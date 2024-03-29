@@ -3059,7 +3059,7 @@ export default function Chart(props: propsIF) {
                                         ).toFixed(2);
 
                                         const infoLabelHeight = 66;
-                                        const infoLabelWidth = 180;
+                                        const infoLabelWidth = 195;
 
                                         const infoLabelXAxisData =
                                             Math.min(

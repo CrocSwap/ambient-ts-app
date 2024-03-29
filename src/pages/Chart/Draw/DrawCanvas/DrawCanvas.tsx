@@ -840,7 +840,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         ).toFixed(2);
 
                         const infoLabelHeight = 66;
-                        const infoLabelWidth = 180;
+                        const infoLabelWidth = 195;
 
                         const infoLabelXAxisData =
                             Math.min(lineData[0].x, lineData[1].x) +
