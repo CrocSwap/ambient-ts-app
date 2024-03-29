@@ -70,6 +70,7 @@ export const AppStateContextProvider = (props: {
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
 
+    // load obj holding brand default settings and data for white-label product
     let brandAssetSet: brandAssetsIF;
     switch (process.env.REACT_APP_BRAND_ASSET_SET ?? 'ambient') {
         case 'ambient':
