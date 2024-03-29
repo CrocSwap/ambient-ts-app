@@ -71,7 +71,8 @@ function SwapTokenInput(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized, poolData } = useContext(PoolContext);
+    const { isTokenABase } = useContext(TradeDataContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -308,6 +309,13 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -335,6 +343,7 @@ function SwapTokenInput(props: propsIF) {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                usdValue={usdValueTokenA}
             />
             <FlexContainer
                 fullWidth
@@ -391,6 +400,7 @@ function SwapTokenInput(props: propsIF) {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
+                usdValue={usdValueTokenB}
             />
         </FlexContainer>
     );
