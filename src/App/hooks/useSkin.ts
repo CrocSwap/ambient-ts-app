@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { chainColorScheme } from '../../assets/ambient/ambientBrandAssets';
+import { chainIds } from '../../ambient-utils/types';
 
 export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
@@ -7,13 +9,18 @@ export interface skinMethodsIF {
     changeTo: (s: skins) => void;
 }
 
-export const useSkin = (defaultSkin: skins): skinMethodsIF => {
+export const useSkin = (
+    colorSchemes: chainColorScheme,
+    chainId: chainIds,
+): skinMethodsIF => {
     const LS_KEY = 'skin';
+
+    const defaultColorForChain: skins = colorSchemes[chainId];
 
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<skins>(
-        localStorage[LS_KEY] ?? defaultSkin,
+        localStorage[LS_KEY] ?? defaultColorForChain,
     );
 
     // hook to hold a single color set for the app to return

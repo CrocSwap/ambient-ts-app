@@ -65,8 +65,9 @@ export default function App() {
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
+        brandAssetSet,
     } = useContext(AppStateContext);
-    const { isWalletChainSupported, defaultUrlParams } =
+    const { isWalletChainSupported, defaultUrlParams, chainData } =
         useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
@@ -81,7 +82,7 @@ export default function App() {
             ? 'swap-body'
             : null;
 
-    const skin: skinMethodsIF = useSkin('purple_dark');
+    const skin: skinMethodsIF = useSkin(brandAssetSet.color, chainData.chainId);
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
