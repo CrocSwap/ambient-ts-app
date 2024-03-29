@@ -141,14 +141,12 @@ export default function Limit() {
         setAmountToReduceNativeTokenQtyMainnet,
     ] = useState<number>(0.001);
 
-    const [
-        amountToReduceNativeTokenQtyScroll,
-        setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0005);
+    const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
+        useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceNativeTokenQtyScroll
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
+            ? amountToReduceNativeTokenQtyL2
             : amountToReduceNativeTokenQtyMainnet;
 
     const activeTxHash = useRef<string>('');
@@ -442,11 +440,7 @@ export default function Limit() {
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkScroll
-            ? 0.0007 * 1e9
-            : isActiveNetworkBlast
-            ? 0.0001 * 1e9
-            : 0,
+        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeeLimit] = useState(
         isActiveNetworkScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
@@ -478,7 +472,7 @@ export default function Limit() {
             const costOfScrollLimitInETH =
                 l1CostOfScrollLimitInETH + l2CostOfScrollLimitInETH;
 
-            setAmountToReduceNativeTokenQtyScroll(
+            setAmountToReduceNativeTokenQtyL2(
                 LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
             );
 
@@ -693,7 +687,9 @@ export default function Limit() {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        'Wallet Balance Insufficient to Cover Gas',
+                        `${
+                            tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
+                        } Wallet Balance Insufficient to Cover Gas`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -712,7 +708,9 @@ export default function Limit() {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        'Wallet Balance Insufficient to Cover Gas',
+                        `${
+                            tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
+                        } Wallet Balance Insufficient to Cover Gas`,
                     );
                 } else {
                     setLimitAllowed(true);
