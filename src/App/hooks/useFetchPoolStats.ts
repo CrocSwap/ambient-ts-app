@@ -8,6 +8,7 @@ import {
     getUnicodeCharacter,
     getMoneynessRank,
     getFormattedNumber,
+    expandPoolStats,
 } from '../../ambient-utils/dataLayer';
 // import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -209,15 +210,35 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (poolPriceDisplayNum && quoteTokenPrice) {
+                    // calculation of estimated base price below may be backwards;
+                    // having a hard time finding an example of base missing a price
+                    const estimatedBasePrice =
+                        quoteTokenPrice / poolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
+                } else {
+                    setBasePrice(undefined);
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (poolPriceDisplayNum && baseTokenPrice) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * poolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
+                } else {
+                    setQuotePrice(undefined);
                 }
             };
 
             fetchTokenPrice();
         }
-    }, [baseAddr, quoteAddr, chainId, crocEnv !== undefined]);
+    }, [
+        baseAddr,
+        quoteAddr,
+        chainId,
+        crocEnv !== undefined,
+        poolPriceDisplayNum,
+    ]);
 
     const fetchPoolStats = async () => {
         if (
@@ -234,10 +255,18 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 pool.quote.address,
                 poolIndex,
                 Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                crocEnv,
                 activeNetwork.graphCacheUrl,
+            );
+
+            const expandedPoolStatsNow = await expandPoolStats(
+                poolStatsNow,
+                pool.base.address,
+                pool.quote.address,
+                chainId,
+                crocEnv,
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
+                cachedQuerySpotPrice,
                 tokens.tokenUniv,
             );
 
@@ -249,21 +278,28 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 pool.quote.address,
                 poolIndex,
                 Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-                crocEnv,
                 activeNetwork.graphCacheUrl,
-                cachedFetchTokenPrice,
-                cachedTokenDetails,
-                tokens.tokenUniv,
                 ydayTime,
             );
 
-            const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
-            const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
+            const expandedPoolStats24hAgo = await expandPoolStats(
+                poolStats24hAgo,
+                pool.base.address,
+                pool.quote.address,
+                chainId,
+                crocEnv,
+                cachedFetchTokenPrice,
+                cachedTokenDetails,
+                cachedQuerySpotPrice,
+                tokens.tokenUniv,
+            );
 
+            const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
+            const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-            const nowPrice = poolStatsNow?.lastPriceIndic;
-            const ydayPrice = poolStats24hAgo?.lastPriceIndic;
+            const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+            const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
             const priceChangeResult =
                 ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
@@ -272,14 +308,14 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                         : nowPrice / ydayPrice - 1.0
                     : 0.0;
 
-            const tvlResult = poolStatsNow?.tvlTotalUsd;
-            const feesTotalResult = poolStatsNow?.feesTotalUsd;
-            const volumeResult = poolStatsNow?.volumeTotalUsd;
+            const tvlResult = expandedPoolStatsNow?.tvlTotalUsd;
+            const feesTotalResult = expandedPoolStatsNow?.feesTotalUsd;
+            const volumeResult = expandedPoolStatsNow?.volumeTotalUsd;
 
-            setQuoteTvlDecimal(poolStatsNow.quoteTvlDecimal);
-            setBaseTvlDecimal(poolStatsNow.baseTvlDecimal);
-            setQuoteTvlUsd(poolStatsNow.quoteTvlUsd);
-            setBaseTvlUsd(poolStatsNow.baseTvlUsd);
+            setQuoteTvlDecimal(expandedPoolStatsNow.quoteTvlDecimal);
+            setBaseTvlDecimal(expandedPoolStatsNow.baseTvlDecimal);
+            setQuoteTvlUsd(expandedPoolStatsNow.quoteTvlUsd);
+            setBaseTvlUsd(expandedPoolStatsNow.baseTvlUsd);
 
             if (tvlResult) {
                 const tvlString = getFormattedNumber({

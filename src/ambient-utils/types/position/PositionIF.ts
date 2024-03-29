@@ -18,6 +18,7 @@ export interface PositionIF {
     baseName: string;
     quoteName: string;
     poolPriceInTicks: number;
+    curentPoolPriceDisplayNum: number;
     isPositionInRange: boolean;
     lowRangeDisplayInBase: string;
     lowRangeShortDisplayInBase: string;

@@ -230,14 +230,12 @@ function Swap(props: propsIF) {
         amountToReduceNativeTokenQtyMainnet,
         setAmountToReduceNativeTokenQtyMainnet,
     ] = useState<number>(0.001);
-    const [
-        amountToReduceNativeTokenQtyScroll,
-        setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0003);
+    const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
+        useState<number>(0.0003);
 
     const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceNativeTokenQtyScroll
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
+            ? amountToReduceNativeTokenQtyL2
             : amountToReduceNativeTokenQtyMainnet;
 
     const activeTxHash = useRef<string>('');
@@ -252,7 +250,29 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
-        if (isSellLoading || isBuyLoading) {
+        if (
+            isNaN(parseFloat(sellQtyString)) ||
+            isNaN(parseFloat(buyQtyString)) ||
+            (sellQtyString === '' && buyQtyString === '') ||
+            (isTokenAPrimary && parseFloat(sellQtyString) <= 0) ||
+            (!isTokenAPrimary && parseFloat(buyQtyString) <= 0)
+        ) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
+            if (
+                isBuyLoading &&
+                (sellQtyString === '' || parseFloat(sellQtyString) <= 0)
+            ) {
+                setIsBuyLoading(false);
+                setLastImpactQuery(undefined);
+            } else if (
+                isSellLoading &&
+                (buyQtyString === '' || parseFloat(buyQtyString) <= 0)
+            ) {
+                setIsSellLoading(false);
+                setLastImpactQuery(undefined);
+            }
+        } else if (isSellLoading || isBuyLoading) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('...');
         } else if (isPoolInitialized === false) {
@@ -261,15 +281,6 @@ function Swap(props: propsIF) {
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
-        } else if (
-            isNaN(parseFloat(sellQtyString)) ||
-            isNaN(parseFloat(buyQtyString))
-        ) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
-        } else if (parseFloat(sellQtyString) <= 0) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Enter an Amount');
         } else {
             const hurdle = isWithdrawFromDexChecked
                 ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
@@ -300,7 +311,9 @@ function Swap(props: propsIF) {
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
-                    'Wallet Balance Insufficient to Cover Gas',
+                    `${
+                        tokenA.address === ZERO_ADDRESS ? 'ETH ' : ''
+                    } Wallet Balance Insufficient to Cover Gas`,
                 );
             } else {
                 setSwapAllowed(true);
@@ -312,6 +325,7 @@ function Swap(props: propsIF) {
         isPoolInitialized === undefined, // Needed to distinguish false from undefined
         tokenA.address,
         tokenB.address,
+        buyQtyString,
         sellQtyString,
         isWithdrawFromDexChecked,
         isBuyLoading,
@@ -321,6 +335,7 @@ function Swap(props: propsIF) {
         tokenAQtyCoveredByWalletBalance,
         amountToReduceNativeTokenQty,
         activeTxHashInPendingTxs,
+        isTokenAPrimary,
     ]);
 
     useEffect(() => {
@@ -328,7 +343,7 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 0.0007 : isActiveNetworkBlast ? 0.0001 : 0,
+        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
         isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
@@ -357,7 +372,6 @@ function Swap(props: propsIF) {
             setAmountToReduceNativeTokenQtyMainnet(
                 SWAP_BUFFER_MULTIPLIER_MAINNET * costOfMainnetSwapInETH,
             );
-
             const l1costOfScrollSwapInETH =
                 l1GasFeeSwapInGwei / NUM_GWEI_IN_ETH;
 
@@ -366,7 +380,7 @@ function Swap(props: propsIF) {
             const costOfScrollSwapInETH =
                 l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
-            setAmountToReduceNativeTokenQtyScroll(
+            setAmountToReduceNativeTokenQtyL2(
                 SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
             );
 
@@ -403,7 +417,6 @@ function Swap(props: propsIF) {
                 : buyQtyString.replaceAll(',', '');
 
             if (qty === '' || parseFloat(qty) === 0) return;
-
             const l1Gas = userAddress
                 ? await calcL1Gas({
                       crocEnv,
@@ -420,10 +433,12 @@ function Swap(props: propsIF) {
             const costOfEthInCents = BigNumber.from(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
             );
-            const l1GasInGwei = l1Gas ? l1Gas.div(NUM_WEI_IN_GWEI) : undefined;
+            const l1GasInGwei =
+                l1Gas && l1Gas.toNumber() !== 0
+                    ? l1Gas.div(NUM_WEI_IN_GWEI)
+                    : undefined;
             l1GasInGwei &&
                 setL1GasFeeSwapInGwei(bigNumToFloat(l1GasInGwei) || 0);
-
             const l1GasCents = l1GasInGwei
                 ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
                 : undefined;
@@ -431,7 +446,6 @@ function Swap(props: propsIF) {
             const l1GasDollarsNum = l1GasCents
                 ? bigNumToFloat(l1GasCents) / 100
                 : undefined;
-
             if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
         })();
     }, [
@@ -684,7 +698,10 @@ function Swap(props: propsIF) {
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFeeString={liquidityProviderFeeString}
                     swapGasPriceinDollars={swapGasPriceinDollars}
-                    showExtraInfoDropdown={primaryQuantity !== ''}
+                    showExtraInfoDropdown={
+                        primaryQuantity !== '' &&
+                        parseFloat(primaryQuantity) > 0
+                    }
                 />
             }
             modal={
