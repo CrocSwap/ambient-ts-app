@@ -43,14 +43,14 @@ export default function TransactionException(props: propsIF) {
                     </p>
                     <DividerDark />
                     <p>
-                        This may have occurred due to an insufficient native
-                        token (e.g. ETH) balance to cover potential slippage.
-                    </p>
-                    <DividerDark />
-                    <p>
                         Please try entering a specific amount of the native
                         token, rather than
                         {' ' + primaryTokenSymbol}.
+                    </p>
+                    <DividerDark />
+                    <p>
+                        This may have occurred due to an insufficient native
+                        token (e.g. ETH) balance to cover potential slippage.
                     </p>
                 </>
             ) : (
