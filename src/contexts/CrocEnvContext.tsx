@@ -64,7 +64,7 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 const mainnetProvider = new BatchedJsonRpcProvider(
     new ethers.providers.InfuraProvider(
         'mainnet',
-        process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e',
+        process.env.REACT_APP_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091',
     ),
 ).proxy;
 
