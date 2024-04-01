@@ -263,8 +263,8 @@ export const mainnetSWETH: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png?=v83',
-    name: 'Swell Ethereum',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
+    name: 'Swell Staked Ether',
     symbol: 'swETH',
 };
 
