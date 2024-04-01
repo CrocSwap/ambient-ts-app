@@ -26,6 +26,8 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { LuPanelBottomOpen } from 'react-icons/lu';
 import { getTxSummary } from '../../../../ambient-utils/dataLayer/functions/findTransactionData';
+import { TxPosition } from '../InputBox/MessageInput';
+import TxSearchResults from '../../../../App/components/Sidebar/SidebarSearchResults/TxSearchResults/TxSearchResults';
 
 interface propsIF {
     message: string;
@@ -35,6 +37,8 @@ interface propsIF {
     walletExplorer: any;
     isCurrentUser?: boolean;
     showAvatar?: boolean;
+    setTxPositionSummary?: Dispatch<SetStateAction<TxPosition>>;
+    txPositionSummary?: TxPosition;
 }
 
 type TransactionData = {
@@ -136,6 +140,17 @@ export default function PositionBox(props: propsIF) {
                 transactionsByPool.changes,
             );
             console.log({ txSummaryData });
+            if (props.setTxPositionSummary) {
+                props.setTxPositionSummary({
+                    poolsByDisplay: txSummaryData?.poolSymbolsDisplay || '',
+                    txHash: txSummaryData?.txHash || '',
+                    sideType: sideType || '',
+                    price:
+                        txSummaryData?.tx.bidTickInvPriceDecimalCorrected?.toFixed(
+                            2,
+                        ) || '',
+                });
+            }
             setTxSummary(txSummaryData ?? null);
         })();
     }, [message, posFingerprint, txFingerprint, isDenomBase]);
@@ -453,7 +468,7 @@ that will merged manually
                     <div className={styles.position_box}>
                         <div className={styles.position_info}>
                             <div className={styles.tokens_name}>
-                                {topToken} / {bottomToken}
+                                {position.baseSymbol} / {position.quoteSymbol}
                             </div>
                             <div className={styles.address_box}>
                                 <div className={styles.address}>

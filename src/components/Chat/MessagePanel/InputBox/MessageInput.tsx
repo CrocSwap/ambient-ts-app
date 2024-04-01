@@ -18,12 +18,25 @@ interface MessageInputProps {
     appPage?: boolean;
 }
 
+export interface TxPosition {
+    poolsByDisplay: string;
+    txHash: string;
+    sideType: string;
+    price: string;
+}
+
 export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
+    const [txPositionSummary, setTxPositionSummary] = useState<TxPosition>({
+        poolsByDisplay: '',
+        txHash: '',
+        sideType: '',
+        price: '',
+    });
     const {
         chat: { isOpen: isChatOpen },
         subscriptions: { isEnabled: isSubscriptionsEnabled },
@@ -113,13 +126,24 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMsg = async (msg: string, roomId: string) => {
         if (msg !== '' && userAddress) {
-            sendMsg(
-                props.currentUser,
-                message,
-                roomId,
-                props.ensName,
-                userAddress,
-            );
+            if (isPosition) {
+                sendMsg(
+                    props.currentUser,
+                    message,
+                    roomId,
+                    props.ensName,
+                    userAddress,
+                    txPositionSummary,
+                );
+            } else {
+                sendMsg(
+                    props.currentUser,
+                    message,
+                    roomId,
+                    props.ensName,
+                    userAddress,
+                );
+            }
         }
     };
 
@@ -144,6 +168,8 @@ export default function MessageInput(props: MessageInputProps) {
                 walletExplorer={
                     props.ensName === undefined ? userAddress : props.ensName
                 }
+                setTxPositionSummary={setTxPositionSummary}
+                txPositionSummary={txPositionSummary}
             />
 
             <div

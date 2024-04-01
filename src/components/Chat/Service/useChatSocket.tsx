@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { CHAT_BACKEND_WSS_URL } from '../../../ambient-utils/constants';
 import { Message } from '../Model/MessageModel';
+import { TxPosition } from './../MessagePanel/InputBox/MessageInput';
 
 const useChatSocket = (
     room: string,
@@ -61,14 +62,29 @@ const useChatSocket = (
         room: string,
         ensName: string,
         walletID: string | null,
+        position?: TxPosition,
     ) {
-        socketRef.current.emit('send-msg', {
+        const data: {
+            from: string;
+            message: string;
+            roomInfo: string;
+            ensName: string;
+            walletID: string | null;
+            position?: TxPosition;
+        } = {
             from: currentUser,
             message: msg,
             roomInfo: room,
             ensName: ensName,
             walletID: walletID,
-        });
+        };
+
+        // Add position to data if it exists
+        if (position !== undefined) {
+            data.position = position;
+        }
+
+        socketRef.current.emit('send-msg', data);
     }
 
     return {
