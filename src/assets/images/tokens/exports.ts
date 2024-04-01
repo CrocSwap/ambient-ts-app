@@ -24,6 +24,7 @@ import OHNO from './OHNO.png';
 import RPL from './RPL.png';
 import XMON from './XMON.png';
 import MKR from './MKR.png';
+import SWETH from './SWETH.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -53,4 +54,5 @@ export {
     RPL,
     XMON,
     MKR,
+    SWETH,
 };
