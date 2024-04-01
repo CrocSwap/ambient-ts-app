@@ -1,16 +1,11 @@
-import {
-    getFormattedNumber,
-    translateToken,
-} from '../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { formatTokenInput, stringToBigNumber } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { BigNumber } from 'ethers';
 
 interface propsIF {
@@ -23,6 +18,7 @@ interface propsIF {
     handleTokenInputEvent: (val: string) => void;
     reverseTokens: () => void;
     handleToggleDexSelection: () => void;
+    usdValue: number | undefined;
     handleRefresh?: () => void;
     parseTokenInput?: (val: string, isMax?: boolean) => void | string;
     fieldId?: string;
@@ -60,45 +56,18 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleRefresh,
         amountToReduceNativeTokenQty,
         isInitPage,
+        usdValue,
     } = props;
 
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
-
-    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
-
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
-    const pricedToken = translateToken(token.address, chainId);
+    const usdValueForDom =
+        usdValue && parseFloat(tokenInput) > 0
+            ? getFormattedNumber({
+                  value: usdValue * parseFloat(tokenInput),
+                  prefix: '$',
+              })
+            : '';
 
     const tokenDecimals = token.decimals;
-    useEffect(() => {
-        if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(pricedToken, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                const usdValueNum: number | undefined =
-                    price !== undefined && tokenInput !== ''
-                        ? price.usdPrice * parseFloat(tokenInput)
-                        : undefined;
-                const usdValueTruncated =
-                    usdValueNum !== undefined
-                        ? getFormattedNumber({
-                              value: usdValueNum,
-                              prefix: '$',
-                          })
-                        : undefined;
-                usdValueTruncated !== undefined
-                    ? setUsdValueForDom(usdValueTruncated)
-                    : setUsdValueForDom('');
-            } else {
-                setUsdValueForDom(undefined);
-            }
-        });
-    }, [crocEnv, chainId, pricedToken, tokenInput]);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -193,8 +162,10 @@ function TokenInputWithWalletBalance(props: propsIF) {
             const balance = subtractBuffer(
                 isDexSelected ? walletBalance : walletAndExchangeBalance,
             );
-            parseTokenInput && parseTokenInput(balance);
-            handleTokenInputEvent(balance);
+            if (walletBalance !== walletAndExchangeBalance) {
+                parseTokenInput && parseTokenInput(balance);
+                handleTokenInputEvent(balance);
+            }
         }
         handleToggleDexSelection();
     };

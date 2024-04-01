@@ -1,5 +1,5 @@
 import styles from './RangeDetailsSimplify.module.css';
-import { BlastPointsDataIF, PositionIF } from '../../../ambient-utils/types';
+import { BlastRewardsDataIF, PositionIF } from '../../../ambient-utils/types';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -16,11 +16,12 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
+    timeFirstMintMemo: number;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
     isAccountView: boolean;
     updatedPositionApy: number | undefined;
-    blastPointsData: BlastPointsDataIF;
+    blastRewardsData: BlastRewardsDataIF;
 }
 
 // TODO: refactor to using styled-components
@@ -31,9 +32,11 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         quoteFeesDisplay,
         isAccountView,
         updatedPositionApy,
-        blastPointsData,
+        blastRewardsData,
+        timeFirstMintMemo,
     } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,
@@ -66,7 +69,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         quoteDisplayFrontend,
         elapsedTimeString,
         elapsedTimeSinceFirstMintString,
-    } = useProcessRange(position, userAddress, isAccountView);
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
@@ -74,7 +77,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { chainData } = useContext(CrocEnvContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const [_, copy] = useCopyToClipboard();
@@ -175,7 +177,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         : 'Out of Range';
 
     const firstMintTime =
-        moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+        moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
         elapsedTimeSinceFirstMintString +
@@ -337,12 +339,12 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             0,
             {
                 title: 'BLAST points ',
-                content: blastPointsData.points,
+                content: blastRewardsData.points,
                 explanation: 'BLAST points earned by the position',
             },
             {
                 title: 'BLAST gold ',
-                content: '...',
+                content: blastRewardsData.gold,
                 explanation: 'BLAST gold earned by the position',
             },
         );

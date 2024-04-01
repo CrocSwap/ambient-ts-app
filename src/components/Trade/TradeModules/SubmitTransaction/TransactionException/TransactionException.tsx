@@ -3,7 +3,6 @@ import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface propsIF {
     txErrorMessage: string;
@@ -12,16 +11,13 @@ interface propsIF {
 export default function TransactionException(props: propsIF) {
     const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
-    const { isTokenAPrimaryRange } = useContext(RangeContext);
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
 
     const isNativeTokenSecondary =
-        (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
-        (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
+        (isTokenAPrimary && tokenB.address === ZERO_ADDRESS) ||
+        (!isTokenAPrimary && tokenA.address === ZERO_ADDRESS);
 
-    const primaryTokenSymbol = isTokenAPrimaryRange
-        ? tokenA.symbol
-        : tokenB.symbol;
+    const primaryTokenSymbol = isTokenAPrimary ? tokenA.symbol : tokenB.symbol;
 
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
@@ -47,14 +43,14 @@ export default function TransactionException(props: propsIF) {
                     </p>
                     <DividerDark />
                     <p>
-                        This may have occurred due to an insufficient native
-                        token (e.g. ETH) balance to cover potential slippage.
+                        Please try entering a specific amount of the native
+                        token (e.g. ETH), rather than
+                        {' ' + primaryTokenSymbol}.
                     </p>
                     <DividerDark />
                     <p>
-                        Please try entering a specific amount of the native
-                        token, rather than
-                        {' ' + primaryTokenSymbol}.
+                        This may have occurred due to an insufficient native
+                        token balance to cover potential slippage.
                     </p>
                 </>
             ) : (

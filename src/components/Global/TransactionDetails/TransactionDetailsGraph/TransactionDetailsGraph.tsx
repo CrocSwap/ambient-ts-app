@@ -14,16 +14,20 @@ import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { fetchCandleSeriesCroc } from '../../../../ambient-utils/api';
 import moment from 'moment';
 import {
+    lineValue,
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
+import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
     tx: any;
-    // timeFirstMint?: number | undefined;
+    timeFirstMintMemo: number | undefined;
     transactionType: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
@@ -34,15 +38,16 @@ export default function TransactionDetailsGraph(
 ) {
     const {
         tx,
-        // timeFirstMint,
+        timeFirstMintMemo,
         transactionType,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
+
     const oneHourMiliseconds = 60 * 60 * 1000;
-    const oneDayMiliseconds = 60 * 60 * 1000 * 24;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -73,6 +78,8 @@ export default function TransactionDetailsGraph(
     const [period, setPeriod] = useState<number | undefined>();
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
+    const [poolPricePixel, setPoolPricePixel] = useState(0);
+    const [poolPrice, setPoolPrice] = useState(0);
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
             return 300;
@@ -87,14 +94,14 @@ export default function TransactionDetailsGraph(
         }
     };
 
-    const verticalLineLabels = () => {
+    const verticalLineLabels = (isSmallRange: boolean) => {
         switch (tx.changeType) {
             case 'mint':
-                return 'Add Liq.';
+                return isSmallRange ? 'Add' : 'Add Liq.';
             case 'burn':
-                return 'Remove Liq. ';
+                return isSmallRange ? 'Remove' : 'Remove Liq. ';
             case 'harvest':
-                return 'Harvest Liq. ';
+                return isSmallRange ? 'Harvest' : 'Harvest Liq. ';
             default:
                 return '';
         }
@@ -114,15 +121,7 @@ export default function TransactionDetailsGraph(
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
 
-    const [timeFirstMintMemo, setTimeFirstMintMemo] = useState<
-        number | undefined
-    >();
-
-    useEffect(() => {
-        if (tx.timeFirstMint) {
-            setTimeFirstMintMemo(tx.timeFirstMint);
-        }
-    }, [tx.timeFirstMint]);
+    const { chainId, base, quote, baseDecimals, quoteDecimals } = props.tx;
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -208,15 +207,40 @@ export default function TransactionDetailsGraph(
                     maxNumCandlesNeeded,
                 );
 
-                const offsetInSeconds = 120;
+                const offsetInSeconds = oneHourMiliseconds / 1000;
 
                 const startBoundary =
-                    Math.floor(localMaxTime / 1000) - offsetInSeconds;
+                    Math.floor(localMaxTime / 1000) + offsetInSeconds;
 
                 try {
                     if (!crocEnv) {
                         return;
                     }
+
+                    const poolPriceNonDisplay = cachedQuerySpotPrice(
+                        crocEnv,
+                        base,
+                        quote,
+                        chainId,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                    );
+
+                    const poolPrice = toDisplayPrice(
+                        await poolPriceNonDisplay,
+                        baseDecimals,
+                        quoteDecimals,
+                    );
+
+                    const poolPriceDisplay = (
+                        !isAccountView
+                            ? isDenomBase
+                            : !isBaseTokenMoneynessGreaterOrEqual
+                    )
+                        ? 1 / poolPrice
+                        : poolPrice;
+
+                    setPoolPrice(poolPriceDisplay);
+
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainData,
@@ -228,6 +252,7 @@ export default function TransactionDetailsGraph(
                         numCandlesNeeded,
                         crocEnv,
                         cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
                     );
 
                     if (graphData) {
@@ -322,8 +347,8 @@ export default function TransactionDetailsGraph(
             const verticalDashLine = d3fc
                 .annotationSvgLine()
                 .orient('vertical')
-                .label((d: any) => d.label)
-                .value((d: any) => d.time)
+                .label((d: any) => d.name)
+                .value((d: any) => d.value)
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale);
 
@@ -337,23 +362,25 @@ export default function TransactionDetailsGraph(
                     const textWidth = (d3.select(element).select('text') as any)
                         .node()
                         .getBBox().width;
-
-                    d3.select(element).attr(
-                        'transform',
-                        `translate(${textWidth / 2 - 1}, ${-19})`,
-                    );
-
                     d3.select(element).selectAll('rect').remove();
-                    const textNode = d3.select(element) as any;
-                    const bbox = textNode.node().getBBox();
-                    textNode
-                        .insert('rect', ':first-child')
-                        .attr('x', bbox.x - 1)
-                        .attr('y', bbox.y)
-                        .attr('width', bbox.width + 2)
-                        .attr('height', bbox.height)
-                        .style('fill', '#61646F')
-                        .attr('rx', 3);
+
+                    if (textWidth) {
+                        d3.select(element).attr(
+                            'transform',
+                            `translate(${textWidth / 2 - 1}, ${-19})`,
+                        );
+
+                        const textNode = d3.select(element) as any;
+                        const bbox = textNode.node().getBBox();
+                        textNode
+                            .insert('rect', ':first-child')
+                            .attr('x', bbox.x - 1)
+                            .attr('y', bbox.y)
+                            .attr('width', bbox.width + 2)
+                            .attr('height', bbox.height)
+                            .style('fill', '#61646F')
+                            .attr('rx', 3);
+                    }
                 });
             });
 
@@ -493,20 +520,24 @@ export default function TransactionDetailsGraph(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const svgDiv = d3.select(d3PlotGraph.current) as any;
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const resizeObserver = new ResizeObserver((result: any) => {
-                const width = result[0].contentRect.width;
+            if (svgDiv) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const resizeObserver = new ResizeObserver((result: any) => {
+                    const width = result[0].contentRect.width;
 
-                if (svgWidth !== width) {
-                    setSvgWidth(width);
-                } else {
-                    graphData && setIsDataLoading(false);
-                }
-            });
+                    if (svgWidth !== width) {
+                        setSvgWidth(width);
+                    } else {
+                        graphData &&
+                            transactionType !== 'liqchange' &&
+                            setIsDataLoading(false);
+                    }
+                });
 
-            resizeObserver.observe(svgDiv.node());
+                resizeObserver.observe(svgDiv.node());
 
-            return () => resizeObserver.unobserve(svgDiv.node());
+                return () => resizeObserver.unobserve(svgDiv.node());
+            }
         }
     }, [graphData, svgWidth]);
 
@@ -612,13 +643,12 @@ export default function TransactionDetailsGraph(
                         tx.latestUpdateTime,
                     ]);
 
-                    const minimumDifferenceMinMax = 80;
+                    const minimumDifferenceMinMax = 75;
 
                     if (result) {
                         const minTime = result.min * 1000;
                         const maxTime = result.max * 1000;
-                        let minTimePixel = xScale(minTime);
-                        let maxTimePixel = xScale(maxTime);
+                        const maxTimePixel = xScale(maxTime);
 
                         const maxDomainPixel = svgWidth;
                         const diffDomainBetweenLastTime =
@@ -636,79 +666,11 @@ export default function TransactionDetailsGraph(
                             xScale.domain([xScale.domain()[0], newMaxDomain]);
                         }
 
-                        if (xScale(minTime) < 0) {
+                        if (xScale(minTime) <= 0) {
                             xScale.domain([
                                 minTime - 2 * bufferOneCandle,
                                 xScale.domain()[1],
                             ]);
-                        }
-
-                        minTimePixel = xScale(minTime);
-                        maxTimePixel = xScale(maxTime);
-                        const diffMinMaxPixel = maxTimePixel - minTimePixel;
-                        const candleCountMax =
-                            (xScale.domain()[1].getTime() - maxTime) /
-                            (1000 * period);
-
-                        if (
-                            minTime !== maxTime &&
-                            diffMinMaxPixel < minimumDifferenceMinMax &&
-                            diffMinMaxPixel > 25
-                        ) {
-                            const checkDiffMinMax =
-                                maxTimePixel - minTimePixel <
-                                    minimumDifferenceMinMax &&
-                                maxTimePixel !== minTimePixel;
-
-                            if (checkDiffMinMax) {
-                                xScale.domain([
-                                    Math.min(
-                                        minTime - bufferOneCandle,
-                                        xScale.invert(40).getTime(),
-                                    ),
-                                    Math.max(
-                                        xScale
-                                            .invert(
-                                                xScale(maxTime) +
-                                                    minimumDifferenceMinMax,
-                                            )
-                                            .getTime(),
-                                        maxTime +
-                                            (candleCountMax / 3) *
-                                                bufferOneCandle,
-                                    ),
-                                ]);
-                            }
-                        }
-
-                        if (
-                            tx.changeType !== 'mint' &&
-                            tx.positionType !== 'ambient' &&
-                            diffMinMaxPixel > 10 &&
-                            diffMinMaxPixel < 25
-                        ) {
-                            const newMinDomain = Math.min(
-                                minTime - bufferOneCandle,
-                                xScale.invert(30).getTime(),
-                            );
-
-                            const newMaxDomain = Math.max(
-                                xScale
-                                    .invert(
-                                        xScale(maxTime) +
-                                            minimumDifferenceMinMax,
-                                    )
-                                    .getTime(),
-                                minTime +
-                                    (candleCountMax / 8) * bufferOneCandle,
-                            );
-
-                            if (
-                                newMaxDomain - newMinDomain >
-                                oneWeekMiliseconds
-                            ) {
-                                xScale.domain([newMinDomain, newMaxDomain]);
-                            }
                         }
                     }
                 }
@@ -887,6 +849,31 @@ export default function TransactionDetailsGraph(
             });
         }
     }, [scaleData]);
+
+    useEffect(() => {
+        if (
+            poolPricePixel &&
+            scaleData &&
+            graphData.length > 0 &&
+            transactionType === 'liqchange'
+        ) {
+            const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
+            const diff = lastDataPixel - poolPricePixel * 10 + 10;
+
+            if (lastDataPixel > poolPricePixel * 10) {
+                const newMaxDomain = scaleData?.xScale
+                    .invert(svgWidth + diff)
+                    .getTime();
+
+                const oldMaxDomain = scaleData?.xScale.domain()[1];
+                scaleData?.xScale.domain([
+                    scaleData?.xScale.domain()[0],
+                    Math.max(newMaxDomain, oldMaxDomain),
+                ]);
+            }
+            render();
+        }
+    }, [scaleData, poolPricePixel, graphData]);
 
     useEffect(() => {
         if (scaleData) {
@@ -1317,17 +1304,9 @@ export default function TransactionDetailsGraph(
                                 },
                             ];
 
-                            const verticalLineData = [
-                                { label: 'Open Position', time: timeStart },
-                            ];
+                            const verticalLineData: lineValue[] = [];
 
-                            const checkDiffMinUpdate =
-                                Math.abs(
-                                    scaleData.xScale(timeStart) -
-                                        scaleData.xScale(
-                                            tx.latestUpdateTime * 1000,
-                                        ),
-                                ) > 30;
+                            let isSmallRange = false;
 
                             if (
                                 tx.txTime &&
@@ -1341,45 +1320,55 @@ export default function TransactionDetailsGraph(
                                         ),
                                 );
 
-                                let checkDiffMinMax = diff > 80;
+                                const checkDiffMinMax = diff > 30;
+
+                                isSmallRange = diff < 70 && diff > 30;
 
                                 if (
-                                    tx.changeType !== 'mint' &&
-                                    tx.positionType !== 'ambient' &&
-                                    !checkDiffMinMax &&
-                                    diff > 10 &&
-                                    (tx.txTime - timeFirstMintMemo) * 1000 >
-                                        oneDayMiliseconds * 3
+                                    !(
+                                        (tx.changeType === 'mint' ||
+                                            tx.positionType === 'ambient') &&
+                                        diff < 10
+                                    )
                                 ) {
-                                    if (
-                                        scaleData.xScale.domain()[1] -
-                                            scaleData.xScale.domain()[0] >
-                                        oneWeekMiliseconds
-                                    ) {
-                                        checkDiffMinMax = true;
-                                    }
+                                    const verticalLineDatum = {
+                                        name: checkDiffMinMax
+                                            ? verticalLineLabels(isSmallRange)
+                                            : '',
+                                        value: tx.txTime * 1000,
+                                    };
+
+                                    verticalLineData.push(verticalLineDatum);
                                 }
-                                checkDiffMinMax &&
-                                    verticalLineData.push({
-                                        label: verticalLineLabels(),
-                                        time: tx.txTime * 1000,
-                                    });
                             }
 
                             if (
                                 tx.latestUpdateTime &&
-                                checkDiffMinUpdate &&
                                 ((tx.txTime &&
                                     tx.latestUpdateTime !== tx.txTime) ||
                                     (timeFirstMintMemo &&
                                         tx.latestUpdateTime !==
                                             timeFirstMintMemo))
                             ) {
-                                verticalLineData.push({
-                                    label: ' Updated',
-                                    time: tx.latestUpdateTime * 1000,
-                                });
+                                const diff = Math.abs(
+                                    scaleData.xScale(timeStart) -
+                                        scaleData.xScale(
+                                            tx.latestUpdateTime * 1000,
+                                        ),
+                                );
+
+                                isSmallRange = diff < 70 && diff > 30;
+                                if (diff > 10) {
+                                    verticalLineData.push({
+                                        name: ' Updated',
+                                        value: tx.latestUpdateTime * 1000,
+                                    });
+                                }
                             }
+                            verticalLineData.push({
+                                name: isSmallRange ? 'Open' : 'Open Position',
+                                value: timeStart,
+                            });
 
                             verticalLinesJoin(svg, [verticalLineData]).call(
                                 verticalDashLine,
@@ -1471,16 +1460,53 @@ export default function TransactionDetailsGraph(
                         width: '100%',
                     }}
                 >
-                    <d3fc-svg
-                        id='d3PlotGraph'
-                        ref={d3PlotGraph}
-                        style={{ width: '90%' }}
-                    ></d3fc-svg>
-
+                    <div
+                        style={{
+                            display: 'grid',
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'hidden',
+                            gridTemplateColumns: '1px auto 1fr auto',
+                            gridTemplateRows:
+                                'minmax(0em, max-content) auto 1fr auto',
+                        }}
+                    >
+                        {transactionType === 'liqchange' && (
+                            <TransactionDetailsLiquidityGraph
+                                tx={tx}
+                                isDenomBase={
+                                    !(!isAccountView
+                                        ? isDenomBase
+                                        : !isBaseTokenMoneynessGreaterOrEqual)
+                                }
+                                yScale={scaleData?.yScale}
+                                transactionType={transactionType}
+                                poolPriceDisplay={poolPrice}
+                                setPoolPricePixel={setPoolPricePixel}
+                                poolPricePixel={poolPricePixel}
+                                svgWidth={svgWidth}
+                                lastCandleData={
+                                    graphData ? graphData[0] : undefined
+                                }
+                                setIsDataLoading={setIsDataLoading}
+                            />
+                        )}
+                        <d3fc-svg
+                            id='d3PlotGraph'
+                            ref={d3PlotGraph}
+                            style={{
+                                width: '100%',
+                                display: isDataLoading ? 'none' : 'inline',
+                            }}
+                        ></d3fc-svg>
+                    </div>
                     <d3fc-canvas
                         className='y-axis'
                         ref={d3Yaxis}
-                        style={{ width: mobileView ? '10%' : '15%' }}
+                        style={{
+                            width: mobileView ? '10%' : '15%',
+                            display: isDataLoading ? 'none' : 'inline',
+                        }}
                     ></d3fc-canvas>
                 </div>
                 <d3fc-canvas

@@ -145,6 +145,15 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
+export const blastEzETH: TokenIF = {
+    name: 'Renzo Restaked ETH',
+    address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+    symbol: 'ezETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: '',
+};
+
 export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
@@ -499,7 +508,7 @@ export const scrollETH: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
 };
 
-export const scrollwstETH: TokenIF = {
+export const scrollWstETH: TokenIF = {
     name: 'Wrapped liquid staked Ether 2.0',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
@@ -658,6 +667,7 @@ export const defaultTokens: TokenIF[] = [
     blastFINGER,
     blastGLORY,
     blastWETH,
+    blastEzETH,
     blastPUMP,
     blastYES,
     blastPACM,
@@ -683,7 +693,7 @@ export const defaultTokens: TokenIF[] = [
     scrollWBTC,
     scrollRocketPoolETH,
     scrollWrappedETH,
-    scrollwstETH,
+    scrollWstETH,
     sepoliaETH,
     sepoliaUSDC,
     sepoliaWBTC,

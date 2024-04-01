@@ -1,5 +1,7 @@
 import {
+    Dispatch,
     ReactNode,
+    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -13,6 +15,7 @@ import { PoolIF } from '../ambient-utils/types';
 import {
     getMoneynessRank,
     getFormattedNumber,
+    expandPoolStats,
 } from '../ambient-utils/dataLayer';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -22,13 +25,7 @@ import { PoolContext } from './PoolContext';
 import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
-type tabs = 'pools' | 'tokens';
-
 export interface ExploreContextIF {
-    tab: {
-        active: tabs;
-        toggle: () => void;
-    };
     pools: {
         all: Array<PoolDataIF>;
         getLimited(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
@@ -40,6 +37,8 @@ export interface ExploreContextIF {
         reset: () => void;
     };
     tokens: useTokenStatsIF;
+    arePricesDollarized: boolean;
+    setArePricesDollarized: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -56,6 +55,7 @@ export interface PoolDataIF extends PoolIF {
         base: number;
         quote: number;
     };
+    usdPriceMoneynessBased: number;
 }
 
 export const ExploreContext = createContext<ExploreContextIF>(
@@ -70,7 +70,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
-        cachedGet24hChange,
     } = useContext(CachedDataContext);
 
     const { crocEnv, chainData, activeNetwork, provider } =
@@ -79,6 +78,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
+    const [arePricesDollarized, setArePricesDollarized] = useState(false);
 
     const allPools = useMemo(
         () => limitedPools.concat(extraPools),
@@ -138,10 +138,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.quote.address,
             poolIdx,
             Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            crocEnv,
             activeNetwork.graphCacheUrl,
+        );
+
+        const expandedPoolStatsNow = await expandPoolStats(
+            poolStatsNow,
+            pool.base.address,
+            pool.quote.address,
+            chainId,
+            crocEnv,
             cachedFetchTokenPrice,
             cachedTokenDetails,
+            cachedQuerySpotPrice,
             tokens.tokenUniv,
         );
         const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -152,22 +160,39 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             pool.quote.address,
             poolIdx,
             Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            crocEnv,
             activeNetwork.graphCacheUrl,
-            cachedFetchTokenPrice,
-            cachedTokenDetails,
-            tokens.tokenUniv,
             ydayTime,
         );
 
-        const volumeTotalNow = poolStatsNow?.volumeTotalUsd;
-        const volumeTotal24hAgo = poolStats24hAgo?.volumeTotalUsd;
+        const expandedPoolStats24hAgo = await expandPoolStats(
+            poolStats24hAgo,
+            pool.base.address,
+            pool.quote.address,
+            chainId,
+            crocEnv,
+            cachedFetchTokenPrice,
+            cachedTokenDetails,
+            cachedQuerySpotPrice,
+            tokens.tokenUniv,
+        );
+
+        const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
+        const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
+        const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+        const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
+
+        const priceChangeRaw =
+            ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
+                ? shouldInvert
+                    ? ydayPrice / nowPrice - 1.0
+                    : nowPrice / ydayPrice - 1.0
+                : 0.0;
         if (
-            !poolStatsNow ||
-            (!isActiveNetworkBlast && poolStatsNow.tvlTotalUsd < 100)
+            !expandedPoolStatsNow ||
+            (!isActiveNetworkBlast && expandedPoolStatsNow.tvlTotalUsd < 100)
         ) {
             // return early
             const poolData: PoolDataIF = {
@@ -185,14 +210,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     base: 0,
                     quote: 0,
                 },
+                usdPriceMoneynessBased: 0,
             };
             return poolData;
         }
 
         // format TVL, use empty string as backup value
-        const tvlDisplay: string = poolStatsNow.tvlTotalUsd
+        const tvlDisplay: string = expandedPoolStatsNow.tvlTotalUsd
             ? getFormattedNumber({
-                  value: poolStatsNow.tvlTotalUsd,
+                  value: expandedPoolStatsNow.tvlTotalUsd,
                   isTvl: true,
                   prefix: '$',
               })
@@ -206,15 +232,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             : '';
         // human readable price change over last 24 hours
         let priceChangePercent: string;
-        const priceChangeRaw: number | undefined = await cachedGet24hChange(
-            chainId,
-            pool.base.address,
-            pool.quote.address,
-            poolIdx,
-            shouldInvert,
-            activeNetwork.graphCacheUrl,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
+
         if (!priceChangeRaw) {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
@@ -253,6 +271,24 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   pool.quote.decimals,
               );
 
+        const tokenPriceForUsd = shouldInvert
+            ? (
+                  await cachedFetchTokenPrice(
+                      pool.quote.address,
+                      pool.chainId,
+                      crocEnv,
+                  )
+              )?.usdPrice || 0
+            : (
+                  await cachedFetchTokenPrice(
+                      pool.base.address,
+                      pool.chainId,
+                      crocEnv,
+                  )
+              )?.usdPrice || 0;
+
+        const usdPriceMoneynessBased = displayPrice * tokenPriceForUsd;
+
         // return variable
         const poolData: PoolDataIF = {
             ...pool,
@@ -262,7 +298,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
             }),
             poolIdx,
-            tvl: poolStatsNow.tvlTotalUsd,
+            tvl: expandedPoolStatsNow.tvlTotalUsd,
             tvlStr: tvlDisplay,
             volume: volumeChange24h,
             volumeStr: volumeDisplay,
@@ -272,6 +308,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 base: baseMoneyness,
                 quote: quoteMoneyness,
             },
+            usdPriceMoneynessBased,
         };
         // write a pool name should it not be there already
         poolData.name =
@@ -354,20 +391,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
-    const [activeTab, setActiveTab] = useState<tabs>('pools');
-    function toggleTab(): void {
-        let newTab: tabs;
-        switch (activeTab) {
-            case 'pools':
-                newTab = 'tokens';
-                break;
-            case 'tokens':
-                newTab = 'pools';
-                break;
-        }
-        setActiveTab(newTab);
-    }
-
     const dexTokens: useTokenStatsIF = useTokenStats(
         chainData.chainId,
         crocEnv,
@@ -379,10 +402,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     );
 
     const exploreContext: ExploreContextIF = {
-        tab: {
-            active: activeTab,
-            toggle: toggleTab,
-        },
         pools: {
             all: allPools,
             getLimited: getLimitedPoolData,
@@ -393,6 +412,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             },
         },
         tokens: dexTokens,
+        arePricesDollarized,
+        setArePricesDollarized,
     };
 
     return (
