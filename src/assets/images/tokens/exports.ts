@@ -22,6 +22,7 @@ import EZETH from './EZETH.png';
 import GLORY from './GLORY.png';
 import OHNO from './OHNO.png';
 import RPL from './RPL.png';
+import XMON from './XMON.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -49,4 +50,5 @@ export {
     GLORY,
     OHNO,
     RPL,
+    XMON,
 };
