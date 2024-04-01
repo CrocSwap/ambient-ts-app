@@ -1,41 +1,28 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
-import { Client } from '@covalenthq/client-sdk';
-import { Chains } from '@covalenthq/client-sdk/dist/services/Client';
-import { COVALENT_CHAIN_IDS } from './fetchTokenBalances';
+import { Alchemy, GetBaseNftsForOwnerOptions } from 'alchemy-sdk';
 
 export const fetchNFT = async (
     address: string,
-    chain: string,
     crocEnv: CrocEnv | undefined,
-    client: Client,
+    client: Alchemy,
 ): Promise<any> => {
     if (!crocEnv) return;
 
-    const covalentChainString =
-        COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
-        'eth-mainnet';
+    const nftsForOwnerResponse = await client.nft.getNftsForOwner(address, {
+        pageKey: '1',
+        pageSize: 50,
+    });
 
-    const covalentNFTResponse = await client.NftService.getNftsForAddress(
-        covalentChainString as Chains,
-        address,
-        {
-            withUncached: true,
-        },
-    );
+    const nftData = nftsForOwnerResponse.ownedNfts;
 
-    console.log(covalentNFTResponse);
-
-    const covalentData = covalentNFTResponse.data.items;
-
-    return covalentData;
+    return nftData;
 };
 
 export type NFTQueryFn = (
     address: string,
-    chain: string,
     crocEnv: CrocEnv | undefined,
-    client: Client,
+    client: Alchemy,
 ) => Promise<any>;
 
 export function memoizeFetchNFT(): NFTQueryFn {

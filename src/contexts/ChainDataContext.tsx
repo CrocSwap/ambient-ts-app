@@ -24,7 +24,11 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from './UserDataContext';
-import { TokenBalanceContext } from './TokenBalanceContext';
+import {
+    NftDataIF,
+    NftListByChain,
+    TokenBalanceContext,
+} from './TokenBalanceContext';
 import {
     fetchBlastUserXpData,
     fetchBlockNumber,
@@ -33,6 +37,7 @@ import {
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
+import { Network, Alchemy } from 'alchemy-sdk';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -93,6 +98,13 @@ export const ChainDataContextProvider = (props: {
         '0x82750',
         '0x8274f',
     ];
+
+    const settings = {
+        apiKey: 'ETHwVh6EZYZJb159fmTvHhO5_u03J5s_', // Replace with your Alchemy API Key.
+        network: Network.ETH_MAINNET, // Replace with your network.
+    };
+
+    const alchemyClient = new Alchemy(settings);
 
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
@@ -195,107 +207,103 @@ export const ChainDataContextProvider = (props: {
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
-    // useEffect(() => {
-    //     const nftLocalData = localStorage.getItem('user_nft_data');
+    useEffect(() => {
+        const nftLocalData = localStorage.getItem('user_nft_data');
 
-    //     const actionKey = userAddress;
+        const actionKey = userAddress;
 
-    //     const localNftDataParsed = nftLocalData
-    //         ? new Map(JSON.parse(nftLocalData))
-    //         : undefined;
+        const localNftDataParsed = nftLocalData
+            ? new Map(JSON.parse(nftLocalData))
+            : undefined;
 
-    //     const nftDataMap = localNftDataParsed?.get(actionKey) as any;
+        const nftDataMap = localNftDataParsed?.get(actionKey) as any;
 
-    //     if (
-    //         isfetchNftTriggered ||
-    //         !nftLocalData ||
-    //         (nftDataMap &&
-    //             moment(Date.now()).diff(
-    //                 moment(nftDataMap.lastFetchTime),
-    //                 'days',
-    //             ) >= 7) ||
-    //         (localNftDataParsed && !localNftDataParsed.has(actionKey))
-    //     ) {
-    //         (async () => {
-    //             if (
-    //                 crocEnv &&
-    //                 isUserConnected &&
-    //                 userAddress &&
-    //                 chainData.chainId &&
-    //                 client
-    //             ) {
-    //                 try {
-    //                     const NFTData = await cachedFetchNFT(
-    //                         '0xF005Bc919B57DC1a95070A614C0d51A2897d11ff', // '0x8e42AEcF40b5cC4c25fFA74E352b3840759aefa2',
-    //                         chainData.chainId,
-    //                         crocEnv,
-    //                         client,
-    //                     );
+        const isOverTimeLimit =
+            nftDataMap &&
+            moment(Date.now()).diff(moment(nftDataMap.lastFetchTime), 'days') >=
+                7;
 
-    //                     const nftDataMap = localNftDataParsed
-    //                         ? localNftDataParsed
-    //                         : new Map<string, Array<NftListByChain>>();
+        if (
+            isfetchNftTriggered ||
+            !nftLocalData ||
+            isOverTimeLimit ||
+            (localNftDataParsed && !localNftDataParsed.has(actionKey))
+        ) {
+            (async () => {
+                if (
+                    crocEnv &&
+                    isUserConnected &&
+                    userAddress &&
+                    chainData.chainId &&
+                    alchemyClient
+                ) {
+                    try {
+                        const NFTData = await cachedFetchNFT(
+                            '0x614531a2135c37B1c9baFb5d9b124372c0e8683c',
+                            crocEnv,
+                            alchemyClient,
+                        );
 
-    //                     const mapValue: Array<NftListByChain> = [];
+                        console.log(NFTData);
 
-    //                     const actionKey = userAddress;
+                        const nftImgArray: Array<NftDataIF> = [];
 
-    //                     NFTData.map((item: any) => {
-    //                         const nftData = Object.values(item.nft_data);
+                        NFTData.map((nftData: any) => {
+                            nftImgArray.push({
+                                contractAddress: nftData.contract.address,
+                                contractName: nftData.contract.name,
+                                cachedUrl: nftData.image.cachedUrl,
+                                originalUrl: nftData.image.originalUrl,
+                            });
+                        });
 
-    //                         const nftImgArray: Array<NftDataIF> = [];
+                        const nftDataMap = localNftDataParsed
+                            ? localNftDataParsed
+                            : new Map<string, Array<NftListByChain>>();
 
-    //                         nftData.map((element: any) => {
-    //                             if (element.external_data)
-    //                                 nftImgArray.push({
-    //                                     tokenUrl: element.token_url,
-    //                                     nftImage: element.external_data.image,
-    //                                 });
-    //                         });
+                        const mapValue: Array<NftListByChain> = [];
 
-    //                         mapValue.push({
-    //                             contractAddress: item.contract_address,
-    //                             contractName: item.contract_name,
-    //                             data: nftImgArray,
-    //                         });
+                        mapValue.push({
+                            chainId: chainData.chainId,
+                            data: nftImgArray,
+                        });
 
-    //                         const mapWithFetchTime = {
-    //                             lastFetchTime: Date.now(),
-    //                             mapValue: mapValue,
-    //                         };
+                        const mapWithFetchTime = {
+                            lastFetchTime: Date.now(),
+                            mapValue: mapValue,
+                        };
 
-    //                         nftDataMap.set(actionKey, mapWithFetchTime);
-    //                     });
+                        nftDataMap.set(actionKey, mapWithFetchTime);
 
-    //                     localStorage.setItem(
-    //                         'user_nft_data',
-    //                         JSON.stringify(Array.from(nftDataMap)),
-    //                     );
+                        localStorage.setItem(
+                            'user_nft_data',
+                            JSON.stringify(Array.from(nftDataMap)),
+                        );
 
-    //                     setNFTData(mapValue);
-    //                     setIsfetchNftTriggered(() => false);
-    //                 } catch (error) {
-    //                     console.error({ error });
-    //                 }
-    //             }
-    //         })();
-    //     } else {
-    //         if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
-    //             if (nftDataMap) {
-    //                 setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
-    //             }
-    //         }
-    //     }
-    // }, [
-    //     crocEnv,
-    //     isUserConnected,
-    //     userAddress,
-    //     chainData.chainId,
-    //     everyFiveMinutes,
-    //     client !== undefined,
-    //     activeNetwork.graphCacheUrl,
-    //     isfetchNftTriggered,
-    // ]);
+                        setNFTData(mapValue);
+                        setIsfetchNftTriggered(() => false);
+                    } catch (error) {
+                        console.error({ error });
+                    }
+                }
+            })();
+        } else {
+            if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
+                if (nftDataMap) {
+                    setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
+                }
+            }
+        }
+    }, [
+        crocEnv,
+        isUserConnected,
+        userAddress,
+        chainData.chainId,
+        everyFiveMinutes,
+        alchemyClient !== undefined,
+        activeNetwork.graphCacheUrl,
+        isfetchNftTriggered,
+    ]);
 
     useEffect(() => {
         (async () => {

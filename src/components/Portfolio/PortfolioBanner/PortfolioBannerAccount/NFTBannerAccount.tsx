@@ -100,17 +100,25 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     useEffect(() => {
         const nftContractName: any[] = [];
-
-        console.log(NFTData);
+        nftContractName.push({ name: 'All Nfts', address: 'all' });
 
         NFTData?.map((item) => {
-            nftContractName.push({
-                name: item.contractName,
-                address: item.contractAddress,
+            item.data.map((nftData) => {
+                if (
+                    nftData.contractName &&
+                    (nftContractName.length === 0 ||
+                        !nftContractName.find(
+                            (nft) => nft.address === nftData.contractAddress,
+                        ))
+                ) {
+                    nftContractName.push({
+                        name: nftData.contractName,
+                        address: nftData.contractAddress,
+                    });
+                }
             });
         });
 
-        nftContractName.push({ name: 'All Nfts', address: 'all' });
         setNftContractName(() => nftContractName);
     }, [NFTData]);
 
@@ -123,7 +131,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             nftData.map((element) => {
                 if (
                     selectedNFTContractAddress.address === 'all' ||
-                    selectedNFTContractAddress.address === item.contractAddress
+                    selectedNFTContractAddress.address ===
+                        element.contractAddress
                 )
                     nftArray.push(element);
             });
@@ -158,8 +167,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         console.log('userId', userId);
         if (selectedNft) {
             if (userId !== undefined) {
-                updateUserWithAvatarImage(userId, selectedNft.nftImage);
-                setUserAccountProfile(() => selectedNft.nftImage);
+                updateUserWithAvatarImage(userId, selectedNft.originalUrl);
+                setUserAccountProfile(() => selectedNft.originalUrl);
             }
         }
     }
@@ -238,12 +247,13 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
             {!isLoading ? (
                 <NFTDisplay>
-                    {nftArray.map((item: any, index: number) => (
+                    {nftArray.map((item: NftDataIF, index: number) => (
                         <NFTImgContainer key={index}>
                             <NFTImg
                                 selected={
                                     selectedNft
-                                        ? selectedNft.tokenUrl === item.tokenUrl
+                                        ? selectedNft.originalUrl ===
+                                          item.originalUrl
                                         : false
                                 }
                                 key={index}
@@ -256,17 +266,18 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                     setSelectedNft(item);
                                 }}
                                 src={
-                                    item.nftImage
+                                    item.originalUrl
                                         ? handleImgSrc(
                                               onErrorIndex,
-                                              item.nftImage,
+                                              item.originalUrl,
                                               index,
                                           )
                                         : nftPlaceHolder
                                 }
                             ></NFTImg>
                             {selectedNft &&
-                                item.tokenUrl === selectedNft.tokenUrl && (
+                                item.originalUrl ===
+                                    selectedNft.originalUrl && (
                                     <img
                                         src={nftSelected}
                                         style={{

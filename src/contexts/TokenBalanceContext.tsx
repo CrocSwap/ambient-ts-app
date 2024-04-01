@@ -3,14 +3,15 @@ import { TokenIF } from '../ambient-utils/types';
 import { UserDataContext } from './UserDataContext';
 
 export interface NftListByChain {
-    contractAddress: string;
-    contractName: string;
+    chainId: string;
     data: Array<NftDataIF>;
 }
 
 export interface NftDataIF {
-    tokenUrl: string;
-    nftImage: string;
+    contractAddress: string;
+    contractName: string;
+    cachedUrl: string;
+    originalUrl: string;
 }
 
 interface TokenBalanceContextIF {
