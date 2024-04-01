@@ -315,7 +315,7 @@ export const mainnetRPL: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: '',
+    logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
     name: 'Rocket Pool',
     symbol: 'RPL',
 };
