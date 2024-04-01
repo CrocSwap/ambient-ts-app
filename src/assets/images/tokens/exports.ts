@@ -21,6 +21,7 @@ import JUICE from './JUICE.svg';
 import EZETH from './EZETH.png';
 import GLORY from './GLORY.png';
 import OHNO from './OHNO.png';
+import RPL from './RPL.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -47,4 +48,5 @@ export {
     EZETH,
     GLORY,
     OHNO,
+    RPL,
 };
