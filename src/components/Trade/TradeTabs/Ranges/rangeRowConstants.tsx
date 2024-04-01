@@ -53,6 +53,7 @@ interface propsIF {
     position: PositionIF;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 export default function rangeRowConstants(props: propsIF) {
@@ -90,6 +91,7 @@ export default function rangeRowConstants(props: propsIF) {
         isPositionInRange,
         baseTokenAddress,
         quoteTokenAddress,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
 
     const { isUsdConversionEnabled } = useContext(PoolContext);
@@ -268,7 +270,9 @@ export default function rangeRowConstants(props: propsIF) {
                 <RowItem hover>
                     <Link to={linkGenPool.getFullURL(poolLinkParams)}>
                         <span style={{ textTransform: 'none' }}>
-                            {baseTokenSymbol} / {quoteTokenSymbol}
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
                         </span>
                         <FiExternalLink
                             size={10}
@@ -286,7 +290,9 @@ export default function rangeRowConstants(props: propsIF) {
                     >
                         <div>
                             <span style={{ textTransform: 'none' }}>
-                                {baseTokenSymbol} / {quoteTokenSymbol}
+                                {isBaseTokenMoneynessGreaterOrEqual
+                                    ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                    : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
                             </span>
                             <FiExternalLink
                                 size={10}

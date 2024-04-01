@@ -48,7 +48,20 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
-    const [isUsdConversionEnabled, setIsUsdConversionEnabled] = useState(false);
+    const [isUsdConversionEnabled, setIsUsdConversionEnabled] = useState(
+        localStorage.getItem('isUsdConversionEnabled') === 'true',
+    );
+
+    useEffect(() => {
+        const savedUsdConversionPreference =
+            localStorage.getItem('isUsdConversionEnabled') === 'true';
+        if (isUsdConversionEnabled !== savedUsdConversionPreference) {
+            localStorage.setItem(
+                'isUsdConversionEnabled',
+                isUsdConversionEnabled.toString(),
+            );
+        }
+    }, [isUsdConversionEnabled]);
 
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,

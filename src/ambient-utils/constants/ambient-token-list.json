@@ -201,7 +201,7 @@
             "fromList": "/ambient-token-list.json",
             "name": "Renzo Restaked ETH",
             "symbol": "ezETH",
-            "logoURI": ""
+            "logoURI": "https://etherscan.io/token/images/ezETHv2_32.png"
         },
         {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
