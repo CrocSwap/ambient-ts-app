@@ -41,7 +41,7 @@ export default function LimitRate(props: propsIF) {
     const {
         chainData: { gridSize },
     } = useContext(CrocEnvContext);
-    const { pool } = useContext(PoolContext);
+    const { pool, usdPriceInverse } = useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
@@ -84,10 +84,25 @@ export default function LimitRate(props: propsIF) {
         }
     };
 
-    const handleOnChange = (input: string) => setDisplayPrice(input);
+    const isValidLimitInputString = (str: string) => {
+        // matches dollar or non-dollar amounts
+        return /^\$?\d*\.?\d*$/.test(str);
+    };
+
+    const handleOnChange = (input: string) => {
+        if (!isValidLimitInputString(input)) return;
+        setDisplayPrice(input);
+    };
 
     const handleOnBlur = async (input: string) => {
-        let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
+        const isDollarized = input.startsWith('$');
+        const convertedFromDollarNum =
+            isDollarized && usdPriceInverse
+                ? parseFloat(input.slice(1)) / usdPriceInverse
+                : undefined;
+        let newDisplayPrice = removeLeadingZeros(
+            convertedFromDollarNum ? convertedFromDollarNum.toString() : input,
+        );
         if (input.startsWith('.')) newDisplayPrice = `0${input}`;
 
         if (newDisplayPrice !== previousDisplayPrice) {
@@ -143,9 +158,9 @@ export default function LimitRate(props: propsIF) {
                                 ? '...'
                                 : displayPrice
                         }
-                        type='number'
+                        type='string'
                         step='any'
-                        inputMode='decimal'
+                        inputMode='text'
                         autoComplete='off'
                         autoCorrect='off'
                         min='0'
