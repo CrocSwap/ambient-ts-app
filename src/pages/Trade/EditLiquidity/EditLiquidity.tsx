@@ -11,9 +11,11 @@ import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import Range from '../Range/Range';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 function EditLiquidity() {
     const { params } = useParams();
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { getDefaultRangeWidthForTokenPair } = useContext(TradeDataContext);
 
@@ -36,7 +38,7 @@ function EditLiquidity() {
     }
 
     const { position } = locationHook.state as { position: PositionIF };
-    const { posHashTruncated } = useProcessRange(position);
+    const { posHashTruncated } = useProcessRange(position, crocEnv);
     // eslint-disable-next-line
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
         getDefaultRangeWidthForTokenPair(
