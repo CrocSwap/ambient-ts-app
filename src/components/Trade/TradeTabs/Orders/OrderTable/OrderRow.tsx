@@ -18,6 +18,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
@@ -41,6 +42,7 @@ function OrderRow(props: propsIF) {
     } = useContext(AppStateContext);
     const { showAllData: showAllDataSelection, currentLimitOrderActive } =
         useContext(TradeTableContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -59,6 +61,7 @@ function OrderRow(props: propsIF) {
         isOrderFilled,
         isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
+        displayPriceInUsd,
         sideType,
         usdValue,
         baseTokenSymbol,
@@ -78,7 +81,7 @@ function OrderRow(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
-    } = useProcessOrder(limitOrder, userAddress, isAccountView);
+    } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
@@ -193,6 +196,7 @@ function OrderRow(props: propsIF) {
         priceCharacter,
         priceStyle,
         truncatedDisplayPrice,
+        displayPriceInUsd,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
         sideCharacter,
@@ -205,6 +209,7 @@ function OrderRow(props: propsIF) {
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
         fillPercentage,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {

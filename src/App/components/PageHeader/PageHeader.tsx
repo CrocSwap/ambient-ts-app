@@ -67,7 +67,8 @@ const PageHeader = function () {
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
 
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, isUsdConversionEnabled, usdPrice } =
+        useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
     const {
@@ -151,9 +152,12 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice = getFormattedNumber({
-        value: poolPriceDisplayWithDenom,
-    });
+    const truncatedPoolPrice =
+        usdPrice && isUsdConversionEnabled
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : getFormattedNumber({
+                  value: poolPriceDisplayWithDenom,
+              });
 
     useEffect(() => {
         const path = location.pathname;

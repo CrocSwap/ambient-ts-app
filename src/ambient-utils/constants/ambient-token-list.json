@@ -186,22 +186,22 @@
             "logoURI": "https://blastscan.io/token/images/openleverageole_32.png"
         },
         {
-            "address": "0x7217124c626f0b7077be91df939195c9a8184ecc",
+            "address": "0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923",
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Finger Blast",
-            "symbol": "FINGER",
-            "logoURI": "https://blastscan.io/token/images/fingerblast_32.png"
+            "name": "JUICE",
+            "symbol": "JUICE",
+            "logoURI": ""
         },
         {
-            "address": "0xd582879453337bd149ae53ec2092b0af5281d1d7",
+            "address": "0x2416092f143378750bb29b79eD961ab195CcEea5",
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Sekai Glory",
-            "symbol": "GLORY",
-            "logoURI": "https://blastscan.io/token/images/sekaiglory_32.png"
+            "name": "Renzo Restaked ETH",
+            "symbol": "ezETH",
+            "logoURI": "https://etherscan.io/token/images/ezETHv2_32.png"
         },
         {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",

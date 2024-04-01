@@ -13,8 +13,14 @@ import ORBIT from './ORBIT.png';
 import BAG from './BAG.png';
 import ALIEN from './ALIEN.png';
 import YES from './YES.png';
+import PAC from './PAC.png';
 import PXETH from './PXETH.png';
 import AXLUSDC from './AXLUSDC.png';
+import ETHX from './ETHX.svg';
+import JUICE from './JUICE.svg';
+import EZETH from './EZETH.png';
+import GLORY from './GLORY.png';
+import OHNO from './OHNO.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -33,6 +39,12 @@ export {
     BAG,
     ALIEN,
     YES,
+    PAC,
     PXETH,
     AXLUSDC,
+    ETHX,
+    JUICE,
+    EZETH,
+    GLORY,
+    OHNO,
 };
