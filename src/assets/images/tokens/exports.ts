@@ -27,6 +27,7 @@ import MKR from './MKR.png';
 import SWETH from './SWETH.svg';
 import LINK from './LINK.svg';
 import SYN from './SYN.png';
+import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
@@ -60,5 +61,6 @@ export {
     SWETH,
     LINK,
     SYN,
+    LDO,
     BLUR,
 };
