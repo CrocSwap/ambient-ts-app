@@ -128,7 +128,7 @@ function YAxisCanvas(props: yAxisIF) {
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
     const { advancedMode } = useContext(RangeContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const location = useLocation();
 
@@ -363,7 +363,7 @@ function YAxisCanvas(props: yAxisIF) {
                 if (isScientific) {
                     const textScientificArray = String(value).split(splitText);
                     const textScientific = textScientificArray[1].slice(1, 4);
-                    const startText = isUsdConversionEnabled
+                    const startText = isTradeDollarizationEnabled
                         ? '$' + splitText
                         : splitText;
                     const textHeight =
@@ -393,7 +393,7 @@ function YAxisCanvas(props: yAxisIF) {
                     );
                 } else {
                     context.beginPath();
-                    const text = isUsdConversionEnabled
+                    const text = isTradeDollarizationEnabled
                         ? value
                         : formatTicks(d, digit ? digit : 2);
                     context.fillText(text, X, yScale(d));
@@ -413,7 +413,7 @@ function YAxisCanvas(props: yAxisIF) {
                     undefined,
                     yAxisCanvasWidth,
                     tickSubString,
-                    isUsdConversionEnabled,
+                    isTradeDollarizationEnabled,
                 );
             }
             if (location.pathname.includes('/limit')) {
@@ -435,7 +435,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         tickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                 } else {
                     createRectLabel(
@@ -448,7 +448,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         tickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                 }
                 addYaxisLabel(
@@ -487,7 +487,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         lowTickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                     addYaxisLabel(
                         isSameLocationMin ? sameLocationDataMin : yScale(low),
@@ -506,7 +506,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         highTickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                     addYaxisLabel(
                         isSameLocationMax ? sameLocationDataMax : yScale(high),
@@ -556,7 +556,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         shapePointSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                 });
             }
@@ -576,7 +576,7 @@ function YAxisCanvas(props: yAxisIF) {
                     undefined,
                     yAxisCanvasWidth,
                     crSubString,
-                    isUsdConversionEnabled,
+                    isTradeDollarizationEnabled,
                 );
             }
 

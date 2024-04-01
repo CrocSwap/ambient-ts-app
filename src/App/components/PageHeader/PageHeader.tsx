@@ -67,7 +67,7 @@ const PageHeader = function () {
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
 
-    const { poolPriceDisplay, isUsdConversionEnabled, usdPrice } =
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -153,7 +153,7 @@ const PageHeader = function () {
         : undefined;
 
     const truncatedPoolPrice =
-        usdPrice && isUsdConversionEnabled
+        usdPrice && isTradeDollarizationEnabled
             ? getFormattedNumber({ value: usdPrice, prefix: '$' })
             : getFormattedNumber({
                   value: poolPriceDisplayWithDenom,
