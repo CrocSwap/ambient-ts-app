@@ -110,7 +110,7 @@ export const txRowConstants = (props: propsIF) => {
         isBaseTokenMoneynessGreaterOrEqual,
     } = props;
     const { tokens } = useContext(TokenContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
@@ -546,36 +546,36 @@ export const txRowConstants = (props: propsIF) => {
         >
             <p>
                 <span>
-                    {truncatedLowDisplayPrice && !isUsdConversionEnabled
+                    {truncatedLowDisplayPrice && !isTradeDollarizationEnabled
                         ? priceCharacter
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? ''
                         : '…'}
                 </span>
                 <span>
                     {isAccountView
-                        ? isUsdConversionEnabled
+                        ? isTradeDollarizationEnabled
                             ? formattedLowUsdPrice
                             : truncatedLowDisplayPriceDenomByMoneyness
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? formattedLowUsdPrice
                         : truncatedLowDisplayPrice}
                 </span>
             </p>
             <p>
                 <span>
-                    {truncatedHighDisplayPrice && !isUsdConversionEnabled
+                    {truncatedHighDisplayPrice && !isTradeDollarizationEnabled
                         ? priceCharacter
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? ''
                         : '…'}
                 </span>
                 <span>
                     {isAccountView
-                        ? isUsdConversionEnabled
+                        ? isTradeDollarizationEnabled
                             ? formattedHighUsdPrice
                             : truncatedHighDisplayPriceDenomByMoneyness
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? formattedHighUsdPrice
                         : truncatedHighDisplayPrice}
                 </span>
@@ -604,22 +604,22 @@ export const txRowConstants = (props: propsIF) => {
                     <span>
                         {(
                             isAccountView
-                                ? !isUsdConversionEnabled &&
+                                ? !isTradeDollarizationEnabled &&
                                   truncatedDisplayPriceDenomByMoneyness
-                                : !isUsdConversionEnabled &&
+                                : !isTradeDollarizationEnabled &&
                                   truncatedDisplayPrice
                         )
                             ? priceCharacter
-                            : isUsdConversionEnabled
+                            : isTradeDollarizationEnabled
                             ? ''
                             : '…'}
                     </span>
                     <span>
                         {isAccountView
-                            ? isUsdConversionEnabled
+                            ? isTradeDollarizationEnabled
                                 ? formattedUsdPrice
                                 : truncatedDisplayPriceDenomByMoneyness
-                            : isUsdConversionEnabled
+                            : isTradeDollarizationEnabled
                             ? formattedUsdPrice
                             : truncatedDisplayPrice}
                     </span>
