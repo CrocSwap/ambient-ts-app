@@ -58,6 +58,7 @@ interface propsIF {
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
     tx: TransactionIF;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 // * This file contains constants used in the rendering of transaction rows in the transaction table.
@@ -106,6 +107,7 @@ export const txRowConstants = (props: propsIF) => {
         truncatedDisplayPrice,
         handleWalletClick,
         handleWalletCopy,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
     const { tokens } = useContext(TokenContext);
     const { isUsdConversionEnabled } = useContext(PoolContext);
@@ -315,7 +317,9 @@ export const txRowConstants = (props: propsIF) => {
                 <RowItem hover>
                     <Link to={tradeLinkPath}>
                         <span style={{ textTransform: 'none' }}>
-                            {tx.baseSymbol} / {tx.quoteSymbol}
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${tx.quoteSymbol} / ${tx.baseSymbol}`
+                                : `${tx.baseSymbol} / ${tx.quoteSymbol}`}
                         </span>
                         <FiExternalLink
                             size={10}
