@@ -224,6 +224,7 @@ function RangesRow(props: propsIF) {
         isPositionInRange,
         baseTokenAddress,
         quoteTokenAddress,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {

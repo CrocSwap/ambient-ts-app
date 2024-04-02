@@ -71,7 +71,8 @@ function SwapTokenInput(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized, poolData } = useContext(PoolContext);
+    const { isTokenABase } = useContext(TradeDataContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -175,14 +176,17 @@ function SwapTokenInput(props: propsIF) {
             slippageTolerancePercentage / 100,
             input,
         );
-        if (impact === undefined) return;
-        setLastImpactQuery({
-            input,
-            isInputSell: sellToken,
-            impact,
-        });
+        if (impact === undefined) {
+            setLastImpactQuery(undefined);
+        } else {
+            setLastImpactQuery({
+                input,
+                isInputSell: sellToken,
+                impact,
+            });
+        }
         if (sellToken) {
-            const rawTokenBQty = parseFloat(impact.buyQty);
+            const rawTokenBQty = impact?.buyQty ? parseFloat(impact.buyQty) : 0;
             const truncatedTokenBQty = rawTokenBQty
                 ? rawTokenBQty < 2
                     ? rawTokenBQty.toPrecision(6)
@@ -195,7 +199,9 @@ function SwapTokenInput(props: propsIF) {
                 setIsBuyLoading(false);
             }
         } else {
-            const rawTokenAQty = parseFloat(impact.sellQty);
+            const rawTokenAQty = impact?.sellQty
+                ? parseFloat(impact.sellQty)
+                : 0;
             const truncatedTokenAQty = rawTokenAQty
                 ? rawTokenAQty < 2
                     ? rawTokenAQty.toPrecision(6)
@@ -308,6 +314,13 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -335,6 +348,7 @@ function SwapTokenInput(props: propsIF) {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                usdValue={usdValueTokenA}
             />
             <FlexContainer
                 fullWidth
@@ -391,6 +405,7 @@ function SwapTokenInput(props: propsIF) {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
+                usdValue={usdValueTokenB}
             />
         </FlexContainer>
     );

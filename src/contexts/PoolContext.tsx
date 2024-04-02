@@ -31,8 +31,10 @@ interface PoolContextIF {
     dailyVol: number | undefined;
     poolData: PoolStatIF;
     usdPrice: number | undefined;
-    isUsdConversionEnabled: boolean;
-    setIsUsdConversionEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+    isTradeDollarizationEnabled: boolean;
+    setIsTradeDollarizationEnabled: React.Dispatch<
+        React.SetStateAction<boolean>
+    >;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -48,7 +50,21 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
-    const [isUsdConversionEnabled, setIsUsdConversionEnabled] = useState(false);
+    const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
+        useState(
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true',
+        );
+
+    useEffect(() => {
+        const savedTradeDollarizationPreference =
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true';
+        if (isTradeDollarizationEnabled !== savedTradeDollarizationPreference) {
+            localStorage.setItem(
+                'isTradeDollarizationEnabled',
+                isTradeDollarizationEnabled.toString(),
+            );
+        }
+    }, [isTradeDollarizationEnabled]);
 
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
@@ -176,8 +192,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         dailyVol,
         poolData,
         usdPrice,
-        isUsdConversionEnabled,
-        setIsUsdConversionEnabled,
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
     };
 
     return (
