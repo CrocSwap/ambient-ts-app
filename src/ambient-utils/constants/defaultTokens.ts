@@ -64,6 +64,16 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
+export const blastJUICE: TokenIF = {
+    address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Juice',
+    symbol: 'JUICE',
+    logoURI: 'https://miablastsoff.com/images/logo.png',
+};
+
 export const blastMIM: TokenIF = {
     address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
     chainId: 81457,
@@ -253,8 +263,8 @@ export const mainnetSWETH: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png?=v83',
-    name: 'Swell Ethereum',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
+    name: 'Swell Staked Ether',
     symbol: 'swETH',
 };
 
@@ -315,7 +325,7 @@ export const mainnetRPL: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: '',
+    logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
     name: 'Rocket Pool',
     symbol: 'RPL',
 };

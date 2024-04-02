@@ -826,6 +826,7 @@ export default function Limit() {
             button={
                 <Button
                     idForDOM='confirm_limit_order_button'
+                    style={{ textTransform: 'none' }}
                     title={
                         areBothAckd
                             ? limitAllowed
@@ -871,6 +872,7 @@ export default function Limit() {
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
                         idForDOM='approve_limit_order_button'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

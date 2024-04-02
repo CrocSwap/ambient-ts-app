@@ -20,7 +20,6 @@ interface PropsIF {
     onToggleDex: () => void;
     availableBalance?: number;
     onMaxButtonClick?: () => void;
-    onRefresh?: () => void;
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
@@ -243,12 +242,6 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     {exchangeWithTooltip}
                 </FlexContainer>
             )}
-
-            {/* {onRefresh && (
-                <RefreshButton onClick={onRefresh} aria-label='Refresh data'>
-                    <FiRefreshCw size={18} />
-                </RefreshButton>
-            )} */}
         </FlexContainer>
     );
 }
