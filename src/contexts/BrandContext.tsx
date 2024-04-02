@@ -23,8 +23,8 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         switch (brand) {
             case 'crocswap':
                 return crocswapBrandAssets;
-            default:
             case 'ambient':
+            default:
                 return ambientBrandAssets;
         }
     }, [brand]);
