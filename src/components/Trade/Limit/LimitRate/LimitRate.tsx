@@ -15,6 +15,10 @@ import {
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -31,7 +35,6 @@ export default function LimitRate(props: propsIF) {
     const {
         displayPrice,
         setDisplayPrice,
-        previousDisplayPrice,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         disable,
@@ -44,11 +47,23 @@ export default function LimitRate(props: propsIF) {
     const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
         useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const { chainData } = useContext(CrocEnvContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-    const { isDenomBase, setLimitTick, limitTick } =
-        useContext(TradeDataContext);
-    const { basePrice, quotePrice } = poolData;
+    const {
+        isDenomBase,
+        setLimitTick,
+        limitTick,
+        setIsTokenAPrimary,
+        tokenA,
+        tokenB,
+        isTokenABase: isBid,
+    } = useContext(TradeDataContext);
+    const { basePrice, quotePrice, poolPriceDisplay } = poolData;
+
+    const side =
+        (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
@@ -81,7 +96,34 @@ export default function LimitRate(props: propsIF) {
                     ? pinTickLower(limit, gridSize)
                     : pinTickUpper(limit, gridSize);
                 setLimitTick(pinnedTick);
-                updateURL({ update: [['limitTick', pinnedTick]] });
+
+                const newLimitNum = parseFloat(value);
+
+                const currentPoolPriceNum = poolPriceDisplay
+                    ? isDenomBase
+                        ? 1 / poolPriceDisplay
+                        : poolPriceDisplay
+                    : undefined;
+
+                const newLimitBelowCurrentPoolPrice = currentPoolPriceNum
+                    ? newLimitNum < currentPoolPriceNum
+                    : false;
+                const shouldReverse =
+                    side === 'sell'
+                        ? newLimitBelowCurrentPoolPrice
+                        : !newLimitBelowCurrentPoolPrice;
+
+                if (shouldReverse) {
+                    setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
+                    linkGenLimit.redirect({
+                        chain: chainData.chainId,
+                        tokenA: tokenB.address,
+                        tokenB: tokenA.address,
+                        limitTick: pinnedTick,
+                    });
+                } else {
+                    updateURL({ update: [['limitTick', pinnedTick]] });
+                }
             }
         }
     };
@@ -118,14 +160,13 @@ export default function LimitRate(props: propsIF) {
                 : undefined
             : undefined;
 
-        let newDisplayPrice = removeLeadingZeros(
-            convertedFromDollarNum ? convertedFromDollarNum.toString() : input,
+        const newDisplayPrice = removeLeadingZeros(
+            isDollarized && convertedFromDollarNum
+                ? convertedFromDollarNum.toString()
+                : input,
         );
-        if (input.startsWith('.')) newDisplayPrice = `0${input}`;
 
-        if (newDisplayPrice !== previousDisplayPrice) {
-            await handleLimitChange(newDisplayPrice);
-        }
+        await handleLimitChange(newDisplayPrice);
         setPriceInputFieldBlurred(true);
     };
 
