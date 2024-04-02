@@ -4,6 +4,7 @@ import { skins } from '../../App/hooks/useSkin';
 export type chainColorScheme = Record<chainIds, skins>;
 
 export interface brandAssetsIF {
+    networks: chainIds[];
     color: chainColorScheme;
     platformName: string;
 }
