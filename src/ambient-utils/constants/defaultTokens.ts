@@ -145,6 +145,15 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
+export const blastEzETH: TokenIF = {
+    name: 'Renzo Restaked ETH',
+    address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+    symbol: 'ezETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: '',
+};
+
 export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
@@ -658,6 +667,7 @@ export const defaultTokens: TokenIF[] = [
     blastFINGER,
     blastGLORY,
     blastWETH,
+    blastEzETH,
     blastPUMP,
     blastYES,
     blastPACM,

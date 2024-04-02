@@ -195,13 +195,13 @@
             "logoURI": ""
         },
         {
-            "address": "0xd582879453337bd149ae53ec2092b0af5281d1d7",
+            "address": "0x2416092f143378750bb29b79eD961ab195CcEea5",
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Sekai Glory",
-            "symbol": "GLORY",
-            "logoURI": "https://blastscan.io/token/images/sekaiglory_32.png"
+            "name": "Renzo Restaked ETH",
+            "symbol": "ezETH",
+            "logoURI": ""
         },
         {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
