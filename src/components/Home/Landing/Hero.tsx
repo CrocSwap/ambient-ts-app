@@ -2,7 +2,6 @@
 import { FlexContainer, Text } from '../../../styled/Common';
 import blastLogo from '../../../assets/images/logos/blast_logo.svg';
 import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
-import logoText from '../../../assets/images/logos/logo_text.png';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
@@ -48,7 +47,6 @@ export default function Hero() {
                         </p>
                         <Text
                             fontWeight='100'
-                            // fontSize='header1'
                             color='text1'
                             align='center'
                             style={{
@@ -101,7 +99,6 @@ export default function Hero() {
                         </p>
                         <Text
                             fontWeight='100'
-                            // fontSize='header1'
                             color='text1'
                             align='center'
                             style={{
