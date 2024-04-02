@@ -20,8 +20,12 @@ interface ExploreIF {
 export default function Explore(props: ExploreIF) {
     const { view } = props;
     // full expanded data set
-    const { pools, tokens, arePricesDollarized, setArePricesDollarized } =
-        useContext(ExploreContext);
+    const {
+        pools,
+        tokens,
+        isExploreDollarizationEnabled,
+        setIsExploreDollarizationEnabled,
+    } = useContext(ExploreContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
@@ -149,12 +153,14 @@ export default function Explore(props: ExploreIF) {
                             <Refresh>
                                 <RefreshButton
                                     onClick={() =>
-                                        setArePricesDollarized((prev) => !prev)
+                                        setIsExploreDollarizationEnabled(
+                                            (prev) => !prev,
+                                        )
                                     }
                                 >
                                     <DollarizationIcon
-                                        arePricesDollarized={
-                                            arePricesDollarized
+                                        isExploreDollarizationEnabled={
+                                            isExploreDollarizationEnabled
                                         }
                                     />
                                 </RefreshButton>
@@ -183,7 +189,9 @@ export default function Explore(props: ExploreIF) {
                 <TopPools
                     allPools={pools.all}
                     goToMarket={goToMarket}
-                    arePricesDollarized={arePricesDollarized}
+                    isExploreDollarizationEnabled={
+                        isExploreDollarizationEnabled
+                    }
                 />
             )}
             {view === 'tokens' && (
@@ -268,10 +276,10 @@ const RefreshIcon = styled(FiRefreshCw)`
 `;
 
 const DollarizationIcon = styled(AiOutlineDollarCircle)<{
-    arePricesDollarized?: boolean;
+    isExploreDollarizationEnabled?: boolean;
 }>`
     font-size: var(--header2-size);
     cursor: pointer;
-    color: ${({ arePricesDollarized }) =>
-        arePricesDollarized && 'var(--accent1)'};
+    color: ${({ isExploreDollarizationEnabled }) =>
+        isExploreDollarizationEnabled && 'var(--accent1)'};
 `;

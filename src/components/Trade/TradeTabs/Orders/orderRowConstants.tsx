@@ -53,6 +53,7 @@ interface propsIF {
     handleWalletCopy: () => void;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 // * This file contains constants used in the rendering of order rows in the order table.
@@ -93,10 +94,11 @@ export const orderRowConstants = (props: propsIF) => {
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
         fillPercentage,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
 
     const { tokens } = useContext(TokenContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -261,7 +263,9 @@ export const orderRowConstants = (props: propsIF) => {
                 <RowItem hover>
                     <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
                         <span style={{ textTransform: 'none' }}>
-                            {baseTokenSymbol} / {quoteTokenSymbol}
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
                         </span>
                         <FiExternalLink
                             size={10}
@@ -279,7 +283,9 @@ export const orderRowConstants = (props: propsIF) => {
                     >
                         <div>
                             <span style={{ textTransform: 'none' }}>
-                                {baseTokenSymbol} / {quoteTokenSymbol}
+                                {isBaseTokenMoneynessGreaterOrEqual
+                                    ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                    : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
                             </span>
                             <FiExternalLink
                                 size={10}
@@ -388,10 +394,10 @@ export const orderRowConstants = (props: propsIF) => {
                 <p>
                     <span>
                         {isAccountView
-                            ? isUsdConversionEnabled
+                            ? isTradeDollarizationEnabled
                                 ? displayPriceInUsd
                                 : truncatedDisplayPriceDenomByMoneyness
-                            : isUsdConversionEnabled
+                            : isTradeDollarizationEnabled
                             ? displayPriceInUsd
                             : truncatedDisplayPrice}
                     </span>
