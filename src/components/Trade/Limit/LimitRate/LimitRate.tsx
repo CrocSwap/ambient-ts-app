@@ -1,7 +1,6 @@
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -84,7 +83,6 @@ export default function LimitRate(props: propsIF) {
     };
 
     const handleLimitChange = async (value: string) => {
-        IS_LOCAL_ENV && console.debug({ value });
         if (pool) {
             if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
             const limit = await pool.fromDisplayPrice(
@@ -130,7 +128,8 @@ export default function LimitRate(props: propsIF) {
 
     const isValidLimitInputString = (str: string) => {
         // matches dollar or non-dollar amounts
-        return /^\$?\d*\.?\d*$/.test(str);
+        return /^\$?\d*\.?\d*\$?$/.test(str); // allows $ at the end
+        // return /^\$?\d*\.?\d*$/.test(str); // doesn't allow $ at the end
     };
 
     const handleOnChange = (input: string) => {
@@ -140,10 +139,17 @@ export default function LimitRate(props: propsIF) {
 
     const handleOnBlur = async (input: string) => {
         const inputStartsWithDollar = input.startsWith('$');
+        const inputEndsWithDollar = input.endsWith('$');
         const isDollarized =
-            inputStartsWithDollar || isTradeDollarizationEnabled;
+            inputStartsWithDollar ||
+            inputEndsWithDollar ||
+            isTradeDollarizationEnabled;
         const parsedInput = parseFloat(
-            inputStartsWithDollar ? input.slice(1) : input,
+            inputStartsWithDollar
+                ? input.slice(1)
+                : inputEndsWithDollar
+                ? input.slice(undefined, -1)
+                : input,
         );
 
         const convertedFromDollarNum = isDollarized
