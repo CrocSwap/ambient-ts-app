@@ -18,7 +18,7 @@ import {
     GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
     GCGO_SCROLL_URL,
-    IS_LOCAL_ENV,
+    // IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenContext } from '../../../contexts/TokenContext';
