@@ -40,6 +40,7 @@ import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
+import { BrandContext } from '../contexts/BrandContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
@@ -47,8 +48,6 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
-import { skinMethodsIF, useSkin } from './hooks/useSkin';
-import { chainIds } from '../ambient-utils/types';
 
 /** ***** React Function *******/
 export default function App() {
@@ -67,8 +66,9 @@ export default function App() {
         showPointSystemPopup,
         dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { isWalletChainSupported, defaultUrlParams, chainData } =
+    const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
+    const { skin } = useContext(BrandContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
@@ -81,8 +81,6 @@ export default function App() {
         currentLocation.startsWith('/swap') && !smallScreen
             ? 'swap-body'
             : null;
-
-    const skin: skinMethodsIF = useSkin(chainData.chainId as chainIds);
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
@@ -333,10 +331,7 @@ export default function App() {
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
-                            <Route
-                                path='testpage'
-                                element={<TestPage skin={skin} />}
-                            />
+                            <Route path='testpage' element={<TestPage />} />
                         )}
                         {IS_LOCAL_ENV && (
                             <Route
