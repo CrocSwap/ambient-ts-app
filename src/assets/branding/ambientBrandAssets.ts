@@ -1,4 +1,5 @@
 import { brandAssetsIF } from './types';
+import large from '../images/logos/large.svg';
 
 export const ambientBrandAssets: brandAssetsIF = {
     networks: [
@@ -20,4 +21,5 @@ export const ambientBrandAssets: brandAssetsIF = {
         '0x13e31': 'purple_dark',
     },
     platformName: 'ambient',
+    headerImage: large as string,
 };

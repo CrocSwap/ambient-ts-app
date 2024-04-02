@@ -7,4 +7,5 @@ export interface brandAssetsIF {
     networks: chainIds[];
     color: chainColorScheme;
     platformName: string;
+    headerImage: string;
 }

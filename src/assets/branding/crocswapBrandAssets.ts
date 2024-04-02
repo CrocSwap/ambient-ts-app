@@ -1,4 +1,5 @@
 import { brandAssetsIF } from './types';
+import large from '../images/logos/large.svg';
 
 export const crocswapBrandAssets: brandAssetsIF = {
     networks: [
@@ -20,4 +21,5 @@ export const crocswapBrandAssets: brandAssetsIF = {
         '0x13e31': 'orange',
     },
     platformName: 'CrocSwap',
+    headerImage: large as string,
 };
