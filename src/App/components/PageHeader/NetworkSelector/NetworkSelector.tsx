@@ -26,7 +26,7 @@ import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
@@ -38,13 +38,14 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { networks } = useContext(BrandContext);
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
-    const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
+    const chains: ChainSpec[] = networks.map((chain: string) =>
         lookupChain(chain),
     );
 

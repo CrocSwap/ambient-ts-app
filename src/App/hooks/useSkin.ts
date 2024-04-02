@@ -11,7 +11,7 @@ export interface skinMethodsIF {
 
 export const useSkin = (
     colorDefaults: chainColorScheme,
-    chainId: string,
+    chainId: chainIds,
 ): skinMethodsIF => {
     const LS_KEY = 'skin';
 
@@ -19,7 +19,7 @@ export const useSkin = (
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<skins>(
         // localStorage[LS_KEY] ??
-        colorDefaults[chainId as chainIds],
+        colorDefaults[chainId],
     );
 
     // hook to hold a single color set for the app to return

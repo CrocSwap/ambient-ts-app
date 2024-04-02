@@ -4,10 +4,12 @@ import { ambientBrandAssets } from '../assets/branding/ambientBrandAssets';
 import { crocswapBrandAssets } from '../assets/branding/crocswapBrandAssets';
 import { brandAssetsIF } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
+import { chainIds } from '../ambient-utils/types';
 
 interface BrandContextIF {
     skin: skinMethodsIF;
     platformName: string;
+    networks: chainIds[];
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -30,12 +32,16 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
     }, [brand]);
 
     // hook to manage the active color theme in the app
-    const skin: skinMethodsIF = useSkin(brandAssets.color, chainData.chainId);
+    const skin: skinMethodsIF = useSkin(
+        brandAssets.color,
+        chainData.chainId as chainIds,
+    );
 
     // data to be returned to the app
     const brandData: BrandContextIF = {
         skin,
         platformName: brandAssets.platformName,
+        networks: brandAssets.networks,
     };
 
     console.log(brandData);
