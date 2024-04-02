@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { chainColorScheme } from '../../assets/ambient/ambientBrandAssets';
 import { chainIds } from '../../ambient-utils/types';
+import { brandAssetsIF, chainColorScheme } from '../../assets/branding/types';
+import { ambientBrandAssets } from '../../assets/branding/ambientBrandAssets';
+import { crocswapBrandAssets } from '../../assets/branding/crocswapBrandAssets';
 
 export type skins = 'purple_dark' | 'purple_light' | 'orange';
 
@@ -15,12 +17,28 @@ export const useSkin = (
 ): skinMethodsIF => {
     const LS_KEY = 'skin';
 
-    const defaultColorForChain: skins = colorSchemes[chainId];
+    const FALLBACK_SET = 'ambient';
+    const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? FALLBACK_SET;
+    console.log(brand);
+
+    const brandAssets: brandAssetsIF = useMemo(() => {
+        switch (brand) {
+            case 'crocswap':
+                return crocswapBrandAssets;
+            default:
+            case 'ambient':
+                return ambientBrandAssets;
+        }
+    }, [brand]);
+    console.log(brandAssets);
+
+    const defaultColorForChain: skins = brandAssets.color[chainId];
 
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<skins>(
-        localStorage[LS_KEY] ?? defaultColorForChain,
+        // localStorage[LS_KEY] ??
+        defaultColorForChain,
     );
 
     // hook to hold a single color set for the app to return

@@ -1,12 +1,4 @@
-import { chainIds } from '../../ambient-utils/types';
-import { skins } from '../../App/hooks/useSkin';
-
-export type chainColorScheme = Record<chainIds, skins>;
-
-export interface brandAssetsIF {
-    color: chainColorScheme;
-    platformName: string;
-}
+import { brandAssetsIF } from './types';
 
 export const ambientBrandAssets: brandAssetsIF = {
     color: {
@@ -16,6 +8,7 @@ export const ambientBrandAssets: brandAssetsIF = {
         '0x8274f': 'purple_dark',
         '0xaa36a7': 'purple_dark',
         '0xa0c71fd': 'purple_dark',
+        '0x13e31': 'purple_dark',
     },
     platformName: 'ambient',
 };

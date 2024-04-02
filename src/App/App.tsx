@@ -48,6 +48,7 @@ import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import { skinMethodsIF, useSkin } from './hooks/useSkin';
+import { chainIds } from '../ambient-utils/types';
 
 /** ***** React Function *******/
 export default function App() {
@@ -82,7 +83,10 @@ export default function App() {
             ? 'swap-body'
             : null;
 
-    const skin: skinMethodsIF = useSkin(brandAssetSet.color, chainData.chainId);
+    const skin: skinMethodsIF = useSkin(
+        brandAssetSet.color,
+        chainData.chainId as chainIds,
+    );
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
@@ -333,7 +337,10 @@ export default function App() {
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
-                            <Route path='testpage' element={<TestPage />} />
+                            <Route
+                                path='testpage'
+                                element={<TestPage skin={skin} />}
+                            />
                         )}
                         {IS_LOCAL_ENV && (
                             <Route

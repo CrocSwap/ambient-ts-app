@@ -1,8 +1,11 @@
-import { useContext } from 'react';
-import { AppStateContext } from '../../contexts/AppStateContext';
+import { skinMethodsIF } from '../../App/hooks/useSkin';
 
-export default function TestPage() {
-    const { skin } = useContext(AppStateContext);
+interface propsIF {
+    skin: skinMethodsIF;
+}
+
+export default function TestPage(props: propsIF) {
+    const { skin } = props;
     return (
         <div>
             <button onClick={() => skin.changeTo('purple_dark')}>

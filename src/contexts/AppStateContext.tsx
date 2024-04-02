@@ -20,10 +20,8 @@ import {
     getCtaDismissalsFromLocalStorage,
     saveCtaDismissalToLocalStorage,
 } from '../App/functions/localStorage';
-import {
-    ambientBrandAssets,
-    brandAssetsIF,
-} from '../assets/ambient/ambientBrandAssets';
+import { ambientBrandAssets } from '../assets/branding/ambientBrandAssets';
+import { brandAssetsIF } from '../assets/branding/types';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
