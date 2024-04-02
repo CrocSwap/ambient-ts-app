@@ -23,7 +23,7 @@ function LimitExtraInfo(props: propsIF) {
         showExtraInfoDropdown,
         liquidityProviderFeeString,
     } = props;
-    const { poolPriceDisplay, isUsdConversionEnabled, usdPrice } =
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
@@ -101,7 +101,7 @@ function LimitExtraInfo(props: propsIF) {
         ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
         : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
 
-    const conversionRate = isUsdConversionEnabled
+    const conversionRate = isTradeDollarizationEnabled
         ? conversionRateUsd
         : conversionRateNonUsd;
 
