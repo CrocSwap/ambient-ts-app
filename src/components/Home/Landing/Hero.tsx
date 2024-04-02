@@ -9,11 +9,13 @@ import { HeroContainer } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { BrandContext } from '../../../contexts/BrandContext';
 
 export default function Hero() {
     const smallScreen = useMediaQuery('(max-width: 1200px)');
     const { isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
+    const { platformName } = useContext(BrandContext);
 
     if (isActiveNetworkBlast) {
         return (
@@ -42,7 +44,7 @@ export default function Hero() {
                             className={styles.ambient_blast_logo}
                             style={{ fontSize: '90px' }}
                         >
-                            ambient
+                            {platformName}
                         </p>
                         <Text
                             fontWeight='100'
@@ -95,7 +97,7 @@ export default function Hero() {
                             className={styles.ambient_blast_logo}
                             style={{ fontSize: '110px' }}
                         >
-                            ambient
+                            {platformName}
                         </p>
                         <Text
                             fontWeight='100'
@@ -139,7 +141,12 @@ export default function Hero() {
                     justifyContent='center'
                     gap={32}
                 >
-                    <img src={logoText} alt='ambient' />
+                    <p
+                        className={styles.ambient_blast_logo}
+                        style={{ fontSize: '110px' }}
+                    >
+                        {platformName}
+                    </p>
                     <TradeNowButton fieldId='trade_now_btn_in_hero' />
                 </FlexContainer>
             </HeroContainer>
