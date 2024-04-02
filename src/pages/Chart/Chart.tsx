@@ -250,7 +250,6 @@ export default function Chart(props: propsIF) {
         tokenB,
         isDenomBase,
         isTokenABase: isBid,
-        isTokenAPrimary,
         setIsTokenAPrimary,
         limitTick,
         setLimitTick,
@@ -5338,7 +5337,7 @@ export default function Chart(props: propsIF) {
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
-                      setIsTokenAPrimary(!isTokenAPrimary);
+                      setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
                       linkGenLimit.redirect({
                           chain: chainData.chainId,
                           tokenA: tokenB.address,
