@@ -98,7 +98,7 @@ export const orderRowConstants = (props: propsIF) => {
     } = props;
 
     const { tokens } = useContext(TokenContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -394,10 +394,10 @@ export const orderRowConstants = (props: propsIF) => {
                 <p>
                     <span>
                         {isAccountView
-                            ? isUsdConversionEnabled
+                            ? isTradeDollarizationEnabled
                                 ? displayPriceInUsd
                                 : truncatedDisplayPriceDenomByMoneyness
-                            : isUsdConversionEnabled
+                            : isTradeDollarizationEnabled
                             ? displayPriceInUsd
                             : truncatedDisplayPrice}
                     </span>

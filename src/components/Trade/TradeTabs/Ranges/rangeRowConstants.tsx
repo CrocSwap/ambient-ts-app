@@ -94,7 +94,7 @@ export default function rangeRowConstants(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
     } = props;
 
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
     const baseToken: TokenIF | undefined =
@@ -401,13 +401,13 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='min price'
             className='base_color'
         >
-            <span>{!isUsdConversionEnabled && sideCharacter}</span>
+            <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
             <span>
                 {isAccountView && !isAmbient
-                    ? isUsdConversionEnabled
+                    ? isTradeDollarizationEnabled
                         ? lowDisplayPriceInUsd
                         : minRangeDenomByMoneyness || '…'
-                    : isUsdConversionEnabled
+                    : isTradeDollarizationEnabled
                     ? lowDisplayPriceInUsd
                     : ambientOrMin || '…'}
             </span>
@@ -434,13 +434,13 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='max price'
             className='base_color'
         >
-            <span>{!isUsdConversionEnabled && sideCharacter}</span>
+            <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
             <span>
                 {isAccountView
-                    ? isUsdConversionEnabled
+                    ? isTradeDollarizationEnabled
                         ? highDisplayPriceInUsd
                         : maxRangeDenomByMoneyness || '…'
-                    : isUsdConversionEnabled
+                    : isTradeDollarizationEnabled
                     ? highDisplayPriceInUsd
                     : ambientOrMax || '…'}
             </span>
@@ -455,25 +455,25 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
         >
             <p>
-                <span>{!isUsdConversionEnabled && sideCharacter}</span>
+                <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView && !isAmbient
-                        ? isUsdConversionEnabled
+                        ? isTradeDollarizationEnabled
                             ? lowDisplayPriceInUsd
                             : minRangeDenomByMoneyness || '…'
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? lowDisplayPriceInUsd
                         : ambientOrMin || '…'}
                 </span>
             </p>
             <p>
-                <span>{!isUsdConversionEnabled && sideCharacter}</span>
+                <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView
-                        ? isUsdConversionEnabled
+                        ? isTradeDollarizationEnabled
                             ? highDisplayPriceInUsd
                             : maxRangeDenomByMoneyness || '…'
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? highDisplayPriceInUsd
                         : ambientOrMax || '…'}
                 </span>
