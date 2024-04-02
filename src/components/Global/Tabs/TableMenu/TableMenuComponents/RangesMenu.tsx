@@ -49,10 +49,12 @@ function RangesMenu(props: propsIF) {
 
     const {
         isEmpty,
+        // eslint-disable-next-line
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
         position,
+        // eslint-disable-next-line
         isPositionInRange,
         isAccountView,
         openDetailsModal: openRangeDetailsModal,
@@ -102,8 +104,8 @@ function RangesMenu(props: propsIF) {
     // const view1 = useMediaQuery('(max-width: 600px)');
     // const view3 = useMediaQuery('(min-width: 1800px)');
 
-    const showRepositionButton =
-        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+    const showRepositionButton = true;
+    // !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
 
     const feesAvailableForHarvest =
         (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;

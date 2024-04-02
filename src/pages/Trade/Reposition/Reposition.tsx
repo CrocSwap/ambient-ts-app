@@ -34,6 +34,8 @@ import {
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
     isStablePair,
+    roundDownTick,
+    roundUpTick,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -50,6 +52,13 @@ import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import {
+    DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
+    DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
+} from '../Range/Range';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 
 function Reposition() {
     // current URL parameter string
@@ -66,7 +75,7 @@ function Reposition() {
         activeNetwork,
         provider,
         ethMainnetUsdPrice,
-        chainData: { blockExplorer },
+        chainData: { blockExplorer, gridSize },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -94,6 +103,14 @@ function Reposition() {
         setCurrentRangeInReposition,
         setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
+
+        advancedHighTick,
+        advancedLowTick,
+        advancedMode,
+        // eslint-disable-next-line
+        setAdvancedHighTick,
+        // eslint-disable-next-line
+        setAdvancedLowTick,
     } = useContext(RangeContext);
     const { userAddress } = useContext(UserDataContext);
 
@@ -807,6 +824,80 @@ function Reposition() {
             currentQuoteQtyDisplayTruncated === '...') ||
         (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
+    // -----------------------------------------------------------------------
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+    // eslint-disable-next-line
+    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+    // eslint-disable-next-line
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
+        useState(false);
+    // eslint-disable-next-line
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
+        useState(false);
+    // eslint-disable-next-line
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
+        useState(DEFAULT_MIN_PRICE_DIFF_PERCENTAGE);
+    // eslint-disable-next-line
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
+        useState(DEFAULT_MAX_PRICE_DIFF_PERCENTAGE);
+
+    const ticksInParams =
+        location.pathname.includes('lowTick') &&
+        location.pathname.includes('highTick');
+    const shouldResetAdvancedLowTick =
+        !ticksInParams &&
+        (advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
+    const shouldResetAdvancedHighTick =
+        !ticksInParams &&
+        (advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
+
+    // default low tick to seed in the DOM (range lower value)
+    const defaultLowTick = useMemo<number>(() => {
+        const value: number = shouldResetAdvancedLowTick
+            ? roundDownTick(
+                  currentPoolPriceTick +
+                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedLowTick;
+        return value;
+    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+
+    const defaultHighTick = useMemo<number>(() => {
+        const value: number = shouldResetAdvancedHighTick
+            ? roundUpTick(
+                  currentPoolPriceTick +
+                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedHighTick;
+        return value;
+    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
+
+    const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
+
+    const MinMaxProps = {
+        minPricePercentage: minPriceDifferencePercentage,
+        maxPricePercentage: maxPriceDifferencePercentage,
+        minPriceInputString: minPriceInputString,
+        maxPriceInputString: maxPriceInputString,
+        setMinPriceInputString: setMaxPriceInputString,
+        setMaxPriceInputString: setMaxPriceInputString,
+        disable: isInvalidRange || !isPoolInitialized,
+        isDenomBase: isDenomBase,
+        highBoundOnBlur: () => setRangeHighBoundFieldBlurred(true),
+        lowBoundOnBlur: () => setRangeLowBoundFieldBlurred(true),
+        rangeLowTick: defaultLowTick,
+        rangeHighTick: defaultHighTick,
+        maxPrice: 10,
+        minPrice: 100,
+        setMaxPrice: setMaxPrice,
+        setMinPrice: setMinPrice,
+    };
+
     return (
         <>
             <div className={styles.repositionContainer}>
@@ -816,13 +907,21 @@ function Reposition() {
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
-                    <RangeWidth
-                        rangeWidthPercentage={rangeWidthPercentage}
-                        setRangeWidthPercentage={setRangeWidthPercentage}
-                        setRescaleRangeBoundariesWithSlider={
-                            setRescaleRangeBoundariesWithSlider
-                        }
-                    />
+                    <AdvancedModeToggle />
+                    {advancedMode ? (
+                        <div className={styles.advanced_info_container}>
+                            <MinMaxPrice {...MinMaxProps} />
+                        </div>
+                    ) : (
+                        <RangeWidth
+                            rangeWidthPercentage={rangeWidthPercentage}
+                            setRangeWidthPercentage={setRangeWidthPercentage}
+                            setRescaleRangeBoundariesWithSlider={
+                                setRescaleRangeBoundariesWithSlider
+                            }
+                        />
+                    )}
+
                     <RepositionPriceInfo
                         position={position}
                         currentPoolPriceDisplay={currentPoolPriceDisplay}
