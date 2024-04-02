@@ -121,11 +121,11 @@ export default function Stats() {
                 feesTotalUsd += dexStats.feesTotalUsd;
 
                 resultsReceived += 1;
-                IS_LOCAL_ENV &&
-                    console.log(
-                        'mainnet cumulative vol: ',
-                        dexStats.volumeTotalUsd.toLocaleString(),
-                    );
+                // IS_LOCAL_ENV &&
+                //     console.log(
+                //         'mainnet cumulative vol: ',
+                //         dexStats.volumeTotalUsd.toLocaleString(),
+                //     );
 
                 if (resultsReceived === numChainsToAggregate) {
                     setTotalTvlString(
@@ -166,11 +166,11 @@ export default function Stats() {
                 volumeTotalUsd += dexStats.volumeTotalUsd;
                 feesTotalUsd += dexStats.feesTotalUsd;
                 resultsReceived += 1;
-                IS_LOCAL_ENV &&
-                    console.log(
-                        'scroll cumulative vol: ',
-                        dexStats.volumeTotalUsd.toLocaleString(),
-                    );
+                // IS_LOCAL_ENV &&
+                // console.log(
+                //     'scroll cumulative vol: ',
+                //     dexStats.volumeTotalUsd.toLocaleString(),
+                // );
 
                 if (resultsReceived === numChainsToAggregate) {
                     setTotalTvlString(
@@ -211,11 +211,11 @@ export default function Stats() {
                 volumeTotalUsd += dexStats.volumeTotalUsd;
                 feesTotalUsd += dexStats.feesTotalUsd;
                 resultsReceived += 1;
-                IS_LOCAL_ENV &&
-                    console.log(
-                        'blast cumulative vol: ',
-                        dexStats.volumeTotalUsd.toLocaleString(),
-                    );
+                // IS_LOCAL_ENV &&
+                //     console.log(
+                //         'blast cumulative vol: ',
+                //         dexStats.volumeTotalUsd.toLocaleString(),
+                //     );
                 if (resultsReceived === numChainsToAggregate) {
                     setTotalTvlString(
                         getFormattedNumber({
