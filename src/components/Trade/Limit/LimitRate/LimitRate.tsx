@@ -137,6 +137,14 @@ export default function LimitRate(props: propsIF) {
         setDisplayPrice(input);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleKeyDown = (e: any) => {
+        const target = e.target as HTMLInputElement;
+        if (e.key === 'Enter') {
+            target && handleOnBlur(target.value); // Trigger blur event
+        }
+    };
+
     const handleOnBlur = async (input: string) => {
         const inputStartsWithDollar = input.startsWith('$');
         const inputEndsWithDollar = input.endsWith('$');
@@ -216,6 +224,7 @@ export default function LimitRate(props: propsIF) {
                         onBlur={(e: ChangeEvent<HTMLInputElement>) =>
                             handleOnBlur(e.target.value)
                         }
+                        onKeyDown={handleKeyDown}
                         value={
                             !isPoolInitialized
                                 ? 'Pool not initialized'
