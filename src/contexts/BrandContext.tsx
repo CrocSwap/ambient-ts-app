@@ -9,13 +9,18 @@ interface BrandContextIF {
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
 
-// TODO: refactor to cache in context and use other contexts as dependencies
-export const CachedDataContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
+export const BrandContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
+
+    // brand asset set to consume as specified in environmental variable
+    // can also provide a fallback if a custom brand is missing values
+    const FALLBACK_SET = 'ambient';
+    const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? FALLBACK_SET;
+
+    // hook to manage the active color theme in the app
     const skin: skinMethodsIF = useSkin(chainData.chainId as chainIds);
 
+    // data to be returned to the app
     const brandData: BrandContextIF = {
         skin,
     };
