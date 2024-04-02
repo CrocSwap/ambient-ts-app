@@ -149,7 +149,8 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        setTokenBInputQty(truncatedTokenBQty);
+        // prevent momentary display of 'Infinity' for limit price on initial load
+        limitTickDisplayPrice && setTokenBInputQty(truncatedTokenBQty);
     };
 
     const handleTokenBChangeEvent = (value?: string) => {

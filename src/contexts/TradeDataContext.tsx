@@ -80,11 +80,6 @@ export const TradeDataContextProvider = (props: {
     const [didUserFlipDenom, setDidUserFlipDenom] =
         React.useState<boolean>(false);
 
-    // TODO: Not convinced yet this belongs here
-    //  This probably belongs in a separate context
-    // Belongs with the other "primary" values in the tradedata slice
-    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(true);
-
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
             tokenA.address,
@@ -129,7 +124,28 @@ export const TradeDataContextProvider = (props: {
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);
-    const [primaryQuantity, setPrimaryQuantity] = React.useState('');
+
+    const [primaryQuantity, setPrimaryQuantity] = React.useState(
+        localStorage.getItem('primaryQuantity') || '',
+    );
+    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(
+        localStorage.getItem('isTokenAPrimary') !== null
+            ? localStorage.getItem('isTokenAPrimary') === 'true'
+            : true,
+    );
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            localStorage.setItem('isTokenAPrimary', 'true');
+        } else {
+            localStorage.setItem('isTokenAPrimary', 'false');
+        }
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
+        localStorage.setItem('primaryQuantity', primaryQuantity);
+    }, [primaryQuantity]);
+
     const [limitTick, setLimitTick] = React.useState<number | undefined>(
         undefined,
     );
