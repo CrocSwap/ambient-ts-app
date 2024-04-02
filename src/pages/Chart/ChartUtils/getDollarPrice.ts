@@ -14,7 +14,7 @@ interface DollarPrice {
 const useDollarPrice = (): ((price: number) => DollarPrice) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const poolArg: PoolIF = {
         base: baseToken,
@@ -39,7 +39,7 @@ const useDollarPrice = (): ((price: number) => DollarPrice) => {
 
     useEffect(() => {
         const getDollarPrice = (price: number): DollarPrice => {
-            if (basePrice && quotePrice && isUsdConversionEnabled) {
+            if (basePrice && quotePrice && isTradeDollarizationEnabled) {
                 const dollarPrice = isDenomBase
                     ? price * quotePrice
                     : price * basePrice;
@@ -63,7 +63,7 @@ const useDollarPrice = (): ((price: number) => DollarPrice) => {
         };
 
         setCachedFunction(() => getDollarPrice);
-    }, [basePrice, quotePrice, isUsdConversionEnabled, isDenomBase]);
+    }, [basePrice, quotePrice, isTradeDollarizationEnabled, isDenomBase]);
 
     const memoizedFunction = useCallback(cachedFunction, [cachedFunction]);
 

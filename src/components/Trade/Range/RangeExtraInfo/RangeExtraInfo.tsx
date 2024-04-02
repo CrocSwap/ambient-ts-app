@@ -22,7 +22,7 @@ function RangeExtraInfo(props: propsIF) {
 
     const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const { poolPriceDisplay, isUsdConversionEnabled, usdPrice } =
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
 
     const baseTokenSymbol = baseToken.symbol;
@@ -66,7 +66,7 @@ function RangeExtraInfo(props: propsIF) {
         ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
         : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
 
-    const conversionRate = isUsdConversionEnabled
+    const conversionRate = isTradeDollarizationEnabled
         ? conversionRateUsd
         : conversionRateNonUsd;
 

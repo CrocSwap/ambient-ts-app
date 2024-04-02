@@ -12,6 +12,7 @@ import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from '@ethersproject/providers';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { getMoneynessRankByAddr } from './getMoneynessRank';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
@@ -287,6 +288,14 @@ export const getLimitOrderData = async (
     );
     newOrder.invLimitPriceDecimalCorrected =
         1 / newOrder.limitPriceDecimalCorrected;
+
+    newOrder.baseUsdPrice = basePrice?.usdPrice;
+    newOrder.quoteUsdPrice = quotePrice?.usdPrice;
+
+    newOrder.isBaseTokenMoneynessGreaterOrEqual =
+        getMoneynessRankByAddr(baseTokenAddress) -
+            getMoneynessRankByAddr(quoteTokenAddress) >=
+        0;
 
     const totalBaseLiq =
         newOrder.positionLiqBaseDecimalCorrected +
