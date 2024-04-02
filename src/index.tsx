@@ -44,7 +44,7 @@ if (!doReload) {
             infuraProvider({
                 apiKey:
                     process.env.REACT_APP_INFURA_KEY ||
-                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2 // TODO Marking this in the codebase
+                    '4741d1713bff4013bc3075ed6e7ce091', // front-end dev key
             }),
 
             jsonRpcProvider({

@@ -35,7 +35,7 @@ export default function PortfolioBanner(props: propsIF) {
         props;
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
-    const { isUsdConversionEnabled, setIsUsdConversionEnabled } =
+    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
     const xpData =
@@ -88,7 +88,7 @@ export default function PortfolioBanner(props: propsIF) {
                     <HeaderButtons
                         mobileHide
                         onClick={() =>
-                            setIsUsdConversionEnabled((prev) => !prev)
+                            setIsTradeDollarizationEnabled((prev) => !prev)
                         }
                     >
                         <AiOutlineDollarCircle
@@ -96,7 +96,7 @@ export default function PortfolioBanner(props: propsIF) {
                             id='trade_dollarized_prices_button'
                             aria-label='Toggle dollarized prices button'
                             style={{
-                                color: isUsdConversionEnabled
+                                color: isTradeDollarizationEnabled
                                     ? 'var(--accent1)'
                                     : undefined,
                             }}
