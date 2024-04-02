@@ -275,6 +275,7 @@ export const TokenSelectButton = styled.button<{
     }
     ${({ disabled }) => disabled && 'cursor: wait !important; '}
     ${({ disabled }) => disabled && 'pointer-events: none !important; '}
+    ${({ disabled }) => disabled && 'padding-right: 27px; '}
 `;
 
 export const RefreshButton = styled(IconButton)`
