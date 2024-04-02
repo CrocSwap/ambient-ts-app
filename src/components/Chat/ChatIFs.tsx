@@ -13,3 +13,9 @@ export interface ChatWsQueryParams {
     address?: string;
     ensName?: string;
 }
+
+export interface ChatWsDecodedMessage {
+    msgType?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payload?: any;
+}

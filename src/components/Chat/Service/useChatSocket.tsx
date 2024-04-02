@@ -2,13 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
 import { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
-import {
-    CHAT_BACKEND_URL,
-    CHAT_BACKEND_WSS_URL,
-} from '../../../ambient-utils/constants';
+import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 
 import {
+    encodeSocketIOMessage,
     getLS,
     getUnverifiedMsgList,
     getUserVerifyToken,
@@ -38,9 +35,8 @@ import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from '../ChatConstants/ChatConstants';
-import useWebSocket from 'react-use-websocket';
-import { domDebug } from '../DomDebugger/DomDebuggerUtils';
-import { WebSocketLike } from 'react-use-websocket/dist/lib/types';
+import { useSocketIO } from 'react-use-websocket';
+import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
 
 const useChatSocket = (
     room: string,
@@ -56,8 +52,6 @@ const useChatSocket = (
     freezePanel?: () => void,
     activatePanel?: () => void,
 ) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
@@ -84,39 +78,58 @@ const useChatSocket = (
         queryParams = { ...queryParams, ensName: ensName };
     }
 
+    const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
+    domDebug(' chat url', url);
     const {
-        sendMessage: socketSendMessage,
         lastMessage: socketLastMessage,
+        sendMessage: socketSendMessage,
         getWebSocket,
-    } = useWebSocket(CHAT_BACKEND_WSS_URL + '/chat/api/subscribe', {
-        fromSocketIO: true,
+    } = useSocketIO(url, {
+        // fromSocketIO: true,
         queryParams: { ...queryParams },
-        share: true,
-        onOpen: () => {
-            domDebug('opening connection', new Date().getTime());
-            console.log('opening connection');
-        },
-
-        onClose(event) {
-            domDebug('closed connection', event);
-        },
-        onError: (e) => {
-            domDebug('connection error', e);
-        },
-        onMessage: (e) => {
-            console.log('on message');
-            console.log(e);
-            const data = e.data as string;
-            if (data.length > 2) {
-                const dataJson = JSON.parse(data.substring(2));
-                console.log(dataJson[0]);
-                if (dataJson.length > 1) {
-                    console.log(dataJson[1]);
-                }
-            }
-        },
         shouldReconnect: () => true,
+        onOpen: (e) => {
+            console.log('connected');
+            console.log(e);
+            console.log('................................');
+            domDebug('connected', getTimeForLog(new Date()));
+        },
+        onClose: (e) => {
+            console.log('closed');
+            console.log(e);
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            domDebug('disconnected', getTimeForLog(new Date()));
+        },
     });
+
+    useEffect(() => {
+        if (isChatOpen) {
+            getWebSocket()?.close();
+        }
+    }, [isChatOpen]);
+
+    useEffect(() => {
+        switch (socketLastMessage.type) {
+            case 'msg-recieve-2':
+                newMsgListener(socketLastMessage.payload);
+                break;
+            case 'message-deleted-listener':
+                deletedMsgListener(socketLastMessage.payload);
+                break;
+            case 'message-updated-listener':
+                updatedMsgListener(socketLastMessage.payload);
+                break;
+            case 'noti':
+                notiListener(socketLastMessage.payload);
+                break;
+        }
+    }, [socketLastMessage]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function sendToSocket(msgType: string, payload: any) {
+        const msg = encodeSocketIOMessage(msgType, payload);
+        socketSendMessage(msg, true);
+    }
 
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
@@ -344,8 +357,6 @@ const useChatSocket = (
     }
 
     useEffect(() => {
-        return;
-
         async function checkVerified() {
             const data = await isUserVerified();
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
@@ -357,17 +368,6 @@ const useChatSocket = (
         checkVerified();
 
         if (!areSubscriptionsEnabled || !isChatOpen) return;
-
-        if (address !== undefined && address != 'undefined') {
-            socketRef.current = io(CHAT_BACKEND_WSS_URL, {
-                path: '/chat/api/subscribe/',
-                query: { roomId: room, address, ensName },
-            });
-        }
-
-        if (isChatOpen) {
-            getMsg();
-        }
 
         async function getRest() {
             if (freezePanel) freezePanel();
@@ -393,80 +393,11 @@ const useChatSocket = (
         }
 
         getRest();
-
-        if (socketRef && socketRef.current) {
-            // eslint-disable-next-line
-            socketRef.current.on('msg-recieve-2', (data: any) => {
-                if (
-                    data &&
-                    data.sender &&
-                    data.sender === currentUserID &&
-                    !data.isVerified
-                ) {
-                    let nonVrfMessages = getLS(
-                        LS_USER_NON_VERIFIED_MESSAGES,
-                        address,
-                    );
-                    const newMsgToken = ', ' + data._id;
-                    nonVrfMessages = nonVrfMessages
-                        ? (nonVrfMessages += newMsgToken)
-                        : data._id + '';
-                    setLS(
-                        LS_USER_NON_VERIFIED_MESSAGES,
-                        nonVrfMessages,
-                        address,
-                    );
-                }
-                setMessages([...messagesRef.current, data]);
-                if (messagesRef.current[messagesRef.current.length - 1]) {
-                    setLastMessage(data);
-                    setLastMessageText(data.message);
-                    setMessageUser(data.sender);
-                }
-            });
-
-            socketRef.current.on('noti', (data: any) => {
-                if (notifications) {
-                    const checkVal = notifications.get(data.roomInfo);
-                    if (checkVal != undefined) {
-                        setNotifications(
-                            notifications.set(data.roomInfo, checkVal + 1),
-                        );
-                    } else {
-                        setNotifications(notifications.set(data.roomInfo, 1));
-                    }
-                } else {
-                    const notificationsMap = new Map<string, number>();
-                    notificationsMap.set(data.roomInfo, 1);
-                    setNotifications(notificationsMap);
-                }
-            });
-        }
-
-        return () => {
-            if (socketRef && socketRef.current) {
-                socketRef.current.disconnect();
-            }
-        };
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
+
     useEffect(() => {
-        if (socketRef.current) {
-            socketRef.current.on('message-deleted-listener', (data: any) => {
-                updateMessages(data);
-            });
-            socketRef.current.on('message-updated-listener', (data: any) => {
-                updateMessages(data);
-            });
-        }
         updateUserCache();
     }, [messages]);
-
-    async function getMsg() {
-        if (!socketRef.current) return;
-        await socketRef.current.emit('msg-recieve', {
-            room: room,
-        });
-    }
 
     async function deleteMsgFromList(msgId: string) {
         const payload = {
@@ -487,7 +418,7 @@ const useChatSocket = (
         data.message.deletedMessageText = 'This message has deleted';
         if (data) {
             const msg = data.message;
-            socketRef.current.emit('message-deleted', { ...data.message });
+            sendToSocket('message-deleted', { ...data.message });
             const newMessageList = messages.map((e) => {
                 if (e._id == msg._id) {
                     return msg;
@@ -527,23 +458,7 @@ const useChatSocket = (
             senderToken: userVrfToken,
         };
 
-        console.log('socket send msg -------------------->>>>>>>>>>>>>>>');
-
-        socketSendMessage(JSON.stringify(payload));
-
-        // socketRef.current.emit('send-msg', {
-        //     from: currentUser,
-        //     message: msg,
-        //     roomInfo: room,
-        //     ensName: ensName,
-        //     walletID: walletID,
-        //     mentionedName: mentionedName,
-        //     isMentionMessage: mentionedName ? true : false,
-        //     mentionedWalletID,
-        //     repliedMessage: repliedMessage,
-        //     repliedMessageRoomInfo: repliedMessageRoomInfo,
-        //     senderToken: userVrfToken,
-        // });
+        sendToSocket('send-msg', payload);
     }
 
     async function addReaction(
@@ -563,7 +478,7 @@ const useChatSocket = (
             body: JSON.stringify(payload),
         });
         const data = await response.json();
-        socketRef.current.emit('message-updated', { ...data.data.message });
+        sendToSocket('message-updated', { ...data.data.message });
 
         return data;
     }
@@ -604,9 +519,59 @@ const useChatSocket = (
         setMessages([...newMessageList]);
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newMsgListener = (data: any) => {
+        if (
+            data &&
+            data.sender &&
+            data.sender === currentUserID &&
+            !data.isVerified
+        ) {
+            let nonVrfMessages = getLS(LS_USER_NON_VERIFIED_MESSAGES, address);
+            const newMsgToken = ', ' + data._id;
+            nonVrfMessages = nonVrfMessages
+                ? (nonVrfMessages += newMsgToken)
+                : data._id + '';
+            setLS(LS_USER_NON_VERIFIED_MESSAGES, nonVrfMessages, address);
+        }
+        setMessages([...messagesRef.current, data]);
+        if (messagesRef.current[messagesRef.current.length - 1]) {
+            setLastMessage(data);
+            setLastMessageText(data.message);
+            setMessageUser(data.sender);
+        }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const deletedMsgListener = (data: any) => {
+        updateMessages(data);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedMsgListener = (data: any) => {
+        updateMessages(data);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const notiListener = (data: any) => {
+        if (notifications) {
+            const checkVal = notifications.get(data.roomInfo);
+            if (checkVal != undefined) {
+                setNotifications(
+                    notifications.set(data.roomInfo, checkVal + 1),
+                );
+            } else {
+                setNotifications(notifications.set(data.roomInfo, 1));
+            }
+        } else {
+            const notificationsMap = new Map<string, number>();
+            notificationsMap.set(data.roomInfo, 1);
+            setNotifications(notificationsMap);
+        }
+    };
+
     return {
         messages,
-        getMsg,
         sendMsg,
         lastMessage,
         messageUser,
@@ -614,7 +579,6 @@ const useChatSocket = (
         users,
         notifications,
         updateLikeDislike,
-        socketRef,
         isVerified,
         verifyUser,
         userMap,

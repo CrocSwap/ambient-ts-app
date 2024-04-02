@@ -3,6 +3,7 @@ import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from './ChatConstants/ChatConstants';
+import { ChatWsDecodedMessage } from './ChatIFs';
 import { Message } from './Model/MessageModel';
 
 export const getLS = (key: string, personalize?: string) => {
@@ -170,4 +171,26 @@ export const isMessageIdStoredInLS = (address: string, messageId: string) => {
             return false;
         }
     }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const encodeSocketIOMessage = (msgType: string, payload: any) => {
+    return `42["${msgType}",${JSON.stringify(payload)}]`;
+};
+
+export const decodeSocketIOMessage = (msg: string) => {
+    const ret: ChatWsDecodedMessage = {};
+
+    if (msg.length > 2 && msg.indexOf('42[') == 0) {
+        msg = msg.substring(3);
+        if (msg.length > 0) {
+            const parsed = JSON.parse(msg);
+            if (parsed.length > 1) {
+                ret.msgType = parsed[0];
+                ret.payload = parsed[1];
+            }
+        }
+    }
+
+    return ret;
 };

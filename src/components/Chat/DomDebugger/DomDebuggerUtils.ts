@@ -85,3 +85,7 @@ export const clearDomDebug = () => {
         el.classList.remove(styles.active);
     }, 100);
 };
+
+export const getTimeForLog = (dt: Date) => {
+    return `${dt.getUTCHours()}:${dt.getUTCMinutes()}:${dt.getUTCSeconds()}:${dt.getUTCMilliseconds()}`;
+};
