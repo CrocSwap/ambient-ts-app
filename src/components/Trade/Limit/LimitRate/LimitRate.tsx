@@ -41,12 +41,14 @@ export default function LimitRate(props: propsIF) {
     const {
         chainData: { gridSize },
     } = useContext(CrocEnvContext);
-    const { pool, usdPriceInverse } = useContext(PoolContext);
+    const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
+        useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { isDenomBase, setLimitTick, limitTick } =
         useContext(TradeDataContext);
+    const { basePrice, quotePrice } = poolData;
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
@@ -95,11 +97,27 @@ export default function LimitRate(props: propsIF) {
     };
 
     const handleOnBlur = async (input: string) => {
-        const isDollarized = input.startsWith('$');
-        const convertedFromDollarNum =
-            isDollarized && usdPriceInverse
-                ? parseFloat(input.slice(1)) / usdPriceInverse
-                : undefined;
+        const inputStartsWithDollar = input.startsWith('$');
+        const isDollarized =
+            inputStartsWithDollar || isTradeDollarizationEnabled;
+        const parsedInput = parseFloat(
+            inputStartsWithDollar ? input.slice(1) : input,
+        );
+
+        const convertedFromDollarNum = isDollarized
+            ? isDenomBase
+                ? quotePrice
+                    ? parsedInput / quotePrice
+                    : usdPriceInverse
+                    ? parsedInput / usdPriceInverse
+                    : undefined
+                : basePrice
+                ? parsedInput / basePrice
+                : usdPriceInverse
+                ? parsedInput / usdPriceInverse
+                : undefined
+            : undefined;
+
         let newDisplayPrice = removeLeadingZeros(
             convertedFromDollarNum ? convertedFromDollarNum.toString() : input,
         );
