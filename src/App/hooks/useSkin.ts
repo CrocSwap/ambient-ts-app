@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { chainIds } from '../../ambient-utils/types';
-import { brandAssetsIF, chainColorScheme } from '../../assets/branding/types';
+import { brandAssetsIF } from '../../assets/branding/types';
 import { ambientBrandAssets } from '../../assets/branding/ambientBrandAssets';
 import { crocswapBrandAssets } from '../../assets/branding/crocswapBrandAssets';
 
@@ -11,10 +11,7 @@ export interface skinMethodsIF {
     changeTo: (s: skins) => void;
 }
 
-export const useSkin = (
-    colorSchemes: chainColorScheme,
-    chainId: chainIds,
-): skinMethodsIF => {
+export const useSkin = (chainId: chainIds): skinMethodsIF => {
     const LS_KEY = 'skin';
 
     const FALLBACK_SET = 'ambient';
@@ -51,6 +48,7 @@ export const useSkin = (
         () => ({
             active: skin,
             changeTo: (s: skins) => setSkin(s),
+            platformName: brandAssets.platformName,
         }),
         [skin],
     );

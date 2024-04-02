@@ -66,7 +66,6 @@ export default function App() {
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
-        brandAssetSet,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams, chainData } =
         useContext(CrocEnvContext);
@@ -83,10 +82,7 @@ export default function App() {
             ? 'swap-body'
             : null;
 
-    const skin: skinMethodsIF = useSkin(
-        brandAssetSet.color,
-        chainData.chainId as chainIds,
-    );
+    const skin: skinMethodsIF = useSkin(chainData.chainId as chainIds);
 
     // Show sidebar on all pages except for home, swap, chat, and 404
     const sidebarRender = smallScreen ? (
