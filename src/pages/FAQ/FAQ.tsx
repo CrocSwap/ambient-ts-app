@@ -1,6 +1,6 @@
 import styles from '../TermsOfService/TermsOfService.module.css';
 
-export default function PrivacyPolicy() {
+export default function FAQ() {
     return (
         <div className={styles.background}>
             <div className={styles.container}>
@@ -108,7 +108,7 @@ export default function PrivacyPolicy() {
                         the app to help users make better decisions.
                     </p>
                     <p className={styles.sub_header}>
-                        How is Gold distributed between pools
+                        How is Gold distributed between pools?
                     </p>
                     <p>
                         The relative distribution of Gold between pools is based
