@@ -5,5 +5,13 @@
     "deno.unstable": true,
     "deno.importMap": ".netlify/edge-functions-import-map.json",
     "deno.path": "/Users/benwolski/Library/Preferences/netlify/deno-cli/deno",
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#251c46", // green
+        "titleBar.inactiveBackground": "#251c46",
+        "statusBar.background": "#251c46",
+        "titleBar.activeForeground": "#FFFFFF", // white
+        "titleBar.inactiveForeground": "#FFFFFF",
+        "statusBar.foreground": "#FFFFFF"
+      }
 }

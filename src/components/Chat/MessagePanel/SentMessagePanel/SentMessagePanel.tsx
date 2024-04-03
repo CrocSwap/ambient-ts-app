@@ -2,6 +2,7 @@ import {
     Dispatch,
     SetStateAction,
     memo,
+    useContext,
     useEffect,
     useRef,
     useState,
@@ -17,7 +18,7 @@ import { Message } from '../../Model/MessageModel';
 import { User, getUserLabelForReactions } from '../../Model/UserModel';
 import useChatApi from '../../Service/ChatApi';
 import PositionBox from '../PositionBox/PositionBox';
-import styles from './SentMessagePanel.module.css';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import {
@@ -31,6 +32,8 @@ import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
 import { ChatVerificationTypes } from '../../ChatEnums';
+import { getAvatarForUser } from '../../ChatRenderUtils';
+import styles from './SentMessagePanel.module.css';
 
 interface SentMessageProps {
     message: Message;
@@ -141,6 +144,8 @@ function SentMessagePanel(props: SentMessageProps) {
     const [repliedMesssage, setRepliedMessage] = useState<
         Message | undefined
     >();
+
+    const { userAddress, userAccountProfile } = useContext(UserDataContext);
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
@@ -610,7 +615,16 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const jazziconsSeed = props.message.walletID.toLowerCase();
 
-    const myJazzicon = (
+    const myJazzicon = props.message.avatarImage ? (
+        <img
+            src={props.message.avatarImage}
+            style={{
+                width: '25px',
+                height: '25px',
+                borderRadius: '50%',
+            }}
+        ></img>
+    ) : (
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
@@ -941,7 +955,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         className={styles.avatar_jazzicons}
                                         onClick={goToProfilePage}
                                     >
-                                        {myJazzicon}
+                                        {/* {myJazzicon} */}
+                                        {getAvatarForUser(
+                                            props.userMap?.get(
+                                                props.message.sender,
+                                            ),
+                                        )}
                                     </div>
                                 )}
                                 {!showAvatar && (
@@ -952,7 +971,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         }}
                                     >
                                         <div className={styles.nft_container}>
-                                            {myJazzicon}
+                                            {/* {myJazzicon} */}
+                                            {getAvatarForUser(
+                                                props.userMap?.get(
+                                                    props.message.sender,
+                                                ),
+                                            )}
                                         </div>
                                     </div>
                                 )}

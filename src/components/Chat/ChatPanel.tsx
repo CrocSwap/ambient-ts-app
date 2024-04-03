@@ -61,7 +61,11 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
-    const { userAddress, ensName: ens } = useContext(UserDataContext);
+    const {
+        userAddress,
+        ensName: ens,
+        userAccountProfile,
+    } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -178,6 +182,8 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        // saveUserWithAvatarImage,
+        updateUserWithAvatarImage,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
@@ -190,7 +196,13 @@ function ChatPanel(props: propsIF) {
         activatePanel,
     );
 
-    const { getID, updateUser, updateMessageUser } = useChatApi();
+    const {
+        getID,
+        updateUser,
+        updateMessageUser,
+        saveUser,
+        getUserAvatarImageAndID,
+    } = useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
@@ -338,6 +350,7 @@ function ChatPanel(props: propsIF) {
             } else {
                 setEnsName(ens);
             }
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 if (result.status === 'Not OK') {
@@ -382,6 +395,18 @@ function ChatPanel(props: propsIF) {
             setCurrentUser(undefined);
         }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
+
+    // useEffect(() => {
+    //     if(userAddress){
+    //         getUserAvatarImageAndID().then((result: any) => {
+    //             console.log(result)
+    //             if (result.status === 'OK') {
+    //                 setUserAccountProfile(() => result.userData.avatarImage)
+    //             }
+    //         });
+
+    //     }
+    // },[userAddress, isUserConnected])
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);

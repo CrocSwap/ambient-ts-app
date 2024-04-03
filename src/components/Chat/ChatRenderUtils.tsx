@@ -2,6 +2,7 @@
 import { formatMessageTime, getShownName } from './ChatUtils';
 import { CROCODILE_LABS_LINKS } from './ChatConstants/ChatConstants';
 import { Message } from './Model/MessageModel';
+import { User } from './Model/UserModel';
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
@@ -93,4 +94,37 @@ export const getMessageCard = (message: Message) => {
             </div>
         </div>
     );
+};
+
+export const getAvatar = (
+    walletID: string,
+    avatarImage?: string,
+    size?: number,
+) => {
+    if (avatarImage && avatarImage.length > 0) {
+        return (
+            <img
+                src={avatarImage}
+                style={{
+                    width: size ? size + 'px' : '25px',
+                    height: size ? size + 'px' : '25px',
+                    borderRadius: '50%',
+                }}
+            ></img>
+        );
+    } else {
+        return (
+            <Jazzicon
+                diameter={size}
+                seed={jsNumberForAddress(walletID.toLocaleLowerCase())}
+            />
+        );
+    }
+};
+
+export const getAvatarForUser = (user?: User, size?: number) => {
+    if (!user) {
+        return <Jazzicon diameter={25} seed={jsNumberForAddress('')} />;
+    }
+    return getAvatar(user.walletID, user.avatarImage, size ? size : 25);
 };
