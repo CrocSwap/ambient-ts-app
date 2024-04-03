@@ -20,8 +20,6 @@ export const fetchNFT = async (
     const totalNFTCount = nftsForOwnerResponse.totalCount;
     const pageKeyResponse = nftsForOwnerResponse.pageKey;
 
-    console.log(nftsForOwnerResponse);
-
     return {
         NFTData: nftData,
         totalNFTCount: totalNFTCount,
