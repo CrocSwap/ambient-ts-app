@@ -30,6 +30,7 @@ import SYN from './SYN.png';
 import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
 import PANDA from './PANDA.jpg';
+import YIELD from './YIELD.jpg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -65,4 +66,5 @@ export {
     LDO,
     BLUR,
     PANDA,
+    YIELD,
 };
