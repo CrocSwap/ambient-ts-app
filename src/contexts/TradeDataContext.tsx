@@ -9,6 +9,7 @@ import {
 } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
+import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -67,13 +68,27 @@ export const TradeDataContextProvider = (props: {
 }) => {
     const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
         useAppChain();
-    // const dfltChainId = getDefaultChainId();
+
+    const savedTokenASymbol = localStorage.getItem('tokenA');
+    const savedTokenBSymbol = localStorage.getItem('tokenB');
 
     const dfltTokenA = getDefaultPairForChain(chainData.chainId)[0];
     const dfltTokenB = getDefaultPairForChain(chainData.chainId)[1];
 
-    const savedTokenASymbol = localStorage.getItem('tokenA');
-    const savedTokenBSymbol = localStorage.getItem('tokenB');
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
+
+    const tokensMatchingA = tokens.getTokensByNameOrSymbol(
+        savedTokenASymbol || '',
+        true,
+    );
+
+    const tokensMatchingB = tokens.getTokensByNameOrSymbol(
+        savedTokenBSymbol || '',
+        true,
+    );
+
+    const firstTokenMatchingA = tokensMatchingA[0] || undefined;
+    const firstTokenMatchingB = tokensMatchingB[0] || undefined;
 
     const isSavedTokenADefaultB = savedTokenASymbol
         ? translateTokenSymbol(savedTokenASymbol) ===
@@ -89,10 +104,18 @@ export const TradeDataContextProvider = (props: {
         isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
     const [tokenA, setTokenA] = React.useState<TokenIF>(() => {
-        return shouldReverseDefaultTokens ? dfltTokenB : dfltTokenA;
+        return firstTokenMatchingA
+            ? firstTokenMatchingA
+            : shouldReverseDefaultTokens
+            ? dfltTokenB
+            : dfltTokenA;
     });
     const [tokenB, setTokenB] = React.useState<TokenIF>(
-        shouldReverseDefaultTokens ? dfltTokenA : dfltTokenB,
+        firstTokenMatchingB
+            ? firstTokenMatchingB
+            : shouldReverseDefaultTokens
+            ? dfltTokenA
+            : dfltTokenB,
     );
 
     const [
