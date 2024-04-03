@@ -11,16 +11,16 @@ export default function FAQ() {
     const questions: questionIF[] = [
         {
             question: 'How do I earn Ambient Points?',
-            answer: 'Ambient Points are earned by making swaps and providing liquidity. The more you swap and the more swaps use the liquidity you have provided, the more Points you earn. Points are distributed once per week.',
+            answer: 'Ambient Points are earned by making swaps and providing liquidity. The more you swap and the more swaps that use the liquidity you have provided, the more Points you earn. Points are distributed once per week.',
         },
         {
             question: 'How is Blast Gold distribution determined?',
-            answer: 'Gold distribution is based on (rough order of descending importance) market depth of liquidity positions, TVL of in-range liquidity positions, swap volume, and small non-linear rewards for trying different actions. The relative weight of these components may change from distribution to distribution, but the overall approach will remain the same.',
+            answer: 'Gold distribution is based on, in rough order of descending importance: (1) market depth of liquidity positions, (2) TVL of in-range liquidity positions, (3) swap volume, and (4) small non-linear rewards for trying different actions. The relative weight of these components may change from distribution to distribution, but the overall approach will remain constant.',
         },
         {
             question:
                 'What is the difference between Ambient Points and Blast Points?',
-            answer: 'If youre in pools on Blast you\'ll earn Ambient Points, Blast Points (which are based on TVL) and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria they provide us (TVL) and Blast Gold optimized for metrics that they want to see from an ecosystem perspective. The criteria for Gold will not be exactly the same as criteria for Ambient Points, because our goal is to align with Blast\'s objectives so they keep sending Ambient large amounts of Gold and ultimately Ambient users earn more Points. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.',
+            answer: 'If you have liquidity positions in pools on Blast you\'ll earn Ambient Points, Blast Points (which are based on TVL), and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria Blast provides us (TVL) while Blast Gold is optimized for ecosystem metrics. The criteria for Gold will not be exactly the same as criteria for Ambient Points; our goal is to align with Blast\'s objectives such that they continue to send Ambient large amounts of Gold and ultimately that Ambient users earn more Points. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.',
         },
         {
             question: 'Why is Gold distributed like this?',
@@ -31,7 +31,7 @@ export default function FAQ() {
             answer: 'The snapshot for the first Gold distribution was taken shortly after Blast announced the Gold distribution. This was on the afternoon of Friday March 22. Liquidity provided after this snapshot will still receive Gold, but will be based on the next Blast Gold distribution. We anticipate this to be released in 2-3 weeks. In general we will follow this policy of distributing each Gold drop based on the retroactive activity since the previous Gold release.',
         },
         {
-            question: 'I got X Gold, is that good or bad?',
+            question: 'I got [some amount of] Blast Gold, is that good or bad?',
             answer: 'With the caveat that no one will know how much Blast rewards are worth until the airdrop, keep in mind that Gold and Points will in total make up 50% of the total airdrop respectively and so far are on the order of 1000× more Blast Points than Blast Gold.',
         },
         {
