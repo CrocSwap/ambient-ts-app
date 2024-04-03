@@ -5,7 +5,7 @@ interface questionIF {
     answer: string | string[];
 }
 
-export default function PrivacyPolicy() {
+export default function FAQ() {
     // all questions as a string
     // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
     const questions: questionIF[] = [
