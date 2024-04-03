@@ -193,7 +193,7 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 
-        setTokenAInputQty(truncatedTokenAQty);
+        limitTickDisplayPrice && setTokenAInputQty(truncatedTokenAQty);
     };
 
     const usdValueTokenA = isTokenABase
