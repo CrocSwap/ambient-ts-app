@@ -1,3 +1,4 @@
+import { ScrollableContainer } from '../../styled/Components/Analytics';
 import styles from '../TermsOfService/TermsOfService.module.css';
 
 interface questionIF {
@@ -56,19 +57,28 @@ export default function FAQ() {
                         Frequently Asked Questions
                     </span>
                     Last Updated: Apr 3, 2024
-                    {questions.map((q: questionIF) => {
-                        const answerAsArray: string[] = [q.answer].flat();
-                        return (
-                            <>
-                                <p className={styles.sub_header}>
-                                    {q.question}
-                                </p>
-                                {answerAsArray.map((a: string) => (
-                                    <p key={a}>{a}</p>
-                                ))}
-                            </>
-                        );
-                    })}
+                    <ul
+                        style={{
+                            listStyleType: 'none',
+                            marginLeft: '0',
+                            marginTop: '10px',
+                            overflowY: 'scroll',
+                        }}
+                    >
+                        {questions.map((q: questionIF) => {
+                            const answerAsArray: string[] = [q.answer].flat();
+                            return (
+                                <li key={JSON.stringify(q)}>
+                                    <p className={styles.sub_header}>
+                                        {q.question}
+                                    </p>
+                                    {answerAsArray.map((a: string) => (
+                                        <p key={a}>{a}</p>
+                                    ))}
+                                </li>
+                            );
+                        })}
+                    </ul>
                 </div>
             </div>
         </div>
