@@ -1,4 +1,3 @@
-import { ScrollableContainer } from '../../styled/Components/Analytics';
 import styles from '../TermsOfService/TermsOfService.module.css';
 
 interface questionIF {
