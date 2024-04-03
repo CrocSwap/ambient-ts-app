@@ -14,7 +14,7 @@ import {
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
-import { getLocalStorageItem, isJsonString } from '../ambient-utils/dataLayer';
+import { isJsonString } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
@@ -221,6 +221,7 @@ export const ChainDataContextProvider = (props: {
             ? new Map(JSON.parse(nftLocalData))
             : undefined;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nftDataMap = localNftDataParsed?.get(actionKey) as any;
 
         const isOverTimeLimit =
@@ -251,52 +252,55 @@ export const ChainDataContextProvider = (props: {
                             NFTFetchSettings.pageSize,
                         );
 
-                        const NFTData = NFTResponse.NFTData;
+                        if (NFTResponse !== undefined) {
+                            const NFTData = NFTResponse.NFTData;
 
-                        const pageKey = NFTResponse.pageKey;
+                            const pageKey = NFTResponse.pageKey;
 
-                        setNFTFetchSettings({
-                            pageSize: NFTFetchSettings.pageSize,
-                            pageKey: pageKey,
-                        });
-
-                        const nftImgArray: Array<NftDataIF> = [];
-
-                        NFTData.map((nftData: any) => {
-                            nftImgArray.push({
-                                contractAddress: nftData.contract.address,
-                                contractName: nftData.contract.name,
-                                cachedUrl: nftData.image.cachedUrl,
-                                originalUrl: nftData.image.originalUrl,
+                            setNFTFetchSettings({
+                                pageSize: NFTFetchSettings.pageSize,
+                                pageKey: pageKey ? pageKey : '',
                             });
-                        });
 
-                        const nftDataMap = localNftDataParsed
-                            ? localNftDataParsed
-                            : new Map<string, Array<NftListByChain>>();
+                            const nftImgArray: Array<NftDataIF> = [];
 
-                        const mapValue: Array<NftListByChain> = [];
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            NFTData.map((nftData: any) => {
+                                nftImgArray.push({
+                                    contractAddress: nftData.contract.address,
+                                    contractName: nftData.contract.name,
+                                    cachedUrl: nftData.image.cachedUrl,
+                                    originalUrl: nftData.image.originalUrl,
+                                });
+                            });
 
-                        mapValue.push({
-                            chainId: chainData.chainId,
-                            totalNFTCount: NFTResponse.totalNFTCount,
-                            data: nftImgArray,
-                        });
+                            const nftDataMap = localNftDataParsed
+                                ? localNftDataParsed
+                                : new Map<string, Array<NftListByChain>>();
 
-                        const mapWithFetchTime = {
-                            lastFetchTime: Date.now(),
-                            mapValue: mapValue,
-                        };
+                            const mapValue: Array<NftListByChain> = [];
 
-                        nftDataMap.set(actionKey, mapWithFetchTime);
+                            mapValue.push({
+                                chainId: chainData.chainId,
+                                totalNFTCount: NFTResponse.totalNFTCount,
+                                data: nftImgArray,
+                            });
 
-                        // localStorage.setItem(
-                        //     'user_nft_data',
-                        //     JSON.stringify(Array.from(nftDataMap)),
-                        // );
+                            const mapWithFetchTime = {
+                                lastFetchTime: Date.now(),
+                                mapValue: mapValue,
+                            };
 
-                        setNFTData(mapValue);
-                        setIsfetchNftTriggered(() => false);
+                            nftDataMap.set(actionKey, mapWithFetchTime);
+
+                            localStorage.setItem(
+                                'user_nft_data',
+                                JSON.stringify(Array.from(nftDataMap)),
+                            );
+
+                            setNFTData(mapValue);
+                            setIsfetchNftTriggered(() => false);
+                        }
                     } catch (error) {
                         console.error({ error });
                     }
@@ -314,7 +318,7 @@ export const ChainDataContextProvider = (props: {
         isUserConnected,
         userAddress,
         chainData.chainId,
-        everyFiveMinutes,
+        // everyFiveMinutes,
         alchemyClient !== undefined,
         activeNetwork.graphCacheUrl,
         isfetchNftTriggered,

@@ -8,7 +8,7 @@ export const fetchNFT = async (
     client: Alchemy,
     pageKey: string,
     pageSize: number,
-): Promise<any> => {
+): Promise<fetchNFTReturn> => {
     if (!crocEnv) return;
 
     const nftsForOwnerResponse = await client.nft.getNftsForOwner(address, {
@@ -20,6 +20,8 @@ export const fetchNFT = async (
     const totalNFTCount = nftsForOwnerResponse.totalCount;
     const pageKeyResponse = nftsForOwnerResponse.pageKey;
 
+    console.log(nftsForOwnerResponse);
+
     return {
         NFTData: nftData,
         totalNFTCount: totalNFTCount,
@@ -27,13 +29,22 @@ export const fetchNFT = async (
     };
 };
 
+export type fetchNFTReturn =
+    | {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          NFTData: any;
+          totalNFTCount: number;
+          pageKey: string | undefined;
+      }
+    | undefined;
+
 export type NFTQueryFn = (
     address: string,
     crocEnv: CrocEnv | undefined,
     client: Alchemy,
     pageKey: string,
     pageSize: number,
-) => Promise<any>;
+) => Promise<fetchNFTReturn>;
 
 export function memoizeFetchNFT(): NFTQueryFn {
     return memoizePromiseFn(fetchNFT) as NFTQueryFn;

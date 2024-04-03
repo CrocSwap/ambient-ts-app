@@ -14,6 +14,7 @@ import {
     NFTBannerFooter,
     SaveButton,
     NFTImg,
+    CheckBoxContainer,
 } from './NFTBannerAccountCss';
 import {
     NftDataIF,
@@ -28,6 +29,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import useChatSocket from '../../../Chat/Service/useChatSocket';
+import { trimString } from '../../../../ambient-utils/dataLayer';
 
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
@@ -47,8 +49,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         NFTData,
         isfetchNftTriggered,
         setIsfetchNftTriggered,
-        NFTFetchSettings,
-        setNFTFetchSettings,
+        // NFTFetchSettings,
+        // setNFTFetchSettings,
     } = props;
 
     const { setUserAccountProfile, userAddress, ensName } =
@@ -71,7 +73,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             address: 'all',
         });
 
-    const [onErrorIndex, setOnErrorIndex] = useState<Array<number>>([]);
+    const [onErrorIndex] = useState<Array<number>>([]);
 
     const [selectedNft, setSelectedNft] = useState<NftDataIF | undefined>(
         undefined,
@@ -105,6 +107,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nftContractName: any[] = [];
         nftContractName.push({ name: 'All Nfts', address: 'all' });
 
@@ -183,7 +186,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     return (
         <NFTBannerAccountContainer
-            onClick={(event: any) => {
+            onClick={(event: React.MouseEvent<HTMLDivElement>) => {
                 event.stopPropagation();
                 setIsContractNameOptionTabActive(false);
             }}
@@ -203,14 +206,23 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                     <NFTBannerFilter>
                         <DropDownContainer>
                             <DropDownHeader
-                                onClick={(event: any) => {
+                                onClick={(
+                                    event: React.MouseEvent<HTMLDivElement>,
+                                ) => {
                                     event.stopPropagation();
                                     setIsContractNameOptionTabActive(
                                         !isContractNameOptionTabActive,
                                     );
                                 }}
                             >
-                                <div>{selectedNFTContractAddress.name}</div>
+                                <div>
+                                    {trimString(
+                                        selectedNFTContractAddress.name,
+                                        15,
+                                        0,
+                                        '…',
+                                    )}
+                                </div>
                                 <LabelSettingsArrow
                                     isActive={isContractNameOptionTabActive}
                                 ></LabelSettingsArrow>
@@ -228,10 +240,15 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                                         : undefined
                                                 }
                                                 key={index}
-                                                onClick={(event: any) => {
+                                                onClick={(
+                                                    event: React.MouseEvent<HTMLElement>,
+                                                ) => {
                                                     event.stopPropagation();
                                                     setSelectedNFTContractAddress(
                                                         item,
+                                                    );
+                                                    setIsContractNameOptionTabActive(
+                                                        false,
                                                     );
                                                 }}
                                             >
@@ -254,50 +271,53 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             </div>
 
             {!isLoading ? (
-                <NFTDisplay>
+                <NFTDisplay template={nftArray.length}>
                     {nftArray.map((item: NftDataIF, index: number) => (
-                        <NFTImgContainer key={index}>
-                            <NFTImg
-                                selected={
-                                    selectedNft
-                                        ? selectedNft.originalUrl ===
-                                          item.originalUrl
-                                        : false
-                                }
-                                key={index}
-                                // alt='Content not found'
-                                onError={() => onErrorIndex.push(index)}
-                                onClick={(
-                                    event: React.MouseEvent<HTMLDivElement>,
-                                ) => {
-                                    event.stopPropagation();
-                                    setSelectedNft(item);
-                                }}
-                                src={
-                                    item.originalUrl
-                                        ? handleImgSrc(
-                                              onErrorIndex,
-                                              item.originalUrl,
-                                              index,
-                                          )
-                                        : nftPlaceHolder
-                                }
-                            ></NFTImg>
-                            {selectedNft &&
-                                item.originalUrl ===
-                                    selectedNft.originalUrl && (
-                                    <img
-                                        src={nftSelected}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '72%',
-                                            left: '68%',
-                                            width: '20px',
-                                            height: '20px',
-                                        }}
-                                        alt=''
-                                    />
-                                )}
+                        <NFTImgContainer key={index} id='continer'>
+                            <CheckBoxContainer key={index}>
+                                <NFTImg
+                                    selected={
+                                        selectedNft
+                                            ? selectedNft.originalUrl ===
+                                              item.originalUrl
+                                            : false
+                                    }
+                                    key={index}
+                                    // alt='Content not found'
+                                    onError={() => onErrorIndex.push(index)}
+                                    onClick={(
+                                        event: React.MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setSelectedNft(item);
+                                        setIsContractNameOptionTabActive(false);
+                                    }}
+                                    src={
+                                        item.originalUrl
+                                            ? handleImgSrc(
+                                                  onErrorIndex,
+                                                  item.originalUrl,
+                                                  index,
+                                              )
+                                            : nftPlaceHolder
+                                    }
+                                ></NFTImg>
+                                {selectedNft &&
+                                    item.originalUrl ===
+                                        selectedNft.originalUrl && (
+                                        <img
+                                            src={nftSelected}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '72%',
+                                                left: '72%',
+                                                width: '20px',
+                                                height: '20px',
+                                            }}
+                                            alt=''
+                                        />
+                                    )}
+                            </CheckBoxContainer>
                         </NFTImgContainer>
                     ))}
                 </NFTDisplay>
@@ -308,7 +328,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             <NFTBannerFooter>
                 {pagination}
                 <SaveButton
-                    onClick={(event: any) => {
+                    onClick={(event: React.MouseEvent<HTMLDivElement>) => {
                         event.stopPropagation();
                         handleNftSelection();
                     }}

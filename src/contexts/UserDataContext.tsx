@@ -111,6 +111,7 @@ export const UserDataContextProvider = (props: {
         (async () => {
             if (userAddress) {
                 try {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     getUserAvatarImageAndID(userAddress).then((result: any) => {
                         if (result.status === 'OK') {
                             setUserAccountProfile(

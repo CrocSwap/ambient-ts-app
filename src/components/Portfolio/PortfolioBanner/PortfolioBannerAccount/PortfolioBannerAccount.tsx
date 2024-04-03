@@ -79,6 +79,10 @@ export default function PortfolioBannerAccount(
         fetchAvatar();
     }, []);
 
+    useEffect(() => {
+        console.log(userAvatarImage);
+    }, [userAvatarImage]);
+
     function handleCopyEnsName() {
         copy(
             ensNameAvailable
@@ -111,7 +115,7 @@ export default function PortfolioBannerAccount(
 
     const updateProfile = NFTData && (
         <UpdateProfileButton
-            onClick={(event: any) => {
+            onClick={(event: React.MouseEvent<HTMLElement>) => {
                 event.stopPropagation();
                 setShowNFTPage(!showNFTPage);
             }}

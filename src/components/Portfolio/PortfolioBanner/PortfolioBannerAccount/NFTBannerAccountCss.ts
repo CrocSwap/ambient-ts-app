@@ -39,9 +39,12 @@ const NFTBannerHeader = styled.div`
     justify-content: space-between;
 `;
 
-const NFTDisplay = styled.div`
+const NFTDisplay = styled.div<{
+    template: number;
+}>`
     display: grid;
-    grid-template-columns: repeat(4, 25%);
+    grid-template-columns: ${({ template }) =>
+        template > 4 ? 'repeat(4, auto);' : 'repeat(' + template + ',  auto);'}
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -57,6 +60,11 @@ const NFTImgContainer = styled.div`
     align-items: center;
 `;
 
+const CheckBoxContainer = styled.div`
+    position: relative;
+    display: flex;
+`;
+
 const NFTImg = styled.img<{
     selected: boolean;
 }>`
@@ -66,9 +74,6 @@ const NFTImg = styled.img<{
 
     width: 75px;
     height: 75px;
-
-    alignitems: center;
-    justifycontent: space-evenly;
 
     &:hover {
         border-color: #7bede4;
@@ -234,6 +239,7 @@ export {
     NFTBannerHeader,
     NFTDisplay,
     NFTImgContainer,
+    CheckBoxContainer,
     DropDownList,
     NFTBannerFilter,
     DropDownListContainer,
