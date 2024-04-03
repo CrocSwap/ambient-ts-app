@@ -10,12 +10,12 @@ export default function PrivacyPolicy() {
                     </span>
                     Last Updated: Apr 3, 2024
                     <p className={styles.sub_header}>
-                        How do I earn Ambient points?
+                        How do I earn Ambient Points?
                     </p>
                     <p>
-                        Ambient points are earned by making swaps and providing
+                        Ambient Points are earned by making swaps and providing
                         liquidity. The more you swap and the more swaps use the
-                        liquidity you have provided, the more points you earn.
+                        liquidity you have provided, the more Points you earn.
                         Points are distributed once per week.
                     </p>
                     <p className={styles.sub_header}>
@@ -36,16 +36,16 @@ export default function PrivacyPolicy() {
                     </p>
                     <p>
                         If you&apos;re in pools on Blast you&apos;ll earn
-                        Ambient points, Blast points (which are based on TVL)
-                        and Blast gold. Be aware that Blast points are
+                        Ambient Points, Blast Points (which are based on TVL)
+                        and Blast Gold. Be aware that Blast Points are
                         distributed directly based on the criteria they provide
-                        us (TVL) and Blast gold optimized for metrics that they
+                        us (TVL) and Blast Gold optimized for metrics that they
                         want to see from an ecosystem perspective. The criteria
-                        for gold will not be exactly the same as criteria for
-                        Ambient points, because our goal is to align with
+                        for Gold will not be exactly the same as criteria for
+                        Ambient Points, because our goal is to align with
                         Blast&apos;s objectives so they keep sending Ambient
-                        large amounts of gold and ultimately Ambient users earn
-                        more points. Blast gold will be heavily based on 2%
+                        large amounts of Gold and ultimately Ambient users earn
+                        more Points. Blast Gold will be heavily based on 2%
                         market depth, so keep orders tight and in-range.
                         Obviously users on Scroll or Ethereum will not get Blast
                         rewards, but we are hearing things about Scroll
