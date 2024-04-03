@@ -8,6 +8,7 @@ import {
     goerliETH,
 } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -67,26 +68,29 @@ export const TradeDataContextProvider = (props: {
     const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
         useAppChain();
     // const dfltChainId = getDefaultChainId();
+
     const dfltTokenA = getDefaultPairForChain(chainData.chainId)[0];
     const dfltTokenB = getDefaultPairForChain(chainData.chainId)[1];
 
-    const savedIsTokenABase = localStorage.getItem('isTokenABase')
-        ? localStorage.getItem('isTokenABase') === 'true'
-        : true;
+    const savedTokenASymbol = localStorage.getItem('tokenA');
+    const savedTokenBSymbol = localStorage.getItem('tokenB');
 
-    const isDefaultTokenABase =
-        sortBaseQuoteTokens(
-            dfltTokenA.address,
-            dfltTokenB.address,
-        )[0].toLowerCase() === dfltTokenA.address.toLowerCase();
+    const isSavedTokenADefaultB = savedTokenASymbol
+        ? translateTokenSymbol(savedTokenASymbol) ===
+          translateTokenSymbol(dfltTokenB.symbol)
+        : false;
+
+    const isSavedTokenBDefaultA = savedTokenBSymbol
+        ? translateTokenSymbol(savedTokenBSymbol) ===
+          translateTokenSymbol(dfltTokenA.symbol)
+        : false;
 
     const shouldReverseDefaultTokens =
-        (savedIsTokenABase && !isDefaultTokenABase) ||
-        (!savedIsTokenABase && isDefaultTokenABase);
+        isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
-    const [tokenA, setTokenA] = React.useState<TokenIF>(
-        shouldReverseDefaultTokens ? dfltTokenB : dfltTokenA,
-    );
+    const [tokenA, setTokenA] = React.useState<TokenIF>(() => {
+        return shouldReverseDefaultTokens ? dfltTokenB : dfltTokenA;
+    });
     const [tokenB, setTokenB] = React.useState<TokenIF>(
         shouldReverseDefaultTokens ? dfltTokenA : dfltTokenB,
     );
@@ -149,12 +153,9 @@ export const TradeDataContextProvider = (props: {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
-        if (isTokenABase) {
-            localStorage.setItem('isTokenABase', 'true');
-        } else {
-            localStorage.setItem('isTokenABase', 'false');
-        }
-    }, [isTokenABase]);
+        localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
+        localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
+    }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
         localStorage.setItem('primaryQuantity', primaryQuantity);
