@@ -51,7 +51,7 @@ export default function PortfolioBannerAccount(
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
-        chainData: { blockExplorer },
+        chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
 
     const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
@@ -78,10 +78,6 @@ export default function PortfolioBannerAccount(
         };
         fetchAvatar();
     }, []);
-
-    useEffect(() => {
-        console.log(userAvatarImage);
-    }, [userAvatarImage]);
 
     function handleCopyEnsName() {
         copy(
@@ -149,7 +145,14 @@ export default function PortfolioBannerAccount(
                     ) : (
                         <>{props.jazziconsToDisplay}</>
                     )} */}
-                    {updateProfile}
+                    {NFTData &&
+                        NFTData.find(
+                            (nftChainList) => nftChainList.chainId === chainId,
+                        ) &&
+                        NFTData.find(
+                            (nftChainList) => nftChainList.chainId === chainId,
+                        )?.userHasNFT &&
+                        updateProfile}
                 </ProfileSettingsContainer>
 
                 <FlexContainer flexDirection='column' gap={4}>
@@ -187,17 +190,23 @@ export default function PortfolioBannerAccount(
                 </FlexContainer>
             </FlexContainer>
 
-            {showNFTPage && NFTData && (
-                <NFTBannerAccount
-                    setShowNFTPage={setShowNFTPage}
-                    showNFTPage={showNFTPage}
-                    NFTData={NFTData}
-                    isfetchNftTriggered={isfetchNftTriggered}
-                    setIsfetchNftTriggered={setIsfetchNftTriggered}
-                    NFTFetchSettings={NFTFetchSettings}
-                    setNFTFetchSettings={setNFTFetchSettings}
-                />
-            )}
+            {showNFTPage &&
+                NFTData &&
+                NFTData.find(
+                    (nftChainList) => nftChainList.chainId === chainId,
+                ) &&
+                NFTData.find((nftChainList) => nftChainList.chainId === chainId)
+                    ?.userHasNFT && (
+                    <NFTBannerAccount
+                        setShowNFTPage={setShowNFTPage}
+                        showNFTPage={showNFTPage}
+                        NFTData={NFTData}
+                        isfetchNftTriggered={isfetchNftTriggered}
+                        setIsfetchNftTriggered={setIsfetchNftTriggered}
+                        NFTFetchSettings={NFTFetchSettings}
+                        setNFTFetchSettings={setNFTFetchSettings}
+                    />
+                )}
         </PortfolioBannerMainContainer>
     );
 }

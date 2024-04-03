@@ -26,6 +26,7 @@ export const fetchNFT = async (
         NFTData: nftData,
         totalNFTCount: totalNFTCount,
         pageKey: pageKeyResponse,
+        userHasNFT: nftsForOwnerResponse.totalCount > 0,
     };
 };
 
@@ -35,6 +36,7 @@ export type fetchNFTReturn =
           NFTData: any;
           totalNFTCount: number;
           pageKey: string | undefined;
+          userHasNFT: boolean;
       }
     | undefined;
 

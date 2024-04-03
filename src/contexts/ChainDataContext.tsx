@@ -105,7 +105,7 @@ export const ChainDataContextProvider = (props: {
     ];
 
     const settings = {
-        apiKey: 'ETHwVh6EZYZJb159fmTvHhO5_u03J5s_', // Replace with your Alchemy API Key.
+        apiKey: process.env.REACT_APP_ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
         network: Network.ETH_MAINNET, // Replace with your network.
     };
 
@@ -245,7 +245,7 @@ export const ChainDataContextProvider = (props: {
                 ) {
                     try {
                         const NFTResponse = await cachedFetchNFT(
-                            '0x8aE57A027c63fcA8070D1Bf38622321dE8004c67',
+                            userAddress,
                             crocEnv,
                             alchemyClient,
                             NFTFetchSettings.pageKey,
@@ -256,6 +256,8 @@ export const ChainDataContextProvider = (props: {
                             const NFTData = NFTResponse.NFTData;
 
                             const pageKey = NFTResponse.pageKey;
+
+                            const userHasNFT = NFTResponse.userHasNFT;
 
                             setNFTFetchSettings({
                                 pageSize: NFTFetchSettings.pageSize,
@@ -283,6 +285,7 @@ export const ChainDataContextProvider = (props: {
                             mapValue.push({
                                 chainId: chainData.chainId,
                                 totalNFTCount: NFTResponse.totalNFTCount,
+                                userHasNFT: userHasNFT,
                                 data: nftImgArray,
                             });
 
