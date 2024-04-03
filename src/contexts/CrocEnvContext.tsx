@@ -33,6 +33,7 @@ import {
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ethers } from 'ethers';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -97,15 +98,37 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB]: [TokenIF, TokenIF] =
+        const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
             getDefaultPairForChain(chainId);
 
+        const savedTokenASymbol = localStorage.getItem('tokenA');
+        const savedTokenBSymbol = localStorage.getItem('tokenB');
+
+        const isSavedTokenADefaultB = savedTokenASymbol
+            ? translateTokenSymbol(savedTokenASymbol) ===
+              translateTokenSymbol(dfltTokenB.symbol)
+            : false;
+
+        const isSavedTokenBDefaultA = savedTokenBSymbol
+            ? translateTokenSymbol(savedTokenBSymbol) ===
+              translateTokenSymbol(dfltTokenA.symbol)
+            : false;
+
+        const shouldReverseDefaultTokens =
+            isSavedTokenADefaultB || isSavedTokenBDefaultA;
+
         // default URL params for swap and market modules
-        const swapParams: swapParamsIF = {
-            chain: chainId,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
-        };
+        const swapParams: swapParamsIF = shouldReverseDefaultTokens
+            ? {
+                  chain: chainId,
+                  tokenA: dfltTokenB.address,
+                  tokenB: dfltTokenA.address,
+              }
+            : {
+                  chain: chainId,
+                  tokenA: dfltTokenA.address,
+                  tokenB: dfltTokenB.address,
+              };
 
         // default URL params for the limit module
         const limitParams: limitParamsIF = {
