@@ -1,10 +1,13 @@
 import styles from '../TermsOfService/TermsOfService.module.css';
 
+interface questionIF {
+    question: string;
+    answer: string | string[];
+}
+
 export default function PrivacyPolicy() {
-    interface questionIF {
-        question: string;
-        answer: string;
-    }
+    // all questions as a string
+    // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
     const questions: questionIF[] = [
         {
             question: 'How do I earn Ambient Points?',
@@ -38,7 +41,10 @@ export default function PrivacyPolicy() {
         },
         {
             question: 'How is Gold distributed between pools?',
-            answer: 'The relative distribution of Gold between pools is based on a set of metrics to normalize relative pool size (combination of volume, TVL, liquidity, and some measures to prevent manipulation of these metrics). That being said we may boost certain pools to help bootstrap liquidity as we did with YES/ETH and ORBIT/ETH in the initial distribution. Those pools ended up receiving about 5× more rewards.             While there are currently no announced Gold boosts, you can in general expect Gold rewards in alt pools to be higher to the extent that our altcoin liquidity is weak relative to ETH/USDB. For example, most alt pools ended up receiving 5-10× boosted rewards in the first epoch, even those outside the announced boosting.',
+            answer: [
+                'The relative distribution of Gold between pools is based on a set of metrics to normalize relative pool size (combination of volume, TVL, liquidity, and some measures to prevent manipulation of these metrics). That being said we may boost certain pools to help bootstrap liquidity as we did with YES/ETH and ORBIT/ETH in the initial distribution. Those pools ended up receiving about 5× more rewards.',
+                'While there are currently no announced Gold boosts, you can in general expect Gold rewards in alt pools to be higher to the extent that our altcoin liquidity is weak relative to ETH/USDB. For example, most alt pools ended up receiving 5-10× boosted rewards in the first epoch, even those outside the announced boosting.',
+            ],
         },
     ];
 
@@ -50,12 +56,19 @@ export default function PrivacyPolicy() {
                         Frequently Asked Questions
                     </span>
                     Last Updated: Apr 3, 2024
-                    {questions.map((q: questionIF) => (
-                        <>
-                            <p className={styles.sub_header}>{q.question}</p>
-                            <p>{q.answer}</p>
-                        </>
-                    ))}
+                    {questions.map((q: questionIF) => {
+                        const answerAsArray: string[] = [q.answer].flat();
+                        return (
+                            <>
+                                <p className={styles.sub_header}>
+                                    {q.question}
+                                </p>
+                                {answerAsArray.map((a: string) => (
+                                    <p key={a}>{a}</p>
+                                ))}
+                            </>
+                        );
+                    })}
                 </div>
             </div>
         </div>
