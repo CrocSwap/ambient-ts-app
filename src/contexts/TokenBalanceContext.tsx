@@ -4,6 +4,7 @@ import { UserDataContext } from './UserDataContext';
 
 export interface NftListByChain {
     chainId: string;
+    totalNFTCount: number;
     data: Array<NftDataIF>;
 }
 
@@ -12,6 +13,11 @@ export interface NftDataIF {
     contractName: string;
     cachedUrl: string;
     originalUrl: string;
+}
+
+export interface NftFetchSettingsIF {
+    pageKey: string;
+    pageSize: number;
 }
 
 interface TokenBalanceContextIF {
@@ -29,6 +35,10 @@ interface TokenBalanceContextIF {
     setNFTData: React.Dispatch<
         React.SetStateAction<NftListByChain[] | undefined>
     >;
+    NFTFetchSettings: NftFetchSettingsIF;
+    setNFTFetchSettings: React.Dispatch<
+        React.SetStateAction<NftFetchSettingsIF>
+    >;
 }
 
 export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
@@ -45,6 +55,9 @@ export const TokenBalanceContextProvider = (props: {
     const [NFTData, setNFTData] = React.useState<NftListByChain[] | undefined>(
         undefined,
     );
+
+    const [NFTFetchSettings, setNFTFetchSettings] =
+        React.useState<NftFetchSettingsIF>({ pageKey: '', pageSize: 100 });
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
@@ -89,8 +102,10 @@ export const TokenBalanceContextProvider = (props: {
         resetTokenBalances,
         setTokenBalance,
         setTokenBalances,
-        setNFTData,
         NFTData,
+        setNFTData,
+        NFTFetchSettings,
+        setNFTFetchSettings,
     };
 
     return (

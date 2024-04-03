@@ -17,8 +17,8 @@ import {
 } from './NFTBannerAccountCss';
 import {
     NftDataIF,
+    NftFetchSettingsIF,
     NftListByChain,
-    TokenBalanceContext,
 } from '../../../../contexts/TokenBalanceContext';
 import Spinner from '../../../Global/Spinner/Spinner';
 import nftPlaceHolder from '../../../../assets/images/Temporary/nft/nft-placeholder.svg';
@@ -32,9 +32,13 @@ import useChatSocket from '../../../Chat/Service/useChatSocket';
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
     setShowNFTPage: React.Dispatch<boolean>;
-    NFTData: NftListByChain[] | undefined;
+    NFTData: NftListByChain[];
     isfetchNftTriggered: boolean;
     setIsfetchNftTriggered: React.Dispatch<React.SetStateAction<boolean>>;
+    NFTFetchSettings: NftFetchSettingsIF;
+    setNFTFetchSettings: React.Dispatch<
+        React.SetStateAction<NftFetchSettingsIF>
+    >;
 }
 
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
@@ -43,6 +47,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         NFTData,
         isfetchNftTriggered,
         setIsfetchNftTriggered,
+        NFTFetchSettings,
+        setNFTFetchSettings,
     } = props;
 
     const { setUserAccountProfile, userAddress, ensName } =
@@ -173,6 +179,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         }
     }
 
+    const pagination = <></>;
+
     return (
         <NFTBannerAccountContainer
             onClick={(event: any) => {
@@ -298,6 +306,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             )}
 
             <NFTBannerFooter>
+                {pagination}
                 <SaveButton
                     onClick={(event: any) => {
                         event.stopPropagation();

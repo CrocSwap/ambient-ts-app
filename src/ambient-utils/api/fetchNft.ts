@@ -1,28 +1,38 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
-import { Alchemy, GetBaseNftsForOwnerOptions } from 'alchemy-sdk';
+import { Alchemy } from 'alchemy-sdk';
 
 export const fetchNFT = async (
     address: string,
     crocEnv: CrocEnv | undefined,
     client: Alchemy,
+    pageKey: string,
+    pageSize: number,
 ): Promise<any> => {
     if (!crocEnv) return;
 
     const nftsForOwnerResponse = await client.nft.getNftsForOwner(address, {
-        pageKey: '1',
-        pageSize: 50,
+        pageKey: pageKey,
+        pageSize: pageSize,
     });
 
     const nftData = nftsForOwnerResponse.ownedNfts;
+    const totalNFTCount = nftsForOwnerResponse.totalCount;
+    const pageKeyResponse = nftsForOwnerResponse.pageKey;
 
-    return nftData;
+    return {
+        NFTData: nftData,
+        totalNFTCount: totalNFTCount,
+        pageKey: pageKeyResponse,
+    };
 };
 
 export type NFTQueryFn = (
     address: string,
     crocEnv: CrocEnv | undefined,
     client: Alchemy,
+    pageKey: string,
+    pageSize: number,
 ) => Promise<any>;
 
 export function memoizeFetchNFT(): NFTQueryFn {

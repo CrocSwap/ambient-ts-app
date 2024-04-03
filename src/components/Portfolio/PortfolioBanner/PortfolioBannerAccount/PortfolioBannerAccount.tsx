@@ -44,7 +44,8 @@ export default function PortfolioBannerAccount(
         setUserAccountProfile,
     } = useContext(UserDataContext);
 
-    const { NFTData } = useContext(TokenBalanceContext);
+    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
+        useContext(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -182,13 +183,15 @@ export default function PortfolioBannerAccount(
                 </FlexContainer>
             </FlexContainer>
 
-            {showNFTPage && (
+            {showNFTPage && NFTData && (
                 <NFTBannerAccount
                     setShowNFTPage={setShowNFTPage}
                     showNFTPage={showNFTPage}
                     NFTData={NFTData}
                     isfetchNftTriggered={isfetchNftTriggered}
                     setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
                 />
             )}
         </PortfolioBannerMainContainer>

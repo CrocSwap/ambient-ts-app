@@ -60,7 +60,12 @@ export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isUserIdle } = useContext(AppStateContext);
-    const { setTokenBalances, setNFTData } = useContext(TokenBalanceContext);
+    const {
+        setTokenBalances,
+        setNFTData,
+        NFTFetchSettings,
+        setNFTFetchSettings,
+    } = useContext(TokenBalanceContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
@@ -238,13 +243,22 @@ export const ChainDataContextProvider = (props: {
                     alchemyClient
                 ) {
                     try {
-                        const NFTData = await cachedFetchNFT(
-                            '0x614531a2135c37B1c9baFb5d9b124372c0e8683c',
+                        const NFTResponse = await cachedFetchNFT(
+                            '0x8aE57A027c63fcA8070D1Bf38622321dE8004c67',
                             crocEnv,
                             alchemyClient,
+                            NFTFetchSettings.pageKey,
+                            NFTFetchSettings.pageSize,
                         );
 
-                        console.log(NFTData);
+                        const NFTData = NFTResponse.NFTData;
+
+                        const pageKey = NFTResponse.pageKey;
+
+                        setNFTFetchSettings({
+                            pageSize: NFTFetchSettings.pageSize,
+                            pageKey: pageKey,
+                        });
 
                         const nftImgArray: Array<NftDataIF> = [];
 
@@ -265,6 +279,7 @@ export const ChainDataContextProvider = (props: {
 
                         mapValue.push({
                             chainId: chainData.chainId,
+                            totalNFTCount: NFTResponse.totalNFTCount,
                             data: nftImgArray,
                         });
 
@@ -275,10 +290,10 @@ export const ChainDataContextProvider = (props: {
 
                         nftDataMap.set(actionKey, mapWithFetchTime);
 
-                        localStorage.setItem(
-                            'user_nft_data',
-                            JSON.stringify(Array.from(nftDataMap)),
-                        );
+                        // localStorage.setItem(
+                        //     'user_nft_data',
+                        //     JSON.stringify(Array.from(nftDataMap)),
+                        // );
 
                         setNFTData(mapValue);
                         setIsfetchNftTriggered(() => false);
