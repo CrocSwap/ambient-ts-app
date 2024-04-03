@@ -10,7 +10,6 @@ import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExpla
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
 interface PropsIF {
     usdValueForDom: string;
     showWallet: boolean | undefined;
@@ -21,7 +20,6 @@ interface PropsIF {
     onToggleDex: () => void;
     availableBalance?: number;
     onMaxButtonClick?: () => void;
-    onRefresh?: () => void;
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
@@ -40,39 +38,40 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
 
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-
-    const walletWithTooltip = (
-        <IconWithTooltip
-            title={`${
-                isWithdraw ? 'Use Wallet Balance Only' : 'Withdraw to Wallet'
-            }`}
-            placement='bottom'
-        >
-            <div
-                style={
-                    !isWithdraw && isActiveNetworkBlast
-                        ? { paddingTop: '2px', cursor: 'default' }
-                        : { paddingTop: '2px', cursor: 'pointer' }
-                }
-                onClick={
-                    !isWithdraw && isActiveNetworkBlast
-                        ? undefined
-                        : onToggleDex
-                }
-            >
-                <img
-                    src={!isDexSelected ? walletEnabledIcon : walletIcon}
-                    width='20'
-                />
-            </div>
-        </IconWithTooltip>
-    );
-
-    const exchangeWithTooltip = isActiveNetworkBlast ? (
-        isWithdraw && (
+    const walletWithTooltip =
+        isWithdraw || !isDexSelected ? (
             <IconWithTooltip
-                title={`${'Use Wallet and Exchange Balance'}`}
+                title={`${
+                    isWithdraw
+                        ? 'Use Wallet Balance Only'
+                        : 'Withdraw to Wallet'
+                }`}
+                placement='bottom'
+            >
+                <div
+                    style={
+                        !isWithdraw
+                            ? { paddingTop: '2px', cursor: 'default' }
+                            : { paddingTop: '2px', cursor: 'pointer' }
+                    }
+                    onClick={!isWithdraw ? undefined : onToggleDex}
+                >
+                    <img
+                        src={!isDexSelected ? walletEnabledIcon : walletIcon}
+                        width='20'
+                    />
+                </div>
+            </IconWithTooltip>
+        ) : null;
+
+    const exchangeWithTooltip =
+        isWithdraw || isDexSelected ? (
+            <IconWithTooltip
+                title={`${
+                    isWithdraw
+                        ? 'Use Wallet and Exchange Balance'
+                        : 'Send to Exchange Balance'
+                }`}
                 placement='bottom'
             >
                 <div
@@ -81,37 +80,14 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         filter: !isDexSelected
                             ? 'grayscale(100%)'
                             : 'contrast(1) brightness(1) saturate(1)',
-                        cursor: 'pointer',
+                        cursor: isWithdraw ? 'pointer' : 'default',
                     }}
                     onClick={onToggleDex}
                 >
                     <img src={ambientLogo} width='20' alt='surplus' />
                 </div>
             </IconWithTooltip>
-        )
-    ) : (
-        <IconWithTooltip
-            title={`${
-                isWithdraw
-                    ? 'Use Wallet and Exchange Balance'
-                    : 'Add to Exchange Balance'
-            }`}
-            placement='bottom'
-        >
-            <div
-                style={{
-                    padding: '2px 4px 0 4px',
-                    filter: !isDexSelected
-                        ? 'grayscale(100%)'
-                        : 'contrast(1) brightness(1) saturate(1)',
-                    cursor: 'pointer',
-                }}
-                onClick={onToggleDex}
-            >
-                <img src={ambientLogo} width='20' alt='surplus' />
-            </div>
-        </IconWithTooltip>
-    );
+        ) : null;
 
     const walletPriceWithTooltip = (
         <DefaultTooltip
@@ -266,12 +242,6 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     {exchangeWithTooltip}
                 </FlexContainer>
             )}
-
-            {/* {onRefresh && (
-                <RefreshButton onClick={onRefresh} aria-label='Refresh data'>
-                    <FiRefreshCw size={18} />
-                </RefreshButton>
-            )} */}
         </FlexContainer>
     );
 }

@@ -59,10 +59,12 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-.active_selected_button:hover,
-.non_active_selected_button:hover {
-    /* background: var(--title-gradient); */
-    color: var(--text1);
+@media screen and (min-width: 768px) {
+    .active_selected_button:hover,
+    .non_active_selected_button:hover {
+        /* background: var(--title-gradient); */
+        color: var(--text1);
+    }
 }
 
 .active_selected_button {

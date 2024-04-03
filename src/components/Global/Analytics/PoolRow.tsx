@@ -1,5 +1,6 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
 import {
+    getFormattedNumber,
     getUnicodeCharacter,
     uriToHttp,
 } from '../../../ambient-utils/dataLayer';
@@ -18,10 +19,13 @@ import { useMemo } from 'react';
 interface propsIF {
     pool: PoolDataIF;
     goToMarket: (tknA: string, tknB: string) => void;
+    isExploreDollarizationEnabled: boolean;
 }
 
 export default function PoolRow(props: propsIF) {
-    const { pool, goToMarket } = props;
+    const { pool, goToMarket, isExploreDollarizationEnabled } = props;
+
+    // const [isHovered, setIsHovered] = useState(false);
 
     const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.moneyness.base < pool.moneyness.quote
@@ -48,6 +52,8 @@ export default function PoolRow(props: propsIF) {
     return (
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
         >
             <TableCell>
                 <FlexContainer alignItems='center'>
@@ -77,7 +83,14 @@ export default function PoolRow(props: propsIF) {
             </TableCell>
             <TableCell hidden sm>
                 <p>
-                    {pool.displayPrice
+                    {isExploreDollarizationEnabled
+                        ? pool.usdPriceMoneynessBased !== 0
+                            ? getFormattedNumber({
+                                  value: pool.usdPriceMoneynessBased,
+                                  prefix: '$',
+                              })
+                            : '...'
+                        : pool.displayPrice
                         ? characterToDisplay + pool.displayPrice
                         : '...'}
                 </p>

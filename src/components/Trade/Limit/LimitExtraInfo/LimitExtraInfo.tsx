@@ -23,7 +23,8 @@ function LimitExtraInfo(props: propsIF) {
         showExtraInfoDropdown,
         liquidityProviderFeeString,
     } = props;
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
+        useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -38,6 +39,11 @@ function LimitExtraInfo(props: propsIF) {
     const displayPriceString = getFormattedNumber({
         value: displayPriceWithDenom,
     });
+
+    const usdPriceDisplay = usdPrice
+        ? getFormattedNumber({ value: usdPrice })
+        : '…';
+
     const startPriceString = getFormattedNumber({
         value: startDisplayPrice,
     });
@@ -87,9 +93,17 @@ function LimitExtraInfo(props: propsIF) {
         },
     ];
 
-    const conversionRate = isDenomBase
+    const conversionRateNonUsd = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
+    const conversionRateUsd = isDenomBase
+        ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
+        : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
+
+    const conversionRate = isTradeDollarizationEnabled
+        ? conversionRateUsd
+        : conversionRateNonUsd;
 
     return (
         <ExtraInfo
