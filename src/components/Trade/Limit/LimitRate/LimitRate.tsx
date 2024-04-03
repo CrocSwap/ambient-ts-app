@@ -219,7 +219,11 @@ export default function LimitRate(props: propsIF) {
                             handleOnChange(e.target.value)
                         }
                         placeholder={
-                            !isPoolInitialized ? 'Pool not initialized' : '0.0'
+                            !isPoolInitialized
+                                ? 'Pool not initialized'
+                                : isTradeDollarizationEnabled
+                                ? '$0.00'
+                                : '0.0'
                         }
                         onBlur={(e: ChangeEvent<HTMLInputElement>) =>
                             handleOnBlur(e.target.value)
@@ -230,6 +234,9 @@ export default function LimitRate(props: propsIF) {
                                 ? 'Pool not initialized'
                                 : displayPrice === 'NaN'
                                 ? '...'
+                                : isTradeDollarizationEnabled &&
+                                  !displayPrice.startsWith('$')
+                                ? '$' + displayPrice
                                 : displayPrice
                         }
                         type='string'
