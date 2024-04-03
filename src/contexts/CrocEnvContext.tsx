@@ -1,4 +1,4 @@
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     ReactNode,
     createContext,
@@ -100,12 +100,32 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const [tokenA, tokenB]: [TokenIF, TokenIF] =
             getDefaultPairForChain(chainId);
 
+        const savedIsTokenABase = localStorage.getItem('isTokenABase')
+            ? localStorage.getItem('isTokenABase') === 'true'
+            : true;
+
+        const isDefaultTokenABase =
+            sortBaseQuoteTokens(
+                tokenA.address,
+                tokenB.address,
+            )[0].toLowerCase() === tokenA.address.toLowerCase();
+
+        const shouldReverseDefaultTokens =
+            (savedIsTokenABase && !isDefaultTokenABase) ||
+            (!savedIsTokenABase && isDefaultTokenABase);
+
         // default URL params for swap and market modules
-        const swapParams: swapParamsIF = {
-            chain: chainId,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
-        };
+        const swapParams: swapParamsIF = shouldReverseDefaultTokens
+            ? {
+                  chain: chainId,
+                  tokenA: tokenB.address,
+                  tokenB: tokenA.address,
+              }
+            : {
+                  chain: chainId,
+                  tokenA: tokenA.address,
+                  tokenB: tokenB.address,
+              };
 
         // default URL params for the limit module
         const limitParams: limitParamsIF = {

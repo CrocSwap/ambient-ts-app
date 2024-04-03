@@ -69,8 +69,28 @@ export const TradeDataContextProvider = (props: {
     // const dfltChainId = getDefaultChainId();
     const dfltTokenA = getDefaultPairForChain(chainData.chainId)[0];
     const dfltTokenB = getDefaultPairForChain(chainData.chainId)[1];
-    const [tokenA, setTokenA] = React.useState<TokenIF>(dfltTokenA);
-    const [tokenB, setTokenB] = React.useState<TokenIF>(dfltTokenB);
+
+    const savedIsTokenABase = localStorage.getItem('isTokenABase')
+        ? localStorage.getItem('isTokenABase') === 'true'
+        : true;
+
+    const isDefaultTokenABase =
+        sortBaseQuoteTokens(
+            dfltTokenA.address,
+            dfltTokenB.address,
+        )[0].toLowerCase() === dfltTokenA.address.toLowerCase();
+
+    const shouldReverseDefaultTokens =
+        (savedIsTokenABase && !isDefaultTokenABase) ||
+        (!savedIsTokenABase && isDefaultTokenABase);
+
+    const [tokenA, setTokenA] = React.useState<TokenIF>(
+        shouldReverseDefaultTokens ? dfltTokenB : dfltTokenA,
+    );
+    const [tokenB, setTokenB] = React.useState<TokenIF>(
+        shouldReverseDefaultTokens ? dfltTokenA : dfltTokenB,
+    );
+
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
@@ -85,6 +105,7 @@ export const TradeDataContextProvider = (props: {
             tokenA.address,
             tokenB.address,
         );
+        setAreDefaultTokensUpdatedForChain(true);
 
         if (tokenA.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
             return {
@@ -104,21 +125,6 @@ export const TradeDataContextProvider = (props: {
     const toggleDidUserFlipDenom = () => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
-
-    // TODO: this part feels suspicious
-    // Why should we be handling the app chain in a hook
-    // rather than a context?
-
-    useEffect(() => {
-        if (tokenA.chainId !== parseInt(chainData.chainId)) {
-            const [_tokenA, _tokenB] = getDefaultPairForChain(
-                chainData.chainId,
-            );
-            setTokenA(_tokenA);
-            setTokenB(_tokenB);
-        }
-        setAreDefaultTokensUpdatedForChain(true);
-    }, [chainData.chainId]);
 
     const [soloToken, setSoloToken] = React.useState(goerliETH);
 
@@ -141,6 +147,14 @@ export const TradeDataContextProvider = (props: {
             localStorage.setItem('isTokenAPrimary', 'false');
         }
     }, [isTokenAPrimary]);
+
+    useEffect(() => {
+        if (isTokenABase) {
+            localStorage.setItem('isTokenABase', 'true');
+        } else {
+            localStorage.setItem('isTokenABase', 'false');
+        }
+    }, [isTokenABase]);
 
     useEffect(() => {
         localStorage.setItem('primaryQuantity', primaryQuantity);
