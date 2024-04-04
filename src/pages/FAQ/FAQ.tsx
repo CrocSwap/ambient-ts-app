@@ -18,11 +18,11 @@ export default function FAQ() {
             question: 'How is Blast Gold distribution determined?',
             answer: (
                 <div>
-                    <span>
+                    <div style={{ margin: '1rem 0' }}>
                         Gold distribution is based on, in rough order of
                         descending importance:
-                    </span>
-                    <ol>
+                    </div>
+                    <ol style={{ paddingLeft: '2rem' }}>
                         <li>market depth of liquidity positions</li>
                         <li>TVL of in-range liquidity positions</li>
                         <li>swap volume</li>
@@ -31,11 +31,11 @@ export default function FAQ() {
                             actions
                         </li>
                     </ol>
-                    <span>
+                    <div style={{ margin: '1rem 0' }}>
                         The relative weight of these components may change from
                         distribution to distribution, but the overall approach
                         will remain constant.
-                    </span>
+                    </div>
                 </div>
             ),
         },
@@ -77,10 +77,12 @@ export default function FAQ() {
         <div className={styles.background}>
             <div className={styles.container}>
                 <div className={styles.content}>
-                    <span className={styles.header}>Points FAQ</span>
-                    <span className={styles.sub_header}>
-                        Last Updated: Apr 3, 2024
-                    </span>
+                    <div className={styles.header_container}>
+                        <span className={styles.header}>Points FAQ</span>
+                        <span className={styles.sub_header}>
+                            Last Updated: Apr 3, 2024
+                        </span>
+                    </div>
 
                     <ul
                         style={{
