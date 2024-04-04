@@ -227,6 +227,10 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             <Link to='/xp-leaderboard' className={styles.link}>
                 View Leaderboard
             </Link>
+
+            <Link to='/faq' className={styles.link}>
+                View FAQ
+            </Link>
         </div>
     );
 }
