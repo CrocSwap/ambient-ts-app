@@ -123,8 +123,8 @@ function DexTokens(props: propsIF) {
             fullWidth
             height={
                 showMobileVersion
-                    ? 'calc(100vh - 290px)'
-                    : 'calc(100vh - 200px)'
+                    ? 'calc(100svh - 240px)'
+                    : 'calc(100svh - 200px)'
             }
         >
             <ScrollableContainer>

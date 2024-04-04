@@ -208,10 +208,10 @@ export default function Explore(props: ExploreIF) {
 const Section = styled.section`
     background: var(--dark2);
     @media (max-width: 500px) {
-        height: calc(100vh - 170px);
+        height: calc(100svh - 70px);
     }
     @media (min-width: 500px) {
-        height: calc(100vh - 82px);
+        height: calc(100svh - 82px);
     }
     padding: 16px;
     display: flex;
