@@ -1118,6 +1118,7 @@ function Range() {
             button={
                 <Button
                     idForDOM='submit_range_position_button'
+                    style={{ textTransform: 'none' }}
                     title={
                         areBothAckd
                             ? tokenAAllowed && tokenBAllowed
