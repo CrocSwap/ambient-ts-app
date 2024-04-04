@@ -207,7 +207,12 @@ export default function Explore(props: ExploreIF) {
 
 const Section = styled.section`
     background: var(--dark2);
-    height: calc(100vh - 170px);
+    @media (max-width: 500px) {
+        height: calc(100vh - 170px);
+    }
+    @media (min-width: 500px) {
+        height: calc(100vh - 82px);
+    }
     padding: 16px;
     display: flex;
     flex-direction: column;
