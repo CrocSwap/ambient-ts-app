@@ -1,7 +1,6 @@
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -15,6 +14,10 @@ import {
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -31,7 +34,6 @@ export default function LimitRate(props: propsIF) {
     const {
         displayPrice,
         setDisplayPrice,
-        previousDisplayPrice,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         disable,
@@ -41,12 +43,26 @@ export default function LimitRate(props: propsIF) {
     const {
         chainData: { gridSize },
     } = useContext(CrocEnvContext);
-    const { pool } = useContext(PoolContext);
+    const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
+        useContext(PoolContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const { chainData } = useContext(CrocEnvContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-    const { isDenomBase, setLimitTick, limitTick } =
-        useContext(TradeDataContext);
+    const {
+        isDenomBase,
+        setLimitTick,
+        limitTick,
+        setIsTokenAPrimary,
+        tokenA,
+        tokenB,
+        isTokenABase: isBid,
+    } = useContext(TradeDataContext);
+    const { basePrice, quotePrice, poolPriceDisplay } = poolData;
+
+    const side =
+        (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
@@ -67,7 +83,6 @@ export default function LimitRate(props: propsIF) {
     };
 
     const handleLimitChange = async (value: string) => {
-        IS_LOCAL_ENV && console.debug({ value });
         if (pool) {
             if (parseFloat(value) === 0 || isNaN(parseFloat(value))) return;
             const limit = await pool.fromDisplayPrice(
@@ -79,20 +94,93 @@ export default function LimitRate(props: propsIF) {
                     ? pinTickLower(limit, gridSize)
                     : pinTickUpper(limit, gridSize);
                 setLimitTick(pinnedTick);
-                updateURL({ update: [['limitTick', pinnedTick]] });
+
+                const newLimitNum = parseFloat(value);
+
+                const currentPoolPriceNum = poolPriceDisplay
+                    ? isDenomBase
+                        ? 1 / poolPriceDisplay
+                        : poolPriceDisplay
+                    : undefined;
+
+                const newLimitBelowCurrentPoolPrice = currentPoolPriceNum
+                    ? newLimitNum < currentPoolPriceNum
+                    : false;
+                const shouldReverse =
+                    side === 'sell'
+                        ? newLimitBelowCurrentPoolPrice
+                        : !newLimitBelowCurrentPoolPrice;
+
+                if (shouldReverse) {
+                    setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
+                    linkGenLimit.redirect({
+                        chain: chainData.chainId,
+                        tokenA: tokenB.address,
+                        tokenB: tokenA.address,
+                        limitTick: pinnedTick,
+                    });
+                } else {
+                    updateURL({ update: [['limitTick', pinnedTick]] });
+                }
             }
         }
     };
 
-    const handleOnChange = (input: string) => setDisplayPrice(input);
+    const isValidLimitInputString = (str: string) => {
+        // matches dollar or non-dollar amounts
+        return /^\$?\d*\.?\d*\$?$/.test(str); // allows $ at the end
+        // return /^\$?\d*\.?\d*$/.test(str); // doesn't allow $ at the end
+    };
+
+    const handleOnChange = (input: string) => {
+        if (!isValidLimitInputString(input)) return;
+        setDisplayPrice(input);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleKeyDown = (e: any) => {
+        const target = e.target as HTMLInputElement;
+        if (e.key === 'Enter') {
+            target && handleOnBlur(target.value); // Trigger blur event
+        }
+    };
 
     const handleOnBlur = async (input: string) => {
-        let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
-        if (input.startsWith('.')) newDisplayPrice = `0${input}`;
+        const inputStartsWithDollar = input.startsWith('$');
+        const inputEndsWithDollar = input.endsWith('$');
+        const isDollarized =
+            inputStartsWithDollar ||
+            inputEndsWithDollar ||
+            isTradeDollarizationEnabled;
+        const parsedInput = parseFloat(
+            inputStartsWithDollar
+                ? input.slice(1)
+                : inputEndsWithDollar
+                ? input.slice(undefined, -1)
+                : input,
+        );
 
-        if (newDisplayPrice !== previousDisplayPrice) {
-            await handleLimitChange(newDisplayPrice);
-        }
+        const convertedFromDollarNum = isDollarized
+            ? isDenomBase
+                ? quotePrice
+                    ? parsedInput / quotePrice
+                    : usdPriceInverse
+                    ? parsedInput / usdPriceInverse
+                    : undefined
+                : basePrice
+                ? parsedInput / basePrice
+                : usdPriceInverse
+                ? parsedInput / usdPriceInverse
+                : undefined
+            : undefined;
+
+        const newDisplayPrice = removeLeadingZeros(
+            isDollarized && convertedFromDollarNum
+                ? convertedFromDollarNum.toString()
+                : input,
+        );
+
+        await handleLimitChange(newDisplayPrice);
         setPriceInputFieldBlurred(true);
     };
 
@@ -131,21 +219,29 @@ export default function LimitRate(props: propsIF) {
                             handleOnChange(e.target.value)
                         }
                         placeholder={
-                            !isPoolInitialized ? 'Pool not initialized' : '0.0'
+                            !isPoolInitialized
+                                ? 'Pool not initialized'
+                                : isTradeDollarizationEnabled
+                                ? '$0.00'
+                                : '0.0'
                         }
                         onBlur={(e: ChangeEvent<HTMLInputElement>) =>
                             handleOnBlur(e.target.value)
                         }
+                        onKeyDown={handleKeyDown}
                         value={
                             !isPoolInitialized
                                 ? 'Pool not initialized'
                                 : displayPrice === 'NaN'
                                 ? '...'
+                                : isTradeDollarizationEnabled &&
+                                  !displayPrice.startsWith('$')
+                                ? '$' + displayPrice
                                 : displayPrice
                         }
-                        type='number'
+                        type='string'
                         step='any'
-                        inputMode='decimal'
+                        inputMode='text'
                         autoComplete='off'
                         autoCorrect='off'
                         min='0'

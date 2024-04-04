@@ -5,7 +5,7 @@ import { fetchContractDetails } from '../../ambient-utils/api';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
-import { getDefaultPairForChain } from '../../ambient-utils/constants';
+// import { getDefaultPairForChain } from '../../ambient-utils/constants';
 import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
@@ -239,11 +239,12 @@ export const useUrlParams = (
         return undefined;
     }
 
-    function processDefaultTokens(chainToUse: string) {
-        const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
-        setTokenA(dfltA);
-        setTokenB(dfltB);
-    }
+    // removing to allow the first default token to be set as token b by default
+    // function processDefaultTokens(chainToUse: string) {
+    //     const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
+    //     setTokenA(dfltA);
+    //     setTokenB(dfltB);
+    // }
 
     useEffect((): (() => void) => {
         let flag = true;
@@ -267,9 +268,10 @@ export const useUrlParams = (
             if (tokenPair && tokenPair[0].decimals && tokenPair[1].decimals) {
                 setTokenA(tokenPair[0]);
                 setTokenB(tokenPair[1]);
-            } else {
-                processDefaultTokens(chainToUse);
             }
+            //  else {
+            //     processDefaultTokens(chainToUse);
+            // }
         };
 
         try {
@@ -279,9 +281,10 @@ export const useUrlParams = (
             const tokenB = urlParamMap.get('tokenB');
             if (tokenA && tokenB) {
                 processTokenAddr(tokenA, tokenB, chainToUse);
-            } else {
-                processDefaultTokens(chainToUse);
             }
+            // else {
+            //     processDefaultTokens(chainToUse);
+            // }
 
             processOptParam('limitTick', async (tick: string) => {
                 setLimitTick(parseInt(tick));
