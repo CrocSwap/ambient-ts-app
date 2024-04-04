@@ -527,6 +527,15 @@ export const scrollWstETH: TokenIF = {
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
 
+export const scrollWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
+};
+
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
@@ -704,6 +713,7 @@ export const defaultTokens: TokenIF[] = [
     scrollRocketPoolETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWrsETH,
     sepoliaETH,
     sepoliaUSDC,
     sepoliaWBTC,

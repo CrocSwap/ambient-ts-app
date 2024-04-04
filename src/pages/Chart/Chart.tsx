@@ -250,7 +250,6 @@ export default function Chart(props: propsIF) {
         tokenB,
         isDenomBase,
         isTokenABase: isBid,
-        isTokenAPrimary,
         setIsTokenAPrimary,
         limitTick,
         setLimitTick,
@@ -1396,20 +1395,13 @@ export default function Chart(props: propsIF) {
             // logic tree to determine if the limit price crosses the current pool price
             // sell => buy or buy to sell
             if (sellOrderStyle === 'order_sell') {
-                // old price > pool price AND new price is < pool price
-                // Check if the previous limit was above poolPriceDisplay and the new limit is below it
-                if (
-                    limitPreviousData > poolPriceDisplay &&
-                    newLimitValue < poolPriceDisplay
-                ) {
+                // Check if new limit is below current price
+                if (newLimitValue < poolPriceDisplay) {
                     needsInversion = true;
                 }
             } else {
-                // Check if the previous limit was below poolPriceDisplay and the new limit is above it.
-                if (
-                    limitPreviousData < poolPriceDisplay &&
-                    newLimitValue > poolPriceDisplay
-                ) {
+                // Check if new limit is above current price.
+                if (newLimitValue > poolPriceDisplay) {
                     needsInversion = true;
                 }
             }
@@ -5345,7 +5337,7 @@ export default function Chart(props: propsIF) {
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
-                      setIsTokenAPrimary(!isTokenAPrimary);
+                      setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
                       linkGenLimit.redirect({
                           chain: chainData.chainId,
                           tokenA: tokenB.address,
