@@ -91,7 +91,7 @@ function TopPools(props: propsIF) {
             fullWidth
             height={
                 showMobileVersion
-                    ? 'calc(100vh - 240px)'
+                    ? 'calc(100vh - 290px)'
                     : 'calc(100vh - 220px)'
             }
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
