@@ -85,7 +85,7 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <FlexContainer fullHeight fullWidth>
+        <FlexContainer fullWidth height='85%'>
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
