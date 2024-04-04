@@ -57,17 +57,17 @@ export default function FAQ() {
         },
         {
             question: 'I got [some amount of] Blast Gold, is that good or bad?',
-            answer: 'With the caveat that no one will know how much Blast rewards are worth until the airdrop, keep in mind that Gold and Points will in total make up 50% of the total airdrop and so far are on the order of 1000× more Blast Points than Blast Gold.',
+            answer: 'With the caveat that no one will know how much Blast rewards are worth until the airdrop, keep in mind that Gold and Points will each make up 50% of the total airdrop and so far there are on the order of 1000× more Blast Points than Blast Gold.',
         },
         {
             question:
                 'What does market depth mean and how can I optimize for it?',
-            answer: 'Market depth means the amount of liquidity your LP position is providing within +/- 2% of the current pool price. For the same size LP position, the tighter the range the more market depth. A 10% wide range order provides approximately 10× more depth per dollar of capital. That being said when your order goes out of range it is no longer providing any market depth, and therefore is not accumulating rewards. So the best tradeoff is based on market volatility and how frequently you can manage the position. We will likely soon be putting market depth information directly into the app to help users make better decisions.',
+            answer: 'Market depth means the amount of liquidity your LP position is providing within +/- 2% of the current pool price. For the same size LP position, the tighter the range the more market depth. A 10% wide range order provides approximately 10× more depth per dollar of capital. That being said, when your order goes out of range it is no longer providing any market depth, and therefore is not accumulating rewards. So the best tradeoff is based on market volatility and how frequently you can manage the position. We will likely soon be putting market depth information directly into the app to help users make better decisions.',
         },
         {
             question: 'How is Gold distributed between pools?',
             answer: [
-                'The relative distribution of Gold between pools is based on a set of metrics to normalize relative pool size (combination of volume, TVL, liquidity, and some measures to prevent manipulation of these metrics). That being said we may boost certain pools to help bootstrap liquidity as we did with YES/ETH and ORBIT/ETH in the initial distribution. Those pools ended up receiving about 5× more rewards.',
+                'The relative distribution of Gold between pools is based on a set of metrics to normalize relative pool size (i.e. a combination of volume, TVL, liquidity, and some measures to prevent manipulation of these metrics). We may boost certain pools to help bootstrap liquidity as we did with YES/ETH and ORBIT/ETH in the initial distribution. Those pools ended up receiving about 5× more rewards.',
                 'While there are currently no announced Gold boosts, you can generally expect Gold rewards in alt pools to be higher to the extent that our altcoin liquidity is weak relative to ETH/USDB. For example, most alt pools ended up receiving 5-10× boosted rewards in the first epoch, even those outside the announced boosting.',
             ],
         },
