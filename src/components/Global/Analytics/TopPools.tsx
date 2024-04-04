@@ -14,6 +14,7 @@ import {
     TableBody,
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
+import { useMediaQuery } from '@material-ui/core';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -35,6 +36,7 @@ function TopPools(props: propsIF) {
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
+    const showMobileVersion = useMediaQuery('(max-width: 500px)');
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -85,7 +87,15 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <FlexContainer fullWidth height='85%'>
+        <FlexContainer
+            fullWidth
+            height={
+                showMobileVersion
+                    ? 'calc(100vh - 290px)'
+                    : 'calc(100vh - 200px)'
+            }
+            // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
+        >
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
