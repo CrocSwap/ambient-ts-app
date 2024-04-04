@@ -57,7 +57,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'Price',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: false,
