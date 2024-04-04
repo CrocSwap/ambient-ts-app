@@ -57,7 +57,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'Price',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: false,
@@ -91,8 +91,8 @@ function TopPools(props: propsIF) {
             fullWidth
             height={
                 showMobileVersion
-                    ? 'calc(100vh - 290px)'
-                    : 'calc(100vh - 200px)'
+                    ? 'calc(100svh - 240px)'
+                    : 'calc(100svh - 200px)'
             }
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >
