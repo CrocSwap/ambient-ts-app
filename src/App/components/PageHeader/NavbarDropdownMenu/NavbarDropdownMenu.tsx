@@ -6,7 +6,7 @@ import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsMedium } from 'react-icons/bs';
 import { SiGitbook } from 'react-icons/si';
 import { RiSpyFill } from 'react-icons/ri';
-import { FaDiscord } from 'react-icons/fa';
+import { FaDiscord, FaQuestion } from 'react-icons/fa';
 import '../../../App.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { openInNewTab } from '../../../../ambient-utils/dataLayer';
@@ -92,6 +92,11 @@ function NavbarDropdownMenu(props: propsIF) {
             icon: <IoDocumentTextSharp size={20} />,
             resource: `${window.location.origin}/${termsUrls.tos}`,
             text: 'Terms of Service',
+        },
+        {
+            icon: <FaQuestion size={20} />,
+            resource: `${window.location.origin}/faq`,
+            text: 'FAQ',
         },
     ];
 

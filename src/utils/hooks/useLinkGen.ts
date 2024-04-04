@@ -65,6 +65,7 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
+    faq: '/faq',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
