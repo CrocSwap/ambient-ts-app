@@ -416,6 +416,7 @@ export default function Withdraw(props: propsIF) {
             {secondaryEnsOrNull}
             <Button
                 idForDOM='withdraw_tokens_button'
+                style={{ textTransform: 'none' }}
                 title={buttonMessage}
                 action={withdrawFn}
                 disabled={isButtonDisabled}
