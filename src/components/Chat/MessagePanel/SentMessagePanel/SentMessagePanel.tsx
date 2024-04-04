@@ -145,8 +145,6 @@ function SentMessagePanel(props: SentMessageProps) {
         Message | undefined
     >();
 
-    const { userAddress, userAccountProfile } = useContext(UserDataContext);
-
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);

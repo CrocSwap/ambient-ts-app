@@ -1,6 +1,5 @@
 // import { ImageMarkerIF } from './ChatIFs';
 import { formatMessageTime, getShownName } from './ChatUtils';
-import { CROCODILE_LABS_LINKS } from './ChatConstants/ChatConstants';
 import { Message } from './Model/MessageModel';
 import { User } from './Model/UserModel';
 

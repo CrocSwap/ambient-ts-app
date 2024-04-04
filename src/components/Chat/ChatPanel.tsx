@@ -61,11 +61,7 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
-    const {
-        userAddress,
-        ensName: ens,
-        userAccountProfile,
-    } = useContext(UserDataContext);
+    const { userAddress, ensName: ens } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -183,7 +179,6 @@ function ChatPanel(props: propsIF) {
         getUserSummaryDetails,
         updateUnverifiedMessages,
         // saveUserWithAvatarImage,
-        updateUserWithAvatarImage,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
@@ -196,13 +191,7 @@ function ChatPanel(props: propsIF) {
         activatePanel,
     );
 
-    const {
-        getID,
-        updateUser,
-        updateMessageUser,
-        saveUser,
-        getUserAvatarImageAndID,
-    } = useChatApi();
+    const { getID, updateUser, updateMessageUser } = useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
@@ -320,6 +309,12 @@ function ChatPanel(props: propsIF) {
     }, [userAddress, room, isChatOpen]);
 
     useEffect(() => {
+        if (
+            lastScrolledMessage == undefined ||
+            lastScrolledMessage.length === 0
+        ) {
+            scrollToBottom();
+        }
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
                 if (
@@ -627,6 +622,7 @@ function ChatPanel(props: propsIF) {
                     handleFocusedMessageOnScroll();
                 } else {
                     domDebug('selected message', '');
+                    setLastScrolledMessage('');
 
                     // setLastScrolledMessage('');
                 }

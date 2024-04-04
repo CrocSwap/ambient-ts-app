@@ -245,7 +245,7 @@ export const ChainDataContextProvider = (props: {
                 ) {
                     try {
                         const NFTResponse = await cachedFetchNFT(
-                            '0x8aE57A027c63fcA8070D1Bf38622321dE8004c67',
+                            userAddress,
                             crocEnv,
                             alchemyClient,
                             NFTFetchSettings.pageKey,

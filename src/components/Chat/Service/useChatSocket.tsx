@@ -89,15 +89,9 @@ const useChatSocket = (
         queryParams: { ...queryParams },
         shouldReconnect: () => true,
         onOpen: (e) => {
-            console.log('connected');
-            console.log(e);
-            console.log('................................');
             domDebug('connected', getTimeForLog(new Date()));
         },
         onClose: (e) => {
-            console.log('closed');
-            console.log(e);
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             domDebug('disconnected', getTimeForLog(new Date()));
         },
     });
@@ -135,6 +129,8 @@ const useChatSocket = (
     }
 
     async function getMsgWithRest(roomInfo: string) {
+        if (roomInfo == undefined || roomInfo == '') return;
+
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
@@ -399,6 +395,10 @@ const useChatSocket = (
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
 
     useEffect(() => {
+        sendToSocket('join-room', { roomInfo: room });
+    }, [room]);
+
+    useEffect(() => {
         updateUserCache();
     }, [messages]);
 
@@ -549,8 +549,6 @@ const useChatSocket = (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function userListLightUpdate(data: any) {
-        console.log('light update ');
-        console.log(data);
         const newUsersList: User[] = [];
 
         let refreshMessages = false;
@@ -560,9 +558,6 @@ const useChatSocket = (
                 refreshMessages = true;
             }
         });
-
-        console.log(newUsersList);
-        console.log(refreshMessages);
 
         if (!refreshMessages) return;
 
@@ -578,6 +573,7 @@ const useChatSocket = (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newMsgListener = (data: any) => {
+        if (data.roomInfo !== room) return;
         if (
             data &&
             data.sender &&

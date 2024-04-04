@@ -35,4 +35,4 @@ export const updateUserWithAvatarImageEndpoint =
 export const getUserAvatarImageByAccountEndpoint =
     apiBase + 'auth/getUserAvatarImageByAccount';
 
-export const getUserAvatarEndpoint = apiBase + 'chat/api/auth/getUserAvatar';
+export const getUserAvatarEndpoint = apiBase + 'auth/getUserAvatar';

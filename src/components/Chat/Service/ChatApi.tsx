@@ -195,7 +195,7 @@ const useChatApi = () => {
         if (walletID && walletID.length > 0) {
             if (userAddress) {
                 const response = await fetch(
-                    getUserAvatarEndpoint + '/' + walletID,
+                    CHAT_BACKEND_URL + getUserAvatarEndpoint + '/' + walletID,
                     {
                         method: 'GET',
                     },
