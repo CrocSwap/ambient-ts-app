@@ -92,7 +92,7 @@ function TopPools(props: propsIF) {
             height={
                 showMobileVersion
                     ? 'calc(100vh - 290px)'
-                    : 'calc(100vh - 220px)'
+                    : 'calc(100vh - 200px)'
             }
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >

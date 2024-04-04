@@ -211,7 +211,7 @@ const Section = styled.section`
         height: calc(100vh - 170px);
     }
     @media (min-width: 500px) {
-        height: calc(100vh - 100px);
+        height: calc(100vh - 82px);
     }
     padding: 16px;
     display: flex;
