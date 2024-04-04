@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-import styles from '../TermsOfService/TermsOfService.module.css';
+import styles from './FAQ.module.css';
 
 interface questionIF {
     question: string;
@@ -53,10 +53,11 @@ export default function FAQ() {
         <div className={styles.background}>
             <div className={styles.container}>
                 <div className={styles.content}>
-                    <span className={styles.header}>
-                        Frequently Asked Questions
+                    <span className={styles.header}>Points FAQ</span>
+                    <span className={styles.sub_header}>
+                        Last Updated: Apr 3, 2024
                     </span>
-                    Last Updated: Apr 3, 2024
+
                     <ul
                         style={{
                             listStyleType: 'none',
@@ -69,11 +70,13 @@ export default function FAQ() {
                             const answerAsArray: string[] = [q.answer].flat();
                             return (
                                 <li key={JSON.stringify(q)}>
-                                    <p className={styles.sub_header}>
+                                    <p className={styles.question}>
                                         {q.question}
                                     </p>
                                     {answerAsArray.map((a: string) => (
-                                        <p key={a}>{a}</p>
+                                        <p key={a} className={styles.answer}>
+                                            {a}
+                                        </p>
                                     ))}
                                 </li>
                             );
