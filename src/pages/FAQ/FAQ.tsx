@@ -12,7 +12,10 @@ export default function FAQ() {
     const questions: questionIF[] = [
         {
             question: 'How do I earn Ambient Points?',
-            answer: 'Ambient Points are earned by making swaps and providing liquidity. The more you swap and the more swaps use the liquidity you have provided, the more Points you earn. Points are distributed once per week.',
+            answer: [
+                'Ambient Points are earned by making swaps and providing liquidity. The more you swap and the more swaps use the liquidity you have provided, the more Points you earn.',
+                'Points are distributed once per week.',
+            ],
         },
         {
             question: 'How is Blast Gold distribution determined?',
