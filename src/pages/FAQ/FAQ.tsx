@@ -3,7 +3,7 @@ import styles from './FAQ.module.css';
 
 interface questionIF {
     question: string;
-    answer: string | string[];
+    answer: string | string[] | JSX.Element | JSX.Element[];
 }
 
 export default function FAQ() {
@@ -16,12 +16,36 @@ export default function FAQ() {
         },
         {
             question: 'How is Blast Gold distribution determined?',
-            answer: 'Gold distribution is based on, in rough order of descending importance: (1) market depth of liquidity positions, (2) TVL of in-range liquidity positions, (3) swap volume, and (4) small non-linear rewards for trying different actions. The relative weight of these components may change from distribution to distribution, but the overall approach will remain constant.',
+            answer: (
+                <div>
+                    <span>
+                        Gold distribution is based on, in rough order of
+                        descending importance:
+                    </span>
+                    <ol>
+                        <li>market depth of liquidity positions</li>
+                        <li>TVL of in-range liquidity positions</li>
+                        <li>swap volume</li>
+                        <li>
+                            small non-linear rewards for trying different
+                            actions
+                        </li>
+                    </ol>
+                    <span>
+                        The relative weight of these components may change from
+                        distribution to distribution, but the overall approach
+                        will remain constant.
+                    </span>
+                </div>
+            ),
         },
         {
             question:
                 'What is the difference between Ambient Points and Blast Points?',
-            answer: "If you have liquidity positions in pools on Blast you'll earn Ambient Points, Blast Points (which are based on TVL), and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria Blast provides us (TVL) while Blast Gold is optimized for ecosystem metrics. The criteria for Gold will not be exactly the same as criteria for Ambient Points; our goal is to align with Blast's objectives such that they continue to send Ambient large amounts of Gold and ultimately that Ambient users earn more Points. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously, users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.",
+            answer: [
+                "If you have liquidity positions in pools on Blast you'll earn Ambient Points, Blast Points (which are based on TVL), and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria Blast provides us (TVL) while Blast Gold is optimized for ecosystem metrics.",
+                "The criteria for Gold will not be exactly the same as criteria for Ambient Points; our goal is to align with Blast's objectives such that they continue to send Ambient large amounts of Gold and ultimately that Ambient users earn more Points. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously, users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.",
+            ],
         },
         {
             question: 'Why is Gold distributed like this?',
@@ -67,17 +91,24 @@ export default function FAQ() {
                         }}
                     >
                         {questions.map((q: questionIF) => {
-                            const answerAsArray: string[] = [q.answer].flat();
+                            const answerAsArray: (string | JSX.Element)[] = [
+                                q.answer,
+                            ].flat();
                             return (
-                                <li key={JSON.stringify(q)}>
-                                    <p className={styles.question}>
+                                <li key={q.question.toString()}>
+                                    <div className={styles.question}>
                                         {q.question}
-                                    </p>
-                                    {answerAsArray.map((a: string) => (
-                                        <p key={a} className={styles.answer}>
-                                            {a}
-                                        </p>
-                                    ))}
+                                    </div>
+                                    {answerAsArray.map(
+                                        (a: string | JSX.Element) => (
+                                            <div
+                                                key={a.toString()}
+                                                className={styles.answer}
+                                            >
+                                                {a}
+                                            </div>
+                                        ),
+                                    )}
                                 </li>
                             );
                         })}

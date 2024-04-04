@@ -26,7 +26,7 @@
     height: 100%;
     width: 100%;
     padding: 2rem;
-
+    cursor: default;
     display: flex;
     flex-direction: column;
 
@@ -64,7 +64,7 @@
     font-size: var(--header1-size);
     line-height: 30px;
 
-    margin-top: 1rem !important;
+    margin-top: 2rem !important;
 }
 
 .answer {
@@ -74,7 +74,7 @@
     line-height: 30px;
     color: var(--text2);
 
-    margin-top: 2rem !important;
+    margin-top: 1rem !important;
 }
 
 .content p {
