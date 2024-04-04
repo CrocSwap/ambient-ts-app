@@ -41,6 +41,7 @@ import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import FAQ from '../pages/FAQ/FAQ';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
@@ -90,6 +91,7 @@ export default function App() {
         currentLocation !== '/404' &&
         currentLocation !== '/terms' &&
         currentLocation !== '/privacy' &&
+        currentLocation !== '/faq' &&
         !currentLocation.includes('/chat') &&
         !currentLocation.includes('/initpool') &&
         !fullScreenChart && (
@@ -109,6 +111,7 @@ export default function App() {
           currentLocation == '/404' ||
           currentLocation == '/terms' ||
           currentLocation == '/privacy' ||
+          currentLocation == '/faq' ||
           currentLocation.includes('/chat') ||
           currentLocation.startsWith('/swap')
         ? 'hide_sidebar'
@@ -329,6 +332,7 @@ export default function App() {
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
+                        <Route path='faq' element={<FAQ />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
@@ -362,6 +366,7 @@ export default function App() {
                     currentLocation !== '/404' &&
                     currentLocation !== '/terms' &&
                     currentLocation !== '/privacy' &&
+                    currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
                 {showMobileVersion && currentLocation !== '/' && (
