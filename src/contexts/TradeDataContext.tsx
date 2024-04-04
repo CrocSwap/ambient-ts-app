@@ -72,8 +72,9 @@ export const TradeDataContextProvider = (props: {
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
 
-    const dfltTokenA = getDefaultPairForChain(chainData.chainId)[0];
-    const dfltTokenB = getDefaultPairForChain(chainData.chainId)[1];
+    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] = getDefaultPairForChain(
+        chainData.chainId,
+    );
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 

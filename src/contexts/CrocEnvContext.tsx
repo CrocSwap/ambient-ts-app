@@ -20,7 +20,7 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
-import { NetworkIF, PoolIF } from '../ambient-utils/types';
+import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
 import {
     APP_ENVIRONMENT,
     IS_LOCAL_ENV,
@@ -101,8 +101,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const dfltTokenA = getDefaultPairForChain(chainData.chainId)[0];
-        const dfltTokenB = getDefaultPairForChain(chainData.chainId)[1];
+        const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
+            getDefaultPairForChain(chainData.chainId);
 
         const savedTokenASymbol = localStorage.getItem('tokenA');
         const savedTokenBSymbol = localStorage.getItem('tokenB');
