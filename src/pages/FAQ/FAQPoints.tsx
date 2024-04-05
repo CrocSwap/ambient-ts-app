@@ -21,7 +21,7 @@ export default function FAQPoints() {
             // if the element exists, scroll to it
             elem && elem.scrollIntoView();
         }
-    }, [params]);
+    }, []);
 
     // all questions as a string
     // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
