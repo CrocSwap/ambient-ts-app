@@ -547,7 +547,17 @@ function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef} id='current_row_scroll'>
+            <ul
+                ref={listRef}
+                id='current_row_scroll'
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { height: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 380px)' }
+                        : undefined
+                }
+            >
                 {!isAccountView &&
                     unindexedNonFailedTransactions.length > 0 &&
                     unindexedNonFailedTransactions.reverse().map((tx, idx) => {
