@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
@@ -14,6 +14,11 @@ import {
 import { TokenIF } from '../../ambient-utils/types';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { ethers } from 'ethers';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    getDefaultPairForChain,
+} from '../../ambient-utils/constants';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 interface dexDataGeneric {
     raw: number;
@@ -46,6 +51,10 @@ export const useTokenStats = (
     provider: ethers.providers.Provider,
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
+
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const defaultTokensForChain: [TokenIF, TokenIF] =
+        getDefaultPairForChain(chainId);
 
     async function fetchData(): Promise<void> {
         dexTokens.length && setDexTokens([]);
@@ -101,8 +110,28 @@ export const useTokenStats = (
             if (!crocEnv || !tokenMeta) return;
             const tokenPricePromise: Promise<TokenPriceFnReturn> =
                 cachedFetchTokenPrice(token.tokenAddr, chainId, crocEnv);
+            const ethPricePromise: Promise<TokenPriceFnReturn> =
+                cachedFetchTokenPrice(
+                    defaultTokensForChain[0].address,
+                    chainId,
+                    crocEnv,
+                );
+            const poolWithETHPricePromise: Promise<number> =
+                tokenMeta.address === defaultTokensForChain[0].address
+                    ? Promise.resolve(1)
+                    : cachedQuerySpotPrice(
+                          crocEnv,
+                          defaultTokensForChain[0].address,
+                          tokenMeta.address,
+                          chainId,
+                          Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                      );
 
-            const price: number = (await tokenPricePromise)?.usdPrice || 0;
+            const price: number =
+                (await tokenPricePromise)?.usdPrice ||
+                (await poolWithETHPricePromise) *
+                    ((await ethPricePromise)?.usdPrice || 0) ||
+                0;
 
             const tvlUSD: number = normalizeToUSD(
                 token.dexTvl,
