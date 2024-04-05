@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { RangeContext } from '../../../contexts/RangeContext';
 import EditLiqPriceInfo from '../../Trade/EditLiquidity/EditLiqPriceInfo/EditLiqPriceInfo';
+import { SiPandas } from 'react-icons/si';
 
 interface RangeBoundsProps {
     customSwitch?: boolean;
@@ -158,6 +159,8 @@ export default function RangeBounds(props: RangeBoundsProps) {
             >
                 <div className={styles.advanced_info_container}>
                     <MinMaxPrice {...minMaxPricePropsIF} />
+                    {isEditPanel && <span className={styles.divider} />}
+                    <EditLiqPriceInfo />
                 </div>
             </motion.div>
         </>
