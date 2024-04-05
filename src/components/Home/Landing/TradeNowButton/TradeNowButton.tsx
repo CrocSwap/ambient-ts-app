@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { FlexContainer } from '../../../../styled/Common';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     StyledLink,
     TradeNowButtonText,
 } from '../../../../styled/Components/Home';
+import { chainNumToString } from '../../../../ambient-utils/dataLayer';
+import {
+    linkGenMethodsIF,
+    marketParamsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     fieldId: string;
@@ -13,12 +19,19 @@ interface propsIF {
 
 export default function TradeNowButton(props: propsIF) {
     const { fieldId, inNav } = props;
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+
+    const tradeButtonParams: marketParamsIF = {
+        chain: chainNumToString(tokenA.chainId),
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
     return (
         <StyledLink
             id={fieldId}
-            to={showMobileVersion ? '/trade' : '/trade/market'}
+            to={linkGenMarket.getFullURL(tradeButtonParams)}
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
