@@ -6,7 +6,7 @@ interface questionIF {
     answer: string | string[] | JSX.Element | JSX.Element[];
 }
 
-export default function FAQ() {
+export default function FAQPoints() {
     // all questions as a string
     // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
     const questions: questionIF[] = [

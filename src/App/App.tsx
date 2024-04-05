@@ -41,7 +41,7 @@ import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
-import FAQ from '../pages/FAQ/FAQ';
+import FAQPoints from '../pages/FAQ/FAQPoints';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
@@ -336,7 +336,7 @@ export default function App() {
                             path='faq'
                             element={<Navigate to='/faq/points' replace />}
                         />
-                        <Route path='/faq/points' element={<FAQ />} />
+                        <Route path='/faq/points' element={<FAQPoints />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
