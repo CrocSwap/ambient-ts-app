@@ -441,7 +441,7 @@ function Orders(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { height: 'calc(100svh - 300px)' }
+                            ? { height: 'calc(100svh - 310px)' }
                             : { height: 'calc(100svh - 380px)' }
                         : undefined
                 }
