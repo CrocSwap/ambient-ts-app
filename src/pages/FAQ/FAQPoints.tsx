@@ -1,6 +1,7 @@
 /* eslint-disable quotes */
 import { useParams } from 'react-router-dom';
 import styles from './FAQ.module.css';
+import { useEffect } from 'react';
 
 interface questionIF {
     question: string;
@@ -10,7 +11,17 @@ interface questionIF {
 
 export default function FAQPoints() {
     const { params } = useParams();
-    console.log(params);
+
+    // logic to scroll user to the question specified by params
+    useEffect(() => {
+        // only run logic if a param was provided in the URL
+        if (params) {
+            // find element in the DOM, if it exists
+            const elem: HTMLElement | null = document.getElementById(params);
+            // if the element exists, scroll to it
+            elem && elem.scrollIntoView();
+        }
+    }, [params]);
 
     // all questions as a string
     // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
