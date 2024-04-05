@@ -78,15 +78,13 @@ export const TradeDataContextProvider = (props: {
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 
-    const tokensMatchingA = tokens.getTokensByNameOrSymbol(
-        savedTokenASymbol || '',
-        true,
-    );
+    const tokensMatchingA = savedTokenASymbol
+        ? tokens.getTokensByNameOrSymbol(savedTokenASymbol, true)
+        : [];
 
-    const tokensMatchingB = tokens.getTokensByNameOrSymbol(
-        savedTokenBSymbol || '',
-        true,
-    );
+    const tokensMatchingB = savedTokenBSymbol
+        ? tokens.getTokensByNameOrSymbol(savedTokenBSymbol, true)
+        : [];
 
     const firstTokenMatchingA = tokensMatchingA[0] || undefined;
     const firstTokenMatchingB = tokensMatchingB[0] || undefined;
