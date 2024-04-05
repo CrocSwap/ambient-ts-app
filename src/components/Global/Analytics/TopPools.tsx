@@ -71,7 +71,7 @@ function TopPools(props: propsIF) {
             sortable: true,
         },
         {
-            label: 'Change',
+            label: '24h Price Δ',
             hidden: true,
             align: 'right',
             responsive: 'lg',
