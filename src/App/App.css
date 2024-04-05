@@ -262,7 +262,7 @@ input[type='number'] {
         position: fixed;
         top: 56px;
         bottom: 64px;
-        z-index: 99;
+        z-index: 2;
     }
     .swap-body {
         /* max-height: 86.5vh; */
