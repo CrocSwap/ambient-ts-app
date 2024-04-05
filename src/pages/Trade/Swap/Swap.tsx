@@ -649,6 +649,11 @@ function Swap(props: propsIF) {
             </WarningContainer>
         ) : undefined;
 
+    const showWarning =
+        (priceImpactNumMemo || 0) > 10 &&
+        isTokenAWalletBalanceSufficient &&
+        !isLiquidityInsufficient;
+
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -702,6 +707,7 @@ function Swap(props: propsIF) {
                         primaryQuantity !== '' &&
                         parseFloat(primaryQuantity) > 0
                     }
+                    showWarning={showWarning}
                 />
             }
             modal={
@@ -744,11 +750,13 @@ function Swap(props: propsIF) {
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
                                 ? swapAllowed
-                                    ? 'Submit Swap'
+                                    ? showWarning
+                                        ? 'I understand the price impact of this swap. Submit anyway!'
+                                        : 'Submit Swap'
                                     : swapButtonErrorMessage
                                 : swapAllowed
-                                ? bypassConfirmSwap.isEnabled
-                                    ? 'Submit Swap'
+                                ? showWarning
+                                    ? 'I understand the price impact of this swap. Confirm anyway!'
                                     : 'Confirm'
                                 : swapButtonErrorMessage
                             : 'Acknowledge'
@@ -766,6 +774,7 @@ function Swap(props: propsIF) {
                             buyQtyString === '') &&
                         areBothAckd
                     }
+                    warning={showWarning}
                     flat
                 />
             }
