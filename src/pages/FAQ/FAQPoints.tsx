@@ -1,4 +1,5 @@
 /* eslint-disable quotes */
+import { useParams } from 'react-router-dom';
 import styles from './FAQ.module.css';
 
 interface questionIF {
@@ -8,6 +9,9 @@ interface questionIF {
 }
 
 export default function FAQPoints() {
+    const { params } = useParams();
+    console.log(params);
+
     // all questions as a string
     // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
     const questions: questionIF[] = [
