@@ -127,6 +127,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'account';
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
+        } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {
+            pageName = 'faqPoints';
         } else {
             pageName = 'home';
         }
