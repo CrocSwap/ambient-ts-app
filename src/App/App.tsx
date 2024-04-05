@@ -91,7 +91,7 @@ export default function App() {
         currentLocation !== '/404' &&
         currentLocation !== '/terms' &&
         currentLocation !== '/privacy' &&
-        currentLocation !== '/faq' &&
+        !currentLocation.includes('/faq') &&
         !currentLocation.includes('/chat') &&
         !currentLocation.includes('/initpool') &&
         !fullScreenChart && (
@@ -111,7 +111,7 @@ export default function App() {
           currentLocation == '/404' ||
           currentLocation == '/terms' ||
           currentLocation == '/privacy' ||
-          currentLocation == '/faq' ||
+          currentLocation.includes('/faq') ||
           currentLocation.includes('/chat') ||
           currentLocation.startsWith('/swap')
         ? 'hide_sidebar'
