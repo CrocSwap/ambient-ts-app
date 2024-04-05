@@ -332,7 +332,11 @@ export default function App() {
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
-                        <Route path='faq' element={<FAQ />} />
+                        <Route
+                            path='faq'
+                            element={<Navigate to='/faq/points' replace />}
+                        />
+                        <Route path='/faq/points' element={<FAQ />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
