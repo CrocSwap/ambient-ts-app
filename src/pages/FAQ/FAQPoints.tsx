@@ -2,6 +2,9 @@
 import { useParams } from 'react-router-dom';
 import styles from './FAQ.module.css';
 import { useEffect } from 'react';
+import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
+import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 interface questionIF {
     question: string;
@@ -22,6 +25,8 @@ export default function FAQPoints() {
             elem && elem.scrollIntoView();
         }
     }, []);
+
+    const [_, copy] = useCopyToClipboard();
 
     // all questions as a string
     // all answers as a string (one paragraph) or array of strings (multiple paragraphs)
@@ -100,6 +105,16 @@ export default function FAQPoints() {
         },
     ];
 
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+
+    function copyLink(s: typeof questions[number]['slug']): void {
+        const domain: string = IS_LOCAL_ENV
+            ? 'localhost:3000'
+            : 'ambient.finance';
+        const baseURL: string = linkGenCurrent.getFullURL(s);
+        copy(domain + baseURL);
+    }
+
     return (
         <div className={styles.background}>
             <div className={styles.container}>
@@ -128,6 +143,7 @@ export default function FAQPoints() {
                                     <div
                                         id={q.slug}
                                         className={styles.question}
+                                        onClick={() => copyLink(q.slug)}
                                     >
                                         {q.question}
                                     </div>
