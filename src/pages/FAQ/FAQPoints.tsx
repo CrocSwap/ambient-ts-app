@@ -45,7 +45,7 @@ export default function FAQPoints() {
         {
             question: 'How is Blast Gold distribution determined?',
             answer: (
-                <div>
+                <>
                     <div style={{ margin: '1rem 0' }}>
                         Gold distribution is based on, in rough order of
                         descending importance:
@@ -64,7 +64,7 @@ export default function FAQPoints() {
                         distribution to distribution, but the overall approach
                         will remain constant.
                     </div>
-                </div>
+                </>
             ),
             slug: 'how-to-earn-blast-gold',
         },
