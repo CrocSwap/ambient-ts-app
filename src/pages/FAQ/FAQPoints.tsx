@@ -4,6 +4,7 @@ import styles from './FAQ.module.css';
 interface questionIF {
     question: string;
     answer: string | string[] | JSX.Element | JSX.Element[];
+    slug: string;
 }
 
 export default function FAQPoints() {
@@ -16,6 +17,7 @@ export default function FAQPoints() {
                 'Ambient Points are earned by making swaps and providing liquidity. The more you swap and the more swaps use the liquidity you have provided, the more Points you earn.',
                 'Points are distributed once per week.',
             ],
+            slug: 'how-to-earn-ambi-points',
         },
         {
             question: 'How is Blast Gold distribution determined?',
@@ -41,6 +43,7 @@ export default function FAQPoints() {
                     </div>
                 </div>
             ),
+            slug: 'how-to-earn-blast-gold',
         },
         {
             question:
@@ -49,23 +52,28 @@ export default function FAQPoints() {
                 "If you have liquidity positions in pools on Blast you'll earn Ambient Points, Blast Points (which are based on TVL), and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria Blast provides us (TVL) while Blast Gold is optimized for ecosystem metrics.",
                 "The criteria for Gold will not be exactly the same as criteria for Ambient Points; our goal is to align with Blast's objectives such that they continue to send Ambient large amounts of Gold and ultimately that Ambient users earn more Gold. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously, users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.",
             ],
+            slug: 'ambi-points-vs-blast-points',
         },
         {
             question: 'Why is Gold distributed like this?',
             answer: "It's important to understand that Blast Gold are not rewards that are arbitrarily determined by Ambient. These rewards come from the Blast ecosystem, and our ability to continue distributing high amounts of Gold rewards to users depends on how much we align with the Blast ecosystem objectives. As part of that we communicate with the Blast team to understand what their objectives are, and this in turn influences how we distribute Gold rewards.",
+            slug: 'why-do-we-distribute-blast-gold-like-this',
         },
         {
             question: 'When was the snapshot taken?',
             answer: 'The snapshot for the first Gold distribution was taken shortly after Blast announced the Gold distribution. This was on the afternoon of Friday, March 22. Liquidity provided after this snapshot will still receive Gold, but will be based on the next Blast Gold distribution. We anticipate this to be released in 2-3 weeks. In general, we will follow this policy of distributing each Gold drop based on the retroactive activity since the previous Gold release.',
+            slug: 'when-are-snapshots-taken',
         },
         {
             question: 'I got [some amount of] Blast Gold, is that good or bad?',
             answer: 'With the caveat that no one will know how much Blast rewards are worth until the airdrop, keep in mind that Gold and Points will each make up 50% of the total airdrop and so far there are on the order of 1000× more Blast Points than Blast Gold.',
+            slug: 'is-my-blast-gold-distribution-good',
         },
         {
             question:
                 'What does market depth mean and how can I optimize for it?',
             answer: 'Market depth means the amount of liquidity your LP position is providing within +/- 2% of the current pool price. For the same size LP position, the tighter the range the more market depth. A 10% wide range order provides approximately 10× more depth per dollar of capital. That being said, when your order goes out of range it is no longer providing any market depth, and therefore is not accumulating rewards. So the best tradeoff is based on market volatility and how frequently you can manage the position. We will likely soon be putting market depth information directly into the app to help users make better decisions.',
+            slug: 'what-is-market-depth',
         },
         {
             question: 'How is Gold distributed between pools?',
@@ -73,6 +81,7 @@ export default function FAQPoints() {
                 'The relative distribution of Gold between pools is based on a set of metrics to normalize relative pool size (i.e. a combination of volume, TVL, liquidity, and some measures to prevent manipulation of these metrics). We may boost certain pools to help bootstrap liquidity as we did with YES/ETH and ORBIT/ETH in the initial distribution. Those pools ended up receiving about 5× more rewards.',
                 'While there are currently no announced Gold boosts, you can generally expect Gold rewards in alt pools to be higher to the extent that our altcoin liquidity is weak relative to ETH/USDB. For example, most alt pools ended up receiving 5-10× boosted rewards in the first epoch, even those outside the announced boosting.',
             ],
+            slug: 'how-is-gold-distributed-between-pools',
         },
     ];
 
