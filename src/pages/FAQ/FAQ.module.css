@@ -70,8 +70,8 @@
     font-weight: 300;
     font-size: var(--header1-size);
     line-height: 30px;
-
     margin-top: 2rem !important;
+    cursor: pointer;
 }
 
 .answer {
