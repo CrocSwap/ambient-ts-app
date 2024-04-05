@@ -1193,6 +1193,7 @@ function Range() {
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -1210,6 +1211,7 @@ function Range() {
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenB.symbol}`
