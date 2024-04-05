@@ -1,4 +1,4 @@
-import { MouseEvent, useContext, useState } from 'react';
+import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { FlexContainer } from '../../../../styled/Common';
@@ -19,14 +19,22 @@ interface PropsIF {
     conversionRate: string;
     gasPrice: string | undefined;
     showDropdown: boolean;
+    showWarning?: boolean;
 }
 
 export const ExtraInfo = (props: PropsIF) => {
-    const { extraInfo, showDropdown, conversionRate, gasPrice } = props;
+    const { extraInfo, showDropdown, conversionRate, gasPrice, showWarning } =
+        props;
 
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (showWarning) {
+            setShowExtraInfo(true);
+        }
+    }, [showWarning]);
 
     const arrowToRender = showDropdown ? (
         showExtraInfo ? (
