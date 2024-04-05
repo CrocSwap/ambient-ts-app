@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-
+import { FiLink } from 'react-icons/fi';
 interface questionIF {
     question: string;
     answer: string | string[] | JSX.Element | JSX.Element[];
@@ -105,13 +105,17 @@ export default function FAQPoints() {
         },
     ];
 
+    // hook needed to help build URL for link
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
-
+    // fn to build a link and copy it to the clipboard
     function copyLink(s: typeof questions[number]['slug']): void {
+        // domain to use, local vs deployed
         const domain: string = IS_LOCAL_ENV
             ? 'localhost:3000'
             : 'ambient.finance';
+        // the rest of the URL
         const baseURL: string = linkGenCurrent.getFullURL(s);
+        // send full navigable URL to clipboard
         copy(domain + baseURL);
     }
 
@@ -146,6 +150,10 @@ export default function FAQPoints() {
                                         onClick={() => copyLink(q.slug)}
                                     >
                                         {q.question}
+                                        <FiLink
+                                            size={20}
+                                            className={styles.link_icon}
+                                        />
                                     </div>
                                     {answerAsArray.map(
                                         (a: string | JSX.Element) => (

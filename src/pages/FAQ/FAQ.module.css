@@ -66,12 +66,23 @@
 }
 
 .question {
+    display: flex;
+    flex-direction: row;
     font-family: 'Lexend Deca';
     font-weight: 300;
     font-size: var(--header1-size);
     line-height: 30px;
     margin-top: 2rem !important;
     cursor: pointer;
+}
+
+.link_icon {
+    display: none;
+    margin-left: 10px;
+}
+
+.question:hover > .link_icon {
+    display: flex !important;
 }
 
 .answer {
