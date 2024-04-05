@@ -18,9 +18,7 @@ export const PortfolioTabsPortfolioTabsContainer = styled.div`
 
     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
         margin: 0 auto;
-        width: 90%;
-        margin-left: 30px;
-
+        width: 100%;
         padding: 0 1rem;
     }
 `;
