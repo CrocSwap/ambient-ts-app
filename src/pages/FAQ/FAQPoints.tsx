@@ -114,7 +114,10 @@ export default function FAQPoints() {
                             ].flat();
                             return (
                                 <li key={q.question.toString()}>
-                                    <div className={styles.question}>
+                                    <div
+                                        id={q.slug}
+                                        className={styles.question}
+                                    >
                                         {q.question}
                                     </div>
                                     {answerAsArray.map(
