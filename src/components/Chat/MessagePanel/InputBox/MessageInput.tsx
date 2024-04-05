@@ -182,17 +182,29 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMessageButton = () => {
         if (message === '') {
-            return;
+            return; // Do nothing if the message is empty
         }
-        const normalizedMessage = formatURL(message);
-        if (
-            (isLink(normalizedMessage) || filterMessage(normalizedMessage)) &&
-            !isLinkInCrocodileLabsLinksForInput(normalizedMessage)
-        ) {
+
+        // Split the message by spaces to get individual words or URLs
+        const parts = message.split(/\s+/);
+
+        // Check each part of the message to see if it's an allowed URL or not
+        const containsBlockedLink = parts.some((part) => {
+            const normalizedPart = formatURL(part); // Normalize URLs for consistency
+            return (
+                (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
+                !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+            );
+        });
+
+        if (containsBlockedLink) {
+            // If any part of the message contains a blocked URL, show a pop-up and block the message
             props.setShowPopUp(true);
             props.setPopUpText('You cannot send this link.');
         } else {
-            handleSendMsg(formatURL(message), roomId);
+            // If all URLs are allowed (or there are no URLs), proceed with sending the message
+            handleSendMsg(formatURL(message), roomId); // Adjust as necessary to match your send message function signature
+            // Resetting message and UI state as per your existing logic
             setMessage('');
             setMentUser(null);
             setPossibleMentUser(null);
@@ -267,30 +279,36 @@ export default function MessageInput(props: MessageInputProps) {
 
             return;
         }
-
         if (e.key === 'Enter') {
-            if (
-                (isLink(message) || filterMessage(message)) &&
-                !isLinkInCrocodileLabsLinksForInput(message)
-            ) {
+            if (message === '') {
+                return; // Do nothing if the message is empty
+            }
+
+            // Split the message by spaces to get individual words or URLs
+            const parts = message.split(/\s+/);
+
+            // Check each part of the message to see if it's an allowed URL or not
+            const containsBlockedLink = parts.some((part) => {
+                const normalizedPart = formatURL(part); // Normalize URLs for consistency
+                return (
+                    (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
+                    !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+                );
+            });
+
+            if (containsBlockedLink) {
+                // If any part of the message contains a blocked URL, show a pop-up and block the message
                 props.setShowPopUp(true);
                 props.setPopUpText('You cannot send this link.');
             } else {
-                // send msg if ment panel is not active
-                if (!mentPanelActive) {
-                    handleSendMsg(formatURL(message), roomId);
-                    setMentUser(null);
-                    setPossibleMentUser(null);
-                    setMessage('');
-                    dontShowEmojiPanel();
-                    props.setShowPopUp(false);
-                }
-                // assign user for ment
-                else {
-                    if (possibleMentUser != null) {
-                        userPickerForMention(possibleMentUser);
-                    }
-                }
+                // If all URLs are allowed (or there are no URLs), proceed with sending the message
+                handleSendMsg(formatURL(message), roomId); // Adjust as necessary to match your send message function signature
+                // Resetting message and UI state as per your existing logic
+                setMessage('');
+                setMentUser(null);
+                setPossibleMentUser(null);
+                dontShowEmojiPanel();
+                props.setShowPopUp(false);
             }
         } else if (
             mentPanelActive &&
