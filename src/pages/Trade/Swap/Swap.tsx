@@ -751,12 +751,12 @@ function Swap(props: propsIF) {
                             ? bypassConfirmSwap.isEnabled
                                 ? swapAllowed
                                     ? showWarning
-                                        ? 'I understand the price impact of this swap. Submit Anyway!'
+                                        ? 'I understand the price impact of this swap. Submit anyway!'
                                         : 'Submit Swap'
                                     : swapButtonErrorMessage
                                 : swapAllowed
                                 ? showWarning
-                                    ? 'I understand the price impact of this swap. Confirm Anyway!'
+                                    ? 'I understand the price impact of this swap. Confirm anyway!'
                                     : 'Confirm'
                                 : swapButtonErrorMessage
                             : 'Acknowledge'
