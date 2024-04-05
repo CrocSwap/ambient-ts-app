@@ -1,4 +1,4 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useState } from 'react';
 import {
     FetchContractDetailsFn,
@@ -116,7 +116,7 @@ export const useTokenStats = (
                     chainId,
                     crocEnv,
                 );
-            const poolWithETHPricePromise: Promise<number> =
+            const poolWithETHNonDisplayPricePromise: Promise<number> =
                 tokenMeta.address === defaultTokensForChain[0].address
                     ? Promise.resolve(1)
                     : cachedQuerySpotPrice(
@@ -129,8 +129,11 @@ export const useTokenStats = (
 
             const price: number =
                 (await tokenPricePromise)?.usdPrice ||
-                (await poolWithETHPricePromise) *
-                    ((await ethPricePromise)?.usdPrice || 0) ||
+                toDisplayPrice(
+                    await poolWithETHNonDisplayPricePromise,
+                    18,
+                    tokenMeta.decimals,
+                ) * ((await ethPricePromise)?.usdPrice || 0) ||
                 0;
 
             const tvlUSD: number = normalizeToUSD(
