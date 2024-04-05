@@ -336,8 +336,9 @@ export default function App() {
                             path='faq'
                             element={<Navigate to='/faq/points' replace />}
                         />
+                        <Route path='faq/points' element={<FAQPoints />} />
                         <Route
-                            path='/faq/points/:params'
+                            path='faq/points/:params'
                             element={<FAQPoints />}
                         />
                         {IS_LOCAL_ENV && (
