@@ -10,10 +10,12 @@ import { FeaturedBox } from './FeaturedBox';
 import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
 
 export default function TableInfo() {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { poolData } = useContext(PoolContext);
+    const { liquidityFee } = useContext(GraphDataContext);
 
     const {
         poolTvl,
@@ -25,6 +27,8 @@ export default function TableInfo() {
         poolVolume,
         poolVolume24h,
     } = poolData;
+
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const featuredData = [
         {
@@ -38,7 +42,14 @@ export default function TableInfo() {
             value: getFormattedNumber({ value: quoteTvlUsd }),
         },
     ];
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
+        'en-US',
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
 
     return (
         <MainSection>
@@ -77,6 +88,13 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='Total Fees'
                                 value={`$${poolFeesTotal?.toString() || '...'}`}
+                            />
+                            <DetailedBox
+                                label='Current Fee Rate'
+                                value={`${
+                                    liquidityProviderFeeString?.toString() ||
+                                    '...'
+                                }%`}
                             />
                         </GridContainer>
                         {/* second 4 row items go here */}
