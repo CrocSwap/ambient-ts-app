@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 import { useParams } from 'react-router-dom';
 import styles from './FAQ.module.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
@@ -15,16 +15,19 @@ interface questionIF {
 export default function FAQPoints() {
     const { params } = useParams();
 
+    const elementRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
     // logic to scroll user to the question specified by params
     useEffect(() => {
         // only run logic if a param was provided in the URL
-        if (params) {
-            // find element in the DOM, if it exists
-            const elem: HTMLElement | null = document.getElementById(params);
-            // if the element exists, scroll to it
-            elem && elem.scrollIntoView();
-        }
-    }, []);
+        setTimeout(() => {
+            if (params) {
+                const elem: HTMLDivElement | null = elementRefs.current[params];
+                elem &&
+                    elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 500);
+    }, [params]);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -147,6 +150,9 @@ export default function FAQPoints() {
                                     <div
                                         id={q.slug}
                                         className={styles.question}
+                                        ref={(el) =>
+                                            (elementRefs.current[q.slug] = el)
+                                        }
                                         onClick={() => copyLink(q.slug)}
                                     >
                                         {q.question}
