@@ -163,6 +163,12 @@ export default function SubmitTransaction(props: propsIF) {
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
+    useEffect(() => {
+        if (isTransactionException) {
+            setShowExtraInfo(true);
+        }
+    }, [isTransactionException]);
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <SubmitTransactionButton

@@ -525,6 +525,10 @@ function Range() {
     ]);
 
     useEffect(() => {
+        resetConfirmation();
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimary(false);
         if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
