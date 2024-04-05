@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { sortDirections } from '../../../ambient-utils/types';
 
-export type sortType = 'price' | 'tvl' | '24h vol.' | 'change' | null;
+export type sortType = 'price' | 'tvl' | '24h vol.' | '24h price δ' | null;
 type sortableKeysType = 'priceChange' | 'tvl' | 'volume';
 
 export interface SortedPoolMethodsIF {
@@ -39,7 +39,7 @@ export const useSortedPools = (
             case '24h vol.':
                 output = sort('volume');
                 break;
-            case 'change':
+            case '24h price δ':
                 output = sort('priceChange');
                 break;
             case 'tvl':
@@ -59,7 +59,7 @@ export const useSortedPools = (
             let needsDemotion: boolean;
             // assign bool based on given value for a given key
             switch (sortBy) {
-                case 'change':
+                case '24h price δ':
                     needsDemotion = p.priceChangeStr === '';
                     break;
                 default:
