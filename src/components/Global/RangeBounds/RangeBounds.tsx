@@ -8,6 +8,8 @@ import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedMod
 import { RangeContext } from '../../../contexts/RangeContext';
 import EditLiqPriceInfo from '../../Trade/EditLiquidity/EditLiqPriceInfo/EditLiqPriceInfo';
 import { SiPandas } from 'react-icons/si';
+import Reposition from '../../../pages/Trade/Reposition/Reposition';
+import RangeWidthControl from '../RangeWidthControl/RangeWidthControl';
 
 interface RangeBoundsProps {
     customSwitch?: boolean;
@@ -143,11 +145,8 @@ export default function RangeBounds(props: RangeBoundsProps) {
             >
                 <RangeWidth {...rangeWidthProps} />
             </motion.div>
-            {isEditPanel ? (
-                <EditLiqPriceInfo />
-            ) : (
-                <RangePriceInfo {...rangePriceInfoProps} />
-            )}
+
+            <RangePriceInfo {...rangePriceInfoProps} />
         </div>
     );
     const advancedModeContent = (
@@ -159,12 +158,14 @@ export default function RangeBounds(props: RangeBoundsProps) {
             >
                 <div className={styles.advanced_info_container}>
                     <MinMaxPrice {...minMaxPricePropsIF} />
-                    {isEditPanel && <span className={styles.divider} />}
-                    <EditLiqPriceInfo />
+                    {/* {isEditPanel && <span className={styles.divider} />} */}
+                    {/* <EditLiqPriceInfo /> */}
                 </div>
             </motion.div>
         </>
     );
+
+    if (isEditPanel) return <RangeWidthControl />;
     return (
         <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
             {!customSwitch && (

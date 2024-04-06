@@ -1093,7 +1093,9 @@ function Range(props: RangePropsIF) {
                     isEditPanel={isEditPanel}
                 />
             }
-            transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
+            transactionDetails={
+                isEditPanel ? null : <RangeExtraInfo {...rangeExtraInfoProps} />
+            }
             modal={
                 isOpen ? (
                     <ConfirmRangeModal

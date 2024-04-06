@@ -1,67 +1,161 @@
-// START: Import React and Dongles
-import { useContext, useEffect, useMemo, useState, memo } from 'react';
-import { useLocation, useParams, Navigate } from 'react-router-dom';
-import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
-
-// START: Import JSX Components
-import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
-import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Button from '../../../components/Form/Button';
-// START: Import Other Local Files
-import styles from './Reposition.module.css';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+import styles from './RangeWidthControl.module.css';
+import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import RangeWidth from '../../Form/RangeWidth/RangeWidth';
+import RepositionPriceInfo from '../../Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    parseErrorMessage,
-    TransactionError,
-} from '../../../utils/TransactionError';
-import useDebounce from '../../../App/hooks/useDebounce';
-import {
-    GCGO_OVERRIDE_URL,
-    IS_LOCAL_ENV,
-} from '../../../ambient-utils/constants';
-import { FiExternalLink } from 'react-icons/fi';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { RangeContext } from '../../../contexts/RangeContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
-    getPositionData,
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
+    getPositionData,
     isStablePair,
     roundDownTick,
     roundUpTick,
 } from '../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { useModal } from '../../../components/Global/Modal/useModal';
-import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
-} from '../../../ambient-utils/constants/';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { useProcessRange } from '../../../utils/hooks/useProcessRange';
-import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { UserDataContext } from '../../../contexts/UserDataContext';
+} from '../../../ambient-utils/constants';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import useDebounce from '../../../App/hooks/useDebounce';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
-} from '../Range/Range';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
-import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import RangeWidthControl from '../../../components/Global/RangeWidthControl/RangeWidthControl';
+} from '../../../pages/Trade/Range/Range';
+import { FlexContainer } from '../../../styled/Common';
 
-function Reposition() {
+interface RangeWidthControlPropsIF {
+    advancedMode: boolean;
+    position: PositionIF;
+    // min max price
+    minPricePercentage: number;
+    maxPricePercentage: number;
+    minPriceInputString: string;
+    maxPriceInputString: string;
+    setMinPriceInputString: Dispatch<SetStateAction<string>>;
+    setMaxPriceInputString: Dispatch<SetStateAction<string>>;
+    disable?: boolean;
+    isDenomBase: boolean;
+    lowBoundOnBlur: () => void;
+    highBoundOnBlur: () => void;
+    rangeLowTick: number;
+    rangeHighTick: number;
+    maxPrice: number;
+    minPrice: number;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    setMinPrice: Dispatch<SetStateAction<number>>;
+
+    // range width
+    rangeWidthPercentage: number;
+    setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
+    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+
+    // price info
+
+    currentPoolPriceTick: number;
+    currentPoolPriceDisplay: string;
+    isConfirmModal?: boolean;
+    minPriceDisplay: string;
+    maxPriceDisplay: string;
+    currentBaseQtyDisplayTruncated: string;
+    currentQuoteQtyDisplayTruncated: string;
+    newBaseQtyDisplay: string;
+    newQuoteQtyDisplay: string;
+    rangeGasPriceinDollars: string | undefined;
+    currentMinPrice: string;
+    currentMaxPrice: string;
+    newValueString: string;
+    valueImpactString: string;
+    valueLossExceedsThreshold: boolean;
+    isCurrentPositionEmpty: boolean;
+}
+export default function RangeWidthControl() {
+    //     const { advancedMode,
+    //         position,
+    //         //  ---------------
+    //         minPricePercentage,
+    //         maxPricePercentage,
+    //         setMinPriceInputString,
+    //         setMaxPriceInputString,
+    //         disable,
+    //         isDenomBase,
+    //         lowBoundOnBlur,
+    //         highBoundOnBlur,
+    //         rangeLowTick,
+    //         rangeHighTick,
+    //         maxPrice,
+    //         minPrice,
+    //         setMaxPrice,
+    //         setMinPrice,
+    //         minPriceInputString,
+    //         maxPriceInputString,
+    // // -----------------------------
+    //         rangeWidthPercentage,
+    //         setRangeWidthPercentage,
+    //         setRescaleRangeBoundariesWithSlider,
+    //         // --------------------------------------
+    //         currentPoolPriceDisplay,
+    //         minPriceDisplay,
+    //         maxPriceDisplay,
+    //         currentBaseQtyDisplayTruncated,
+    //         currentQuoteQtyDisplayTruncated,
+    //         newBaseQtyDisplay,
+    //         newQuoteQtyDisplay,
+    //         rangeGasPriceinDollars,
+    //         currentMinPrice,
+    //         currentMaxPrice,
+    //         newValueString,
+    //         valueImpactString,
+    //         currentPoolPriceTick,
+    //         valueLossExceedsThreshold,
+    //         isCurrentPositionEmpty,
+
+    //     } = props
+
+    //     const MinMaxProps = {
+    //         minPricePercentage,
+    //         maxPricePercentage,
+    //         setMinPriceInputString,
+    //         setMaxPriceInputString,
+    //         minPriceInputString,
+    //         maxPriceInputString,
+
+    //         disable,
+    //         isDenomBase,
+    //         lowBoundOnBlur,
+    //         highBoundOnBlur,
+    //         rangeLowTick,
+    //         rangeHighTick,
+    //         maxPrice,
+    //         minPrice,
+    //         setMaxPrice,
+    //         setMinPrice,
+    //     };
+
     // current URL parameter string
     const { params } = useParams();
 
@@ -113,25 +207,15 @@ function Reposition() {
         // eslint-disable-next-line
         setAdvancedLowTick,
     } = useContext(RangeContext);
+    const {
+        isDenomBase,
+        tokenA,
+        tokenB,
+        isTokenABase,
+        poolPriceNonDisplay: currentPoolPriceNonDisplay,
+        getDefaultRangeWidthForTokenPair,
+    } = useContext(TradeDataContext);
     const { userAddress } = useContext(UserDataContext);
-
-    const [isOpen, openModal, closeModal] = useModal();
-
-    const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
-        useState('');
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-
-    const resetConfirmation = () => {
-        setShowConfirmation(false);
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setNewRepositionTransactionHash('');
-    };
-
-    const isRepositionSent = newRepositionTransactionHash !== '';
-
     const locationHook = useLocation();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
@@ -190,15 +274,6 @@ function Reposition() {
         updateConcLiq();
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
-    const {
-        isDenomBase,
-        tokenA,
-        tokenB,
-        isTokenABase,
-        poolPriceNonDisplay: currentPoolPriceNonDisplay,
-        getDefaultRangeWidthForTokenPair,
-    } = useContext(TradeDataContext);
-
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
 
@@ -237,16 +312,6 @@ function Reposition() {
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
 
-    const handleModalOpen = () => {
-        resetConfirmation();
-        openModal();
-    };
-
-    const handleModalClose = () => {
-        resetConfirmation();
-        closeModal();
-    };
-
     // if chart is at ambient width, keep ambient width, otherwise use the default
     // otherwise the the width rapidly switches back and forth between the two when returning to an in progress reposition
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
@@ -276,7 +341,6 @@ function Reposition() {
                 position.quote.toLowerCase(),
             ),
         );
-        setNewRepositionTransactionHash('');
     }, [position]);
 
     // neccessary to get the liquidity chart to correctly show an ambient range width
@@ -345,107 +409,6 @@ function Reposition() {
             return [lowTick, highTick];
         }
     }
-
-    const sendRepositionTransaction = async () => {
-        if (!crocEnv) return;
-        let tx;
-        setTxErrorCode('');
-        setTxErrorMessage('');
-
-        resetConfirmation();
-        setShowConfirmation(true);
-
-        try {
-            const pool = crocEnv.pool(position.base, position.quote);
-            const repo = new CrocReposition(
-                pool,
-                {
-                    liquidity: concLiq,
-                    burn: [position.bidTick, position.askTick],
-                    mint: mintArgsForReposition(pinnedLowTick, pinnedHighTick),
-                },
-                { impact: slippageTolerancePercentage / 100 },
-            );
-
-            tx = await repo.rebal();
-            setNewRepositionTransactionHash(tx?.hash);
-            addPendingTx(tx?.hash);
-            if (tx?.hash) {
-                addTransactionByType({
-                    userAddress: userAddress || '',
-                    txHash: tx.hash,
-                    txAction: 'Reposition',
-                    txType: 'Range',
-                    txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
-                    txDetails: {
-                        baseAddress: position.base,
-                        quoteAddress: position.quote,
-                        poolIdx: poolIndex,
-                        baseSymbol: position.baseSymbol,
-                        quoteSymbol: position.quoteSymbol,
-                        baseTokenDecimals: baseTokenDecimals,
-                        quoteTokenDecimals: quoteTokenDecimals,
-                        lowTick: pinnedLowTick,
-                        highTick: pinnedHighTick,
-                        gridSize: lookupChain(position.chainId).gridSize,
-                        originalLowTick: position.bidTick,
-                        originalHighTick: position.askTick,
-                        isBid: position.positionLiqQuote === 0,
-                    },
-                });
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: tx.hash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-            }
-            // We want the user to exit themselves
-            // navigate(redirectPath, { replace: true });
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(parseErrorMessage(error));
-        }
-
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                removePendingTx(error.hash);
-                const newTransactionHash = error.replacement.hash;
-                addPendingTx(newTransactionHash);
-
-                updateTransactionHash(error.hash, error.replacement.hash);
-                setNewRepositionTransactionHash(newTransactionHash);
-                const posHash = getPositionHash(position);
-                addPositionUpdate({
-                    txHash: newTransactionHash,
-                    positionID: posHash,
-                    isLimit: false,
-                    unixTimeAdded: Math.floor(Date.now() / 1000),
-                });
-                IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                receipt = error.receipt;
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
-            }
-        }
-        if (receipt) {
-            addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
-        }
-    };
 
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
@@ -737,6 +700,7 @@ function Reposition() {
             debouncedHighTick,
         ],
     );
+    // CHANGE FOR EDIT
 
     useEffect(() => {
         if (
@@ -798,21 +762,6 @@ function Reposition() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, extraL1GasFeePool]);
-
-    const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
-
-    const etherscanButton = (
-        <a
-            href={txUrlOnBlockExplorer}
-            target='_blank'
-            rel='noreferrer'
-            className={styles.view_etherscan}
-            aria-label='view on block explorer'
-        >
-            View on Block Explorer
-            <FiExternalLink size={12} color='var(--text1)' />
-        </a>
-    );
 
     const isCurrentPositionEmpty =
         currentBaseQtyDisplayTruncated === '0.00' &&
@@ -900,146 +849,54 @@ function Reposition() {
     };
 
     return (
-        <>
-            <div className={styles.repositionContainer}>
-                <RepositionHeader
-                    setRangeWidthPercentage={setRangeWidthPercentage}
-                    positionHash={posHashTruncated}
-                    resetTxHash={() => setNewRepositionTransactionHash('')}
-                />
-                <div className={styles.reposition_content}>
-                    <RangeWidthControl />
-                    {/* <AdvancedModeToggle />
-                    {advancedMode ? (
-                        <div className={styles.advanced_info_container}>
-                            <MinMaxPrice {...MinMaxProps} />
-                        </div>
-                    ) : (
-                        <RangeWidth
-                            rangeWidthPercentage={rangeWidthPercentage}
-                            setRangeWidthPercentage={setRangeWidthPercentage}
-                            setRescaleRangeBoundariesWithSlider={
-                                setRescaleRangeBoundariesWithSlider
-                            }
-                        />
-                    )}
-
-                    <RepositionPriceInfo
-                        position={position}
-                        currentPoolPriceDisplay={currentPoolPriceDisplay}
-                        currentPoolPriceTick={currentPoolPriceTick}
-                        rangeWidthPercentage={rangeWidthPercentage}
-                        minPriceDisplay={minPriceDisplay}
-                        maxPriceDisplay={maxPriceDisplay}
-                        currentBaseQtyDisplayTruncated={
-                            currentBaseQtyDisplayTruncated
-                        }
-                        currentQuoteQtyDisplayTruncated={
-                            currentQuoteQtyDisplayTruncated
-                        }
-                        newBaseQtyDisplay={newBaseQtyDisplay}
-                        newQuoteQtyDisplay={newQuoteQtyDisplay}
-                        rangeGasPriceinDollars={rangeGasPriceinDollars}
-                        currentMinPrice={
-                            isDenomBase
-                                ? position?.lowRangeDisplayInBase
-                                : position?.lowRangeDisplayInQuote
-                        }
-                        currentMaxPrice={
-                            isDenomBase
-                                ? position?.highRangeDisplayInBase
-                                : position?.highRangeDisplayInQuote
-                        }
-                        newValueString={newValueString}
-                        valueImpactString={valueImpactString}
-                        valueLossExceedsThreshold={valueLossExceedsThreshold}
-                        isCurrentPositionEmpty={isCurrentPositionEmpty}
-                    /> */}
-                    <div className={styles.button_container}>
-                        {bypassConfirmRepo.isEnabled && showConfirmation ? (
-                            <SubmitTransaction
-                                type='Reposition'
-                                newTransactionHash={
-                                    newRepositionTransactionHash
-                                }
-                                txErrorCode={txErrorCode}
-                                txErrorMessage={txErrorMessage}
-                                sendTransaction={sendRepositionTransaction}
-                                resetConfirmation={resetConfirmation}
-                                transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
-                                disableSubmitAgain
-                            />
-                        ) : (
-                            <Button
-                                idForDOM='confirm_reposition_button'
-                                title={
-                                    isRepositionSent
-                                        ? 'Reposition Sent'
-                                        : isPositionInRange
-                                        ? 'Position Currently In Range'
-                                        : bypassConfirmRepo.isEnabled
-                                        ? 'Reposition'
-                                        : 'Confirm'
-                                }
-                                action={
-                                    bypassConfirmRepo.isEnabled
-                                        ? sendRepositionTransaction
-                                        : handleModalOpen
-                                }
-                                disabled={
-                                    userAddress?.toLowerCase() !==
-                                        position.user.toLowerCase() ||
-                                    isRepositionSent ||
-                                    isPositionInRange ||
-                                    isCurrentPositionEmptyOrLoading
-                                }
-                                flat
-                            />
-                        )}
-                    </div>
-                    {isRepositionSent ? etherscanButton : null}
-                </div>
+        <div className={styles.reposition_content}>
+            <div className={styles.advanced_toggle_container}>
+                <AdvancedModeToggle />
             </div>
-            {isOpen && (
-                <ConfirmRepositionModal
-                    isPositionInRange={isPositionInRange}
-                    position={position as PositionIF}
-                    onSend={sendRepositionTransaction}
-                    showConfirmation={showConfirmation}
-                    newRepositionTransactionHash={newRepositionTransactionHash}
-                    resetConfirmation={resetConfirmation}
-                    txErrorCode={txErrorCode}
-                    txErrorMessage={txErrorMessage}
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
-                    currentBaseQtyDisplayTruncated={
-                        currentBaseQtyDisplayTruncated
-                    }
-                    currentQuoteQtyDisplayTruncated={
-                        currentQuoteQtyDisplayTruncated
-                    }
-                    newBaseQtyDisplay={newBaseQtyDisplay}
-                    newQuoteQtyDisplay={newQuoteQtyDisplay}
-                    isAmbient={isAmbient}
-                    pinnedMinPriceDisplayTruncatedInBase={
-                        pinnedMinPriceDisplayTruncatedInBase
-                    }
-                    pinnedMinPriceDisplayTruncatedInQuote={
-                        pinnedMinPriceDisplayTruncatedInQuote
-                    }
-                    pinnedMaxPriceDisplayTruncatedInBase={
-                        pinnedMaxPriceDisplayTruncatedInBase
-                    }
-                    pinnedMaxPriceDisplayTruncatedInQuote={
-                        pinnedMaxPriceDisplayTruncatedInQuote
-                    }
-                    isTokenABase={isTokenABase}
-                    onClose={handleModalClose}
-                    slippageTolerance={slippageTolerancePercentage}
-                />
-            )}
-        </>
+            <FlexContainer flexDirection='column' height='120px'>
+                {advancedMode ? (
+                    <div className={styles.advanced_info_container}>
+                        <MinMaxPrice {...MinMaxProps} />
+                    </div>
+                ) : (
+                    <RangeWidth
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        setRangeWidthPercentage={setRangeWidthPercentage}
+                        setRescaleRangeBoundariesWithSlider={
+                            setRescaleRangeBoundariesWithSlider
+                        }
+                    />
+                )}
+            </FlexContainer>
+            <RepositionPriceInfo
+                position={position}
+                currentPoolPriceDisplay={currentPoolPriceDisplay}
+                currentPoolPriceTick={currentPoolPriceTick}
+                rangeWidthPercentage={rangeWidthPercentage}
+                minPriceDisplay={minPriceDisplay}
+                maxPriceDisplay={maxPriceDisplay}
+                currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
+                currentQuoteQtyDisplayTruncated={
+                    currentQuoteQtyDisplayTruncated
+                }
+                newBaseQtyDisplay={newBaseQtyDisplay}
+                newQuoteQtyDisplay={newQuoteQtyDisplay}
+                rangeGasPriceinDollars={rangeGasPriceinDollars}
+                currentMinPrice={
+                    isDenomBase
+                        ? position?.lowRangeDisplayInBase
+                        : position?.lowRangeDisplayInQuote
+                }
+                currentMaxPrice={
+                    isDenomBase
+                        ? position?.highRangeDisplayInBase
+                        : position?.highRangeDisplayInQuote
+                }
+                newValueString={newValueString}
+                valueImpactString={valueImpactString}
+                valueLossExceedsThreshold={valueLossExceedsThreshold}
+                isCurrentPositionEmpty={isCurrentPositionEmpty}
+            />
+        </div>
     );
 }
-
-export default memo(Reposition);

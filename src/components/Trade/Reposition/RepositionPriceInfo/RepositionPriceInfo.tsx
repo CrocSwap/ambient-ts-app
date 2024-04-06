@@ -47,7 +47,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentMinPrice,
         currentMaxPrice,
         newValueString,
-        // valueImpactString,
+        valueImpactString,
         valueLossExceedsThreshold,
         isCurrentPositionEmpty,
     } = props;
@@ -168,10 +168,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
                 {/* {!isConfirmModal ? apr : null} */}
-                <aside className={styles.divider} />
 
                 <RowDisplay item1='' item2='Current' item3='Est. New' />
-                <aside className={styles.divider} />
 
                 <RowDisplay
                     item1={position?.baseSymbol}
@@ -219,8 +217,8 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                     }
                     negative={!isLoading && valueLossExceedsThreshold}
                 />
-                {/* <RowDisplay
-                    item1='Impact'
+                <RowDisplay
+                    item1='Price Impact'
                     item2={''}
                     item3={
                         isCurrentPositionEmpty || isLoading
@@ -228,7 +226,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                             : valueImpactString
                     }
                     negative={!isLoading && valueLossExceedsThreshold}
-                /> */}
+                />
             </div>
             {gasPriceDropdown}
         </div>
