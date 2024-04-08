@@ -118,7 +118,6 @@ import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import useDollarPrice from './ChartUtils/getDollarPrice';
-import { domDebug } from '../../components/Chat/DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -501,10 +500,6 @@ export default function Chart(props: propsIF) {
             mobileView,
         );
     }, [diffHashSigScaleData(scaleData), unparsedCandleData]);
-
-    domDebug('visible candle data', visibleCandleData.length);
-    domDebug('perid', period);
-    domDebug('scaledata', scaleData);
 
     const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
