@@ -1,0 +1,36 @@
+.nft_avatar_wrapper{
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+.nft_edit_overlay{
+    transition: all .2s ease-in-out;
+    position: absolute;
+    opacity: 0;
+    background-color: var(--accent1);
+    width: 100%;
+    height: 100%;
+}
+
+.nft_edit_icon{
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.nft_edit_icon svg{
+    fill: white;
+}
+
+.nft_avatar_wrapper:hover .nft_edit_overlay{
+    opacity: .5;
+}
+
+.nft_avatar_wrapper:hover .nft_edit_icon{
+    opacity: 1;
+}

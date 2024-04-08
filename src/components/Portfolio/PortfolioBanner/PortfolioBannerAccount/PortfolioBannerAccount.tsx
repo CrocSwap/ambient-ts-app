@@ -20,8 +20,12 @@ import {
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import NFTBannerAccount from './NFTBannerAccount';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
-import { getAvatar } from '../../../Chat/ChatRenderUtils';
+import {
+    getAvatar,
+    getAvatarForProfilePage,
+} from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -77,7 +81,15 @@ export default function PortfolioBannerAccount(
             }
         };
         fetchAvatar();
-    }, []);
+    }, [resolvedAddress]);
+
+    useEffect(() => {
+        setShowNFTPage(false);
+    }, [resolvedAddress]);
+
+    domDebug('resolved address', resolvedAddress);
+    domDebug('user address', userAddress);
+    domDebug('ua_profile', userAccountProfile);
 
     useEffect(() => {
         console.log(userAvatarImage);
@@ -134,10 +146,22 @@ export default function PortfolioBannerAccount(
                 gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                <ProfileSettingsContainer placement={NFTData ? true : false}>
-                    {userAddress &&
-                        getAvatar(userAddress, userAccountProfile, 65)}
-                    {/* {userAccountProfile ? (
+                <span
+                    onClick={() => {
+                        setShowNFTPage(!showNFTPage);
+                    }}
+                >
+                    <ProfileSettingsContainer
+                        placement={NFTData ? true : false}
+                    >
+                        {userAddress &&
+                            getAvatarForProfilePage(
+                                userAddress,
+                                userAccountProfile,
+                                65,
+                                true,
+                            )}
+                        {/* {userAccountProfile ? (
                         <img
                             src={userAccountProfile}
                             style={{
@@ -149,8 +173,9 @@ export default function PortfolioBannerAccount(
                     ) : (
                         <>{props.jazziconsToDisplay}</>
                     )} */}
-                    {updateProfile}
-                </ProfileSettingsContainer>
+                        {/* {updateProfile} */}
+                    </ProfileSettingsContainer>
+                </span>
 
                 <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer

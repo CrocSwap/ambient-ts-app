@@ -2,13 +2,11 @@ import {
     Dispatch,
     SetStateAction,
     memo,
-    useContext,
     useEffect,
     useRef,
     useState,
 } from 'react';
 import { AiOutlineCheck } from 'react-icons/ai';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     DefaultTooltip,
@@ -18,9 +16,11 @@ import { Message } from '../../Model/MessageModel';
 import { User, getUserLabelForReactions } from '../../Model/UserModel';
 import useChatApi from '../../Service/ChatApi';
 import PositionBox from '../PositionBox/PositionBox';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
+import { ChatVerificationTypes } from '../../ChatEnums';
+import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
+import { getAvatarForUser } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
@@ -30,9 +30,6 @@ import {
 } from '../../ChatUtils';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
-import { ChatVerificationTypes } from '../../ChatEnums';
-import { getAvatarForUser } from '../../ChatRenderUtils';
 import styles from './SentMessagePanel.module.css';
 
 interface SentMessageProps {
@@ -611,24 +608,6 @@ function SentMessagePanel(props: SentMessageProps) {
         );
     }
 
-    const jazziconsSeed = props.message.walletID.toLowerCase();
-
-    const myJazzicon = props.message.avatarImage ? (
-        <img
-            src={props.message.avatarImage}
-            style={{
-                width: '25px',
-                height: '25px',
-                borderRadius: '50%',
-            }}
-        ></img>
-    ) : (
-        <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
-
-    // function blockUser(userId: string) {
-
-    // }
     function getReplyMessageInfo(_id: string) {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         getRepliedMessageInfo(_id).then((result: any) => {

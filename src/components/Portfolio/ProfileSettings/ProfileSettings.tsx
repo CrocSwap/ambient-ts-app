@@ -11,7 +11,10 @@ import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
 import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
 
 import useChatApi from '../../Chat/Service/ChatApi';
-import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
+import {
+    CHAT_BACKEND_URL,
+    IS_LOCAL_ENV,
+} from '../../../ambient-utils/constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ProfileSettingsMotionContainer } from './ProfileSettings.styles';
 import { FlexContainer, Text } from '../../../styled/Common';
@@ -93,28 +96,28 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
 
     useEffect(() => {
         getID().then((result) => {
-            setId(result._id);
-            setName(result.ensName);
+            setId(result.userData._id);
+            setName(result.userData.ensName);
         });
     }, []);
 
     async function updateUser() {
         console.log('update user called');
-        // const response = await fetch(host + '/chat/api/auth/updateUser', {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({ ensName: name, _id: id }),
-        // });
+        const response = await fetch(host + '/chat/api/auth/updateUser', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ensName: name, _id: id }),
+        });
 
-        // const data = await response.json();
-        // if (data.status === 'OK') {
-        //     IS_LOCAL_ENV && console.debug('aaaa', data);
-        //     openSnackbar(`${name} has been set as a name.`, 'info');
-        // } else {
-        //     IS_LOCAL_ENV && console.debug('bbb', data.status);
-        // }
+        const data = await response.json();
+        if (data.status === 'OK') {
+            IS_LOCAL_ENV && console.debug('aaaa', data);
+            openSnackbar(`${name} has been set as a name.`, 'info');
+        } else {
+            IS_LOCAL_ENV && console.debug('bbb', data.status);
+        }
     }
 
     return (

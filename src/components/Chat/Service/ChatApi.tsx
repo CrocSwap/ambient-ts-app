@@ -95,6 +95,8 @@ const useChatApi = () => {
         ensName: string,
         userCurrentPool: string,
     ) {
+        if (!_id) return;
+
         const response = await fetch(host + '/chat/api/auth/updateUser', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },

@@ -4,6 +4,8 @@ import { Message } from './Model/MessageModel';
 import { User } from './Model/UserModel';
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import styles from './ChatRenderUtils.module.css';
+import { AiOutlineEdit, AiOutlineFileImage } from 'react-icons/ai';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -99,17 +101,62 @@ export const getAvatar = (
     walletID: string,
     avatarImage?: string,
     size?: number,
+    canEdit?: boolean,
 ) => {
     if (avatarImage && avatarImage.length > 0) {
         return (
             <img
                 src={avatarImage}
+                className={`${styles.nft_avatar} ${
+                    canEdit ? styles.can_edit : ''
+                }`}
                 style={{
                     width: size ? size + 'px' : '25px',
                     height: size ? size + 'px' : '25px',
                     borderRadius: '50%',
                 }}
             ></img>
+        );
+    } else {
+        return (
+            <Jazzicon
+                diameter={size}
+                seed={jsNumberForAddress(walletID.toLocaleLowerCase())}
+            />
+        );
+    }
+};
+
+export const getAvatarForProfilePage = (
+    walletID: string,
+    avatarImage?: string,
+    size?: number,
+    canEdit?: boolean,
+) => {
+    if (avatarImage && avatarImage.length > 0) {
+        return (
+            <span className={styles.nft_avatar_wrapper}>
+                {canEdit && (
+                    <>
+                        <div className={styles.nft_edit_overlay}></div>
+                        <div className={styles.nft_edit_icon}>
+                            <AiOutlineFileImage size={24}></AiOutlineFileImage>
+                        </div>
+                    </>
+                )}
+
+                <img
+                    src={avatarImage}
+                    className={`${styles.nft_avatar} ${
+                        canEdit ? styles.can_edit : ''
+                    }`}
+                    style={{
+                        width: size ? size + 'px' : '25px',
+                        height: size ? size + 'px' : '25px',
+                        borderRadius: '50%',
+                    }}
+                ></img>
+            </span>
         );
     } else {
         return (

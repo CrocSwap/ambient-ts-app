@@ -436,7 +436,6 @@ function ChatPanel(props: propsIF) {
             // messageEnd.current.scrollTop = messageEnd.current.scrollHeight - msgElOffsetTop + msgElHeight - messageEnd.current.getBoundingClientRect().height;
             setTimeout(() => {
                 const target = calculateScrollTarget(messageId);
-                domDebug('target', new Date().getTime());
                 if (messageEnd && messageEnd.current) {
                     messageEnd.current.scrollTop = target;
                     if (flashAnimation) {
@@ -473,7 +472,6 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen]);
 
     useEffect(() => {
-        domDebug('messages', messages.length);
         const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == userAddress;
         });
@@ -571,7 +569,6 @@ function ChatPanel(props: propsIF) {
             if (msgEl) {
                 const msgElOffsetTop = (msgEl as HTMLElement).offsetTop;
                 const target = msgElOffsetTop - 120;
-                domDebug('potential scroll target', target);
 
                 return target;
             }
@@ -593,14 +590,6 @@ function ChatPanel(props: propsIF) {
                 if (el.getBoundingClientRect().top > rect.top) {
                     const msgId = el.getAttribute('data-message-id');
                     const msgContent = el.getAttribute('data-message-content');
-                    domDebug('selected message', msgContent ? msgContent : '-');
-                    domDebug('selectedMsgOffet', (el as HTMLElement).offsetTop);
-                    domDebug(
-                        'panelHeight',
-                        messageEnd.current.getBoundingClientRect().height,
-                    );
-                    domDebug('scrollheight', messageEnd.current.scrollHeight);
-                    domDebug('panelScrollTop', messageEnd.current.scrollTop);
                     calculateScrollTarget(msgId ? msgId : '');
                     setLastScrolledMessage(msgId ? msgId : '');
                     break;

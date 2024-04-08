@@ -88,10 +88,10 @@ const useChatSocket = (
         // fromSocketIO: true,
         queryParams: { ...queryParams },
         shouldReconnect: () => true,
-        onOpen: (e) => {
+        onOpen: () => {
             domDebug('connected', getTimeForLog(new Date()));
         },
-        onClose: (e) => {
+        onClose: () => {
             domDebug('disconnected', getTimeForLog(new Date()));
         },
     });
@@ -356,6 +356,7 @@ const useChatSocket = (
     }
 
     useEffect(() => {
+        if (!isChatOpen) return;
         async function checkVerified() {
             const data = await isUserVerified();
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
