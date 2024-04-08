@@ -10,6 +10,7 @@ import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
+import useChatApi from '../components/Chat/Service/ChatApi';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -26,6 +27,10 @@ interface UserDataContextIF {
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
+    userAccountProfile: string | undefined;
+    setUserAccountProfile: Dispatch<SetStateAction<string | undefined>>;
+    isfetchNftTriggered: boolean;
+    setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
     secondaryEnsFromContext: string;
     setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
 }
@@ -54,6 +59,9 @@ export const UserDataContextProvider = (props: {
 
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
     const { disconnect: disconnectUser } = useDisconnect();
+
+    const { getUserAvatar } = useChatApi();
+
     const {
         connect: connectUser,
         connectors,
@@ -73,6 +81,14 @@ export const UserDataContextProvider = (props: {
     const { data: ensNameFromWagmi } = useEnsName({ address: userAddress });
 
     const [ensName, setEnsName] = useState('');
+
+    const [userAccountProfile, setUserAccountProfile] = useState<
+        string | undefined
+    >(undefined);
+
+    const [isfetchNftTriggered, setIsfetchNftTriggered] =
+        useState<boolean>(false);
+
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -91,6 +107,26 @@ export const UserDataContextProvider = (props: {
         })();
     }, [ensNameFromWagmi, userAddress]);
 
+    useEffect(() => {
+        (async () => {
+            if (userAddress) {
+                try {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    getUserAvatar(userAddress).then((result: any) => {
+                        if (result.status === 'OK') {
+                            setUserAccountProfile(
+                                () => result.userData.avatarImage,
+                            );
+                        }
+                    });
+                } catch (error) {
+                    setUserAccountProfile('');
+                    console.error({ error });
+                }
+            }
+        })();
+    }, [userAddress, isUserConnected]);
+
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
@@ -105,6 +141,10 @@ export const UserDataContextProvider = (props: {
         setResolvedAddressInContext,
         secondaryEnsFromContext,
         setSecondaryEnsInContext,
+        userAccountProfile,
+        setUserAccountProfile,
+        setIsfetchNftTriggered,
+        isfetchNftTriggered,
     };
 
     return (

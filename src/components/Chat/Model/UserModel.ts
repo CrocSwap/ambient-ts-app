@@ -3,6 +3,7 @@ export interface User {
     ensName: string;
     walletID: string;
     verifyDate: Date;
+    avatarImage: string;
 }
 
 const hasEnsName = (user: User) => {

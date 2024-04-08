@@ -27,3 +27,12 @@ export const getUserDetailsEndpoint = apiBase + 'auth/getUserByWalletID';
 
 export const updateUnverifiedMessagesEndpoint =
     apiBase + 'messages/updateUnverifiedMessages';
+
+export const saveuserWithAvatarEndpoint =
+    apiBase + 'auth/saveUserWithAvatarImage';
+export const updateUserWithAvatarImageEndpoint =
+    apiBase + 'auth/updateUserWithAvatarImage';
+export const getUserAvatarImageByAccountEndpoint =
+    apiBase + 'auth/getUserAvatarImageByAccount';
+
+export const getUserAvatarEndpoint = apiBase + 'auth/getUserAvatar';

@@ -72,15 +72,11 @@ export default function Points(props: propsIF) {
                             pointsAccrued={
                                 connectedAccountActive
                                     ? connectedUserBlastXp.dataReceived === true
-                                        ? (
-                                              connectedUserBlastXp.data
-                                                  ?.points ?? 0
-                                          ).toLocaleString()
+                                        ? connectedUserBlastXp.data?.points ??
+                                          '0'
                                         : '...'
                                     : resolvedUserBlastXp.dataReceived === true
-                                    ? (
-                                          resolvedUserBlastXp.data?.points ?? 0
-                                      ).toLocaleString()
+                                    ? resolvedUserBlastXp.data?.points ?? '0'
                                     : '...'
                             }
                             logo={blastLogo}
@@ -90,7 +86,15 @@ export default function Points(props: propsIF) {
                         <PointsRow
                             shortName={'BLAST'}
                             longName={'Blast Gold'}
-                            pointsAccrued={'...'}
+                            pointsAccrued={
+                                connectedAccountActive
+                                    ? connectedUserBlastXp.dataReceived === true
+                                        ? connectedUserBlastXp.data?.gold ?? '0'
+                                        : '...'
+                                    : resolvedUserBlastXp.dataReceived === true
+                                    ? resolvedUserBlastXp.data?.gold ?? '0'
+                                    : '...'
+                            }
                             logo={blastLogo}
                         />
                     </div>

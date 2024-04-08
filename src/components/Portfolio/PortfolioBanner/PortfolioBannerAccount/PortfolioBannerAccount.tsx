@@ -1,6 +1,6 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -12,13 +12,26 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../../styled/Common';
-import { PortfolioBannerMainContainer } from '../../../../styled/Components/Portfolio';
+import {
+    PortfolioBannerMainContainer,
+    UpdateProfileButton,
+    ProfileSettingsContainer,
+} from '../../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import NFTBannerAccount from './NFTBannerAccount';
+import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
+import {
+    getAvatar,
+    getAvatarForProfilePage,
+} from '../../../Chat/ChatRenderUtils';
+import useChatApi from '../../../Chat/Service/ChatApi';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
 ) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
+    const [showNFTPage, setShowNFTPage] = useState(false);
 
     const {
         ensName,
@@ -26,7 +39,17 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
     } = props;
-    const { userAddress } = useContext(UserDataContext);
+
+    const {
+        userAddress,
+        userAccountProfile,
+        isfetchNftTriggered,
+        setIsfetchNftTriggered,
+        setUserAccountProfile,
+    } = useContext(UserDataContext);
+
+    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
+        useContext(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -44,6 +67,33 @@ export default function PortfolioBannerAccount(
         : userAddress;
 
     const [_, copy] = useCopyToClipboard();
+
+    const { getUserAvatar } = useChatApi();
+
+    const [userAvatarImage, setUserAvatarImage] = useState(null);
+
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            if (userAddress) {
+                const avatar = await getUserAvatar(userAddress);
+                setUserAvatarImage(avatar);
+                setUserAccountProfile(avatar);
+            }
+        };
+        fetchAvatar();
+    }, [resolvedAddress]);
+
+    useEffect(() => {
+        setShowNFTPage(false);
+    }, [resolvedAddress]);
+
+    domDebug('resolved address', resolvedAddress);
+    domDebug('user address', userAddress);
+    domDebug('ua_profile', userAccountProfile);
+
+    useEffect(() => {
+        console.log(userAvatarImage);
+    }, [userAvatarImage]);
 
     function handleCopyEnsName() {
         copy(
@@ -75,6 +125,17 @@ export default function PortfolioBannerAccount(
         }
     }
 
+    const updateProfile = NFTData && (
+        <UpdateProfileButton
+            onClick={(event: React.MouseEvent<HTMLElement>) => {
+                event.stopPropagation();
+                setShowNFTPage(!showNFTPage);
+            }}
+        >
+            Update Avatar
+        </UpdateProfileButton>
+    );
+
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
@@ -85,7 +146,36 @@ export default function PortfolioBannerAccount(
                 gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                {props.jazziconsToDisplay}
+                <span
+                    onClick={() => {
+                        setShowNFTPage(!showNFTPage);
+                    }}
+                >
+                    <ProfileSettingsContainer
+                        placement={NFTData ? true : false}
+                    >
+                        {userAddress &&
+                            getAvatarForProfilePage(
+                                userAddress,
+                                userAccountProfile,
+                                65,
+                                true,
+                            )}
+                        {/* {userAccountProfile ? (
+                        <img
+                            src={userAccountProfile}
+                            style={{
+                                width: '65px',
+                                height: '65px',
+                                borderRadius: '50%',
+                            }}
+                        ></img>
+                    ) : (
+                        <>{props.jazziconsToDisplay}</>
+                    )} */}
+                        {/* {updateProfile} */}
+                    </ProfileSettingsContainer>
+                </span>
 
                 <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer
@@ -121,6 +211,18 @@ export default function PortfolioBannerAccount(
                     </FlexContainer>
                 </FlexContainer>
             </FlexContainer>
+
+            {showNFTPage && NFTData && (
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                    NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
+                />
+            )}
         </PortfolioBannerMainContainer>
     );
 }

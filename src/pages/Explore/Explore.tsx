@@ -2,10 +2,7 @@ import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import DexTokens from '../../components/Global/Analytics/DexTokens';
-import {
-    ExploreContext,
-    ExploreContextIF,
-} from '../../contexts/ExploreContext';
+import { ExploreContext } from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -13,10 +10,22 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import Toggle from '../../components/Form/Toggle';
 import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
-export default function Explore() {
+interface ExploreIF {
+    view: 'pools' | 'tokens';
+}
+
+export default function Explore(props: ExploreIF) {
+    const { view } = props;
     // full expanded data set
-    const exploreData: ExploreContextIF = useContext(ExploreContext);
+    const {
+        pools,
+        tokens,
+        isExploreDollarizationEnabled,
+        setIsExploreDollarizationEnabled,
+    } = useContext(ExploreContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
@@ -27,15 +36,15 @@ export default function Explore() {
 
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            exploreData.pools.getLimited(poolList, crocEnv, chainData.chainId);
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
         }
     };
 
     // trigger process to fetch and format token data when page loads with
     // ... gatekeeping to prevent re-fetch if data is already loaded
     useEffect(() => {
-        if (crocEnv !== undefined && exploreData.tokens.data.length === 0) {
-            exploreData.tokens.update();
+        if (crocEnv !== undefined && tokens.data.length === 0) {
+            tokens.update();
         }
     }, [crocEnv !== undefined]);
 
@@ -43,14 +52,10 @@ export default function Explore() {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            exploreData.pools.reset();
+            pools.reset();
             // use metadata to get expanded pool data
             getLimitedPools().then(() => {
-                exploreData.pools.getExtra(
-                    poolList,
-                    crocEnv,
-                    chainData.chainId,
-                );
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
             });
         }
     };
@@ -89,17 +94,27 @@ export default function Explore() {
         : 'Top Pools on Ambient';
 
     const titleTextForDOM: string =
-        exploreData.tab.active === 'pools' ? titleTextPools : titleTextTokens;
+        view === 'pools' ? titleTextPools : titleTextTokens;
 
     // logic router to dispatch the correct action for a refresh button click
     function handleRefresh(): void {
-        switch (exploreData.tab.active) {
+        switch (view) {
             case 'pools':
                 getAllPools();
                 break;
             case 'tokens':
-                exploreData.tokens.update();
+                tokens.update();
                 break;
+        }
+    }
+
+    const linkGenExplorePools: linkGenMethodsIF = useLinkGen('explorePools');
+    const linkGenExploreTokens: linkGenMethodsIF = useLinkGen('exploreTokens');
+    function changeView(current: 'pools' | 'tokens') {
+        if (current === 'pools') {
+            linkGenExploreTokens.navigate();
+        } else if (current === 'tokens') {
+            linkGenExplorePools.navigate();
         }
     }
 
@@ -117,28 +132,71 @@ export default function Explore() {
                 >
                     <Text>Pools</Text>
                     <Toggle
-                        isOn={exploreData.tab.active === 'tokens'}
+                        isOn={view === 'tokens'}
                         id={'explore_page_'}
-                        handleToggle={() => exploreData.tab.toggle()}
+                        handleToggle={() => changeView(view)}
                     />
                     <Text>Tokens</Text>
                 </FlexContainer>
-                <Refresh>
-                    <RefreshButton onClick={() => handleRefresh()}>
-                        <RefreshIcon />
-                    </RefreshButton>
-                </Refresh>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={12}
+                    marginLeft='12px'
+                >
+                    {view === 'pools' && (
+                        <DefaultTooltip
+                            interactive
+                            title={'Toggle USD Price Estimates'}
+                            enterDelay={500}
+                        >
+                            <Refresh>
+                                <RefreshButton
+                                    onClick={() =>
+                                        setIsExploreDollarizationEnabled(
+                                            (prev) => !prev,
+                                        )
+                                    }
+                                >
+                                    <DollarizationIcon
+                                        isExploreDollarizationEnabled={
+                                            isExploreDollarizationEnabled
+                                        }
+                                    />
+                                </RefreshButton>
+                            </Refresh>
+                        </DefaultTooltip>
+                    )}
+                    <DefaultTooltip
+                        interactive
+                        title={
+                            view === 'pools'
+                                ? 'Refresh Top Pools'
+                                : 'Refresh Active Tokens'
+                        }
+                        enterDelay={500}
+                    >
+                        <Refresh>
+                            <RefreshButton onClick={() => handleRefresh()}>
+                                <RefreshIcon />
+                            </RefreshButton>
+                        </Refresh>
+                    </DefaultTooltip>
+                </FlexContainer>
             </OptionsWrapper>
 
-            {exploreData.tab.active === 'pools' && (
+            {view === 'pools' && (
                 <TopPools
-                    allPools={exploreData.pools.all}
+                    allPools={pools.all}
                     goToMarket={goToMarket}
+                    isExploreDollarizationEnabled={
+                        isExploreDollarizationEnabled
+                    }
                 />
             )}
-            {exploreData.tab.active === 'tokens' && (
+            {view === 'tokens' && (
                 <DexTokens
-                    dexTokens={exploreData.tokens.data}
+                    dexTokens={tokens.data}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
                 />
@@ -215,4 +273,13 @@ const RefreshButton = styled.button`
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: var(--header2-size);
     cursor: pointer;
+`;
+
+const DollarizationIcon = styled(AiOutlineDollarCircle)<{
+    isExploreDollarizationEnabled?: boolean;
+}>`
+    font-size: var(--header2-size);
+    cursor: pointer;
+    color: ${({ isExploreDollarizationEnabled }) =>
+        isExploreDollarizationEnabled && 'var(--accent1)'};
 `;

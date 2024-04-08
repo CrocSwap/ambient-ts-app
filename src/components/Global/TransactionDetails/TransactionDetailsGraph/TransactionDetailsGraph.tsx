@@ -20,6 +20,9 @@ import {
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
+import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -41,7 +44,9 @@ export default function TransactionDetailsGraph(
         isAccountView,
     } = props;
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
+
     const oneHourMiliseconds = 60 * 60 * 1000;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
@@ -73,6 +78,8 @@ export default function TransactionDetailsGraph(
     const [period, setPeriod] = useState<number | undefined>();
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
+    const [poolPricePixel, setPoolPricePixel] = useState(0);
+    const [poolPrice, setPoolPrice] = useState(0);
     const takeSmallerPeriodForRemoveRange = (diff: number) => {
         if (diff <= 600) {
             return 300;
@@ -113,6 +120,8 @@ export default function TransactionDetailsGraph(
         useState(false);
     const mobileView = useMediaQuery('(min-width: 800px)');
     const [svgWidth, setSvgWidth] = useState(0);
+
+    const { chainId, base, quote, baseDecimals, quoteDecimals } = props.tx;
 
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
@@ -198,15 +207,40 @@ export default function TransactionDetailsGraph(
                     maxNumCandlesNeeded,
                 );
 
-                const offsetInSeconds = 120;
+                const offsetInSeconds = oneHourMiliseconds / 1000;
 
                 const startBoundary =
-                    Math.floor(localMaxTime / 1000) - offsetInSeconds;
+                    Math.floor(localMaxTime / 1000) + offsetInSeconds;
 
                 try {
                     if (!crocEnv) {
                         return;
                     }
+
+                    const poolPriceNonDisplay = cachedQuerySpotPrice(
+                        crocEnv,
+                        base,
+                        quote,
+                        chainId,
+                        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+                    );
+
+                    const poolPrice = toDisplayPrice(
+                        await poolPriceNonDisplay,
+                        baseDecimals,
+                        quoteDecimals,
+                    );
+
+                    const poolPriceDisplay = (
+                        !isAccountView
+                            ? isDenomBase
+                            : !isBaseTokenMoneynessGreaterOrEqual
+                    )
+                        ? 1 / poolPrice
+                        : poolPrice;
+
+                    setPoolPrice(poolPriceDisplay);
+
                     const graphData = await fetchCandleSeriesCroc(
                         fetchEnabled,
                         chainData,
@@ -218,6 +252,7 @@ export default function TransactionDetailsGraph(
                         numCandlesNeeded,
                         crocEnv,
                         cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
                     );
 
                     if (graphData) {
@@ -493,7 +528,9 @@ export default function TransactionDetailsGraph(
                     if (svgWidth !== width) {
                         setSvgWidth(width);
                     } else {
-                        graphData && setIsDataLoading(false);
+                        graphData &&
+                            transactionType !== 'liqchange' &&
+                            setIsDataLoading(false);
                     }
                 });
 
@@ -606,7 +643,7 @@ export default function TransactionDetailsGraph(
                         tx.latestUpdateTime,
                     ]);
 
-                    const minimumDifferenceMinMax = 70;
+                    const minimumDifferenceMinMax = 75;
 
                     if (result) {
                         const minTime = result.min * 1000;
@@ -812,6 +849,31 @@ export default function TransactionDetailsGraph(
             });
         }
     }, [scaleData]);
+
+    useEffect(() => {
+        if (
+            poolPricePixel &&
+            scaleData &&
+            graphData.length > 0 &&
+            transactionType === 'liqchange'
+        ) {
+            const lastDataPixel = scaleData.xScale(graphData[0].time * 1000);
+            const diff = lastDataPixel - poolPricePixel * 10 + 10;
+
+            if (lastDataPixel > poolPricePixel * 10) {
+                const newMaxDomain = scaleData?.xScale
+                    .invert(svgWidth + diff)
+                    .getTime();
+
+                const oldMaxDomain = scaleData?.xScale.domain()[1];
+                scaleData?.xScale.domain([
+                    scaleData?.xScale.domain()[0],
+                    Math.max(newMaxDomain, oldMaxDomain),
+                ]);
+            }
+            render();
+        }
+    }, [scaleData, poolPricePixel, graphData]);
 
     useEffect(() => {
         if (scaleData) {
@@ -1398,16 +1460,53 @@ export default function TransactionDetailsGraph(
                         width: '100%',
                     }}
                 >
-                    <d3fc-svg
-                        id='d3PlotGraph'
-                        ref={d3PlotGraph}
-                        style={{ width: '90%' }}
-                    ></d3fc-svg>
-
+                    <div
+                        style={{
+                            display: 'grid',
+                            width: '100%',
+                            height: '100%',
+                            overflow: 'hidden',
+                            gridTemplateColumns: '1px auto 1fr auto',
+                            gridTemplateRows:
+                                'minmax(0em, max-content) auto 1fr auto',
+                        }}
+                    >
+                        {transactionType === 'liqchange' && (
+                            <TransactionDetailsLiquidityGraph
+                                tx={tx}
+                                isDenomBase={
+                                    !(!isAccountView
+                                        ? isDenomBase
+                                        : !isBaseTokenMoneynessGreaterOrEqual)
+                                }
+                                yScale={scaleData?.yScale}
+                                transactionType={transactionType}
+                                poolPriceDisplay={poolPrice}
+                                setPoolPricePixel={setPoolPricePixel}
+                                poolPricePixel={poolPricePixel}
+                                svgWidth={svgWidth}
+                                lastCandleData={
+                                    graphData ? graphData[0] : undefined
+                                }
+                                setIsDataLoading={setIsDataLoading}
+                            />
+                        )}
+                        <d3fc-svg
+                            id='d3PlotGraph'
+                            ref={d3PlotGraph}
+                            style={{
+                                width: '100%',
+                                display: isDataLoading ? 'none' : 'inline',
+                            }}
+                        ></d3fc-svg>
+                    </div>
                     <d3fc-canvas
                         className='y-axis'
                         ref={d3Yaxis}
-                        style={{ width: mobileView ? '10%' : '15%' }}
+                        style={{
+                            width: mobileView ? '10%' : '15%',
+                            display: isDataLoading ? 'none' : 'inline',
+                        }}
                     ></d3fc-canvas>
                 </div>
                 <d3fc-canvas

@@ -27,10 +27,11 @@ export interface HeaderItem {
 interface propsIF {
     allPools: Array<PoolDataIF>;
     goToMarket: (tknA: string, tknB: string) => void;
+    isExploreDollarizationEnabled: boolean;
 }
 
 function TopPools(props: propsIF) {
-    const { allPools, goToMarket } = props;
+    const { allPools, goToMarket, isExploreDollarizationEnabled } = props;
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
@@ -104,6 +105,9 @@ function TopPools(props: propsIF) {
                                             key={JSON.stringify(pool) + idx}
                                             pool={pool}
                                             goToMarket={goToMarket}
+                                            isExploreDollarizationEnabled={
+                                                isExploreDollarizationEnabled
+                                            }
                                         />
                                     ))
                             ) : (

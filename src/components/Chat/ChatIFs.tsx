@@ -19,3 +19,8 @@ export interface ChatWsDecodedMessage {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload?: any;
 }
+
+export interface AvatarUpdateIF {
+    userId: string;
+    avatarImage: string;
+}
