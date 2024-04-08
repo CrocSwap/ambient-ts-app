@@ -120,7 +120,7 @@ export default function FAQPoints() {
         // domain to use, local vs deployed
         const domain: string = IS_LOCAL_ENV
             ? 'localhost:3000'
-            : 'ambient.finance';
+            : 'https://ambient.finance';
         // the rest of the URL
         const baseURL: string = linkGenCurrent.getFullURL(s);
         // send full navigable URL to clipboard
