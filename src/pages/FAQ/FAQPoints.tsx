@@ -118,10 +118,7 @@ export default function FAQPoints() {
                 'The relative distribution of Gold between pools is based on a set of metrics to normalize relative pool size (i.e. a combination of volume, TVL, liquidity, and some measures to prevent manipulation of these metrics). We may boost certain pools to help bootstrap liquidity as we did with YES/ETH and ORBIT/ETH in the initial distribution. Those pools ended up receiving about 5× more rewards.',
                 'While there are currently no announced Gold boosts, you can generally expect Gold rewards in alt pools to be higher to the extent that our altcoin liquidity is weak relative to ETH/USDB. For example, most alt pools ended up receiving 5-10× boosted rewards in the first epoch, even those outside the announced boosting.',
             ],
-            slugs: [
-                'how-is-gold-distributed-between-pools',
-                'gold-distribution',
-            ],
+            slugs: ['how-is-gold-distributed-between-pools'],
         },
     ];
 
