@@ -75,7 +75,8 @@ export default function FAQPoints() {
             slug: 'how-to-earn-blast-gold',
         },
         {
-            question: 'What is the difference between Ambient/Blast Points?',
+            question:
+                "What's the difference between Ambient Points and Blast Points?",
             answer: [
                 "If you have liquidity positions in pools on Blast you'll earn Ambient Points, Blast Points (which are based on TVL), and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria Blast provides us (TVL) while Blast Gold is optimized for ecosystem metrics.",
                 "The criteria for Gold will not be exactly the same as criteria for Ambient Points; our goal is to align with Blast's objectives such that they continue to send Ambient large amounts of Gold and ultimately that Ambient users earn more Gold. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously, users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.",
