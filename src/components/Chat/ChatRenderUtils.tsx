@@ -168,9 +168,15 @@ export const getAvatarForProfilePage = (
     }
 };
 
-export const getAvatarForUser = (user?: User, size?: number) => {
+export const getAvatarForChat = (user?: User, size?: number) => {
     if (!user) {
         return <Jazzicon diameter={25} seed={jsNumberForAddress('')} />;
     }
-    return getAvatar(user.walletID, user.avatarImage, size ? size : 25);
+    return getAvatar(
+        user.walletID,
+        user.avatarThumnail != undefined && user.avatarThumnail.length > 0
+            ? user.avatarThumnail
+            : user.avatarImage,
+        size ? size : 25,
+    );
 };

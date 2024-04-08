@@ -20,7 +20,7 @@ import PositionBox from '../PositionBox/PositionBox';
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import { ChatVerificationTypes } from '../../ChatEnums';
 import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
-import { getAvatarForUser } from '../../ChatRenderUtils';
+import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
@@ -933,7 +933,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         onClick={goToProfilePage}
                                     >
                                         {/* {myJazzicon} */}
-                                        {getAvatarForUser(
+                                        {getAvatarForChat(
                                             props.userMap?.get(
                                                 props.message.sender,
                                             ),
@@ -949,7 +949,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                     >
                                         <div className={styles.nft_container}>
                                             {/* {myJazzicon} */}
-                                            {getAvatarForUser(
+                                            {getAvatarForChat(
                                                 props.userMap?.get(
                                                     props.message.sender,
                                                 ),
