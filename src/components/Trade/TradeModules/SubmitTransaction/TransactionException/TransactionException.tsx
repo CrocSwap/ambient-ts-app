@@ -3,15 +3,23 @@ import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import TooltipComponent from '../../../../Global/TooltipComponent/TooltipComponent';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     txErrorMessage: string;
 }
 
 export default function TransactionException(props: propsIF) {
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
     const { txErrorMessage } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
+
+    const [_, copy] = useCopyToClipboard();
 
     const isNativeTokenSecondary =
         (isTokenAPrimary && tokenB.address === ZERO_ADDRESS) ||
@@ -22,6 +30,10 @@ export default function TransactionException(props: propsIF) {
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
+    function handleCopyErrorMessage() {
+        copy(formattedErrorMessage);
+        openSnackbar('error message copied', 'info');
+    }
     const suggestionToCheckWalletETHBalance = (
         <p>
             Please verify that the native token (e.g. ETH) balance in your
@@ -60,7 +72,22 @@ export default function TransactionException(props: propsIF) {
                         We apologize for this inconvenience.
                     </p>
                     <DividerDark />
-                    <p>{formattedErrorMessage}</p>
+                    <div className={styles.formatted_error_container}>
+                        <p className={styles.formatted_error}>
+                            {formattedErrorMessage}
+                        </p>
+
+                        <button
+                            className={styles.copy_error}
+                            onClick={handleCopyErrorMessage}
+                        >
+                            Copy Error Message
+                            <TooltipComponent
+                                title='If you have any questions or need further assistance, feel free to copy your error message and paste it in Discord. Our team is here to help!'
+                                placement='bottom'
+                            />
+                        </button>
+                    </div>
                     <DividerDark />
 
                     {!txErrorMessage ? (

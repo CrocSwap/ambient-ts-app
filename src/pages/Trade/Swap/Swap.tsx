@@ -486,7 +486,7 @@ function Swap(props: propsIF) {
 
         let tx;
         try {
-            const sellTokenAddress = tokenA.address;
+            const sellTokenAddress = tokenB.address;
             const buyTokenAddress = tokenB.address;
 
             tx = await performSwap({
