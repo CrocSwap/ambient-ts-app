@@ -173,6 +173,7 @@ function Range() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -884,6 +885,7 @@ function Range() {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -908,6 +910,7 @@ function Range() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             setTxErrorMessage,
+            setTxErrorJSON,
             resetConfirmation,
             activeRangeTxHash,
         });
@@ -1099,6 +1102,7 @@ function Range() {
                         showConfirmation={showConfirmation}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1162,6 +1166,7 @@ function Range() {
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={

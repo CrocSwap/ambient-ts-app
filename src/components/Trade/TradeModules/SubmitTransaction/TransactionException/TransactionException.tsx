@@ -9,13 +9,14 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     txErrorMessage: string;
+    txErrorJSON: string;
 }
 
 export default function TransactionException(props: propsIF) {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const { txErrorMessage } = props;
+    const { txErrorMessage, txErrorJSON } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
 
@@ -31,8 +32,8 @@ export default function TransactionException(props: propsIF) {
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
     function handleCopyErrorMessage() {
-        copy(formattedErrorMessage);
-        openSnackbar('error message copied', 'info');
+        copy(txErrorJSON);
+        openSnackbar('Error message copied to clipboard', 'info');
     }
     const suggestionToCheckWalletETHBalance = (
         <p>
@@ -81,9 +82,9 @@ export default function TransactionException(props: propsIF) {
                             className={styles.copy_error}
                             onClick={handleCopyErrorMessage}
                         >
-                            Copy Error Message
+                            Copy Error Message to Clipboard
                             <TooltipComponent
-                                title='If you have any questions or need further assistance, feel free to copy your error message and paste it in Discord. Our team is here to help!'
+                                title='If you have any questions or need further assistance, please open a ticket on Discord (#open-a-ticket) and paste this error message. https://discord.gg/ambient-finance'
                                 placement='bottom'
                             />
                         </button>
