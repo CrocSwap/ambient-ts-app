@@ -64,6 +64,8 @@ const useChatSocket = (
     );
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
+    const roomRef = useRef<string>(room);
+
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
 
@@ -105,6 +107,8 @@ const useChatSocket = (
     useEffect(() => {
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
+                console.log(socketLastMessage.payload);
+                console.log('.........................');
                 newMsgListener(socketLastMessage.payload);
                 break;
             case 'message-deleted-listener':
@@ -396,7 +400,9 @@ const useChatSocket = (
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
 
     useEffect(() => {
-        sendToSocket('join-room', { roomInfo: room });
+        domDebug('room changed', room);
+        sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
+        roomRef.current = room;
     }, [room]);
 
     useEffect(() => {
@@ -574,7 +580,7 @@ const useChatSocket = (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newMsgListener = (data: any) => {
-        if (data.roomInfo !== room) return;
+        if (data.roomInfo !== room && room != 'Admins') return;
         if (
             data &&
             data.sender &&
