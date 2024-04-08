@@ -5,6 +5,7 @@ import { UserDataContext } from './UserDataContext';
 export interface NftListByChain {
     chainId: string;
     totalNFTCount: number;
+    userHasNFT: boolean;
     data: Array<NftDataIF>;
 }
 
