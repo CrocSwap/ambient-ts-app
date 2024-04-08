@@ -140,20 +140,22 @@ function RangesMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
+    const shouldCopyQuoteToTokenA =
+        tokenAAddress.toLowerCase() === position.quote.toLowerCase() ||
+        tokenBAddress.toLowerCase() === position.base.toLowerCase();
+
     const repositionButton = (
         <Link
             id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
-                tokenA:
-                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
-                        ? position.quote
-                        : position.base,
-                tokenB:
-                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
-                        ? position.base
-                        : position.quote,
+                tokenA: shouldCopyQuoteToTokenA
+                    ? position.quote
+                    : position.base,
+                tokenB: shouldCopyQuoteToTokenA
+                    ? position.base
+                    : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
