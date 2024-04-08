@@ -24,9 +24,12 @@ export default function FAQPoints() {
             if (params) {
                 const elem: HTMLDivElement | null = elementRefs.current[params];
                 elem &&
-                    elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    elem.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                    });
             }
-        }, 500);
+        }, 1500);
     }, [params]);
 
     const [_, copy] = useCopyToClipboard();
