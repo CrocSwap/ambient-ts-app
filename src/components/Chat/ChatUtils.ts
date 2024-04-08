@@ -80,7 +80,7 @@ export const isLink = (url: string) => {
     return urlPattern.test(url);
 };
 
-const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
+const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac|finance)\b.*$/;
 
 export const filterMessage = (message: string) => {
     return blockPattern.test(message);
@@ -132,27 +132,36 @@ export const isValidUrl = (urlString: string) => {
 };
 
 export const isLinkInCrocodileLabsLinks = (word: string) => {
+    const wordDomain = word
+        .replace(/^https?:\/\/(www\.)?/, '')
+        .split('/')[0]
+        .toLowerCase(); // Normalize by removing scheme and 'www.', then get the domain part, ensure lowercase for comparison.
+
     return CROCODILE_LABS_LINKS.some((link: string) => {
         const linkUrl = new URL(link);
-        const linkDomain = linkUrl.hostname.replace(/^www\./, ''); // Remove 'www.' prefix if present
-        const wordDomain = word
-            .replace(/^https?:\/\/(www\.)?/, '')
-            .split('/')[0]; // Remove scheme and 'www.', then get the domain part
+        const linkDomain = linkUrl.hostname.replace(/^www\./, '').toLowerCase(); // Remove 'www.' prefix if present and ensure lowercase.
         return linkDomain === wordDomain;
     });
 };
 
 export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
-    return CROCODILE_LABS_LINKS.some((link: string) => {
-        try {
-            const url = new URL(link);
-            const domain = url.hostname;
-            return word.toLowerCase().includes(domain);
-        } catch (error) {
-            console.error('Invalid URL:', link);
-            return false;
-        }
-    });
+    try {
+        const normalizedWord = word.startsWith('http')
+            ? word
+            : `https://${word}`;
+        const wordUrl = new URL(normalizedWord);
+        const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase(); // Normalize by removing 'www.' and ensure lowercase.
+
+        return CROCODILE_LABS_LINKS.some((link) => {
+            const linkUrl = new URL(link);
+            const linkDomain = linkUrl.hostname
+                .replace(/^www\./, '')
+                .toLowerCase(); // Also remove 'www.' from the link domain.
+            return wordDomain === linkDomain;
+        });
+    } catch (error) {
+        return false;
+    }
 };
 
 export const isMessageIdStoredInLS = (address: string, messageId: string) => {
