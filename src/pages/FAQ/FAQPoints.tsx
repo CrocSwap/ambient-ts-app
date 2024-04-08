@@ -1,11 +1,12 @@
 /* eslint-disable quotes */
 import { useParams } from 'react-router-dom';
 import styles from './FAQ.module.css';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { FiLink } from 'react-icons/fi';
+import { AppStateContext } from '../../contexts/AppStateContext';
 interface questionIF {
     question: string;
     answer: string | string[] | JSX.Element | JSX.Element[];
@@ -14,7 +15,9 @@ interface questionIF {
 
 export default function FAQPoints() {
     const { params } = useParams();
-
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
     const elementRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
     // logic to scroll user to the question specified by params
@@ -72,8 +75,7 @@ export default function FAQPoints() {
             slug: 'how-to-earn-blast-gold',
         },
         {
-            question:
-                'What is the difference between Ambient Points and Blast Points?',
+            question: 'What is the difference between Ambient/Blast Points?',
             answer: [
                 "If you have liquidity positions in pools on Blast you'll earn Ambient Points, Blast Points (which are based on TVL), and Blast Gold. Be aware that Blast Points are distributed directly based on the criteria Blast provides us (TVL) while Blast Gold is optimized for ecosystem metrics.",
                 "The criteria for Gold will not be exactly the same as criteria for Ambient Points; our goal is to align with Blast's objectives such that they continue to send Ambient large amounts of Gold and ultimately that Ambient users earn more Gold. Blast Gold will be heavily based on 2% market depth, so keep orders tight and in-range. Obviously, users on Scroll or Ethereum will not get Blast rewards, but we are hearing things about Scroll incentives coming soon.",
@@ -123,6 +125,7 @@ export default function FAQPoints() {
         const baseURL: string = linkGenCurrent.getFullURL(s);
         // send full navigable URL to clipboard
         copy(domain + baseURL);
+        openSnackbar('Link copied to clipboard', 'info');
     }
 
     return (
