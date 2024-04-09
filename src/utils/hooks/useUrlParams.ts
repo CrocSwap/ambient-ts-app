@@ -15,7 +15,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 // array of all valid params in the app (global, anywhere)
 // must be listed in desired sequence in URL string
-const validParams = ['chain', 'tokenA', 'tokenB', 'limitTick', 'q'] as const;
+const validParams = ['chain', 'tokenA', 'tokenB', 'limitTick'] as const;
 
 // type generated as a union of all string literals in `validParams`
 export type validParamsType = typeof validParams[number];
@@ -59,9 +59,6 @@ export const useUrlParams = (
             case 'pool':
             case 'initpool':
                 paramsForPage = globalParams;
-                break;
-            case 'faqPoints':
-                paramsForPage = ['q'];
                 break;
             // all non-parameterized URL pathways
             default:
