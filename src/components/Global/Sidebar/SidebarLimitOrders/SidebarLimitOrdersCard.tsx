@@ -17,7 +17,7 @@ interface propsIF {
 export default function SidebarLimitOrdersCard(props: propsIF) {
     const { order, handleClick } = props;
     const { tokens } = useContext(TokenContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const baseTokenMoneyness = getMoneynessRankByAddr(order.base);
     const quoteTokenMoneyness = getMoneynessRankByAddr(order.quote);
@@ -29,7 +29,7 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         order,
         tokens,
         isDenomBase,
-        isUsdConversionEnabled,
+        isTradeDollarizationEnabled,
     );
 
     // human-readable limit order value to display in the DOM

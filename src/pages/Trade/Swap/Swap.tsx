@@ -142,6 +142,7 @@ function Swap(props: propsIF) {
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
@@ -469,6 +470,7 @@ function Swap(props: propsIF) {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewSwapTransactionHash('');
     };
 
@@ -531,6 +533,7 @@ function Swap(props: propsIF) {
             console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(parseErrorMessage(error));
+            setTxErrorJSON(JSON.stringify(error));
         }
 
         if (tx) {
@@ -649,6 +652,11 @@ function Swap(props: propsIF) {
             </WarningContainer>
         ) : undefined;
 
+    const showWarning =
+        (priceImpactNumMemo || 0) > 10 &&
+        isTokenAWalletBalanceSufficient &&
+        !isLiquidityInsufficient;
+
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -702,6 +710,7 @@ function Swap(props: propsIF) {
                         primaryQuantity !== '' &&
                         parseFloat(primaryQuantity) > 0
                     }
+                    showWarning={showWarning}
                 />
             }
             modal={
@@ -719,6 +728,7 @@ function Swap(props: propsIF) {
                         newSwapTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         slippageTolerancePercentage={
@@ -739,15 +749,18 @@ function Swap(props: propsIF) {
             button={
                 <Button
                     idForDOM='confirm_swap_button'
+                    style={{ textTransform: 'none' }}
                     title={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
                                 ? swapAllowed
-                                    ? 'Submit Swap'
+                                    ? showWarning
+                                        ? 'I understand the price impact of this swap. Submit anyway!'
+                                        : 'Submit Swap'
                                     : swapButtonErrorMessage
                                 : swapAllowed
-                                ? bypassConfirmSwap.isEnabled
-                                    ? 'Submit Swap'
+                                ? showWarning
+                                    ? 'I understand the price impact of this swap. Confirm anyway!'
                                     : 'Confirm'
                                 : swapButtonErrorMessage
                             : 'Acknowledge'
@@ -765,6 +778,7 @@ function Swap(props: propsIF) {
                             buyQtyString === '') &&
                         areBothAckd
                     }
+                    warning={showWarning}
                     flat
                 />
             }
@@ -775,6 +789,7 @@ function Swap(props: propsIF) {
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
@@ -789,6 +804,7 @@ function Swap(props: propsIF) {
                 sellQtyString !== 'Infinity' ? (
                     <Button
                         idForDOM='approve_token_a_for_swap_module'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

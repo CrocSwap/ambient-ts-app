@@ -19,11 +19,11 @@ import { useMemo } from 'react';
 interface propsIF {
     pool: PoolDataIF;
     goToMarket: (tknA: string, tknB: string) => void;
-    arePricesDollarized: boolean;
+    isExploreDollarizationEnabled: boolean;
 }
 
 export default function PoolRow(props: propsIF) {
-    const { pool, goToMarket, arePricesDollarized } = props;
+    const { pool, goToMarket, isExploreDollarizationEnabled } = props;
 
     // const [isHovered, setIsHovered] = useState(false);
 
@@ -81,9 +81,9 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm left>
                 <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
-            <TableCell hidden sm>
+            <TableCell>
                 <p>
-                    {arePricesDollarized
+                    {isExploreDollarizationEnabled
                         ? pool.usdPriceMoneynessBased !== 0
                             ? getFormattedNumber({
                                   value: pool.usdPriceMoneynessBased,

@@ -180,6 +180,7 @@ function Range(props: RangePropsIF) {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -530,6 +531,10 @@ function Range(props: RangePropsIF) {
         baseTokenDecimals,
         quoteTokenDecimals,
     ]);
+
+    useEffect(() => {
+        resetConfirmation();
+    }, [isTokenAPrimary]);
 
     useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimary(false);
@@ -887,6 +892,7 @@ function Range(props: RangePropsIF) {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -911,6 +917,7 @@ function Range(props: RangePropsIF) {
             setNewRangeTransactionHash,
             setTxErrorCode,
             setTxErrorMessage,
+            setTxErrorJSON,
             resetConfirmation,
             activeRangeTxHash,
         });
@@ -1113,6 +1120,7 @@ function Range(props: RangePropsIF) {
                         showConfirmation={showConfirmation}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1136,6 +1144,7 @@ function Range(props: RangePropsIF) {
             button={
                 <Button
                     idForDOM='submit_range_position_button'
+                    style={{ textTransform: 'none' }}
                     title={
                         areBothAckd
                             ? tokenAAllowed && tokenBAllowed
@@ -1175,6 +1184,7 @@ function Range(props: RangePropsIF) {
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={
@@ -1206,6 +1216,7 @@ function Range(props: RangePropsIF) {
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -1223,6 +1234,7 @@ function Range(props: RangePropsIF) {
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenB.symbol}`

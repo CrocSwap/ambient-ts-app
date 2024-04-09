@@ -149,7 +149,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 onMaxButtonClick={
                     !hideWalletMaxButton ? handleMaxButtonClick : undefined
                 }
-                onRefresh={handleRefresh}
             />
         </>
     );
