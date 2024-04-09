@@ -21,6 +21,17 @@ import JUICE from './JUICE.svg';
 import EZETH from './EZETH.png';
 import GLORY from './GLORY.png';
 import OHNO from './OHNO.png';
+import RPL from './RPL.png';
+import XMON from './XMON.png';
+import MKR from './MKR.png';
+import SWETH from './SWETH.svg';
+import LINK from './LINK.svg';
+import SYN from './SYN.png';
+import LDO from './LDO.svg';
+import BLUR from './BLUR.png';
+import WRSETH from './WRSETH.png';
+import PANDA from './PANDA.jpg';
+import YIELD from './YIELD.jpg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -47,4 +58,15 @@ export {
     EZETH,
     GLORY,
     OHNO,
+    RPL,
+    XMON,
+    MKR,
+    SWETH,
+    LINK,
+    SYN,
+    LDO,
+    BLUR,
+    WRSETH,
+    PANDA,
+    YIELD,
 };

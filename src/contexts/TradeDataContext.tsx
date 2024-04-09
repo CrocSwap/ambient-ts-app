@@ -8,6 +8,8 @@ import {
     goerliETH,
 } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
+import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -66,11 +68,56 @@ export const TradeDataContextProvider = (props: {
 }) => {
     const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
         useAppChain();
-    // const dfltChainId = getDefaultChainId();
-    const dfltTokenA = getDefaultPairForChain(chainData.chainId)[0];
-    const dfltTokenB = getDefaultPairForChain(chainData.chainId)[1];
-    const [tokenA, setTokenA] = React.useState<TokenIF>(dfltTokenA);
-    const [tokenB, setTokenB] = React.useState<TokenIF>(dfltTokenB);
+
+    const savedTokenASymbol = localStorage.getItem('tokenA');
+    const savedTokenBSymbol = localStorage.getItem('tokenB');
+
+    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] = getDefaultPairForChain(
+        chainData.chainId,
+    );
+
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
+
+    const tokensMatchingA =
+        savedTokenASymbol === 'ETH'
+            ? [dfltTokenA]
+            : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+    const tokensMatchingB =
+        savedTokenBSymbol === 'ETH'
+            ? [dfltTokenA]
+            : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+
+    const firstTokenMatchingA = tokensMatchingA[0] || undefined;
+    const firstTokenMatchingB = tokensMatchingB[0] || undefined;
+
+    const isSavedTokenADefaultB = savedTokenASymbol
+        ? translateTokenSymbol(savedTokenASymbol) ===
+          translateTokenSymbol(dfltTokenB.symbol)
+        : false;
+
+    const isSavedTokenBDefaultA = savedTokenBSymbol
+        ? translateTokenSymbol(savedTokenBSymbol) ===
+          translateTokenSymbol(dfltTokenA.symbol)
+        : false;
+
+    const shouldReverseDefaultTokens =
+        isSavedTokenADefaultB || isSavedTokenBDefaultA;
+
+    const [tokenA, setTokenA] = React.useState<TokenIF>(() => {
+        return firstTokenMatchingA
+            ? firstTokenMatchingA
+            : shouldReverseDefaultTokens
+            ? dfltTokenB
+            : dfltTokenA;
+    });
+    const [tokenB, setTokenB] = React.useState<TokenIF>(
+        firstTokenMatchingB
+            ? firstTokenMatchingB
+            : shouldReverseDefaultTokens
+            ? dfltTokenA
+            : dfltTokenB,
+    );
+
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
@@ -80,16 +127,12 @@ export const TradeDataContextProvider = (props: {
     const [didUserFlipDenom, setDidUserFlipDenom] =
         React.useState<boolean>(false);
 
-    // TODO: Not convinced yet this belongs here
-    //  This probably belongs in a separate context
-    // Belongs with the other "primary" values in the tradedata slice
-    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(true);
-
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
             tokenA.address,
             tokenB.address,
         );
+        setAreDefaultTokensUpdatedForChain(true);
 
         if (tokenA.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
             return {
@@ -110,26 +153,37 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    // TODO: this part feels suspicious
-    // Why should we be handling the app chain in a hook
-    // rather than a context?
-
-    useEffect(() => {
-        if (tokenA.chainId !== parseInt(chainData.chainId)) {
-            const [_tokenA, _tokenB] = getDefaultPairForChain(
-                chainData.chainId,
-            );
-            setTokenA(_tokenA);
-            setTokenB(_tokenB);
-        }
-        setAreDefaultTokensUpdatedForChain(true);
-    }, [chainData.chainId]);
-
     const [soloToken, setSoloToken] = React.useState(goerliETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);
-    const [primaryQuantity, setPrimaryQuantity] = React.useState('');
+
+    const [primaryQuantity, setPrimaryQuantity] = React.useState(
+        localStorage.getItem('primaryQuantity') || '',
+    );
+    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(
+        localStorage.getItem('isTokenAPrimary') !== null
+            ? localStorage.getItem('isTokenAPrimary') === 'true'
+            : true,
+    );
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            localStorage.setItem('isTokenAPrimary', 'true');
+        } else {
+            localStorage.setItem('isTokenAPrimary', 'false');
+        }
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
+        localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
+        localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
+    }, [tokenA.address, tokenB.address]);
+
+    useEffect(() => {
+        localStorage.setItem('primaryQuantity', primaryQuantity);
+    }, [primaryQuantity]);
+
     const [limitTick, setLimitTick] = React.useState<number | undefined>(
         undefined,
     );

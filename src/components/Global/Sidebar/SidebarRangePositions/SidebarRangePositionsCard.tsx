@@ -18,7 +18,7 @@ interface propsIF {
 
 export default function SidebarRangePositionsCard(props: propsIF) {
     const { position, handleClick } = props;
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const baseTokenMoneyness = getMoneynessRankByAddr(position.base);
     const quoteTokenMoneyness = getMoneynessRankByAddr(position.quote);
@@ -78,7 +78,7 @@ export default function SidebarRangePositionsCard(props: propsIF) {
 
     const rangeDisplayUsd = `${formattedLowUsdPrice}-${formattedHighUsdPrice}`;
 
-    const rangeDisplay = isUsdConversionEnabled
+    const rangeDisplay = isTradeDollarizationEnabled
         ? rangeDisplayUsd
         : position?.positionType === 'ambient'
         ? 'ambient'

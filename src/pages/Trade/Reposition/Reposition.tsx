@@ -122,11 +122,13 @@ function Reposition() {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRepositionTransactionHash('');
     };
 
@@ -351,6 +353,7 @@ function Reposition() {
         let tx;
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
 
         resetConfirmation();
         setShowConfirmation(true);
@@ -410,6 +413,7 @@ function Reposition() {
             console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(parseErrorMessage(error));
+            setTxErrorJSON(JSON.stringify(error));
         }
 
         let receipt;
@@ -964,6 +968,7 @@ function Reposition() {
                                 }
                                 txErrorCode={txErrorCode}
                                 txErrorMessage={txErrorMessage}
+                                txErrorJSON={txErrorJSON}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
@@ -1010,6 +1015,7 @@ function Reposition() {
                     resetConfirmation={resetConfirmation}
                     txErrorCode={txErrorCode}
                     txErrorMessage={txErrorMessage}
+                    txErrorJSON={txErrorJSON}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={

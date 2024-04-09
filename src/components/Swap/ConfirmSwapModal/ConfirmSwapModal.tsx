@@ -19,6 +19,7 @@ interface propsIF {
     tokenPair: TokenPairIF;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     slippageTolerancePercentage: number;
@@ -42,6 +43,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         tokenPair,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         resetConfirmation,
         showConfirmation,
         slippageTolerancePercentage,
@@ -254,6 +256,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             transactionHash={newSwapTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             showConfirmation={showConfirmation}
             statusText={
                 !showConfirmation

@@ -46,8 +46,8 @@ function RangePriceInfo(props: propsIF) {
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
-        isUsdConversionEnabled,
-        setIsUsdConversionEnabled,
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
     const {
@@ -169,7 +169,7 @@ function RangePriceInfo(props: propsIF) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Min Price</h4>
             <span id='min_price_readable' className={styles.min_price}>
-                {isUsdConversionEnabled ? minPriceUsdEquivalent : minPrice}
+                {isTradeDollarizationEnabled ? minPriceUsdEquivalent : minPrice}
             </span>
         </div>
     ) : (
@@ -186,7 +186,7 @@ function RangePriceInfo(props: propsIF) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Max Price</h4>
             <span id='max_price_readable' className={styles.max_price}>
-                {isUsdConversionEnabled ? maxPriceUsdEquivalent : maxPrice}
+                {isTradeDollarizationEnabled ? maxPriceUsdEquivalent : maxPrice}
             </span>
         </div>
     ) : (
@@ -205,7 +205,7 @@ function RangePriceInfo(props: propsIF) {
             className={styles.price_info_container}
             // below needed to prevent an area between the two price displays from having different cursor
             style={{ cursor: 'pointer' }}
-            onClick={() => setIsUsdConversionEnabled((prev) => !prev)}
+            onClick={() => setIsTradeDollarizationEnabled((prev) => !prev)}
         >
             <div className={styles.price_info_content}>
                 {/* {aprDisplay} */}

@@ -6,7 +6,7 @@ export const getLimitPriceForSidebar = (
     limitOrder: LimitOrderIF,
     tokens: TokenMethodsIF,
     isDenomBase: boolean,
-    isUsdConversionEnabled: boolean,
+    isTradeDollarizationEnabled: boolean,
 ): string => {
     const baseToken = tokens.getTokenByAddress(limitOrder.base);
     const quoteToken = tokens.getTokenByAddress(limitOrder.quote);
@@ -20,7 +20,7 @@ export const getLimitPriceForSidebar = (
 
     let output: string;
 
-    if (isUsdConversionEnabled) {
+    if (isTradeDollarizationEnabled) {
         const nonTruncatedPrice = limitOrder.isBaseTokenMoneynessGreaterOrEqual
             ? limitOrder.baseUsdPrice
                 ? limitOrder.limitPriceDecimalCorrected *

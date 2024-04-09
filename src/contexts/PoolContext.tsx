@@ -31,8 +31,11 @@ interface PoolContextIF {
     dailyVol: number | undefined;
     poolData: PoolStatIF;
     usdPrice: number | undefined;
-    isUsdConversionEnabled: boolean;
-    setIsUsdConversionEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+    usdPriceInverse: number | undefined;
+    isTradeDollarizationEnabled: boolean;
+    setIsTradeDollarizationEnabled: React.Dispatch<
+        React.SetStateAction<boolean>
+    >;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -48,20 +51,21 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
-    const [isUsdConversionEnabled, setIsUsdConversionEnabled] = useState(
-        localStorage.getItem('isUsdConversionEnabled') === 'true',
-    );
+    const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
+        useState(
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true',
+        );
 
     useEffect(() => {
-        const savedUsdConversionPreference =
-            localStorage.getItem('isUsdConversionEnabled') === 'true';
-        if (isUsdConversionEnabled !== savedUsdConversionPreference) {
+        const savedTradeDollarizationPreference =
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true';
+        if (isTradeDollarizationEnabled !== savedTradeDollarizationPreference) {
             localStorage.setItem(
-                'isUsdConversionEnabled',
-                isUsdConversionEnabled.toString(),
+                'isTradeDollarizationEnabled',
+                isTradeDollarizationEnabled.toString(),
             );
         }
-    }, [isUsdConversionEnabled]);
+    }, [isTradeDollarizationEnabled]);
 
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
@@ -146,6 +150,16 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
             : undefined
         : undefined;
 
+    const usdPriceInverse = poolPriceDisplay
+        ? isDenomBase
+            ? basePrice
+                ? poolPriceDisplay * basePrice
+                : undefined
+            : quotePrice
+            ? (1 / poolPriceDisplay) * quotePrice
+            : undefined
+        : undefined;
+
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
         (async () => {
@@ -189,8 +203,9 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         dailyVol,
         poolData,
         usdPrice,
-        isUsdConversionEnabled,
-        setIsUsdConversionEnabled,
+        usdPriceInverse,
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
     };
 
     return (

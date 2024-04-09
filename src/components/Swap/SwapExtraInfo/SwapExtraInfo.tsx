@@ -16,6 +16,7 @@ interface propsIF {
     isOnTradeRoute?: boolean;
     effectivePriceWithDenom: number | undefined;
     showExtraInfoDropdown: boolean;
+    showWarning: boolean;
 }
 
 function SwapExtraInfo(props: propsIF) {
@@ -26,9 +27,10 @@ function SwapExtraInfo(props: propsIF) {
         liquidityProviderFeeString,
         swapGasPriceinDollars,
         showExtraInfoDropdown,
+        showWarning,
     } = props;
 
-    const { poolPriceDisplay, isUsdConversionEnabled, usdPrice } =
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
@@ -123,7 +125,7 @@ function SwapExtraInfo(props: propsIF) {
         ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
         : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
 
-    const conversionRate = isUsdConversionEnabled
+    const conversionRate = isTradeDollarizationEnabled
         ? conversionRateUsd
         : conversionRateNonUsd;
 
@@ -133,6 +135,7 @@ function SwapExtraInfo(props: propsIF) {
             conversionRate={conversionRate}
             gasPrice={swapGasPriceinDollars}
             showDropdown={showExtraInfoDropdown}
+            showWarning={showWarning}
         />
     );
 }

@@ -25,7 +25,7 @@ function TradeChartsTokenInfo() {
         isPoolPriceChangePositive,
         poolPriceChangePercent,
         usdPrice,
-        isUsdConversionEnabled,
+        isTradeDollarizationEnabled,
     } = useContext(PoolContext);
     const { favePools } = useContext(UserPreferenceContext);
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
@@ -55,7 +55,7 @@ function TradeChartsTokenInfo() {
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
-    const poolPrice = isUsdConversionEnabled
+    const poolPrice = isTradeDollarizationEnabled
         ? usdPrice
             ? getFormattedNumber({ value: usdPrice, prefix: '$' })
             : '…'
