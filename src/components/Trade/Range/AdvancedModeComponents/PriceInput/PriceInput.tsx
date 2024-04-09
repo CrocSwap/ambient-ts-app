@@ -43,6 +43,8 @@ function PriceInput(props: propsIF) {
             ? '+' + percentageDifference
             : percentageDifference.toString();
 
+    console.log({ fieldId });
+
     return (
         <FlexContainer
             flexDirection='column'

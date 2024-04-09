@@ -36,7 +36,10 @@ import {
 } from '../../../pages/Trade/Range/Range';
 import { FlexContainer } from '../../../styled/Common';
 
-export default function RangeWidthControl() {
+interface PropsIF {
+    isEditPanel?: boolean;
+}
+export default function RangeWidthControl(props: PropsIF) {
     // current URL parameter string
     const { params } = useParams();
 
@@ -63,6 +66,10 @@ export default function RangeWidthControl() {
     // const { bypassConfirmRepo, repoSlippage } = useContext(
     //     UserPreferenceContext,
     // );
+    const isEditEnabledLocally =
+        process.env.REACT_APP_IS_EDIT_ENABLED !== undefined
+            ? process.env.REACT_APP_IS_EDIT_ENABLED === 'true'
+            : true;
 
     const {
         simpleRangeWidth,
@@ -720,9 +727,11 @@ export default function RangeWidthControl() {
 
     return (
         <div className={styles.reposition_content}>
-            <div className={styles.advanced_toggle_container}>
-                <AdvancedModeToggle />
-            </div>
+            {!props.isEditPanel && isEditEnabledLocally && (
+                <div className={styles.advanced_toggle_container}>
+                    <AdvancedModeToggle />
+                </div>
+            )}
             <FlexContainer flexDirection='column' height='120px'>
                 {advancedMode ? (
                     <div className={styles.advanced_info_container}>
