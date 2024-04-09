@@ -142,9 +142,29 @@ function MinMaxPrice(props: propsIF) {
         lowBoundOnBlur();
     };
 
+    const onEnterLowBoundInput = (
+        event: ChangeEvent<HTMLInputElement> | undefined,
+    ): void => {
+        isDenomBase
+            ? handleMinPriceChangeEvent(event)
+            : handleMaxPriceChangeEvent(event);
+        // flip an arbitrary bool in local state of `Range.tsx`
+        lowBoundOnBlur();
+    };
+
     // event handler for blurring the `Max Price` input field
     const blurHighBoundInput = (
         event: FocusEvent<HTMLInputElement, Element>,
+    ): void => {
+        isDenomBase
+            ? handleMaxPriceChangeEvent(event)
+            : handleMinPriceChangeEvent(event);
+        // flip an arbitrary bool in local state of `Range.tsx`
+        highBoundOnBlur();
+    };
+
+    const onEnterHighBoundInput = (
+        event: ChangeEvent<HTMLInputElement> | undefined,
     ): void => {
         isDenomBase
             ? handleMaxPriceChangeEvent(event)
@@ -169,6 +189,7 @@ function MinMaxPrice(props: propsIF) {
                     percentageDifference={minPricePercentage}
                     handleChangeEvent={() => undefined}
                     onBlur={blurLowBoundInput}
+                    onEnter={onEnterLowBoundInput}
                     increaseTick={
                         isDenomBase ? decreaseHighTick : increaseLowTick
                     }
@@ -182,6 +203,7 @@ function MinMaxPrice(props: propsIF) {
                     percentageDifference={maxPricePercentage}
                     handleChangeEvent={() => undefined}
                     onBlur={blurHighBoundInput}
+                    onEnter={onEnterHighBoundInput}
                     increaseTick={
                         isDenomBase ? decreaseLowTick : increaseHighTick
                     }

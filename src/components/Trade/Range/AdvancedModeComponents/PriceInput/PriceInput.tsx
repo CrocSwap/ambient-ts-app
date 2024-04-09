@@ -16,6 +16,7 @@ interface propsIF {
     percentageDifference: number;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     onBlur: FocusEventHandler<HTMLInputElement>;
+    onEnter: (evt?: ChangeEvent<HTMLInputElement>) => void;
     increaseTick: () => void;
     decreaseTick: () => void;
 }
@@ -33,6 +34,7 @@ function PriceInput(props: propsIF) {
         percentageDifference,
         handleChangeEvent,
         onBlur,
+        onEnter,
         increaseTick,
         decreaseTick,
     } = props;
@@ -42,6 +44,14 @@ function PriceInput(props: propsIF) {
         percentageDifference >= 0
             ? '+' + percentageDifference
             : percentageDifference.toString();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleKeyDown = (e: any) => {
+        const target = e.target as HTMLInputElement;
+        if (e.key === 'Enter') {
+            target && onEnter(e); // Trigger blur event
+        }
+    };
 
     return (
         <FlexContainer
@@ -68,12 +78,13 @@ function PriceInput(props: propsIF) {
                 >
                     <PriceInputStyled
                         id={`${fieldId}-price-input-quantity`}
-                        type='text'
+                        type='string'
                         onChange={(event: ChangeEvent<HTMLInputElement>) =>
                             handleChangeEvent(event)
                         }
+                        onKeyDown={handleKeyDown}
                         onBlur={onBlur}
-                        inputMode='decimal'
+                        inputMode='text'
                         autoComplete='off'
                         autoCorrect='off'
                         min='0'
