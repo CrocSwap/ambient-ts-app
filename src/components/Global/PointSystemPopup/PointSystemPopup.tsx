@@ -56,17 +56,11 @@ export default function PointSystemPopup(props: PropsIF) {
         dismissPointSystemPopup({ ctaId: 'points_modal_cta' });
     };
     // Any location we won't to exclude the popup from goes here
-    const excludedLocations = [
-        '/404',
-        '/terms',
-        '/privacy',
-        '/faq',
-        '/trade',
-        '/xp',
-    ];
+    const excludedLocations = ['/404', '/terms', '/privacy', '/trade', '/xp'];
 
     if (
         excludedLocations.includes(currentLocation) ||
+        currentLocation.includes('/faq') ||
         !isEnabledLocally ||
         isSmallScreen
     )

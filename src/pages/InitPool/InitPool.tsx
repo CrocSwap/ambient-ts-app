@@ -970,6 +970,8 @@ export default function InitPool() {
     >('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
+
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
     const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
@@ -984,6 +986,7 @@ export default function InitPool() {
     const resetConfirmation = () => {
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -1009,6 +1012,7 @@ export default function InitPool() {
         setIsTxCompletedInit,
         setTxErrorCode,
         setTxErrorMessage,
+        setTxErrorJSON,
         resetConfirmation,
     );
 
@@ -1092,6 +1096,7 @@ export default function InitPool() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             setTxErrorMessage,
+            setTxErrorJSON,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1774,6 +1779,7 @@ export default function InitPool() {
         isTokenABase,
         errorCode: txErrorCode,
         txErrorMessage: txErrorMessage,
+        txErrorJSON: txErrorJSON,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,
