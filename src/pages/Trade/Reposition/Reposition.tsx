@@ -5,7 +5,7 @@ import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
-import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
+
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
@@ -34,15 +34,12 @@ import {
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
     isStablePair,
-    roundDownTick,
-    roundUpTick,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
@@ -56,9 +53,6 @@ import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Range/Range';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
-import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import RangeWidthControl from '../../../components/Global/RangeWidthControl/RangeWidthControl';
 
 function Reposition() {
@@ -76,7 +70,7 @@ function Reposition() {
         activeNetwork,
         provider,
         ethMainnetUsdPrice,
-        chainData: { blockExplorer, gridSize },
+        chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -102,12 +96,8 @@ function Reposition() {
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
-        setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
 
-        advancedHighTick,
-        advancedLowTick,
-        advancedMode,
         // eslint-disable-next-line
         setAdvancedHighTick,
         // eslint-disable-next-line
@@ -211,33 +201,11 @@ function Reposition() {
     const baseTokenDecimals = position.baseDecimals || 18;
     const quoteTokenDecimals = position.quoteDecimals || 18;
 
-    const currentPoolDisplayPriceInBase =
-        1 /
-        toDisplayPrice(
-            currentPoolPriceNonDisplay,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-        );
-
     const currentPoolDisplayPriceInQuote = toDisplayPrice(
         currentPoolPriceNonDisplay,
         baseTokenDecimals,
         quoteTokenDecimals,
     );
-
-    const truncatedCurrentPoolDisplayPriceInBase = getFormattedNumber({
-        value: currentPoolDisplayPriceInBase,
-    });
-    const truncatedCurrentPoolDisplayPriceInQuote = getFormattedNumber({
-        value: currentPoolDisplayPriceInQuote,
-    });
-
-    const currentPoolPriceDisplay =
-        currentPoolPriceNonDisplay === 0
-            ? '...'
-            : isDenomBase
-            ? truncatedCurrentPoolDisplayPriceInBase
-            : truncatedCurrentPoolDisplayPriceInQuote;
 
     const handleModalOpen = () => {
         resetConfirmation();
@@ -577,34 +545,6 @@ function Reposition() {
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
     const [newValueNum, setNewValueNum] = useState<number | undefined>();
 
-    const valueLossExceedsThreshold = useMemo(() => {
-        if (newValueNum === undefined) return false;
-        const priceImpactNum =
-            (newValueNum - position.totalValueUSD) / position.totalValueUSD;
-        return priceImpactNum < -0.02;
-        // change color to red if value loss greater than 2%
-    }, [newValueNum, position.totalValueUSD]);
-
-    const valueImpactString = useMemo(() => {
-        if (newValueNum === undefined) return '...';
-        const priceImpactNum =
-            (newValueNum - position.totalValueUSD) / position.totalValueUSD;
-        const isNegative = priceImpactNum < 0;
-        const formattedNum = getFormattedNumber({
-            value: Math.abs(priceImpactNum) * 100,
-            isPercentage: true,
-        });
-        const formattedDisplayString = isNegative
-            ? `(${formattedNum}%)`
-            : `${formattedNum}%`;
-        return formattedDisplayString;
-    }, [newValueNum, position.totalValueUSD]);
-
-    const newValueString = useMemo(() => {
-        if (newValueNum === undefined) return '...';
-        return getFormattedNumber({ value: newValueNum, prefix: '$' });
-    }, [newValueNum]);
-
     const [basePrice, setBasePrice] = useState<number | undefined>();
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
@@ -774,7 +714,7 @@ function Reposition() {
         debouncedHighTick,
         currentPoolPriceTick,
     ]);
-
+    // eslint-disable-next-line
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -818,10 +758,6 @@ function Reposition() {
         </a>
     );
 
-    const isCurrentPositionEmpty =
-        currentBaseQtyDisplayTruncated === '0.00' &&
-        currentQuoteQtyDisplayTruncated === '0.00';
-
     const isCurrentPositionEmptyOrLoading =
         (currentBaseQtyDisplayTruncated === '0.00' &&
             currentQuoteQtyDisplayTruncated === '0.00') ||
@@ -830,9 +766,9 @@ function Reposition() {
         (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
     // -----------------------------------------------------------------------
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
     // eslint-disable-next-line
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    // eslint-disable-next-line
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
     // eslint-disable-next-line
     const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
@@ -847,62 +783,6 @@ function Reposition() {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
         useState(DEFAULT_MAX_PRICE_DIFF_PERCENTAGE);
 
-    const ticksInParams =
-        location.pathname.includes('lowTick') &&
-        location.pathname.includes('highTick');
-    const shouldResetAdvancedLowTick =
-        !ticksInParams &&
-        (advancedHighTick > currentPoolPriceTick + 100000 ||
-            advancedLowTick < currentPoolPriceTick - 100000);
-    const shouldResetAdvancedHighTick =
-        !ticksInParams &&
-        (advancedHighTick > currentPoolPriceTick + 100000 ||
-            advancedLowTick < currentPoolPriceTick - 100000);
-
-    // default low tick to seed in the DOM (range lower value)
-    const defaultLowTick = useMemo<number>(() => {
-        const value: number = shouldResetAdvancedLowTick
-            ? roundDownTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedLowTick;
-        return value;
-    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
-
-    const defaultHighTick = useMemo<number>(() => {
-        const value: number = shouldResetAdvancedHighTick
-            ? roundUpTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedHighTick;
-        return value;
-    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
-
-    const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
-
-    const MinMaxProps = {
-        minPricePercentage: minPriceDifferencePercentage,
-        maxPricePercentage: maxPriceDifferencePercentage,
-        minPriceInputString: minPriceInputString,
-        maxPriceInputString: maxPriceInputString,
-        setMinPriceInputString: setMaxPriceInputString,
-        setMaxPriceInputString: setMaxPriceInputString,
-        disable: isInvalidRange || !isPoolInitialized,
-        isDenomBase: isDenomBase,
-        highBoundOnBlur: () => setRangeHighBoundFieldBlurred(true),
-        lowBoundOnBlur: () => setRangeLowBoundFieldBlurred(true),
-        rangeLowTick: defaultLowTick,
-        rangeHighTick: defaultHighTick,
-        maxPrice: 10,
-        minPrice: 100,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
-    };
-
     return (
         <>
             <div className={styles.repositionContainer}>
@@ -913,52 +793,7 @@ function Reposition() {
                 />
                 <div className={styles.reposition_content}>
                     <RangeWidthControl />
-                    {/* <AdvancedModeToggle />
-                    {advancedMode ? (
-                        <div className={styles.advanced_info_container}>
-                            <MinMaxPrice {...MinMaxProps} />
-                        </div>
-                    ) : (
-                        <RangeWidth
-                            rangeWidthPercentage={rangeWidthPercentage}
-                            setRangeWidthPercentage={setRangeWidthPercentage}
-                            setRescaleRangeBoundariesWithSlider={
-                                setRescaleRangeBoundariesWithSlider
-                            }
-                        />
-                    )}
 
-                    <RepositionPriceInfo
-                        position={position}
-                        currentPoolPriceDisplay={currentPoolPriceDisplay}
-                        currentPoolPriceTick={currentPoolPriceTick}
-                        rangeWidthPercentage={rangeWidthPercentage}
-                        minPriceDisplay={minPriceDisplay}
-                        maxPriceDisplay={maxPriceDisplay}
-                        currentBaseQtyDisplayTruncated={
-                            currentBaseQtyDisplayTruncated
-                        }
-                        currentQuoteQtyDisplayTruncated={
-                            currentQuoteQtyDisplayTruncated
-                        }
-                        newBaseQtyDisplay={newBaseQtyDisplay}
-                        newQuoteQtyDisplay={newQuoteQtyDisplay}
-                        rangeGasPriceinDollars={rangeGasPriceinDollars}
-                        currentMinPrice={
-                            isDenomBase
-                                ? position?.lowRangeDisplayInBase
-                                : position?.lowRangeDisplayInQuote
-                        }
-                        currentMaxPrice={
-                            isDenomBase
-                                ? position?.highRangeDisplayInBase
-                                : position?.highRangeDisplayInQuote
-                        }
-                        newValueString={newValueString}
-                        valueImpactString={valueImpactString}
-                        valueLossExceedsThreshold={valueLossExceedsThreshold}
-                        isCurrentPositionEmpty={isCurrentPositionEmpty}
-                    /> */}
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (
                             <SubmitTransaction

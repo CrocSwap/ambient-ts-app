@@ -6,9 +6,7 @@ import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/Mi
 import { motion } from 'framer-motion';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { RangeContext } from '../../../contexts/RangeContext';
-import EditLiqPriceInfo from '../../Trade/EditLiquidity/EditLiqPriceInfo/EditLiqPriceInfo';
-import { SiPandas } from 'react-icons/si';
-import Reposition from '../../../pages/Trade/Reposition/Reposition';
+
 import RangeWidthControl from '../RangeWidthControl/RangeWidthControl';
 
 interface RangeBoundsProps {

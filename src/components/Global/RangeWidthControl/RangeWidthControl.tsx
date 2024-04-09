@@ -1,36 +1,24 @@
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import styles from './RangeWidthControl.module.css';
 import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import RangeWidth from '../../Form/RangeWidth/RangeWidth';
 import RepositionPriceInfo from '../../Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import { PositionIF, PositionServerIF } from '../../../ambient-utils/types';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { RangeContext } from '../../../contexts/RangeContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
     getPositionData,
-    isStablePair,
     roundDownTick,
     roundUpTick,
 } from '../../../ambient-utils/dataLayer';
-import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
@@ -48,114 +36,7 @@ import {
 } from '../../../pages/Trade/Range/Range';
 import { FlexContainer } from '../../../styled/Common';
 
-interface RangeWidthControlPropsIF {
-    advancedMode: boolean;
-    position: PositionIF;
-    // min max price
-    minPricePercentage: number;
-    maxPricePercentage: number;
-    minPriceInputString: string;
-    maxPriceInputString: string;
-    setMinPriceInputString: Dispatch<SetStateAction<string>>;
-    setMaxPriceInputString: Dispatch<SetStateAction<string>>;
-    disable?: boolean;
-    isDenomBase: boolean;
-    lowBoundOnBlur: () => void;
-    highBoundOnBlur: () => void;
-    rangeLowTick: number;
-    rangeHighTick: number;
-    maxPrice: number;
-    minPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
-
-    // range width
-    rangeWidthPercentage: number;
-    setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
-
-    // price info
-
-    currentPoolPriceTick: number;
-    currentPoolPriceDisplay: string;
-    isConfirmModal?: boolean;
-    minPriceDisplay: string;
-    maxPriceDisplay: string;
-    currentBaseQtyDisplayTruncated: string;
-    currentQuoteQtyDisplayTruncated: string;
-    newBaseQtyDisplay: string;
-    newQuoteQtyDisplay: string;
-    rangeGasPriceinDollars: string | undefined;
-    currentMinPrice: string;
-    currentMaxPrice: string;
-    newValueString: string;
-    valueImpactString: string;
-    valueLossExceedsThreshold: boolean;
-    isCurrentPositionEmpty: boolean;
-}
 export default function RangeWidthControl() {
-    //     const { advancedMode,
-    //         position,
-    //         //  ---------------
-    //         minPricePercentage,
-    //         maxPricePercentage,
-    //         setMinPriceInputString,
-    //         setMaxPriceInputString,
-    //         disable,
-    //         isDenomBase,
-    //         lowBoundOnBlur,
-    //         highBoundOnBlur,
-    //         rangeLowTick,
-    //         rangeHighTick,
-    //         maxPrice,
-    //         minPrice,
-    //         setMaxPrice,
-    //         setMinPrice,
-    //         minPriceInputString,
-    //         maxPriceInputString,
-    // // -----------------------------
-    //         rangeWidthPercentage,
-    //         setRangeWidthPercentage,
-    //         setRescaleRangeBoundariesWithSlider,
-    //         // --------------------------------------
-    //         currentPoolPriceDisplay,
-    //         minPriceDisplay,
-    //         maxPriceDisplay,
-    //         currentBaseQtyDisplayTruncated,
-    //         currentQuoteQtyDisplayTruncated,
-    //         newBaseQtyDisplay,
-    //         newQuoteQtyDisplay,
-    //         rangeGasPriceinDollars,
-    //         currentMinPrice,
-    //         currentMaxPrice,
-    //         newValueString,
-    //         valueImpactString,
-    //         currentPoolPriceTick,
-    //         valueLossExceedsThreshold,
-    //         isCurrentPositionEmpty,
-
-    //     } = props
-
-    //     const MinMaxProps = {
-    //         minPricePercentage,
-    //         maxPricePercentage,
-    //         setMinPriceInputString,
-    //         setMaxPriceInputString,
-    //         minPriceInputString,
-    //         maxPriceInputString,
-
-    //         disable,
-    //         isDenomBase,
-    //         lowBoundOnBlur,
-    //         highBoundOnBlur,
-    //         rangeLowTick,
-    //         rangeHighTick,
-    //         maxPrice,
-    //         minPrice,
-    //         setMaxPrice,
-    //         setMinPrice,
-    //     };
-
     // current URL parameter string
     const { params } = useParams();
 
@@ -170,7 +51,7 @@ export default function RangeWidthControl() {
         activeNetwork,
         provider,
         ethMainnetUsdPrice,
-        chainData: { blockExplorer, gridSize },
+        chainData: { gridSize },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -179,17 +60,10 @@ export default function RangeWidthControl() {
         isActiveNetworkBlast,
         isActiveNetworkScroll,
     } = useContext(ChainDataContext);
-    const { bypassConfirmRepo, repoSlippage } = useContext(
-        UserPreferenceContext,
-    );
-    const {
-        addPendingTx,
-        addReceipt,
-        addTransactionByType,
-        addPositionUpdate,
-        removePendingTx,
-        updateTransactionHash,
-    } = useContext(ReceiptContext);
+    // const { bypassConfirmRepo, repoSlippage } = useContext(
+    //     UserPreferenceContext,
+    // );
+
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
@@ -209,13 +83,13 @@ export default function RangeWidthControl() {
     } = useContext(RangeContext);
     const {
         isDenomBase,
-        tokenA,
-        tokenB,
-        isTokenABase,
+        // tokenA,
+        // tokenB,
+        // isTokenABase,
         poolPriceNonDisplay: currentPoolPriceNonDisplay,
         getDefaultRangeWidthForTokenPair,
     } = useContext(TradeDataContext);
-    const { userAddress } = useContext(UserDataContext);
+    // const { userAddress } = useContext(UserDataContext);
     const locationHook = useLocation();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
@@ -236,14 +110,14 @@ export default function RangeWidthControl() {
 
     const { position } = locationHook.state as { position: PositionIF };
 
-    const slippageTolerancePercentage = isStablePair(
-        position.base,
-        position.quote,
-    )
-        ? repoSlippage.stable
-        : repoSlippage.volatile;
+    // const slippageTolerancePercentage = isStablePair(
+    //     position.base,
+    //     position.quote,
+    // )
+    //     ? repoSlippage.stable
+    //     : repoSlippage.volatile;
 
-    const { posHashTruncated } = useProcessRange(position, crocEnv);
+    // const { posHashTruncated } = useProcessRange(position, crocEnv);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -276,10 +150,6 @@ export default function RangeWidthControl() {
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
-
-    const isPositionInRange =
-        position.bidTick <= currentPoolPriceTick &&
-        currentPoolPriceTick <= position.askTick;
 
     const baseTokenDecimals = position.baseDecimals || 18;
     const quoteTokenDecimals = position.quoteDecimals || 18;
@@ -629,77 +499,77 @@ export default function RangeWidthControl() {
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
 
-    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                true,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMinPriceDisplayTruncated,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            debouncedLowTick,
-            debouncedHighTick,
-        ],
-    );
+    // const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+    //     () =>
+    //         getPinnedPriceValuesFromTicks(
+    //             true,
+    //             baseTokenDecimals,
+    //             quoteTokenDecimals,
+    //             debouncedLowTick,
+    //             debouncedHighTick,
+    //             lookupChain(position.chainId).gridSize,
+    //         ).pinnedMinPriceDisplayTruncated,
+    //     [
+    //         baseTokenDecimals,
+    //         quoteTokenDecimals,
+    //         debouncedLowTick,
+    //         debouncedHighTick,
+    //     ],
+    // );
 
-    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                false,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMinPriceDisplayTruncated,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            debouncedLowTick,
-            debouncedHighTick,
-        ],
-    );
+    // const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+    //     () =>
+    //         getPinnedPriceValuesFromTicks(
+    //             false,
+    //             baseTokenDecimals,
+    //             quoteTokenDecimals,
+    //             debouncedLowTick,
+    //             debouncedHighTick,
+    //             lookupChain(position.chainId).gridSize,
+    //         ).pinnedMinPriceDisplayTruncated,
+    //     [
+    //         baseTokenDecimals,
+    //         quoteTokenDecimals,
+    //         debouncedLowTick,
+    //         debouncedHighTick,
+    //     ],
+    // );
 
-    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                true,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            debouncedLowTick,
-            debouncedHighTick,
-        ],
-    );
+    // const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+    //     () =>
+    //         getPinnedPriceValuesFromTicks(
+    //             true,
+    //             baseTokenDecimals,
+    //             quoteTokenDecimals,
+    //             debouncedLowTick,
+    //             debouncedHighTick,
+    //             lookupChain(position.chainId).gridSize,
+    //         ).pinnedMaxPriceDisplayTruncated,
+    //     [
+    //         baseTokenDecimals,
+    //         quoteTokenDecimals,
+    //         debouncedLowTick,
+    //         debouncedHighTick,
+    //     ],
+    // );
 
-    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                false,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            debouncedLowTick,
-            debouncedHighTick,
-        ],
-    );
+    // const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+    //     () =>
+    //         getPinnedPriceValuesFromTicks(
+    //             false,
+    //             baseTokenDecimals,
+    //             quoteTokenDecimals,
+    //             debouncedLowTick,
+    //             debouncedHighTick,
+    //             lookupChain(position.chainId).gridSize,
+    //         ).pinnedMaxPriceDisplayTruncated,
+    //     [
+    //         baseTokenDecimals,
+    //         quoteTokenDecimals,
+    //         debouncedLowTick,
+    //         debouncedHighTick,
+    //     ],
+    // );
     // CHANGE FOR EDIT
 
     useEffect(() => {
@@ -767,12 +637,12 @@ export default function RangeWidthControl() {
         currentBaseQtyDisplayTruncated === '0.00' &&
         currentQuoteQtyDisplayTruncated === '0.00';
 
-    const isCurrentPositionEmptyOrLoading =
-        (currentBaseQtyDisplayTruncated === '0.00' &&
-            currentQuoteQtyDisplayTruncated === '0.00') ||
-        (currentBaseQtyDisplayTruncated === '...' &&
-            currentQuoteQtyDisplayTruncated === '...') ||
-        (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
+    // const isCurrentPositionEmptyOrLoading =
+    //     (currentBaseQtyDisplayTruncated === '0.00' &&
+    //         currentQuoteQtyDisplayTruncated === '0.00') ||
+    //     (currentBaseQtyDisplayTruncated === '...' &&
+    //         currentQuoteQtyDisplayTruncated === '...') ||
+    //     (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
     // -----------------------------------------------------------------------
     const isPoolInitialized = useSimulatedIsPoolInitialized();
