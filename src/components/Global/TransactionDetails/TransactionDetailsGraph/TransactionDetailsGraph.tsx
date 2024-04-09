@@ -1360,7 +1360,10 @@ export default function TransactionDetailsGraph(
                                 isSmallRange = diff < 70 && diff > 30;
                                 if (diff > 10) {
                                     verticalLineData.push({
-                                        name: ' Updated',
+                                        name:
+                                            tx.positionLiq === 0
+                                                ? ' Remove Liq.'
+                                                : ' Update Liq.',
                                         value: tx.latestUpdateTime * 1000,
                                     });
                                 }
