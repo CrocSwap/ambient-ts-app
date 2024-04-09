@@ -13,6 +13,7 @@ interface propsIF {
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     startDisplayPrice: number;
@@ -29,6 +30,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         newLimitOrderTransactionHash,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         resetConfirmation,
         showConfirmation,
         startDisplayPrice,
@@ -134,6 +136,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             transactionHash={newLimitOrderTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             statusText={
                 !showConfirmation
                     ? limitAllowed
