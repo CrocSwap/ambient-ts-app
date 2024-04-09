@@ -324,7 +324,11 @@ function RangesMenu(props: propsIF) {
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
-            {IS_EDIT_ENABLED && userMatchesConnectedAccount ? editButton : null}
+            {IS_EDIT_ENABLED &&
+            !showRepositionButton &&
+            userMatchesConnectedAccount
+                ? editButton
+                : null}
         </div>
     );
 
@@ -345,6 +349,11 @@ function RangesMenu(props: propsIF) {
             {!userMatchesConnectedAccount &&
                 tableView === 'small' &&
                 copyButton}
+            {IS_EDIT_ENABLED &&
+            showRepositionButton &&
+            userMatchesConnectedAccount
+                ? editButton
+                : null}
         </div>
     );
 
