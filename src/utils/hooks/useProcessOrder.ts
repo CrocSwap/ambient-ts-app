@@ -473,8 +473,8 @@ export const useProcessOrder = (
 
             const finishPriceDisplayNum = isDenomBase
                 ? isBid
-                    ? bidTickInvPrice
-                    : askTickInvPrice
+                    ? askTickInvPrice
+                    : bidTickInvPrice
                 : isBid
                 ? bidTickPrice
                 : askTickPrice;
@@ -482,11 +482,11 @@ export const useProcessOrder = (
             const finishPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
                     ? isBid
-                        ? bidTickInvPrice
-                        : askTickInvPrice
+                        ? bidTickPrice
+                        : askTickPrice
                     : isBid
-                    ? bidTickPrice
-                    : askTickPrice;
+                    ? askTickInvPrice
+                    : bidTickInvPrice;
 
             const finishPriceDisplayDenomByMoneyness = getFormattedNumber({
                 value: finishPriceDenomByMoneyness,

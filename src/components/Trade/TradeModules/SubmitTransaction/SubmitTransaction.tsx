@@ -32,6 +32,7 @@ interface propsIF {
     newTransactionHash: string;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     resetConfirmation: () => void;
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
@@ -43,6 +44,7 @@ export default function SubmitTransaction(props: propsIF) {
         newTransactionHash,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         resetConfirmation,
         sendTransaction,
         transactionPendingDisplayString,
@@ -86,7 +88,10 @@ export default function SubmitTransaction(props: propsIF) {
         />
     );
     const transactionException = (
-        <TransactionException txErrorMessage={txErrorMessage} />
+        <TransactionException
+            txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
+        />
     );
 
     const [isTransactionFailed, setIsTransactionFailed] =
@@ -162,6 +167,12 @@ export default function SubmitTransaction(props: propsIF) {
         : transactionPendingDisplayString;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
+
+    useEffect(() => {
+        if (isTransactionException) {
+            setShowExtraInfo(true);
+        }
+    }, [isTransactionException]);
 
     return (
         <FlexContainer flexDirection='column' gap={8}>

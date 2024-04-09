@@ -35,12 +35,12 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
-            "name": "Dai Stablecoin",
-            "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "name": "Swell Staked Ether",
+            "address": "0xf951e335afb289353dc249e82926178eac7ded78",
             "chainId": 1,
             "decimals": 18,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
-            "symbol": "DAI"
+            "logoURI": "https://etherscan.io/token/images/swellnetwork_32.png",
+            "symbol": "swETH"
         },
         {
             "name": "Maker",
@@ -190,18 +190,18 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "JUICE",
+            "name": "Juice",
             "symbol": "JUICE",
             "logoURI": ""
         },
         {
-            "address": "0xd582879453337bd149ae53ec2092b0af5281d1d7",
+            "address": "0x2416092f143378750bb29b79eD961ab195CcEea5",
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Sekai Glory",
-            "symbol": "GLORY",
-            "logoURI": "https://blastscan.io/token/images/sekaiglory_32.png"
+            "name": "Renzo Restaked ETH",
+            "symbol": "ezETH",
+            "logoURI": "https://etherscan.io/token/images/ezETHv2_32.png"
         },
         {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
@@ -306,6 +306,14 @@
             "decimals": 18,
             "chainId": 534352,
             "logoURI": ""
+        },
+        {
+            "name": "Wrapped Kelp DAO Restaked ETH",
+            "address": "0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f",
+            "symbol": "wrsETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
         },
         {
             "name": "Axelar Wrapped USDC",
