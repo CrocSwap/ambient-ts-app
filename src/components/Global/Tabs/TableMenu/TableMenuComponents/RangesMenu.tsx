@@ -24,6 +24,7 @@ import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { IS_EDIT_ENABLED } from '../../../../../ambient-utils/constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -46,10 +47,6 @@ interface propsIF {
 // React functional component
 function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
-    const isEditEnabledLocally =
-        process.env.REACT_APP_IS_EDIT_ENABLED !== undefined
-            ? process.env.REACT_APP_IS_EDIT_ENABLED === 'true'
-            : true;
 
     const {
         isEmpty,
@@ -327,7 +324,7 @@ function RangesMenu(props: propsIF) {
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
-            {isEditEnabledLocally ? editButton : null}
+            {IS_EDIT_ENABLED && userMatchesConnectedAccount ? editButton : null}
         </div>
     );
 

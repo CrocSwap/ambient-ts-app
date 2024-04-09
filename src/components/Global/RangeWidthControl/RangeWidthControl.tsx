@@ -24,6 +24,7 @@ import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
     GCGO_OVERRIDE_URL,
+    IS_EDIT_ENABLED,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants';
@@ -66,10 +67,6 @@ export default function RangeWidthControl(props: PropsIF) {
     // const { bypassConfirmRepo, repoSlippage } = useContext(
     //     UserPreferenceContext,
     // );
-    const isEditEnabledLocally =
-        process.env.REACT_APP_IS_EDIT_ENABLED !== undefined
-            ? process.env.REACT_APP_IS_EDIT_ENABLED === 'true'
-            : true;
 
     const {
         simpleRangeWidth,
@@ -727,7 +724,7 @@ export default function RangeWidthControl(props: PropsIF) {
 
     return (
         <div className={styles.reposition_content}>
-            {!props.isEditPanel && isEditEnabledLocally && (
+            {!props.isEditPanel && IS_EDIT_ENABLED && (
                 <div className={styles.advanced_toggle_container}>
                     <AdvancedModeToggle />
                 </div>
