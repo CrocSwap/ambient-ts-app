@@ -34,6 +34,7 @@ import {
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
     isStablePair,
+    truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -70,7 +71,7 @@ function Reposition() {
         activeNetwork,
         provider,
         ethMainnetUsdPrice,
-        chainData: { blockExplorer },
+        chainData: { blockExplorer, gridSize },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -97,7 +98,7 @@ function Reposition() {
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
         setAdvancedMode,
-
+        advancedMode,
         // eslint-disable-next-line
         setAdvancedHighTick,
         // eslint-disable-next-line
@@ -237,6 +238,100 @@ function Reposition() {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
         setAdvancedMode(false);
     }, []);
+
+    // const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
+    //     useState(0);
+    // const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
+    //     useState(0);
+
+    useEffect(() => {
+        if (advancedMode) {
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                pinnedLowTick,
+                pinnedHighTick,
+                gridSize,
+            );
+            // setRangeLowBoundNonDisplayPrice(
+            //     pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            // );
+            // setRangeHighBoundNonDisplayPrice(
+            //     pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            // );
+
+            // setPinnedMinPriceDisplayTruncated(
+            //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            // );
+            // setPinnedMaxPriceDisplayTruncated(
+            //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            // );
+
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+
+            const highTickDiff =
+                pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+            const lowTickDiff =
+                pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+
+            const highGeometricDifferencePercentage =
+                Math.abs(highTickDiff) < 200
+                    ? parseFloat(truncateDecimals(highTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(highTickDiff / 100, 0));
+            const lowGeometricDifferencePercentage =
+                Math.abs(lowTickDiff) < 200
+                    ? parseFloat(truncateDecimals(lowTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
+            isDenomBase
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
+
+            isDenomBase
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
+
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+                const rangeHighBoundDisplayField = document.getElementById(
+                    'max-price-input-quantity',
+                ) as HTMLInputElement;
+
+                if (rangeHighBoundDisplayField) {
+                    rangeHighBoundDisplayField.value =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                }
+            }
+
+            setMaxPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+            );
+            setMinPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+            );
+        }
+    }, [
+        currentPoolPriceTick,
+        pinnedLowTick,
+        pinnedHighTick,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        advancedMode,
+    ]);
 
     useEffect(() => {
         setSimpleRangeWidth(
