@@ -335,8 +335,8 @@ export const GraphDataContextProvider = (props: {
     );
 
     const failedSessionTransactionHashes = allReceipts
-        .filter((r) => JSON.parse(r).status === 0)
-        .map((r) => JSON.parse(r).transactionHash);
+        .filter((r) => r.status === 'success')
+        .map((r) => r.transactionHash);
 
     // transaction hashes for subsequently fully removed positions
     const removedPositionUpdateTxHashes = sessionPositionUpdates
@@ -353,7 +353,8 @@ export const GraphDataContextProvider = (props: {
 
     const unindexedNonFailedSessionTransactionHashes =
         unindexedSessionTransactionHashes.filter(
-            (tx) => !failedSessionTransactionHashes.includes(tx),
+            (tx) =>
+                !failedSessionTransactionHashes.includes(tx as `0x${string}`),
         );
 
     const unindexedNonFailedSessionPositionUpdates =
@@ -419,7 +420,7 @@ export const GraphDataContextProvider = (props: {
                         user: userAddress,
                         chainId: chainData.chainId,
                         gcUrl: activeNetwork.graphCacheUrl,
-                        provider,
+                        publicClient: provider,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
                         cachedFetchTokenPrice,
@@ -465,7 +466,7 @@ export const GraphDataContextProvider = (props: {
                     ensResolution: true,
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
-                    provider,
+                    publicClient: provider,
                     n: 200, // fetch last 200 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,

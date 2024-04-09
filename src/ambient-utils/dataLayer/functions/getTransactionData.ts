@@ -2,14 +2,14 @@ import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { TokenIF, TransactionIF, TransactionServerIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 
 export const getTransactionData = async (
     tx: TransactionServerIF,
     tokenList: TokenIF[],
     crocEnv: CrocEnv,
-    provider: Provider,
+    publicClient: PublicClient,
     chainId: string,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
@@ -85,10 +85,12 @@ export const getTransactionData = async (
 
     newTx.baseName = baseTokenName
         ? baseTokenName
-        : (await cachedTokenDetails(provider, tx.base, chainId))?.name ?? '';
+        : (await cachedTokenDetails(publicClient, tx.base, chainId))?.name ??
+          '';
     newTx.quoteName = quoteTokenName
         ? quoteTokenName
-        : (await cachedTokenDetails(provider, tx.quote, chainId))?.name ?? '';
+        : (await cachedTokenDetails(publicClient, tx.quote, chainId))?.name ??
+          '';
 
     newTx.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newTx.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
@@ -96,22 +98,24 @@ export const getTransactionData = async (
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals = baseTokenListedDecimals
         ? baseTokenListedDecimals
-        : (await cachedTokenDetails(provider, tx.base, chainId))?.decimals ??
-          DEFAULT_DECIMALS;
+        : (await cachedTokenDetails(publicClient, tx.base, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS;
     const quoteTokenDecimals = quoteTokenListedDecimals
         ? quoteTokenListedDecimals
-        : (await cachedTokenDetails(provider, tx.quote, chainId))?.decimals ??
-          DEFAULT_DECIMALS;
+        : (await cachedTokenDetails(publicClient, tx.quote, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS;
 
     newTx.baseDecimals = baseTokenDecimals;
     newTx.quoteDecimals = quoteTokenDecimals;
 
     newTx.baseSymbol = baseTokenListedSymbol
         ? baseTokenListedSymbol
-        : (await cachedTokenDetails(provider, tx.base, chainId))?.symbol ?? '';
+        : (await cachedTokenDetails(publicClient, tx.base, chainId))?.symbol ??
+          '';
     newTx.quoteSymbol = quoteTokenListedSymbol
         ? quoteTokenListedSymbol
-        : (await cachedTokenDetails(provider, tx.quote, chainId))?.symbol ?? '';
+        : (await cachedTokenDetails(publicClient, tx.quote, chainId))?.symbol ??
+          '';
 
     newTx.baseFlowDecimalCorrected =
         tx.baseFlow / Math.pow(10, baseTokenDecimals);

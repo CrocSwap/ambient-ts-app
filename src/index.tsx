@@ -6,20 +6,37 @@ import App from './App/App';
 import './i18n/config';
 import { StyleSheetManager } from 'styled-components';
 import isValidProp from '@emotion/is-prop-valid';
-import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
+import {
+    mainnet,
+    blast,
+    scroll,
+    goerli,
+    sepolia,
+    scrollSepolia,
+    blastSepolia,
+    Chain,
+} from 'viem/chains';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { infuraProvider } from 'wagmi/providers/infura';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+import { createConfig, http, fallback, WagmiProvider } from 'wagmi';
+import {
+    injected,
+    // walletConnect
+} from 'wagmi/connectors';
 
-import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
-    BLAST_RPC_URL,
-    SCROLL_RPC_URL,
+    MAIN_BLAST_RPC_URL,
+    FALLBACK_BLAST_RPC_URLS,
+    MAIN_SCROLL_RPC_URL,
+    FALLBACK_SCROLL_RPC_URLS,
+    MAIN_SCROLL_SEPOLIA_RPC_URL,
+    FALLBACK_SCROLL_SEPOLIA_RPC_URLS,
+    MAIN_BLAST_SEPOLIA_RPC_URL,
+    FALLBACK_BLAST_SEPOLIA_RPC_URLS,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
-    WALLETCONNECT_PROJECT_ID,
+    // WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
@@ -36,100 +53,75 @@ if (doReload) {
     localStorage.setItem('ambiAppReloadTrigger', 'true');
 }
 
+const queryClient = new QueryClient();
+
 // Don't bother rendering page if this is a reload, because it'll slow down the full load
 if (!doReload) {
-    const { chains, provider, webSocketProvider } = configureChains(
-        Object.values(supportedNetworks).map((network) => network.wagmiChain),
-        [
-            infuraProvider({
-                apiKey:
-                    process.env.REACT_APP_INFURA_KEY ||
-                    '4741d1713bff4013bc3075ed6e7ce091', // front-end dev key
-            }),
-
-            jsonRpcProvider({
-                rpc: (chain: Chain) => {
-                    if (chain.id === 534352) {
-                        return { http: SCROLL_RPC_URL };
-                    } else if (chain.id === 81457) {
-                        return { http: BLAST_RPC_URL };
-                    } else if (chain.id === 534351) {
-                        return { http: 'https://sepolia-rpc.scroll.io' };
-                    } else if (chain.id === 168587773) {
-                        return { http: 'https://sepolia.blast.io' };
-                    } else {
-                        return { http: '' };
-                    }
-                },
-            }),
-        ],
-    );
-
-    // Set up client
-    const client = createClient({
-        autoConnect: true,
+    console.log(supportedNetworks);
+    const config = createConfig({
+        chains: Object.values(supportedNetworks).map(
+            (network) => network.wagmiChain,
+        ) as unknown as readonly [Chain, ...Chain[]],
+        multiInjectedProviderDiscovery: true,
         connectors: [
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'MetaMask',
-                    shimDisconnect: true,
-                },
-            }),
-            new WalletConnectConnector({
-                chains,
-                options: {
-                    projectId: WALLETCONNECT_PROJECT_ID || '',
-                    isNewChainsStale: false,
-                },
-            }),
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'Rabby',
-                    shimDisconnect: true,
-                },
-            }),
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'Brave',
-                    shimDisconnect: true,
-                },
-            }),
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'Other (Injected) Wallet',
-                    shimDisconnect: true,
-                },
-            }),
+            injected(),
+            // walletConnect({
+            //     projectId: WALLETCONNECT_PROJECT_ID || '',
+            //     isNewChainsStale: false,
+            // })
         ],
-        provider,
-        webSocketProvider,
+        transports: {
+            [mainnet.id]: http(),
+            [scroll.id]: fallback(
+                [MAIN_SCROLL_RPC_URL]
+                    .concat(FALLBACK_SCROLL_RPC_URLS)
+                    .map((url) => http(url)),
+            ),
+            [blast.id]: fallback(
+                [MAIN_BLAST_RPC_URL]
+                    .concat(FALLBACK_BLAST_RPC_URLS)
+                    .map((url) => http(url)),
+            ),
+            [goerli.id]: http(),
+            [sepolia.id]: http(),
+            [scrollSepolia.id]: fallback(
+                [MAIN_SCROLL_SEPOLIA_RPC_URL]
+                    .concat(FALLBACK_SCROLL_SEPOLIA_RPC_URLS)
+                    .map((url) => http(url)),
+            ),
+            [blastSepolia.id]: fallback(
+                [MAIN_BLAST_SEPOLIA_RPC_URL]
+                    .concat(FALLBACK_BLAST_SEPOLIA_RPC_URLS)
+                    .map((url) => http(url)),
+            ),
+        },
+        batch: {
+            multicall: true,
+        },
     });
-
     const root = ReactDOM.createRoot(
         document.getElementById('root') as HTMLElement,
     );
 
     root.render(
         <React.StrictMode>
-            <WagmiConfig client={client}>
-                <BrowserRouter>
-                    <GlobalContexts>
-                        <StyleSheetManager
-                            shouldForwardProp={(propName) =>
-                                isValidProp(propName)
-                            }
-                        >
-                            <App />
-                        </StyleSheetManager>
+            <WagmiProvider config={config}>
+                <QueryClientProvider client={queryClient}>
+                    <BrowserRouter>
+                        <GlobalContexts>
+                            <StyleSheetManager
+                                shouldForwardProp={(propName) =>
+                                    isValidProp(propName)
+                                }
+                            >
+                                <App />
+                            </StyleSheetManager>
 
-                        <div id={GLOBAL_MODAL_PORTAL_ID} />
-                    </GlobalContexts>
-                </BrowserRouter>
-            </WagmiConfig>
+                            <div id={GLOBAL_MODAL_PORTAL_ID} />
+                        </GlobalContexts>
+                    </BrowserRouter>
+                </QueryClientProvider>
+            </WagmiProvider>
         </React.StrictMode>,
     );
 }

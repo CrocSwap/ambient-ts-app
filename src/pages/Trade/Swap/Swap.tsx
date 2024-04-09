@@ -1,11 +1,10 @@
-import { CrocImpact, bigNumToFloat } from '@crocswap-libs/sdk';
+import { CrocImpact, bigIntToFloat } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getFormattedNumber,
     getPriceImpactString,
     isStablePair,
-    getTxReceipt,
     performSwap,
 } from '../../../ambient-utils/dataLayer';
 import Button from '../../../components/Form/Button';
@@ -56,7 +55,7 @@ import {
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { calcL1Gas } from '../../../App/functions/calcL1Gas';
-import { BigNumber } from 'ethers';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -431,21 +430,21 @@ function Swap(props: propsIF) {
                   })
                 : undefined;
 
-            const costOfEthInCents = BigNumber.from(
+            const costOfEthInCents = BigInt(
                 Math.floor((ethMainnetUsdPrice || 0) * 100),
             );
             const l1GasInGwei =
-                l1Gas && l1Gas.toNumber() !== 0
-                    ? l1Gas.div(NUM_WEI_IN_GWEI)
+                l1Gas && l1Gas !== BigInt(0)
+                    ? l1Gas / BigInt(NUM_WEI_IN_GWEI)
                     : undefined;
             l1GasInGwei &&
-                setL1GasFeeSwapInGwei(bigNumToFloat(l1GasInGwei) || 0);
+                setL1GasFeeSwapInGwei(bigIntToFloat(l1GasInGwei) || 0);
             const l1GasCents = l1GasInGwei
-                ? l1GasInGwei.mul(costOfEthInCents).div(NUM_GWEI_IN_ETH)
+                ? (l1GasInGwei * costOfEthInCents) / BigInt(NUM_GWEI_IN_ETH)
                 : undefined;
 
             const l1GasDollarsNum = l1GasCents
-                ? bigNumToFloat(l1GasCents) / 100
+                ? bigIntToFloat(l1GasCents) / 100
                 : undefined;
             if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
         })();
@@ -486,12 +485,12 @@ function Swap(props: propsIF) {
 
         const isQtySell = isTokenAPrimary;
 
-        let tx;
+        let hash;
         try {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
 
-            tx = await performSwap({
+            hash = await performSwap({
                 crocEnv,
                 isQtySell,
                 qty,
@@ -501,14 +500,14 @@ function Swap(props: propsIF) {
                 isWithdrawFromDexChecked,
                 isSaveAsDexSurplusChecked,
             });
-            activeTxHash.current = tx?.hash;
-            setNewSwapTransactionHash(tx?.hash);
-            addPendingTx(tx?.hash);
 
-            if (tx.hash) {
+            if (hash) {
+                activeTxHash.current = hash;
+                setNewSwapTransactionHash(hash);
+                addPendingTx(hash);
                 addTransactionByType({
                     userAddress: userAddress || '',
-                    txHash: tx.hash,
+                    txHash: hash,
                     txAction:
                         buyTokenAddress.toLowerCase() ===
                         quoteToken.address.toLowerCase()
@@ -536,10 +535,15 @@ function Swap(props: propsIF) {
             setTxErrorJSON(JSON.stringify(error));
         }
 
-        if (tx) {
+        if (hash) {
             let receipt;
             try {
-                receipt = await getTxReceipt(tx);
+                receipt = await waitForTransactionReceipt(
+                    (
+                        await crocEnv.context
+                    ).publicClient,
+                    { hash: hash },
+                );
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
@@ -564,7 +568,7 @@ function Swap(props: propsIF) {
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.transactionHash);
             }
         }
@@ -786,7 +790,9 @@ function Swap(props: propsIF) {
                 showConfirmation && bypassConfirmSwap.isEnabled ? (
                     <SubmitTransaction
                         type='Swap'
-                        newTransactionHash={newSwapTransactionHash}
+                        newTransactionHash={
+                            newSwapTransactionHash as `0x${string}`
+                        }
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
                         txErrorJSON={txErrorJSON}

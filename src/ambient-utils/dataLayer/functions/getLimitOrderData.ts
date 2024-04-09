@@ -1,8 +1,8 @@
 import {
     baseTokenForConcLiq,
-    bigNumToFloat,
+    bigIntToFloat,
     CrocEnv,
-    floatToBigNum,
+    floatToBigInt,
     quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
@@ -10,7 +10,7 @@ import {
 import { LimitOrderIF, TokenIF, LimitOrderServerIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
 
@@ -18,7 +18,7 @@ export const getLimitOrderData = async (
     order: LimitOrderServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
-    provider: Provider,
+    publicClient: PublicClient,
     chainId: string,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
@@ -26,7 +26,8 @@ export const getLimitOrderData = async (
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
 ): Promise<LimitOrderIF> => {
-    if (!provider) throw Error('Can not proceed without an assigned provider');
+    if (!publicClient)
+        throw Error('Can not proceed without an assigned provider');
     const newOrder = { ...order } as LimitOrderIF;
 
     const baseTokenAddress = order.base;
@@ -95,11 +96,11 @@ export const getLimitOrderData = async (
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals = baseTokenListedDecimals
         ? baseTokenListedDecimals
-        : (await cachedTokenDetails(provider, order.base, chainId))?.decimals ??
-          DEFAULT_DECIMALS;
+        : (await cachedTokenDetails(publicClient, order.base, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS;
     const quoteTokenDecimals = quoteTokenListedDecimals
         ? quoteTokenListedDecimals
-        : (await cachedTokenDetails(provider, order.quote, chainId))
+        : (await cachedTokenDetails(publicClient, order.quote, chainId))
               ?.decimals ?? DEFAULT_DECIMALS;
 
     newOrder.baseDecimals = baseTokenDecimals;
@@ -107,20 +108,21 @@ export const getLimitOrderData = async (
 
     newOrder.baseSymbol = baseTokenListedSymbol
         ? baseTokenListedSymbol
-        : (await cachedTokenDetails(provider, order.base, chainId))?.symbol ??
-          '';
+        : (await cachedTokenDetails(publicClient, order.base, chainId))
+              ?.symbol ?? '';
     newOrder.quoteSymbol = quoteTokenListedSymbol
         ? quoteTokenListedSymbol
-        : (await cachedTokenDetails(provider, order.quote, chainId))?.symbol ??
-          '';
+        : (await cachedTokenDetails(publicClient, order.quote, chainId))
+              ?.symbol ?? '';
 
     newOrder.baseName = baseTokenName
         ? baseTokenName
-        : (await cachedTokenDetails(provider, order.base, chainId))?.name ?? '';
+        : (await cachedTokenDetails(publicClient, order.base, chainId))?.name ??
+          '';
     newOrder.quoteName = quoteTokenName
         ? quoteTokenName
-        : (await cachedTokenDetails(provider, order.quote, chainId))?.name ??
-          '';
+        : (await cachedTokenDetails(publicClient, order.quote, chainId))
+              ?.name ?? '';
 
     newOrder.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newOrder.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
@@ -162,79 +164,79 @@ export const getLimitOrderData = async (
     newOrder.askTickInvPriceDecimalCorrected = upperPriceDisplayInBase;
 
     newOrder.positionLiq = order.concLiq;
-    newOrder.positionLiqBase = bigNumToFloat(
+    newOrder.positionLiqBase = bigIntToFloat(
         baseTokenForConcLiq(
             await poolPriceNonDisplay,
-            floatToBigNum(order.concLiq),
+            floatToBigInt(order.concLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
     );
 
-    newOrder.positionLiqQuote = bigNumToFloat(
+    newOrder.positionLiqQuote = bigIntToFloat(
         quoteTokenForConcLiq(
             await poolPriceNonDisplay,
-            floatToBigNum(order.concLiq),
+            floatToBigInt(order.concLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
     );
-    newOrder.originalPositionLiqBase = bigNumToFloat(
+    newOrder.originalPositionLiqBase = bigIntToFloat(
         baseTokenForConcLiq(
             !order.isBid
                 ? tickToPrice(order.bidTick - 1)
                 : tickToPrice(order.askTick + 1),
-            floatToBigNum(order.concLiq + order.claimableLiq),
+            floatToBigInt(order.concLiq + order.claimableLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
     );
-    newOrder.originalPositionLiqQuote = bigNumToFloat(
+    newOrder.originalPositionLiqQuote = bigIntToFloat(
         quoteTokenForConcLiq(
             !order.isBid
                 ? tickToPrice(order.bidTick - 1)
                 : tickToPrice(order.askTick + 1),
-            floatToBigNum(order.concLiq + order.claimableLiq),
+            floatToBigInt(order.concLiq + order.claimableLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
     );
-    newOrder.expectedPositionLiqBase = bigNumToFloat(
+    newOrder.expectedPositionLiqBase = bigIntToFloat(
         baseTokenForConcLiq(
             order.isBid
                 ? tickToPrice(order.bidTick - 1)
                 : tickToPrice(order.askTick + 1),
-            floatToBigNum(order.concLiq + order.claimableLiq),
+            floatToBigInt(order.concLiq + order.claimableLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
     );
-    newOrder.expectedPositionLiqQuote = bigNumToFloat(
+    newOrder.expectedPositionLiqQuote = bigIntToFloat(
         quoteTokenForConcLiq(
             order.isBid
                 ? tickToPrice(order.bidTick - 1)
                 : tickToPrice(order.askTick + 1),
-            floatToBigNum(order.concLiq + order.claimableLiq),
+            floatToBigInt(order.concLiq + order.claimableLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
     );
 
     if (order.isBid) {
-        newOrder.claimableLiqQuote = bigNumToFloat(
+        newOrder.claimableLiqQuote = bigIntToFloat(
             quoteTokenForConcLiq(
                 tickToPrice(order.bidTick),
-                floatToBigNum(order.claimableLiq),
+                floatToBigInt(order.claimableLiq),
                 tickToPrice(order.bidTick),
                 tickToPrice(order.askTick),
             ),
         );
         newOrder.claimableLiqBase = 0;
     } else {
-        newOrder.claimableLiqBase = bigNumToFloat(
+        newOrder.claimableLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
                 tickToPrice(order.askTick),
-                floatToBigNum(order.claimableLiq),
+                floatToBigInt(order.claimableLiq),
                 tickToPrice(order.bidTick),
                 tickToPrice(order.askTick),
             ),

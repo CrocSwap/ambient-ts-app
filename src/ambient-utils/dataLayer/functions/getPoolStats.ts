@@ -105,7 +105,7 @@ export async function expandPoolStats(
     cachedQuerySpotPrice: PoolQueryFn,
     tokenList: TokenIF[],
 ): Promise<PoolStatsIF> {
-    const provider = (await crocEnv.context).provider;
+    const publicClient = (await crocEnv.context).publicClient;
 
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
@@ -124,12 +124,14 @@ export async function expandPoolStats(
 
     const baseDecimals =
         (baseTokenListedDecimals ||
-            (await cachedTokenDetails(provider, base, chainId))?.decimals) ??
+            (await cachedTokenDetails(publicClient, base, chainId))
+                ?.decimals) ??
         DEFAULT_DECIMALS;
 
     const quoteDecimals =
         (quoteTokenListedDecimals ||
-            (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
+            (await cachedTokenDetails(publicClient, quote, chainId))
+                ?.decimals) ??
         DEFAULT_DECIMALS;
 
     const getSpotPrice = async () => {

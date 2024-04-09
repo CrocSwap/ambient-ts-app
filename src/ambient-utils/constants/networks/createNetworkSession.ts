@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ethers } from 'ethers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { NetworkSessionIF, TokenIF } from '../../types';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient, createPublicClient, http } from 'viem';
 import { fetchTokenUniverse } from '../../api/fetchTokenUniverse';
 import { supportedNetworks } from './index';
 
@@ -15,15 +14,15 @@ export const createNetworkSession = async ({
     chainId,
     tokenUniv,
     gcUrl,
-    infuraUrl,
-    provider,
+    infuraUrl: rpcUrl,
+    publicClient,
     crocEnv,
 }: {
     chainId: string;
     tokenUniv?: TokenIF[];
     gcUrl?: string;
     infuraUrl?: string;
-    provider?: Provider;
+    publicClient?: PublicClient;
     crocEnv?: CrocEnv;
 }): Promise<NetworkSessionIF> => {
     if (chainId.length === 0) {
@@ -48,26 +47,28 @@ export const createNetworkSession = async ({
     // Following for the compiler, because it has a low IQ
 
     // By the end of the block, we will have all the required dependencies in a non missing state (or error trying)
-    infuraUrl = await assertExists(infuraUrl, async () => network.evmRpcUrl);
+    rpcUrl = await assertExists(rpcUrl, async () => network.evmRpcUrl);
     gcUrl = await assertExists(gcUrl, async () => network.graphCacheUrl);
     tokenUniv = await assertExists(tokenUniv, async () =>
         fetchTokenUniverse(network.chainId),
     );
-    provider = await assertExists(
-        provider,
-        async () => new ethers.providers.JsonRpcProvider(infuraUrl),
-    );
+    publicClient = (await assertExists(publicClient, async () => {
+        return createPublicClient({
+            transport: http(rpcUrl),
+            batch: { multicall: true },
+        });
+    })) as PublicClient;
     crocEnv = await assertExists(
         crocEnv,
-        async () => new CrocEnv(provider as Provider, defaultSigner),
+        async () => new CrocEnv(publicClient, defaultSigner),
     );
 
     return {
         tokenUniv: tokenUniv!,
-        infuraUrl: infuraUrl!,
-        provider: provider!,
+        infuraUrl: rpcUrl!,
+        publicClient: publicClient!,
         chainId: chainId,
-        signer: undefined,
+        walletClient: undefined,
         gcUrl: gcUrl!,
         crocEnv: crocEnv!,
     };

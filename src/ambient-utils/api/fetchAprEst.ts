@@ -1,23 +1,26 @@
 import { capitalConcFactor, CrocEnv } from '@crocswap-libs/sdk';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 
 // Approximately 24 hours in Ethereum. TODO make this generalizable across
 // chains.
-const FIXED_APY_N_BLOCK_LOOKBACK = 7000;
+const FIXED_APY_N_BLOCK_LOOKBACK = BigInt(7000);
 
 export async function estimateFrom24HrAmbientApr(
     base: string,
     quote: string,
     crocEnv: CrocEnv,
-    provider: Provider,
-    lastBlockNumber: number,
+    publicClient: PublicClient,
+    lastBlockNumber: bigint,
 ): Promise<number> {
     if (!lastBlockNumber) {
-        lastBlockNumber = await provider.getBlockNumber();
+        lastBlockNumber = await publicClient.getBlockNumber();
     }
 
-    const lookbackBlockNum = lastBlockNumber - FIXED_APY_N_BLOCK_LOOKBACK;
-    const lookbackBlock = provider.getBlock(lookbackBlockNum);
+    const lookbackBlockNum =
+        BigInt(lastBlockNumber) - FIXED_APY_N_BLOCK_LOOKBACK;
+    const lookbackBlock = publicClient.getBlock({
+        blockNumber: lookbackBlockNum,
+    });
 
     const nowGrowth = crocEnv
         .pool(base, quote)
@@ -27,7 +30,8 @@ export async function estimateFrom24HrAmbientApr(
         .cumAmbientGrowth(lookbackBlockNum);
 
     const periodGrowth = (await nowGrowth) - (await prevGrowth);
-    const timeSecs = Date.now() / 1000 - (await lookbackBlock).timestamp;
+    const timeSecs =
+        Date.now() / 1000 - Number((await lookbackBlock).timestamp);
 
     const timeYears = timeSecs / (365 * 24 * 3600);
     return periodGrowth / timeYears;
@@ -38,14 +42,14 @@ export async function estimateFrom24HrRangeApr(
     base: string,
     quote: string,
     crocEnv: CrocEnv,
-    provider: Provider,
-    lastBlockNumber: number,
+    publicClient: PublicClient,
+    lastBlockNumber: bigint,
 ): Promise<number> {
     const ambientApy = estimateFrom24HrAmbientApr(
         base,
         quote,
         crocEnv,
-        provider,
+        publicClient,
         lastBlockNumber,
     );
     const concFactor = capitalConcFactor(

@@ -1,20 +1,22 @@
-import { ethers } from 'ethers';
+import { PublicClient } from 'viem';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
 
 export async function fetchBlockTime(
-    provider: ethers.providers.Provider,
+    publicClient: PublicClient,
     blockNumber: number,
 ): Promise<number | undefined> {
     try {
-        const block = provider.getBlock(blockNumber);
-        return (await block).timestamp;
+        const block = publicClient.getBlock({
+            blockNumber: BigInt(blockNumber),
+        });
+        return Number((await block).timestamp);
     } catch (error) {
         return undefined;
     }
 }
 
 export type FetchBlockTimeFn = (
-    provider: ethers.providers.Provider,
+    publicClient: PublicClient,
     blockNumber: number,
 ) => Promise<number | undefined>;
 

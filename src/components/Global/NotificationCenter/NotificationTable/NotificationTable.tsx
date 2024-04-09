@@ -14,7 +14,7 @@ import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 interface NotificationTableProps {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
-    pendingTransactions: string[];
+    pendingTransactions: `0x${string}`[];
     notificationItemRef: RefObject<HTMLDivElement>;
 }
 
@@ -25,16 +25,12 @@ const NotificationTable = (props: NotificationTableProps) => {
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
 
-    const parsedReceipts = sessionReceipts.map((receipt) =>
-        JSON.parse(receipt),
-    );
-
-    const parsedReceiptsDisplay = parsedReceipts.map((receipt, idx) => (
+    const parsedReceiptsDisplay = sessionReceipts.map((receipt, idx) => (
         <ReceiptDisplay
             key={idx}
-            status={receipt?.status === 1 ? 'successful' : 'failed'}
+            status={receipt?.status}
             hash={receipt?.transactionHash}
-            txBlockNumber={receipt?.blockNumber}
+            txBlockNumber={Number(receipt?.blockNumber)}
             txType={
                 transactionsByType.find(
                     (e) => e.txHash === receipt?.transactionHash,

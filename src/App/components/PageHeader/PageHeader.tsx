@@ -48,7 +48,7 @@ import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 // import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { useSwitchNetwork } from 'wagmi';
+import { useSwitchChain } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -85,7 +85,7 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
-    const { switchNetwork } = useSwitchNetwork();
+    const { switchChain: switchNetwork } = useSwitchChain();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -406,7 +406,13 @@ const PageHeader = function () {
                                     ) : null}
                                 </FlexContainer>
                             )} */}
-                            <NetworkSelector switchNetwork={switchNetwork} />
+
+                            <NetworkSelector
+                                switchNetwork={(chainId: number | void) =>
+                                    switchNetwork({ chainId: chainId || 1 })
+                                }
+                            />
+                            {/* TODO: gross */}
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />

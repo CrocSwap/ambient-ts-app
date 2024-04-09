@@ -6,7 +6,8 @@ export * from './slippage';
 export * from './tokenListURIs';
 export * from './tokenUnicodeCharMap';
 export * from './gasEstimates';
-export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const ZERO_ADDRESS: `0x${string}` =
+    '0x0000000000000000000000000000000000000000';
 
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
 // NOTE: we use 'main' for staging (testnet) and 'production' for mainnet app. All other names are treated as 'local'
@@ -45,15 +46,59 @@ export const BLOCK_POLLING_RPC_URL =
         ? process.env.REACT_APP_BLOCK_POLLING_RPC_URL
         : '';
 
-export const BLAST_RPC_URL =
+export const MAIN_BLAST_RPC_URL =
     process.env.REACT_APP_BLAST_RPC_URL !== undefined
         ? process.env.REACT_APP_BLAST_RPC_URL
         : 'https://rpc.blast.io/';
+export const FALLBACK_BLAST_RPC_URLS = [
+    'https://rpc.blast.io',
+    'https://rpc.ankr.com/blast/',
+    'https://blast.drpc.org',
+    'https://blast.blockpi.network/v1/rpc/public',
+];
+// find and remove the main RPC from the fallback list
+let index = FALLBACK_BLAST_RPC_URLS.indexOf(MAIN_BLAST_RPC_URL);
+if (index > -1) FALLBACK_BLAST_RPC_URLS.splice(index, 1);
 
-export const SCROLL_RPC_URL =
+export const MAIN_BLAST_SEPOLIA_RPC_URL =
+    process.env.REACT_APP_BLAST_SEPOLIA_RPC_URL !== undefined
+        ? process.env.REACT_APP_BLAST_SEPOLIA_RPC_URL
+        : 'https://sepolia.blast.io/';
+export const FALLBACK_BLAST_SEPOLIA_RPC_URLS = [
+    'https://sepolia.blast.io',
+    'https://rpc.ankr.com/blast_testnet_sepolia',
+    'https://blast-sepolia.drpc.org',
+    'https://blast-sepolia.blockpi.network/v1/rpc/public',
+];
+index = FALLBACK_BLAST_SEPOLIA_RPC_URLS.indexOf(MAIN_BLAST_SEPOLIA_RPC_URL);
+if (index > -1) FALLBACK_BLAST_SEPOLIA_RPC_URLS.splice(index, 1);
+
+export const MAIN_SCROLL_RPC_URL =
     process.env.REACT_APP_SCROLL_RPC_URL !== undefined
         ? process.env.REACT_APP_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
+export const FALLBACK_SCROLL_RPC_URLS = [
+    'https://rpc.scroll.io',
+    'https://rpc.ankr.com/scroll/',
+    'https://scroll.drpc.org',
+    'https://scroll.blockpi.network/v1/rpc/public',
+];
+index = FALLBACK_SCROLL_RPC_URLS.indexOf(MAIN_SCROLL_RPC_URL);
+if (index > -1) FALLBACK_SCROLL_RPC_URLS.splice(index, 1);
+
+export const MAIN_SCROLL_SEPOLIA_RPC_URL =
+    process.env.REACT_APP_SCROLL_SEPOLIA_RPC_URL !== undefined
+        ? process.env.REACT_APP_SCROLL_SEPOLIA_RPC_URL
+        : 'https://sepolia-rpc.scroll.io/';
+export const FALLBACK_SCROLL_SEPOLIA_RPC_URLS = [
+    'https://sepolia-rpc.scroll.io',
+    'https://rpc.ankr.com/scroll_sepolia_testnet',
+    'https://scroll-sepolia.drpc.org',
+    'https://scroll-testnet.rpc.grove.city/v1/a7a7c8e2',
+    '',
+];
+index = FALLBACK_SCROLL_SEPOLIA_RPC_URLS.indexOf(MAIN_SCROLL_SEPOLIA_RPC_URL);
+if (index > -1) FALLBACK_SCROLL_SEPOLIA_RPC_URLS.splice(index, 1);
 
 export const INCLUDE_CANTO_LINK =
     process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined

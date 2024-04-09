@@ -3,7 +3,6 @@ import { useEffect, useRef, useState, useMemo, useContext } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 
 const NotificationCenter = () => {
@@ -21,12 +20,12 @@ const NotificationCenter = () => {
     }, [txCount]);
 
     const receivedReceiptHashes = useMemo(
-        () => getReceiptTxHashes(sessionReceipts),
-        [JSON.stringify(sessionReceipts)],
+        () => sessionReceipts.map((receipt) => receipt.transactionHash),
+        [sessionReceipts],
     );
 
     const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receivedReceiptHashes.includes(hash),
+        (hash: `0x${string}`) => !receivedReceiptHashes.includes(hash),
     );
 
     const notificationItemRef = useRef<HTMLDivElement>(null);

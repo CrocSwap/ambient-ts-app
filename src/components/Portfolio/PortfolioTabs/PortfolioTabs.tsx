@@ -229,7 +229,7 @@ export default function PortfolioTabs(props: propsIF) {
                 n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
-                provider,
+                publicClient: provider,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
                 cachedTokenDetails: cachedTokenDetails,

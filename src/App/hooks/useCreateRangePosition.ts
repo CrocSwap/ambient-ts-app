@@ -14,6 +14,7 @@ import { createRangePositionTx } from '../../ambient-utils/dataLayer/transaction
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 export function useCreateRangePosition() {
     const {
@@ -82,7 +83,7 @@ export function useCreateRangePosition() {
 
         if (!crocEnv) return;
 
-        let tx;
+        let hash;
 
         const posHash = getPositionHash(undefined, {
             isPositionTypeAmbient: isAmbient,
@@ -95,7 +96,7 @@ export function useCreateRangePosition() {
         });
 
         try {
-            tx = await createRangePositionTx({
+            hash = await createRangePositionTx({
                 crocEnv,
                 isAmbient,
                 slippageTolerancePercentage,
@@ -113,36 +114,34 @@ export function useCreateRangePosition() {
                 tick: { low: defaultLowTick, high: defaultHighTick },
             });
 
-            setNewRangeTransactionHash(tx?.hash);
-            addPendingTx(tx?.hash);
-            activeRangeTxHash.current = tx?.hash;
-
-            if (tx?.hash)
-                addTransactionByType({
-                    userAddress: userAddress || '',
-                    txHash: tx.hash,
-                    txAction: 'Add',
-                    txType: 'Range',
-                    txDescription: isAdd
-                        ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
-                        : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
-                    txDetails: {
-                        baseAddress: baseToken.address,
-                        quoteAddress: quoteToken.address,
-                        poolIdx: poolIndex,
-                        baseSymbol: baseToken.symbol,
-                        quoteSymbol: quoteToken.symbol,
-                        baseTokenDecimals: baseTokenDecimals,
-                        quoteTokenDecimals: quoteTokenDecimals,
-                        isAmbient: isAmbient,
-                        lowTick: defaultLowTick,
-                        highTick: defaultHighTick,
-                        gridSize: gridSize,
-                    },
-                });
+            if (hash) setNewRangeTransactionHash(hash);
+            addPendingTx(hash);
+            activeRangeTxHash.current = hash;
+            addTransactionByType({
+                userAddress: userAddress || '',
+                txHash: hash,
+                txAction: 'Add',
+                txType: 'Range',
+                txDescription: isAdd
+                    ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
+                    : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
+                txDetails: {
+                    baseAddress: baseToken.address,
+                    quoteAddress: quoteToken.address,
+                    poolIdx: poolIndex,
+                    baseSymbol: baseToken.symbol,
+                    quoteSymbol: quoteToken.symbol,
+                    baseTokenDecimals: baseTokenDecimals,
+                    quoteTokenDecimals: quoteTokenDecimals,
+                    isAmbient: isAmbient,
+                    lowTick: defaultLowTick,
+                    highTick: defaultHighTick,
+                    gridSize: gridSize,
+                },
+            });
 
             addPositionUpdate({
-                txHash: tx.hash,
+                txHash: hash,
                 positionID: posHash,
                 isLimit: false,
                 unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -159,7 +158,13 @@ export function useCreateRangePosition() {
 
         let receipt;
         try {
-            if (tx) receipt = await tx.wait();
+            if (hash)
+                receipt = await waitForTransactionReceipt(
+                    (
+                        await crocEnv.context
+                    ).publicClient,
+                    { hash },
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -185,7 +190,7 @@ export function useCreateRangePosition() {
             }
         }
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.transactionHash);
             if (setIsTxCompletedRange) {
                 setIsTxCompletedRange(true);

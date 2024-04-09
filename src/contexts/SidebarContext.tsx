@@ -13,11 +13,10 @@ import {
 } from '../App/hooks/useRecentPools';
 import { sidebarMethodsIF, useSidebar } from '../App/hooks/useSidebar';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
-import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
-import { TransactionReceipt } from '@ethersproject/abstract-provider';
+import { TransactionReceipt } from 'viem';
 
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
@@ -44,16 +43,14 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
 
     // parsed JSON on the most recent receipt in the stack
     const lastReceipt: TransactionReceipt | null =
-        allReceipts.length > 0 && isJsonString(allReceipts[0])
-            ? JSON.parse(allReceipts[0])
-            : null;
+        allReceipts.length > 0 ? allReceipts[0] : null;
 
     // boolean representing whether most recent receipt parsed successfully
-    const isLastReceiptSuccess: boolean = lastReceipt?.status === 1;
+    const isLastReceiptSuccess: boolean = lastReceipt?.status === 'success';
 
     // hash representation of the most recent receipt
     const lastReceiptHash = useMemo<string | undefined>(
-        () => (lastReceipt ? diffHashSig(lastReceipt) : undefined),
+        () => (lastReceipt ? lastReceipt.transactionHash : undefined),
         [lastReceipt],
     );
 

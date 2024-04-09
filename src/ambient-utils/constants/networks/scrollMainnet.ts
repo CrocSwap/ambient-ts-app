@@ -9,40 +9,15 @@ import {
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import { GCGO_SCROLL_URL } from '../gcgo';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { scroll as wagmiChain } from 'viem/chains';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 export const SCROLL_RPC_URL =
     process.env.REACT_APP_SCROLL_RPC_URL !== undefined
         ? process.env.REACT_APP_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
-
-const wagmiChain = {
-    id: 534352,
-    name: 'Scroll',
-    network: 'scroll',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: [SCROLL_RPC_URL],
-        },
-        public: {
-            http: ['https://rpc.scroll.io/'],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Scrollscan',
-            url: 'https://scrollscan.com',
-        },
-    },
-    testnet: false,
-};
 
 export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
@@ -59,8 +34,8 @@ export const scrollMainnet: NetworkIF = {
         new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollWrsETH, scrollETH, lookupChain('0x82750').poolIndex),
     ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+    getGasPriceInGwei: async (publicCLient?: PublicClient) => {
+        if (!publicCLient) return 0;
+        return bigIntToFloat(await publicCLient.getGasPrice()) * 1e-9;
     },
 };

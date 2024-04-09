@@ -208,7 +208,7 @@ function Transactions(props: propsIF) {
             time: filter?.time,
             crocEnv: crocEnv,
             graphCacheUrl: activeNetwork.graphCacheUrl,
-            provider,
+            publicClient: provider,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
             cachedTokenDetails: cachedTokenDetails,

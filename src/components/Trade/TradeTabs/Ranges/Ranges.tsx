@@ -32,7 +32,7 @@ import TableRows from '../TableRows';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import {
-    bigNumToFloat,
+    bigIntToFloat,
     baseTokenForConcLiq,
     tickToPrice,
     quoteTokenForConcLiq,
@@ -484,14 +484,14 @@ function Ranges(props: propsIF) {
                     const liqBigNum = pendingPositionUpdate.txDetails.isAmbient
                         ? position.seeds
                         : position.liq;
-                    const liqNum = bigNumToFloat(liqBigNum);
+                    const liqNum = bigIntToFloat(liqBigNum);
                     if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
                             liqNum * Math.sqrt(poolPriceNonDisplay);
                         positionLiqQuote =
                             liqNum / Math.sqrt(poolPriceNonDisplay);
                     } else {
-                        positionLiqBase = bigNumToFloat(
+                        positionLiqBase = bigIntToFloat(
                             baseTokenForConcLiq(
                                 poolPriceNonDisplay,
                                 liqBigNum,
@@ -505,7 +505,7 @@ function Ranges(props: propsIF) {
                                 ),
                             ),
                         );
-                        positionLiqQuote = bigNumToFloat(
+                        positionLiqQuote = bigIntToFloat(
                             quoteTokenForConcLiq(
                                 poolPriceNonDisplay,
                                 liqBigNum,

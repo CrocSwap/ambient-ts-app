@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -30,6 +29,7 @@ import {
 } from '../../ambient-utils/constants/';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -87,7 +87,7 @@ export default function LimitActionModal(props: propsIF) {
     const [networkFee, setNetworkFee] = useState<string | undefined>(undefined);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
-        BigNumber | undefined
+        bigint | undefined
     >();
 
     const resetConfirmation = () => {
@@ -177,19 +177,19 @@ export default function LimitActionModal(props: propsIF) {
             setShowSettings(false);
             IS_LOCAL_ENV && { limitOrder };
 
-            let tx;
+            let hash;
             try {
                 if (limitOrder.isBid) {
-                    tx = await crocEnv
+                    hash = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
                         .burnLiq(currentLiquidity);
-                    setNewTxHash(tx.hash);
-                    addPendingTx(tx?.hash);
-                    if (tx?.hash) {
+                    if (hash) {
+                        setNewTxHash(hash);
+                        addPendingTx(hash);
                         addTransactionByType({
                             userAddress: userAddress || '',
-                            txHash: tx.hash,
+                            txHash: hash,
                             txAction: 'Remove',
                             txType: 'Limit',
                             txDescription: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
@@ -207,23 +207,23 @@ export default function LimitActionModal(props: propsIF) {
                             },
                         });
                         addPositionUpdate({
-                            txHash: tx.hash,
+                            txHash: hash,
                             positionID: posHash,
                             isLimit: true,
                             unixTimeAdded: Math.floor(Date.now() / 1000),
                         });
                     }
                 } else {
-                    tx = await crocEnv
+                    hash = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
                         .burnLiq(currentLiquidity);
-                    setNewTxHash(tx.hash);
-                    addPendingTx(tx?.hash);
-                    if (tx?.hash) {
+                    if (hash) {
+                        setNewTxHash(hash);
+                        addPendingTx(hash);
                         addTransactionByType({
                             userAddress: userAddress || '',
-                            txHash: tx.hash,
+                            txHash: hash,
                             txAction: 'Remove',
                             txType: 'Limit',
                             txDescription: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
@@ -241,7 +241,7 @@ export default function LimitActionModal(props: propsIF) {
                             },
                         });
                         addPositionUpdate({
-                            txHash: tx.hash,
+                            txHash: hash,
                             positionID: posHash,
                             isLimit: true,
                             unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -262,7 +262,13 @@ export default function LimitActionModal(props: propsIF) {
 
             let receipt;
             try {
-                if (tx) receipt = await tx.wait();
+                if (hash)
+                    receipt = await waitForTransactionReceipt(
+                        (
+                            await crocEnv.context
+                        ).publicClient,
+                        { hash },
+                    );
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
@@ -291,9 +297,9 @@ export default function LimitActionModal(props: propsIF) {
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.transactionHash);
-                if (receipt.status === 1) {
+                if (receipt.status === 'success') {
                     // track removals separately to identify limit mints that were subsequently removed
                     addPositionUpdate({
                         positionID: posHash,
@@ -319,19 +325,19 @@ export default function LimitActionModal(props: propsIF) {
                 console.debug({ claimablePivotTime });
                 console.debug({ limitOrder });
             }
-            let tx;
+            let hash;
             try {
                 if (limitOrder.isBid) {
-                    tx = await crocEnv
+                    hash = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
                         .recoverPost(claimablePivotTime, { surplus: false });
-                    setNewTxHash(tx.hash);
-                    addPendingTx(tx?.hash);
-                    if (tx?.hash) {
+                    if (hash) {
+                        setNewTxHash(hash);
+                        addPendingTx(hash);
                         addTransactionByType({
                             userAddress: userAddress || '',
-                            txHash: tx.hash,
+                            txHash: hash,
                             txAction: 'Claim',
                             txType: 'Limit',
                             txDescription: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
@@ -349,23 +355,23 @@ export default function LimitActionModal(props: propsIF) {
                             },
                         });
                         addPositionUpdate({
-                            txHash: tx.hash,
+                            txHash: hash,
                             positionID: posHash,
                             isLimit: true,
                             unixTimeAdded: Math.floor(Date.now() / 1000),
                         });
                     }
                 } else {
-                    tx = await crocEnv
+                    hash = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
                         .recoverPost(claimablePivotTime, { surplus: false });
-                    setNewTxHash(tx.hash);
-                    addPendingTx(tx?.hash);
-                    if (tx?.hash) {
+                    if (hash) {
+                        setNewTxHash(hash);
+                        addPendingTx(hash);
                         addTransactionByType({
                             userAddress: userAddress || '',
-                            txHash: tx.hash,
+                            txHash: hash,
                             txAction: 'Claim',
                             txType: 'Limit',
                             txDescription: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
@@ -383,7 +389,7 @@ export default function LimitActionModal(props: propsIF) {
                             },
                         });
                         addPositionUpdate({
-                            txHash: tx.hash,
+                            txHash: hash,
                             positionID: posHash,
                             isLimit: true,
                             unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -404,7 +410,13 @@ export default function LimitActionModal(props: propsIF) {
 
             let receipt;
             try {
-                if (tx) receipt = await tx.wait();
+                if (hash)
+                    receipt = await waitForTransactionReceipt(
+                        (
+                            await crocEnv.context
+                        ).publicClient,
+                        { hash },
+                    );
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
@@ -432,9 +444,9 @@ export default function LimitActionModal(props: propsIF) {
             }
 
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.transactionHash);
-                if (receipt.status === 1) {
+                if (receipt.status === 'success') {
                     // track claims separately to identify limit mints that were subsequently removed
                     addPositionUpdate({
                         positionID: posHash,
@@ -534,7 +546,7 @@ export default function LimitActionModal(props: propsIF) {
                     {showConfirmation ? (
                         <SubmitTransaction
                             type={type === 'Remove' ? 'Remove' : 'Claim'}
-                            newTransactionHash={newTxHash}
+                            newTransactionHash={newTxHash as `0x${string}`}
                             txErrorCode={txErrorCode}
                             txErrorMessage={txErrorMessage}
                             txErrorJSON={txErrorJSON}

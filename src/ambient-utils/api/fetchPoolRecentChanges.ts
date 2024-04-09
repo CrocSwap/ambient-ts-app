@@ -5,7 +5,7 @@ import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -24,7 +24,7 @@ interface argsIF {
     time?: number;
     crocEnv: CrocEnv;
     graphCacheUrl: string;
-    provider: Provider;
+    publicClient: PublicClient;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
@@ -48,7 +48,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         time,
         crocEnv,
         graphCacheUrl,
-        provider,
+        publicClient,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
@@ -107,7 +107,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         tx,
                         tokenList,
                         crocEnv,
-                        provider,
+                        publicClient,
                         chainId,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,

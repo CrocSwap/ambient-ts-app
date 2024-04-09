@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { waitForTransactionReceipt } from 'viem/actions';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
@@ -38,19 +39,26 @@ export function useApprove() {
         if (!crocEnv) return;
         try {
             setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) addPendingTx(tx?.hash);
-            if (tx?.hash)
+            const hash = await crocEnv.token(tokenAddress).approve();
+            if (hash) {
+                addPendingTx(hash);
                 addTransactionByType({
                     userAddress: userAddress || '',
-                    txHash: tx.hash,
+                    txHash: hash,
                     txType: 'Approve',
                     txDescription: `Approval of ${tokenSymbol}`,
                 });
+            }
 
             let receipt;
             try {
-                if (tx) receipt = await tx.wait();
+                if (hash)
+                    receipt = await waitForTransactionReceipt(
+                        (
+                            await crocEnv.context
+                        ).publicClient,
+                        { hash: hash },
+                    );
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
@@ -72,7 +80,7 @@ export function useApprove() {
                 }
             }
             if (receipt) {
-                addReceipt(JSON.stringify(receipt));
+                addReceipt(receipt);
                 removePendingTx(receipt.transactionHash);
             }
         } catch (error) {

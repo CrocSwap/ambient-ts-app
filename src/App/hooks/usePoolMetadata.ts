@@ -33,7 +33,7 @@ import {
     getPositionData,
     getTransactionData,
 } from '../../ambient-utils/dataLayer';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -44,7 +44,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
     graphCacheUrl: string;
-    provider?: Provider;
+    publicClient?: PublicClient;
     pathname: string;
     chainData: ChainSpec;
     userAddress: `0x${string}` | undefined;
@@ -297,7 +297,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         if (
             contextMatchesParams &&
             props.crocEnv &&
-            props.provider !== undefined &&
+            props.publicClient !== undefined &&
             isServerEnabled
         ) {
             if (baseTokenAddress && quoteTokenAddress) {
@@ -340,7 +340,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const poolPositions = json.data;
                             const crocEnv = props.crocEnv;
-                            const provider = props.provider;
+                            const provider = props.publicClient;
                             const skipENSFetch = true;
                             if (poolPositions && crocEnv && provider) {
                                 Promise.all(
@@ -418,7 +418,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const leaderboardPositions = json.data;
                             const crocEnv = props.crocEnv;
-                            const provider = props.provider;
+                            const provider = props.publicClient;
                             const skipENSFetch = true;
 
                             if (leaderboardPositions && crocEnv && provider) {
@@ -490,7 +490,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         n: 200,
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
-                        provider: props.provider,
+                        publicClient: props.publicClient,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
                         cachedQuerySpotPrice: props.cachedQuerySpotPrice,
                         cachedTokenDetails: props.cachedTokenDetails,
@@ -535,7 +535,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const poolLimitOrderStates = json?.data;
                             const crocEnv = props.crocEnv;
-                            const provider = props.provider;
+                            const provider = props.publicClient;
                             const skipENSFetch = true;
                             if (poolLimitOrderStates && crocEnv && provider) {
                                 Promise.all(
@@ -606,7 +606,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolTransactions = json.data;
                                 const crocEnv = props.crocEnv;
-                                const provider = props.provider;
+                                const provider = props.publicClient;
                                 const skipENSFetch = true;
                                 if (
                                     userPoolTransactions &&
@@ -676,7 +676,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolPositions = json.data;
                                 const crocEnv = props.crocEnv;
-                                const provider = props.provider;
+                                const provider = props.publicClient;
                                 const skipENSFetch = true;
 
                                 if (userPoolPositions && crocEnv && provider) {
@@ -745,7 +745,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolLimitOrderStates = json?.data;
                                 const crocEnv = props.crocEnv;
-                                const provider = props.provider;
+                                const provider = props.publicClient;
                                 const skipENSFetch = true;
                                 if (
                                     userPoolLimitOrderStates &&
@@ -812,7 +812,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
             : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         !!props.crocEnv,
-        !!props.provider,
+        !!props.publicClient,
 
         isServerEnabled,
     ]);

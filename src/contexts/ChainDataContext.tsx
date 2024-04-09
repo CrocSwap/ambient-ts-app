@@ -8,9 +8,7 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
-    BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
-    SCROLL_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
@@ -25,13 +23,10 @@ import {
     UserXpDataIF,
 } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
-import {
-    fetchBlastUserXpData,
-    fetchBlockNumber,
-    fetchUserXpData,
-} from '../ambient-utils/api';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
+import { fetchBlastUserXpData, fetchUserXpData } from '../ambient-utils/api';
 import { AppStateContext } from './AppStateContext';
+import { usePublicClient } from 'wagmi';
+import { hexToNumber } from 'viem';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -76,10 +71,6 @@ export const ChainDataContextProvider = (props: {
     );
     const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
 
-    const blockPollingUrl = BLOCK_POLLING_RPC_URL
-        ? BLOCK_POLLING_RPC_URL
-        : chainData.nodeUrl;
-
     // array of network IDs for supported L2 networks
     const L2_NETWORKS: string[] = [
         '0x13e31',
@@ -93,21 +84,15 @@ export const ChainDataContextProvider = (props: {
 
     const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
 
+    const publicClient = usePublicClient({
+        chainId: hexToNumber(chainData.chainId),
+    });
+
     async function pollBlockNum(): Promise<void> {
-        // if default RPC is Infura, use key from env variable
-        const nodeUrl =
-            chainData.nodeUrl.toLowerCase().includes('infura') &&
-            process.env.REACT_APP_INFURA_KEY
-                ? chainData.nodeUrl.slice(0, -32) +
-                  process.env.REACT_APP_INFURA_KEY
-                : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-                ? BLAST_RPC_URL
-                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                ? SCROLL_RPC_URL
-                : blockPollingUrl;
         try {
-            const lastBlockNumber = await fetchBlockNumber(nodeUrl);
-            if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
+            const lastBlockNumber = await publicClient?.getBlockNumber();
+            if (lastBlockNumber && lastBlockNumber > 0)
+                setLastBlockNumber(Number(lastBlockNumber));
         } catch (error) {
             console.error({ error });
         }
@@ -126,7 +111,7 @@ export const ChainDataContextProvider = (props: {
             pollBlockNum();
         }, BLOCK_NUM_POLL_MS);
         return () => clearInterval(interval);
-    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
+    }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 

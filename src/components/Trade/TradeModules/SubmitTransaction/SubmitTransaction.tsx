@@ -29,7 +29,7 @@ interface propsIF {
         | 'Harvest'
         | 'Claim'
         | 'Reset';
-    newTransactionHash: string;
+    newTransactionHash: `0x${string}`;
     txErrorCode: string;
     txErrorMessage: string;
     txErrorJSON: string;
@@ -100,9 +100,9 @@ export default function SubmitTransaction(props: propsIF) {
     // set isTransactionFailed to true if last receipt failed
     useEffect(() => {
         const lastReceipt =
-            sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
+            sessionReceipts.length > 0 ? sessionReceipts[0] : null;
         if (
-            lastReceipt?.status === 0 &&
+            lastReceipt?.status === 'reverted' &&
             lastReceipt.transactionHash === newTransactionHash
         ) {
             setIsTransactionFailed(true);

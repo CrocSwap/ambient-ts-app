@@ -15,8 +15,8 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 
 interface ReceiptDisplayPropsIF {
-    status: 'successful' | 'failed' | 'pending';
-    hash: string;
+    status: 'success' | 'reverted' | 'pending';
+    hash: `0x${string}`;
     txBlockNumber?: number;
     txType: string | undefined;
 }
@@ -36,7 +36,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const success = <IoMdCheckmarkCircleOutline size={30} color='#7371fc ' />;
 
     function handleStatusDisplay(status: string) {
-        if (status === 'successful') {
+        if (status === 'success') {
             return success;
         } else if (status === 'failed') {
             return failed;
@@ -47,7 +47,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
 
     // This function would later on return info about the tx such as 'Swap 0.0001 ETH for 0321 DAI
     function handleTxTextDisplay(status: string) {
-        if (status === 'successful') {
+        if (status === 'success') {
             return 'Completed';
         } else if (status === 'failed') {
             return 'Failed';

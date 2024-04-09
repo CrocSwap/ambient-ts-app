@@ -5,9 +5,13 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
-import { ConnectArgs, Connector } from '@wagmi/core';
-import { checkBlacklist } from '../ambient-utils/constants';
+import {
+    useAccount,
+    useConnect,
+    useDisconnect,
+    useEnsName,
+    Connector,
+} from 'wagmi';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
 
@@ -15,13 +19,10 @@ interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
     disconnectUser: () => void;
-    connectUser: (args?: Partial<ConnectArgs> | undefined) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    connectUser: any; // TODO: fix any
     connectError: Error | null;
-    connectIsLoading: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    connectors: Connector<any, any, any>[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pendingConnector: Connector<any, any, any> | undefined;
+    connectors: readonly Connector[];
 
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
@@ -58,18 +59,7 @@ export const UserDataContextProvider = (props: {
         connect: connectUser,
         connectors,
         error: connectError,
-        isLoading: connectIsLoading,
-        pendingConnector,
-    } = useConnect({
-        onSettled(data, error) {
-            if (error) console.error({ error });
-            const connectedAddress = data?.account;
-            const isBlacklisted = connectedAddress
-                ? checkBlacklist(connectedAddress)
-                : false;
-            if (isBlacklisted) disconnectUser();
-        },
-    });
+    } = useConnect();
     const { data: ensNameFromWagmi } = useEnsName({ address: userAddress });
 
     const [ensName, setEnsName] = useState('');
@@ -99,8 +89,6 @@ export const UserDataContextProvider = (props: {
         connectUser,
         connectors,
         connectError,
-        connectIsLoading,
-        pendingConnector,
         resolvedAddressFromContext,
         setResolvedAddressInContext,
         secondaryEnsFromContext,

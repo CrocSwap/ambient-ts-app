@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { ethers } from 'ethers';
+import { PublicClient } from 'viem';
 import { fetchContractDetails } from '../../ambient-utils/api';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
@@ -33,7 +33,7 @@ interface urlParamsMethodsIF {
 export const useUrlParams = (
     tokens: tokenMethodsIF,
     dfltChainId: string,
-    provider: ethers.providers.Provider,
+    publicClient: PublicClient,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
@@ -170,7 +170,7 @@ export const useUrlParams = (
     /* Given an address and chain ID retrieves full token context data from the useTokenMap
      * hook. */
     async function getTokenByAddress(
-        addr: string,
+        addr: `0x${string}`,
         chainId: string,
     ): Promise<TokenIF | undefined> {
         // Don't run until the token map has loaded. Otherwise, we may spuriously query a token
@@ -183,9 +183,9 @@ export const useUrlParams = (
             return lookup;
         } else {
             // const provider = inflateProvider(chainId);
-            if (provider) {
+            if (publicClient) {
                 return fetchContractDetails(
-                    provider,
+                    publicClient,
                     addr,
                     chainId,
                     'on_chain_by_URL_param',
@@ -219,8 +219,8 @@ export const useUrlParams = (
     }
 
     async function resolveTokenData(
-        addrA: string,
-        addrB: string,
+        addrA: `0x${string}`,
+        addrB: `0x${string}`,
         chainToUse: string,
     ): Promise<[TokenIF, TokenIF] | undefined> {
         const [tokenA, tokenB] = await Promise.all([
@@ -250,8 +250,8 @@ export const useUrlParams = (
         let flag = true;
 
         const processTokenAddr = async (
-            tokenAddrA: string,
-            tokenAddrB: string,
+            tokenAddrA: `0x${string}`,
+            tokenAddrB: `0x${string}`,
             chainToUse: string,
         ) => {
             const tokenPair = await resolveTokenData(
@@ -277,8 +277,8 @@ export const useUrlParams = (
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
-            const tokenA = urlParamMap.get('tokenA');
-            const tokenB = urlParamMap.get('tokenB');
+            const tokenA = urlParamMap.get('tokenA') as `0x${string}`;
+            const tokenB = urlParamMap.get('tokenB') as `0x${string}`;
             if (tokenA && tokenB) {
                 processTokenAddr(tokenA, tokenB, chainToUse);
             }

@@ -4,8 +4,8 @@ import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { Provider } from '@ethersproject/providers';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { PublicClient } from 'viem';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 const PROVIDER_KEY =
     process.env.NODE_ENV === 'test'
@@ -29,8 +29,8 @@ export const ethereumSepolia: NetworkIF = {
             lookupChain('0xaa36a7').poolIndex,
         ),
     ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+    getGasPriceInGwei: async (publicClient?: PublicClient) => {
+        if (!publicClient) return 0;
+        return bigIntToFloat(await publicClient.getGasPrice()) * 1e-9;
     },
 };

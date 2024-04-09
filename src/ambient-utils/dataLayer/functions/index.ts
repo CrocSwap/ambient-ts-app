@@ -14,7 +14,6 @@ export * from './getPoolStats';
 export * from './getPositionData';
 export * from './getPriceImpactString';
 export * from './getPrecisionOfInput';
-export * from './getReceiptTxHashes';
 export * from './getSymbols';
 export * from './getTransactionData';
 export * from './getTxType';

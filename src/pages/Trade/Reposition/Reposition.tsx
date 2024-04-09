@@ -50,6 +50,7 @@ import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 function Reposition() {
     // current URL parameter string
@@ -332,7 +333,7 @@ function Reposition() {
 
     const sendRepositionTransaction = async () => {
         if (!crocEnv) return;
-        let tx;
+        let hash;
         setTxErrorCode('');
         setTxErrorMessage('');
         setTxErrorJSON('');
@@ -352,13 +353,13 @@ function Reposition() {
                 { impact: slippageTolerancePercentage / 100 },
             );
 
-            tx = await repo.rebal();
-            setNewRepositionTransactionHash(tx?.hash);
-            addPendingTx(tx?.hash);
-            if (tx?.hash) {
+            hash = await repo.rebal();
+            if (hash) {
+                setNewRepositionTransactionHash(hash);
+                addPendingTx(hash);
                 addTransactionByType({
                     userAddress: userAddress || '',
-                    txHash: tx.hash,
+                    txHash: hash,
                     txAction: 'Reposition',
                     txType: 'Range',
                     txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
@@ -380,7 +381,7 @@ function Reposition() {
                 });
                 const posHash = getPositionHash(position);
                 addPositionUpdate({
-                    txHash: tx.hash,
+                    txHash: hash,
                     positionID: posHash,
                     isLimit: false,
                     unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -400,7 +401,13 @@ function Reposition() {
 
         let receipt;
         try {
-            if (tx) receipt = await tx.wait();
+            if (hash)
+                receipt = await waitForTransactionReceipt(
+                    (
+                        await crocEnv.context
+                    ).publicClient,
+                    { hash },
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -428,7 +435,7 @@ function Reposition() {
             }
         }
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.transactionHash);
         }
     };
@@ -863,7 +870,7 @@ function Reposition() {
                             <SubmitTransaction
                                 type='Reposition'
                                 newTransactionHash={
-                                    newRepositionTransactionHash
+                                    newRepositionTransactionHash as `0x${string}`
                                 }
                                 txErrorCode={txErrorCode}
                                 txErrorMessage={txErrorMessage}

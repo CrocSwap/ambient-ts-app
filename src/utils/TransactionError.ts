@@ -1,8 +1,7 @@
 // attribution: https://github.com/element-fi/react-query-typechain/blob/main/src/base/TransactionError.ts
 // license: https://github.com/element-fi/react-query-typechain/commit/5815d460d14909e8382690c150186e95ad65ab25
 
-import { ContractReceipt, ContractTransaction } from 'ethers';
-import { Logger } from 'ethers/lib/utils';
+import { TransactionReceipt, Transaction } from 'viem';
 
 // union type of TransactionError's that we can grow.
 export type TransactionError =
@@ -11,7 +10,7 @@ export type TransactionError =
 
 export interface TransactionReplacedError extends Error {
     code: 'TRANSACTION_REPLACED';
-    hash: string;
+    hash: `0x${string}`;
     // The reason why the transaction was replaced
     // - "repriced" is generally nothing of concern, the
     //   only difference in the transaction is the gasPrice
@@ -24,17 +23,18 @@ export interface TransactionReplacedError extends Error {
     // "cancelled" or "replaced" tx are effectively cancelled
     cancelled: boolean;
     // The TransactionResponse which replaced the original
-    replacement: ContractTransaction;
+    replacement: Transaction;
     // The TransactionReceipt of the replacement transaction
-    receipt: ContractReceipt;
+    receipt: TransactionReceipt;
 }
 
 export function isTransactionReplacedError(
     error: TransactionError,
 ): error is TransactionReplacedError {
-    if (error.code === Logger.errors.TRANSACTION_REPLACED) {
-        return true;
-    }
+    // TODO: fix replaced error
+    // if (error.code === Logger.errors.TRANSACTION_REPLACED) {
+    //     return true;
+    // }
     return false;
 }
 
@@ -42,7 +42,7 @@ export interface TransactionFailedError {
     code: number;
     message: string;
     stack: string;
-    receipt: ContractReceipt;
+    receipt: TransactionReceipt;
 }
 
 export function isTransactionFailedError(
@@ -58,10 +58,12 @@ export function isTransactionFailedError(
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseErrorMessage(error: any): string {
+    console.log(error);
     const errorMessage =
         error?.error?.data?.message ||
         error?.error?.message ||
         error?.data?.message ||
+        error?.error?.message ||
         error?.response?.data?.message ||
         error?.details ||
         error?.shortMessage ||

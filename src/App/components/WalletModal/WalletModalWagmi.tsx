@@ -6,18 +6,16 @@ import styles from './WalletModalWagmi.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Form/Button';
 import WalletButton from './WalletButton/WalletButton';
-import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
-import braveLogo from '../../../assets/images/logos/brave_lion.svg';
-import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
 import walletConnectLogo from '../../../assets/images/logos/wallet_connect_icon.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { IS_LOCAL_ENV, checkBlacklist } from '../../../ambient-utils/constants';
 import GateWallet from './GateWallet';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { ConnectErrorType } from '@wagmi/core';
 
 export default function WalletModalWagmi() {
     const {
@@ -27,10 +25,9 @@ export default function WalletModalWagmi() {
     const {
         isUserConnected,
         connectUser,
+        disconnectUser,
         connectors,
         connectError,
-        connectIsLoading,
-        pendingConnector,
     } = useContext(UserDataContext);
 
     useEffect(() => {
@@ -92,44 +89,67 @@ export default function WalletModalWagmi() {
             </a>
         </div>
     );
+    console.log('connectors', connectors);
+    const sortedConnectors = connectors.toSorted((a, b) => {
+        // Rough ordering based on popularity
+        const ranks: { [key: string]: number } = {
+            'io.metamask': 10,
+            'io.rabby': 20,
+            'com.coinbase.wallet': 30,
+            'me.rainbow': 40,
+            injected: 999999,
+            walletConnect: 9999999,
+        };
+        const aRank = ranks[a.id] || 1000;
+        const bRank = ranks[b.id] || 1000;
+        return aRank == bRank ? 0 : aRank < bRank ? -1 : 1;
+    });
     const connectorsDisplay = (
         <div className={styles.wall_buttons_container}>
-            {connectors.map((connector) => (
+            {sortedConnectors.map((connector) => (
                 <WalletButton
-                    title={`${connector.name} ${
-                        !connector.ready ? ' (unavailable)' : ''
-                    }  ${
-                        connectIsLoading &&
-                        connector.id === pendingConnector?.id
-                            ? ' (connecting)'
-                            : ''
-                    }`}
-                    disabled={!connector.ready}
-                    key={connector.id + '|' + connector.name} // Join both to ensure uniqueness
+                    title={`${connector.name}`}
+                    // title={`${connector.name} ${
+                    //     connectIsLoading &&
+                    //     connector.id === pendingConnector?.id
+                    //         ? ' (connecting)'
+                    //         : ''
+                    // }`}
+                    // disabled={!connector.ready}
+                    key={connector.uid}
                     action={() => {
-                        connectUser({ connector });
+                        console.log('connector', connector);
+                        connectUser({
+                            connector,
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            onSettled(data: any, error: ConnectErrorType) {
+                                // TODO: fix any?
+                                if (error) console.error({ error });
+                                const connectedAddress = data?.account;
+                                const isBlacklisted = connectedAddress
+                                    ? checkBlacklist(connectedAddress)
+                                    : false;
+                                if (isBlacklisted) disconnectUser();
+                            },
+                        });
                         IS_LOCAL_ENV && console.debug({ connector });
-                        connector.name.toLowerCase() === 'metamask'
-                            ? (() => {
-                                  setPage('metamaskPending');
-                                  setPendingLoginDelayElapsed(false);
-                              })()
-                            : connector.name === 'Coinbase Wallet'
-                            ? setPage('coinbaseWalletPending')
-                            : connector.name === 'WalletConnect'
-                            ? closeModal()
-                            : setPage('metamaskPending');
+                        setPage('metamaskPending');
+                        setPendingLoginDelayElapsed(false);
+                        // connector.name.toLowerCase() === 'metamask'
+                        //     ? (() => {
+                        //         setPage('metamaskPending');
+                        //         setPendingLoginDelayElapsed(false);
+                        //     })()
+                        //     : connector.name === 'Coinbase Wallet'
+                        //         ? setPage('coinbaseWalletPending')
+                        //         : connector.name === 'WalletConnect'
+                        //             ? closeModal()
+                        //             : setPage('metamaskPending');
                     }}
                     logo={
-                        connector.name.toLowerCase() === 'metamask'
-                            ? metamaskLogo
-                            : connector.name === 'WalletConnect'
-                            ? walletConnectLogo
-                            : connector.name === 'Brave'
-                            ? braveLogo
-                            : connector.name.toLowerCase() === 'rabby'
-                            ? rabbyLogo
-                            : undefined
+                        connector.id === 'walletConnect'
+                            ? walletConnectLogo // for some reason WalletConnect doesn't have a logo in wagmi?
+                            : connector.icon
                     }
                 />
             ))}

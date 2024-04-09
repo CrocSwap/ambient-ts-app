@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useNetwork, useSwitchNetwork } from 'wagmi';
+import { useAccount, useChains, useSwitchChain } from 'wagmi';
 import {
     getDefaultChainId,
     validateChainId,
@@ -19,8 +19,9 @@ export const useAppChain = (): {
     chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
-    const { chain: chainNetwork, chains: chns } = useNetwork();
-    const { switchNetwork } = useSwitchNetwork();
+    const { chain: chainNetwork } = useAccount();
+    const chns = useChains();
+    const { switchChain: switchNetwork } = useSwitchChain();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
@@ -82,7 +83,7 @@ export const useAppChain = (): {
     useEffect(() => {
         if (chainInURLValidated && switchNetwork) {
             if (activeNetwork.chainId !== chainInURLValidated) {
-                switchNetwork(parseInt(chainInURLValidated));
+                switchNetwork({ chainId: parseInt(chainInURLValidated) });
             }
         }
     }, [switchNetwork === undefined]);

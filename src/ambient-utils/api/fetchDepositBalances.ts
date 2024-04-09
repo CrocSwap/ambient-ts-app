@@ -63,7 +63,7 @@ async function expandTokenBalance(
         ? tokenListedSymbol
         : props
               .cachedTokenDetails(
-                  (await props.crocEnv.context).provider,
+                  (await props.crocEnv.context).publicClient,
                   token,
                   props.chainId,
               )

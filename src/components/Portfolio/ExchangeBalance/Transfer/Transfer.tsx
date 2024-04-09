@@ -10,7 +10,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -41,6 +40,7 @@ import {
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -113,8 +113,10 @@ export default function Transfer(props: propsIF) {
         if (!resolvedAddress) return;
         checkIfContract(resolvedAddress);
         async function checkIfContract(address: string) {
-            const code = await provider?.getCode(address);
-            setIsAddressContract(code !== '0x');
+            const code = await provider?.getBytecode({
+                address: address as `0x${string}`,
+            });
+            setIsAddressContract(code != undefined);
         }
     }, [resolvedAddress]);
 
@@ -135,9 +137,7 @@ export default function Transfer(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!transferQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(
-                      BigNumber.from(transferQtyNonDisplay),
-                  )
+                ? BigInt(tokenDexBalance) >= BigInt(transferQtyNonDisplay)
                 : false,
         [tokenDexBalance, transferQtyNonDisplay],
     );
@@ -211,20 +211,25 @@ export default function Transfer(props: propsIF) {
                 );
 
                 setIsTransferPending(true);
-                const tx = await crocEnv
+                const hash = await crocEnv
                     .token(selectedToken.address)
                     .transfer(transferQtyDisplay, resolvedAddress);
-                addPendingTx(tx?.hash);
-                if (tx?.hash)
-                    addTransactionByType({
-                        userAddress: userAddress || '',
-                        txHash: tx.hash,
-                        txType: 'Transfer',
-                        txDescription: `Transfer ${selectedToken.symbol}`,
-                    });
+                if (hash) addPendingTx(hash);
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: hash,
+                    txType: 'Transfer',
+                    txDescription: `Transfer ${selectedToken.symbol}`,
+                });
                 let receipt;
                 try {
-                    if (tx) receipt = await tx.wait();
+                    if (hash)
+                        receipt = await waitForTransactionReceipt(
+                            (
+                                await crocEnv.context
+                            ).publicClient,
+                            { hash },
+                        );
                 } catch (e) {
                     const error = e as TransactionError;
                     console.error({ error });
@@ -250,7 +255,7 @@ export default function Transfer(props: propsIF) {
                 }
 
                 if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
+                    addReceipt(receipt);
                     removePendingTx(receipt.transactionHash);
                     resetTransferQty();
                 }

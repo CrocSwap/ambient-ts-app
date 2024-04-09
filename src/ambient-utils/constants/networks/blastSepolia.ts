@@ -2,36 +2,10 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { blastSepoliaETH, blastSepoliaUSDB } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { Chain } from 'wagmi';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
-
-const wagmiChain = {
-    id: 168587773,
-    name: 'Blast Sepolia',
-    network: 'blast-sepolia',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: ['https://sepolia.blast.io/'],
-        },
-        public: {
-            http: ['https://sepolia.blast.io/'],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Blastscan',
-            url: 'https://testnet.blastscan.io',
-        },
-    },
-    testnet: true,
-} as const satisfies Chain;
+import { blastSepolia as wagmiChain } from 'viem/chains';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 export const blastSepolia: NetworkIF = {
     chainId: '0xa0c71fd',
@@ -48,8 +22,8 @@ export const blastSepolia: NetworkIF = {
             lookupChain('0xa0c71fd').poolIndex,
         ),
     ],
-    getGasPriceInGwei: async (provider?: Provider) => {
-        if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+    getGasPriceInGwei: async (publicClient?: PublicClient) => {
+        if (!publicClient) return 0;
+        return bigIntToFloat(await publicClient.getGasPrice()) * 1e-9;
     },
 };

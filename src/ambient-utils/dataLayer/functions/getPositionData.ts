@@ -1,8 +1,8 @@
 import {
     baseTokenForConcLiq,
-    bigNumToFloat,
+    bigIntToFloat,
     CrocEnv,
-    floatToBigNum,
+    floatToBigInt,
     quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
@@ -11,7 +11,7 @@ import { PositionIF, PositionServerIF, TokenIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
@@ -20,7 +20,7 @@ export const getPositionData = async (
     position: PositionServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
-    provider: Provider,
+    publicClient: PublicClient,
     chainId: string,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
@@ -97,11 +97,11 @@ export const getPositionData = async (
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals = baseTokenListedDecimals
         ? baseTokenListedDecimals
-        : (await cachedTokenDetails(provider, position.base, chainId))
+        : (await cachedTokenDetails(publicClient, position.base, chainId))
               ?.decimals ?? DEFAULT_DECIMALS;
     const quoteTokenDecimals = quoteTokenListedDecimals
         ? quoteTokenListedDecimals
-        : (await cachedTokenDetails(provider, position.quote, chainId))
+        : (await cachedTokenDetails(publicClient, position.quote, chainId))
               ?.decimals ?? DEFAULT_DECIMALS;
 
     newPosition.ensResolution = skipENSFetch
@@ -124,21 +124,21 @@ export const getPositionData = async (
 
     newPosition.baseSymbol = baseTokenListedSymbol
         ? baseTokenListedSymbol
-        : (await cachedTokenDetails(provider, position.base, chainId))
+        : (await cachedTokenDetails(publicClient, position.base, chainId))
               ?.symbol ?? '';
     newPosition.quoteSymbol = quoteTokenListedSymbol
         ? quoteTokenListedSymbol
-        : (await cachedTokenDetails(provider, position.quote, chainId))
+        : (await cachedTokenDetails(publicClient, position.quote, chainId))
               ?.symbol ?? '';
 
     newPosition.baseName = baseTokenName
         ? baseTokenName
-        : (await cachedTokenDetails(provider, position.base, chainId))?.name ??
-          '';
+        : (await cachedTokenDetails(publicClient, position.base, chainId))
+              ?.name ?? '';
     newPosition.quoteName = quoteTokenName
         ? quoteTokenName
-        : (await cachedTokenDetails(provider, position.quote, chainId))?.name ??
-          '';
+        : (await cachedTokenDetails(publicClient, position.quote, chainId))
+              ?.name ?? '';
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
@@ -246,18 +246,18 @@ export const getPositionData = async (
     } else if (position.positionType == 'concentrated') {
         newPosition.positionLiq = position.concLiq;
 
-        newPosition.positionLiqBase = bigNumToFloat(
+        newPosition.positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(position.concLiq),
+                floatToBigInt(position.concLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),
         );
-        newPosition.positionLiqQuote = bigNumToFloat(
+        newPosition.positionLiqQuote = bigIntToFloat(
             quoteTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(position.concLiq),
+                floatToBigInt(position.concLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),

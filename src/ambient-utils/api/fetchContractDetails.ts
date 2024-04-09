@@ -1,5 +1,5 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
-import { Contract, ethers } from 'ethers';
+import { getContract, PublicClient, Address, hexToString } from 'viem';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF, otherTokenSources } from '../types/token/TokenIF';
 import { ZERO_ADDRESS } from '../constants';
@@ -16,8 +16,8 @@ export interface ContractDetails {
 // !important:  ... as the point of entry for a token fetched from on-chain data
 
 export const fetchContractDetails = async (
-    provider: ethers.providers.Provider,
-    address: string,
+    publicClient: PublicClient,
+    address: Address,
     _chainId: string,
     provenance: otherTokenSources,
 ): Promise<TokenIF> => {
@@ -35,36 +35,40 @@ export const fetchContractDetails = async (
         };
     }
 
-    const contract = new Contract(address, ERC20_ABI, provider);
+    const contract = getContract({
+        address,
+        abi: ERC20_ABI,
+        client: publicClient,
+    });
 
     let decimals,
         symbol,
         name = undefined;
 
     try {
-        decimals = await contract.decimals();
+        decimals = (await contract.read.decimals()) as number;
     } catch (error) {
         console.warn({ error });
     }
 
     try {
-        symbol = await contract.symbol();
+        symbol = await contract.read.symbol();
         /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
         // attempt to parse data as bytes32 in case of a non-compliant token
         try {
-            symbol = ethers.utils.parseBytes32String(error.data);
+            symbol = hexToString(error.data);
         } catch (error) {
             console.warn({ error });
         }
     }
 
     try {
-        name = await contract.name();
+        name = await contract.read.name();
         /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
         try {
-            name = ethers.utils.parseBytes32String(error.data);
+            name = hexToString(error.data);
         } catch (error) {
             console.warn({ error });
         }
@@ -73,16 +77,16 @@ export const fetchContractDetails = async (
     return {
         address: address,
         chainId: parseInt(_chainId),
-        decimals: decimals,
-        symbol: symbol,
-        name: name,
+        decimals: decimals as number,
+        symbol: symbol as string,
+        name: name as string,
         fromList: provenance,
         logoURI: '',
     };
 };
 
 export type FetchContractDetailsFn = (
-    provider: ethers.providers.Provider,
+    publicClient: PublicClient,
     address: string,
     chainId: string,
 ) => Promise<TokenIF | undefined>;

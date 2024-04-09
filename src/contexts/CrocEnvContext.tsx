@@ -4,15 +4,14 @@ import {
     createContext,
     useContext,
     useEffect,
-    useMemo,
     useState,
 } from 'react';
-import { useSigner } from 'wagmi';
+import { useWalletClient, usePublicClient } from 'wagmi';
+import { PublicClient, hexToNumber } from 'viem';
+import { mainnet, blast, scroll } from 'viem/chains';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
-import { Provider } from '@ethersproject/providers';
-import { BatchedJsonRpcProvider } from '../utils/batchedProvider';
 import {
     limitParamsIF,
     linkGenMethodsIF,
@@ -27,12 +26,9 @@ import {
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
-    BLAST_RPC_URL,
-    SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
-import { ethers } from 'ethers';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
@@ -52,30 +48,17 @@ interface CrocEnvContextIF {
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
-    provider: Provider;
+    provider: PublicClient;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
-    mainnetProvider: Provider | undefined;
-    scrollProvider: Provider | undefined;
-    blastProvider: Provider | undefined;
+    mainnetProvider: PublicClient;
+    scrollProvider: PublicClient;
+    blastProvider: PublicClient;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
-const mainnetProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.InfuraProvider(
-        'mainnet',
-        process.env.REACT_APP_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091',
-    ),
-).proxy;
-
-const scrollProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL),
-).proxy;
-const blastProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.JsonRpcProvider(BLAST_RPC_URL),
-).proxy;
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -83,7 +66,14 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useContext(TradeDataContext);
 
     const { userAddress } = useContext(UserDataContext);
-    const { data: signer, isError, error, status: signerStatus } = useSigner();
+    const wal = useWalletClient();
+    console.log('wallet', wal);
+    const {
+        data: signer,
+        isError,
+        error,
+        status: signerStatus,
+    } = useWalletClient();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
@@ -170,29 +160,24 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const nodeUrl =
-        chainData.nodeUrl.toLowerCase().includes('infura') &&
-        process.env.REACT_APP_INFURA_KEY
-            ? chainData.nodeUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
-            : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-            ? BLAST_RPC_URL
-            : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-            ? SCROLL_RPC_URL
-            : chainData.nodeUrl;
+    const provider = usePublicClient({
+        chainId: hexToNumber(chainData.chainId),
+    });
+    if (provider === undefined) throw new Error('provider is undefined');
 
-    const provider = useMemo(
-        () =>
-            chainData.chainId === '0x1'
-                ? mainnetProvider
-                : chainData.chainId === '0x82750'
-                ? scrollProvider
-                : chainData.chainId === '0x13e31'
-                ? blastProvider
-                : new ethers.providers.JsonRpcProvider(nodeUrl),
-        [chainData.chainId],
-    );
+    const mainnetProvider = usePublicClient({ chainId: mainnet.id });
+    const scrollProvider = usePublicClient({ chainId: scroll.id });
+    const blastProvider = usePublicClient({ chainId: blast.id });
+    if (
+        provider === undefined ||
+        mainnetProvider === undefined ||
+        scrollProvider === undefined ||
+        blastProvider === undefined
+    )
+        throw new Error('one of the providers is undefined');
 
     useBlacklist(userAddress);
+    console.log('signer', signer);
 
     const setNewCrocEnv = async () => {
         if (APP_ENVIRONMENT === 'local') {
@@ -207,10 +192,12 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         } else if (!provider && !signer) {
             APP_ENVIRONMENT === 'local' &&
                 console.debug('setting crocEnv to undefined');
-            setCrocEnv(undefined);
+            // setCrocEnv(undefined);
+            console.log('undefined env');
             return;
         } else if (!signer && !!crocEnv) {
             APP_ENVIRONMENT === 'local' && console.debug('keeping provider');
+            console.log('some nonsense');
             return;
         } else if (provider && !crocEnv) {
             const newCrocEnv = new CrocEnv(
@@ -218,23 +205,25 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 signer ? signer : undefined,
             );
             setCrocEnv(newCrocEnv);
+            console.log('new corc env with signer', signer);
         } else {
+            // throw new Error('unexpected state');
+            // TODO: is this needed anymore?
             // If signer and provider are set to different chains (as can happen)
             // after a network switch, it causes a lot of performance killing timeouts
             // and errors
-            if (
-                (await signer?.getChainId()) ==
-                (await provider.getNetwork()).chainId
-            ) {
-                const newCrocEnv = new CrocEnv(
-                    provider,
-                    signer ? signer : undefined,
-                );
-                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-                setCrocEnv(newCrocEnv);
-            }
+            // if (
+            //     (await signer?.getChainId()) ==
+            //     (await provider.getNetwork()).chainId
+            // ) {
+            console.log('creating with signer', signer);
+            const newCrocEnv = new CrocEnv(provider, signer);
+            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
+            setCrocEnv(newCrocEnv);
+            // }
         }
     };
+    // setNewCrocEnv();
     useEffect(() => {
         setNewCrocEnv();
     }, [

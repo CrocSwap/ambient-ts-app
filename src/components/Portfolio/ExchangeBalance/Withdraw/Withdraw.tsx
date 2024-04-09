@@ -1,5 +1,4 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
 import {
     Dispatch,
     SetStateAction,
@@ -42,6 +41,7 @@ import {
     GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -118,8 +118,10 @@ export default function Withdraw(props: propsIF) {
         if (!resolvedAddress) return;
         checkIfContract(resolvedAddress);
         async function checkIfContract(address: string) {
-            const code = await provider?.getCode(address);
-            setIsAddressContract(code !== '0x');
+            const code = await provider?.getBytecode({
+                address: address as `0x${string}`,
+            });
+            setIsAddressContract(code != undefined);
         }
     }, [resolvedAddress]);
 
@@ -140,9 +142,7 @@ export default function Withdraw(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!withdrawQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(
-                      BigNumber.from(withdrawQtyNonDisplay),
-                  )
+                ? BigInt(tokenDexBalance) >= BigInt(withdrawQtyNonDisplay)
                 : false,
         [tokenDexBalance, withdrawQtyNonDisplay],
     );
@@ -211,28 +211,33 @@ export default function Withdraw(props: propsIF) {
                 );
 
                 setIsWithdrawPending(true);
-                let tx;
+                let hash;
                 if (isSendToAddressChecked && resolvedAddress) {
-                    tx = await crocEnv
+                    hash = await crocEnv
                         .token(selectedToken.address)
                         .withdraw(depositQtyDisplay, resolvedAddress);
                 } else {
-                    tx = await crocEnv
+                    hash = await crocEnv
                         .token(selectedToken.address)
                         .withdraw(depositQtyDisplay, userAddress);
                 }
-                addPendingTx(tx?.hash);
-                if (tx?.hash)
-                    addTransactionByType({
-                        userAddress: userAddress || '',
-                        txHash: tx.hash,
-                        txType: 'Withdraw',
-                        txDescription: `Withdrawal of ${selectedToken.symbol}`,
-                    });
+                if (hash) addPendingTx(hash);
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: hash.hash,
+                    txType: 'Withdraw',
+                    txDescription: `Withdrawal of ${selectedToken.symbol}`,
+                });
 
                 let receipt;
                 try {
-                    if (tx) receipt = await tx.wait();
+                    if (hash)
+                        receipt = await waitForTransactionReceipt(
+                            (
+                                await crocEnv.context
+                            ).publicClient,
+                            { hash },
+                        );
                 } catch (e) {
                     const error = e as TransactionError;
                     console.error({ error });
@@ -258,7 +263,7 @@ export default function Withdraw(props: propsIF) {
                 }
 
                 if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
+                    addReceipt(receipt);
                     removePendingTx(receipt.transactionHash);
                     resetWithdrawQty();
                 }

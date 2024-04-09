@@ -13,12 +13,12 @@ import {
 } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
-import { ethers } from 'ethers';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     getDefaultPairForChain,
 } from '../../ambient-utils/constants';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { PublicClient } from 'viem';
 
 interface dexDataGeneric {
     raw: number;
@@ -48,7 +48,7 @@ export const useTokenStats = (
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
-    provider: ethers.providers.Provider,
+    publicClient: PublicClient,
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 
@@ -102,7 +102,7 @@ export const useTokenStats = (
     const decorate = async (t: DexTokenAggServerIF): Promise<dexTokenData> => {
         const tokenMeta: TokenIF | undefined =
             tokenMethods.getTokenByAddress(t.tokenAddr) ??
-            (await cachedTokenDetails(provider, t.tokenAddr, chainId));
+            (await cachedTokenDetails(publicClient, t.tokenAddr, chainId));
 
         const tokenStatsNormalized = await expandTokenStats(t);
 

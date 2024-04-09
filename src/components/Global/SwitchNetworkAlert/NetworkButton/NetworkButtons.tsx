@@ -4,7 +4,7 @@
 // import ethereumLogo from '../../../../assets/images/networks/ethereum.png';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useSwitchNetwork } from 'wagmi';
+import { useSwitchChain } from 'wagmi';
 import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
 import NetworkButton from './NetworkButton';
 
@@ -17,8 +17,8 @@ export default function NetworkButtons() {
 
     const {
         // chains, error, isLoading, pendingChainId,
-        switchNetwork,
-    } = useSwitchNetwork();
+        switchChain: switchNetwork,
+    } = useSwitchChain();
 
     const supportedChains = getSupportedChainIds().map((chainId) => {
         return {
@@ -38,7 +38,8 @@ export default function NetworkButtons() {
                     theme={chain.theme}
                     id={chain.id}
                     clickHandler={() => {
-                        switchNetwork && switchNetwork(parseInt(chain.id));
+                        switchNetwork &&
+                            switchNetwork({ chainId: parseInt(chain.id) });
                     }}
                 />
             ))}

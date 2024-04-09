@@ -9,7 +9,6 @@ import {
     PositionServerIF,
     RangeModalAction,
 } from '../../ambient-utils/types';
-import { BigNumber } from 'ethers';
 import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
@@ -45,6 +44,8 @@ import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { waitForTransactionReceipt } from 'viem/actions';
+import { PublicClient } from 'viem';
 
 interface propsIF {
     type: RangeModalAction;
@@ -157,11 +158,13 @@ function RangeActionModal(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
-        BigNumber | undefined
+        bigint | undefined
     >();
 
     const liquidityToBurn = useMemo(
-        () => currentLiquidity?.mul(removalPercentage).div(100),
+        () =>
+            ((currentLiquidity || BigInt(0)) * BigInt(removalPercentage)) /
+            BigInt(100),
         [currentLiquidity, removalPercentage],
     );
 
@@ -307,18 +310,18 @@ function RangeActionModal(props: propsIF) {
         const lowLimit = spotPrice * (1 - persistedSlippage / 100);
         const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
-        let tx;
+        let hash;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
                 IS_LOCAL_ENV &&
                     console.debug(`${removalPercentage}% to be removed.`);
                 try {
-                    tx = await pool.burnAmbientAll([lowLimit, highLimit], {
+                    hash = await pool.burnAmbientAll([lowLimit, highLimit], {
                         surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
-                    IS_LOCAL_ENV && console.debug(tx?.hash);
-                    addPendingTx(tx?.hash);
-                    setNewTransactionHash(tx?.hash);
+                    IS_LOCAL_ENV && console.debug(hash);
+                    addPendingTx(hash);
+                    setNewTransactionHash(hash);
                 } catch (error) {
                     if (
                         error.reason ===
@@ -333,13 +336,13 @@ function RangeActionModal(props: propsIF) {
                 }
             } else {
                 try {
-                    tx = await pool.burnAmbientLiq(liquidityToBurn, [
+                    hash = await pool.burnAmbientLiq(liquidityToBurn, [
                         lowLimit,
                         highLimit,
                     ]);
-                    addPendingTx(tx?.hash);
-                    IS_LOCAL_ENV && console.debug(tx?.hash);
-                    setNewTransactionHash(tx?.hash);
+                    addPendingTx(hash);
+                    IS_LOCAL_ENV && console.debug(hash);
+                    setNewTransactionHash(hash);
                 } catch (error) {
                     if (
                         error.reason ===
@@ -355,15 +358,15 @@ function RangeActionModal(props: propsIF) {
             }
         } else if (position.positionType === 'concentrated') {
             try {
-                tx = await pool.burnRangeLiq(
+                hash = await pool.burnRangeLiq(
                     liquidityToBurn,
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
                     { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
-                IS_LOCAL_ENV && console.debug(tx?.hash);
-                addPendingTx(tx?.hash);
-                setNewTransactionHash(tx?.hash);
+                IS_LOCAL_ENV && console.debug(hash);
+                addPendingTx(hash);
+                setNewTransactionHash(hash);
             } catch (error) {
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -380,10 +383,10 @@ function RangeActionModal(props: propsIF) {
                 console.debug('unsupported position type for removal');
         }
 
-        if (tx?.hash) {
+        if (hash) {
             addTransactionByType({
                 userAddress: userAddress || '',
-                txHash: tx.hash,
+                txHash: hash,
                 txAction: 'Remove',
                 txType: 'Range',
                 txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
@@ -403,7 +406,7 @@ function RangeActionModal(props: propsIF) {
             });
             const posHash = getPositionHash(position);
             addPositionUpdate({
-                txHash: tx.hash,
+                txHash: hash,
                 positionID: posHash,
                 isLimit: false,
                 unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -413,7 +416,13 @@ function RangeActionModal(props: propsIF) {
         let receipt;
 
         try {
-            if (tx) receipt = await tx.wait();
+            if (hash)
+                receipt = await waitForTransactionReceipt(
+                    (
+                        await crocEnv.context
+                    ).publicClient as PublicClient,
+                    { hash },
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -442,7 +451,7 @@ function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.transactionHash);
         }
     };
@@ -457,22 +466,22 @@ function RangeActionModal(props: propsIF) {
         const lowLimit = spotPrice * (1 - persistedSlippage / 100);
         const highLimit = spotPrice * (1 + persistedSlippage / 100);
 
-        let tx;
+        let hash;
         if (position.positionType === 'concentrated') {
             try {
                 IS_LOCAL_ENV && console.debug('Harvesting 100% of fees.');
-                tx = await pool.harvestRange(
+                hash = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
                     { surplus: dexBalRange.outputToDexBal.isEnabled },
                 );
-                IS_LOCAL_ENV && console.debug(tx?.hash);
-                addPendingTx(tx?.hash);
-                setNewTransactionHash(tx?.hash);
-                if (tx?.hash) {
+                IS_LOCAL_ENV && console.debug(hash);
+                if (hash) {
+                    addPendingTx(hash);
+                    setNewTransactionHash(hash);
                     addTransactionByType({
                         userAddress: userAddress || '',
-                        txHash: tx.hash,
+                        txHash: hash,
                         txAction: 'Harvest',
                         txType: 'Range',
                         txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
@@ -492,7 +501,7 @@ function RangeActionModal(props: propsIF) {
                     });
                     const posHash = getPositionHash(position);
                     addPositionUpdate({
-                        txHash: tx.hash,
+                        txHash: hash,
                         positionID: posHash,
                         isLimit: false,
                         unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -516,7 +525,13 @@ function RangeActionModal(props: propsIF) {
         let receipt;
 
         try {
-            if (tx) receipt = await tx.wait();
+            if (hash)
+                receipt = await waitForTransactionReceipt(
+                    (
+                        await crocEnv.context
+                    ).publicClient as PublicClient,
+                    { hash },
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -544,7 +559,7 @@ function RangeActionModal(props: propsIF) {
         if (receipt) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.transactionHash);
         }
     };
@@ -630,7 +645,7 @@ function RangeActionModal(props: propsIF) {
                             ? 'Remove'
                             : 'Range'
                     }
-                    newTransactionHash={newTransactionHash}
+                    newTransactionHash={newTransactionHash as `0x${string}`}
                     txErrorCode={txErrorCode}
                     txErrorMessage={txErrorMessage}
                     txErrorJSON={txErrorJSON}
@@ -648,7 +663,7 @@ function RangeActionModal(props: propsIF) {
                         !(
                             (type === 'Remove'
                                 ? liquidityToBurn === undefined ||
-                                  liquidityToBurn.isZero()
+                                  liquidityToBurn == BigInt(0)
                                 : memoIsActionReset) || showSettings
                         )
                             ? type === 'Remove'
@@ -661,7 +676,7 @@ function RangeActionModal(props: propsIF) {
                     disabled={
                         (type === 'Remove' &&
                             (liquidityToBurn === undefined ||
-                                liquidityToBurn.isZero())) ||
+                                liquidityToBurn == BigInt(0))) ||
                         showSettings
                     }
                     action={type === 'Remove' ? removeFn : harvestFn}

@@ -11,7 +11,6 @@ import TokenSelect from '../TokenSelect/TokenSelect';
 import styles from './SoloTokenSelect.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -161,11 +160,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
         // Otherwise, query to get token metadata from on-chain
         setCustomToken('querying');
-        cachedTokenDetails(
-            provider as ethers.providers.Provider,
-            validatedInput,
-            chainId,
-        )
+        cachedTokenDetails(provider, validatedInput, chainId)
             .then((res) => {
                 // If response has a `decimals` value, treat it as valid
                 if (res?.decimals) {

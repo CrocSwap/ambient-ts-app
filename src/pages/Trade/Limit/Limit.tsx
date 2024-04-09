@@ -8,7 +8,6 @@ import {
 import { useContext, useState, useEffect, useRef } from 'react';
 import {
     getFormattedNumber,
-    getTxReceipt,
     submitLimitOrder,
 } from '../../../ambient-utils/dataLayer';
 import { useTradeData } from '../../../App/hooks/useTradeData';
@@ -53,6 +52,7 @@ import {
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 export default function Limit() {
     const {
@@ -594,9 +594,9 @@ export default function Limit() {
             askTick: isSellTokenBase ? limitTick + gridSize : limitTick,
         });
 
-        let tx;
+        let hash;
         try {
-            tx = await submitLimitOrder({
+            hash = await submitLimitOrder({
                 crocEnv,
                 qty,
                 sellTokenAddress: sellToken,
@@ -606,15 +606,15 @@ export default function Limit() {
                 isWithdrawFromDexChecked,
             });
 
-            if (!tx) return;
+            if (!hash) return;
 
-            activeTxHash.current = tx?.hash;
+            activeTxHash.current = hash;
 
-            addPendingTx(tx?.hash);
-            setNewLimitOrderTransactionHash(tx.hash);
+            addPendingTx(hash);
+            setNewLimitOrderTransactionHash(hash);
             addTransactionByType({
                 userAddress: userAddress || '',
-                txHash: tx.hash,
+                txHash: hash,
                 txAction:
                     tokenB.address.toLowerCase() ===
                     quoteToken.address.toLowerCase()
@@ -639,7 +639,7 @@ export default function Limit() {
             });
 
             addPositionUpdate({
-                txHash: tx.hash,
+                txHash: hash,
                 positionID: posHash,
                 isLimit: true,
                 unixTimeAdded: Math.floor(Date.now() / 1000),
@@ -659,7 +659,13 @@ export default function Limit() {
 
         let receipt;
         try {
-            if (tx) receipt = await getTxReceipt(tx);
+            if (hash)
+                receipt = await waitForTransactionReceipt(
+                    (
+                        await crocEnv.context
+                    ).publicClient,
+                    { hash },
+                );
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
@@ -688,7 +694,7 @@ export default function Limit() {
         }
 
         if (receipt) {
-            addReceipt(JSON.stringify(receipt));
+            addReceipt(receipt);
             removePendingTx(receipt.transactionHash);
         }
     };
@@ -911,7 +917,9 @@ export default function Limit() {
                 showConfirmation && bypassConfirmLimit.isEnabled ? (
                     <SubmitTransaction
                         type='Limit'
-                        newTransactionHash={newLimitOrderTransactionHash}
+                        newTransactionHash={
+                            newLimitOrderTransactionHash as `0x${string}`
+                        }
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
                         txErrorJSON={txErrorJSON}

@@ -22,7 +22,7 @@ const fetchDataForChain = async (
         // Session related:
         chainId: sess.chainId,
         gcUrl: sess.gcUrl,
-        provider: sess.provider,
+        publicClient: sess.publicClient,
         lastBlockNumber: sess.lastBlockNumber,
         tokenUniv: sess.tokenUniv,
         crocEnv: sess.crocEnv,

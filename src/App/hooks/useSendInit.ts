@@ -11,6 +11,8 @@ import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { waitForTransactionReceipt } from 'viem/actions';
+
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
         React.SetStateAction<string | undefined>
@@ -37,28 +39,34 @@ export function useSendInit(
         initialPriceInBaseDenom: number | undefined,
         cb?: () => void,
     ) => {
+        if (!crocEnv) return;
         resetConfirmation();
 
         if (initialPriceInBaseDenom) {
-            let tx;
+            let hash;
             try {
                 setIsInitPending(true);
-                tx = await crocEnv
+                hash = await crocEnv
                     ?.pool(baseToken.address, quoteToken.address)
                     .initPool(initialPriceInBaseDenom);
 
-                setNewInitTransactionHash(tx?.hash);
-                if (tx) addPendingTx(tx?.hash);
-                if (tx?.hash)
-                    addTransactionByType({
-                        userAddress: userAddress || '',
-                        txHash: tx.hash,
-                        txType: 'Init',
-                        txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
-                    });
+                if (hash) setNewInitTransactionHash(hash);
+                addPendingTx(hash);
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: hash,
+                    txType: 'Init',
+                    txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                });
                 let receipt;
                 try {
-                    if (tx) receipt = await tx.wait();
+                    if (hash)
+                        receipt = await waitForTransactionReceipt(
+                            (
+                                await crocEnv.context
+                            ).publicClient,
+                            { hash },
+                        );
                 } catch (e) {
                     const error = e as TransactionError;
                     console.error({ error });
@@ -82,7 +90,7 @@ export function useSendInit(
                     }
                 }
                 if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
+                    addReceipt(receipt);
                     removePendingTx(receipt.transactionHash);
                     if (cb) cb();
                     setIsTxCompletedInit(true);

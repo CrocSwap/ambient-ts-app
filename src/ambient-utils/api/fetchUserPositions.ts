@@ -7,7 +7,7 @@ import {
     querySpotPrice,
 } from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'viem';
 import {
     TokenPriceFn,
     FetchContractDetailsFn,
@@ -36,7 +36,7 @@ interface RecordRequestIF {
     addValue?: boolean;
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
-    provider?: Provider;
+    publicClient?: PublicClient;
     cachedFetchTokenPrice?: TokenPriceFn;
     cachedQuerySpotPrice?: SpotPriceFn;
     cachedTokenDetails?: FetchContractDetailsFn;
@@ -88,7 +88,7 @@ const decorateUserPositions = async ({
     userPositions,
     tokenUniv,
     crocEnv,
-    provider,
+    publicClient,
     chainId,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
@@ -99,7 +99,7 @@ const decorateUserPositions = async ({
     userPositions: PositionIF[] | LimitOrderIF[];
     tokenUniv: TokenIF[];
     crocEnv: CrocEnv;
-    provider: Provider;
+    publicClient: PublicClient;
     chainId: string;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -115,7 +115,7 @@ const decorateUserPositions = async ({
                         position,
                         tokenUniv,
                         crocEnv,
-                        provider,
+                        publicClient,
                         chainId,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
@@ -135,7 +135,7 @@ const decorateUserPositions = async ({
                         position,
                         tokenUniv,
                         crocEnv,
-                        provider,
+                        publicClient,
                         chainId,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
@@ -160,7 +160,7 @@ const fetchDecorated = async ({
     addValue = true,
     tokenUniv,
     crocEnv,
-    provider,
+    publicClient: provider,
     cachedFetchTokenPrice,
     cachedQuerySpotPrice,
     cachedTokenDetails,
@@ -200,7 +200,7 @@ const fetchDecorated = async ({
             userPositions: userPositions,
             tokenUniv: tokenUniv!,
             crocEnv: crocEnv!,
-            provider: provider!,
+            publicClient: provider!,
             chainId: chainId,
             cachedFetchTokenPrice: cachedFetchTokenPrice!,
             cachedQuerySpotPrice: cachedQuerySpotPrice!,
@@ -217,7 +217,7 @@ const fetchSimpleDecorated = async ({
     user,
     chainId,
     gcUrl,
-    provider,
+    publicClient: provider,
     ensResolution = true,
     annotate = true,
     omitKnockout = true,
@@ -233,7 +233,7 @@ const fetchSimpleDecorated = async ({
         chainId: chainId,
         tokenUniv: tokenUniv,
         gcUrl: gcUrl,
-        provider: provider,
+        publicClient: provider,
         crocEnv: crocEnv,
     });
 
@@ -253,7 +253,7 @@ const fetchSimpleDecorated = async ({
         // Session Information:
         chainId: sess.chainId,
         gcUrl: sess.gcUrl,
-        provider: sess.provider,
+        publicClient: sess.publicClient,
         tokenUniv: sess.tokenUniv,
         crocEnv: sess.crocEnv,
 

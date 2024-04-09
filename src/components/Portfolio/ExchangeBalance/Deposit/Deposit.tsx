@@ -14,7 +14,6 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
-import { BigNumber } from 'ethers';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -45,6 +44,7 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -99,19 +99,17 @@ export default function Deposit(props: propsIF) {
         string | undefined
     >();
 
-    const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
-        Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
-    )
-        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
-        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
+    const amountToReduceNativeTokenQtyMainnet =
+        BigInt(Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI)) *
+        BigInt(NUM_WEI_IN_GWEI) *
+        BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_MAINNET);
 
-    const amountToReduceNativeTokenQtyL2 = BigNumber.from(
-        Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
-    )
-        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
-        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
+    const amountToReduceNativeTokenQtyL2 =
+        BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
+        BigInt(NUM_WEI_IN_GWEI) *
+        BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
@@ -119,11 +117,11 @@ export default function Deposit(props: propsIF) {
 
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance)
-
-                  .sub(amountToReduceNativeTokenQty)
-                  .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
-                  .toString()
+            ? (
+                  BigInt(tokenWalletBalance) -
+                  amountToReduceNativeTokenQty -
+                  BigInt(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH)
+              ).toString()
             : tokenWalletBalance;
 
     const tokenWalletBalanceDisplay = tokenWalletBalance
@@ -169,7 +167,7 @@ export default function Deposit(props: propsIF) {
     const isTokenAllowanceSufficient = useMemo(
         () =>
             tokenAllowance && isDepositQtyValid && !!depositQtyNonDisplay
-                ? BigNumber.from(tokenAllowance).gte(depositQtyNonDisplay)
+                ? BigInt(tokenAllowance) >= BigInt(depositQtyNonDisplay)
                 : false,
         [tokenAllowance, isDepositQtyValid, depositQtyNonDisplay],
     );
@@ -179,11 +177,8 @@ export default function Deposit(props: propsIF) {
             return true;
         }
         return tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance).gte(
-                  amountToReduceNativeTokenQty.add(
-                      BigNumber.from(depositQtyNonDisplay),
-                  ),
-              )
+            ? BigInt(tokenWalletBalance) >
+                  amountToReduceNativeTokenQty + BigInt(depositQtyNonDisplay)
             : false;
     }, [
         tokenWalletBalance,
@@ -194,11 +189,9 @@ export default function Deposit(props: propsIF) {
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
             tokenWalletBalance && isDepositQtyValid
-                ? BigNumber.from(tokenWalletBalance).gte(
-                      BigNumber.from(depositQtyNonDisplay),
-                  )
-                : tokenWalletBalance &&
-                  BigNumber.from(tokenWalletBalance).gte(BigNumber.from(0))
+                ? BigInt(tokenWalletBalance) >=
+                  BigInt(depositQtyNonDisplay || 0)
+                : tokenWalletBalance && BigInt(tokenWalletBalance) >= BigInt(0)
                 ? true
                 : false,
         [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
@@ -270,23 +263,28 @@ export default function Deposit(props: propsIF) {
 
                 setIsDepositPending(true);
 
-                const tx = await crocEnv
+                const hash = await crocEnv
                     .token(selectedToken.address)
                     .deposit(depositQtyDisplay, userAddress);
 
-                addPendingTx(tx?.hash);
-                if (tx?.hash)
-                    addTransactionByType({
-                        userAddress: userAddress || '',
-                        txHash: tx.hash,
-                        txType: 'Deposit',
-                        txDescription: `Deposit ${selectedToken.symbol}`,
-                    });
+                if (hash) addPendingTx(hash);
+                addTransactionByType({
+                    userAddress: userAddress || '',
+                    txHash: hash,
+                    txType: 'Deposit',
+                    txDescription: `Deposit ${selectedToken.symbol}`,
+                });
 
                 let receipt;
 
                 try {
-                    if (tx) receipt = await tx.wait();
+                    if (hash)
+                        receipt = await waitForTransactionReceipt(
+                            (
+                                await crocEnv.context
+                            ).publicClient,
+                            { hash },
+                        );
                 } catch (e) {
                     const error = e as TransactionError;
                     console.error({ error });
@@ -312,7 +310,7 @@ export default function Deposit(props: propsIF) {
                 }
 
                 if (receipt) {
-                    addReceipt(JSON.stringify(receipt));
+                    addReceipt(receipt);
                     removePendingTx(receipt.transactionHash);
                     resetDepositQty();
                 }

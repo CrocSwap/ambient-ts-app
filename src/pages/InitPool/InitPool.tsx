@@ -81,6 +81,7 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { waitForTransactionReceipt } from 'viem/actions';
 // react functional component
 export default function InitPool() {
     const {
@@ -1630,16 +1631,15 @@ export default function InitPool() {
                 setIsWithdrawPending(true);
 
                 try {
-                    const tx = await crocEnv
+                    const hash = await crocEnv
                         .token(erc20TokenWithDexBalance.address)
                         .withdraw(dexBalanceToBeRemoved, userAddress);
 
-                    addPendingTx(tx?.hash);
-
-                    if (tx?.hash) {
+                    if (hash) {
+                        addPendingTx(hash);
                         addTransactionByType({
                             userAddress: userAddress || '',
-                            txHash: tx.hash,
+                            txHash: hash,
                             txType: 'Withdraw',
                             txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
                         });
@@ -1647,7 +1647,13 @@ export default function InitPool() {
 
                     let receipt;
                     try {
-                        if (tx) receipt = await tx.wait();
+                        if (hash)
+                            receipt = await waitForTransactionReceipt(
+                                (
+                                    await crocEnv.context
+                                ).publicClient,
+                                { hash },
+                            );
                     } catch (e) {
                         const error = e as TransactionError;
                         console.error({ error });
@@ -1673,7 +1679,7 @@ export default function InitPool() {
                     }
 
                     if (receipt) {
-                        addReceipt(JSON.stringify(receipt));
+                        addReceipt(receipt);
                         removePendingTx(receipt.transactionHash);
                     }
                 } finally {

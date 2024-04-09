@@ -164,14 +164,14 @@ export const checkBlacklist = (addr: string) => {
 //     return isOnBlacklist;
 // };
 
-/* 
+/*
 sdn_list=$(curl https://www.treasury.gov/ofac/downloads/sdnlist.txt)
 
-input=( $(echo "$sdn_list" | 
-        egrep "0x[A-Fa-f0-9]{40}" | 
-        sed 's+.*\(0x[A-Fa-f0-9]\{40\}\).*+\1+' | 
+input=( $(echo "$sdn_list" |
+        egrep "0x[A-Fa-f0-9]{40}" |
+        sed 's+.*\(0x[A-Fa-f0-9]\{40\}\).*+\1+' |
         sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'|
-         sort | uniq) ) 
+         sort | uniq) )
 
 output=($(
 for i in ${input[@]}
@@ -180,5 +180,5 @@ for i in ${input[@]}
 done
 ))
 output=${output[@]}
-echo ${output//,/, } 
+echo ${output//,/, }
 */
