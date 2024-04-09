@@ -18,6 +18,9 @@ export * from './token';
 // TransactionIF, TransactionServerIF
 export * from './transaction';
 
+// UserXpIF, XpLeaderboardIF
+export * from './xp';
+
 export * from './fetchBatch';
 
 export * from './GCServerPoolIF';
@@ -28,6 +31,9 @@ export * from './NetworkIF';
 export * from './ScaleDataIF';
 
 export * from './TradeTableDataRow';
+
+// directions for table sorting (ascending/descending/null)
+export * from './sortDirections';
 
 export enum RecordType {
     Position = 'PositionIF',

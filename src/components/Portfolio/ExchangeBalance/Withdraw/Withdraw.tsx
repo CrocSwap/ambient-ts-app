@@ -65,12 +65,10 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
+        useContext(ChainDataContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -112,6 +110,19 @@ export default function Withdraw(props: propsIF) {
     const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
 
+    const [isAddressContract, setIsAddressContract] = useState<
+        boolean | undefined
+    >();
+
+    useEffect(() => {
+        if (!resolvedAddress) return;
+        checkIfContract(resolvedAddress);
+        async function checkIfContract(address: string) {
+            const code = await provider?.getCode(address);
+            setIsAddressContract(code !== '0x');
+        }
+    }, [resolvedAddress]);
+
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
 
@@ -119,10 +130,12 @@ export default function Withdraw(props: propsIF) {
 
         return (
             !isResolvedAddressBlacklisted &&
+            !isAddressContract &&
             resolvedAddress?.length === 42 &&
-            resolvedAddress.startsWith('0x')
+            resolvedAddress.startsWith('0x') &&
+            resolvedAddress !== ZERO_ADDRESS
         );
-    }, [resolvedAddress]);
+    }, [resolvedAddress, isAddressContract]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -335,9 +348,9 @@ export default function Withdraw(props: propsIF) {
                 setInputValue(tokenExchangeDepositsDisplay);
         }
     };
-
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [extraL1GasFeeWithdraw] = useState(isScroll ? 1.2 : 0);
+    const [extraL1GasFeeWithdraw] = useState(
+        isActiveNetworkScroll ? 1.2 : isActiveNetworkBlast ? 0.25 : 0,
+    );
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
         string | undefined
@@ -368,7 +381,7 @@ export default function Withdraw(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
             <Text fontSize='body' color='text2'>
-                Withdraw tokens from the exchange to your wallet
+                Withdraw tokens from the exchange to your wallet:
             </Text>
             {toggleContent}
             {transferAddressOrNull}
@@ -403,6 +416,7 @@ export default function Withdraw(props: propsIF) {
             {secondaryEnsOrNull}
             <Button
                 idForDOM='withdraw_tokens_button'
+                style={{ textTransform: 'none' }}
                 title={buttonMessage}
                 action={withdrawFn}
                 disabled={isButtonDisabled}

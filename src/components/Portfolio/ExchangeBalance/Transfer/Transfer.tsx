@@ -64,14 +64,12 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const {
-        crocEnv,
-        ethMainnetUsdPrice,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { gasPriceInGwei, isActiveNetworkScroll, isActiveNetworkBlast } =
+        useContext(ChainDataContext);
     const {
         addPendingTx,
         addReceipt,
@@ -107,6 +105,19 @@ export default function Transfer(props: propsIF) {
     const [isAddressFieldDisabled, setIsAddressFieldDisabled] =
         useState<boolean>(true);
 
+    const [isAddressContract, setIsAddressContract] = useState<
+        boolean | undefined
+    >();
+
+    useEffect(() => {
+        if (!resolvedAddress) return;
+        checkIfContract(resolvedAddress);
+        async function checkIfContract(address: string) {
+            const code = await provider?.getCode(address);
+            setIsAddressContract(code !== '0x');
+        }
+    }, [resolvedAddress]);
+
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
 
@@ -114,10 +125,12 @@ export default function Transfer(props: propsIF) {
 
         return (
             !isResolvedAddressBlacklisted &&
+            !isAddressContract &&
             resolvedAddress?.length === 42 &&
-            resolvedAddress.startsWith('0x')
+            resolvedAddress.startsWith('0x') &&
+            resolvedAddress !== ZERO_ADDRESS
         );
-    }, [resolvedAddress]);
+    }, [resolvedAddress, isAddressContract]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -296,8 +309,9 @@ export default function Transfer(props: propsIF) {
         }
     };
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
-    const [extraL1GasFeeTransfer] = useState(isScroll ? 1.25 : 0);
+    const [extraL1GasFeeTransfer] = useState(
+        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.35 : 0,
+    );
 
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
         string | undefined
@@ -367,6 +381,7 @@ export default function Transfer(props: propsIF) {
             {secondaryEnsOrNull}
             <Button
                 idForDOM='transfer_tokens_button'
+                style={{ textTransform: 'none' }}
                 title={buttonMessage}
                 action={transferFn}
                 disabled={isButtonDisabled}

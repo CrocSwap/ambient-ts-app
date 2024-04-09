@@ -1,9 +1,15 @@
 import React, { createContext, useEffect, useMemo } from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { getDefaultChainId } from '../ambient-utils/dataLayer';
-import { getDefaultPairForChain, goerliETH } from '../ambient-utils/constants';
+import {
+    blastETH,
+    blastUSDB,
+    getDefaultPairForChain,
+    goerliETH,
+} from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
+import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -15,7 +21,6 @@ export interface TradeDataContextIF {
     isDenomBase: boolean;
     didUserFlipDenom: boolean;
     isTokenAPrimary: boolean;
-    disableReverseTokens: boolean;
     soloToken: TokenIF;
     shouldSwapDirectionReverse: boolean;
     primaryQuantity: string;
@@ -27,7 +32,6 @@ export interface TradeDataContextIF {
     setTokenB: React.Dispatch<React.SetStateAction<TokenIF>>;
     setDenomInBase: React.Dispatch<React.SetStateAction<boolean>>;
     setIsTokenAPrimary: React.Dispatch<React.SetStateAction<boolean>>;
-    setDisableReverseTokens: React.Dispatch<React.SetStateAction<boolean>>;
     setDidUserFlipDenom: React.Dispatch<React.SetStateAction<boolean>>;
     toggleDidUserFlipDenom: () => void;
     setSoloToken: React.Dispatch<React.SetStateAction<TokenIF>>;
@@ -43,6 +47,12 @@ export interface TradeDataContextIF {
     isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
+    defaultRangeWidthForActivePool: number;
+    getDefaultRangeWidthForTokenPair: (
+        chainId: string,
+        baseAddress: string,
+        quoteAddress: string,
+    ) => number;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -52,15 +62,62 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 // for default chain. Don't worry if user is coming in to another chain,
 // since these will get updated by useUrlParams() in any context where a
 // pair is necessary at load time
-const dfltChainId = getDefaultChainId();
-const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
-const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
 
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [tokenA, setTokenA] = React.useState<TokenIF>(dfltTokenA);
-    const [tokenB, setTokenB] = React.useState<TokenIF>(dfltTokenB);
+    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
+        useAppChain();
+
+    const savedTokenASymbol = localStorage.getItem('tokenA');
+    const savedTokenBSymbol = localStorage.getItem('tokenB');
+
+    const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] = getDefaultPairForChain(
+        chainData.chainId,
+    );
+
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
+
+    const tokensMatchingA =
+        savedTokenASymbol === 'ETH'
+            ? [dfltTokenA]
+            : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+    const tokensMatchingB =
+        savedTokenBSymbol === 'ETH'
+            ? [dfltTokenA]
+            : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+
+    const firstTokenMatchingA = tokensMatchingA[0] || undefined;
+    const firstTokenMatchingB = tokensMatchingB[0] || undefined;
+
+    const isSavedTokenADefaultB = savedTokenASymbol
+        ? translateTokenSymbol(savedTokenASymbol) ===
+          translateTokenSymbol(dfltTokenB.symbol)
+        : false;
+
+    const isSavedTokenBDefaultA = savedTokenBSymbol
+        ? translateTokenSymbol(savedTokenBSymbol) ===
+          translateTokenSymbol(dfltTokenA.symbol)
+        : false;
+
+    const shouldReverseDefaultTokens =
+        isSavedTokenADefaultB || isSavedTokenBDefaultA;
+
+    const [tokenA, setTokenA] = React.useState<TokenIF>(() => {
+        return firstTokenMatchingA
+            ? firstTokenMatchingA
+            : shouldReverseDefaultTokens
+            ? dfltTokenB
+            : dfltTokenA;
+    });
+    const [tokenB, setTokenB] = React.useState<TokenIF>(
+        firstTokenMatchingB
+            ? firstTokenMatchingB
+            : shouldReverseDefaultTokens
+            ? dfltTokenA
+            : dfltTokenB,
+    );
+
     const [
         areDefaultTokensUpdatedForChain,
         setAreDefaultTokensUpdatedForChain,
@@ -70,18 +127,12 @@ export const TradeDataContextProvider = (props: {
     const [didUserFlipDenom, setDidUserFlipDenom] =
         React.useState<boolean>(false);
 
-    // TODO: Not convinced yet this belongs here
-    //  This probably belongs in a separate context
-    // Belongs with the other "primary" values in the tradedata slice
-    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(true);
-    const [disableReverseTokens, setDisableReverseTokens] =
-        React.useState<boolean>(false);
-
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
         const [baseTokenAddress] = sortBaseQuoteTokens(
             tokenA.address,
             tokenB.address,
         );
+        setAreDefaultTokensUpdatedForChain(true);
 
         if (tokenA.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
             return {
@@ -97,36 +148,76 @@ export const TradeDataContextProvider = (props: {
             };
         }
     }, [tokenA, tokenB]);
+
     const toggleDidUserFlipDenom = () => {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
-
-    // TODO: this part feels suspicious
-    // Why should we be handling the app chain in a hook
-    // rather than a context?
-    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
-        useAppChain();
-    useEffect(() => {
-        if (tokenA.chainId !== parseInt(chainData.chainId)) {
-            const [_tokenA, _tokenB] = getDefaultPairForChain(
-                chainData.chainId,
-            );
-            setTokenA(_tokenA);
-            setTokenB(_tokenB);
-        }
-        setAreDefaultTokensUpdatedForChain(true);
-    }, [chainData.chainId]);
 
     const [soloToken, setSoloToken] = React.useState(goerliETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);
-    const [primaryQuantity, setPrimaryQuantity] = React.useState('');
+
+    const [primaryQuantity, setPrimaryQuantity] = React.useState(
+        localStorage.getItem('primaryQuantity') || '',
+    );
+    const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(
+        localStorage.getItem('isTokenAPrimary') !== null
+            ? localStorage.getItem('isTokenAPrimary') === 'true'
+            : true,
+    );
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            localStorage.setItem('isTokenAPrimary', 'true');
+        } else {
+            localStorage.setItem('isTokenAPrimary', 'false');
+        }
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
+        localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
+        localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
+    }, [tokenA.address, tokenB.address]);
+
+    useEffect(() => {
+        localStorage.setItem('primaryQuantity', primaryQuantity);
+    }, [primaryQuantity]);
+
     const [limitTick, setLimitTick] = React.useState<number | undefined>(
         undefined,
     );
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
+
+    useEffect(() => {
+        setPoolPriceNonDisplay(0);
+        setDidUserFlipDenom(false);
+    }, [baseToken.address + quoteToken.address]);
+
     const [slippageTolerance, setSlippageTolerance] = React.useState(0.5);
+
+    const getDefaultRangeWidthForTokenPair = (
+        chainId: string,
+        baseAddress: string,
+        quoteAddress: string,
+    ) => {
+        const isPoolBlastEthUSDB =
+            chainId === '0x13e31' &&
+            baseAddress.toLowerCase() === blastETH.address.toLowerCase() &&
+            quoteAddress.toLowerCase() === blastUSDB.address.toLowerCase();
+        // temporarily reset to 10 for ETH/USDB until volatility reduces
+        const defaultWidth = isPoolBlastEthUSDB ? 10 : 10;
+        return defaultWidth;
+    };
+
+    const defaultRangeWidthForActivePool = useMemo(() => {
+        const defaultWidth = getDefaultRangeWidthForTokenPair(
+            chainData.chainId,
+            baseToken.address,
+            quoteToken.address,
+        );
+        return defaultWidth;
+    }, [baseToken.address + quoteToken.address + chainData.chainId]);
 
     const tradeDataContext = {
         tokenA,
@@ -136,7 +227,6 @@ export const TradeDataContextProvider = (props: {
         isTokenABase,
         isDenomBase,
         isTokenAPrimary,
-        disableReverseTokens,
         didUserFlipDenom,
         soloToken,
         shouldSwapDirectionReverse,
@@ -149,7 +239,6 @@ export const TradeDataContextProvider = (props: {
         areDefaultTokensUpdatedForChain,
         setDenomInBase,
         setIsTokenAPrimary,
-        setDisableReverseTokens,
         setDidUserFlipDenom,
         toggleDidUserFlipDenom,
         setSoloToken,
@@ -162,6 +251,8 @@ export const TradeDataContextProvider = (props: {
         isWalletChainSupported,
         activeNetwork,
         chooseNetwork,
+        defaultRangeWidthForActivePool,
+        getDefaultRangeWidthForTokenPair,
     };
 
     return (

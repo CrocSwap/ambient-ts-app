@@ -1,4 +1,10 @@
-import { useEffect, useState, memo, useContext, useCallback } from 'react';
+import React, {
+    useEffect,
+    useState,
+    memo,
+    useContext,
+    useCallback,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
@@ -6,8 +12,8 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
-import { BiGitBranch } from 'react-icons/bi';
-import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
+// import { BiGitBranch } from 'react-icons/bi';
+// import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -40,7 +46,7 @@ import {
 } from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-import { version as appVersion } from '../../../../package.json';
+// import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
@@ -57,11 +63,13 @@ const PageHeader = function () {
 
     const {
         wagmiModal: { open: openWagmiModal },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
 
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
+        useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
     const {
@@ -145,9 +153,12 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice = getFormattedNumber({
-        value: poolPriceDisplayWithDenom,
-    });
+    const truncatedPoolPrice =
+        usdPrice && isTradeDollarizationEnabled
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : getFormattedNumber({
+                  value: poolPriceDisplayWithDenom,
+              });
 
     useEffect(() => {
         const path = location.pathname;
@@ -251,6 +262,11 @@ const PageHeader = function () {
             destination: '/account',
             shouldDisplay: !!isUserConnected,
         },
+        {
+            title: 'Points',
+            destination: '/account/points',
+            shouldDisplay: !!isUserConnected && desktopScreen,
+        },
     ];
 
     // Most of this functionality can be achieved by using the NavLink instead of Link and accessing the isActive prop on the
@@ -289,6 +305,7 @@ const PageHeader = function () {
             locationPathname === linkDestination
         );
     }
+
     const routeDisplay = (
         <AnimateSharedLayout>
             <PrimaryNavigation
@@ -318,7 +335,6 @@ const PageHeader = function () {
             </PrimaryNavigation>
         </AnimateSharedLayout>
     );
-
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
 
@@ -343,7 +359,14 @@ const PageHeader = function () {
             data-testid={'page-header'}
             fixed={location.pathname === '/'}
         >
-            <div>
+            <div
+                onClick={(event: React.MouseEvent) => {
+                    event?.stopPropagation();
+                    if (appHeaderDropdown.isActive) {
+                        appHeaderDropdown.setIsActive(false);
+                    }
+                }}
+            >
                 <LogoContainer to='/' aria-label='Home'>
                     {desktopScreen ? (
                         <img src={mainLogo} alt='ambient' />
@@ -368,16 +391,21 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            <FlexContainer fontSize='body' color={'orange'}>
-                                {APP_ENVIRONMENT !== 'production' ? (
-                                    <FlexContainer alignItems='center' gap={4}>
-                                        {`${BRANCH_NAME} - v${appVersion}`}
-                                        {APP_ENVIRONMENT !== 'testnet' && (
-                                            <BiGitBranch color='yellow' />
-                                        )}
-                                    </FlexContainer>
-                                ) : null}
-                            </FlexContainer>
+                            {/* {desktopScreen && (
+                                <FlexContainer fontSize='body' color={'orange'}>
+                                    {APP_ENVIRONMENT !== 'production' ? (
+                                        <FlexContainer
+                                            alignItems='center'
+                                            gap={4}
+                                        >
+                                            {`${BRANCH_NAME} - v${appVersion}`}
+                                            {APP_ENVIRONMENT !== 'testnet' && (
+                                                <BiGitBranch color='yellow' />
+                                            )}
+                                        </FlexContainer>
+                                    ) : null}
+                                </FlexContainer>
+                            )} */}
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />

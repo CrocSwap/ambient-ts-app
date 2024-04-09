@@ -8,7 +8,7 @@
             rgba(13, 17, 23, 0.9),
             rgba(13, 17, 23, 1)
         ),
-        url('/src/assets/images/home/home_wallpaper.png') no-repeat;
+        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat;
 }
 
 .home_wallpaper {
@@ -19,8 +19,8 @@
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('/src/assets/images/home/home_wallpaper.png') no-repeat center
-            center;
+        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat
+            center center;
 }
 .home2 {
     background: url(/src/assets/images/home/home2.png) no-repeat;
@@ -39,4 +39,22 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+}
+
+.ambient_blast_logo {
+    font-size: 50px;
+    font-family: 'Lexend Exa';
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+
+    background: linear-gradient(
+        90deg,
+        #7371fc 0.01%,
+        #cdc1ff 49.48%,
+        #7371fc 99.99%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }

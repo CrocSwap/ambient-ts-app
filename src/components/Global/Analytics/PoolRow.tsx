@@ -1,5 +1,9 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { TokenIF } from '../../../ambient-utils/types';
 import {
@@ -10,25 +14,46 @@ import {
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useMemo } from 'react';
 
 interface propsIF {
     pool: PoolDataIF;
     goToMarket: (tknA: string, tknB: string) => void;
+    isExploreDollarizationEnabled: boolean;
 }
 
 export default function PoolRow(props: propsIF) {
-    const { pool, goToMarket } = props;
+    const { pool, goToMarket, isExploreDollarizationEnabled } = props;
+
+    // const [isHovered, setIsHovered] = useState(false);
 
     const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.moneyness.base < pool.moneyness.quote
             ? [pool.base, pool.quote]
             : [pool.quote, pool.base];
 
-    const mobileScrenView = useMediaQuery('(max-width: 500px)');
+    const baseTokenCharacter = pool.base.symbol
+        ? getUnicodeCharacter(pool.base.symbol)
+        : '';
+    const quoteTokenCharacter = pool.quote.symbol
+        ? getUnicodeCharacter(pool.quote.symbol)
+        : '';
+
+    const characterToDisplay = useMemo(
+        () =>
+            pool.moneyness.base < pool.moneyness.quote
+                ? quoteTokenCharacter
+                : baseTokenCharacter,
+        [pool],
+    );
+
+    const mobileScrenView = useMediaQuery('(max-width: 640px)');
 
     return (
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
         >
             <TableCell>
                 <FlexContainer alignItems='center'>
@@ -56,8 +81,19 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm left>
                 <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
-            <TableCell hidden sm>
-                <p>{pool.displayPrice ?? '...'}</p>
+            <TableCell>
+                <p>
+                    {isExploreDollarizationEnabled
+                        ? pool.usdPriceMoneynessBased !== 0
+                            ? getFormattedNumber({
+                                  value: pool.usdPriceMoneynessBased,
+                                  prefix: '$',
+                              })
+                            : '...'
+                        : pool.displayPrice
+                        ? characterToDisplay + pool.displayPrice
+                        : '...'}
+                </p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>

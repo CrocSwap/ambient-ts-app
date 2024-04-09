@@ -18,9 +18,7 @@ export const PortfolioTabsPortfolioTabsContainer = styled.div`
 
     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
         margin: 0 auto;
-        width: 90%;
-        margin-left: 30px;
-
+        width: 100%;
         padding: 0 1rem;
     }
 `;
@@ -175,6 +173,14 @@ export const PortfolioBannerRectangleContainer = styled.div`
         display: flex;
         flex-shrink: 0;
     }
+`;
+export const PortfolioBannerLevelContainer = styled.div`
+    display: flex;
+    background: rgba(23, 29, 39, 0.7);
+    border-radius: 8px;
+    backdrop-filter: 10px;
+    padding: 4px 8px;
+    height: auto;
 `;
 
 export const PortfolioContainer = styled(FlexContainer)`

@@ -3,6 +3,7 @@ import { TokenIF, TransactionIF, TransactionServerIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from '@ethersproject/providers';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 
 export const getTransactionData = async (
     tx: TransactionServerIF,
@@ -10,7 +11,6 @@ export const getTransactionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
-    lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
@@ -29,11 +29,8 @@ export const getTransactionData = async (
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
-        lastBlockNumber,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     );
-
-    const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
-    const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
     const basePricePromise = cachedFetchTokenPrice(
         baseTokenAddress,
@@ -68,23 +65,53 @@ export const getTransactionData = async (
             token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
 
-    newTx.baseName = baseTokenName ?? '';
-    newTx.quoteName = quoteTokenName ?? '';
+    const baseTokenListedDecimals = tokenList.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.decimals;
+    const quoteTokenListedDecimals = tokenList.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.decimals;
+
+    const baseTokenListedSymbol = tokenList.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.symbol;
+    const quoteTokenListedSymbol = tokenList.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.symbol;
+
+    newTx.baseName = baseTokenName
+        ? baseTokenName
+        : (await cachedTokenDetails(provider, tx.base, chainId))?.name ?? '';
+    newTx.quoteName = quoteTokenName
+        ? quoteTokenName
+        : (await cachedTokenDetails(provider, tx.quote, chainId))?.name ?? '';
 
     newTx.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newTx.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
     const DEFAULT_DECIMALS = 18;
-    const baseTokenDecimals =
-        (await baseMetadata)?.decimals ?? DEFAULT_DECIMALS;
-    const quoteTokenDecimals =
-        (await quoteMetadata)?.decimals ?? DEFAULT_DECIMALS;
+    const baseTokenDecimals = baseTokenListedDecimals
+        ? baseTokenListedDecimals
+        : (await cachedTokenDetails(provider, tx.base, chainId))?.decimals ??
+          DEFAULT_DECIMALS;
+    const quoteTokenDecimals = quoteTokenListedDecimals
+        ? quoteTokenListedDecimals
+        : (await cachedTokenDetails(provider, tx.quote, chainId))?.decimals ??
+          DEFAULT_DECIMALS;
 
     newTx.baseDecimals = baseTokenDecimals;
     newTx.quoteDecimals = quoteTokenDecimals;
 
-    newTx.baseSymbol = (await baseMetadata)?.symbol ?? '';
-    newTx.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
+    newTx.baseSymbol = baseTokenListedSymbol
+        ? baseTokenListedSymbol
+        : (await cachedTokenDetails(provider, tx.base, chainId))?.symbol ?? '';
+    newTx.quoteSymbol = quoteTokenListedSymbol
+        ? quoteTokenListedSymbol
+        : (await cachedTokenDetails(provider, tx.quote, chainId))?.symbol ?? '';
 
     newTx.baseFlowDecimalCorrected =
         tx.baseFlow / Math.pow(10, baseTokenDecimals);
@@ -150,6 +177,8 @@ export const getTransactionData = async (
         baseTokenDecimals,
         quoteTokenDecimals,
     );
+
+    newTx.curentPoolPriceDisplayNum = poolPrice;
 
     if (quotePrice && basePrice) {
         newTx.totalValueUSD =

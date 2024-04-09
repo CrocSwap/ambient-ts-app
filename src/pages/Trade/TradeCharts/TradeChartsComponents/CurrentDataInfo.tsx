@@ -2,8 +2,9 @@ import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import useDollarPrice from '../../../Chart/ChartUtils/getDollarPrice';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
@@ -29,41 +30,44 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         reset,
     } = props;
 
-    function formattedCurrentData(data: number | undefined) {
-        return getFormattedNumber({ value: data, zeroDisplay: '-' });
-    }
+    const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const getDollarPrice = useDollarPrice();
 
     const { isDenomBase } = useContext(TradeDataContext);
 
     return (
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
-                <div className={styles.current_data_info}>
+                <div
+                    className={styles.current_data_info}
+                    style={{ marginLeft: smallScreen ? '0px' : '15px' }}
+                >
                     {currentData &&
                         'O: ' +
-                            formattedCurrentData(
+                            getDollarPrice(
                                 isDenomBase
                                     ? currentData.invPriceOpenExclMEVDecimalCorrected
                                     : currentData.priceOpenExclMEVDecimalCorrected,
-                            ) +
+                            ).formattedValue +
                             ' H: ' +
-                            formattedCurrentData(
+                            getDollarPrice(
                                 isDenomBase
                                     ? currentData.invMinPriceExclMEVDecimalCorrected
                                     : currentData.maxPriceExclMEVDecimalCorrected,
-                            ) +
+                            ).formattedValue +
                             ' L: ' +
-                            formattedCurrentData(
+                            getDollarPrice(
                                 isDenomBase
                                     ? currentData.invMaxPriceExclMEVDecimalCorrected
                                     : currentData.minPriceExclMEVDecimalCorrected,
-                            ) +
+                            ).formattedValue +
                             ' C: ' +
-                            formattedCurrentData(
+                            getDollarPrice(
                                 isDenomBase
                                     ? currentData.invPriceCloseExclMEVDecimalCorrected
                                     : currentData.priceCloseExclMEVDecimalCorrected,
-                            ) +
+                            ).formattedValue +
                             ' V: ' +
                             formatDollarAmountAxis(currentVolumeData)}
                 </div>

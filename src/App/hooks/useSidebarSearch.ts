@@ -15,11 +15,31 @@ import {
 } from '../../ambient-utils/types';
 import matchSearchInput from '../functions/matchSearchInput';
 import { tokenMethodsIF } from './useTokens';
-import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
+import {
+    GCGO_OVERRIDE_URL,
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+    tokenListURIs,
+} from '../../ambient-utils/constants';
 import { PoolContext } from '../../contexts/PoolContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { fetchEnsAddress } from '../../ambient-utils/api';
 
+// types specifying which results set should render in the dom
+// `standard` ⮕ standard sidebar content
+// `token` ⮕ content when user searches for a token address, name, or symbol
+// `wallet` ⮕ content when user searches for a wallet address or ENS
+export type contentGroups = 'standard' | 'token' | 'wallet';
+
+export interface walletHexAndENS {
+    hex: string;
+    ens: string | null;
+}
+
+// shape of object returned by this hook
 export interface sidebarSearchIF {
     rawInput: string;
+    contentGroup: contentGroups;
     setInput: Dispatch<SetStateAction<string>>;
     clearInput: () => void;
     isInputValid: boolean;
@@ -27,6 +47,7 @@ export interface sidebarSearchIF {
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
+    wallets: walletHexAndENS[];
 }
 
 export const useSidebarSearch = (
@@ -37,49 +58,64 @@ export const useSidebarSearch = (
 ): sidebarSearchIF => {
     const { poolList } = useContext(PoolContext);
 
+    // needed to resolve ENS addresses entered by user
+    const { mainnetProvider } = useContext(CrocEnvContext);
+
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
+    // debounced copy of `rawInput` (no sanitization)
     const [dbInput, setDbInput] = useState<string>('');
-
     useEffect(() => {
-        const timer = setTimeout(() => setDbInput(rawInput), 400);
+        // prevent debouncing when input has been cleared
+        if (!rawInput) {
+            setDbInput(rawInput);
+            return;
+        }
+        // time in ms to debounce input
+        const delayTime = 400;
+        // update `dbInput` after the indicated delay
+        const timer = setTimeout(() => setDbInput(rawInput), delayTime);
+        // clear the timeout from the DOM
         return () => clearTimeout(timer);
     }, [rawInput]);
 
-    // search type ➜ '' or 'address' or 'nameOrAddress'
-    const [searchAs, setSearchAs] = useState<string | null>(null);
+    // search type ➜ presumed type of input provided by user
+    type searchType = 'address' | 'nameOrSymbol' | 'ens' | null;
+    const [searchAs, setSearchAs] = useState<searchType>(null);
 
-    // fn to clear the search input
-    function clearInput(): void {
-        setRawInput('');
-    }
+    // value delineating which content set the DOM should render, this prevents a
+    // ... flash of token search content before displaying wallet search content
+    const [contentGroup, setContentGroup] = useState<contentGroups>('standard');
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
-        const cleanInput: string = dbInput.trim().toLowerCase();
-        // action if input appears to be a contract address
+        const cleanInput: string = dbInput.trim();
+        // logic to determine which type of search to run based on input shape
         if (
             cleanInput.length === 42 ||
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-            // if not an apparent token address, search name and symbol
+        } else if (cleanInput.includes('.eth')) {
+            setSearchAs('ens');
+            return cleanInput.split('.')[0] + '.eth';
         } else if (cleanInput.length > 0) {
             setSearchAs('nameOrSymbol');
+            setContentGroup('token');
             return cleanInput;
-            // otherwise treat as if there is no input entered
         } else {
             setSearchAs(null);
+            setContentGroup('standard');
             return '';
         }
-        // add '0x' to the front of the cleaned string if not present
-        const fixedInput = cleanInput.startsWith('0x')
+        // declare an output variable
+        let output: string = cleanInput;
+        // extra formatting to handle contract addresses without leading '0x'
+        const fixedInput: string = cleanInput.startsWith('0x')
             ? cleanInput
             : '0x' + cleanInput;
-        // declare an output variable
-        let output = cleanInput;
         // check if string is a correctly-formed contract address
         if (
             // check if string has 42 characters
@@ -144,7 +180,8 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredPools = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case 'ens':
+            case null:
             default:
                 filteredPools = noSearch();
         }
@@ -224,7 +261,8 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredRangePositions = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case 'ens':
+            case null:
             default:
                 filteredRangePositions = noSearch();
         }
@@ -266,7 +304,8 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredTxs = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case 'ens':
+            case null:
             default:
                 filteredTxs = noSearch();
         }
@@ -312,7 +351,8 @@ export const useSidebarSearch = (
             case 'nameOrSymbol':
                 filteredLimits = searchByNameOrSymbol(validatedInput);
                 break;
-            case '':
+            case 'ens':
+            case null:
             default:
                 filteredLimits = noSearch();
         }
@@ -320,14 +360,95 @@ export const useSidebarSearch = (
         setOutputLimits(filteredLimits);
     }, [limitOrderList.length, validatedInput]);
 
+    // data returned when querying address as a wallet
+    const [outputWallets, setOutputWallets] = useState<walletHexAndENS[]>([]);
+
+    // environmental data needed for wallet query
+    const { activeNetwork, chainData } = useContext(CrocEnvContext);
+
+    // logic to query search input as a wallet
+    useEffect(() => {
+        // fn to run query when user enters a hex address
+        async function fetchWalletByHex(searchStr: string): Promise<void> {
+            // construct a queryable endpoint for wallet data
+            let walletEndpoint: string =
+                GCGO_OVERRIDE_URL ?? activeNetwork.graphCacheUrl;
+            walletEndpoint += '/user_txs?';
+            walletEndpoint += new URLSearchParams({
+                user: searchStr,
+                chainId: chainData.chainId,
+                n: '1',
+            });
+            // determine if user-created search input is a wallet (implied by tx data present)
+            const isWallet: boolean | undefined = await fetch(walletEndpoint)
+                .then((response) => response.json())
+                .then((response) => !!response.data)
+                .catch((err) => {
+                    IS_LOCAL_ENV && console.warn(err);
+                    return undefined;
+                });
+            // search for an ENS address if input is a wallet, otherwise reset state data
+            if (isWallet) {
+                const ens = await fetchEnsAddress(searchStr);
+                setOutputWallets([
+                    {
+                        hex: searchStr,
+                        ens: ens ?? null,
+                    },
+                ]);
+                setContentGroup('wallet');
+            } else {
+                setOutputWallets([]);
+                setContentGroup('token');
+            }
+        }
+        // fn to run query when user enters an ENS address
+        function fetchWalletByENS(searchStr: string) {
+            if (mainnetProvider) {
+                mainnetProvider
+                    .resolveName(searchStr)
+                    .then((res) => {
+                        if (res) {
+                            setOutputWallets([
+                                {
+                                    hex: res,
+                                    ens: searchStr,
+                                },
+                            ]);
+                            setContentGroup('wallet');
+                        } else {
+                            setOutputWallets([]);
+                            setContentGroup('wallet');
+                        }
+                    })
+                    .catch((err) => {
+                        IS_LOCAL_ENV && console.warn(err);
+                        setOutputWallets([]);
+                    });
+            }
+        }
+        // logic router to only run a query if input validates as an address
+        // if input validates, run the query (results may still be negative)
+        // if input does not validate, do not query and nullify any prior data
+        if (searchAs === 'address') {
+            fetchWalletByHex(validatedInput);
+        } else if (searchAs === 'ens') {
+            fetchWalletByENS(validatedInput);
+        } else {
+            setOutputWallets([]);
+        }
+    }, [validatedInput]);
+
     return {
         rawInput,
+        contentGroup,
         setInput: setRawInput,
-        clearInput: clearInput,
+        clearInput: () => setRawInput(''),
         isInputValid: !!searchAs,
         pools: outputPools,
         positions: outputPositions,
         txs: outputTxs,
         limits: outputLimits,
+        wallets: outputWallets,
     };
 };

@@ -41,11 +41,13 @@ import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import FAQPoints from '../pages/FAQ/FAQPoints';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
+import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,6 +63,9 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
+        appHeaderDropdown,
+        showPointSystemPopup,
+        dismissPointSystemPopup,
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
@@ -86,6 +91,7 @@ export default function App() {
         currentLocation !== '/404' &&
         currentLocation !== '/terms' &&
         currentLocation !== '/privacy' &&
+        !currentLocation.includes('/faq') &&
         !currentLocation.includes('/chat') &&
         !currentLocation.includes('/initpool') &&
         !fullScreenChart && (
@@ -105,6 +111,7 @@ export default function App() {
           currentLocation == '/404' ||
           currentLocation == '/terms' ||
           currentLocation == '/privacy' ||
+          currentLocation.includes('/faq') ||
           currentLocation.includes('/chat') ||
           currentLocation.startsWith('/swap')
         ? 'hide_sidebar'
@@ -166,8 +173,17 @@ export default function App() {
                 data-theme={selectedTheme}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
+                {showPointSystemPopup && (
+                    <PointSystemPopup
+                        dismissPointSystemPopup={dismissPointSystemPopup}
+                    />
+                )}
                 <AppOverlay />
                 <PageHeader />
+                <div
+                    className={appHeaderDropdown.isActive ? 'app_blur' : ''}
+                    onClick={() => appHeaderDropdown.setIsActive(false)}
+                />
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
@@ -254,8 +270,45 @@ export default function App() {
                         <Route path='initpool/:params' element={<InitPool />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route
+                            path='xp-leaderboard'
+                            element={<Portfolio isLevelsPage isRanksPage />}
+                        />
+                        <Route
+                            path='account/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='account/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+                        <Route
+                            path='account/:address/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+
+                        <Route
+                            path='/:address/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+                        <Route
+                            path='account/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
+                            path='account/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
                             path='account/:address'
                             element={<Portfolio />}
+                        />
+                        <Route
+                            path='account/:address/xp'
+                            element={<Portfolio isLevelsPage />}
                         />
                         <Route
                             path='swap'
@@ -263,10 +316,31 @@ export default function App() {
                                 <Navigate replace to={defaultUrlParams.swap} />
                             }
                         />
-                        <Route path='explore' element={<Explore />} />
+                        {/* refactor EXPLORE as a nested route */}
+                        <Route
+                            path='explore'
+                            element={<Navigate to='/explore/pools' replace />}
+                        />
+                        <Route
+                            path='explore/pools'
+                            element={<Explore view='pools' />}
+                        />
+                        <Route
+                            path='explore/tokens'
+                            element={<Explore view='tokens' />}
+                        />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
+                        <Route
+                            path='faq'
+                            element={<Navigate to='/faq/points' replace />}
+                        />
+                        <Route path='faq/points' element={<FAQPoints />} />
+                        <Route
+                            path='faq/points/:params'
+                            element={<FAQPoints />}
+                        />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
@@ -277,6 +351,16 @@ export default function App() {
                             />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
+                        <Route
+                            path='/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
@@ -290,6 +374,7 @@ export default function App() {
                     currentLocation !== '/404' &&
                     currentLocation !== '/terms' &&
                     currentLocation !== '/privacy' &&
+                    currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
                 {showMobileVersion && currentLocation !== '/' && (

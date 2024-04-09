@@ -16,7 +16,7 @@ import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/Ini
 
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-import { LuEdit2 } from 'react-icons/lu';
+import { LuPencil } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
@@ -122,11 +122,15 @@ export default function InitPool() {
         advancedLowTick,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        setIsTokenAPrimaryRange,
-        setPrimaryQuantityRange,
     } = useContext(RangeContext);
-    const { tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        setIsTokenAPrimary,
+        setPrimaryQuantity,
+    } = useContext(TradeDataContext);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -806,14 +810,12 @@ export default function InitPool() {
         amountToReduceNativeTokenQtyMainnet,
         setAmountToReduceNativeTokenQtyMainnet,
     ] = useState<number>(0.01);
-    const [
-        amountToReduceNativeTokenQtyScroll,
-        setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0007);
+    const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
+        useState<number>(0.0007);
 
     const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceNativeTokenQtyScroll
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
+            ? amountToReduceNativeTokenQtyL2
             : amountToReduceNativeTokenQtyMainnet;
 
     const activeRangeTxHash = useRef<string>('none');
@@ -840,7 +842,7 @@ export default function InitPool() {
             const costOfScrollPoolInETH =
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
-            setAmountToReduceNativeTokenQtyScroll(
+            setAmountToReduceNativeTokenQtyL2(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
@@ -968,6 +970,8 @@ export default function InitPool() {
     >('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
+
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
     const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
@@ -982,6 +986,7 @@ export default function InitPool() {
     const resetConfirmation = () => {
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -1007,6 +1012,7 @@ export default function InitPool() {
         setIsTxCompletedInit,
         setTxErrorCode,
         setTxErrorMessage,
+        setTxErrorJSON,
         resetConfirmation,
     );
 
@@ -1022,8 +1028,8 @@ export default function InitPool() {
         );
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     const isInitPage = true;
@@ -1031,7 +1037,7 @@ export default function InitPool() {
     const clearTokenInputs = () => {
         setTokenACollateral('');
         setTokenBCollateral('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {
@@ -1090,6 +1096,7 @@ export default function InitPool() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             setTxErrorMessage,
+            setTxErrorJSON,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1397,7 +1404,7 @@ export default function InitPool() {
             ) : (
                 <FiRefreshCw size={20} onClick={handleRefresh} />
             )}
-            <LuEdit2 size={20} onClick={() => openEditMode()} />
+            <LuPencil size={20} onClick={() => openEditMode()} />
         </FlexContainer>
     );
 
@@ -1772,6 +1779,7 @@ export default function InitPool() {
         isTokenABase,
         errorCode: txErrorCode,
         txErrorMessage: txErrorMessage,
+        txErrorJSON: txErrorJSON,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,

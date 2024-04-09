@@ -17,7 +17,6 @@ import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalan
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -45,9 +44,7 @@ function LimitTokenInput(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
-        useContext(RangeContext);
-    const { pool } = useContext(PoolContext);
+    const { pool, poolData } = useContext(PoolContext);
     const {
         baseToken: {
             balance: baseTokenBalance,
@@ -71,9 +68,9 @@ function LimitTokenInput(props: propsIF) {
         isDenomBase,
         setIsTokenAPrimary,
         setLimitTick,
-        setPoolPriceNonDisplay,
         primaryQuantity,
         setPrimaryQuantity,
+        isTokenABase,
     } = useContext(TradeDataContext);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
@@ -87,7 +84,6 @@ function LimitTokenInput(props: propsIF) {
 
     const reverseTokens = (): void => {
         setLimitTick(undefined);
-        setPoolPriceNonDisplay(0);
 
         const limitLinkParams: limitParamsIF = {
             chain: chainId,
@@ -97,7 +93,6 @@ function LimitTokenInput(props: propsIF) {
         // navigate user to limit page with URL params defined above
         linkGenLimit.navigate(limitLinkParams);
         setIsTokenAPrimary(!isTokenAPrimary);
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     useEffect(() => {
@@ -154,7 +149,8 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        setTokenBInputQty(truncatedTokenBQty);
+        // prevent momentary display of 'Infinity' for limit price on initial load
+        limitTickDisplayPrice && setTokenBInputQty(truncatedTokenBQty);
     };
 
     const handleTokenBChangeEvent = (value?: string) => {
@@ -197,8 +193,15 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 
-        setTokenAInputQty(truncatedTokenAQty);
+        limitTickDisplayPrice && setTokenAInputQty(truncatedTokenAQty);
     };
+
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
@@ -220,6 +223,7 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                usdValue={usdValueTokenA}
             />
             <FlexContainer
                 fullWidth
@@ -249,6 +253,7 @@ function LimitTokenInput(props: propsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
+                usdValue={usdValueTokenB}
             />
         </FlexContainer>
     );

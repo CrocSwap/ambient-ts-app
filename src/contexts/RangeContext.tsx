@@ -6,10 +6,6 @@ import React, {
 } from 'react';
 
 interface RangeContextIF {
-    isTokenAPrimaryRange: boolean;
-    setIsTokenAPrimaryRange: Dispatch<SetStateAction<boolean>>;
-    primaryQuantityRange: string; // Value input into Range
-    setPrimaryQuantityRange: Dispatch<SetStateAction<string>>;
     rangeTicksCopied: boolean;
     setRangeTicksCopied: Dispatch<SetStateAction<boolean>>;
 
@@ -44,10 +40,6 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     // low and high bounds of range to display in DOM for advanced mode
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
-    const [isTokenAPrimaryRange, setIsTokenAPrimaryRange] =
-        useState<boolean>(true);
-    const [primaryQuantityRange, setPrimaryQuantityRange] =
-        useState<string>('');
 
     const [rangeTicksCopied, setRangeTicksCopied] = useState<boolean>(false);
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
@@ -81,10 +73,6 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setCurrentRangeInReposition,
         currentRangeInAdd,
         setCurrentRangeInAdd,
-        isTokenAPrimaryRange,
-        setIsTokenAPrimaryRange,
-        primaryQuantityRange,
-        setPrimaryQuantityRange,
         rangeTicksCopied,
         setRangeTicksCopied,
 

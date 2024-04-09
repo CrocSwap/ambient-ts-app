@@ -61,6 +61,11 @@ button:hover > svg {
     cursor: pointer;
 }
 
+button:focus > svg {
+    color: var(--accent1);
+    cursor: pointer;
+}
+
 /* button,
 svg,
 a {
@@ -249,6 +254,16 @@ input[type='number'] {
 }
 
 @media only screen and (max-width: 600px) {
+    .app_blur {
+        width: 100vw;
+        height: 100vh;
+        backdrop-filter: blur(10px);
+
+        position: fixed;
+        top: 56px;
+        bottom: 64px;
+        z-index: 2;
+    }
     .swap-body {
         /* max-height: 86.5vh; */
         overflow-y: hidden;
