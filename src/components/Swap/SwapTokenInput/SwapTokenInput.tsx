@@ -321,6 +321,14 @@ function SwapTokenInput(props: propsIF) {
         ? poolData.quotePrice
         : poolData.basePrice;
 
+    const percentDiffUsdValue =
+        usdValueTokenA && usdValueTokenB
+            ? ((usdValueTokenB * parseFloat(buyQtyString) -
+                  usdValueTokenA * parseFloat(sellQtyString)) /
+                  (usdValueTokenA * parseFloat(sellQtyString))) *
+              100
+            : 0;
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -406,6 +414,7 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
         </FlexContainer>
     );
