@@ -34,9 +34,9 @@ export const fetchTokenPrice = async (
         const response = await fetchBatch<'price'>(body);
 
         if ('error' in response) throw new Error(response.error);
-        if (response.value.usdPrice === Infinity)
+        if (response.value.usdPrice === Infinity) {
             throw new Error('USD value returned as Infinity');
-
+        }
         return response.value;
     } catch (error) {
         const defaultPair = supportedNetworks[chain]?.defaultPair;
@@ -66,6 +66,14 @@ export const fetchTokenPrice = async (
             return {
                 usdPrice: displayPrice,
                 usdPriceFormatted: usdPriceFormatted,
+            };
+        } else if (
+            // if token is USDC/USDB, return $1
+            dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()
+        ) {
+            return {
+                usdPrice: 1,
+                usdPriceFormatted: '1.00',
             };
         }
         return undefined;
