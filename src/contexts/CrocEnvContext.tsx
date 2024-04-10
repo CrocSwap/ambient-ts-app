@@ -23,7 +23,6 @@ import {
 import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
 import {
     APP_ENVIRONMENT,
-    IS_LOCAL_ENV,
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
@@ -247,8 +246,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         if (provider && crocEnv) {
             (async () => {
-                IS_LOCAL_ENV &&
-                    console.debug('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     mainnetETH.address,
                     ethereumMainnet.chainId,
@@ -256,6 +253,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;
                 setEthMainnetUsdPrice(usdPrice);
+                usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
             })();
         }
     }, [crocEnv, provider]);

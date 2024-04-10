@@ -34,6 +34,8 @@ export const fetchTokenPrice = async (
         const response = await fetchBatch<'price'>(body);
 
         if ('error' in response) throw new Error(response.error);
+        if (response.value.usdPrice === Infinity)
+            throw new Error('USD value returned as Infinity');
 
         return response.value;
     } catch (error) {
