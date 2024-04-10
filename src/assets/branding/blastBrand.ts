@@ -22,4 +22,5 @@ export const blastBrandAssets: brandAssetsIF = {
     },
     platformName: '',
     headerImage: large as string,
+    showPoints: true,
 };

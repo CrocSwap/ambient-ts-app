@@ -69,7 +69,7 @@ export default function App() {
     } = useContext(AppStateContext);
     const { isWalletChainSupported, defaultUrlParams } =
         useContext(CrocEnvContext);
-    const { skin } = useContext(BrandContext);
+    const { skin, showPoints } = useContext(BrandContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
@@ -174,7 +174,7 @@ export default function App() {
                 data-theme={skin.active}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
-                {showPointSystemPopup && (
+                {showPoints && showPointSystemPopup && (
                     <PointSystemPopup
                         dismissPointSystemPopup={dismissPointSystemPopup}
                     />

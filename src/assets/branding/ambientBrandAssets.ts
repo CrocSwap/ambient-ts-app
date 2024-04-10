@@ -22,4 +22,5 @@ export const ambientBrandAssets: brandAssetsIF = {
     },
     platformName: 'ambient',
     headerImage: large as string,
+    showPoints: true,
 };

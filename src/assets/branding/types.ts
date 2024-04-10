@@ -8,4 +8,5 @@ export interface brandAssetsIF {
     color: chainColorScheme;
     platformName: string;
     headerImage: string;
+    showPoints: boolean;
 }
