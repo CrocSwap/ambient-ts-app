@@ -252,7 +252,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                     crocEnv,
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;
-                setEthMainnetUsdPrice(usdPrice);
                 usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
             })();
         }
