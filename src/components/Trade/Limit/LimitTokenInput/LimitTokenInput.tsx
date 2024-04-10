@@ -203,6 +203,14 @@ function LimitTokenInput(props: propsIF) {
         ? poolData.quotePrice
         : poolData.basePrice;
 
+    const percentDiffUsdValue =
+        usdValueTokenA && usdValueTokenB
+            ? ((usdValueTokenB * parseFloat(tokenBInputQty) -
+                  usdValueTokenA * parseFloat(tokenAInputQty)) /
+                  (usdValueTokenA * parseFloat(tokenAInputQty))) *
+              100
+            : 0;
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -254,6 +262,7 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
         </FlexContainer>
     );
