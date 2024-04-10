@@ -73,7 +73,7 @@ function Swap(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
     const {
@@ -112,6 +112,7 @@ function Swap(props: propsIF) {
         primaryQuantity,
         setPrimaryQuantity,
         areDefaultTokensUpdatedForChain,
+        isTokenABase,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -657,6 +658,21 @@ function Swap(props: propsIF) {
         isTokenAWalletBalanceSufficient &&
         !isLiquidityInsufficient;
 
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
+    const percentDiffUsdValue =
+        usdValueTokenA && usdValueTokenB
+            ? ((usdValueTokenB * parseFloat(buyQtyString) -
+                  usdValueTokenA * parseFloat(sellQtyString)) /
+                  (usdValueTokenA * parseFloat(sellQtyString))) *
+              100
+            : 0;
+
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -697,6 +713,9 @@ function Swap(props: propsIF) {
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                    usdValueTokenA={usdValueTokenA}
+                    usdValueTokenB={usdValueTokenB}
+                    percentDiffUsdValue={percentDiffUsdValue}
                 />
             }
             transactionDetails={
@@ -741,6 +760,7 @@ function Swap(props: propsIF) {
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        percentDiffUsdValue={percentDiffUsdValue}
                     />
                 ) : (
                     <></>
