@@ -5,6 +5,7 @@ import { crocswapBrandAssets } from '../assets/branding/crocswapBrandAssets';
 import { brandAssetsIF } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
+import { blastBrandAssets } from '../assets/branding/blastBrand';
 
 interface BrandContextIF {
     skin: skinMethodsIF;
@@ -26,6 +27,8 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         switch (brand) {
             case 'crocswap':
                 return crocswapBrandAssets;
+            case 'blast':
+                return blastBrandAssets;
             case 'ambient':
             default:
                 return ambientBrandAssets;

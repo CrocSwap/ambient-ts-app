@@ -39,24 +39,28 @@ export default function Hero() {
                         gap={8}
                         style={{ verticalAlign: 'middle' }}
                     >
-                        <p
-                            className={styles.ambient_blast_logo}
-                            style={{ fontSize: '90px' }}
-                        >
-                            {platformName}
-                        </p>
-                        <Text
-                            fontWeight='100'
-                            color='text1'
-                            align='center'
-                            style={{
-                                marginTop: '20px',
-                                marginLeft: '15px',
-                                fontSize: '30px',
-                            }}
-                        >
-                            X
-                        </Text>
+                        {platformName && (
+                            <>
+                                <p
+                                    className={styles.ambient_blast_logo}
+                                    style={{ fontSize: '90px' }}
+                                >
+                                    {platformName}
+                                </p>
+                                <Text
+                                    fontWeight='100'
+                                    color='text1'
+                                    align='center'
+                                    style={{
+                                        marginTop: '20px',
+                                        marginLeft: '15px',
+                                        fontSize: '30px',
+                                    }}
+                                >
+                                    X
+                                </Text>
+                            </>
+                        )}
                         <img
                             src={blastLogo}
                             alt=''
@@ -97,25 +101,32 @@ export default function Hero() {
                         >
                             {platformName}
                         </p>
-                        <Text
-                            fontWeight='100'
-                            color='text1'
-                            align='center'
-                            style={{
-                                marginTop: '20px',
-                                marginLeft: '15px',
-                                marginRight: '15px',
-                                fontSize: '30px',
-                            }}
-                        >
-                            X
-                        </Text>
-                        <img
-                            src={scrollLogo}
-                            alt=''
-                            width='70px'
-                            style={{ marginTop: '8px', maxWidth: '60%' }}
-                        />
+                        {platformName && (
+                            <>
+                                <Text
+                                    fontWeight='100'
+                                    color='text1'
+                                    align='center'
+                                    style={{
+                                        marginTop: '20px',
+                                        marginLeft: '15px',
+                                        marginRight: '15px',
+                                        fontSize: '30px',
+                                    }}
+                                >
+                                    X
+                                </Text>
+                                <img
+                                    src={scrollLogo}
+                                    alt=''
+                                    width='70px'
+                                    style={{
+                                        marginTop: '8px',
+                                        maxWidth: '60%',
+                                    }}
+                                />
+                            </>
+                        )}
                     </FlexContainer>
                     <TradeNowButton fieldId='trade_now_btn_in_hero' />
                 </FlexContainer>
