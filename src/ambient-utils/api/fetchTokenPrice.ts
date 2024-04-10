@@ -73,7 +73,7 @@ export const fetchTokenPrice = async (
         ) {
             return {
                 usdPrice: 1,
-                usdPriceFormatted: '1.00',
+                usdPriceFormatted: 1,
             };
         }
         return undefined;
