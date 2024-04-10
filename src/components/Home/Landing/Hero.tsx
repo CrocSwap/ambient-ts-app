@@ -116,17 +116,17 @@ export default function Hero() {
                                 >
                                     X
                                 </Text>
-                                <img
-                                    src={scrollLogo}
-                                    alt=''
-                                    width='70px'
-                                    style={{
-                                        marginTop: '8px',
-                                        maxWidth: '60%',
-                                    }}
-                                />
                             </>
                         )}
+                        <img
+                            src={scrollLogo}
+                            alt=''
+                            width='70px'
+                            style={{
+                                marginTop: '8px',
+                                maxWidth: '60%',
+                            }}
+                        />
                     </FlexContainer>
                     <TradeNowButton fieldId='trade_now_btn_in_hero' />
                 </FlexContainer>

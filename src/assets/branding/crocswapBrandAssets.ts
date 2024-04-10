@@ -20,7 +20,7 @@ export const crocswapBrandAssets: brandAssetsIF = {
         '0xa0c71fd': 'orange',
         '0x13e31': 'orange',
     },
-    platformName: 'CrocSwap',
+    platformName: '',
     headerImage: large as string,
     showPoints: false,
     showDexStats: false,
