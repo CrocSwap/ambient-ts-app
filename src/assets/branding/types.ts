@@ -9,4 +9,5 @@ export interface brandAssetsIF {
     platformName: string;
     headerImage: string;
     showPoints: boolean;
+    showDexStats: boolean;
 }

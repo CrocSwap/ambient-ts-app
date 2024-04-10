@@ -23,4 +23,5 @@ export const crocswapBrandAssets: brandAssetsIF = {
     platformName: 'CrocSwap',
     headerImage: large as string,
     showPoints: false,
+    showDexStats: false,
 };

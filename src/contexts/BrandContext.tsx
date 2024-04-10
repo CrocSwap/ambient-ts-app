@@ -13,6 +13,7 @@ interface BrandContextIF {
     networks: chainIds[];
     headerImage: string;
     showPoints: boolean;
+    showDexStats: boolean;
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -49,6 +50,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         networks: brandAssets.networks,
         headerImage: brandAssets.headerImage,
         showPoints: brandAssets.showPoints,
+        showDexStats: brandAssets.showDexStats,
     };
 
     console.log(brandData);

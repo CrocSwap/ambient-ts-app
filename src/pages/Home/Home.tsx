@@ -54,7 +54,7 @@ export default function Home() {
         }
     }, [switchNetwork]);
 
-    const { showPoints } = useContext(BrandContext);
+    const { showPoints, showDexStats } = useContext(BrandContext);
 
     const PointSystemContainer = styled.section`
         margin: 0 auto;
@@ -104,7 +104,7 @@ export default function Home() {
             )}
             <div>
                 <TopPools />
-                <Stats />
+                {showDexStats && <Stats />}
             </div>
             <LandingSections />
         </section>
