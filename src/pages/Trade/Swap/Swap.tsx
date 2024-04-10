@@ -156,10 +156,15 @@ function Swap(props: propsIF) {
         | undefined
     >();
 
-    const priceImpact = useMemo(
-        () => lastImpactQuery?.impact,
-        [JSON.stringify(lastImpactQuery)],
-    );
+    const priceImpact = useMemo(() => {
+        return lastImpactQuery ? lastImpactQuery.impact : undefined;
+    }, [lastImpactQuery]);
+
+    useEffect(() => {
+        if (primaryQuantity === '') {
+            setLastImpactQuery(undefined);
+        }
+    }, [primaryQuantity]);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -190,7 +195,7 @@ function Swap(props: propsIF) {
     >();
 
     useEffect(() => {
-        if (priceImpactNum) setPriceImpactNumMemo(priceImpactNum);
+        setPriceImpactNumMemo(priceImpactNum);
     }, [priceImpactNum]);
 
     const tokenASurplusMinusTokenARemainderNum =
