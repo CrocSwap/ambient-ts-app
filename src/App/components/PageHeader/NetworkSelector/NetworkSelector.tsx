@@ -38,7 +38,7 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { networks } = useContext(BrandContext);
+    const { networks, platformName } = useContext(BrandContext);
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams] = useSearchParams();
@@ -332,7 +332,9 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x13e31') && blastNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
-                        {INCLUDE_CANTO_LINK && cantoNetwork}
+                        {INCLUDE_CANTO_LINK &&
+                            platformName === 'ambient' &&
+                            cantoNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
                         {chainMap.has('0xa0c71fd') && blastSepoliaNetwork}
                         {chainMap.has('0x8274f') && scrollSepoliaNetwork}
