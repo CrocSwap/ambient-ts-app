@@ -95,14 +95,15 @@ export default function Hero() {
                         gap={8}
                         style={{ verticalAlign: 'middle' }}
                     >
-                        <p
-                            className={styles.ambient_blast_logo}
-                            style={{ fontSize: '110px' }}
-                        >
-                            {platformName}
-                        </p>
                         {platformName && (
                             <>
+                                <p
+                                    className={styles.ambient_blast_logo}
+                                    style={{ fontSize: '110px' }}
+                                >
+                                    {platformName}
+                                </p>
+
                                 <Text
                                     fontWeight='100'
                                     color='text1'
