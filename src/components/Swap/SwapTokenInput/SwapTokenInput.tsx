@@ -47,6 +47,9 @@ interface propsIF {
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
+    usdValueTokenA: number | undefined;
+    usdValueTokenB: number | undefined;
+    percentDiffUsdValue: number | undefined;
 }
 
 function SwapTokenInput(props: propsIF) {
@@ -64,6 +67,9 @@ function SwapTokenInput(props: propsIF) {
         toggleDexSelection,
         amountToReduceNativeTokenQty,
         setLastImpactQuery,
+        usdValueTokenA,
+        usdValueTokenB,
+        percentDiffUsdValue,
     } = props;
 
     const {
@@ -71,8 +77,7 @@ function SwapTokenInput(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { isPoolInitialized, poolData } = useContext(PoolContext);
-    const { isTokenABase } = useContext(TradeDataContext);
+    const { isPoolInitialized } = useContext(PoolContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -313,21 +318,6 @@ function SwapTokenInput(props: propsIF) {
             }
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
-
-    const usdValueTokenA = isTokenABase
-        ? poolData.basePrice
-        : poolData.quotePrice;
-    const usdValueTokenB = isTokenABase
-        ? poolData.quotePrice
-        : poolData.basePrice;
-
-    const percentDiffUsdValue =
-        usdValueTokenA && usdValueTokenB
-            ? ((usdValueTokenB * parseFloat(buyQtyString) -
-                  usdValueTokenA * parseFloat(sellQtyString)) /
-                  (usdValueTokenA * parseFloat(sellQtyString))) *
-              100
-            : 0;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>

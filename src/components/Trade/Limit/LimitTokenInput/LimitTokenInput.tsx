@@ -27,6 +27,9 @@ interface propsIF {
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
+    usdValueTokenA: number | undefined;
+    usdValueTokenB: number | undefined;
+    percentDiffUsdValue: number | undefined;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -39,12 +42,15 @@ function LimitTokenInput(props: propsIF) {
         handleLimitButtonMessage,
         toggleDexSelection,
         amountToReduceNativeTokenQty,
+        usdValueTokenA,
+        usdValueTokenB,
+        percentDiffUsdValue,
     } = props;
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { pool, poolData } = useContext(PoolContext);
+    const { pool } = useContext(PoolContext);
     const {
         baseToken: {
             balance: baseTokenBalance,
@@ -70,7 +76,6 @@ function LimitTokenInput(props: propsIF) {
         setLimitTick,
         primaryQuantity,
         setPrimaryQuantity,
-        isTokenABase,
     } = useContext(TradeDataContext);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
@@ -195,21 +200,6 @@ function LimitTokenInput(props: propsIF) {
 
         limitTickDisplayPrice && setTokenAInputQty(truncatedTokenAQty);
     };
-
-    const usdValueTokenA = isTokenABase
-        ? poolData.basePrice
-        : poolData.quotePrice;
-    const usdValueTokenB = isTokenABase
-        ? poolData.quotePrice
-        : poolData.basePrice;
-
-    const percentDiffUsdValue =
-        usdValueTokenA && usdValueTokenB
-            ? ((usdValueTokenB * parseFloat(tokenBInputQty) -
-                  usdValueTokenA * parseFloat(tokenAInputQty)) /
-                  (usdValueTokenA * parseFloat(tokenAInputQty))) *
-              100
-            : 0;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
