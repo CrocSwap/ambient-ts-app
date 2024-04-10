@@ -33,6 +33,8 @@ import {
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ethers } from 'ethers';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
+import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -96,15 +98,53 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
+
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB]: [TokenIF, TokenIF] =
-            getDefaultPairForChain(chainId);
+        const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
+            getDefaultPairForChain(chainData.chainId);
+
+        const savedTokenASymbol = localStorage.getItem('tokenA');
+        const savedTokenBSymbol = localStorage.getItem('tokenB');
+
+        const tokensMatchingA =
+            savedTokenASymbol === 'ETH'
+                ? [dfltTokenA]
+                : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+        const tokensMatchingB =
+            savedTokenBSymbol === 'ETH'
+                ? [dfltTokenA]
+                : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+
+        const firstTokenMatchingA = tokensMatchingA[0] || undefined;
+        const firstTokenMatchingB = tokensMatchingB[0] || undefined;
+
+        const isSavedTokenADefaultB = savedTokenASymbol
+            ? translateTokenSymbol(savedTokenASymbol) ===
+              translateTokenSymbol(dfltTokenB.symbol)
+            : false;
+
+        const isSavedTokenBDefaultA = savedTokenBSymbol
+            ? translateTokenSymbol(savedTokenBSymbol) ===
+              translateTokenSymbol(dfltTokenA.symbol)
+            : false;
+
+        const shouldReverseDefaultTokens =
+            isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
         // default URL params for swap and market modules
         const swapParams: swapParamsIF = {
             chain: chainId,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
+            tokenA: firstTokenMatchingA
+                ? firstTokenMatchingA.address
+                : shouldReverseDefaultTokens
+                ? dfltTokenB.address
+                : dfltTokenA.address,
+            tokenB: firstTokenMatchingB
+                ? firstTokenMatchingB.address
+                : shouldReverseDefaultTokens
+                ? dfltTokenA.address
+                : dfltTokenB.address,
         };
 
         // default URL params for the limit module

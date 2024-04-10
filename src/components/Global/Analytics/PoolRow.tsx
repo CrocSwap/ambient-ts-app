@@ -81,7 +81,7 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm left>
                 <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
-            <TableCell hidden sm>
+            <TableCell>
                 <p>
                     {isExploreDollarizationEnabled
                         ? pool.usdPriceMoneynessBased !== 0

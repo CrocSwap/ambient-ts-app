@@ -184,36 +184,6 @@ export const blastOLE: TokenIF = {
     logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
 };
 
-export const blastFINGER: TokenIF = {
-    address: '0x7217124c626f0b7077be91df939195c9a8184ecc',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '/ambient-token-list.json',
-    name: 'Finger Blast',
-    symbol: 'FINGER',
-    logoURI: 'https://blastscan.io/token/images/fingerblast_32.png',
-};
-
-export const blastGLORY: TokenIF = {
-    address: '0xd582879453337bd149ae53ec2092b0af5281d1d7',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '/ambient-token-list.json',
-    name: 'Sekai Glory',
-    symbol: 'GLORY',
-    logoURI: 'https://blastscan.io/token/images/sekaiglory_32.png',
-};
-
-export const blastVROOM: TokenIF = {
-    address: '0x891c9B37177Bdf8Edc891119C9d8aEefDa9A5246',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '',
-    name: 'VROOM',
-    symbol: 'VROOM',
-    logoURI: '',
-};
-
 export const blastSepoliaETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 168587773,
@@ -527,6 +497,15 @@ export const scrollWstETH: TokenIF = {
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
 
+export const scrollWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
+};
+
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
@@ -674,14 +653,11 @@ export const defaultTokens: TokenIF[] = [
     blastBEPE,
     blastALIEN,
     blastOLE,
-    blastFINGER,
-    blastGLORY,
     blastWETH,
     blastEzETH,
     blastPUMP,
     blastYES,
     blastPACM,
-    blastVROOM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     goerliETH,
@@ -704,6 +680,7 @@ export const defaultTokens: TokenIF[] = [
     scrollRocketPoolETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWrsETH,
     sepoliaETH,
     sepoliaUSDC,
     sepoliaWBTC,

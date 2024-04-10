@@ -64,6 +64,7 @@ const PageHeader = function () {
 
     const {
         wagmiModal: { open: openWagmiModal },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
@@ -359,7 +360,14 @@ const PageHeader = function () {
             data-testid={'page-header'}
             fixed={location.pathname === '/'}
         >
-            <div>
+            <div
+                onClick={(event: React.MouseEvent) => {
+                    event?.stopPropagation();
+                    if (appHeaderDropdown.isActive) {
+                        appHeaderDropdown.setIsActive(false);
+                    }
+                }}
+            >
                 <LogoContainer to='/' aria-label='Home'>
                     {desktopScreen ? (
                         <img src={headerImage} alt='ambient' />
