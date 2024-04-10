@@ -31,6 +31,7 @@ interface propsIF {
     isTokenAPrimary: boolean;
     priceImpactWarning: JSX.Element | undefined;
     isSaveAsDexSurplusChecked: boolean;
+    percentDiffUsdValue: number | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -55,6 +56,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         isTokenAPrimary,
         priceImpactWarning,
         isSaveAsDexSurplusChecked,
+        percentDiffUsdValue,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -269,6 +271,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                 isWaitingForPriceChangeAckt && priceIncreaseComponent
             }
             priceImpactWarning={priceImpactWarning}
+            percentDiffUsdValue={percentDiffUsdValue}
         />
     );
 }
