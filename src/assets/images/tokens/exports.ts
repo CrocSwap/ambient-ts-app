@@ -32,6 +32,7 @@ import BLUR from './BLUR.png';
 import WRSETH from './WRSETH.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
+import ESE from './ESE.jpg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -69,4 +70,5 @@ export {
     WRSETH,
     PANDA,
     YIELD,
+    ESE,
 };
