@@ -18,6 +18,10 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../../../ambient-utils/dataLayer/functions/pinTick';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -58,6 +62,7 @@ export default function LimitRate(props: propsIF) {
         tokenA,
         tokenB,
         isTokenABase: isBid,
+        currentPoolPriceTick,
     } = useContext(TradeDataContext);
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
 
@@ -76,6 +81,32 @@ export default function LimitRate(props: propsIF) {
     const decreaseTick = (): void => {
         if (limitTick !== undefined) {
             const newLimitTick: number = limitTick - gridSize;
+            setLimitTick(newLimitTick);
+            updateURL({ update: [['limitTick', newLimitTick]] });
+            setPriceInputFieldBlurred(true);
+        }
+    };
+
+    const setTickToMinimum = (): void => {
+        if (currentPoolPriceTick !== undefined) {
+            const currentPoolPricePinned = pinTickToTickLower(
+                currentPoolPriceTick,
+                gridSize,
+            );
+            const newLimitTick: number = currentPoolPricePinned - gridSize;
+            setLimitTick(newLimitTick);
+            updateURL({ update: [['limitTick', newLimitTick]] });
+            setPriceInputFieldBlurred(true);
+        }
+    };
+
+    const setTickToMaximum = (): void => {
+        if (currentPoolPriceTick !== undefined) {
+            const currentPoolPricePinned = pinTickToTickUpper(
+                currentPoolPriceTick,
+                gridSize,
+            );
+            const newLimitTick: number = currentPoolPricePinned + gridSize;
             setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
@@ -194,6 +225,13 @@ export default function LimitRate(props: propsIF) {
             >
                 <p>Price</p>
             </FlexContainer>
+            <button
+                id='increase_limit_rate_button'
+                onClick={isSellTokenBase ? setTickToMinimum : setTickToMaximum}
+                aria-label='Set Limit to Top of Book.'
+            >
+                Top of Book
+            </button>
             <FlexContainer
                 animation={showOrderPulseAnimation ? 'pulse' : ''}
                 fullWidth
