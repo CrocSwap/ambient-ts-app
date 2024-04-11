@@ -107,14 +107,14 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const savedTokenASymbol = localStorage.getItem('tokenA');
         const savedTokenBSymbol = localStorage.getItem('tokenB');
 
-        const tokensMatchingA = tokens.getTokensByNameOrSymbol(
-            savedTokenASymbol || '',
-            true,
-        );
-        const tokensMatchingB = tokens.getTokensByNameOrSymbol(
-            savedTokenBSymbol || '',
-            true,
-        );
+        const tokensMatchingA =
+            savedTokenASymbol === 'ETH'
+                ? [dfltTokenA]
+                : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+        const tokensMatchingB =
+            savedTokenBSymbol === 'ETH'
+                ? [dfltTokenA]
+                : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
 
         const firstTokenMatchingA = tokensMatchingA[0] || undefined;
         const firstTokenMatchingB = tokensMatchingB[0] || undefined;
