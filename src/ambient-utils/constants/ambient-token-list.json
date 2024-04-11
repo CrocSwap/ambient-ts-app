@@ -177,6 +177,15 @@
             "logoURI": ""
         },
         {
+            "address": "0x491e6DE43b55c8EAE702EDC263E32339da42f58c",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "eesee",
+            "symbol": "ESE",
+            "logoURI": ""
+        },
+        {
             "address": "0x73c369f61c90f03eb0dd172e95c90208a28dc5bc",
             "chainId": 81457,
             "decimals": 18,
