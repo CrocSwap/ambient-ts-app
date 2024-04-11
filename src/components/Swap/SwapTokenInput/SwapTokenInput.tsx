@@ -47,6 +47,9 @@ interface propsIF {
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
+    usdValueTokenA: number | undefined;
+    usdValueTokenB: number | undefined;
+    percentDiffUsdValue: number | undefined;
 }
 
 function SwapTokenInput(props: propsIF) {
@@ -64,6 +67,9 @@ function SwapTokenInput(props: propsIF) {
         toggleDexSelection,
         amountToReduceNativeTokenQty,
         setLastImpactQuery,
+        usdValueTokenA,
+        usdValueTokenB,
+        percentDiffUsdValue,
     } = props;
 
     const {
@@ -71,8 +77,7 @@ function SwapTokenInput(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { isPoolInitialized, poolData } = useContext(PoolContext);
-    const { isTokenABase } = useContext(TradeDataContext);
+    const { isPoolInitialized } = useContext(PoolContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -100,9 +105,8 @@ function SwapTokenInput(props: propsIF) {
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const [lastInput, setLastInput] = useState<string | undefined>();
-
-    // Let input rest 3/4 of a second before triggering an update
-    const debouncedLastInput = useDebounce(lastInput, 750);
+    // Let input rest 1/5 of a second before triggering an update
+    const debouncedLastInput = useDebounce(lastInput, 200);
 
     const reverseTokens = (skipQuantityReverse?: boolean): void => {
         if (!isPoolInitialized) return;
@@ -314,13 +318,6 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
-    const usdValueTokenA = isTokenABase
-        ? poolData.basePrice
-        : poolData.quotePrice;
-    const usdValueTokenB = isTokenABase
-        ? poolData.quotePrice
-        : poolData.basePrice;
-
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -406,6 +403,7 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
         </FlexContainer>
     );
