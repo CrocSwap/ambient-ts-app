@@ -58,17 +58,6 @@ function EditLiquidity() {
     // eslint-disable-next-line
     const [newEditTransactionHash, setNewEditTransactionHash] = useState('');
 
-    // -------------------
-    const yes = true;
-
-    if (yes)
-        return (
-            <>
-                <h1>Edit Liq</h1>
-                <RangeWidthControl />
-            </>
-        );
-
     return (
         <>
             <div className={styles.repositionContainer}>

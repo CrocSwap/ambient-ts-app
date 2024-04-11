@@ -878,16 +878,6 @@ function Reposition() {
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
         useState(DEFAULT_MAX_PRICE_DIFF_PERCENTAGE);
 
-    const yes = true;
-
-    if (yes)
-        return (
-            <>
-                <h1>Reposition</h1>
-                <RangeWidthControl />
-            </>
-        );
-
     return (
         <>
             <div className={styles.repositionContainer}>
