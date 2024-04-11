@@ -1,5 +1,11 @@
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useState,
+} from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -22,6 +28,10 @@ import {
     pinTickToTickLower,
     pinTickToTickUpper,
 } from '../../../../ambient-utils/dataLayer/functions/pinTick';
+import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { Chip } from '../../../Form/Chip';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -64,6 +74,9 @@ export default function LimitRate(props: propsIF) {
         isTokenABase: isBid,
         currentPoolPriceTick,
     } = useContext(TradeDataContext);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
 
     const side =
@@ -215,6 +228,16 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred(true);
     };
 
+    const balancedPresets: number[] = [100, 1, 5, 10];
+    type presetValues = typeof balancedPresets[number];
+
+    const [limitRateValue, setLimitRateValue] = useState(5);
+
+    function updateLimitRateWithButton(value: presetValues): void {
+        setLimitRateValue(value);
+        console.log({ limitRateValue });
+    }
+
     return (
         <FlexContainer flexDirection='column' gap={4}>
             <FlexContainer
@@ -309,13 +332,52 @@ export default function LimitRate(props: propsIF) {
                     </LimitRateButton>
                 </LimitRateButtonContainer>
             </FlexContainer>
-            <button
-                id='increase_limit_rate_button'
-                onClick={isSellTokenBase ? setTickToMinimum : setTickToMaximum}
-                aria-label='Set Limit to Top of Book.'
+            <FlexContainer
+                fullWidth
+                wrap
+                alignItems='center'
+                gap={10}
+                padding='8px 0'
             >
-                Top of Book
-            </button>
+                {balancedPresets.map((preset: presetValues) => {
+                    const humanReadable: string =
+                        preset === 100 ? 'Top' : preset.toString() + '%';
+                    return (
+                        <Chip
+                            key={humanReadable}
+                            id={`limit_rate_preset_${humanReadable}`}
+                            variant={
+                                limitRateValue === preset
+                                    ? 'filled'
+                                    : 'secondary'
+                            }
+                            onClick={() => {
+                                if (preset === 100) {
+                                    isSellTokenBase
+                                        ? setTickToMinimum
+                                        : setTickToMaximum;
+                                }
+                                updateLimitRateWithButton(preset);
+                            }}
+                            aria-label={`Set limit rate to ${humanReadable}.`}
+                        >
+                            {humanReadable}
+                        </Chip>
+                    );
+                })}
+                <ExplanationButton
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>Limit rate explanation</div>,
+                            'Limit Rate',
+                            'right',
+                        )
+                    }
+                    aria-label='Open limit rate explanation popup.'
+                >
+                    <AiOutlineInfoCircle color='var(--text2)' />
+                </ExplanationButton>
+            </FlexContainer>
         </FlexContainer>
     );
 }
