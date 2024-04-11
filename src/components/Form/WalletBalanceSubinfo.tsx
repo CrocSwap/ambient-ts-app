@@ -10,6 +10,7 @@ import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExpla
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 interface PropsIF {
     usdValueForDom: string;
     showWallet: boolean | undefined;
@@ -20,10 +21,12 @@ interface PropsIF {
     onToggleDex: () => void;
     availableBalance?: number;
     onMaxButtonClick?: () => void;
+    percentDiffUsdValue: number | undefined;
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
         usdValueForDom,
+        percentDiffUsdValue,
         showWallet,
         isWithdraw,
         balance,
@@ -214,6 +217,18 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
             </MaxButton>
         </DefaultTooltip>
     );
+    const showWarning =
+        usdValueForDom &&
+        percentDiffUsdValue !== undefined &&
+        percentDiffUsdValue < -10;
+
+    const formattedUsdDifference =
+        percentDiffUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: percentDiffUsdValue,
+                  isPercentage: true,
+              }) + '%'
+            : undefined;
 
     return (
         <FlexContainer
@@ -223,8 +238,13 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
             gap={4}
             fontSize='body'
             color='text2'
+            cursor='default'
         >
-            <p>{usdValueForDom}</p>
+            <p style={showWarning ? { color: 'var(--other-red)' } : undefined}>
+                {showWarning
+                    ? `${usdValueForDom} ${' '}(${formattedUsdDifference})`
+                    : usdValueForDom}
+            </p>
             {showWallet && (
                 <FlexContainer
                     role='button'
