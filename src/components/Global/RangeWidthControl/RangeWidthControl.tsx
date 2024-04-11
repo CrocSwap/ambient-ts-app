@@ -18,6 +18,7 @@ import {
     getPositionData,
     roundDownTick,
     roundUpTick,
+    truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -206,6 +207,95 @@ export default function RangeWidthControl(props: PropsIF) {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
         setAdvancedMode(false);
     }, []);
+
+    useEffect(() => {
+        if (advancedMode) {
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                pinnedLowTick,
+                pinnedHighTick,
+                gridSize,
+            );
+            // setRangeLowBoundNonDisplayPrice(
+            //     pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            // );
+            // setRangeHighBoundNonDisplayPrice(
+            //     pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            // );
+
+            // setPinnedMinPriceDisplayTruncated(
+            //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            // );
+            // setPinnedMaxPriceDisplayTruncated(
+            //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            // );
+
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+
+            const highTickDiff =
+                pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
+            const lowTickDiff =
+                pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
+
+            const highGeometricDifferencePercentage =
+                Math.abs(highTickDiff) < 200
+                    ? parseFloat(truncateDecimals(highTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(highTickDiff / 100, 0));
+            const lowGeometricDifferencePercentage =
+                Math.abs(lowTickDiff) < 200
+                    ? parseFloat(truncateDecimals(lowTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
+            isDenomBase
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
+
+            isDenomBase
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
+
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+                const rangeHighBoundDisplayField = document.getElementById(
+                    'max-price-input-quantity',
+                ) as HTMLInputElement;
+
+                if (rangeHighBoundDisplayField) {
+                    rangeHighBoundDisplayField.value =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                }
+            }
+
+            setMaxPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+            );
+            setMinPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+            );
+        }
+    }, [
+        currentPoolPriceTick,
+        pinnedLowTick,
+        pinnedHighTick,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        advancedMode,
+    ]);
 
     useEffect(() => {
         setSimpleRangeWidth(
@@ -576,39 +666,6 @@ export default function RangeWidthControl(props: PropsIF) {
     // );
     // CHANGE FOR EDIT
 
-    useEffect(() => {
-        if (
-            !crocEnv ||
-            Math.abs(debouncedLowTick) === Infinity ||
-            Math.abs(debouncedHighTick) === Infinity ||
-            !position.base ||
-            !position.quote ||
-            !concLiq
-        ) {
-            return;
-        }
-        const pool = crocEnv.pool(position.base, position.quote);
-
-        const repo = new CrocReposition(pool, {
-            liquidity: concLiq,
-            burn: [position.bidTick, position.askTick],
-            mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
-        });
-
-        repo.postBalance().then(([base, quote]: [number, number]) => {
-            setNewBaseQtyNum(base);
-            setNewQuoteQtyNum(quote);
-            setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
-            setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
-        });
-    }, [
-        crocEnv,
-        concLiq,
-        debouncedLowTick, // Debounce because effect involves on-chain call
-        debouncedHighTick,
-        currentPoolPriceTick,
-    ]);
-
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -721,6 +778,67 @@ export default function RangeWidthControl(props: PropsIF) {
         setMaxPrice: setMaxPrice,
         setMinPrice: setMinPrice,
     };
+
+    // --------
+    useEffect(() => {
+        setSimpleRangeWidth(
+            getDefaultRangeWidthForTokenPair(
+                position.chainId,
+                position.base.toLowerCase(),
+                position.quote.toLowerCase(),
+            ),
+        );
+    }, [position]);
+
+    // neccessary to get the liquidity chart to correctly show an ambient range width
+    useEffect(() => {
+        if (rangeWidthPercentage === 100) {
+            setSimpleRangeWidth(100);
+        } else {
+            setSimpleRangeWidth(rangeWidthPercentage);
+        }
+    }, [rangeWidthPercentage === 100]);
+
+    useEffect(() => {
+        if (simpleRangeWidth !== rangeWidthPercentage) {
+            setRangeWidthPercentage(simpleRangeWidth);
+            const sliderInput = document.getElementById(
+                'input-slider-range',
+            ) as HTMLInputElement;
+            if (sliderInput) sliderInput.value = simpleRangeWidth.toString();
+        }
+    }, [simpleRangeWidth]);
+
+    useEffect(() => {
+        if (!position) {
+            return;
+        }
+
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            isDenomBase,
+            position.baseDecimals,
+            position.quoteDecimals,
+            lowTick,
+            highTick,
+            lookupChain(position.chainId).gridSize,
+        );
+
+        const isAmbient: boolean = rangeWidthPercentage === 100;
+
+        if (isAmbient) {
+            setIsAmbient(true);
+            // (0,0) ticks is convention for full-width ambient
+            setPinnedLowTick(0);
+            setPinnedHighTick(0);
+        } else {
+            setIsAmbient(false);
+            setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
+        }
+    }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
 
     return (
         <div className={styles.reposition_content}>

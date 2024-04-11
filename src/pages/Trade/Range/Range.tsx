@@ -1138,6 +1138,7 @@ function Range(props: RangePropsIF) {
                         }
                         onClose={handleModalClose}
                         slippageTolerance={slippageTolerancePercentage}
+                        isEditPanel={isEditPanel}
                     />
                 ) : (
                     <></>

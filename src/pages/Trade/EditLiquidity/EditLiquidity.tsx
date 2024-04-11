@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
 
 // START: Import Other Local Files
@@ -12,13 +12,15 @@ import RepositionHeader from '../../../components/Trade/Reposition/RepositionHea
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import Range from '../Range/Range';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import RangeWidthControl from '../../../components/Global/RangeWidthControl/RangeWidthControl';
+import { RangeContext } from '../../../contexts/RangeContext';
 
 function EditLiquidity() {
     const { params } = useParams();
     const { crocEnv } = useContext(CrocEnvContext);
 
     const { getDefaultRangeWidthForTokenPair } = useContext(TradeDataContext);
-
+    const { setCurrentRangeInEdit } = useContext(RangeContext);
     const locationHook = useLocation();
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
@@ -39,6 +41,12 @@ function EditLiquidity() {
 
     const { position } = locationHook.state as { position: PositionIF };
     const { posHashTruncated } = useProcessRange(position, crocEnv);
+    useEffect(() => {
+        setCurrentRangeInEdit('');
+        if (position) {
+            setCurrentRangeInEdit(position.positionId);
+        }
+    }, [position]);
     // eslint-disable-next-line
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
         getDefaultRangeWidthForTokenPair(
@@ -49,6 +57,17 @@ function EditLiquidity() {
     );
     // eslint-disable-next-line
     const [newEditTransactionHash, setNewEditTransactionHash] = useState('');
+
+    // -------------------
+    const yes = true;
+
+    if (yes)
+        return (
+            <>
+                <h1>Edit Liq</h1>
+                <RangeWidthControl />
+            </>
+        );
 
     return (
         <>

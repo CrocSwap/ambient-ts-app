@@ -34,6 +34,7 @@ interface ChartHeights {
     max: number;
     default: number;
 }
+export const pathsToUpdateChart = ['reposition', 'pool', 'edit'];
 
 interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;

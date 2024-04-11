@@ -21,6 +21,8 @@ interface RangeContextIF {
     setChartTriggeredBy: Dispatch<SetStateAction<string>>;
     currentRangeInReposition: string;
     setCurrentRangeInReposition: Dispatch<SetStateAction<string>>;
+    currentRangeInEdit: string;
+    setCurrentRangeInEdit: Dispatch<SetStateAction<string>>;
     currentRangeInAdd: string;
     setCurrentRangeInAdd: Dispatch<SetStateAction<string>>;
 
@@ -46,6 +48,7 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
 
     const [currentRangeInReposition, setCurrentRangeInReposition] =
         useState<string>('');
+    const [currentRangeInEdit, setCurrentRangeInEdit] = useState<string>('');
     const [currentRangeInAdd, setCurrentRangeInAdd] = useState<string>('');
     const [advancedMode, setAdvancedMode] = useState<boolean>(false);
     const [advancedLowTick, setAdvancedLowTick] = useState<number>(0);
@@ -71,6 +74,8 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setChartTriggeredBy,
         currentRangeInReposition,
         setCurrentRangeInReposition,
+        currentRangeInEdit,
+        setCurrentRangeInEdit,
         currentRangeInAdd,
         setCurrentRangeInAdd,
         rangeTicksCopied,

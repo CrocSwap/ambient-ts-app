@@ -35,6 +35,7 @@ import {
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
+import { pathsToUpdateChart } from '../../../../contexts/ChartContext';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -457,8 +458,9 @@ function YAxisCanvas(props: yAxisIF) {
             }
 
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
             ) {
                 const {
                     isSameLocationMin: isSameLocationMin,
@@ -826,8 +828,9 @@ function YAxisCanvas(props: yAxisIF) {
                 d3.select(d3Yaxis.current).on('.drag', null);
             }
             if (
-                (location.pathname.includes('pool') ||
-                    location.pathname.includes('reposition')) &&
+                pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                ) &&
                 !isLineDrag
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);

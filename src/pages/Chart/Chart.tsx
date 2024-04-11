@@ -105,7 +105,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../utils/numbers';
-import { ChartContext } from '../../contexts/ChartContext';
+import { ChartContext, pathsToUpdateChart } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
 import {
     LS_KEY_CHART_ANNOTATIONS,
@@ -649,8 +649,9 @@ export default function Chart(props: propsIF) {
         if (
             chartMousemoveEvent &&
             mainCanvasBoundingClientRect &&
-            (location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')) &&
+            pathsToUpdateChart.some((path) =>
+                location.pathname.includes(path),
+            ) &&
             !(!advancedMode && simpleRangeWidth === 100) &&
             scaleData
         ) {
@@ -1168,14 +1169,16 @@ export default function Chart(props: propsIF) {
                                 mousePlacement > limitLineValue - lineBuffer;
 
                             const isOnRangeMin =
-                                (location.pathname.includes('pool') ||
-                                    location.pathname.includes('reposition')) &&
+                                pathsToUpdateChart.some((path) =>
+                                    location.pathname.includes(path),
+                                ) &&
                                 mousePlacement < minRangeValue + lineBuffer &&
                                 mousePlacement > minRangeValue - lineBuffer;
 
                             const isOnRangeMax =
-                                (location.pathname.includes('pool') ||
-                                    location.pathname.includes('reposition')) &&
+                                pathsToUpdateChart.some((path) =>
+                                    location.pathname.includes(path),
+                                ) &&
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
@@ -1255,8 +1258,9 @@ export default function Chart(props: propsIF) {
                 changeScale(false);
 
                 if (
-                    location.pathname.includes('pool') ||
-                    location.pathname.includes('reposition')
+                    pathsToUpdateChart.some((path) =>
+                        location.pathname.includes(path),
+                    )
                 ) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
                         (liqData: LiquidityDataLocal) => liqData.liqPrices,
@@ -1336,8 +1340,9 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            (location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')) &&
+            pathsToUpdateChart.some((path) =>
+                location.pathname.includes(path),
+            ) &&
             advancedMode
         ) {
             if (chartTriggeredBy === '' || rescaleRangeBoundariesWithSlider) {
@@ -1677,7 +1682,11 @@ export default function Chart(props: propsIF) {
 
                         if (
                             !advancedMode ||
-                            location.pathname.includes('reposition')
+                            pathsToUpdateChart
+                                .filter((path) => path !== 'pool')
+                                .some((path) =>
+                                    location.pathname.includes(path),
+                                )
                         ) {
                             if (
                                 draggedValue === 0 ||
@@ -1937,7 +1946,11 @@ export default function Chart(props: propsIF) {
                     if (!cancelDrag) {
                         if (
                             (!advancedMode ||
-                                location.pathname.includes('reposition')) &&
+                                pathsToUpdateChart
+                                    .filter((path) => path !== 'pool')
+                                    .some((path) =>
+                                        location.pathname.includes(path),
+                                    )) &&
                             rangeWidthPercentage
                         ) {
                             setSimpleRangeWidth(
@@ -2194,8 +2207,9 @@ export default function Chart(props: propsIF) {
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
             ) {
                 if (dragRange && !isLineDrag) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
@@ -2407,7 +2421,12 @@ export default function Chart(props: propsIF) {
                 lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
             }
 
-            if (!advancedMode || location.pathname.includes('reposition')) {
+            if (
+                !advancedMode ||
+                pathsToUpdateChart
+                    .filter((path) => path !== 'pool')
+                    .some((path) => location.pathname.includes(path))
+            ) {
                 let rangeWidthPercentage;
                 let tickValue;
                 if (
@@ -4073,8 +4092,7 @@ export default function Chart(props: propsIF) {
         if (location.pathname.includes('limit')) {
             changeScaleLimit(isTriggeredByZoom);
         } else if (
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition')
+            pathsToUpdateChart.some((path) => location.pathname.includes(path))
         ) {
             changeScaleRangeOrReposition(isTriggeredByZoom);
         } else {
@@ -4108,15 +4126,16 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (!isLineDrag) {
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
             ) {
                 changeScaleRangeOrReposition(false);
             }
         }
     }, [
-        location.pathname.includes('pool') ||
-            location.pathname.includes('reposition'),
+        pathsToUpdateChart.some((path) => location.pathname.includes(path)),
+
         market,
         isLineDrag,
         minPrice,
@@ -4283,8 +4302,9 @@ export default function Chart(props: propsIF) {
                     // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
-                        (location.pathname.includes('pool') ||
-                            location.pathname.includes('reposition')) &&
+                        pathsToUpdateChart.some((path) =>
+                            location.pathname.includes(path),
+                        ) &&
                         scaleData !== undefined &&
                         !isHoverCandleOrVolumeData
                     ) {

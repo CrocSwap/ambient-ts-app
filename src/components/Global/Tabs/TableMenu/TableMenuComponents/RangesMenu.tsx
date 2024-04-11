@@ -71,6 +71,7 @@ function RangesMenu(props: propsIF) {
         setRangeTicksCopied,
         setSimpleRangeWidth,
         setCurrentRangeInReposition,
+        setCurrentRangeInEdit,
         setCurrentRangeInAdd,
         setAdvancedHighTick,
         setAdvancedLowTick,
@@ -206,7 +207,7 @@ function RangesMenu(props: propsIF) {
                         position.quote.toLowerCase(),
                     ),
                 );
-                setCurrentRangeInReposition(position.positionId);
+                setCurrentRangeInEdit(position.positionId);
                 setCurrentRangeInAdd('');
             }}
             state={{ position: position }}
