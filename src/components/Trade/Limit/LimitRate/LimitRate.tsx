@@ -225,13 +225,7 @@ export default function LimitRate(props: propsIF) {
             >
                 <p>Price</p>
             </FlexContainer>
-            <button
-                id='increase_limit_rate_button'
-                onClick={isSellTokenBase ? setTickToMinimum : setTickToMaximum}
-                aria-label='Set Limit to Top of Book.'
-            >
-                Top of Book
-            </button>
+
             <FlexContainer
                 animation={showOrderPulseAnimation ? 'pulse' : ''}
                 fullWidth
@@ -315,6 +309,13 @@ export default function LimitRate(props: propsIF) {
                     </LimitRateButton>
                 </LimitRateButtonContainer>
             </FlexContainer>
+            <button
+                id='increase_limit_rate_button'
+                onClick={isSellTokenBase ? setTickToMinimum : setTickToMaximum}
+                aria-label='Set Limit to Top of Book.'
+            >
+                Top of Book
+            </button>
         </FlexContainer>
     );
 }
