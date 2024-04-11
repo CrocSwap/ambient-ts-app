@@ -629,11 +629,15 @@ function Swap(props: propsIF) {
         </WarningContainer>
     ) : undefined;
 
+    const isButtonDisabled =
+        (!swapAllowed || sellQtyString === '' || buyQtyString === '') &&
+        areBothAckd;
+
     const priceImpactWarning =
         !isLiquidityInsufficient &&
         priceImpactNumMemo &&
         priceImpactNumMemo > 2 &&
-        !(swapButtonErrorMessage === 'Enter an Amount') ? (
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount') ? (
             <WarningContainer
                 flexDirection='row'
                 justifyContent='space-between'
@@ -658,12 +662,11 @@ function Swap(props: propsIF) {
                 <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
-
     const showWarning =
         (priceImpactNumMemo || 0) > 10 &&
         isTokenAWalletBalanceSufficient &&
         !isLiquidityInsufficient &&
-        !(swapButtonErrorMessage === 'Enter an Amount');
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount');
 
     const usdValueTokenA = isTokenABase
         ? poolData.basePrice
@@ -693,10 +696,6 @@ function Swap(props: propsIF) {
                 : 'Confirm'
             : swapButtonErrorMessage
         : 'Acknowledge';
-
-    const isButtonDisabled =
-        (!swapAllowed || sellQtyString === '' || buyQtyString === '') &&
-        areBothAckd;
 
     return (
         <TradeModuleSkeleton
