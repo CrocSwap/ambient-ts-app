@@ -31,6 +31,7 @@ interface propsIF {
     amountToReduceNativeTokenQty: number;
     isInitPage?: boolean | undefined;
     tokenDecimals?: number;
+    percentDiffUsdValue?: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -58,6 +59,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isInitPage,
         tokenDecimals,
         usdValue,
+        percentDiffUsdValue,
     } = props;
 
     const usdValueForDom =
@@ -133,6 +135,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                         ? ''
                         : usdValueForDom
                 }
+                percentDiffUsdValue={percentDiffUsdValue}
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
