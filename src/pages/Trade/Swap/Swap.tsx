@@ -156,10 +156,15 @@ function Swap(props: propsIF) {
         | undefined
     >();
 
-    const priceImpact = useMemo(
-        () => lastImpactQuery?.impact,
-        [JSON.stringify(lastImpactQuery)],
-    );
+    const priceImpact = useMemo(() => {
+        return lastImpactQuery ? lastImpactQuery.impact : undefined;
+    }, [lastImpactQuery]);
+
+    useEffect(() => {
+        if (primaryQuantity === '') {
+            setLastImpactQuery(undefined);
+        }
+    }, [primaryQuantity]);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -190,7 +195,7 @@ function Swap(props: propsIF) {
     >();
 
     useEffect(() => {
-        if (priceImpactNum) setPriceImpactNumMemo(priceImpactNum);
+        setPriceImpactNumMemo(priceImpactNum);
     }, [priceImpactNum]);
 
     const tokenASurplusMinusTokenARemainderNum =
@@ -624,10 +629,15 @@ function Swap(props: propsIF) {
         </WarningContainer>
     ) : undefined;
 
+    const isButtonDisabled =
+        (!swapAllowed || sellQtyString === '' || buyQtyString === '') &&
+        areBothAckd;
+
     const priceImpactWarning =
         !isLiquidityInsufficient &&
         priceImpactNumMemo &&
-        priceImpactNumMemo > 2 ? (
+        priceImpactNumMemo > 2 &&
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount') ? (
             <WarningContainer
                 flexDirection='row'
                 justifyContent='space-between'
@@ -652,11 +662,11 @@ function Swap(props: propsIF) {
                 <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
-
     const showWarning =
         (priceImpactNumMemo || 0) > 10 &&
         isTokenAWalletBalanceSufficient &&
-        !isLiquidityInsufficient;
+        !isLiquidityInsufficient &&
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount');
 
     const usdValueTokenA = isTokenABase
         ? poolData.basePrice
@@ -672,6 +682,20 @@ function Swap(props: propsIF) {
                   (usdValueTokenA * parseFloat(sellQtyString))) *
               100
             : 0;
+
+    const buttonTitle = areBothAckd
+        ? bypassConfirmSwap.isEnabled
+            ? swapAllowed
+                ? showWarning
+                    ? 'I understand the price impact of this swap. Submit anyway!'
+                    : 'Submit Swap'
+                : swapButtonErrorMessage
+            : swapAllowed
+            ? showWarning
+                ? 'I understand the price impact of this swap. Confirm anyway!'
+                : 'Confirm'
+            : swapButtonErrorMessage
+        : 'Acknowledge';
 
     return (
         <TradeModuleSkeleton
@@ -770,21 +794,7 @@ function Swap(props: propsIF) {
                 <Button
                     idForDOM='confirm_swap_button'
                     style={{ textTransform: 'none' }}
-                    title={
-                        areBothAckd
-                            ? bypassConfirmSwap.isEnabled
-                                ? swapAllowed
-                                    ? showWarning
-                                        ? 'I understand the price impact of this swap. Submit anyway!'
-                                        : 'Submit Swap'
-                                    : swapButtonErrorMessage
-                                : swapAllowed
-                                ? showWarning
-                                    ? 'I understand the price impact of this swap. Confirm anyway!'
-                                    : 'Confirm'
-                                : swapButtonErrorMessage
-                            : 'Acknowledge'
-                    }
+                    title={buttonTitle}
                     action={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -792,12 +802,7 @@ function Swap(props: propsIF) {
                                 : handleModalOpen
                             : ackAsNeeded
                     }
-                    disabled={
-                        (!swapAllowed ||
-                            sellQtyString === '' ||
-                            buyQtyString === '') &&
-                        areBothAckd
-                    }
+                    disabled={isButtonDisabled}
                     warning={showWarning}
                     flat
                 />

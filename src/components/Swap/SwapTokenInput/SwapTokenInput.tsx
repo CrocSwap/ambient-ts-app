@@ -105,9 +105,8 @@ function SwapTokenInput(props: propsIF) {
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const [lastInput, setLastInput] = useState<string | undefined>();
-
-    // Let input rest 3/4 of a second before triggering an update
-    const debouncedLastInput = useDebounce(lastInput, 750);
+    // Let input rest 1/5 of a second before triggering an update
+    const debouncedLastInput = useDebounce(lastInput, 200);
 
     const reverseTokens = (skipQuantityReverse?: boolean): void => {
         if (!isPoolInitialized) return;
