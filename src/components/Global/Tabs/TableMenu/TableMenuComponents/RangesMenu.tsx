@@ -312,7 +312,7 @@ function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {tableView !== 'small' && showRepositionButton && repositionButton}
+            {showRepositionButton && repositionButton}
             {tableView !== 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
@@ -325,7 +325,11 @@ function RangesMenu(props: propsIF) {
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
-            {IS_EDIT_ENABLED && userMatchesConnectedAccount ? editButton : null}
+            {IS_EDIT_ENABLED &&
+            !showRepositionButton &&
+            userMatchesConnectedAccount
+                ? editButton
+                : null}
         </div>
     );
 
@@ -342,10 +346,14 @@ function RangesMenu(props: propsIF) {
                 removeButton}
             {detailsButton}
             {!isAccountView && walletButton}
-            {tableView === 'small' && showRepositionButton && repositionButton}
             {!userMatchesConnectedAccount &&
                 tableView === 'small' &&
                 copyButton}
+            {IS_EDIT_ENABLED &&
+            showRepositionButton &&
+            userMatchesConnectedAccount
+                ? editButton
+                : null}
         </div>
     );
 
