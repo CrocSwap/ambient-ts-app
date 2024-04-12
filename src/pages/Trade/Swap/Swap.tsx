@@ -257,12 +257,24 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
+        if (isTokenAPrimary && isSellLoading) {
+            setIsSellLoading(false);
+        } else if (!isTokenAPrimary && isBuyLoading) {
+            setIsBuyLoading(false);
+        }
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
         if (
-            isNaN(parseFloat(sellQtyString)) ||
-            isNaN(parseFloat(buyQtyString)) ||
             (sellQtyString === '' && buyQtyString === '') ||
-            (isTokenAPrimary && parseFloat(sellQtyString) <= 0) ||
-            (!isTokenAPrimary && parseFloat(buyQtyString) <= 0)
+            (isTokenAPrimary &&
+                !isBuyLoading &&
+                (isNaN(parseFloat(sellQtyString)) ||
+                    parseFloat(sellQtyString) <= 0)) ||
+            (!isTokenAPrimary &&
+                !isSellLoading &&
+                (isNaN(parseFloat(buyQtyString)) ||
+                    parseFloat(buyQtyString) <= 0))
         ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
@@ -344,6 +356,18 @@ function Swap(props: propsIF) {
         activeTxHashInPendingTxs,
         isTokenAPrimary,
     ]);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            setIsBuyLoading(true);
+            setSwapButtonErrorMessage('...');
+            setBuyQtyString('');
+        } else {
+            setIsSellLoading(true);
+            setSwapButtonErrorMessage('...');
+            setSellQtyString('');
+        }
+    }, [tokenA.address + tokenB.address, isTokenAPrimary]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
@@ -486,10 +510,7 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const qty = isTokenAPrimary
-            ? sellQtyString.replaceAll(',', '')
-            : buyQtyString.replaceAll(',', '');
-
+        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
         const isQtySell = isTokenAPrimary;
 
         let tx;

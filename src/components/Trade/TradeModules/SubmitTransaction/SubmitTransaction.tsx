@@ -178,6 +178,7 @@ export default function SubmitTransaction(props: propsIF) {
         <FlexContainer flexDirection='column' gap={8}>
             <SubmitTransactionButton
                 onClick={() => setShowExtraInfo(!showExtraInfo)}
+                style={{ textTransform: 'none' }}
             >
                 <div>{animationDisplay}</div>
                 <div style={{ color: buttonColor }}>{buttonText}</div>
