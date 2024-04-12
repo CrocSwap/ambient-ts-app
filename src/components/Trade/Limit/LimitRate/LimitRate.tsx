@@ -122,6 +122,13 @@ export default function LimitRate(props: propsIF) {
         undefined,
     );
 
+    useEffect(() => {
+        setTopOfBookTickValue(undefined);
+        setOnePercentTickValue(undefined);
+        setFivePercentTickValue(undefined);
+        setTenPercentTickValue(undefined);
+    }, [tokenA.address + tokenB.address]);
+
     const willLimitFail = async (testLimitTick: number) => {
         try {
             if (!crocEnv) return;
