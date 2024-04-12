@@ -222,7 +222,6 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenA.decimals}
                 usdValue={usdValueTokenA}
             />
             {!hidePlus && (
@@ -263,7 +262,6 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenB.decimals}
                 isWithdraw
                 usdValue={usdValueTokenB}
             />
