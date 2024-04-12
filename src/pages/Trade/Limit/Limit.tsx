@@ -165,6 +165,16 @@ export default function Limit() {
         activeTxHash.current = '';
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            setLimitButtonErrorMessage('...');
+            setTokenBInputQty('');
+        } else {
+            setLimitButtonErrorMessage('...');
+            setTokenAInputQty('');
+        }
+    }, [tokenA.address + tokenB.address]);
+
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;

@@ -1,11 +1,12 @@
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { memo } from 'react';
-import { formatTokenInput } from '../../utils/numbers';
+import { formatTokenInput, stringToBigNumber } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
+import { BigNumber } from 'ethers';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -57,7 +58,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleRefresh,
         amountToReduceNativeTokenQty,
         isInitPage,
-        tokenDecimals,
         usdValue,
         percentDiffUsdValue,
     } = props;
@@ -73,6 +73,14 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
 
+    const walletBalanceBigNum = tokenBalance
+        ? stringToBigNumber(tokenBalance, token.decimals)
+        : BigNumber.from(0);
+
+    const dexBalanceBigNum = tokenDexBalance
+        ? stringToBigNumber(tokenDexBalance, token.decimals)
+        : BigNumber.from(0);
+
     const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
     const walletAndExchangeBalance =
         tokenBalance && tokenDexBalance
@@ -82,7 +90,25 @@ function TokenInputWithWalletBalance(props: propsIF) {
                   ).toString(),
               )
             : '...';
+    const walletAndExchangeBalanceBigNum =
+        walletBalanceBigNum.add(dexBalanceBigNum);
     const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
+    const balanceBigNum = !isDexSelected
+        ? walletBalanceBigNum
+        : walletAndExchangeBalanceBigNum;
+
+    const balanceBigNumString = balanceBigNum.toString();
+
+    // function to insert character at index from end of string
+    const insertCharAt = (str: string, index: number, char: string) =>
+        str.slice(0, -index) + char + str.slice(-index);
+
+    const balBigNumStringScaled = insertCharAt(
+        balanceBigNumString.padStart(token.decimals, '0'),
+        token.decimals,
+        '.',
+    );
+
     const balanceToDisplay = getFormattedNumber({
         value: parseFloat(balance) ?? undefined,
     });
@@ -91,10 +117,12 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
-            ? (parseFloat(balance) - 1e-12).toFixed(tokenDecimals)
+            ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
             : balance;
 
-    const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
+    const balanceWithBuffer = balance
+        ? subtractBuffer(balBigNumStringScaled)
+        : '...';
 
     const handleMaxButtonClick = () => {
         if (
