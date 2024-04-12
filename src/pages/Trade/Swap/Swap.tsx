@@ -257,6 +257,14 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
+        if (isTokenAPrimary && isSellLoading) {
+            setIsSellLoading(false);
+        } else if (!isTokenAPrimary && isBuyLoading) {
+            setIsBuyLoading(false);
+        }
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
         if (
             (sellQtyString === '' && buyQtyString === '') ||
             (isTokenAPrimary &&
