@@ -188,12 +188,7 @@ export const formatTokenInput = (
             nullDisplay: '',
         });
     // remove trailing zeros
-    return (
-        inputStr
-            // .toFixed(token.decimals)
-            .replace(/0+$/, '')
-            .replace(/\.$/, '')
-    );
+    return inputStr.replace(/0+$/, '').replace(/\.$/, '');
 };
 
 export function stringToBigNumber(tokenString: string, decimals: number) {

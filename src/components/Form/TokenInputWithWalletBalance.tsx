@@ -70,8 +70,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
               })
             : '';
 
-    const tokenDecimals = token.decimals;
-
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
 
@@ -107,7 +105,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     const balBigNumStringScaled = insertCharAt(
         balanceBigNumString.padStart(token.decimals, '0'),
-        tokenDecimals,
+        token.decimals,
         '.',
     );
 
@@ -119,7 +117,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
-            ? (parseFloat(balance) - 1e-12).toFixed(tokenDecimals)
+            ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
             : balance;
 
     const balanceWithBuffer = balance
