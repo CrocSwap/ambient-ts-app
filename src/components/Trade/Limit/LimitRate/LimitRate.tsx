@@ -303,7 +303,9 @@ export default function LimitRate(props: propsIF) {
     type presetValues = typeof balancedPresets[number];
 
     const limitTickMatchesPreset = (preset: number): boolean => {
-        if (preset === 0) {
+        if (limitTick === undefined) {
+            return false;
+        } else if (preset === 0) {
             return limitTick === topOfBookTickValue;
         } else if (preset === 1) {
             return limitTick === onePercentPresetTickValue;
