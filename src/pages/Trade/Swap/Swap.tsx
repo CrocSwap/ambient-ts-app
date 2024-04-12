@@ -486,10 +486,7 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const qty = isTokenAPrimary
-            ? sellQtyString.replaceAll(',', '')
-            : buyQtyString.replaceAll(',', '');
-
+        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
         const isQtySell = isTokenAPrimary;
 
         let tx;
