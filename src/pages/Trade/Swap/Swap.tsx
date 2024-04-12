@@ -258,11 +258,15 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         if (
-            isNaN(parseFloat(sellQtyString)) ||
-            isNaN(parseFloat(buyQtyString)) ||
             (sellQtyString === '' && buyQtyString === '') ||
-            (isTokenAPrimary && parseFloat(sellQtyString) <= 0) ||
-            (!isTokenAPrimary && parseFloat(buyQtyString) <= 0)
+            (isTokenAPrimary &&
+                !isBuyLoading &&
+                (isNaN(parseFloat(sellQtyString)) ||
+                    parseFloat(sellQtyString) <= 0)) ||
+            (!isTokenAPrimary &&
+                !isSellLoading &&
+                (isNaN(parseFloat(buyQtyString)) ||
+                    parseFloat(buyQtyString) <= 0))
         ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
@@ -344,6 +348,18 @@ function Swap(props: propsIF) {
         activeTxHashInPendingTxs,
         isTokenAPrimary,
     ]);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            setIsBuyLoading(true);
+            setSwapButtonErrorMessage('...');
+            setBuyQtyString('');
+        } else {
+            setIsSellLoading(true);
+            setSwapButtonErrorMessage('...');
+            setSellQtyString('');
+        }
+    }, [tokenA.address + tokenB.address]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
