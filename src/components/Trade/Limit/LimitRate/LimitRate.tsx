@@ -108,6 +108,15 @@ export default function LimitRate(props: propsIF) {
     const [topOfBookTickValue, setTopOfBookTickValue] = useState<
         number | undefined
     >();
+    const [onePercentPresetTickValue, setOnePercentTickValue] = useState<
+        number | undefined
+    >();
+    const [fivePercentPresetTickValue, setFivePercentTickValue] = useState<
+        number | undefined
+    >();
+    const [tenPercentPresetTickValue, setTenPercentTickValue] = useState<
+        number | undefined
+    >();
 
     const [selectedPreset, setSelectedPreset] = useState<number | undefined>(
         undefined,
@@ -159,6 +168,33 @@ export default function LimitRate(props: propsIF) {
             }
         })();
     }, [currentPoolPriceTick, isSellTokenBase, gridSize, selectedPreset]);
+
+    const updateLimitWithButton = (percent: number) => {
+        if (!currentPoolPriceTick) return;
+        const lowTick = currentPoolPriceTick - percent * 100;
+        const highTick = currentPoolPriceTick + percent * 100;
+        const pinnedTick: number = isSellTokenBase
+            ? pinTickToTickLower(lowTick, gridSize)
+            : pinTickToTickUpper(highTick, gridSize);
+
+        switch (percent) {
+            case 1:
+                setOnePercentTickValue(pinnedTick);
+                break;
+            case 5:
+                setFivePercentTickValue(pinnedTick);
+                break;
+            case 10:
+                setTenPercentTickValue(pinnedTick);
+                break;
+            default:
+                break;
+        }
+
+        setLimitTick(pinnedTick);
+        updateURL({ update: [['limitTick', pinnedTick]] });
+        setPriceInputFieldBlurred(true);
+    };
 
     const handleLimitChange = async (value: string) => {
         if (pool) {
@@ -263,8 +299,22 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred(true);
     };
 
-    const balancedPresets: number[] = [0];
+    const balancedPresets: number[] = [0, 1, 5, 10];
     type presetValues = typeof balancedPresets[number];
+
+    const limitTickMatchesPreset = (preset: number): boolean => {
+        if (preset === 0) {
+            return limitTick === topOfBookTickValue;
+        } else if (preset === 1) {
+            return limitTick === onePercentPresetTickValue;
+        } else if (preset === 5) {
+            return limitTick === fivePercentPresetTickValue;
+        } else if (preset === 10) {
+            return limitTick === tenPercentPresetTickValue;
+        } else {
+            return false;
+        }
+    };
 
     return (
         <FlexContainer flexDirection='column' gap={4}>
@@ -375,13 +425,16 @@ export default function LimitRate(props: propsIF) {
                             key={humanReadable}
                             id={`limit_rate_preset_${humanReadable}`}
                             variant={
-                                limitTick === topOfBookTickValue
+                                limitTickMatchesPreset(preset)
                                     ? 'filled'
                                     : 'secondary'
                             }
                             onClick={() => {
                                 if (preset === 0) {
                                     setSelectedPreset(0);
+                                } else if (preset) {
+                                    setSelectedPreset(preset);
+                                    updateLimitWithButton(preset);
                                 }
                             }}
                             aria-label={`Set limit rate to ${humanReadable}.`}
