@@ -12,7 +12,6 @@ import RepositionHeader from '../../../components/Trade/Reposition/RepositionHea
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import Range from '../Range/Range';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import RangeWidthControl from '../../../components/Global/RangeWidthControl/RangeWidthControl';
 import { RangeContext } from '../../../contexts/RangeContext';
 
 function EditLiquidity() {

@@ -21,7 +21,7 @@ import {
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { CrocReposition, toDisplayPrice } from '@crocswap-libs/sdk';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     GAS_DROPS_ESTIMATE_REPOSITION,
     GCGO_OVERRIDE_URL,
@@ -30,7 +30,6 @@ import {
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import useDebounce from '../../../App/hooks/useDebounce';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
@@ -65,9 +64,6 @@ export default function RangeWidthControl(props: PropsIF) {
         isActiveNetworkBlast,
         isActiveNetworkScroll,
     } = useContext(ChainDataContext);
-    // const { bypassConfirmRepo, repoSlippage } = useContext(
-    //     UserPreferenceContext,
-    // );
 
     const {
         simpleRangeWidth,
@@ -130,7 +126,7 @@ export default function RangeWidthControl(props: PropsIF) {
             setCurrentRangeInReposition(position.positionId);
         }
     }, [position]);
-
+    // eslint-disable-next-line
     const [concLiq, setConcLiq] = useState<string>('');
 
     const updateConcLiq = async () => {
@@ -363,17 +359,6 @@ export default function RangeWidthControl(props: PropsIF) {
         }
     }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
 
-    function mintArgsForReposition(
-        lowTick: number,
-        highTick: number,
-    ): 'ambient' | [number, number] {
-        if (lowTick === 0 && highTick === 0) {
-            return 'ambient';
-        } else {
-            return [lowTick, highTick];
-        }
-    }
-
     const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -493,8 +478,9 @@ export default function RangeWidthControl(props: PropsIF) {
     useEffect(() => {
         fetchCurrentCollateral();
     }, [lastBlockNumber, JSON.stringify(position), !!crocEnv, !!provider]);
-
+    // eslint-disable-next-line
     const [newBaseQtyNum, setNewBaseQtyNum] = useState<number | undefined>();
+    // eslint-disable-next-line
     const [newQuoteQtyNum, setNewQuoteQtyNum] = useState<number | undefined>();
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
@@ -589,82 +575,6 @@ export default function RangeWidthControl(props: PropsIF) {
         basePrice,
         quotePrice,
     ]);
-
-    const debouncedLowTick = useDebounce(pinnedLowTick, 500);
-    const debouncedHighTick = useDebounce(pinnedHighTick, 500);
-
-    // const pinnedMinPriceDisplayTruncatedInBase = useMemo(
-    //     () =>
-    //         getPinnedPriceValuesFromTicks(
-    //             true,
-    //             baseTokenDecimals,
-    //             quoteTokenDecimals,
-    //             debouncedLowTick,
-    //             debouncedHighTick,
-    //             lookupChain(position.chainId).gridSize,
-    //         ).pinnedMinPriceDisplayTruncated,
-    //     [
-    //         baseTokenDecimals,
-    //         quoteTokenDecimals,
-    //         debouncedLowTick,
-    //         debouncedHighTick,
-    //     ],
-    // );
-
-    // const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
-    //     () =>
-    //         getPinnedPriceValuesFromTicks(
-    //             false,
-    //             baseTokenDecimals,
-    //             quoteTokenDecimals,
-    //             debouncedLowTick,
-    //             debouncedHighTick,
-    //             lookupChain(position.chainId).gridSize,
-    //         ).pinnedMinPriceDisplayTruncated,
-    //     [
-    //         baseTokenDecimals,
-    //         quoteTokenDecimals,
-    //         debouncedLowTick,
-    //         debouncedHighTick,
-    //     ],
-    // );
-
-    // const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
-    //     () =>
-    //         getPinnedPriceValuesFromTicks(
-    //             true,
-    //             baseTokenDecimals,
-    //             quoteTokenDecimals,
-    //             debouncedLowTick,
-    //             debouncedHighTick,
-    //             lookupChain(position.chainId).gridSize,
-    //         ).pinnedMaxPriceDisplayTruncated,
-    //     [
-    //         baseTokenDecimals,
-    //         quoteTokenDecimals,
-    //         debouncedLowTick,
-    //         debouncedHighTick,
-    //     ],
-    // );
-
-    // const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
-    //     () =>
-    //         getPinnedPriceValuesFromTicks(
-    //             false,
-    //             baseTokenDecimals,
-    //             quoteTokenDecimals,
-    //             debouncedLowTick,
-    //             debouncedHighTick,
-    //             lookupChain(position.chainId).gridSize,
-    //         ).pinnedMaxPriceDisplayTruncated,
-    //     [
-    //         baseTokenDecimals,
-    //         quoteTokenDecimals,
-    //         debouncedLowTick,
-    //         debouncedHighTick,
-    //     ],
-    // );
-    // CHANGE FOR EDIT
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
