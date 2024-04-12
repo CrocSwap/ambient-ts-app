@@ -110,20 +110,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
         tokenDecimals,
         '.',
     );
-    // useEffect(() => {
-    //     console.log({
-    //         tokenBalance,
-    //         balanceBigNumString,
-    //         balBigNumStringScaled,
-    //         token,
-    //         amountToReduceNativeTokenQty,
-    //     });
-    // }, [
-    //     balanceBigNumString,
-    //     balBigNumStringScaled,
-    //     token,
-    //     amountToReduceNativeTokenQty,
-    // ]);
 
     const balanceToDisplay = getFormattedNumber({
         value: parseFloat(balance) ?? undefined,
@@ -134,9 +120,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
             ? (parseFloat(balance) - 1e-12).toFixed(tokenDecimals)
-            : // : tokenDecimals > 15
-              // ? (parseFloat(balance) - 1e-15).toFixed(tokenDecimals)
-              balance;
+            : balance;
 
     const balanceWithBuffer = balance
         ? subtractBuffer(balBigNumStringScaled)

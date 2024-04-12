@@ -494,8 +494,6 @@ function Swap(props: propsIF) {
             const sellTokenAddress = tokenA.address;
             const buyTokenAddress = tokenB.address;
 
-            console.log({ qty });
-
             tx = await performSwap({
                 crocEnv,
                 isQtySell,
