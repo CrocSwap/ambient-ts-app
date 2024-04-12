@@ -367,7 +367,7 @@ function Swap(props: propsIF) {
             setSwapButtonErrorMessage('...');
             setSellQtyString('');
         }
-    }, [tokenA.address + tokenB.address]);
+    }, [tokenA.address + tokenB.address, isTokenAPrimary]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
