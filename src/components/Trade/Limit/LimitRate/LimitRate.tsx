@@ -1,5 +1,12 @@
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
+import {
+    ChangeEvent,
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -18,6 +25,14 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../../../ambient-utils/dataLayer/functions/pinTick';
+import { ExplanationButton } from '../../../Form/Icons/Icons.styles';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { Chip } from '../../../Form/Chip';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -42,6 +57,7 @@ export default function LimitRate(props: propsIF) {
 
     const {
         chainData: { gridSize },
+        crocEnv,
     } = useContext(CrocEnvContext);
     const { pool, usdPriceInverse, isTradeDollarizationEnabled, poolData } =
         useContext(PoolContext);
@@ -54,11 +70,16 @@ export default function LimitRate(props: propsIF) {
         isDenomBase,
         setLimitTick,
         limitTick,
+        isTokenAPrimary,
         setIsTokenAPrimary,
         tokenA,
         tokenB,
         isTokenABase: isBid,
+        currentPoolPriceTick,
     } = useContext(TradeDataContext);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
     const { basePrice, quotePrice, poolPriceDisplay } = poolData;
 
     const side =
@@ -66,6 +87,7 @@ export default function LimitRate(props: propsIF) {
 
     const increaseTick = (): void => {
         if (limitTick !== undefined) {
+            setSelectedPreset(undefined);
             const newLimitTick: number = limitTick + gridSize;
             setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
@@ -75,11 +97,110 @@ export default function LimitRate(props: propsIF) {
 
     const decreaseTick = (): void => {
         if (limitTick !== undefined) {
+            setSelectedPreset(undefined);
             const newLimitTick: number = limitTick - gridSize;
             setLimitTick(newLimitTick);
             updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
+    };
+
+    const [topOfBookTickValue, setTopOfBookTickValue] = useState<
+        number | undefined
+    >();
+    const [onePercentPresetTickValue, setOnePercentTickValue] = useState<
+        number | undefined
+    >();
+    const [fivePercentPresetTickValue, setFivePercentTickValue] = useState<
+        number | undefined
+    >();
+    const [tenPercentPresetTickValue, setTenPercentTickValue] = useState<
+        number | undefined
+    >();
+
+    const [selectedPreset, setSelectedPreset] = useState<number | undefined>(
+        undefined,
+    );
+
+    useEffect(() => {
+        setTopOfBookTickValue(undefined);
+        setOnePercentTickValue(undefined);
+        setFivePercentTickValue(undefined);
+        setTenPercentTickValue(undefined);
+    }, [tokenA.address + tokenB.address]);
+
+    const willLimitFail = async (testLimitTick: number) => {
+        try {
+            if (!crocEnv) return;
+
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tokenA.address, 0)
+                : crocEnv.buy(tokenB.address, 0);
+
+            const ko = testOrder.atLimit(
+                isTokenAPrimary ? tokenB.address : tokenA.address,
+                testLimitTick,
+            );
+
+            if (await ko.willMintFail()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        (async () => {
+            if (currentPoolPriceTick !== undefined) {
+                let newTopOfBookLimit = isSellTokenBase
+                    ? pinTickToTickLower(currentPoolPriceTick, gridSize) -
+                      gridSize
+                    : pinTickToTickUpper(currentPoolPriceTick, gridSize) +
+                      gridSize;
+                const willFail = await willLimitFail(newTopOfBookLimit);
+                if (willFail) {
+                    newTopOfBookLimit = isSellTokenBase
+                        ? newTopOfBookLimit - gridSize
+                        : newTopOfBookLimit + gridSize;
+                }
+                setTopOfBookTickValue(newTopOfBookLimit);
+                if (selectedPreset === 0) {
+                    setLimitTick(topOfBookTickValue);
+                    updateURL({ update: [['limitTick', newTopOfBookLimit]] });
+                    setPriceInputFieldBlurred(true);
+                }
+            }
+        })();
+    }, [currentPoolPriceTick, isSellTokenBase, gridSize, selectedPreset]);
+
+    const updateLimitWithButton = (percent: number) => {
+        if (!currentPoolPriceTick) return;
+        const lowTick = currentPoolPriceTick - percent * 100;
+        const highTick = currentPoolPriceTick + percent * 100;
+        const pinnedTick: number = isSellTokenBase
+            ? pinTickToTickLower(lowTick, gridSize)
+            : pinTickToTickUpper(highTick, gridSize);
+
+        switch (percent) {
+            case 1:
+                setOnePercentTickValue(pinnedTick);
+                break;
+            case 5:
+                setFivePercentTickValue(pinnedTick);
+                break;
+            case 10:
+                setTenPercentTickValue(pinnedTick);
+                break;
+            default:
+                break;
+        }
+
+        setLimitTick(pinnedTick);
+        updateURL({ update: [['limitTick', pinnedTick]] });
+        setPriceInputFieldBlurred(true);
     };
 
     const handleLimitChange = async (value: string) => {
@@ -134,6 +255,7 @@ export default function LimitRate(props: propsIF) {
 
     const handleOnChange = (input: string) => {
         if (!isValidLimitInputString(input)) return;
+        setSelectedPreset(undefined);
         setDisplayPrice(input);
     };
 
@@ -184,6 +306,25 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred(true);
     };
 
+    const balancedPresets: number[] = [0, 1, 5, 10];
+    type presetValues = typeof balancedPresets[number];
+
+    const limitTickMatchesPreset = (preset: number): boolean => {
+        if (limitTick === undefined) {
+            return false;
+        } else if (preset === 0) {
+            return limitTick === topOfBookTickValue;
+        } else if (preset === 1) {
+            return limitTick === onePercentPresetTickValue;
+        } else if (preset === 5) {
+            return limitTick === fivePercentPresetTickValue;
+        } else if (preset === 10) {
+            return limitTick === tenPercentPresetTickValue;
+        } else {
+            return false;
+        }
+    };
+
     return (
         <FlexContainer flexDirection='column' gap={4}>
             <FlexContainer
@@ -194,6 +335,7 @@ export default function LimitRate(props: propsIF) {
             >
                 <p>Price</p>
             </FlexContainer>
+
             <FlexContainer
                 animation={showOrderPulseAnimation ? 'pulse' : ''}
                 fullWidth
@@ -276,6 +418,64 @@ export default function LimitRate(props: propsIF) {
                         <HiMinus />
                     </LimitRateButton>
                 </LimitRateButtonContainer>
+            </FlexContainer>
+            <FlexContainer
+                fullWidth
+                wrap
+                alignItems='center'
+                gap={10}
+                padding='8px 0 0 8px'
+            >
+                {balancedPresets.map((preset: presetValues) => {
+                    const humanReadable: string =
+                        preset === 0 ? 'Top of Book' : preset.toString() + '%';
+                    return (
+                        <Chip
+                            key={humanReadable}
+                            id={`limit_rate_preset_${humanReadable}`}
+                            variant={
+                                limitTickMatchesPreset(preset)
+                                    ? 'filled'
+                                    : 'secondary'
+                            }
+                            onClick={() => {
+                                if (preset === 0) {
+                                    setSelectedPreset(0);
+                                } else if (preset) {
+                                    setSelectedPreset(preset);
+                                    updateLimitWithButton(preset);
+                                }
+                            }}
+                            aria-label={`Set limit rate to ${humanReadable}.`}
+                        >
+                            {humanReadable}
+                        </Chip>
+                    );
+                })}
+                <ExplanationButton
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>
+                                The price you specify is the pool price at which
+                                your limit order will be completely filled and
+                                claimable. The Top of Book preset will pin the
+                                limit price as close as possible to the current
+                                pool price, reducing the expected fill time for
+                                a successfully created limit order, but
+                                increasing the chances your limit order creation
+                                will fail should the pool price move toward your
+                                limit price during your transaction. You can
+                                remove an unfilled or partially filled limit
+                                order at any time before fill completion.
+                            </div>,
+                            'Limit Price',
+                            'right',
+                        )
+                    }
+                    aria-label='Open limit rate explanation popup.'
+                >
+                    <AiOutlineInfoCircle color='var(--text2)' />
+                </ExplanationButton>
             </FlexContainer>
         </FlexContainer>
     );
