@@ -33,7 +33,6 @@ interface propsIF {
     rangeDetailsProps: any;
     position: PositionIF;
     isPositionEmpty: boolean;
-    isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
     isAccountView: boolean;
@@ -48,7 +47,6 @@ function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        isEmpty,
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
@@ -280,9 +278,9 @@ function RangesMenu(props: propsIF) {
                 addButton}
             {(tableView === 'large' ||
                 (!showRepositionButton && tableView !== 'small')) &&
-                !isEmpty &&
+                !isPositionEmpty &&
                 removeButton}
-            {tableView === 'large' && !isEmpty && harvestButton}
+            {tableView === 'large' && !isPositionEmpty && harvestButton}
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
@@ -295,10 +293,10 @@ function RangesMenu(props: propsIF) {
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {tableView !== 'large' && !isEmpty && harvestButton}
+            {tableView !== 'large' && !isPositionEmpty && harvestButton}
             {(tableView === 'small' ||
                 (showRepositionButton && tableView !== 'large')) &&
-                !isEmpty &&
+                !isPositionEmpty &&
                 removeButton}
             {detailsButton}
             {!isAccountView && walletButton}
