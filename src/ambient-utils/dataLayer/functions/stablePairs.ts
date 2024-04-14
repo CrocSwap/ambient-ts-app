@@ -27,6 +27,7 @@ import {
     blastEzETH,
     mainnetSWETH,
     scrollWrsETH,
+    blastWrsETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -100,6 +101,7 @@ export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     scrollWstETH.address,
     scrollWrsETH.address,
+    blastWrsETH.address,
     blastEzETH.address,
     mainnetSWETH.address,
 ].map((x) => x.toLowerCase());
