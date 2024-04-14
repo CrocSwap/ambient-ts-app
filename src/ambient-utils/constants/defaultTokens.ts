@@ -165,6 +165,15 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
+export const blastWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
+};
+
 export const blastEzETH: TokenIF = {
     name: 'Renzo Restaked ETH',
     address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
