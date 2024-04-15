@@ -94,25 +94,19 @@ export const formatURL = (url: string) => {
 };
 
 export const isValidUrl = (urlString: string) => {
-    // Correct the format if it starts with "https:" followed directly by a domain name
-    let formattedUrlString = urlString;
+    let formattedUrlString = urlString.toLowerCase();
     if (
         formattedUrlString.startsWith('https:') &&
         !formattedUrlString.startsWith('https://')
     ) {
         formattedUrlString = formattedUrlString.replace('https:', 'https://');
     }
-
-    // Check for obviously incorrect protocols or malformed URLs
     if (
         formattedUrlString.includes(':') &&
         !formattedUrlString.match(/^https?:\/\/.*/)
     ) {
         return false;
     }
-
-    // Prepend 'https://' to strings that don't start with 'http://' or 'https://'
-    // This is to handle cases like 'twitter.com' where the protocol is missing
     if (
         !formattedUrlString.startsWith('http://') &&
         !formattedUrlString.startsWith('https://')
@@ -121,42 +115,52 @@ export const isValidUrl = (urlString: string) => {
     }
 
     try {
-        // Attempt to parse the URL
-
-        // Further validation can be added here if necessary
         return true;
     } catch (e) {
-        // Parsing failed, so it's not a valid URL
         return false;
     }
 };
 
-export const isLinkInCrocodileLabsLinks = (word: string) => {
-    const wordDomain = word
-        .replace(/^https?:\/\/(www\.)?/, '')
-        .split('/')[0]
-        .toLowerCase(); // Normalize by removing scheme and 'www.', then get the domain part, ensure lowercase for comparison.
+export function isLinkInCrocodileLabsLinks(input: string) {
+    let hostname = input.toLowerCase();
 
-    return CROCODILE_LABS_LINKS.some((link: string) => {
-        const linkUrl = new URL(link);
-        const linkDomain = linkUrl.hostname.replace(/^www\./, '').toLowerCase(); // Remove 'www.' prefix if present and ensure lowercase.
-        return linkDomain === wordDomain;
-    });
-};
+    if (input.includes('://')) {
+        try {
+            const inputUrl = new URL(input);
+            hostname = inputUrl.hostname;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    const hostnameParts = hostname.split(/[.,:?#]+/).filter(Boolean);
+
+    for (const link of CROCODILE_LABS_LINKS) {
+        const domain = new URL(link).hostname.toLowerCase();
+        const domainParts = domain.split(/[.,:?#]+/).filter(Boolean);
+
+        if (domainParts.every((part, index) => hostnameParts[index] === part)) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
     try {
         const normalizedWord = word.startsWith('http')
             ? word
             : `https://${word}`;
+        normalizedWord.toLowerCase();
         const wordUrl = new URL(normalizedWord);
-        const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase(); // Normalize by removing 'www.' and ensure lowercase.
+        const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase();
 
         return CROCODILE_LABS_LINKS.some((link) => {
             const linkUrl = new URL(link);
             const linkDomain = linkUrl.hostname
                 .replace(/^www\./, '')
-                .toLowerCase(); // Also remove 'www.' from the link domain.
+                .toLowerCase();
             return wordDomain === linkDomain;
         });
     } catch (error) {

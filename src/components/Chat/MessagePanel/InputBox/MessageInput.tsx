@@ -25,7 +25,9 @@ import {
     filterMessage,
     formatURL,
     isLinkInCrocodileLabsLinksForInput,
+    isLinkInCrocodileLabsLinks,
 } from '../../ChatUtils';
+import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 
 interface MessageInputProps {
     currentUser: string;
@@ -101,7 +103,6 @@ export default function MessageInput(props: MessageInputProps) {
 
             const selectionStart = inputRef.current.selectionStart as number;
 
-            // Create the new message by inserting the emoji at the selection start position
             const newMessage =
                 currentMessage.slice(0, selectionStart) +
                 emoji +
@@ -111,17 +112,14 @@ export default function MessageInput(props: MessageInputProps) {
                 setMessage(newMessage);
                 setInputLength(newMessage.length);
 
-                // Calculate the new cursor position after emoji insertion
                 const newCursorPosition = selectionStart + emoji.length;
 
-                // Update the input value and set the cursor position
                 inputRef.current.value = newMessage;
                 inputRef.current.setSelectionRange(
                     newCursorPosition,
                     newCursorPosition,
                 );
 
-                // Ensure the cursor remains active by focusing on the input element
                 inputRef.current.focus();
             } else {
                 props.setShowPopUp(true);
@@ -182,29 +180,27 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMessageButton = () => {
         if (message === '') {
-            return; // Do nothing if the message is empty
+            return;
         }
-
-        // Split the message by spaces to get individual words or URLs
         const parts = message.split(/\s+/);
 
-        // Check each part of the message to see if it's an allowed URL or not
         const containsBlockedLink = parts.some((part) => {
-            const normalizedPart = formatURL(part); // Normalize URLs for consistency
+            const normalizedPart = formatURL(part);
             return (
                 (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
                 !isLinkInCrocodileLabsLinksForInput(normalizedPart)
             );
         });
 
-        if (containsBlockedLink) {
-            // If any part of the message contains a blocked URL, show a pop-up and block the message
+        const containsAllowedLink = parts.some((part) => {
+            const normalizedPart = formatURL(part);
+            return isLinkInCrocodileLabsLinks(normalizedPart);
+        });
+        if (containsBlockedLink && !containsAllowedLink) {
             props.setShowPopUp(true);
             props.setPopUpText('You cannot send this link.');
         } else {
-            // If all URLs are allowed (or there are no URLs), proceed with sending the message
-            handleSendMsg(formatURL(message), roomId); // Adjust as necessary to match your send message function signature
-            // Resetting message and UI state as per your existing logic
+            handleSendMsg(formatURL(message), roomId);
             setMessage('');
             setMentUser(null);
             setPossibleMentUser(null);
@@ -233,15 +229,12 @@ export default function MessageInput(props: MessageInputProps) {
         setInputLength(newMessage.length);
         setCursorPosition(e.currentTarget.selectionStart);
 
-        // Check if the message length is less than or equal to 140 characters,
-        // and hide the pop-up message if it was shown previously
         if (newMessage.length <= 140) {
             props.setShowPopUp(false);
         }
     };
 
     const handleInputClick = () => {
-        // Update cursor position when the user clicks inside the input field
         if (inputRef.current) {
             setCursorPosition(inputRef.current.selectionStart);
         }
@@ -265,8 +258,6 @@ export default function MessageInput(props: MessageInputProps) {
     // };
 
     const isEmoji = (char: string) => {
-        // You can implement a more comprehensive check for emojis
-        // For simplicity, this example only checks for surrogate pairs
         return /[\uD800-\uDFFF]/.test(char);
     };
 
@@ -281,29 +272,29 @@ export default function MessageInput(props: MessageInputProps) {
         }
         if (e.key === 'Enter') {
             if (message === '') {
-                return; // Do nothing if the message is empty
+                return;
             }
 
-            // Split the message by spaces to get individual words or URLs
             const parts = message.split(/\s+/);
 
-            // Check each part of the message to see if it's an allowed URL or not
             const containsBlockedLink = parts.some((part) => {
-                const normalizedPart = formatURL(part); // Normalize URLs for consistency
+                const normalizedPart = formatURL(part);
+
                 return (
                     (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
                     !isLinkInCrocodileLabsLinksForInput(normalizedPart)
                 );
             });
 
-            if (containsBlockedLink) {
-                // If any part of the message contains a blocked URL, show a pop-up and block the message
+            const containsAllowedLink = parts.some((part) => {
+                const normalizedPart = formatURL(part);
+                return isLinkInCrocodileLabsLinks(normalizedPart);
+            });
+            if (containsBlockedLink && !containsAllowedLink) {
                 props.setShowPopUp(true);
                 props.setPopUpText('You cannot send this link.');
             } else {
-                // If all URLs are allowed (or there are no URLs), proceed with sending the message
-                handleSendMsg(formatURL(message), roomId); // Adjust as necessary to match your send message function signature
-                // Resetting message and UI state as per your existing logic
+                handleSendMsg(formatURL(message), roomId);
                 setMessage('');
                 setMentUser(null);
                 setPossibleMentUser(null);
