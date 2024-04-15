@@ -11810,10 +11810,10 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
-modern-screenshot@^4.4.25:
-  version "4.4.25"
-  resolved "https://registry.npmjs.org/modern-screenshot/-/modern-screenshot-4.4.25.tgz"
-  integrity sha512-4w6T8NveojRlmpyni6sQcAF0SgdLpNwTkr+G4EXTNCflvP2V/KAaahlCVoCcx55JIDvB6mY6WJaQGqGF3DbkpQ==
+modern-screenshot@^4.4.39:
+  version "4.4.39"
+  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.4.39.tgz#4c8b7a9ecb899e68b6d4111abfa71043f326847a"
+  integrity sha512-p+I4yLZUDnoJMa5zoi+71nLQmoLQ6WRU4W8vZu1BZk2PlIYOz5mGnj9/7t2lGWKYeOr4zo6pajhY0/9TS5Zcdw==
 
 moment@^2.29.4:
   version "2.29.4"
