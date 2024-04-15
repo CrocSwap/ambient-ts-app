@@ -111,7 +111,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         const userRegister = async () => {
             if (userAddress && ensName) {
                 const userId = await saveUser(userAddress, ensName);
-                console.log('userId', userId);
                 setUserId(userId.userData._id);
             }
         };
@@ -184,8 +183,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }
 
     async function handleNftSelection() {
-        console.log('selectedNft', selectedNft);
-        console.log('userId', userId);
         if (selectedNft) {
             if (userId !== undefined) {
                 updateUserWithAvatarImage(userId, selectedNft.originalUrl);

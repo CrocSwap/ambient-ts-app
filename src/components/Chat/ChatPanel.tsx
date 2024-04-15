@@ -61,11 +61,7 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
-    const {
-        userAddress,
-        ensName: ens,
-        userAccountProfile,
-    } = useContext(UserDataContext);
+    const { userAddress, ensName: ens } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -183,7 +179,6 @@ function ChatPanel(props: propsIF) {
         getUserSummaryDetails,
         updateUnverifiedMessages,
         // saveUserWithAvatarImage,
-        updateUserWithAvatarImage,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
@@ -196,13 +191,7 @@ function ChatPanel(props: propsIF) {
         activatePanel,
     );
 
-    const {
-        getID,
-        updateUser,
-        updateMessageUser,
-        saveUser,
-        getUserAvatarImageAndID,
-    } = useChatApi();
+    const { getID, updateUser, updateMessageUser } = useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
@@ -320,6 +309,12 @@ function ChatPanel(props: propsIF) {
     }, [userAddress, room, isChatOpen]);
 
     useEffect(() => {
+        if (
+            lastScrolledMessage == undefined ||
+            lastScrolledMessage.length === 0
+        ) {
+            scrollToBottom();
+        }
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
                 if (
@@ -441,7 +436,6 @@ function ChatPanel(props: propsIF) {
             // messageEnd.current.scrollTop = messageEnd.current.scrollHeight - msgElOffsetTop + msgElHeight - messageEnd.current.getBoundingClientRect().height;
             setTimeout(() => {
                 const target = calculateScrollTarget(messageId);
-                domDebug('target', new Date().getTime());
                 if (messageEnd && messageEnd.current) {
                     messageEnd.current.scrollTop = target;
                     if (flashAnimation) {
@@ -478,7 +472,6 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen]);
 
     useEffect(() => {
-        domDebug('messages', messages.length);
         const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == userAddress;
         });
@@ -576,7 +569,6 @@ function ChatPanel(props: propsIF) {
             if (msgEl) {
                 const msgElOffsetTop = (msgEl as HTMLElement).offsetTop;
                 const target = msgElOffsetTop - 120;
-                domDebug('potential scroll target', target);
 
                 return target;
             }
@@ -598,14 +590,6 @@ function ChatPanel(props: propsIF) {
                 if (el.getBoundingClientRect().top > rect.top) {
                     const msgId = el.getAttribute('data-message-id');
                     const msgContent = el.getAttribute('data-message-content');
-                    domDebug('selected message', msgContent ? msgContent : '-');
-                    domDebug('selectedMsgOffet', (el as HTMLElement).offsetTop);
-                    domDebug(
-                        'panelHeight',
-                        messageEnd.current.getBoundingClientRect().height,
-                    );
-                    domDebug('scrollheight', messageEnd.current.scrollHeight);
-                    domDebug('panelScrollTop', messageEnd.current.scrollTop);
                     calculateScrollTarget(msgId ? msgId : '');
                     setLastScrolledMessage(msgId ? msgId : '');
                     break;
@@ -627,6 +611,7 @@ function ChatPanel(props: propsIF) {
                     handleFocusedMessageOnScroll();
                 } else {
                     domDebug('selected message', '');
+                    setLastScrolledMessage('');
 
                     // setLastScrolledMessage('');
                 }

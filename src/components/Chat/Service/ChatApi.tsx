@@ -95,6 +95,8 @@ const useChatApi = () => {
         ensName: string,
         userCurrentPool: string,
     ) {
+        if (!_id) return;
+
         const response = await fetch(host + '/chat/api/auth/updateUser', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -195,7 +197,7 @@ const useChatApi = () => {
         if (walletID && walletID.length > 0) {
             if (userAddress) {
                 const response = await fetch(
-                    getUserAvatarEndpoint + '/' + walletID,
+                    CHAT_BACKEND_URL + getUserAvatarEndpoint + '/' + walletID,
                     {
                         method: 'GET',
                     },

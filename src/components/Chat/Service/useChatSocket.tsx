@@ -64,6 +64,8 @@ const useChatSocket = (
     );
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
+    const roomRef = useRef<string>(room);
+
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
 
@@ -88,16 +90,10 @@ const useChatSocket = (
         // fromSocketIO: true,
         queryParams: { ...queryParams },
         shouldReconnect: () => true,
-        onOpen: (e) => {
-            console.log('connected');
-            console.log(e);
-            console.log('................................');
+        onOpen: () => {
             domDebug('connected', getTimeForLog(new Date()));
         },
-        onClose: (e) => {
-            console.log('closed');
-            console.log(e);
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        onClose: () => {
             domDebug('disconnected', getTimeForLog(new Date()));
         },
     });
@@ -111,6 +107,8 @@ const useChatSocket = (
     useEffect(() => {
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
+                console.log(socketLastMessage.payload);
+                console.log('.........................');
                 newMsgListener(socketLastMessage.payload);
                 break;
             case 'message-deleted-listener':
@@ -135,6 +133,8 @@ const useChatSocket = (
     }
 
     async function getMsgWithRest(roomInfo: string) {
+        if (roomInfo == undefined || roomInfo == '') return;
+
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
@@ -360,6 +360,7 @@ const useChatSocket = (
     }
 
     useEffect(() => {
+        if (!isChatOpen) return;
         async function checkVerified() {
             const data = await isUserVerified();
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
@@ -397,6 +398,12 @@ const useChatSocket = (
 
         getRest();
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
+
+    useEffect(() => {
+        domDebug('room changed', room);
+        sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
+        roomRef.current = room;
+    }, [room]);
 
     useEffect(() => {
         updateUserCache();
@@ -549,8 +556,6 @@ const useChatSocket = (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function userListLightUpdate(data: any) {
-        console.log('light update ');
-        console.log(data);
         const newUsersList: User[] = [];
 
         let refreshMessages = false;
@@ -560,9 +565,6 @@ const useChatSocket = (
                 refreshMessages = true;
             }
         });
-
-        console.log(newUsersList);
-        console.log(refreshMessages);
 
         if (!refreshMessages) return;
 
@@ -578,6 +580,7 @@ const useChatSocket = (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newMsgListener = (data: any) => {
+        if (data.roomInfo !== room && room != 'Admins') return;
         if (
             data &&
             data.sender &&

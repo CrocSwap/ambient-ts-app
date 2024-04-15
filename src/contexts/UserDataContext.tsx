@@ -60,7 +60,7 @@ export const UserDataContextProvider = (props: {
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
     const { disconnect: disconnectUser } = useDisconnect();
 
-    const { getUserAvatarImageAndID } = useChatApi();
+    const { getUserAvatar } = useChatApi();
 
     const {
         connect: connectUser,
@@ -112,7 +112,7 @@ export const UserDataContextProvider = (props: {
             if (userAddress) {
                 try {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    getUserAvatarImageAndID(userAddress).then((result: any) => {
+                    getUserAvatar(userAddress).then((result: any) => {
                         if (result.status === 'OK') {
                             setUserAccountProfile(
                                 () => result.userData.avatarImage,
