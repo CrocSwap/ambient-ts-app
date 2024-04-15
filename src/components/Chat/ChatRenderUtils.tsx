@@ -5,7 +5,7 @@ import { User } from './Model/UserModel';
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import styles from './ChatRenderUtils.module.css';
-import { AiOutlineEdit, AiOutlineFileImage } from 'react-icons/ai';
+import { AiOutlineFileImage } from 'react-icons/ai';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (

@@ -589,7 +589,6 @@ function ChatPanel(props: propsIF) {
                 const el = bubbles[i];
                 if (el.getBoundingClientRect().top > rect.top) {
                     const msgId = el.getAttribute('data-message-id');
-                    const msgContent = el.getAttribute('data-message-content');
                     calculateScrollTarget(msgId ? msgId : '');
                     setLastScrolledMessage(msgId ? msgId : '');
                     break;
