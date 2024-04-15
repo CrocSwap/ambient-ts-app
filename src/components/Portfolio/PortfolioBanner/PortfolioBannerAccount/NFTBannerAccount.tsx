@@ -15,6 +15,11 @@ import {
     SaveButton,
     NFTImg,
     CheckBoxContainer,
+    SelectedNftCotainer,
+    NFTHeaderSettings,
+    SelectedNFTImg,
+    SelectedJazzIcon,
+    IconContainer,
 } from './NFTBannerAccountCss';
 import {
     NftDataIF,
@@ -24,12 +29,14 @@ import {
 import Spinner from '../../../Global/Spinner/Spinner';
 import nftPlaceHolder from '../../../../assets/images/Temporary/nft/nft-placeholder.svg';
 import nftSelected from '../../../../assets/images/Temporary/nft/nft-profile-selected.svg';
+import thumbnailSelected from '../../../../assets/images/Temporary/nft/nft-thumbnail-selected.svg';
 import { VscClose } from 'react-icons/vsc';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import useChatSocket from '../../../Chat/Service/useChatSocket';
 import { trimString } from '../../../../ambient-utils/dataLayer';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
@@ -75,9 +82,14 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     const [onErrorIndex] = useState<Array<number>>([]);
 
+    const [isSelectThumbnail, setIsSelectThumbnail] = useState(false);
+
     const [selectedNft, setSelectedNft] = useState<NftDataIF | undefined>(
         undefined,
     );
+    const [selectedThumbnail, setSelectedThumbnail] = useState<
+        NftDataIF | undefined
+    >(undefined);
 
     const { saveUser } = useChatApi();
 
@@ -202,72 +214,162 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                         }}
                     />
                 </NFTBannerHeader>
-                {nftContractName.length > 0 && (
-                    <NFTBannerFilter>
-                        <DropDownContainer>
-                            <DropDownHeader
-                                onClick={(
-                                    event: React.MouseEvent<HTMLDivElement>,
-                                ) => {
-                                    event.stopPropagation();
-                                    setIsContractNameOptionTabActive(
-                                        !isContractNameOptionTabActive,
-                                    );
-                                }}
-                            >
-                                <div>
-                                    {trimString(
-                                        selectedNFTContractAddress.name,
-                                        15,
-                                        0,
-                                        '…',
-                                    )}
-                                </div>
-                                <LabelSettingsArrow
-                                    isActive={isContractNameOptionTabActive}
-                                ></LabelSettingsArrow>
-                            </DropDownHeader>
-
-                            {isContractNameOptionTabActive && (
-                                <DropDownListContainer>
-                                    <DropDownList>
-                                        {nftContractName.map((item, index) => (
-                                            <ListItem
-                                                backgroundColor={
-                                                    item.address ===
-                                                    selectedNFTContractAddress.address
-                                                        ? '#434c58'
-                                                        : undefined
-                                                }
-                                                key={index}
-                                                onClick={(
-                                                    event: React.MouseEvent<HTMLElement>,
-                                                ) => {
-                                                    event.stopPropagation();
-                                                    setSelectedNFTContractAddress(
-                                                        item,
-                                                    );
-                                                    setIsContractNameOptionTabActive(
-                                                        false,
-                                                    );
-                                                }}
-                                            >
-                                                {item.name}
-                                            </ListItem>
-                                        ))}
-                                    </DropDownList>
-                                </DropDownListContainer>
+                <NFTHeaderSettings>
+                    <SelectedNftCotainer>
+                        <IconContainer>
+                            {selectedNft ? (
+                                <SelectedNFTImg
+                                    selected={!isSelectThumbnail}
+                                    isSelectThumbnail={false}
+                                    onClick={(
+                                        event: React.MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setIsSelectThumbnail(false);
+                                        setIsContractNameOptionTabActive(false);
+                                    }}
+                                    src={
+                                        selectedNft
+                                            ? selectedNft.originalUrl
+                                            : nftPlaceHolder
+                                    }
+                                ></SelectedNFTImg>
+                            ) : (
+                                <SelectedJazzIcon
+                                    selected={!isSelectThumbnail}
+                                    isSelectThumbnail={false}
+                                    onClick={(
+                                        event: React.MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setIsSelectThumbnail(false);
+                                        setIsContractNameOptionTabActive(false);
+                                    }}
+                                >
+                                    <Jazzicon
+                                        diameter={51}
+                                        seed={jsNumberForAddress(
+                                            userAddress
+                                                ? userAddress.toLocaleLowerCase()
+                                                : '',
+                                        )}
+                                    />
+                                </SelectedJazzIcon>
                             )}
-                        </DropDownContainer>
+                            <div>Profile</div>
+                        </IconContainer>
+                        <IconContainer>
+                            {selectedThumbnail ? (
+                                <SelectedNFTImg
+                                    selected={isSelectThumbnail}
+                                    isSelectThumbnail={true}
+                                    onClick={(
+                                        event: React.MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setIsSelectThumbnail(true);
+                                        setIsContractNameOptionTabActive(false);
+                                    }}
+                                    src={
+                                        selectedThumbnail
+                                            ? selectedThumbnail.originalUrl
+                                            : nftPlaceHolder
+                                    }
+                                ></SelectedNFTImg>
+                            ) : (
+                                <SelectedJazzIcon
+                                    selected={isSelectThumbnail}
+                                    isSelectThumbnail={true}
+                                    onClick={(
+                                        event: React.MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setIsSelectThumbnail(true);
+                                        setIsContractNameOptionTabActive(false);
+                                    }}
+                                >
+                                    <Jazzicon
+                                        diameter={51}
+                                        seed={jsNumberForAddress(
+                                            userAddress
+                                                ? userAddress.toLocaleLowerCase()
+                                                : '',
+                                        )}
+                                    />
+                                </SelectedJazzIcon>
+                            )}
+                            <div>Thumbnail</div>
+                        </IconContainer>
+                    </SelectedNftCotainer>
+                    {nftContractName.length > 0 && (
+                        <NFTBannerFilter>
+                            <DropDownContainer>
+                                <DropDownHeader
+                                    onClick={(
+                                        event: React.MouseEvent<HTMLDivElement>,
+                                    ) => {
+                                        event.stopPropagation();
+                                        setIsContractNameOptionTabActive(
+                                            !isContractNameOptionTabActive,
+                                        );
+                                    }}
+                                >
+                                    <div>
+                                        {trimString(
+                                            selectedNFTContractAddress.name,
+                                            15,
+                                            0,
+                                            '…',
+                                        )}
+                                    </div>
+                                    <LabelSettingsArrow
+                                        isActive={isContractNameOptionTabActive}
+                                    ></LabelSettingsArrow>
+                                </DropDownHeader>
 
-                        <FiRefreshCw
-                            size={18}
-                            onClick={() => {
-                                setIsfetchNftTriggered(() => true);
-                            }}
-                        />
-                    </NFTBannerFilter>
-                )}
+                                {isContractNameOptionTabActive && (
+                                    <DropDownListContainer>
+                                        <DropDownList>
+                                            {nftContractName.map(
+                                                (item, index) => (
+                                                    <ListItem
+                                                        backgroundColor={
+                                                            item.address ===
+                                                            selectedNFTContractAddress.address
+                                                                ? '#434c58'
+                                                                : undefined
+                                                        }
+                                                        key={index}
+                                                        onClick={(
+                                                            event: React.MouseEvent<HTMLElement>,
+                                                        ) => {
+                                                            event.stopPropagation();
+                                                            setSelectedNFTContractAddress(
+                                                                item,
+                                                            );
+                                                            setIsContractNameOptionTabActive(
+                                                                false,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </ListItem>
+                                                ),
+                                            )}
+                                        </DropDownList>
+                                    </DropDownListContainer>
+                                )}
+                            </DropDownContainer>
+
+                            <FiRefreshCw
+                                size={18}
+                                onClick={() => {
+                                    setIsfetchNftTriggered(() => true);
+                                }}
+                            />
+                        </NFTBannerFilter>
+                    )}
+                </NFTHeaderSettings>
             </div>
 
             {!isLoading ? (
@@ -276,12 +378,19 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                         <NFTImgContainer key={index} id='continer'>
                             <CheckBoxContainer key={index}>
                                 <NFTImg
-                                    selected={
+                                    selectedNFT={
                                         selectedNft
                                             ? selectedNft.originalUrl ===
                                               item.originalUrl
                                             : false
                                     }
+                                    selectedThumbnail={
+                                        selectedThumbnail
+                                            ? selectedThumbnail.originalUrl ===
+                                              item.originalUrl
+                                            : false
+                                    }
+                                    isSelectThumbnail={isSelectThumbnail}
                                     key={index}
                                     // alt='Content not found'
                                     onError={() => onErrorIndex.push(index)}
@@ -289,8 +398,12 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                         event: React.MouseEvent<HTMLDivElement>,
                                     ) => {
                                         event.stopPropagation();
-                                        setSelectedNft(item);
                                         setIsContractNameOptionTabActive(false);
+                                        if (isSelectThumbnail) {
+                                            setSelectedThumbnail(item);
+                                        } else {
+                                            setSelectedNft(item);
+                                        }
                                     }}
                                     src={
                                         item.originalUrl
@@ -317,6 +430,21 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                             alt=''
                                         />
                                     )}
+                                {selectedThumbnail &&
+                                    item.originalUrl ===
+                                        selectedThumbnail.originalUrl && (
+                                        <img
+                                            src={thumbnailSelected}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '72%',
+                                                left: '72%',
+                                                width: '20px',
+                                                height: '20px',
+                                            }}
+                                            alt=''
+                                        />
+                                    )}
                             </CheckBoxContainer>
                         </NFTImgContainer>
                     ))}
@@ -333,7 +461,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                         handleNftSelection();
                     }}
                 >
-                    Select
+                    Save
                 </SaveButton>
             </NFTBannerFooter>
         </NFTBannerAccountContainer>
