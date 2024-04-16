@@ -28,6 +28,7 @@ import {
     mainnetSWETH,
     scrollWrsETH,
     blastWrsETH,
+    blastUSDPLUS,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -68,6 +69,7 @@ export const STABLE_USD_TOKENS = [
     mainnetDAI.address,
     mainnetUSDC.address,
     blastUSDB.address,
+    blastUSDPLUS.address,
     mainnetUSDT.address,
     goerliDAI.address,
     goerliUSDC.address,
