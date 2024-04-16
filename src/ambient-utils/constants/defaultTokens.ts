@@ -673,6 +673,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetLIDO,
     mainnetLUSD,
     blastETH,
+    blastWrsETH,
     blastUSDB,
     blastUSDPLUS,
     blastMIA,
