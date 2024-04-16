@@ -1,12 +1,12 @@
 const apiBase = '/chat/api/';
 
 export const getMessageWithRestEndpoint =
-    apiBase + 'messages/getMsgWithoutWebSocket/';
+    apiBase + 'messages/getMsgWithoutWebSocket2/';
 
 export const getAllMessagesEndpoint = apiBase + 'messages/getall/';
 
 export const getMessageWithRestWithPaginationEndpoint =
-    apiBase + 'messages/getMsgWithoutWebSocket/';
+    apiBase + 'messages/getMsgWithoutWebSocket2/';
 
 export const updateLikesDislikesCountEndpoint =
     apiBase + 'messages/updateLikeDislike';
