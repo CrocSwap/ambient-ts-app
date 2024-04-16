@@ -13,6 +13,7 @@ interface propsIF {
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     startDisplayPrice: number;
@@ -21,6 +22,7 @@ interface propsIF {
     onClose: () => void;
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
+    percentDiffUsdValue: number;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -29,6 +31,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         newLimitOrderTransactionHash,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         resetConfirmation,
         showConfirmation,
         startDisplayPrice,
@@ -39,6 +42,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         onClose = () => null,
         limitAllowed,
         limitButtonErrorMessage,
+        percentDiffUsdValue,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -134,6 +138,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             transactionHash={newLimitOrderTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             statusText={
                 !showConfirmation
                     ? limitAllowed
@@ -144,6 +149,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
             isAllowed={limitAllowed}
+            percentDiffUsdValue={percentDiffUsdValue}
         />
     );
 }

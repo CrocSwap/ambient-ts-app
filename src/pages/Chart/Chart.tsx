@@ -14,8 +14,6 @@ import { useLocation } from 'react-router-dom';
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import {
-    MAX_TICK,
-    MIN_TICK,
     pinTickLower,
     pinTickUpper,
     tickToPrice,
@@ -118,6 +116,10 @@ import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import useDollarPrice from './ChartUtils/getDollarPrice';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../ambient-utils/dataLayer/functions/pinTick';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -250,10 +252,12 @@ export default function Chart(props: propsIF) {
         tokenB,
         isDenomBase,
         isTokenABase: isBid,
-        isTokenAPrimary,
         setIsTokenAPrimary,
         limitTick,
         setLimitTick,
+        currentPoolPriceTick,
+        noGoZoneBoundaries,
+        setNoGoZoneBoundaries,
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
@@ -558,9 +562,6 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [marketLine, setMarketLine] = useState<any>();
 
-    // NoGoZone
-    const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([[0, 0]]);
-
     const [mainZoom, setMainZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
 
@@ -593,11 +594,6 @@ export default function Chart(props: propsIF) {
     ] = useState(false);
 
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
-
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined
-            ? 0
-            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const isScientific = poolPriceNonDisplay
         ? poolPriceNonDisplay.toString().includes('e')
@@ -1396,20 +1392,13 @@ export default function Chart(props: propsIF) {
             // logic tree to determine if the limit price crosses the current pool price
             // sell => buy or buy to sell
             if (sellOrderStyle === 'order_sell') {
-                // old price > pool price AND new price is < pool price
-                // Check if the previous limit was above poolPriceDisplay and the new limit is below it
-                if (
-                    limitPreviousData > poolPriceDisplay &&
-                    newLimitValue < poolPriceDisplay
-                ) {
+                // Check if new limit is below current price
+                if (newLimitValue < poolPriceDisplay) {
                     needsInversion = true;
                 }
             } else {
-                // Check if the previous limit was below poolPriceDisplay and the new limit is above it.
-                if (
-                    limitPreviousData < poolPriceDisplay &&
-                    newLimitValue > poolPriceDisplay
-                ) {
+                // Check if new limit is above current price.
+                if (newLimitValue > poolPriceDisplay) {
                     needsInversion = true;
                 }
             }
@@ -1425,8 +1414,8 @@ export default function Chart(props: propsIF) {
      * @returns {Object} An object containing 'noGoZoneMin' and 'noGoZoneMax'.
      */
     const getNoZoneData = () => {
-        const noGoZoneMin = noGoZoneBoundaries[0][0];
-        const noGoZoneMax = noGoZoneBoundaries[0][1];
+        const noGoZoneMin = noGoZoneBoundaries[0];
+        const noGoZoneMax = noGoZoneBoundaries[1];
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
     };
 
@@ -3822,28 +3811,30 @@ export default function Chart(props: propsIF) {
         renderCanvasArray([d3CanvasMarketLine]);
     }, [market, marketLine]);
 
-    const pinTickToTickLower = (poolPriceTick: number, gridSize: number) => {
-        const tickGrid = Math.floor(poolPriceTick / gridSize) * gridSize;
-        const horizon = Math.floor(MIN_TICK / gridSize) * gridSize;
+    useEffect(() => {
+        const noGoZoneBoundaries = noGoZone(
+            currentPoolPriceTick,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lookupChain(chainId).gridSize,
+        );
+        setNoGoZoneBoundaries(() => {
+            return noGoZoneBoundaries;
+        });
+    }, [
+        currentPoolPriceTick,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        lookupChain(chainId).gridSize,
+        isDenomBase,
+    ]);
 
-        const lowTickNoGoZone = Math.max(tickGrid, horizon);
-
-        return lowTickNoGoZone;
-    };
-    const pinTickToTickUpper = (poolPriceTick: number, gridSize: number) => {
-        const tickGrid = Math.ceil(poolPriceTick / gridSize) * gridSize;
-        const horizon = Math.ceil(MAX_TICK / gridSize) * gridSize;
-
-        const highTickNoGoZone = Math.min(tickGrid, horizon);
-
-        return highTickNoGoZone;
-    };
-    function noGoZone(
+    const noGoZone = (
         poolPriceTick: number,
         baseTokenDecimals: number,
         quoteTokenDecimals: number,
         gridSize: number,
-    ) {
+    ) => {
         const lowTickNoGoZone =
             pinTickToTickLower(poolPriceTick, gridSize) - gridSize;
         const highTickNoGoZone =
@@ -3878,27 +3869,8 @@ export default function Chart(props: propsIF) {
               );
 
         setLimitTickNearNoGoZone(lowTickDisplayPrice, highTickDisplayPrice);
-        return [[lowTickDisplayPrice, highTickDisplayPrice]];
-    }
-
-    useEffect(() => {
-        const noGoZoneBoundaries = noGoZone(
-            currentPoolPriceTick,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            lookupChain(chainId).gridSize,
-        );
-
-        setNoGoZoneBoundaries(() => {
-            return noGoZoneBoundaries;
-        });
-    }, [
-        currentPoolPriceTick,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        lookupChain(chainId).gridSize,
-        isDenomBase,
-    ]);
+        return [lowTickDisplayPrice, highTickDisplayPrice];
+    };
 
     const getYAxisBoundary = (isTriggeredByZoom: boolean) => {
         let minYBoundary = undefined;
@@ -5345,7 +5317,7 @@ export default function Chart(props: propsIF) {
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
-                      setIsTokenAPrimary(!isTokenAPrimary);
+                      setIsTokenAPrimary((isTokenAPrimary) => !isTokenAPrimary);
                       linkGenLimit.redirect({
                           chain: chainData.chainId,
                           tokenA: tokenB.address,

@@ -717,7 +717,17 @@ function Ranges(props: propsIF) {
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef} id='current_row_scroll'>
+            <ul
+                ref={listRef}
+                id='current_row_scroll'
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { height: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 380px)' }
+                        : undefined
+                }
+            >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&
                     pendingPositionsToDisplayPlaceholder

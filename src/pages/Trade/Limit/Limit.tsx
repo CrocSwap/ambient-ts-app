@@ -62,7 +62,13 @@ export default function Limit() {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
-    const { pool, isPoolInitialized } = useContext(PoolContext);
+    const {
+        pool,
+        isPoolInitialized,
+        isTradeDollarizationEnabled,
+        usdPriceInverse,
+        poolData,
+    } = useContext(PoolContext);
     const { userAddress } = useContext(UserDataContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -88,6 +94,7 @@ export default function Limit() {
     const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
+    const { basePrice, quotePrice } = poolData;
 
     const [isOpen, openModal, closeModal] = useModal();
     const {
@@ -102,6 +109,7 @@ export default function Limit() {
         poolPriceNonDisplay,
         primaryQuantity,
         setPrimaryQuantity,
+        isTokenABase,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -125,6 +133,7 @@ export default function Limit() {
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -155,6 +164,16 @@ export default function Limit() {
     useEffect(() => {
         activeTxHash.current = '';
     }, [tokenA.address + tokenB.address, primaryQuantity]);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            setLimitButtonErrorMessage('...');
+            setTokenBInputQty('');
+        } else {
+            setLimitButtonErrorMessage('...');
+            setTokenAInputQty('');
+        }
+    }, [tokenA.address + tokenB.address]);
 
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
@@ -222,11 +241,30 @@ export default function Limit() {
                 const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                 setEndDisplayPrice(displayPriceWithDenom);
 
-                const limitRateTruncated = getFormattedNumber({
-                    value: displayPriceWithDenom,
-                    isInput: true,
-                    removeCommas: true,
-                });
+                const dollarizedDisplayPrice = displayPriceWithDenom
+                    ? isDenomBase
+                        ? quotePrice
+                            ? displayPriceWithDenom * quotePrice
+                            : undefined
+                        : basePrice
+                        ? displayPriceWithDenom * basePrice
+                        : undefined
+                    : usdPriceInverse && displayPriceWithDenom
+                    ? usdPriceInverse * displayPriceWithDenom
+                    : undefined;
+
+                const limitRateTruncated = isTradeDollarizationEnabled
+                    ? getFormattedNumber({
+                          value: dollarizedDisplayPrice,
+                          removeCommas: true,
+                          isInput: true,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: displayPriceWithDenom,
+                          isInput: true,
+                          removeCommas: true,
+                      });
 
                 setDisplayPrice(limitRateTruncated);
                 setPreviousDisplayPrice(limitRateTruncated);
@@ -289,11 +327,32 @@ export default function Limit() {
                 const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
 
                 setEndDisplayPrice(displayPriceWithDenom);
-                const limitRateTruncated = getFormattedNumber({
-                    value: displayPriceWithDenom,
-                    isInput: true,
-                    removeCommas: true,
-                });
+
+                const dollarizedDisplayPrice = displayPriceWithDenom
+                    ? isDenomBase
+                        ? quotePrice
+                            ? displayPriceWithDenom * quotePrice
+                            : undefined
+                        : basePrice
+                        ? displayPriceWithDenom * basePrice
+                        : undefined
+                    : usdPriceInverse && displayPriceWithDenom
+                    ? usdPriceInverse * displayPriceWithDenom
+                    : undefined;
+
+                const limitRateTruncated = isTradeDollarizationEnabled
+                    ? getFormattedNumber({
+                          value: dollarizedDisplayPrice,
+                          removeCommas: true,
+                          isInput: true,
+                          prefix: '$',
+                      })
+                    : getFormattedNumber({
+                          value: displayPriceWithDenom,
+                          isInput: true,
+                          removeCommas: true,
+                      });
+
                 setDisplayPrice(limitRateTruncated);
                 setPreviousDisplayPrice(limitRateTruncated);
             });
@@ -355,6 +414,10 @@ export default function Limit() {
         priceInputFieldBlurred,
         isSellTokenBase,
         poolPriceNonDisplay,
+        isTradeDollarizationEnabled,
+        usdPriceInverse,
+        basePrice,
+        quotePrice,
     ]);
 
     // patch limit tick into URL if it is missing, this value isn't available
@@ -503,6 +566,7 @@ export default function Limit() {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewLimitOrderTransactionHash('');
     };
 
@@ -598,6 +662,7 @@ export default function Limit() {
             console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(parseErrorMessage(error));
+            setTxErrorJSON(JSON.stringify(error));
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -746,6 +811,21 @@ export default function Limit() {
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
+    const percentDiffUsdValue =
+        usdValueTokenA && usdValueTokenB
+            ? ((usdValueTokenB * parseFloat(tokenBInputQty) -
+                  usdValueTokenA * parseFloat(tokenAInputQty)) /
+                  (usdValueTokenA * parseFloat(tokenAInputQty))) *
+              100
+            : 0;
+
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -772,6 +852,9 @@ export default function Limit() {
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                    usdValueTokenA={usdValueTokenA}
+                    usdValueTokenB={usdValueTokenB}
+                    percentDiffUsdValue={percentDiffUsdValue}
                 />
             }
             inputOptions={
@@ -811,6 +894,7 @@ export default function Limit() {
                         }
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
@@ -818,6 +902,7 @@ export default function Limit() {
                         endDisplayPrice={endDisplayPrice}
                         limitAllowed={limitAllowed}
                         limitButtonErrorMessage={limitButtonErrorMessage}
+                        percentDiffUsdValue={percentDiffUsdValue}
                     />
                 ) : (
                     <></>
@@ -859,6 +944,7 @@ export default function Limit() {
                         newTransactionHash={newLimitOrderTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendLimitOrder}
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}

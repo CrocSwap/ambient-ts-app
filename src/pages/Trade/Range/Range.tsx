@@ -173,6 +173,7 @@ function Range() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -523,6 +524,10 @@ function Range() {
         baseTokenDecimals,
         quoteTokenDecimals,
     ]);
+
+    useEffect(() => {
+        resetConfirmation();
+    }, [isTokenAPrimary]);
 
     useEffect(() => {
         if (isTokenAInputDisabled) setIsTokenAPrimary(false);
@@ -880,6 +885,7 @@ function Range() {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -904,6 +910,7 @@ function Range() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             setTxErrorMessage,
+            setTxErrorJSON,
             resetConfirmation,
             activeRangeTxHash,
         });
@@ -1095,6 +1102,7 @@ function Range() {
                         showConfirmation={showConfirmation}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1158,6 +1166,7 @@ function Range() {
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={
@@ -1189,6 +1198,7 @@ function Range() {
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -1206,6 +1216,7 @@ function Range() {
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenB.symbol}`

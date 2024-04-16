@@ -73,7 +73,7 @@ function Swap(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
     const {
@@ -112,6 +112,7 @@ function Swap(props: propsIF) {
         primaryQuantity,
         setPrimaryQuantity,
         areDefaultTokensUpdatedForChain,
+        isTokenABase,
     } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
@@ -142,6 +143,7 @@ function Swap(props: propsIF) {
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
@@ -154,10 +156,15 @@ function Swap(props: propsIF) {
         | undefined
     >();
 
-    const priceImpact = useMemo(
-        () => lastImpactQuery?.impact,
-        [JSON.stringify(lastImpactQuery)],
-    );
+    const priceImpact = useMemo(() => {
+        return lastImpactQuery ? lastImpactQuery.impact : undefined;
+    }, [lastImpactQuery]);
+
+    useEffect(() => {
+        if (primaryQuantity === '') {
+            setLastImpactQuery(undefined);
+        }
+    }, [primaryQuantity]);
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -188,7 +195,7 @@ function Swap(props: propsIF) {
     >();
 
     useEffect(() => {
-        if (priceImpactNum) setPriceImpactNumMemo(priceImpactNum);
+        setPriceImpactNumMemo(priceImpactNum);
     }, [priceImpactNum]);
 
     const tokenASurplusMinusTokenARemainderNum =
@@ -250,12 +257,24 @@ function Swap(props: propsIF) {
     }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
+        if (isTokenAPrimary && isSellLoading) {
+            setIsSellLoading(false);
+        } else if (!isTokenAPrimary && isBuyLoading) {
+            setIsBuyLoading(false);
+        }
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
         if (
-            isNaN(parseFloat(sellQtyString)) ||
-            isNaN(parseFloat(buyQtyString)) ||
             (sellQtyString === '' && buyQtyString === '') ||
-            (isTokenAPrimary && parseFloat(sellQtyString) <= 0) ||
-            (!isTokenAPrimary && parseFloat(buyQtyString) <= 0)
+            (isTokenAPrimary &&
+                !isBuyLoading &&
+                (isNaN(parseFloat(sellQtyString)) ||
+                    parseFloat(sellQtyString) <= 0)) ||
+            (!isTokenAPrimary &&
+                !isSellLoading &&
+                (isNaN(parseFloat(buyQtyString)) ||
+                    parseFloat(buyQtyString) <= 0))
         ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
@@ -337,6 +356,18 @@ function Swap(props: propsIF) {
         activeTxHashInPendingTxs,
         isTokenAPrimary,
     ]);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            setIsBuyLoading(true);
+            setSwapButtonErrorMessage('...');
+            setBuyQtyString('');
+        } else {
+            setIsSellLoading(true);
+            setSwapButtonErrorMessage('...');
+            setSellQtyString('');
+        }
+    }, [tokenA.address + tokenB.address, isTokenAPrimary]);
 
     useEffect(() => {
         setNewSwapTransactionHash('');
@@ -469,6 +500,7 @@ function Swap(props: propsIF) {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewSwapTransactionHash('');
     };
 
@@ -478,10 +510,7 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const qty = isTokenAPrimary
-            ? sellQtyString.replaceAll(',', '')
-            : buyQtyString.replaceAll(',', '');
-
+        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
         const isQtySell = isTokenAPrimary;
 
         let tx;
@@ -531,6 +560,7 @@ function Swap(props: propsIF) {
             console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(parseErrorMessage(error));
+            setTxErrorJSON(JSON.stringify(error));
         }
 
         if (tx) {
@@ -620,10 +650,15 @@ function Swap(props: propsIF) {
         </WarningContainer>
     ) : undefined;
 
+    const isButtonDisabled =
+        (!swapAllowed || sellQtyString === '' || buyQtyString === '') &&
+        areBothAckd;
+
     const priceImpactWarning =
         !isLiquidityInsufficient &&
         priceImpactNumMemo &&
-        priceImpactNumMemo > 2 ? (
+        priceImpactNumMemo > 2 &&
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount') ? (
             <WarningContainer
                 flexDirection='row'
                 justifyContent='space-between'
@@ -648,6 +683,40 @@ function Swap(props: propsIF) {
                 <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
+    const showWarning =
+        (priceImpactNumMemo || 0) > 10 &&
+        isTokenAWalletBalanceSufficient &&
+        !isLiquidityInsufficient &&
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount');
+
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
+    const percentDiffUsdValue =
+        usdValueTokenA && usdValueTokenB
+            ? ((usdValueTokenB * parseFloat(buyQtyString) -
+                  usdValueTokenA * parseFloat(sellQtyString)) /
+                  (usdValueTokenA * parseFloat(sellQtyString))) *
+              100
+            : 0;
+
+    const buttonTitle = areBothAckd
+        ? bypassConfirmSwap.isEnabled
+            ? swapAllowed
+                ? showWarning
+                    ? 'I understand the price impact of this swap. Submit anyway!'
+                    : 'Submit Swap'
+                : swapButtonErrorMessage
+            : swapAllowed
+            ? showWarning
+                ? 'I understand the price impact of this swap. Confirm anyway!'
+                : 'Confirm'
+            : swapButtonErrorMessage
+        : 'Acknowledge';
 
     return (
         <TradeModuleSkeleton
@@ -689,6 +758,9 @@ function Swap(props: propsIF) {
                     setSwapAllowed={setSwapAllowed}
                     toggleDexSelection={toggleDexSelection}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                    usdValueTokenA={usdValueTokenA}
+                    usdValueTokenB={usdValueTokenB}
+                    percentDiffUsdValue={percentDiffUsdValue}
                 />
             }
             transactionDetails={
@@ -702,6 +774,7 @@ function Swap(props: propsIF) {
                         primaryQuantity !== '' &&
                         parseFloat(primaryQuantity) > 0
                     }
+                    showWarning={showWarning}
                 />
             }
             modal={
@@ -719,6 +792,7 @@ function Swap(props: propsIF) {
                         newSwapTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         slippageTolerancePercentage={
@@ -731,6 +805,7 @@ function Swap(props: propsIF) {
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        percentDiffUsdValue={percentDiffUsdValue}
                     />
                 ) : (
                     <></>
@@ -740,19 +815,7 @@ function Swap(props: propsIF) {
                 <Button
                     idForDOM='confirm_swap_button'
                     style={{ textTransform: 'none' }}
-                    title={
-                        areBothAckd
-                            ? bypassConfirmSwap.isEnabled
-                                ? swapAllowed
-                                    ? 'Submit Swap'
-                                    : swapButtonErrorMessage
-                                : swapAllowed
-                                ? bypassConfirmSwap.isEnabled
-                                    ? 'Submit Swap'
-                                    : 'Confirm'
-                                : swapButtonErrorMessage
-                            : 'Acknowledge'
-                    }
+                    title={buttonTitle}
                     action={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -760,12 +823,8 @@ function Swap(props: propsIF) {
                                 : handleModalOpen
                             : ackAsNeeded
                     }
-                    disabled={
-                        (!swapAllowed ||
-                            sellQtyString === '' ||
-                            buyQtyString === '') &&
-                        areBothAckd
-                    }
+                    disabled={isButtonDisabled}
+                    warning={showWarning}
                     flat
                 />
             }
@@ -776,6 +835,7 @@ function Swap(props: propsIF) {
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}

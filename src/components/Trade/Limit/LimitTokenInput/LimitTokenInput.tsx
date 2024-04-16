@@ -27,6 +27,9 @@ interface propsIF {
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
+    usdValueTokenA: number | undefined;
+    usdValueTokenB: number | undefined;
+    percentDiffUsdValue: number | undefined;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -39,12 +42,15 @@ function LimitTokenInput(props: propsIF) {
         handleLimitButtonMessage,
         toggleDexSelection,
         amountToReduceNativeTokenQty,
+        usdValueTokenA,
+        usdValueTokenB,
+        percentDiffUsdValue,
     } = props;
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { pool, poolData } = useContext(PoolContext);
+    const { pool } = useContext(PoolContext);
     const {
         baseToken: {
             balance: baseTokenBalance,
@@ -70,7 +76,6 @@ function LimitTokenInput(props: propsIF) {
         setLimitTick,
         primaryQuantity,
         setPrimaryQuantity,
-        isTokenABase,
     } = useContext(TradeDataContext);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
@@ -149,7 +154,8 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        setTokenBInputQty(truncatedTokenBQty);
+        // prevent momentary display of 'Infinity' for limit price on initial load
+        limitTickDisplayPrice && setTokenBInputQty(truncatedTokenBQty);
     };
 
     const handleTokenBChangeEvent = (value?: string) => {
@@ -192,15 +198,8 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 
-        setTokenAInputQty(truncatedTokenAQty);
+        limitTickDisplayPrice && setTokenAInputQty(truncatedTokenAQty);
     };
-
-    const usdValueTokenA = isTokenABase
-        ? poolData.basePrice
-        : poolData.quotePrice;
-    const usdValueTokenB = isTokenABase
-        ? poolData.quotePrice
-        : poolData.basePrice;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
@@ -253,6 +252,7 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
         </FlexContainer>
     );

@@ -61,7 +61,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons
-                    mobileHide
                     onClick={() =>
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }

@@ -3,6 +3,7 @@ import { ButtonBase } from './Form.styles';
 interface propsIF {
     idForDOM: string;
     disabled?: boolean;
+    warning?: boolean;
     title: string;
     action: () => void;
     flat?: boolean;
@@ -17,6 +18,7 @@ export default function Button(props: propsIF) {
     const {
         idForDOM,
         disabled,
+        warning,
         action,
         title,
         flat,
@@ -45,6 +47,7 @@ export default function Button(props: propsIF) {
             flat={!!flat}
             width={width ? width : thin ? '156px' : '100%'}
             height={thin ? '28px' : 'auto'}
+            warning={warning}
         >
             {title}
         </ButtonBase>
