@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { AiOutlineFullscreen, AiOutlineDollarCircle } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -36,18 +36,30 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     const copyChartToClipboard = async () => {
+        const excludeSelectors = ['#points-banner-container'];
         if (canvasRef.current && chartCanvasRef.current) {
             const blob = isChartFullScreen
-                ? await printDomToImage(chartCanvasRef.current, '#171d27')
+                ? await printDomToImage(
+                      chartCanvasRef.current,
+                      '#171d27',
+                      undefined,
+                      undefined,
+                      excludeSelectors,
+                  )
                 : await printDomToImage(
                       canvasRef.current,
                       '#171d27',
                       undefined,
                       // height, trade charts header + chart height
                       50 + chartHeights.current,
+                      excludeSelectors,
                   );
             if (blob) {
-                copy(blob);
+                // Copy blob to clipboard
+                const data = [new ClipboardItem({ 'image/png': blob })];
+                await navigator.clipboard.write(data);
+
+                // Notify user
                 openSnackbar('Chart image copied to clipboard', 'info');
             }
         }

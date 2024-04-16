@@ -277,7 +277,10 @@ function Trade() {
                     ref={canvasRef}
                 >
                     {showTopPtsBanner && (
-                        <div style={{ padding: '0 8px' }}>
+                        <div
+                            style={{ padding: '0 8px' }}
+                            id='points-banner-container'
+                        >
                             <PointsBanner dismissElem={dismissTopBannerPopup} />
                         </div>
                     )}
