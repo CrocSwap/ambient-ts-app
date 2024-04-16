@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react';
+import { useContext } from 'react';
 import { AiOutlineFullscreen, AiOutlineDollarCircle } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -25,7 +25,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-
+    // eslint-disable-next-lin
     const [, copy] = useCopyToClipboard();
     const {
         snackbar: { open: openSnackbar },
@@ -55,11 +55,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       excludeSelectors,
                   );
             if (blob) {
-                // Copy blob to clipboard
-                const data = [new ClipboardItem({ 'image/png': blob })];
-                await navigator.clipboard.write(data);
-
-                // Notify user
+                copy(blob);
                 openSnackbar('Chart image copied to clipboard', 'info');
             }
         }
