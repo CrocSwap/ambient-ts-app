@@ -105,7 +105,7 @@ export const ChainDataContextProvider = (props: {
     ];
 
     const settings = {
-        apiKey: 'ETHwVh6EZYZJb159fmTvHhO5_u03J5s_', // Replace with your Alchemy API Key.
+        apiKey: process.env.REACT_APP_ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
         network: Network.ETH_MAINNET, // Replace with your network.
     };
 
@@ -257,6 +257,8 @@ export const ChainDataContextProvider = (props: {
 
                             const pageKey = NFTResponse.pageKey;
 
+                            const userHasNFT = NFTResponse.userHasNFT;
+
                             setNFTFetchSettings({
                                 pageSize: NFTFetchSettings.pageSize,
                                 pageKey: pageKey ? pageKey : '',
@@ -283,6 +285,7 @@ export const ChainDataContextProvider = (props: {
                             mapValue.push({
                                 chainId: chainData.chainId,
                                 totalNFTCount: NFTResponse.totalNFTCount,
+                                userHasNFT: userHasNFT,
                                 data: nftImgArray,
                             });
 

@@ -6,16 +6,15 @@ const NFTBannerAccountContainer = styled.div`
     position: absolute;
 
     display: grid;
-    grid-template-rows: 20% 55% 25%;
 
     width: 350px;
-    height: 400px;
+    height: 570px;
 
     gap: 16px;
 
     top: 30%;
     left: 50%;
-    transform: translate(-50%, 30%);
+    transform: translate(-80%, 10%);
 
     border-radius: 4px;
 
@@ -39,6 +38,14 @@ const NFTBannerHeader = styled.div`
     justify-content: space-between;
 `;
 
+const NFTHeaderSettings = styled.div`
+    display: flex;
+
+    gap: 5px;
+
+    flex-direction: column;
+`;
+
 const NFTDisplay = styled.div<{
     template: number;
 }>`
@@ -60,23 +67,100 @@ const NFTImgContainer = styled.div`
     align-items: center;
 `;
 
+const SelectedNftCotainer = styled.div`
+    display: flex;
+
+    gap: 10px;
+
+    justify-content: center;
+    align-items: center;
+`;
+
+const IconContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 2px;
+
+    font-size: 13px;
+    line-height: var(--body-lh);
+    color: var(--text1);
+`;
+
 const CheckBoxContainer = styled.div`
     position: relative;
     display: flex;
 `;
 
 const NFTImg = styled.img<{
-    selected: boolean;
+    selectedNFT: boolean;
+    selectedThumbnail: boolean;
+    isSelectThumbnail: boolean;
 }>`
     border: 2.25px solid
-        ${({ selected }) => (selected ? '#7bede4' : 'transparent')};
+        ${({ selectedNFT, selectedThumbnail }) =>
+            selectedNFT
+                ? '#7bede4'
+                : selectedThumbnail
+                ? '#ff9800'
+                : 'transparent'};
     border-radius: 8px;
 
     width: 75px;
     height: 75px;
 
     &:hover {
-        border-color: #7bede4;
+        border-color: ${({ isSelectThumbnail }) =>
+            isSelectThumbnail ? '#ff9800' : '#7bede4'};
+        cursor: pointer;
+    }
+`;
+
+const SelectedNFTImg = styled.img<{
+    selected: boolean;
+    isSelectThumbnail: boolean;
+}>`
+    border: 2.25px solid
+        ${({ selected, isSelectThumbnail }) =>
+            selected
+                ? isSelectThumbnail
+                    ? '#ff9800'
+                    : '#7bede4'
+                : 'transparent'};
+    border-radius: 50%;
+
+    width: 55px;
+    height: 55px;
+
+    &:hover {
+        border-color: ${({ isSelectThumbnail }) =>
+            isSelectThumbnail ? '#ff9800' : '#7bede4'};
+        cursor: pointer;
+    }
+`;
+
+const SelectedJazzIcon = styled.div<{
+    selected: boolean;
+    isSelectThumbnail: boolean;
+}>`
+    border: 2.25px solid
+        ${({ selected, isSelectThumbnail }) =>
+            selected
+                ? isSelectThumbnail
+                    ? '#ff9800'
+                    : '#7bede4'
+                : 'transparent'};
+    border-radius: 50%;
+
+    width: 55px;
+    height: 55px;
+
+    &:hover {
+        border-color: ${({ isSelectThumbnail }) =>
+            isSelectThumbnail ? '#ff9800' : '#7bede4'};
         cursor: pointer;
     }
 `;
@@ -250,4 +334,9 @@ export {
     NFTBannerFooter,
     SaveButton,
     NFTImg,
+    SelectedNFTImg,
+    SelectedNftCotainer,
+    NFTHeaderSettings,
+    SelectedJazzIcon,
+    IconContainer,
 };
