@@ -125,6 +125,16 @@ export const blastBAJA: TokenIF = {
     logoURI: '',
 };
 
+export const blastESE: TokenIF = {
+    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'eesee',
+    symbol: 'ESE',
+    logoURI: '',
+};
+
 export const blastYES: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
@@ -153,6 +163,15 @@ export const blastWETH: TokenIF = {
     name: 'Wrapped Ether',
     symbol: 'wETH',
     logoURI: '',
+};
+
+export const blastWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
 };
 
 export const blastEzETH: TokenIF = {
@@ -650,6 +669,7 @@ export const defaultTokens: TokenIF[] = [
     blastORBIT,
     blastBAG,
     blastBAJA,
+    blastESE,
     blastBEPE,
     blastALIEN,
     blastOLE,

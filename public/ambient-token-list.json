@@ -107,6 +107,14 @@
             "logoURI": "https://blastscan.io/token/images/orbit_32.png"
         },
         {
+            "address": "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Wrapped Kelp DAO Restaked ETH",
+            "symbol": "wrsETH",
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
+        },
+        {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
             "chainId": 81457,
             "decimals": 18,
@@ -174,6 +182,15 @@
             "fromList": "/ambient-token-list.json",
             "name": "Baja",
             "symbol": "BAJA",
+            "logoURI": ""
+        },
+        {
+            "address": "0x491e6DE43b55c8EAE702EDC263E32339da42f58c",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "eesee",
+            "symbol": "ESE",
             "logoURI": ""
         },
         {
