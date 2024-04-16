@@ -20,7 +20,7 @@
     aspect-ratio: 5/6;
     transition: var(--transition);
     overflow: auto;
-    box-shadow: 0px 0px 12px rgba(205, 193, 255, 0.2);
+    box-shadow: 0px 0px 12px color-mix(in srgb, var(--accent1) 20%, transparent);
     border-top: 0.5px solid var(--accent1);
     border-left: 0.5px solid var(--accent1);
     border-right: 0.5px solid var(--accent1);
@@ -228,14 +228,14 @@
 
 @keyframes purpleFlash{
     0% , 100%{
-        box-shadow: 0px 0px 28px #7371fc33;
-        background:#7371fc11;
-        border: 1px solid #7371fc55;
+        box-shadow: 0px 0px 28px color-mix(in srgb, var(--accent1) 12%, transparent);
+        background:color-mix(in srgb, var(--accent1) 6%, transparent);
+        border: 1px solid color-mix(in srgb, var(--accent1) 20%, transparent);
     }
     50%{
-        box-shadow: 0px 0px 28px #7371fcaa;
-        background:#7371fc55;
-        border: 1px solid #7371fcff;
+        box-shadow: 0px 0px 28px color-mix(in srgb, var(--accent1) 40%, transparent);
+        background:color-mix(in srgb, var(--accent1) 20%, transparent);
+        border: 1px solid color-mix(in srgb, var(--accent1) 10%, transparent);
     }
 }
 
@@ -325,8 +325,8 @@
     z-index: 1;
     left: 5%;
     animation: scaleAnim .3s ease-in-out forwards;
-    box-shadow: 0px 0px 40px #7371fc77;
-    border: 1px solid #7371fcaa;
+    box-shadow: 0px 0px 40px color-mix(in srgb, var(--accent1) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent1) 66%, transparent);
     overflow: hidden;
     border-radius: .5rem;
     z-index: 4;
@@ -359,14 +359,15 @@
     transition: all .2s ease-in-out;
     font-size: 1rem;
     border-radius: 10rem;
-    background: #7371fc33;
-    border: 1px solid #7371fc88;
+    background: color-mix(in srgb, var(--accent1) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent1) 45%, transparent);
     backdrop-filter: blur(10px);
 }
 
 .scroll_to_icon:hover{
-    background: #7371fc55;
-    border: 1px solid #7371fcaa;
+    background: color-mix(in srgb, var(--accent1) 22%, transparent);
+    
+    border: 1px solid color-mix(in srgb, var(--accent1) 66%, transparent);
 }
 
 @media only screen and (max-width: 600px){

@@ -981,7 +981,7 @@ function ChatPanel(props: propsIF) {
                         >
                             <BsChatLeftFill
                                 size={25}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 style={{ cursor: 'pointer' }}
                             />
                             <span className={styles.text}>
@@ -992,7 +992,7 @@ function ChatPanel(props: propsIF) {
                             <RiArrowDownSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom'
@@ -1007,7 +1007,7 @@ function ChatPanel(props: propsIF) {
                         <span onClick={() => scrollToBottomButton()}>
                             <BsChatLeftFill
                                 size={25}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 style={{ cursor: 'pointer' }}
                             />
                             <span className={styles.text}>
@@ -1018,7 +1018,7 @@ function ChatPanel(props: propsIF) {
                             <RiArrowDownSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
@@ -1037,7 +1037,7 @@ function ChatPanel(props: propsIF) {
                         <RiArrowDownSLine
                             role='button'
                             size={32}
-                            color='#7371fc'
+                            color='var(--accent1)'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom'
@@ -1051,7 +1051,7 @@ function ChatPanel(props: propsIF) {
                         <RiArrowDownSLine
                             role='button'
                             size={27}
-                            color='#7371fc'
+                            color='var(--accent1)'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom zzzz'
@@ -1133,7 +1133,7 @@ function ChatPanel(props: propsIF) {
                     <RiArrowUpSLine
                         role='button'
                         size={27}
-                        color='#7371fc'
+                        color='var(--accent1)'
                         onClick={() => getPreviousMessages()}
                         tabIndex={0}
                         aria-label='Show previous messages'
@@ -1239,7 +1239,7 @@ function ChatPanel(props: propsIF) {
                             <RiArrowUpSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => getPreviousMessages()}
                                 tabIndex={0}
                                 aria-label='Show previous messages'
