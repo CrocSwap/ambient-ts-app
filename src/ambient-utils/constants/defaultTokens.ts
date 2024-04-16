@@ -44,6 +44,16 @@ export const blastUSDB: TokenIF = {
     symbol: 'USDB',
 };
 
+export const blastUSDPLUS: TokenIF = {
+    address: '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI: '',
+    name: 'USD+',
+    symbol: 'USD+',
+};
+
 export const blastORBIT: TokenIF = {
     address: '0x42E12D42b3d6C4A74a88A61063856756Ea2DB357',
     chainId: 81457,
@@ -664,6 +674,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetLUSD,
     blastETH,
     blastUSDB,
+    blastUSDPLUS,
     blastMIA,
     blastMIM,
     blastORBIT,
