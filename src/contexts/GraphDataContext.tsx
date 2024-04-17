@@ -370,7 +370,7 @@ export const GraphDataContextProvider = (props: {
                     (userPositionIndexUpdate) =>
                         userPositionIndexUpdate.positionID ===
                             positionUpdate.positionID &&
-                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >=
                             (positionUpdate.unixTimeAdded || 0),
                 ),
         );
@@ -389,7 +389,7 @@ export const GraphDataContextProvider = (props: {
                     (userPositionIndexUpdate) =>
                         userPositionIndexUpdate.positionID ===
                             positionUpdate.positionID &&
-                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >=
                             (positionUpdate.unixTimeAdded || 0),
                 ),
         );

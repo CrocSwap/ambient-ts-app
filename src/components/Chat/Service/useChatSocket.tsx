@@ -28,15 +28,15 @@ import {
     verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
-import { Message } from '../Model/MessageModel';
-import { User } from '../Model/UserModel';
-import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
+import { useSocketIO } from 'react-use-websocket';
 import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from '../ChatConstants/ChatConstants';
-import { useSocketIO } from 'react-use-websocket';
+import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
 import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
+import { Message } from '../Model/MessageModel';
+import { User } from '../Model/UserModel';
 
 const useChatSocket = (
     room: string,
@@ -64,6 +64,8 @@ const useChatSocket = (
     );
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
+    const roomRef = useRef<string>(room);
+
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
 
@@ -88,16 +90,10 @@ const useChatSocket = (
         // fromSocketIO: true,
         queryParams: { ...queryParams },
         shouldReconnect: () => true,
-        onOpen: (e) => {
-            console.log('connected');
-            console.log(e);
-            console.log('................................');
+        onOpen: () => {
             domDebug('connected', getTimeForLog(new Date()));
         },
-        onClose: (e) => {
-            console.log('closed');
-            console.log(e);
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        onClose: () => {
             domDebug('disconnected', getTimeForLog(new Date()));
         },
     });
@@ -111,6 +107,8 @@ const useChatSocket = (
     useEffect(() => {
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
+                console.log(socketLastMessage.payload);
+                console.log('.........................');
                 newMsgListener(socketLastMessage.payload);
                 break;
             case 'message-deleted-listener':
@@ -118,6 +116,9 @@ const useChatSocket = (
                 break;
             case 'message-updated-listener':
                 updatedMsgListener(socketLastMessage.payload);
+                break;
+            case 'set-avatar-listener':
+                userListLightUpdate(socketLastMessage.payload);
                 break;
             case 'noti':
                 notiListener(socketLastMessage.payload);
@@ -132,6 +133,8 @@ const useChatSocket = (
     }
 
     async function getMsgWithRest(roomInfo: string) {
+        if (roomInfo == undefined || roomInfo == '') return;
+
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
@@ -357,6 +360,7 @@ const useChatSocket = (
     }
 
     useEffect(() => {
+        if (!isChatOpen) return;
         async function checkVerified() {
             const data = await isUserVerified();
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
@@ -367,7 +371,7 @@ const useChatSocket = (
 
         checkVerified();
 
-        if (!areSubscriptionsEnabled || !isChatOpen) return;
+        // if (!areSubscriptionsEnabled || !isChatOpen) return;
 
         async function getRest() {
             if (freezePanel) freezePanel();
@@ -394,6 +398,12 @@ const useChatSocket = (
 
         getRest();
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
+
+    useEffect(() => {
+        domDebug('room changed', room);
+        sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
+        roomRef.current = room;
+    }, [room]);
 
     useEffect(() => {
         updateUserCache();
@@ -519,8 +529,58 @@ const useChatSocket = (
         setMessages([...newMessageList]);
     };
 
+    async function updateUserWithAvatarImage(
+        userId: string,
+        avatarImage: string,
+    ) {
+        // rest implementation to be removed
+        // const response = await fetch(
+        //     CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
+        //     {
+        //         method: 'PUT',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify({
+        //             _id: _id,
+        //             ensName: ensName,
+        //             avatarImage: userAvatarImage,
+        //         }),
+        //     },
+        // );
+        // const data = await response.json();
+
+        sendToSocket('set-avatar', {
+            userId,
+            avatarImage,
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function userListLightUpdate(data: any) {
+        const newUsersList: User[] = [];
+
+        let refreshMessages = false;
+        users.map((e) => {
+            if (e._id == data.userId) {
+                newUsersList.push({ ...e, avatarImage: data.avatarImage });
+                refreshMessages = true;
+            }
+        });
+
+        if (!refreshMessages) return;
+
+        setUsers(newUsersList);
+
+        const usmp = new Map<string, User>();
+        newUsersList.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setMessages([...messagesRef.current]);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newMsgListener = (data: any) => {
+        if (data.roomInfo !== room && room != 'Admins') return;
         if (
             data &&
             data.sender &&
@@ -593,6 +653,7 @@ const useChatSocket = (
         getUserSummaryDetails,
         updateUnverifiedMessages,
         getMentionsWithRest,
+        updateUserWithAvatarImage,
     };
 };
 

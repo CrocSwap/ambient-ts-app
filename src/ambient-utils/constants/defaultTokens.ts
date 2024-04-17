@@ -64,6 +64,16 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
+export const blastJUICE: TokenIF = {
+    address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Juice',
+    symbol: 'JUICE',
+    logoURI: 'https://miablastsoff.com/images/logo.png',
+};
+
 export const blastMIM: TokenIF = {
     address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
     chainId: 81457,
@@ -115,6 +125,16 @@ export const blastBAJA: TokenIF = {
     logoURI: '',
 };
 
+export const blastESE: TokenIF = {
+    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'eesee',
+    symbol: 'ESE',
+    logoURI: '',
+};
+
 export const blastYES: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
@@ -145,6 +165,24 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
+export const blastWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
+};
+
+export const blastEzETH: TokenIF = {
+    name: 'Renzo Restaked ETH',
+    address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+    symbol: 'ezETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: '',
+};
+
 export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
@@ -163,36 +201,6 @@ export const blastOLE: TokenIF = {
     name: 'OpenLeverage',
     symbol: 'OLE',
     logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
-};
-
-export const blastFINGER: TokenIF = {
-    address: '0x7217124c626f0b7077be91df939195c9a8184ecc',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '/ambient-token-list.json',
-    name: 'Finger Blast',
-    symbol: 'FINGER',
-    logoURI: 'https://blastscan.io/token/images/fingerblast_32.png',
-};
-
-export const blastGLORY: TokenIF = {
-    address: '0xd582879453337bd149ae53ec2092b0af5281d1d7',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '/ambient-token-list.json',
-    name: 'Sekai Glory',
-    symbol: 'GLORY',
-    logoURI: 'https://blastscan.io/token/images/sekaiglory_32.png',
-};
-
-export const blastVROOM: TokenIF = {
-    address: '0x891c9B37177Bdf8Edc891119C9d8aEefDa9A5246',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '',
-    name: 'VROOM',
-    symbol: 'VROOM',
-    logoURI: '',
 };
 
 export const blastSepoliaETH: TokenIF = {
@@ -244,8 +252,8 @@ export const mainnetSWETH: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png?=v83',
-    name: 'Swell Ethereum',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
+    name: 'Swell Staked Ether',
     symbol: 'swETH',
 };
 
@@ -306,7 +314,7 @@ export const mainnetRPL: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: '',
+    logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
     name: 'Rocket Pool',
     symbol: 'RPL',
 };
@@ -499,13 +507,22 @@ export const scrollETH: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
 };
 
-export const scrollwstETH: TokenIF = {
+export const scrollWstETH: TokenIF = {
     name: 'Wrapped liquid staked Ether 2.0',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
     decimals: 18,
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
+};
+
+export const scrollWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
 };
 
 export const scrollRocketPoolETH: TokenIF = {
@@ -652,16 +669,15 @@ export const defaultTokens: TokenIF[] = [
     blastORBIT,
     blastBAG,
     blastBAJA,
+    blastESE,
     blastBEPE,
     blastALIEN,
     blastOLE,
-    blastFINGER,
-    blastGLORY,
     blastWETH,
+    blastEzETH,
     blastPUMP,
     blastYES,
     blastPACM,
-    blastVROOM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     goerliETH,
@@ -683,7 +699,8 @@ export const defaultTokens: TokenIF[] = [
     scrollWBTC,
     scrollRocketPoolETH,
     scrollWrappedETH,
-    scrollwstETH,
+    scrollWstETH,
+    scrollWrsETH,
     sepoliaETH,
     sepoliaUSDC,
     sepoliaWBTC,

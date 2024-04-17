@@ -21,7 +21,6 @@ import {
 import {
     diffHashSig,
     diffHashSigScaleData,
-    getFormattedNumber,
 } from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import {
@@ -43,6 +42,7 @@ import {
 } from '../../ChartUtils/drawConstants';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
+import useDollarPrice from '../../ChartUtils/getDollarPrice';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -128,6 +128,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     const [borderLineSeries, setBorderLineSeries] = useState<any>();
 
     const currentPool = useContext(TradeDataContext);
+    const getDollarPrice = useDollarPrice();
 
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.xScale.copy();
@@ -839,7 +840,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         ).toFixed(2);
 
                         const infoLabelHeight = 66;
-                        const infoLabelWidth = 180;
+                        const infoLabelWidth = 195;
 
                         const infoLabelXAxisData =
                             Math.min(lineData[0].x, lineData[1].x) +
@@ -912,10 +913,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     : 0;
 
                             ctx.fillText(
-                                getFormattedNumber({
-                                    value: heightAsPrice,
-                                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                                }) +
+                                getDollarPrice(heightAsPrice).formattedValue +
                                     ' ' +
                                     ' (' +
                                     heightAsPercentage.toString() +

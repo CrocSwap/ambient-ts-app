@@ -3,15 +3,24 @@ import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import TooltipComponent from '../../../../Global/TooltipComponent/TooltipComponent';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     txErrorMessage: string;
+    txErrorJSON: string;
 }
 
 export default function TransactionException(props: propsIF) {
-    const { txErrorMessage } = props;
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const { txErrorMessage, txErrorJSON } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
+
+    const [_, copy] = useCopyToClipboard();
 
     const isNativeTokenSecondary =
         (isTokenAPrimary && tokenB.address === ZERO_ADDRESS) ||
@@ -22,6 +31,10 @@ export default function TransactionException(props: propsIF) {
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
+    function handleCopyErrorMessage() {
+        copy(txErrorJSON);
+        openSnackbar('Error message copied to clipboard', 'info');
+    }
     const suggestionToCheckWalletETHBalance = (
         <p>
             Please verify that the native token (e.g. ETH) balance in your
@@ -43,14 +56,14 @@ export default function TransactionException(props: propsIF) {
                     </p>
                     <DividerDark />
                     <p>
-                        This may have occurred due to an insufficient native
-                        token (e.g. ETH) balance to cover potential slippage.
+                        Please try entering a specific amount of the native
+                        token (e.g. ETH), rather than
+                        {' ' + primaryTokenSymbol}.
                     </p>
                     <DividerDark />
                     <p>
-                        Please try entering a specific amount of the native
-                        token, rather than
-                        {' ' + primaryTokenSymbol}.
+                        This may have occurred due to an insufficient native
+                        token balance to cover potential slippage.
                     </p>
                 </>
             ) : (
@@ -60,7 +73,22 @@ export default function TransactionException(props: propsIF) {
                         We apologize for this inconvenience.
                     </p>
                     <DividerDark />
-                    <p>{formattedErrorMessage}</p>
+                    <div className={styles.formatted_error_container}>
+                        <p className={styles.formatted_error}>
+                            {formattedErrorMessage}
+                        </p>
+
+                        <button
+                            className={styles.copy_error}
+                            onClick={handleCopyErrorMessage}
+                        >
+                            Copy Error Message to Clipboard
+                            <TooltipComponent
+                                title='If you have any questions or need further assistance, please open a ticket on Discord (#open-a-ticket) and paste this error message. https://discord.gg/ambient-finance'
+                                placement='bottom'
+                            />
+                        </button>
+                    </div>
                     <DividerDark />
 
                     {!txErrorMessage ? (

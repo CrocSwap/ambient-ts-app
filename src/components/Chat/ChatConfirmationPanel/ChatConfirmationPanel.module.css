@@ -8,13 +8,13 @@
     padding: 1rem;
     width: 80%;
     left: 10%;
-    box-shadow: 0px 0px 28px #7371fc47;
-    border: 1px solid #7371fcb3;
+    box-shadow: 0px 0px 28px color-mix(in srgb, var(--accent1) 20%, transparent);
+    border: 1px solid var(--accent1);
     border-radius: 0.6rem;
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(8px);
     transform: translateY(130%);
-    background: rgba(22, 28, 38, 0.6);
+    background:color-mix(in srgb, var(--dark2) 86%, transparent);
 }
 
 .confirmation_wrapper.active{
@@ -77,7 +77,7 @@
 
 .primary_btn:hover{
     box-shadow: 0px 0px 10px var(--accent1);
-    border-color: #9d9cff;
+    border-color: color-mix(in srgb, var(--accent1) 66%, white);
 }
 
 

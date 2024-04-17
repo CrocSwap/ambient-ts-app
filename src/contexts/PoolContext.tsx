@@ -30,6 +30,12 @@ interface PoolContextIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;
+    usdPrice: number | undefined;
+    usdPriceInverse: number | undefined;
+    isTradeDollarizationEnabled: boolean;
+    setIsTradeDollarizationEnabled: React.Dispatch<
+        React.SetStateAction<boolean>
+    >;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -43,7 +49,24 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+
+    const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
+        useState(
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true',
+        );
+
+    useEffect(() => {
+        const savedTradeDollarizationPreference =
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true';
+        if (isTradeDollarizationEnabled !== savedTradeDollarizationPreference) {
+            localStorage.setItem(
+                'isTradeDollarizationEnabled',
+                isTradeDollarizationEnabled.toString(),
+            );
+        }
+    }, [isTradeDollarizationEnabled]);
+
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
         crocEnv,
@@ -108,10 +131,34 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
 
-    const poolPriceDisplay = poolData.poolPriceDisplay;
-    const isPoolPriceChangePositive = poolData.isPoolPriceChangePositive;
-    const poolPriceChangePercent = poolData.poolPriceChangePercent;
-    const isPoolInitialized = poolData.isPoolInitialized;
+    const {
+        poolPriceDisplay,
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
+        basePrice,
+        quotePrice,
+        isPoolInitialized,
+    } = poolData;
+
+    const usdPrice = poolPriceDisplay
+        ? isDenomBase
+            ? quotePrice
+                ? (1 / poolPriceDisplay) * quotePrice
+                : undefined
+            : basePrice
+            ? poolPriceDisplay * basePrice
+            : undefined
+        : undefined;
+
+    const usdPriceInverse = poolPriceDisplay
+        ? isDenomBase
+            ? basePrice
+                ? poolPriceDisplay * basePrice
+                : undefined
+            : quotePrice
+            ? (1 / poolPriceDisplay) * quotePrice
+            : undefined
+        : undefined;
 
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
@@ -155,6 +202,10 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         ambientApy,
         dailyVol,
         poolData,
+        usdPrice,
+        usdPriceInverse,
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
     };
 
     return (

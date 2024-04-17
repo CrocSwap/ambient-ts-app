@@ -57,6 +57,13 @@ function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const {
+        crocEnv,
+        activeNetwork,
+        provider,
+        chainData: { chainId, poolIndex },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
 
     const {
         isAmbient,
@@ -67,7 +74,7 @@ function RangeActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isPositionInRange,
-    } = useProcessRange(position, userAddress, isAccountView);
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -77,13 +84,7 @@ function RangeActionModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
-    } = useContext(CrocEnvContext);
+
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
     const {
         addPendingTx,
@@ -265,12 +266,14 @@ function RangeActionModal(props: propsIF) {
     const [newTransactionHash, setNewTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
     };
 
     useEffect(() => {
@@ -326,6 +329,7 @@ function RangeActionModal(props: propsIF) {
                     console.error({ error });
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(parseErrorMessage(error));
+                    setTxErrorJSON(JSON.stringify(error));
                 }
             } else {
                 try {
@@ -346,6 +350,7 @@ function RangeActionModal(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ error });
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(parseErrorMessage(error));
+                    setTxErrorJSON(JSON.stringify(error));
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -368,6 +373,7 @@ function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(parseErrorMessage(error));
+                setTxErrorJSON(JSON.stringify(error));
             }
         } else {
             IS_LOCAL_ENV &&
@@ -496,6 +502,7 @@ function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(parseErrorMessage(error));
+                setTxErrorJSON(JSON.stringify(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -626,6 +633,7 @@ function RangeActionModal(props: propsIF) {
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
                     txErrorMessage={txErrorMessage}
+                    txErrorJSON={txErrorJSON}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={

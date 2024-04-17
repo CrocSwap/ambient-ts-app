@@ -7,7 +7,6 @@ import {
     useState,
 } from 'react';
 import { AiOutlineCheck } from 'react-icons/ai';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     DefaultTooltip,
@@ -17,9 +16,11 @@ import { Message } from '../../Model/MessageModel';
 import { User, getUserLabelForReactions } from '../../Model/UserModel';
 import useChatApi from '../../Service/ChatApi';
 import PositionBox from '../PositionBox/PositionBox';
-import styles from './SentMessagePanel.module.css';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
+import { ChatVerificationTypes } from '../../ChatEnums';
+import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
+import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
@@ -29,8 +30,7 @@ import {
 } from '../../ChatUtils';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
-import { ChatVerificationTypes } from '../../ChatEnums';
+import styles from './SentMessagePanel.module.css';
 
 interface SentMessageProps {
     message: Message;
@@ -608,15 +608,6 @@ function SentMessagePanel(props: SentMessageProps) {
         );
     }
 
-    const jazziconsSeed = props.message.walletID.toLowerCase();
-
-    const myJazzicon = (
-        <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
-
-    // function blockUser(userId: string) {
-
-    // }
     function getReplyMessageInfo(_id: string) {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         getRepliedMessageInfo(_id).then((result: any) => {
@@ -941,7 +932,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         className={styles.avatar_jazzicons}
                                         onClick={goToProfilePage}
                                     >
-                                        {myJazzicon}
+                                        {/* {myJazzicon} */}
+                                        {getAvatarForChat(
+                                            props.userMap?.get(
+                                                props.message.sender,
+                                            ),
+                                        )}
                                     </div>
                                 )}
                                 {!showAvatar && (
@@ -952,7 +948,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         }}
                                     >
                                         <div className={styles.nft_container}>
-                                            {myJazzicon}
+                                            {/* {myJazzicon} */}
+                                            {getAvatarForChat(
+                                                props.userMap?.get(
+                                                    props.message.sender,
+                                                ),
+                                            )}
                                         </div>
                                     </div>
                                 )}

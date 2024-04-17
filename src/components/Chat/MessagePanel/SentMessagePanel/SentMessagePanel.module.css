@@ -681,7 +681,6 @@
     /* right: -14rem; */
     /* transform: translateX(-50%) translateY(-1.6rem);  */
     opacity: 0;
-    background: #12171f;
     /* border: 1px solid var(--accent1); */
     /* border: 1px solid rgba(255,255,255,.2); */
     /* box-shadow: 0px 0px 4px var(--accent1); */
@@ -778,12 +777,12 @@
 }
 
 .user_reacted{
-    background: #5f5eff;
-    box-shadow: 0px 0px 17px 3px #4a47ff86;
+    background: var(--accent1);
+    box-shadow: 0px 0px 17px 3px color-mix(in srgb, var(--accent1) 50%, transparent);
 }
 
 .user_reaction_label{
-    color: #817eff;
+    color: var(--accent1);
     font-weight: bold;
 }
 
@@ -856,7 +855,7 @@
 }
 
 .link_token{
-    color: #7371FC;
+    color: var(--accent1);
     text-decoration: underline;
     cursor: pointer;
 }
@@ -864,7 +863,7 @@
 .mentioned_name_token{
     font-weight: bold;
     cursor: pointer;
-    color: #7371FC;
+    color: var(--accent1);
 }
 
 .vrf_msg_dbg{

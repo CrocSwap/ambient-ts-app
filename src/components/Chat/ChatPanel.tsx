@@ -178,6 +178,7 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        // saveUserWithAvatarImage,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
@@ -308,6 +309,12 @@ function ChatPanel(props: propsIF) {
     }, [userAddress, room, isChatOpen]);
 
     useEffect(() => {
+        if (
+            lastScrolledMessage == undefined ||
+            lastScrolledMessage.length === 0
+        ) {
+            scrollToBottom();
+        }
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
                 if (
@@ -338,6 +345,7 @@ function ChatPanel(props: propsIF) {
             } else {
                 setEnsName(ens);
             }
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 if (result.status === 'Not OK') {
@@ -383,6 +391,18 @@ function ChatPanel(props: propsIF) {
         }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
 
+    // useEffect(() => {
+    //     if(userAddress){
+    //         getUserAvatarImageAndID().then((result: any) => {
+    //             console.log(result)
+    //             if (result.status === 'OK') {
+    //                 setUserAccountProfile(() => result.userData.avatarImage)
+    //             }
+    //         });
+
+    //     }
+    // },[userAddress, isUserConnected])
+
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
         // scrollToBottom();
@@ -416,7 +436,6 @@ function ChatPanel(props: propsIF) {
             // messageEnd.current.scrollTop = messageEnd.current.scrollHeight - msgElOffsetTop + msgElHeight - messageEnd.current.getBoundingClientRect().height;
             setTimeout(() => {
                 const target = calculateScrollTarget(messageId);
-                domDebug('target', new Date().getTime());
                 if (messageEnd && messageEnd.current) {
                     messageEnd.current.scrollTop = target;
                     if (flashAnimation) {
@@ -453,7 +472,6 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen]);
 
     useEffect(() => {
-        domDebug('messages', messages.length);
         const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == userAddress;
         });
@@ -551,7 +569,6 @@ function ChatPanel(props: propsIF) {
             if (msgEl) {
                 const msgElOffsetTop = (msgEl as HTMLElement).offsetTop;
                 const target = msgElOffsetTop - 120;
-                domDebug('potential scroll target', target);
 
                 return target;
             }
@@ -572,15 +589,6 @@ function ChatPanel(props: propsIF) {
                 const el = bubbles[i];
                 if (el.getBoundingClientRect().top > rect.top) {
                     const msgId = el.getAttribute('data-message-id');
-                    const msgContent = el.getAttribute('data-message-content');
-                    domDebug('selected message', msgContent ? msgContent : '-');
-                    domDebug('selectedMsgOffet', (el as HTMLElement).offsetTop);
-                    domDebug(
-                        'panelHeight',
-                        messageEnd.current.getBoundingClientRect().height,
-                    );
-                    domDebug('scrollheight', messageEnd.current.scrollHeight);
-                    domDebug('panelScrollTop', messageEnd.current.scrollTop);
                     calculateScrollTarget(msgId ? msgId : '');
                     setLastScrolledMessage(msgId ? msgId : '');
                     break;
@@ -602,6 +610,7 @@ function ChatPanel(props: propsIF) {
                     handleFocusedMessageOnScroll();
                 } else {
                     domDebug('selected message', '');
+                    setLastScrolledMessage('');
 
                     // setLastScrolledMessage('');
                 }
@@ -972,7 +981,7 @@ function ChatPanel(props: propsIF) {
                         >
                             <BsChatLeftFill
                                 size={25}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 style={{ cursor: 'pointer' }}
                             />
                             <span className={styles.text}>
@@ -983,7 +992,7 @@ function ChatPanel(props: propsIF) {
                             <RiArrowDownSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom'
@@ -998,7 +1007,7 @@ function ChatPanel(props: propsIF) {
                         <span onClick={() => scrollToBottomButton()}>
                             <BsChatLeftFill
                                 size={25}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 style={{ cursor: 'pointer' }}
                             />
                             <span className={styles.text}>
@@ -1009,7 +1018,7 @@ function ChatPanel(props: propsIF) {
                             <RiArrowDownSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
@@ -1028,7 +1037,7 @@ function ChatPanel(props: propsIF) {
                         <RiArrowDownSLine
                             role='button'
                             size={32}
-                            color='#7371fc'
+                            color='var(--accent1)'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom'
@@ -1042,7 +1051,7 @@ function ChatPanel(props: propsIF) {
                         <RiArrowDownSLine
                             role='button'
                             size={27}
-                            color='#7371fc'
+                            color='var(--accent1)'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
                             aria-label='Scroll to bottom zzzz'
@@ -1124,7 +1133,7 @@ function ChatPanel(props: propsIF) {
                     <RiArrowUpSLine
                         role='button'
                         size={27}
-                        color='#7371fc'
+                        color='var(--accent1)'
                         onClick={() => getPreviousMessages()}
                         tabIndex={0}
                         aria-label='Show previous messages'
@@ -1230,7 +1239,7 @@ function ChatPanel(props: propsIF) {
                             <RiArrowUpSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => getPreviousMessages()}
                                 tabIndex={0}
                                 aria-label='Show previous messages'

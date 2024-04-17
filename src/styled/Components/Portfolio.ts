@@ -18,9 +18,7 @@ export const PortfolioTabsPortfolioTabsContainer = styled.div`
 
     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
         margin: 0 auto;
-        width: 90%;
-        margin-left: 30px;
-
+        width: 100%;
         padding: 0 1rem;
     }
 `;
@@ -274,4 +272,33 @@ export const MobileButton = styled.button<{ active: boolean }>`
         color: ${active ? 'black' : 'var(--text1)'};
         background: ${active ? 'var(--accent1)' : 'transparent'};
     `}
+`;
+
+export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    ${({ placement }) => {
+        if (placement) {
+            return `
+            transform: translate(0%, 23%);
+            `;
+        }
+    }}
+`;
+
+export const UpdateProfileButton = styled.div`
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    color: var(--text1);
+
+    border: none;
+    outline: none;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;

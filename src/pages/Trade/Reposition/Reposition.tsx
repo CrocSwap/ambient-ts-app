@@ -104,11 +104,13 @@ function Reposition() {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRepositionTransactionHash('');
     };
 
@@ -141,7 +143,7 @@ function Reposition() {
         ? repoSlippage.stable
         : repoSlippage.volatile;
 
-    const { posHashTruncated } = useProcessRange(position);
+    const { posHashTruncated } = useProcessRange(position, crocEnv);
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -333,6 +335,7 @@ function Reposition() {
         let tx;
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
 
         resetConfirmation();
         setShowConfirmation(true);
@@ -392,6 +395,7 @@ function Reposition() {
             console.error({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(parseErrorMessage(error));
+            setTxErrorJSON(JSON.stringify(error));
         }
 
         let receipt;
@@ -554,6 +558,14 @@ function Reposition() {
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
     const [newValueNum, setNewValueNum] = useState<number | undefined>();
+
+    const valueLossExceedsThreshold = useMemo(() => {
+        if (newValueNum === undefined) return false;
+        const priceImpactNum =
+            (newValueNum - position.totalValueUSD) / position.totalValueUSD;
+        return priceImpactNum < -0.02;
+        // change color to red if value loss greater than 2%
+    }, [newValueNum, position.totalValueUSD]);
 
     const valueImpactString = useMemo(() => {
         if (newValueNum === undefined) return '...';
@@ -843,6 +855,7 @@ function Reposition() {
                         }
                         newValueString={newValueString}
                         valueImpactString={valueImpactString}
+                        valueLossExceedsThreshold={valueLossExceedsThreshold}
                         isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
                     <div className={styles.button_container}>
@@ -854,6 +867,7 @@ function Reposition() {
                                 }
                                 txErrorCode={txErrorCode}
                                 txErrorMessage={txErrorMessage}
+                                txErrorJSON={txErrorJSON}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
@@ -900,6 +914,7 @@ function Reposition() {
                     resetConfirmation={resetConfirmation}
                     txErrorCode={txErrorCode}
                     txErrorMessage={txErrorMessage}
+                    txErrorJSON={txErrorJSON}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={

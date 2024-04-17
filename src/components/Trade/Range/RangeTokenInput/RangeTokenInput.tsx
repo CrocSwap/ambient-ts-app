@@ -19,6 +19,7 @@ import { InputDisabledText } from '../../../../styled/Components/TradeModules';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -74,6 +75,7 @@ function RangeTokenInput(props: propsIF) {
         isTokenBEth,
     } = useContext(TradeTokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
+    const { poolData } = useContext(PoolContext);
     const { rangeTicksCopied, setRangeTicksCopied } = useContext(RangeContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
@@ -187,6 +189,13 @@ function RangeTokenInput(props: propsIF) {
         </InputDisabledText>
     );
 
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -213,7 +222,7 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenA.decimals}
+                usdValue={usdValueTokenA}
             />
             {!hidePlus && (
                 <FlexContainer
@@ -253,8 +262,8 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenB.decimals}
                 isWithdraw
+                usdValue={usdValueTokenB}
             />
         </FlexContainer>
     );
