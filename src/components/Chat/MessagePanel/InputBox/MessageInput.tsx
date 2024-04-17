@@ -25,7 +25,9 @@ import {
     filterMessage,
     formatURL,
     isLinkInCrocodileLabsLinksForInput,
+    isLinkInCrocodileLabsLinks,
 } from '../../ChatUtils';
+import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 
 interface MessageInputProps {
     currentUser: string;
@@ -101,7 +103,6 @@ export default function MessageInput(props: MessageInputProps) {
 
             const selectionStart = inputRef.current.selectionStart as number;
 
-            // Create the new message by inserting the emoji at the selection start position
             const newMessage =
                 currentMessage.slice(0, selectionStart) +
                 emoji +
@@ -111,17 +112,14 @@ export default function MessageInput(props: MessageInputProps) {
                 setMessage(newMessage);
                 setInputLength(newMessage.length);
 
-                // Calculate the new cursor position after emoji insertion
                 const newCursorPosition = selectionStart + emoji.length;
 
-                // Update the input value and set the cursor position
                 inputRef.current.value = newMessage;
                 inputRef.current.setSelectionRange(
                     newCursorPosition,
                     newCursorPosition,
                 );
 
-                // Ensure the cursor remains active by focusing on the input element
                 inputRef.current.focus();
             } else {
                 props.setShowPopUp(true);
@@ -184,11 +182,21 @@ export default function MessageInput(props: MessageInputProps) {
         if (message === '') {
             return;
         }
-        const normalizedMessage = formatURL(message);
-        if (
-            (isLink(normalizedMessage) || filterMessage(normalizedMessage)) &&
-            !isLinkInCrocodileLabsLinksForInput(normalizedMessage)
-        ) {
+        const parts = message.split(/\s+/);
+
+        const containsBlockedLink = parts.some((part) => {
+            const normalizedPart = formatURL(part);
+            return (
+                (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
+                !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+            );
+        });
+
+        const containsAllowedLink = parts.some((part) => {
+            const normalizedPart = formatURL(part);
+            return isLinkInCrocodileLabsLinks(normalizedPart);
+        });
+        if (containsBlockedLink && !containsAllowedLink) {
             props.setShowPopUp(true);
             props.setPopUpText('You cannot send this link.');
         } else {
@@ -221,15 +229,12 @@ export default function MessageInput(props: MessageInputProps) {
         setInputLength(newMessage.length);
         setCursorPosition(e.currentTarget.selectionStart);
 
-        // Check if the message length is less than or equal to 140 characters,
-        // and hide the pop-up message if it was shown previously
         if (newMessage.length <= 140) {
             props.setShowPopUp(false);
         }
     };
 
     const handleInputClick = () => {
-        // Update cursor position when the user clicks inside the input field
         if (inputRef.current) {
             setCursorPosition(inputRef.current.selectionStart);
         }
@@ -253,8 +258,6 @@ export default function MessageInput(props: MessageInputProps) {
     // };
 
     const isEmoji = (char: string) => {
-        // You can implement a more comprehensive check for emojis
-        // For simplicity, this example only checks for surrogate pairs
         return /[\uD800-\uDFFF]/.test(char);
     };
 
@@ -267,30 +270,36 @@ export default function MessageInput(props: MessageInputProps) {
 
             return;
         }
-
         if (e.key === 'Enter') {
-            if (
-                (isLink(message) || filterMessage(message)) &&
-                !isLinkInCrocodileLabsLinksForInput(message)
-            ) {
+            if (message === '') {
+                return;
+            }
+
+            const parts = message.split(/\s+/);
+
+            const containsBlockedLink = parts.some((part) => {
+                const normalizedPart = formatURL(part);
+
+                return (
+                    (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
+                    !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+                );
+            });
+
+            const containsAllowedLink = parts.some((part) => {
+                const normalizedPart = formatURL(part);
+                return isLinkInCrocodileLabsLinks(normalizedPart);
+            });
+            if (containsBlockedLink && !containsAllowedLink) {
                 props.setShowPopUp(true);
                 props.setPopUpText('You cannot send this link.');
             } else {
-                // send msg if ment panel is not active
-                if (!mentPanelActive) {
-                    handleSendMsg(formatURL(message), roomId);
-                    setMentUser(null);
-                    setPossibleMentUser(null);
-                    setMessage('');
-                    dontShowEmojiPanel();
-                    props.setShowPopUp(false);
-                }
-                // assign user for ment
-                else {
-                    if (possibleMentUser != null) {
-                        userPickerForMention(possibleMentUser);
-                    }
-                }
+                handleSendMsg(formatURL(message), roomId);
+                setMessage('');
+                setMentUser(null);
+                setPossibleMentUser(null);
+                dontShowEmojiPanel();
+                props.setShowPopUp(false);
             }
         } else if (
             mentPanelActive &&

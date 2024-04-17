@@ -527,8 +527,8 @@ function SentMessagePanel(props: SentMessageProps) {
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
         if (
-            (isLinkInCrocodileLabsLinks(word) ||
-                isLinkInCrocodileLabsLinksForInput(word)) &&
+            isLinkInCrocodileLabsLinks(word) &&
+            isLinkInCrocodileLabsLinksForInput(word) &&
             isValidUrl(word)
         ) {
             ret = (
