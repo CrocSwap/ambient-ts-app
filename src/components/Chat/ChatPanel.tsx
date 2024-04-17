@@ -195,7 +195,7 @@ function ChatPanel(props: propsIF) {
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
-    const { isUserConnected, resolvedAddressFromContext } =
+    const { isUserConnected, resolvedAddressFromContext, setCurrentUserID } =
         useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
@@ -360,6 +360,7 @@ function ChatPanel(props: propsIF) {
                         ? setIsModerator(true)
                         : setIsModerator(false);
                     setCurrentUser(result.userData._id);
+                    setCurrentUserID(result.userData._id);
                     setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
                         updateUser(
@@ -390,18 +391,6 @@ function ChatPanel(props: propsIF) {
             setCurrentUser(undefined);
         }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
-
-    // useEffect(() => {
-    //     if(userAddress){
-    //         getUserAvatarImageAndID().then((result: any) => {
-    //             console.log(result)
-    //             if (result.status === 'OK') {
-    //                 setUserAccountProfile(() => result.userData.avatarImage)
-    //             }
-    //         });
-
-    //     }
-    // },[userAddress, isUserConnected])
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);

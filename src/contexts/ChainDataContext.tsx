@@ -245,7 +245,7 @@ export const ChainDataContextProvider = (props: {
                 ) {
                     try {
                         const NFTResponse = await cachedFetchNFT(
-                            userAddress,
+                            '0x3E3072BA17D18eB9E0e51a5EA23043286e00aa1D',
                             crocEnv,
                             alchemyClient,
                             NFTFetchSettings.pageKey,
@@ -268,12 +268,19 @@ export const ChainDataContextProvider = (props: {
 
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             NFTData.map((nftData: any) => {
-                                nftImgArray.push({
-                                    contractAddress: nftData.contract.address,
-                                    contractName: nftData.contract.name,
-                                    cachedUrl: nftData.image.cachedUrl,
-                                    originalUrl: nftData.image.originalUrl,
-                                });
+                                if (
+                                    nftData.collection.name !==
+                                    'ENS: Ethereum Name Service'
+                                ) {
+                                    nftImgArray.push({
+                                        contractAddress:
+                                            nftData.contract.address,
+                                        contractName: nftData.contract.name,
+                                        thumbnailUrl:
+                                            nftData.image.thumbnailUrl,
+                                        cachedUrl: nftData.image.cachedUrl,
+                                    });
+                                }
                             });
 
                             const nftDataMap = localNftDataParsed

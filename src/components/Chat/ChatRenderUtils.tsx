@@ -129,7 +129,7 @@ export const getAvatar = (
 
 export const getAvatarForProfilePage = (
     walletID: string,
-    avatarImage?: string,
+    avatarImage?: string | undefined,
     size?: number,
     canEdit?: boolean,
 ) => {
@@ -174,8 +174,8 @@ export const getAvatarForChat = (user?: User, size?: number) => {
     }
     return getAvatar(
         user.walletID,
-        user.avatarThumnail != undefined && user.avatarThumnail.length > 0
-            ? user.avatarThumnail
+        user.avatarThumbnail != undefined && user.avatarThumbnail.length > 0
+            ? user.avatarThumbnail
             : user.avatarImage,
         size ? size : 25,
     );

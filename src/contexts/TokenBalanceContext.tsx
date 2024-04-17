@@ -12,8 +12,8 @@ export interface NftListByChain {
 export interface NftDataIF {
     contractAddress: string;
     contractName: string;
+    thumbnailUrl: string;
     cachedUrl: string;
-    originalUrl: string;
 }
 
 export interface NftFetchSettingsIF {
