@@ -8,9 +8,11 @@ import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
 import { blast } from './blastNetwork';
 
-export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
-    ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'
-    : false;
+// export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
+//     ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'
+//     : false;
+
+export const IS_BLAST_SITE = true;
 
 export const IS_SCROLL_SITE =
     process.env.REACT_APP_IS_SCROLL_SITE !== undefined

@@ -5,25 +5,36 @@
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSwitchNetwork } from 'wagmi';
-import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
+// import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
 import NetworkButton from './NetworkButton';
+import { useContext } from 'react';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import { chainIds } from '../../../../ambient-utils/types';
 
 // interface NetworkButtonsPropsIF {
 //     switchNetwork: (providedChainId: string) => Promise<void>;
 // }
 export default function NetworkButtons() {
-    // props: NetworkButtonsPropsIF
-    // const { switchNetwork } = props;
+    const { networks } = useContext(BrandContext);
 
     const {
         // chains, error, isLoading, pendingChainId,
         switchNetwork,
     } = useSwitchNetwork();
 
-    const supportedChains = getSupportedChainIds().map((chainId) => {
+    // const supportedChains = getSupportedChainIds().map((chainId) => {
+    //     return {
+    //         name: lookupChain(chainId).displayName,
+    //         id: chainId,
+    //         icon: '',
+    //         theme: '#36364a',
+    //     };
+    // });
+
+    const supportedChains = networks.map((network: chainIds) => {
         return {
-            name: lookupChain(chainId).displayName,
-            id: chainId,
+            name: lookupChain(network).displayName,
+            id: network,
             icon: '',
             theme: '#36364a',
         };
