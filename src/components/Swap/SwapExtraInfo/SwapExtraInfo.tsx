@@ -65,6 +65,9 @@ function SwapExtraInfo(props: propsIF) {
             ? undefined
             : Math.abs(priceImpact.percentChange) * 100;
 
+    const priceImpactExceedsThreshold =
+        priceImpactNum !== undefined && priceImpactNum > 2;
+
     const extraInfo = [
         {
             title: 'Avg. Rate',
@@ -136,6 +139,7 @@ function SwapExtraInfo(props: propsIF) {
             gasPrice={swapGasPriceinDollars}
             showDropdown={showExtraInfoDropdown}
             showWarning={showWarning}
+            priceImpactExceedsThreshold={priceImpactExceedsThreshold}
         />
     );
 }
