@@ -45,6 +45,19 @@ const useChatApi = () => {
         }
     }
 
+    async function getIDByUserAddress(userAddress: string) {
+        if (userAddress) {
+            const response = await fetch(
+                host + '/chat/api/auth/getUserByAccount/' + userAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
     async function getName(id: string) {
         const response = await fetch(
             host + '/chat/api/auth/getNamebyID/' + id,
@@ -233,6 +246,7 @@ const useChatApi = () => {
         getUserAvatarImageAndID,
         updateUserWithAvatarImage,
         getUserAvatar,
+        getIDByUserAddress,
         getTopRooms,
     };
 };

@@ -10,7 +10,6 @@ import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
-import useChatApi from '../components/Chat/Service/ChatApi';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -27,17 +26,27 @@ interface UserDataContextIF {
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
-    userAccountProfile: string | undefined;
-    setUserAccountProfile: Dispatch<SetStateAction<string | undefined>>;
+    userProfileNFT: string | undefined;
+    setUserProfileNFT: Dispatch<SetStateAction<string | undefined>>;
+    userThumbnailNFT: string | undefined;
+    setUserThumbnailNFT: Dispatch<SetStateAction<string | undefined>>;
+    currentUserID: string | undefined;
+    setCurrentUserID: Dispatch<SetStateAction<string | undefined>>;
     isfetchNftTriggered: boolean;
     setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
     secondaryEnsFromContext: string;
     setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
+    nftTestWalletAddress: string;
+    setNftTestWalletAddress: Dispatch<SetStateAction<string>>;
 }
 
 export interface UserXpDataIF {
     dataReceived: boolean;
     data: UserXpIF | undefined;
+}
+export interface UserNftIF {
+    userID: string;
+    avatarImage: string | undefined;
 }
 
 export interface BlastUserXpDataIF {
@@ -60,8 +69,6 @@ export const UserDataContextProvider = (props: {
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
     const { disconnect: disconnectUser } = useDisconnect();
 
-    const { getUserAvatar } = useChatApi();
-
     const {
         connect: connectUser,
         connectors,
@@ -82,12 +89,23 @@ export const UserDataContextProvider = (props: {
 
     const [ensName, setEnsName] = useState('');
 
-    const [userAccountProfile, setUserAccountProfile] = useState<
+    const [userProfileNFT, setUserProfileNFT] = useState<string | undefined>(
+        undefined,
+    );
+
+    const [userThumbnailNFT, setUserThumbnailNFT] = useState<
         string | undefined
     >(undefined);
 
+    const [currentUserID, setCurrentUserID] = useState<string | undefined>(
+        undefined,
+    );
+
     const [isfetchNftTriggered, setIsfetchNftTriggered] =
         useState<boolean>(false);
+
+    const [nftTestWalletAddress, setNftTestWalletAddress] =
+        useState<string>('');
 
     // check for ENS name account changes
     useEffect(() => {
@@ -107,26 +125,6 @@ export const UserDataContextProvider = (props: {
         })();
     }, [ensNameFromWagmi, userAddress]);
 
-    useEffect(() => {
-        (async () => {
-            if (userAddress) {
-                try {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    getUserAvatar(userAddress).then((result: any) => {
-                        if (result.status === 'OK') {
-                            setUserAccountProfile(
-                                () => result.userData.avatarImage,
-                            );
-                        }
-                    });
-                } catch (error) {
-                    setUserAccountProfile('');
-                    console.error({ error });
-                }
-            }
-        })();
-    }, [userAddress, isUserConnected]);
-
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
@@ -141,10 +139,16 @@ export const UserDataContextProvider = (props: {
         setResolvedAddressInContext,
         secondaryEnsFromContext,
         setSecondaryEnsInContext,
-        userAccountProfile,
-        setUserAccountProfile,
+        userProfileNFT,
+        setUserProfileNFT,
+        userThumbnailNFT,
+        setUserThumbnailNFT,
+        currentUserID,
+        setCurrentUserID,
         setIsfetchNftTriggered,
         isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
     };
 
     return (

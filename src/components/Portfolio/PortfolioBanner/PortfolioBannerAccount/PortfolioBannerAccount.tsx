@@ -14,18 +14,15 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     PortfolioBannerMainContainer,
-    UpdateProfileButton,
     ProfileSettingsContainer,
 } from '../../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import NFTBannerAccount from './NFTBannerAccount';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
-import {
-    getAvatar,
-    getAvatarForProfilePage,
-} from '../../../Chat/ChatRenderUtils';
+import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
+import { MdOutlineCloudDownload } from 'react-icons/md';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -42,10 +39,12 @@ export default function PortfolioBannerAccount(
 
     const {
         userAddress,
-        userAccountProfile,
+        userProfileNFT,
         isfetchNftTriggered,
         setIsfetchNftTriggered,
-        setUserAccountProfile,
+        setUserProfileNFT,
+        setUserThumbnailNFT,
+        setNftTestWalletAddress,
     } = useContext(UserDataContext);
 
     const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
@@ -70,18 +69,20 @@ export default function PortfolioBannerAccount(
 
     const { getUserAvatar } = useChatApi();
 
-    const [userAvatarImage, setUserAvatarImage] = useState(null);
-
     useEffect(() => {
         const fetchAvatar = async () => {
             if (userAddress) {
-                const avatar = await getUserAvatar(userAddress);
-                setUserAvatarImage(avatar);
-                setUserAccountProfile(avatar);
+                const avatar = await getUserAvatar(
+                    resolvedAddress !== undefined && resolvedAddress.length > 0
+                        ? resolvedAddress
+                        : userAddress,
+                );
+                setUserProfileNFT(avatar.avatarImage);
+                setUserThumbnailNFT(avatar.avatarThumbnail);
             }
         };
         fetchAvatar();
-    }, [resolvedAddress]);
+    }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
         setShowNFTPage(false);
@@ -89,11 +90,7 @@ export default function PortfolioBannerAccount(
 
     domDebug('resolved address', resolvedAddress);
     domDebug('user address', userAddress);
-    domDebug('ua_profile', userAccountProfile);
-
-    useEffect(() => {
-        console.log(userAvatarImage);
-    }, [userAvatarImage]);
+    domDebug('ua_profile', userProfileNFT);
 
     function handleCopyEnsName() {
         copy(
@@ -125,16 +122,27 @@ export default function PortfolioBannerAccount(
         }
     }
 
-    const updateProfile = NFTData && (
-        <UpdateProfileButton
-            onClick={(event: React.MouseEvent<HTMLElement>) => {
-                event.stopPropagation();
-                setShowNFTPage(!showNFTPage);
-            }}
-        >
-            Update Avatar
-        </UpdateProfileButton>
-    );
+    // Nft Fetch For Test Wallet
+    const [isWalletPanelActive, setIsWalletPanelActive] = useState(false);
+
+    function openWalletAddressPanel(e: KeyboardEvent) {
+        if (e.code === 'KeyQ' && e.altKey) {
+            setIsWalletPanelActive((prev) => !prev);
+
+            document.removeEventListener('keydown', openWalletAddressPanel);
+        }
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', openWalletAddressPanel);
+    }, []);
+
+    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
+
+    function handleTestWalletChange(nftTestWalletInput: string) {
+        setNftTestWalletAddress(() => nftTestWalletInput);
+        setIsfetchNftTriggered(() => true);
+    }
 
     return (
         <PortfolioBannerMainContainer
@@ -148,7 +156,10 @@ export default function PortfolioBannerAccount(
             >
                 <span
                     onClick={() => {
-                        setShowNFTPage(!showNFTPage);
+                        !(
+                            resolvedAddress !== undefined &&
+                            resolvedAddress.length > 0
+                        ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
                     <ProfileSettingsContainer
@@ -157,32 +168,13 @@ export default function PortfolioBannerAccount(
                         {userAddress &&
                             getAvatarForProfilePage(
                                 userAddress,
-                                userAccountProfile,
+                                userProfileNFT,
                                 65,
-                                true,
+                                resolvedAddress !== undefined &&
+                                    resolvedAddress.length > 0
+                                    ? false
+                                    : true,
                             )}
-                        {/* {userAccountProfile ? (
-                        <img
-                            src={userAccountProfile}
-                            style={{
-                                width: '65px',
-                                height: '65px',
-                                borderRadius: '50%',
-                            }}
-                        ></img>
-                    ) : (
-                        <>{props.jazziconsToDisplay}</>
-                    )} */}
-                        {NFTData &&
-                            NFTData.find(
-                                (nftChainList) =>
-                                    nftChainList.chainId === chainId,
-                            ) &&
-                            NFTData.find(
-                                (nftChainList) =>
-                                    nftChainList.chainId === chainId,
-                            )?.userHasNFT &&
-                            updateProfile}
                     </ProfileSettingsContainer>
                 </span>
 
@@ -236,8 +228,48 @@ export default function PortfolioBannerAccount(
                         setIsfetchNftTriggered={setIsfetchNftTriggered}
                         NFTFetchSettings={NFTFetchSettings}
                         setNFTFetchSettings={setNFTFetchSettings}
+                        setNftTestWalletInput={setNftTestWalletInput}
+                        nftTestWalletInput={nftTestWalletInput}
+                        handleTestWalletChange={handleTestWalletChange}
                     />
                 )}
+
+            {isWalletPanelActive && (
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '5px',
+                    }}
+                >
+                    <input
+                        id='token_select_input_field'
+                        spellCheck='false'
+                        type='text'
+                        value={nftTestWalletInput}
+                        onChange={(e) => setNftTestWalletInput(e.target.value)}
+                        placeholder=' Test wallet address'
+                        style={{
+                            borderRadius: '3px',
+
+                            borderWidth: '1.5px',
+                            borderStyle: 'solid',
+                            borderColor: 'rgba(121, 133, 148, 0.7)',
+
+                            fontSize: '15px',
+                            color: 'rgba(204, 204, 204)',
+                            background: '#2f3d52',
+                        }}
+                    />
+                    <MdOutlineCloudDownload
+                        size={18}
+                        onClick={() => {
+                            handleTestWalletChange(nftTestWalletInput);
+                        }}
+                    />
+                </div>
+            )}
         </PortfolioBannerMainContainer>
     );
 }

@@ -532,25 +532,12 @@ const useChatSocket = (
     async function updateUserWithAvatarImage(
         userId: string,
         avatarImage: string,
+        avatarThumbnail?: string,
     ) {
-        // rest implementation to be removed
-        // const response = await fetch(
-        //     CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
-        //     {
-        //         method: 'PUT',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             _id: _id,
-        //             ensName: ensName,
-        //             avatarImage: userAvatarImage,
-        //         }),
-        //     },
-        // );
-        // const data = await response.json();
-
         sendToSocket('set-avatar', {
             userId,
             avatarImage,
+            avatarThumbnail,
         });
     }
 
