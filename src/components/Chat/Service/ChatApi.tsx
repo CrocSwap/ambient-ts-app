@@ -8,6 +8,7 @@ import {
     // updateUserWithAvatarImageEndpoint,
 } from '../ChatUtils';
 import {
+    getTopRoomsEndpoint,
     getUserAvatarEndpoint,
     getUserAvatarImageByAccountEndpoint,
     updateUserWithAvatarImageEndpoint,
@@ -32,6 +33,19 @@ const useChatApi = () => {
     }
 
     async function getID() {
+        if (userAddress) {
+            const response = await fetch(
+                host + '/chat/api/auth/getUserByAccount/' + userAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
+    async function getIDByUserAddress(userAddress: string) {
         if (userAddress) {
             const response = await fetch(
                 host + '/chat/api/auth/getUserByAccount/' + userAddress,
@@ -210,6 +224,14 @@ const useChatApi = () => {
         return '';
     }
 
+    async function getTopRooms() {
+        const response = await fetch(CHAT_BACKEND_URL + getTopRoomsEndpoint, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        return data;
+    }
+
     return {
         getStatus,
         getID,
@@ -224,6 +246,8 @@ const useChatApi = () => {
         getUserAvatarImageAndID,
         updateUserWithAvatarImage,
         getUserAvatar,
+        getIDByUserAddress,
+        getTopRooms,
     };
 };
 export default useChatApi;

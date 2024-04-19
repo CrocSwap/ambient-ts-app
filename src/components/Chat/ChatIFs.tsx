@@ -24,3 +24,17 @@ export interface AvatarUpdateIF {
     userId: string;
     avatarImage: string;
 }
+
+export interface GetTopPoolsResponse {
+    roomInfo: string;
+    count: number;
+}
+
+export interface ChatRoomIF {
+    name: string;
+    base?: string;
+    quote?: string;
+    popularity?: number;
+    isFavourite?: boolean;
+    shownName?: string;
+}

@@ -78,6 +78,8 @@ export const ChainDataContextProvider = (props: {
         isUserConnected,
         setIsfetchNftTriggered,
         isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
     } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
@@ -245,7 +247,9 @@ export const ChainDataContextProvider = (props: {
                 ) {
                     try {
                         const NFTResponse = await cachedFetchNFT(
-                            userAddress,
+                            nftTestWalletAddress !== ''
+                                ? nftTestWalletAddress
+                                : userAddress,
                             crocEnv,
                             alchemyClient,
                             NFTFetchSettings.pageKey,
@@ -268,12 +272,19 @@ export const ChainDataContextProvider = (props: {
 
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             NFTData.map((nftData: any) => {
-                                nftImgArray.push({
-                                    contractAddress: nftData.contract.address,
-                                    contractName: nftData.contract.name,
-                                    cachedUrl: nftData.image.cachedUrl,
-                                    originalUrl: nftData.image.originalUrl,
-                                });
+                                if (
+                                    nftData.collection.name !==
+                                    'ENS: Ethereum Name Service'
+                                ) {
+                                    nftImgArray.push({
+                                        contractAddress:
+                                            nftData.contract.address,
+                                        contractName: nftData.contract.name,
+                                        thumbnailUrl:
+                                            nftData.image.thumbnailUrl,
+                                        cachedUrl: nftData.image.cachedUrl,
+                                    });
+                                }
                             });
 
                             const nftDataMap = localNftDataParsed
@@ -303,6 +314,7 @@ export const ChainDataContextProvider = (props: {
 
                             setNFTData(mapValue);
                             setIsfetchNftTriggered(() => false);
+                            setNftTestWalletAddress(() => '');
                         }
                     } catch (error) {
                         console.error({ error });
