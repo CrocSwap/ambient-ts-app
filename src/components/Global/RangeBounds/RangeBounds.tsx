@@ -144,7 +144,11 @@ export default function RangeBounds(props: RangeBoundsProps) {
                 transition={{ duration: 0.5 }}
             >
                 <RangeWidth {...rangeWidthProps} />
-                {isEditPanel && <EditLiqPriceInfo />}
+                {isEditPanel && (
+                    <EditLiqPriceInfo
+                        rangeWidthPercentage={rangeWidthPercentage}
+                    />
+                )}
             </motion.div>
 
             {isReposition || isEditPanel ? null : (
@@ -162,7 +166,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
                 <div className={styles.advanced_info_container}>
                     <MinMaxPrice {...minMaxPricePropsIF} />
                     {isEditPanel && <span className={styles.divider} />}
-                    {isEditPanel && <EditLiqPriceInfo />}
+                    {isEditPanel && <EditLiqPriceInfo {...rangeWidthProps} />}
                 </div>
             </motion.div>
         </>

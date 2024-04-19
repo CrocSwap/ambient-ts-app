@@ -7,33 +7,19 @@ import { useContext, useMemo, useState } from 'react';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
-export default function EditLiqPriceInfo() {
-    const { isDenomBase, getDefaultRangeWidthForTokenPair } =
-        useContext(TradeDataContext);
+interface propsIF {
+    rangeWidthPercentage: number;
+}
+export default function EditLiqPriceInfo(props: propsIF) {
+    const { rangeWidthPercentage } = props;
+    const { isDenomBase } = useContext(TradeDataContext);
 
-    const {
-        simpleRangeWidth,
-
-        // eslint-disable-next-line
-        setAdvancedHighTick,
-        // eslint-disable-next-line
-        setAdvancedLowTick,
-    } = useContext(RangeContext);
     const locationHook = useLocation();
     const { position } = locationHook.state as { position: PositionIF };
     console.log({ position });
     const { pinnedDisplayPrices } = useContext(RangeContext);
 
     // eslint-disable-next-line
-    const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
-        simpleRangeWidth === 100
-            ? 100
-            : getDefaultRangeWidthForTokenPair(
-                  position.chainId,
-                  position.base.toLowerCase(),
-                  position.quote.toLowerCase(),
-              ),
-    );
 
     // eslint-disable-next-line
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =

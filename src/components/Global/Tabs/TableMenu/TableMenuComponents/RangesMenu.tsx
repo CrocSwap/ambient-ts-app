@@ -327,7 +327,7 @@ function RangesMenu(props: propsIF) {
             userMatchesConnectedAccount
                 ? editButton
                 : null}
-            {editButton}
+            {IS_EDIT_ENABLED && editButton}
         </div>
     );
 
