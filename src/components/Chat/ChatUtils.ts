@@ -1,9 +1,14 @@
+import { PoolIF } from '../../ambient-utils/types';
 import {
     CROCODILE_LABS_LINKS,
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from './ChatConstants/ChatConstants';
-import { ChatWsDecodedMessage } from './ChatIFs';
+import {
+    ChatRoomIF,
+    ChatWsDecodedMessage,
+    GetTopPoolsResponse,
+} from './ChatIFs';
 import { Message } from './Model/MessageModel';
 
 export const getLS = (key: string, personalize?: string) => {
@@ -193,4 +198,59 @@ export const decodeSocketIOMessage = (msg: string) => {
     }
 
     return ret;
+};
+
+export const getDefaultRooms = (isModerator: boolean) => {
+    const ret: ChatRoomIF[] = [
+        {
+            name: 'Global',
+        },
+    ];
+
+    if (isModerator) {
+        ret.push({
+            name: 'Admins',
+        });
+    }
+
+    return ret;
+};
+
+export const createRoomIF = (
+    resp: GetTopPoolsResponse,
+    popularityScore?: number,
+) => {
+    let ret: ChatRoomIF;
+    if (resp.roomInfo.indexOf('/') >= 0) {
+        ret = {
+            name: resp.roomInfo,
+            base: resp.roomInfo.split('/')[0],
+            quote: resp.roomInfo.split('/')[1],
+            popularity: popularityScore,
+        };
+    } else {
+        ret = {
+            name: resp.roomInfo,
+            popularity: popularityScore,
+        };
+    }
+
+    try {
+        if (popularityScore && popularityScore > 0) {
+            let append = '';
+            for (let i = 0; i < popularityScore; i++) {
+                append += '🔥';
+            }
+
+            ret.shownName = `${ret.name} ${append}`;
+        }
+    } catch {
+        console.error('Error creating roomIF');
+    }
+
+    return ret;
+};
+
+export const getRoomNameFromPool = (pool: PoolIF) => {
+    return `${pool.base.symbol} / ${pool.quote.symbol}`;
 };
