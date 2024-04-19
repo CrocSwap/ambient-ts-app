@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
-import { crocswapBrandAssets } from '../assets/branding/crocswapBrandAssets';
 import { brandAssetsIF } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
@@ -32,8 +31,6 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
     const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? FALLBACK_SET;
     const brandAssets = useMemo<brandAssetsIF>(() => {
         switch (brand) {
-            case 'crocswap':
-                return crocswapBrandAssets;
             case 'blast':
                 return blastBrandAssets;
             case 'scroll':
