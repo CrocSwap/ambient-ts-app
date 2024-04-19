@@ -22,6 +22,7 @@ import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
+import { MdOutlineCloudDownload } from 'react-icons/md';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -43,6 +44,7 @@ export default function PortfolioBannerAccount(
         setIsfetchNftTriggered,
         setUserProfileNFT,
         setUserThumbnailNFT,
+        setNftTestWalletAddress,
     } = useContext(UserDataContext);
 
     const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
@@ -70,13 +72,17 @@ export default function PortfolioBannerAccount(
     useEffect(() => {
         const fetchAvatar = async () => {
             if (userAddress) {
-                const avatar = await getUserAvatar(userAddress);
+                const avatar = await getUserAvatar(
+                    resolvedAddress !== undefined && resolvedAddress.length > 0
+                        ? resolvedAddress
+                        : userAddress,
+                );
                 setUserProfileNFT(avatar.avatarImage);
                 setUserThumbnailNFT(avatar.avatarThumbnail);
             }
         };
         fetchAvatar();
-    }, [resolvedAddress]);
+    }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
         setShowNFTPage(false);
@@ -116,6 +122,28 @@ export default function PortfolioBannerAccount(
         }
     }
 
+    // Nft Fetch For Test Wallet
+    const [isWalletPanelActive, setIsWalletPanelActive] = useState(false);
+
+    function openWalletAddressPanel(e: KeyboardEvent) {
+        if (e.code === 'KeyQ' && e.altKey) {
+            setIsWalletPanelActive((prev) => !prev);
+
+            document.removeEventListener('keydown', openWalletAddressPanel);
+        }
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', openWalletAddressPanel);
+    }, []);
+
+    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
+
+    function handleTestWalletChange(nftTestWalletInput: string) {
+        setNftTestWalletAddress(() => nftTestWalletInput);
+        setIsfetchNftTriggered(() => true);
+    }
+
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
@@ -128,7 +156,10 @@ export default function PortfolioBannerAccount(
             >
                 <span
                     onClick={() => {
-                        setShowNFTPage(!showNFTPage);
+                        !(
+                            resolvedAddress !== undefined &&
+                            resolvedAddress.length > 0
+                        ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
                     <ProfileSettingsContainer
@@ -139,7 +170,10 @@ export default function PortfolioBannerAccount(
                                 userAddress,
                                 userProfileNFT,
                                 65,
-                                true,
+                                resolvedAddress !== undefined &&
+                                    resolvedAddress.length > 0
+                                    ? false
+                                    : true,
                             )}
                     </ProfileSettingsContainer>
                 </span>
@@ -194,8 +228,48 @@ export default function PortfolioBannerAccount(
                         setIsfetchNftTriggered={setIsfetchNftTriggered}
                         NFTFetchSettings={NFTFetchSettings}
                         setNFTFetchSettings={setNFTFetchSettings}
+                        setNftTestWalletInput={setNftTestWalletInput}
+                        nftTestWalletInput={nftTestWalletInput}
+                        handleTestWalletChange={handleTestWalletChange}
                     />
                 )}
+
+            {isWalletPanelActive && (
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '5px',
+                    }}
+                >
+                    <input
+                        id='token_select_input_field'
+                        spellCheck='false'
+                        type='text'
+                        value={nftTestWalletInput}
+                        onChange={(e) => setNftTestWalletInput(e.target.value)}
+                        placeholder=' Test wallet address'
+                        style={{
+                            borderRadius: '3px',
+
+                            borderWidth: '1.5px',
+                            borderStyle: 'solid',
+                            borderColor: 'rgba(121, 133, 148, 0.7)',
+
+                            fontSize: '15px',
+                            color: 'rgba(204, 204, 204)',
+                            background: '#2f3d52',
+                        }}
+                    />
+                    <MdOutlineCloudDownload
+                        size={18}
+                        onClick={() => {
+                            handleTestWalletChange(nftTestWalletInput);
+                        }}
+                    />
+                </div>
+            )}
         </PortfolioBannerMainContainer>
     );
 }

@@ -78,6 +78,8 @@ export const ChainDataContextProvider = (props: {
         isUserConnected,
         setIsfetchNftTriggered,
         isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
     } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
@@ -245,7 +247,9 @@ export const ChainDataContextProvider = (props: {
                 ) {
                     try {
                         const NFTResponse = await cachedFetchNFT(
-                            '0x3E3072BA17D18eB9E0e51a5EA23043286e00aa1D',
+                            nftTestWalletAddress !== ''
+                                ? nftTestWalletAddress
+                                : userAddress,
                             crocEnv,
                             alchemyClient,
                             NFTFetchSettings.pageKey,
@@ -310,6 +314,7 @@ export const ChainDataContextProvider = (props: {
 
                             setNFTData(mapValue);
                             setIsfetchNftTriggered(() => false);
+                            setNftTestWalletAddress(() => '');
                         }
                     } catch (error) {
                         console.error({ error });

@@ -36,6 +36,8 @@ import { FiRefreshCw } from 'react-icons/fi';
 import useChatSocket from '../../../Chat/Service/useChatSocket';
 import { trimString } from '../../../../ambient-utils/dataLayer';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import useChatApi from '../../../Chat/Service/ChatApi';
+import { MdOutlineCloudDownload } from 'react-icons/md';
 
 interface NFTBannerAccountProps {
     showNFTPage: boolean;
@@ -47,6 +49,10 @@ interface NFTBannerAccountProps {
     setNFTFetchSettings: React.Dispatch<
         React.SetStateAction<NftFetchSettingsIF>
     >;
+    setNftTestWalletInput: React.Dispatch<React.SetStateAction<string>>;
+    nftTestWalletInput: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handleTestWalletChange: any;
 }
 
 export default function NFTBannerAccount(props: NFTBannerAccountProps) {
@@ -55,8 +61,9 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         NFTData,
         isfetchNftTriggered,
         setIsfetchNftTriggered,
-        // NFTFetchSettings,
-        // setNFTFetchSettings,
+        nftTestWalletInput,
+        setNftTestWalletInput,
+        handleTestWalletChange,
     } = props;
 
     const {
@@ -75,6 +82,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         { name: string; address: string }[]
     >([]);
 
+    const { saveUser } = useChatApi();
+
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [isContractNameOptionTabActive, setIsContractNameOptionTabActive] =
@@ -87,6 +96,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         });
 
     const [onErrorIndex] = useState<Array<number>>([]);
+
+    const [isWalletPanelActive, setIsWalletPanelActive] = useState(false);
 
     const [isSelectThumbnail, setIsSelectThumbnail] = useState(false);
 
@@ -188,22 +199,50 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }
 
     async function handleNftSelection() {
-        if (currentUserID) {
+        if (
+            (currentUserID === undefined || currentUserID.length === 0) &&
+            userAddress
+        ) {
+            saveUser(userAddress, ensName ? ensName : '').then(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (result: any) => {
+                    saveSelectedNFT(result.userData._id);
+                },
+            );
+        } else {
+            saveSelectedNFT(currentUserID);
+        }
+    }
+
+    function saveSelectedNFT(userID: string | undefined) {
+        if (userID) {
             if (isSelectThumbnail && selectedThumbnail) {
                 setUserThumbnailNFT(() => selectedThumbnail.cachedUrl);
-            } else if (selectedNft) {
+            }
+
+            if (selectedNft && userProfileNFT !== selectedNft?.cachedUrl) {
                 setUserProfileNFT(() => selectedNft.cachedUrl);
             }
 
             updateUserWithAvatarImage(
-                currentUserID,
+                userID,
                 selectedNft ? selectedNft.cachedUrl : '',
                 selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
             );
         }
     }
 
-    const pagination = <></>;
+    function openWalletAddressPanel(e: KeyboardEvent) {
+        if (e.code === 'KeyQ' && e.altKey) {
+            setIsWalletPanelActive((prev) => !prev);
+
+            document.removeEventListener('keydown', openWalletAddressPanel);
+        }
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', openWalletAddressPanel);
+    }, []);
 
     return (
         <NFTBannerAccountContainer
@@ -378,6 +417,44 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                             />
                         </NFTBannerFilter>
                     )}
+                    {isWalletPanelActive && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '5px',
+                            }}
+                        >
+                            <input
+                                id='token_select_input_field'
+                                spellCheck='false'
+                                type='text'
+                                value={nftTestWalletInput}
+                                onChange={(e) =>
+                                    setNftTestWalletInput(e.target.value)
+                                }
+                                placeholder=' Test wallet address'
+                                style={{
+                                    borderRadius: '3px',
+
+                                    borderWidth: '1.5px',
+                                    borderStyle: 'solid',
+                                    borderColor: 'rgba(121, 133, 148, 0.7)',
+
+                                    fontSize: '15px',
+                                    color: 'rgba(204, 204, 204)',
+                                    background: '#2f3d52',
+                                }}
+                            />
+                            <MdOutlineCloudDownload
+                                size={18}
+                                onClick={() => {
+                                    handleTestWalletChange(nftTestWalletInput);
+                                }}
+                            />
+                        </div>
+                    )}
                 </NFTHeaderSettings>
             </div>
 
@@ -476,7 +553,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             )}
 
             <NFTBannerFooter>
-                {pagination}
                 <SaveButton
                     onClick={(event: React.MouseEvent<HTMLDivElement>) => {
                         event.stopPropagation();

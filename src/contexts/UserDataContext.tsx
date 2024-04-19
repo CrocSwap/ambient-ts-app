@@ -36,6 +36,8 @@ interface UserDataContextIF {
     setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
     secondaryEnsFromContext: string;
     setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
+    nftTestWalletAddress: string;
+    setNftTestWalletAddress: Dispatch<SetStateAction<string>>;
 }
 
 export interface UserXpDataIF {
@@ -102,6 +104,9 @@ export const UserDataContextProvider = (props: {
     const [isfetchNftTriggered, setIsfetchNftTriggered] =
         useState<boolean>(false);
 
+    const [nftTestWalletAddress, setNftTestWalletAddress] =
+        useState<string>('');
+
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -142,6 +147,8 @@ export const UserDataContextProvider = (props: {
         setCurrentUserID,
         setIsfetchNftTriggered,
         isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
     };
 
     return (
