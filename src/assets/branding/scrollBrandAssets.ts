@@ -2,7 +2,9 @@ import { brandAssetsIF } from './types';
 import large from '../images/logos/large.svg';
 
 export const scrollBrandAssets: brandAssetsIF = {
-    networks: ['0x82750'],
+    networks: [
+        '0x82750', // scroll
+    ],
     color: {
         '0x1': 'orange',
         '0x82750': 'orange',

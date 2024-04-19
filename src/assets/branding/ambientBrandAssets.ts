@@ -3,13 +3,12 @@ import large from '../images/logos/large.svg';
 
 export const ambientBrandAssets: brandAssetsIF = {
     networks: [
-        '0x1',
-        '0x82750',
-        '0x5',
-        '0x8274f',
-        '0xaa36a7',
-        '0xa0c71fd',
-        '0x13e31',
+        '0x1', // ethereum mainnet
+        '0x82750', // scroll mainnet
+        '0x8274f', // scroll sepolia
+        '0xaa36a7', // ethereum sepolia
+        '0xa0c71fd', // blast sepolia
+        '0x13e31', // blast mainnet
     ],
     color: {
         '0x1': 'purple_dark',
