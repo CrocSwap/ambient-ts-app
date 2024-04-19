@@ -177,6 +177,8 @@ export default function Room(props: propsIF) {
     };
 
     useEffect(() => {
+        processRoomList();
+
         props.setUserCurrentPool(baseToken.symbol + ' / ' + quoteToken.symbol);
         updateUser(
             props.currentUser as string,
@@ -241,6 +243,8 @@ export default function Room(props: propsIF) {
     ]);
 
     useEffect(() => {
+        processRoomList();
+
         if (
             props.isModerator &&
             defaultRooms.find((room) => room.name === 'Admins') === undefined
@@ -269,6 +273,8 @@ export default function Room(props: propsIF) {
     }, []);
 
     useEffect(() => {
+        processRoomList();
+
         const fave:
             | PoolIF[]
             | {
@@ -593,7 +599,7 @@ export default function Room(props: propsIF) {
                                     {handleNotiDot(pool.name || '')}
                                 </div>
                             ))}
-                        {handleShowRoomsExceptGlobal(props.selectedRoom)}
+                        {/* {handleShowRoomsExceptGlobal(props.selectedRoom)} */}
                     </div>
 
                     {/* // CHAT_FEATURES_WBO -  Feature : Mentions */}
