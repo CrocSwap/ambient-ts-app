@@ -56,10 +56,15 @@ interface RangePropsIF {
     isEditPanel?: boolean;
     prepopulatedBaseValue?: string;
     prepopulatedQuoteValue?: string;
+    isReposition?: boolean;
 }
 function Range(props: RangePropsIF) {
-    const { isEditPanel, prepopulatedBaseValue, prepopulatedQuoteValue } =
-        props;
+    const {
+        isEditPanel,
+        prepopulatedBaseValue,
+        prepopulatedQuoteValue,
+        isReposition,
+    } = props;
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
@@ -87,7 +92,10 @@ function Range(props: RangePropsIF) {
         setRescaleRangeBoundariesWithSlider,
         setCurrentRangeInAdd,
         setIsLinesSwitched,
+        pinnedDisplayPrices,
+        setPinnedDisplayPrices,
     } = useContext(RangeContext);
+
     const { tokens } = useContext(TokenContext);
     const {
         tokenAAllowance,
@@ -151,21 +159,21 @@ function Range(props: RangePropsIF) {
         useState(false);
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
         useState(false);
-    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
-        | {
-              pinnedMinPriceDisplay: string;
-              pinnedMaxPriceDisplay: string;
-              pinnedMinPriceDisplayTruncated: string;
-              pinnedMaxPriceDisplayTruncated: string;
-              pinnedMinPriceDisplayTruncatedWithCommas: string;
-              pinnedMaxPriceDisplayTruncatedWithCommas: string;
-              pinnedLowTick: number;
-              pinnedHighTick: number;
-              pinnedMinPriceNonDisplay: number;
-              pinnedMaxPriceNonDisplay: number;
-          }
-        | undefined
-    >();
+    // const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+    //     | {
+    //           pinnedMinPriceDisplay: string;
+    //           pinnedMaxPriceDisplay: string;
+    //           pinnedMinPriceDisplayTruncated: string;
+    //           pinnedMaxPriceDisplayTruncated: string;
+    //           pinnedMinPriceDisplayTruncatedWithCommas: string;
+    //           pinnedMaxPriceDisplayTruncatedWithCommas: string;
+    //           pinnedLowTick: number;
+    //           pinnedHighTick: number;
+    //           pinnedMinPriceNonDisplay: number;
+    //           pinnedMaxPriceNonDisplay: number;
+    //       }
+    //     | undefined
+    // >();
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
@@ -551,6 +559,7 @@ function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (advancedMode) {
+            console.log({ advancedMode });
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
                 baseTokenDecimals,
@@ -733,6 +742,10 @@ function Range(props: RangePropsIF) {
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
+            const repoMaxPriceDisplay = document.getElementById(
+                ' repo-info-max-price-display',
+            ) as HTMLInputElement;
+
             const targetMaxValue = maxPrice;
             const targetMinValue = minPrice;
 
@@ -805,6 +818,15 @@ function Range(props: RangePropsIF) {
             if (rangeHighBoundDisplayField) {
                 rangeHighBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                console.log(
+                    'this might be it',
+                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                );
+
+                if (repoMaxPriceDisplay) {
+                    repoMaxPriceDisplay.value =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                }
             } else {
                 IS_LOCAL_ENV && console.debug('high bound field not found');
             }
@@ -1044,6 +1066,18 @@ function Range(props: RangePropsIF) {
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
     };
+
+    if (isReposition)
+        return (
+            <RangeBounds
+                isRangeBoundsDisabled={!isPoolInitialized}
+                {...rangeWidthProps}
+                {...rangePriceInfoProps}
+                {...minMaxPriceProps}
+                isEditPanel={isEditPanel}
+                isReposition={isReposition}
+            />
+        );
 
     return (
         <TradeModuleSkeleton

@@ -5,18 +5,11 @@ import { PositionIF } from '../../../../ambient-utils/types';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useContext, useMemo, useState } from 'react';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    getFormattedNumber,
-    getPinnedPriceValuesFromTicks,
-} from '../../../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 export default function EditLiqPriceInfo() {
-    const {
-        isDenomBase,
-        poolPriceNonDisplay: currentPoolPriceNonDisplay,
-        getDefaultRangeWidthForTokenPair,
-    } = useContext(TradeDataContext);
+    const { isDenomBase, getDefaultRangeWidthForTokenPair } =
+        useContext(TradeDataContext);
 
     const {
         simpleRangeWidth,
@@ -29,9 +22,8 @@ export default function EditLiqPriceInfo() {
     const locationHook = useLocation();
     const { position } = locationHook.state as { position: PositionIF };
     console.log({ position });
+    const { pinnedDisplayPrices } = useContext(RangeContext);
 
-    const currentPoolPriceTick =
-        Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
     // eslint-disable-next-line
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
         simpleRangeWidth === 100
@@ -43,17 +35,6 @@ export default function EditLiqPriceInfo() {
               ),
     );
 
-    const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-    const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-        isDenomBase,
-        position.baseDecimals,
-        position.quoteDecimals,
-        lowTick,
-        highTick,
-        lookupChain(position.chainId).gridSize,
-    );
     // eslint-disable-next-line
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '...');
@@ -104,6 +85,18 @@ export default function EditLiqPriceInfo() {
         [position],
     );
 
+    const pinnedMinDisplay =
+        pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated;
+    const pinnedMaxDisplay =
+        pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;
+
+    const newBaseValue = document.getElementById(
+        'range_A_qty',
+    ) as HTMLInputElement;
+    const newQuoteValue = document.getElementById(
+        'range_B_qty',
+    ) as HTMLInputElement;
+
     return (
         <FlexContainer flexDirection='column'>
             <div className={styles.row_item_header}>
@@ -115,13 +108,17 @@ export default function EditLiqPriceInfo() {
             <div className={styles.row_item}>
                 <Text color='white'>ETH</Text>
                 <Text color='text2'>{baseQty}</Text>
-                <Text color='white'>...</Text>
+                <Text color='white'>
+                    {Number(newBaseValue?.value)?.toFixed(2) ?? '...'}
+                </Text>
             </div>
 
             <div className={styles.row_item}>
                 <Text color='white'>USDC</Text>
                 <Text color='text2'>{quoteQty}</Text>
-                <Text color='white'>...</Text>
+                <Text color='white'>
+                    {Number(newQuoteValue?.value)?.toFixed(2) ?? '...'}
+                </Text>
             </div>
 
             <span className={styles.divider} />
@@ -134,7 +131,7 @@ export default function EditLiqPriceInfo() {
                         ? '...'
                         : rangeWidthPercentage === 100
                         ? '0'
-                        : minPriceDisplay}
+                        : pinnedMinDisplay ?? minPriceDisplay}
                 </Text>
             </div>
 
@@ -142,12 +139,11 @@ export default function EditLiqPriceInfo() {
                 <Text color='white'>Max Price</Text>
                 <Text color='text2'>{currentMaxPrice}</Text>
                 <Text color='white'>
-                    {/* {isCurrentPositionEmpty
-                            ? '...'
-                            : rangeWidthPercentage === 100
-                            ? '∞'
-                        : maxPriceDisplay} */}
-                    ...
+                    {isCurrentPositionEmpty
+                        ? '...'
+                        : rangeWidthPercentage === 100
+                        ? '∞'
+                        : pinnedMaxDisplay ?? maxPriceDisplay}
                 </Text>
             </div>
 

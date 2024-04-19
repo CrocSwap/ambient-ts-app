@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { RangeContext } from '../../../contexts/RangeContext';
 
-import RangeWidthControl from '../RangeWidthControl/RangeWidthControl';
+import EditLiqPriceInfo from '../../Trade/EditLiquidity/EditLiqPriceInfo/EditLiqPriceInfo';
 
 interface RangeBoundsProps {
     customSwitch?: boolean;
@@ -57,6 +57,7 @@ interface RangeBoundsProps {
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
     isEditPanel?: boolean;
+    isReposition?: boolean;
 }
 
 export default function RangeBounds(props: RangeBoundsProps) {
@@ -93,6 +94,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         isRangeBoundsDisabled,
         customSwitch = false,
         isEditPanel,
+        isReposition,
     } = props;
     const rangeWidthProps = {
         rangeWidthPercentage,
@@ -142,9 +144,12 @@ export default function RangeBounds(props: RangeBoundsProps) {
                 transition={{ duration: 0.5 }}
             >
                 <RangeWidth {...rangeWidthProps} />
+                {isEditPanel && <EditLiqPriceInfo />}
             </motion.div>
 
-            <RangePriceInfo {...rangePriceInfoProps} />
+            {isReposition || isEditPanel ? null : (
+                <RangePriceInfo {...rangePriceInfoProps} />
+            )}
         </div>
     );
     const advancedModeContent = (
@@ -156,14 +161,14 @@ export default function RangeBounds(props: RangeBoundsProps) {
             >
                 <div className={styles.advanced_info_container}>
                     <MinMaxPrice {...minMaxPricePropsIF} />
-                    {/* {isEditPanel && <span className={styles.divider} />} */}
-                    {/* <EditLiqPriceInfo /> */}
+                    {isEditPanel && <span className={styles.divider} />}
+                    {isEditPanel && <EditLiqPriceInfo />}
                 </div>
             </motion.div>
         </>
     );
 
-    if (isEditPanel) return <RangeWidthControl />;
+    // if (isEditPanel) return <RangeWidthControl />;
     return (
         <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
             {!customSwitch && (

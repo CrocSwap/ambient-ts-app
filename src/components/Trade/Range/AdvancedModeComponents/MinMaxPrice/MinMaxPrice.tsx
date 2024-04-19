@@ -55,8 +55,12 @@ function MinMaxPrice(props: propsIF) {
     const {
         chainData: { gridSize: tickSize },
     } = useContext(CrocEnvContext);
-    const { setAdvancedHighTick, setAdvancedLowTick } =
-        useContext(RangeContext);
+    const {
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        pinnedDisplayPrices,
+        setPinnedDisplayPrices,
+    } = useContext(RangeContext);
 
     const handleMinPriceChangeEvent = (
         evt?: ChangeEvent<HTMLInputElement>,
@@ -100,6 +104,20 @@ function MinMaxPrice(props: propsIF) {
         }
     };
 
+    // Update the pinnedMaxPriceDisplay or pinnedMinPriceDisplay value
+    const updatePinnedPriceDisplay = (
+        newMinValue: string,
+        newMaxValue: string,
+    ) => {
+        if (pinnedDisplayPrices) {
+            setPinnedDisplayPrices({
+                ...pinnedDisplayPrices,
+                pinnedMinPriceDisplayTruncated: newMinValue,
+                pinnedMaxPriceDisplayTruncated: newMaxValue,
+            });
+        }
+    };
+
     useEffect(() => {
         if (maxPrice !== undefined && minPrice !== undefined) {
             const high = maxPrice;
@@ -108,6 +126,7 @@ function MinMaxPrice(props: propsIF) {
                 high !== undefined ? high.toString() : '0.0',
             );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
+            updatePinnedPriceDisplay(minPrice.toString(), maxPrice.toString());
         }
     }, [maxPrice, minPrice]);
 

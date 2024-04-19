@@ -34,6 +34,39 @@ interface RangeContextIF {
     setAdvancedHighTick: Dispatch<SetStateAction<number>>;
     isLinesSwitched: boolean | undefined;
     setIsLinesSwitched: Dispatch<SetStateAction<boolean | undefined>>;
+
+    pinnedDisplayPrices:
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined;
+
+    setPinnedDisplayPrices: React.Dispatch<
+        React.SetStateAction<
+            | {
+                  pinnedMinPriceDisplay: string;
+                  pinnedMaxPriceDisplay: string;
+                  pinnedMinPriceDisplayTruncated: string;
+                  pinnedMaxPriceDisplayTruncated: string;
+                  pinnedMinPriceDisplayTruncatedWithCommas: string;
+                  pinnedMaxPriceDisplayTruncatedWithCommas: string;
+                  pinnedLowTick: number;
+                  pinnedHighTick: number;
+                  pinnedMinPriceNonDisplay: number;
+                  pinnedMaxPriceNonDisplay: number;
+              }
+            | undefined
+        >
+    >;
 }
 
 export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
@@ -61,6 +94,23 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     const [isLinesSwitched, setIsLinesSwitched] = useState<boolean | undefined>(
         undefined,
     );
+
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+
     const rangeContext = {
         maxRangePrice,
         setMaxRangePrice,
@@ -89,6 +139,8 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
         setAdvancedHighTick,
         isLinesSwitched,
         setIsLinesSwitched,
+        pinnedDisplayPrices,
+        setPinnedDisplayPrices,
     };
 
     return (

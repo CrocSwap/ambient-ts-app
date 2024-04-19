@@ -50,6 +50,7 @@ function RangePriceInfo(props: propsIF) {
         setIsTradeDollarizationEnabled,
         poolPriceDisplay,
     } = useContext(PoolContext);
+
     const {
         chainData: { chainId },
         crocEnv,

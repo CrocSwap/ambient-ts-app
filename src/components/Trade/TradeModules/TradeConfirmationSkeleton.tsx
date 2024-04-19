@@ -157,7 +157,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     return (
         <Modal
             title={`${
-                type === 'Range' ? (isEditPanel ? 'Edit Pool' : 'Pool') : ''
+                type === 'Range' ? (isEditPanel ? 'Edit Pool' : 'Pool') : type
             } Confirmation`}
             onClose={onClose}
         >

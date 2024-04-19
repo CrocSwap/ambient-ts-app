@@ -14,6 +14,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     getFormattedNumber,
+    getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPositionData,
     roundDownTick,
@@ -68,6 +69,8 @@ export default function RangeWidthControl(props: PropsIF) {
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
+        minRangePrice: minPrice,
+        maxRangePrice: maxPrice,
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
@@ -81,6 +84,10 @@ export default function RangeWidthControl(props: PropsIF) {
         setAdvancedHighTick,
         // eslint-disable-next-line
         setAdvancedLowTick,
+        chartTriggeredBy,
+        isLinesSwitched,
+        setIsLinesSwitched,
+        setChartTriggeredBy,
     } = useContext(RangeContext);
     const {
         isDenomBase,
@@ -204,6 +211,11 @@ export default function RangeWidthControl(props: PropsIF) {
         setAdvancedMode(false);
     }, []);
 
+    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
+        useState(0);
+    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
+        useState(0);
+
     useEffect(() => {
         if (advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
@@ -214,12 +226,12 @@ export default function RangeWidthControl(props: PropsIF) {
                 pinnedHighTick,
                 gridSize,
             );
-            // setRangeLowBoundNonDisplayPrice(
-            //     pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-            // );
-            // setRangeHighBoundNonDisplayPrice(
-            //     pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-            // );
+            setRangeLowBoundNonDisplayPrice(
+                pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            );
+            setRangeHighBoundNonDisplayPrice(
+                pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            );
 
             // setPinnedMinPriceDisplayTruncated(
             //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
@@ -670,6 +682,185 @@ export default function RangeWidthControl(props: PropsIF) {
 
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
+    // -----------------------------------------
+    useEffect(() => {
+        if (rangeLowBoundFieldBlurred || chartTriggeredBy === 'low_line') {
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+
+            const targetMinValue = minPrice;
+            const targetMaxValue = maxPrice;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                targetMinValue?.toString() ?? '0',
+                targetMaxValue?.toString() ?? '0',
+                gridSize,
+            );
+
+            !isDenomBase
+                ? setRangeLowBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+                  )
+                : setRangeHighBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            !isDenomBase
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+
+            !isDenomBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
+
+            if (isLinesSwitched) {
+                isDenomBase
+                    ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                    : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+            }
+
+            const highGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick -
+                        currentPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            const lowGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            isDenomBase
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
+
+            // setPinnedMinPriceDisplayTruncated(
+            //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            // );
+
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+            } else {
+                IS_LOCAL_ENV && console.debug('low bound field not found');
+            }
+
+            setRangeLowBoundFieldBlurred(false);
+            setChartTriggeredBy('none');
+            setIsLinesSwitched(false);
+        }
+    }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
+
+    useEffect(() => {
+        if (rangeHighBoundFieldBlurred || chartTriggeredBy === 'high_line') {
+            const rangeHighBoundDisplayField = document.getElementById(
+                'max-price-input-quantity',
+            ) as HTMLInputElement;
+
+            const targetMaxValue = maxPrice;
+            const targetMinValue = minPrice;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                targetMinValue?.toString() ?? '0',
+                targetMaxValue?.toString() ?? '0',
+                gridSize,
+            );
+
+            isDenomBase
+                ? setRangeLowBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+                  )
+                : setRangeHighBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            isDenomBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
+
+            isDenomBase
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+
+            if (isLinesSwitched) {
+                !isDenomBase
+                    ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                    : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
+            }
+
+            const highGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick -
+                        currentPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            const lowGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            isDenomBase
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
+
+            // setPinnedMaxPriceDisplayTruncated(
+            //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            // );
+
+            if (rangeHighBoundDisplayField) {
+                rangeHighBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+            } else {
+                IS_LOCAL_ENV && console.debug('high bound field not found');
+            }
+
+            setRangeHighBoundFieldBlurred(false);
+            setChartTriggeredBy('none');
+            setIsLinesSwitched(false);
+        }
+    }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
+
+    // -----------------------------------------
+
     const MinMaxProps = {
         minPricePercentage: minPriceDifferencePercentage,
         maxPricePercentage: maxPriceDifferencePercentage,
@@ -683,8 +874,8 @@ export default function RangeWidthControl(props: PropsIF) {
         lowBoundOnBlur: () => setRangeLowBoundFieldBlurred(true),
         rangeLowTick: defaultLowTick,
         rangeHighTick: defaultHighTick,
-        maxPrice: 10,
-        minPrice: 100,
+        maxPrice: minPrice,
+        minPrice: maxPrice,
         setMaxPrice: setMaxPrice,
         setMinPrice: setMinPrice,
     };
