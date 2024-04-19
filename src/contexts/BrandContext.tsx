@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
-import { ambientBrandAssets } from '../assets/branding/ambientBrandAssets';
 import { crocswapBrandAssets } from '../assets/branding/crocswapBrandAssets';
 import { brandAssetsIF } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
-import { blastBrandAssets } from '../assets/branding/blastBrand';
+import {
+    blastBrandAssets,
+    scrollBrandAssets,
+    ambientBrandAssets,
+} from '../assets/branding';
 
 interface BrandContextIF {
     skin: skinMethodsIF;
@@ -23,6 +26,8 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
 
     // brand asset set to consume as specified in environmental variable
     // can also provide a fallback if a custom brand is missing values
+
+    // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const FALLBACK_SET = 'ambient';
     const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? FALLBACK_SET;
     const brandAssets = useMemo<brandAssetsIF>(() => {
@@ -31,6 +36,8 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
                 return crocswapBrandAssets;
             case 'blast':
                 return blastBrandAssets;
+            case 'scroll':
+                return scrollBrandAssets;
             case 'ambient':
             default:
                 return ambientBrandAssets;
@@ -39,7 +46,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
 
     // hook to manage the active color theme in the app
     const skin: skinMethodsIF = useSkin(
-        brandAssets.color,
+        blastBrandAssets.color,
         chainData.chainId as chainIds,
     );
 
