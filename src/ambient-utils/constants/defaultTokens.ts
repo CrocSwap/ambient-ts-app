@@ -208,10 +208,10 @@ export const blastSSS: TokenIF = {
     chainId: 81457,
     decimals: 18,
     fromList: '/ambient-token-list.json',
-    name: 'SSS',
+    name: 'Super Sushi Samurai',
     symbol: 'SSS',
     logoURI:
-        'https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg?1710684220',
+        'https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg',
 };
 
 export const blastOLE: TokenIF = {
