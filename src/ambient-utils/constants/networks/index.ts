@@ -1,6 +1,4 @@
 import { NetworkIF, TokenIF } from '../../types';
-import { arbitrumGoerli } from './arbitrumGoerli';
-import { ethereumGoerli } from './ethereumGoerli';
 import { ethereumSepolia } from './ethereumSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
@@ -54,8 +52,6 @@ export const supportedNetworks: { [x: string]: NetworkIF } = IS_BLAST_SITE
           [blastSepolia.chainId]: blastSepolia,
           [ethereumSepolia.chainId]: ethereumSepolia,
           [scrollSepolia.chainId]: scrollSepolia,
-          [ethereumGoerli.chainId]: ethereumGoerli,
-          [arbitrumGoerli.chainId]: arbitrumGoerli,
       };
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
@@ -65,8 +61,6 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     ];
 }
 
-export { arbitrumGoerli };
-export { ethereumGoerli };
 export { ethereumSepolia };
 export { ethereumMainnet };
 export { scrollMainnet };
