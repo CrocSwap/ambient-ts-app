@@ -277,31 +277,6 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
-    // JSX element to select goerli network
-    const goerliNetwork: JSX.Element = (
-        <NetworkItem
-            id='goerli_network_selector'
-            onClick={() => handleClick(chainMap.get('0x5'))}
-            key='goerli'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x5'}>
-                <img
-                    src={ETH}
-                    alt='goerli network'
-                    width='17px'
-                    height='22px'
-                    style={{ borderRadius: '50%', marginLeft: '2px' }}
-                />
-                <Text color={chainId === '0x5' ? 'accent1' : 'white'}>
-                    Görli
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
     return (
         <div style={{ position: 'relative' }}>
             <DropdownMenuContainer
@@ -338,7 +313,6 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
                         {chainMap.has('0xa0c71fd') && blastSepoliaNetwork}
                         {chainMap.has('0x8274f') && scrollSepoliaNetwork}
-                        {chainMap.has('0x5') && goerliNetwork}
                     </MenuContent>
                 </DropdownMenu2>
             </DropdownMenuContainer>
