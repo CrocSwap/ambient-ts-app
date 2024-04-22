@@ -203,6 +203,17 @@ export const blastPUMP: TokenIF = {
     logoURI: '',
 };
 
+export const blastSSS: TokenIF = {
+    address: '0xfd4D19F9FBb9F730C3C88a21755832BD2455144e',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'SSS',
+    symbol: 'SSS',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg?1710684220',
+};
+
 export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
