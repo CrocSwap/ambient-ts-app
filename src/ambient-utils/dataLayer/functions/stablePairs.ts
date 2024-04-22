@@ -29,6 +29,7 @@ import {
     scrollWrsETH,
     blastWrsETH,
     blastUSDPLUS,
+    mainnetLUSD,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -68,9 +69,10 @@ export function isWethToken(addr: string): boolean {
 export const STABLE_USD_TOKENS = [
     mainnetDAI.address,
     mainnetUSDC.address,
+    mainnetUSDT.address,
+    mainnetLUSD.address,
     blastUSDB.address,
     blastUSDPLUS.address,
-    mainnetUSDT.address,
     goerliDAI.address,
     goerliUSDC.address,
     goerliUSDT.address,
