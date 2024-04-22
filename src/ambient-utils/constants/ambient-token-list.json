@@ -172,7 +172,7 @@
             "fromList": "/ambient-token-list.json",
             "name": "Super Sushi Samurai",
             "symbol": "SSS",
-            "logoURI": "https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg?1710684220"
+            "logoURI": "https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg"
         },
         {
             "address": "0x0B4d0ee29857c3961b380d4ec138EA5814E346b9",
