@@ -201,6 +201,8 @@ function RangePriceInfo(props: propsIF) {
 
     // TODO: remove unnecessary top-level wrapper
 
+    console.log({ minimumPrice, maximumPrice });
+
     return (
         <div
             className={styles.price_info_container}

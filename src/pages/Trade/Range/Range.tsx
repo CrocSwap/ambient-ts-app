@@ -57,14 +57,10 @@ interface RangePropsIF {
     prepopulatedBaseValue?: string;
     prepopulatedQuoteValue?: string;
     isReposition?: boolean;
+    position?: PositionIF;
 }
 function Range(props: RangePropsIF) {
-    const {
-        isEditPanel,
-        prepopulatedBaseValue,
-        prepopulatedQuoteValue,
-        isReposition,
-    } = props;
+    const { isEditPanel, isReposition, position } = props;
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
@@ -130,12 +126,41 @@ function Range(props: RangePropsIF) {
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
+    // const [tokenAInputQty, setTokenAInputQty] = useState<string>(
+    //     isTokenAPrimary ? primaryQuantity : '',
+    // );
+    // const [tokenBInputQty, setTokenBInputQty] = useState<string>(
+    //     !isTokenAPrimary ? primaryQuantity : '',
+    // );
+
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        isTokenAPrimary ? primaryQuantity : '',
+        position
+            ? position?.positionLiqBaseDecimalCorrected.toString()
+            : isTokenAPrimary
+            ? primaryQuantity
+            : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !isTokenAPrimary ? primaryQuantity : '',
+        position
+            ? position?.positionLiqQuoteDecimalCorrected.toString()
+            : !isTokenAPrimary
+            ? primaryQuantity
+            : '',
     );
+
+    const [positionCount, setPositionCount] = useState(0);
+
+    useEffect(() => {
+        if (position) {
+            setTokenAInputQty(
+                position?.positionLiqBaseDecimalCorrected.toString(),
+            );
+            setTokenBInputQty(
+                position?.positionLiqQuoteDecimalCorrected.toString(),
+            );
+        }
+        setPositionCount(positionCount + 1);
+    }, [position]);
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);
@@ -559,7 +584,6 @@ function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (advancedMode) {
-            console.log({ advancedMode });
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
                 baseTokenDecimals,
@@ -818,10 +842,6 @@ function Range(props: RangePropsIF) {
             if (rangeHighBoundDisplayField) {
                 rangeHighBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
-                console.log(
-                    'this might be it',
-                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                );
 
                 if (repoMaxPriceDisplay) {
                     repoMaxPriceDisplay.value =
@@ -1103,17 +1123,11 @@ function Range(props: RangePropsIF) {
                     }}
                     isOutOfRange={isOutOfRange}
                     tokenAInputQty={{
-                        value:
-                            isEditPanel && prepopulatedBaseValue
-                                ? prepopulatedBaseValue
-                                : tokenAInputQty,
+                        value: tokenAInputQty,
                         set: setTokenAInputQty,
                     }}
                     tokenBInputQty={{
-                        value:
-                            isEditPanel && prepopulatedQuoteValue
-                                ? prepopulatedQuoteValue
-                                : tokenBInputQty,
+                        value: tokenBInputQty,
                         set: setTokenBInputQty,
                     }}
                     toggleDexSelection={toggleDexSelection}
@@ -1241,7 +1255,7 @@ function Range(props: RangePropsIF) {
                                           ? tokenB.symbol
                                           : ''
                                   }
-                                     `
+                                        `
                         }
                     />
                 ) : undefined

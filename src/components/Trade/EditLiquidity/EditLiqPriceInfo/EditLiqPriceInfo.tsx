@@ -16,7 +16,6 @@ export default function EditLiqPriceInfo(props: propsIF) {
 
     const locationHook = useLocation();
     const { position } = locationHook.state as { position: PositionIF };
-    console.log({ position });
     const { pinnedDisplayPrices } = useContext(RangeContext);
 
     // eslint-disable-next-line

@@ -69,6 +69,7 @@ function EditLiquidity() {
 
                 <Range
                     isEditPanel
+                    position={position}
                     prepopulatedBaseValue={position?.positionLiqBaseDecimalCorrected.toString()}
                     prepopulatedQuoteValue={position?.positionLiqQuoteDecimalCorrected.toString()}
                 />

@@ -2508,6 +2508,7 @@ export default function Chart(props: propsIF) {
                             pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                         ),
                     );
+                    console.log({ minPrice, maxPrice });
                 }
 
                 setSimpleRangeWidth(
@@ -5294,11 +5295,13 @@ export default function Chart(props: propsIF) {
 
             setMinPrice(low > high ? high : low);
             setMaxPrice(low > high ? low : high);
+            console.log({ minPrice, maxPrice });
 
             if (lowLineMoved) {
                 setChartTriggeredBy('low_line');
             } else if (highLineMoved) {
                 setChartTriggeredBy('high_line');
+                console.log('triggered');
             }
             setIsLinesSwitched(isLinesSwitched);
         }
