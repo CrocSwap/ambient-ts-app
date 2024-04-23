@@ -145,20 +145,31 @@ function RangePriceInfo(props: propsIF) {
             maxPriceNum = parseFloat(pinnedMaxPrice) * (basePrice || 0);
         }
 
-        const minDisplayUsdPriceString = getFormattedNumber({
-            value: minPriceNum,
-            zeroDisplay: '…',
-            prefix: '$',
-        });
+        const minDisplayUsdPriceString = isAmbient
+            ? '$0'
+            : getFormattedNumber({
+                  value: minPriceNum,
+                  zeroDisplay: '…',
+                  prefix: '$',
+              });
         setMinPriceUsdEquivalent(minDisplayUsdPriceString);
 
-        const maxDisplayUsdPriceString = getFormattedNumber({
-            value: maxPriceNum,
-            zeroDisplay: '…',
-            prefix: '$',
-        });
+        const maxDisplayUsdPriceString = isAmbient
+            ? '$∞'
+            : getFormattedNumber({
+                  value: maxPriceNum,
+                  zeroDisplay: '…',
+                  prefix: '$',
+              });
         setMaxPriceUsdEquivalent(maxDisplayUsdPriceString);
-    }, [pinnedMinPrice, pinnedMaxPrice, isDenomBase, basePrice, quotePrice]);
+    }, [
+        pinnedMinPrice,
+        pinnedMaxPrice,
+        isDenomBase,
+        basePrice,
+        quotePrice,
+        isAmbient,
+    ]);
 
     // JSX frag for lowest price in range
 
