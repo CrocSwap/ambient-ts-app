@@ -104,18 +104,19 @@ export default function App() {
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
-    const showSidebarOrNullStyle = smallScreen
-        ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/faq') ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
-        ? 'hide_sidebar'
-        : sidebarDislayStyle;
+    // const showSidebarOrNullStyle = smallScreen
+    //     ? sidebarDislayStyle
+    //     : currentLocation == '/' ||
+    //       currentLocation == '/swap' ||
+    //       currentLocation == '/404' ||
+    //       currentLocation == '/terms' ||
+    //       currentLocation == '/privacy' ||
+    //       currentLocation.includes('/faq') ||
+    //       currentLocation.includes('/chat') ||
+    //       currentLocation.startsWith('/swap')
+    //     ? 'hide_sidebar'
+    //     : sidebarDislayStyle;
+    const showSidebarOrNullStyle = 'hide_sidebar';
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -187,8 +188,8 @@ export default function App() {
                 <section
                     className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
                 >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
-                        sidebarRender}
+                    {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                        sidebarRender} */}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route

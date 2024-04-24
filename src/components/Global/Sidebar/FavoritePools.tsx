@@ -7,6 +7,7 @@ import PoolsListItem from './PoolsListItem';
 import { FlexContainer } from '../../../styled/Common';
 import {
     HeaderGrid,
+    ItemHeaderContainer,
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
@@ -35,14 +36,17 @@ export default function FavoritePools(props: propsIF) {
     );
 
     return (
-        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
-            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
-                {['Pool', 'Volume', 'TVL'].map((item) => (
-                    <FlexContainer key={item} justifyContent='center'>
-                        {item}
-                    </FlexContainer>
+        <FlexContainer
+            flexDirection='column'
+            fontSize='body'
+            fullHeight
+            gap={8}
+        >
+            <ItemHeaderContainer color='text2'>
+                {['Pool', 'Price', 'Volume', 'TVL'].map((item) => (
+                    <FlexContainer key={item}>{item}</FlexContainer>
                 ))}
-            </HeaderGrid>
+            </ItemHeaderContainer>
             {isAlreadyFavorited || (
                 <ViewMoreFlex
                     justifyContent='center'

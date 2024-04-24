@@ -1,5 +1,5 @@
 import { NoColorTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
-import { memo, useContext } from 'react';
+import { memo, useContext, useRef, useState } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
@@ -14,6 +14,9 @@ import { TokenIF } from '../../../../ambient-utils/types';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons, HeaderText } from '../../../../styled/Components/Chart';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import DropdownSearch from '../../../../components/Global/DropdownSearch/DropdownSearch';
 
 function TradeChartsTokenInfo() {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
@@ -29,6 +32,14 @@ function TradeChartsTokenInfo() {
     } = useContext(PoolContext);
     const { favePools } = useContext(UserPreferenceContext);
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
+    const { appHeaderDropdown } = useContext(AppStateContext);
+
+    const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+
+    const searchDropdownItemRef = useRef<HTMLDivElement>(null);
+    const clickOutsideWalletHandler = () => setShowSearchDropdown(false);
+
+    useOnClickOutside(searchDropdownItemRef, clickOutsideWalletHandler);
 
     const denomInBase = isDenomBase;
 
@@ -64,6 +75,46 @@ function TradeChartsTokenInfo() {
           poolPriceDisplay === undefined
         ? '…'
         : `${currencyCharacter}${truncatedPoolPrice}`;
+
+    const searchDisplay = (
+        <section
+            style={{
+                position: 'relative',
+                fontSize: '16px',
+                marginTop: '1px',
+            }}
+            ref={searchDropdownItemRef}
+            aria-label='search dropdown'
+        >
+            <h3
+                style={{ color: 'white' }}
+                tabIndex={0}
+                onClick={() => {
+                    setShowSearchDropdown(!showSearchDropdown);
+                    if (!showSearchDropdown) {
+                        appHeaderDropdown.setIsActive(true);
+                    } else appHeaderDropdown.setIsActive(false);
+                }}
+            >
+                Arrow
+            </h3>
+
+            {showSearchDropdown ? (
+                <div
+                    style={{
+                        background: 'blue',
+                        width: '400px',
+                        height: '200px',
+                        position: 'absolute',
+                        right: '20px',
+                        bottom: '0',
+                    }}
+                >
+                    <h1>I AM THE SEARCH</h1>
+                </div>
+            ) : null}
+        </section>
+    );
 
     const currentAmountDisplay = (
         <span
@@ -173,42 +224,45 @@ function TradeChartsTokenInfo() {
     );
 
     const denomToggleButton = (
-        <HeaderButtons
-            id='token_pair_in_chart_header'
-            aria-label='flip denomination.'
-            onClick={() => toggleDidUserFlipDenom()}
-        >
-            <FlexContainer
-                id='trade_chart_header_token_pair_logos'
-                role='button'
-                gap={4}
+        <FlexContainer gap={4}>
+            <HeaderButtons
+                id='token_pair_in_chart_header'
+                aria-label='flip denomination.'
+                onClick={() => toggleDidUserFlipDenom()}
             >
-                <TokenIcon
-                    token={topToken}
-                    src={topToken.logoURI}
-                    alt={topToken.symbol}
-                    size={smallScrenView ? 's' : 'l'}
-                />
-                <TokenIcon
-                    token={bottomToken}
-                    src={bottomToken.logoURI}
-                    alt={bottomToken.symbol}
-                    size={smallScrenView ? 's' : 'l'}
-                />
-            </FlexContainer>
-            <HeaderText
-                id='trade_chart_header_token_pair_symbols'
-                fontSize='header1'
-                fontWeight='300'
-                color='text1'
-                role='button'
-                aria-live='polite'
-                aria-atomic='true'
-                aria-relevant='all'
-            >
-                {topToken.symbol} / {bottomToken.symbol}
-            </HeaderText>
-        </HeaderButtons>
+                <FlexContainer
+                    id='trade_chart_header_token_pair_logos'
+                    role='button'
+                    gap={4}
+                >
+                    <TokenIcon
+                        token={topToken}
+                        src={topToken.logoURI}
+                        alt={topToken.symbol}
+                        size={smallScrenView ? 's' : 'l'}
+                    />
+                    <TokenIcon
+                        token={bottomToken}
+                        src={bottomToken.logoURI}
+                        alt={bottomToken.symbol}
+                        size={smallScrenView ? 's' : 'l'}
+                    />
+                </FlexContainer>
+                <HeaderText
+                    id='trade_chart_header_token_pair_symbols'
+                    fontSize='header1'
+                    fontWeight='300'
+                    color='text1'
+                    role='button'
+                    aria-live='polite'
+                    aria-atomic='true'
+                    aria-relevant='all'
+                >
+                    {topToken.symbol} / {bottomToken.symbol}
+                </HeaderText>
+            </HeaderButtons>
+            <DropdownSearch />
+        </FlexContainer>
     );
 
     // end of fav button-------------------------------
