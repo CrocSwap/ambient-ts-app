@@ -33,7 +33,7 @@ gap: 8px;
   top: 100%;
   left: 0;
   z-index: 2;
-  box-shadow: rgba(115, 113, 252, 0.56) 0px 22px 70px 30px;
+  box-shadow: rgba(115, 113, 252, 0.56) 0px 100px 100px 2px;
 
 }
  
