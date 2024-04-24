@@ -173,7 +173,18 @@ export default function PortfolioBannerAccount(
                                 resolvedAddress !== undefined &&
                                     resolvedAddress.length > 0
                                     ? false
-                                    : true,
+                                    : NFTData &&
+                                          NFTData.find(
+                                              (nftChainList) =>
+                                                  nftChainList.chainId ===
+                                                  chainId,
+                                          ) &&
+                                          NFTData.find(
+                                              (nftChainList) =>
+                                                  nftChainList.chainId ===
+                                                  chainId,
+                                          )?.userHasNFT &&
+                                          true,
                             )}
                     </ProfileSettingsContainer>
                 </span>
