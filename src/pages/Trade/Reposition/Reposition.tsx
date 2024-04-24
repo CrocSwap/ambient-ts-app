@@ -811,9 +811,9 @@ function Reposition() {
             currentQuoteQtyDisplayTruncated === '...') ||
         (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
-    useEffect(() => {
-        console.log({ minPriceDisplay, maxPriceDisplay });
-    }, [minPriceDisplay, maxPriceDisplay]);
+    // useEffect(() => {
+    //     console.log({ minPriceDisplay, maxPriceDisplay });
+    // }, [minPriceDisplay, maxPriceDisplay]);
 
     return (
         <>

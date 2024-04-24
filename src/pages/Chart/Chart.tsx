@@ -1677,14 +1677,7 @@ export default function Chart(props: propsIF) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         let pinnedDisplayPrices: any;
 
-                        if (
-                            !advancedMode ||
-                            pathsToUpdateChart
-                                .filter((path) => path !== 'pool')
-                                .some((path) =>
-                                    location.pathname.includes(path),
-                                )
-                        ) {
+                        if (!advancedMode) {
                             if (
                                 draggedValue === 0 ||
                                 draggedValue === liquidityData?.topBoundary
@@ -1942,13 +1935,13 @@ export default function Chart(props: propsIF) {
 
                     if (!cancelDrag) {
                         if (
-                            (!advancedMode ||
-                                pathsToUpdateChart
-                                    .filter((path) => path !== 'pool')
-                                    .some((path) =>
-                                        location.pathname.includes(path),
-                                    )) &&
-                            rangeWidthPercentage
+                            !advancedMode ||
+                            (pathsToUpdateChart
+                                .filter((path) => path !== 'pool')
+                                .some((path) =>
+                                    location.pathname.includes(path),
+                                ) &&
+                                rangeWidthPercentage)
                         ) {
                             setSimpleRangeWidth(
                                 Math.floor(
@@ -2418,12 +2411,7 @@ export default function Chart(props: propsIF) {
                 lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
             }
 
-            if (
-                !advancedMode ||
-                pathsToUpdateChart
-                    .filter((path) => path !== 'pool')
-                    .some((path) => location.pathname.includes(path))
-            ) {
+            if (!advancedMode) {
                 let rangeWidthPercentage;
                 let tickValue;
                 if (
@@ -5295,13 +5283,11 @@ export default function Chart(props: propsIF) {
 
             setMinPrice(low > high ? high : low);
             setMaxPrice(low > high ? low : high);
-            console.log({ minPrice, maxPrice });
 
             if (lowLineMoved) {
                 setChartTriggeredBy('low_line');
             } else if (highLineMoved) {
                 setChartTriggeredBy('high_line');
-                console.log('triggered');
             }
             setIsLinesSwitched(isLinesSwitched);
         }

@@ -140,11 +140,11 @@ export default function EditLiqPriceInfo(props: propsIF) {
                 <Text color='negative'>...</Text>
             </div>
 
-            <div className={styles.row_item}>
+            {/* <div className={styles.row_item}>
                 <Text color='white'>Price Impact</Text>
                 <p />
                 <Text color='negative'>(1.56%)</Text>
-            </div>
+            </div> */}
         </FlexContainer>
     );
 }

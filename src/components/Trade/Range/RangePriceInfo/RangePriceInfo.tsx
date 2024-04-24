@@ -212,7 +212,7 @@ function RangePriceInfo(props: propsIF) {
 
     // TODO: remove unnecessary top-level wrapper
 
-    console.log({ minimumPrice, maximumPrice });
+    // console.log({ minimumPrice, maximumPrice });
 
     return (
         <div
