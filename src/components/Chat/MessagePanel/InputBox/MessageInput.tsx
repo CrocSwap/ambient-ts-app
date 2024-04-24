@@ -17,17 +17,16 @@ import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 // import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
+import {
+    filterMessage,
+    formatURL,
+    isLink,
+    isLinkInCrocodileLabsLinks,
+    isLinkInCrocodileLabsLinksForInput,
+} from '../../ChatUtils';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import {
-    isLink,
-    filterMessage,
-    formatURL,
-    isLinkInCrocodileLabsLinksForInput,
-    isLinkInCrocodileLabsLinks,
-} from '../../ChatUtils';
-import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 
 interface MessageInputProps {
     currentUser: string;

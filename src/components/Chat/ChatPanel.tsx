@@ -1201,7 +1201,6 @@ function ChatPanel(props: propsIF) {
                     <Room
                         selectedRoom={room}
                         setRoom={setRoom}
-                        isFullScreen={isFullScreen}
                         room={room}
                         setIsCurrentPool={setIsCurrentPool}
                         isCurrentPool={isCurrentPool}
@@ -1211,8 +1210,6 @@ function ChatPanel(props: propsIF) {
                         setUserCurrentPool={setUserCurrentPool}
                         currentUser={currentUser}
                         ensName={ensName}
-                        setFavoritePools={setFavoritePools}
-                        favoritePools={favoritePools}
                         setIsFocusMentions={setIsFocusMentions}
                         notifications={notifications}
                         mentCount={mentions.length}

@@ -107,8 +107,6 @@ const useChatSocket = (
     useEffect(() => {
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
-                console.log(socketLastMessage.payload);
-                console.log('.........................');
                 newMsgListener(socketLastMessage.payload);
                 break;
             case 'message-deleted-listener':
