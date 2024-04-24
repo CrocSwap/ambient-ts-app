@@ -176,6 +176,16 @@ export default function Room(props: propsIF) {
     }
 
     const handlePoolRedirect = async (roomName: string) => {
+        // PoolListItem.tsx line 71
+        // const [addrTokenA, addrTokenB] =
+        // tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
+        //     ? [pool.base.address, pool.quote.address]
+        //     : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
+        //     ? [pool.quote.address, pool.base.address]
+        //     : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+        //     ? [pool.quote.address, pool.base.address]
+        //     : [pool.base.address, pool.quote.address];
+
         const room = roomList.find((room) => room.name === roomName);
 
         if (room && room.base && room.quote) {
