@@ -13,6 +13,7 @@
 .avatar_jazzicons {
     display: flex;
     margin-top: .5rem;
+    cursor: pointer;
 }
 
 .avatar_jazzicons canvas {

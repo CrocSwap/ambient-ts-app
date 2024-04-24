@@ -217,12 +217,14 @@ export const getDefaultRooms = (isModerator: boolean) => {
     const ret: ChatRoomIF[] = [
         {
             name: 'Global',
+            shownName: 'Global 🌍',
         },
     ];
 
     if (isModerator) {
         ret.push({
             name: 'Admins',
+            shownName: 'Admins 👑',
         });
     }
 
@@ -237,8 +239,8 @@ export const createRoomIF = (
     if (resp.roomInfo.indexOf('/') >= 0) {
         ret = {
             name: resp.roomInfo,
-            base: resp.roomInfo.split('/')[0],
-            quote: resp.roomInfo.split('/')[1],
+            base: resp.roomInfo.split('/')[0].trim(),
+            quote: resp.roomInfo.split('/')[1].trim(),
             popularity: popularityScore,
         };
     } else {
@@ -266,4 +268,12 @@ export const createRoomIF = (
 
 export const getRoomNameFromPool = (pool: PoolIF) => {
     return `${pool.base.symbol} / ${pool.quote.symbol}`;
+};
+
+export const getRoomObjFromBaseQuote = (base: string, quote: string) => {
+    return {
+        name: `${base} / ${quote}`,
+        base: base,
+        quote: quote,
+    };
 };
