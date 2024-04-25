@@ -10,6 +10,7 @@ import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import {
+    CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
@@ -19,7 +20,6 @@ import {
     getFormattedNumber,
     printDomToImage,
 } from '../../../ambient-utils/dataLayer';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
@@ -53,7 +53,6 @@ export default function OrderDetailsModal(props: propsIF) {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { crocEnv, activeNetwork, provider } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { userAddress } = useContext(UserDataContext);
@@ -74,7 +73,7 @@ export default function OrderDetailsModal(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         posHash,
         fillPercentage,
-    } = useProcessOrder(limitOrder, userAddress);
+    } = useProcessOrder(limitOrder, crocEnv, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
@@ -139,7 +138,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
@@ -198,7 +196,11 @@ export default function OrderDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, !!crocEnv, !!provider]);
+    }, [
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        !!crocEnv,
+        !!provider,
+    ]);
 
     const detailsRef = useRef(null);
 

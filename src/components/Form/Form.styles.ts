@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components/macro';
 
 export const ButtonBase = styled.button<{
     flat: boolean;
+    warning?: boolean;
     width?: string;
     height?: string;
     style?: React.CSSProperties;
@@ -61,6 +62,12 @@ export const ButtonBase = styled.button<{
             border-radius: var(--border-radius);
             background-color: var(--dark2);
             pointer-events: none;
+        `}
+    ${({ warning }) =>
+        warning &&
+        css`
+            background: var(--dark2);
+            color: var(--accent1);
         `}
 `;
 

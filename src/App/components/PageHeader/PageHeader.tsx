@@ -63,11 +63,13 @@ const PageHeader = function () {
 
     const {
         wagmiModal: { open: openWagmiModal },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
 
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
+        useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
     const {
@@ -151,9 +153,12 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice = getFormattedNumber({
-        value: poolPriceDisplayWithDenom,
-    });
+    const truncatedPoolPrice =
+        usdPrice && isTradeDollarizationEnabled
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : getFormattedNumber({
+                  value: poolPriceDisplayWithDenom,
+              });
 
     useEffect(() => {
         const path = location.pathname;
@@ -354,7 +359,14 @@ const PageHeader = function () {
             data-testid={'page-header'}
             fixed={location.pathname === '/'}
         >
-            <div>
+            <div
+                onClick={(event: React.MouseEvent) => {
+                    event?.stopPropagation();
+                    if (appHeaderDropdown.isActive) {
+                        appHeaderDropdown.setIsActive(false);
+                    }
+                }}
+            >
                 <LogoContainer to='/' aria-label='Home'>
                     {desktopScreen ? (
                         <img src={mainLogo} alt='ambient' />

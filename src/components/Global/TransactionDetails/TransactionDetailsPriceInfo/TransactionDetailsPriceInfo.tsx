@@ -13,6 +13,7 @@ import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 type ItemIF = {
     slug: string;
@@ -30,6 +31,7 @@ interface propsIF {
 export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { tx, controlItems, positionApy, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -55,7 +57,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         quoteTokenCharacter,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessTransaction(tx, userAddress);
+    } = useProcessTransaction(tx, userAddress, crocEnv);
 
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);

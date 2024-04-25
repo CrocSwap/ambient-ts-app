@@ -14,6 +14,7 @@ import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from '@ethersproject/providers';
 import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { getMoneynessRankByAddr } from './getMoneynessRank';
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -21,7 +22,6 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
-    lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
@@ -142,6 +142,17 @@ export const getPositionData = async (
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+    const basePrice = await basePricePromise;
+    const quotePrice = await quotePricePromise;
+
+    newPosition.isBaseTokenMoneynessGreaterOrEqual =
+        getMoneynessRankByAddr(baseTokenAddress) -
+            getMoneynessRankByAddr(quoteTokenAddress) >=
+        0;
+
+    newPosition.baseUsdPrice = basePrice?.usdPrice;
+    newPosition.quoteUsdPrice = quotePrice?.usdPrice;
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: position.positionType === 'ambient',
@@ -279,18 +290,21 @@ export const getPositionData = async (
         zeroDisplay: '0',
     });
 
-    const basePrice = await basePricePromise;
-    const quotePrice = await quotePricePromise;
     const poolPrice = toDisplayPrice(
         await poolPriceNonDisplay,
         baseTokenDecimals,
         quoteTokenDecimals,
     );
+    newPosition.curentPoolPriceDisplayNum = poolPrice;
 
     if (quotePrice && basePrice) {
         newPosition.totalValueUSD =
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (
             newPosition.feesLiqQuoteDecimalCorrected &&
             newPosition.feesLiqBaseDecimalCorrected
@@ -301,16 +315,24 @@ export const getPositionData = async (
     } else if (basePrice) {
         const quotePrice = basePrice.usdPrice * poolPrice;
         newPosition.totalValueUSD =
-            quotePrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (newPosition.feesLiqBaseDecimalCorrected)
             newPosition.feesValueUSD =
                 basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (quotePrice) {
         const basePrice = quotePrice.usdPrice / poolPrice;
         newPosition.totalValueUSD =
-            basePrice * newPosition.positionLiqBaseDecimalCorrected +
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected;
+            basePrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0)) +
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0));
         if (newPosition.feesLiqQuoteDecimalCorrected)
             newPosition.feesValueUSD =
                 quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected;

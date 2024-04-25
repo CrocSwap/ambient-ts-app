@@ -58,7 +58,7 @@ interface ButtonProps {
 }
 export const StyledLink = styled(Link)<ButtonProps>`
     width: 100%;
-    z-index: 2;
+    z-index: 1;
     border-radius: var(--border-radius);
     background: var(--title-gradient);
     max-width: 16rem;

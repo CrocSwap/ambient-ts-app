@@ -1,10 +1,11 @@
-import { useState, useRef, ReactNode, useContext } from 'react';
+import { useState, useRef, ReactNode, useContext, useEffect } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 // Interface for React functional components
 interface DropdownMenuPropsIF {
@@ -22,6 +23,14 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
+
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
+            setIsMenuOpen(false);
+            appHeaderDropdown.setIsActive(false);
+        }
+    }, [isEscapePressed]);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);

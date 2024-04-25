@@ -23,6 +23,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const { tx, isAccountView, timeFirstMintMemo } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,
@@ -52,9 +53,7 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
-    } = useProcessTransaction(tx, userAddress);
-
-    const { chainData } = useContext(CrocEnvContext);
+    } = useProcessTransaction(tx, userAddress, crocEnv);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 

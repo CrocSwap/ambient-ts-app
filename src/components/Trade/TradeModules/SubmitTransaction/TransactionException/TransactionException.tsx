@@ -3,29 +3,38 @@ import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
 import { useContext } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../../contexts/RangeContext';
+import TooltipComponent from '../../../../Global/TooltipComponent/TooltipComponent';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 interface propsIF {
     txErrorMessage: string;
+    txErrorJSON: string;
 }
 
 export default function TransactionException(props: propsIF) {
-    const { txErrorMessage } = props;
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const { txErrorMessage, txErrorJSON } = props;
     const rangeModuleActive = location.pathname.includes('/trade/pool');
-    const { isTokenAPrimaryRange } = useContext(RangeContext);
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
+
+    const [_, copy] = useCopyToClipboard();
 
     const isNativeTokenSecondary =
-        (isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
-        (!isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
+        (isTokenAPrimary && tokenB.address === ZERO_ADDRESS) ||
+        (!isTokenAPrimary && tokenA.address === ZERO_ADDRESS);
 
-    const primaryTokenSymbol = isTokenAPrimaryRange
-        ? tokenA.symbol
-        : tokenB.symbol;
+    const primaryTokenSymbol = isTokenAPrimary ? tokenA.symbol : tokenB.symbol;
 
     const formattedErrorMessage =
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
+    function handleCopyErrorMessage() {
+        copy(txErrorJSON);
+        openSnackbar('Error message copied to clipboard', 'info');
+    }
     const suggestionToCheckWalletETHBalance = (
         <p>
             Please verify that the native token (e.g. ETH) balance in your
@@ -47,14 +56,14 @@ export default function TransactionException(props: propsIF) {
                     </p>
                     <DividerDark />
                     <p>
-                        This may have occurred due to an insufficient native
-                        token (e.g. ETH) balance to cover potential slippage.
+                        Please try entering a specific amount of the native
+                        token (e.g. ETH), rather than
+                        {' ' + primaryTokenSymbol}.
                     </p>
                     <DividerDark />
                     <p>
-                        Please try entering a specific amount of the native
-                        token, rather than
-                        {' ' + primaryTokenSymbol}.
+                        This may have occurred due to an insufficient native
+                        token balance to cover potential slippage.
                     </p>
                 </>
             ) : (
@@ -64,7 +73,22 @@ export default function TransactionException(props: propsIF) {
                         We apologize for this inconvenience.
                     </p>
                     <DividerDark />
-                    <p>{formattedErrorMessage}</p>
+                    <div className={styles.formatted_error_container}>
+                        <p className={styles.formatted_error}>
+                            {formattedErrorMessage}
+                        </p>
+
+                        <button
+                            className={styles.copy_error}
+                            onClick={handleCopyErrorMessage}
+                        >
+                            Copy Error Message to Clipboard
+                            <TooltipComponent
+                                title='If you have any questions or need further assistance, please open a ticket on Discord (#open-a-ticket) and paste this error message. https://discord.gg/ambient-finance'
+                                placement='bottom'
+                            />
+                        </button>
+                    </div>
                     <DividerDark />
 
                     {!txErrorMessage ? (

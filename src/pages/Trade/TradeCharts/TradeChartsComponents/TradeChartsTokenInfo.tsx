@@ -24,6 +24,8 @@ function TradeChartsTokenInfo() {
         poolPriceDisplay,
         isPoolPriceChangePositive,
         poolPriceChangePercent,
+        usdPrice,
+        isTradeDollarizationEnabled,
     } = useContext(PoolContext);
     const { favePools } = useContext(UserPreferenceContext);
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
@@ -53,12 +55,15 @@ function TradeChartsTokenInfo() {
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
-    const poolPrice =
-        poolPriceDisplay === Infinity ||
-        poolPriceDisplay === 0 ||
-        poolPriceDisplay === undefined
-            ? '…'
-            : `${currencyCharacter}${truncatedPoolPrice}`;
+    const poolPrice = isTradeDollarizationEnabled
+        ? usdPrice
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : '…'
+        : poolPriceDisplay === Infinity ||
+          poolPriceDisplay === 0 ||
+          poolPriceDisplay === undefined
+        ? '…'
+        : `${currencyCharacter}${truncatedPoolPrice}`;
 
     const currentAmountDisplay = (
         <span
@@ -70,7 +75,7 @@ function TradeChartsTokenInfo() {
         </span>
     );
 
-    const poolPriceNumber =
+    const poolPriceChangeString =
         poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
     const poolPriceChange = (
@@ -94,9 +99,9 @@ function TradeChartsTokenInfo() {
                               fontSize: '15px',
                           }
                 }
-                aria-label={`Pool price change is ${poolPriceNumber}`}
+                aria-label={`Pool price change is ${poolPriceChangeString}`}
             >
-                {poolPriceNumber}
+                {poolPriceChangeString}
             </span>
         </NoColorTooltip>
     );
