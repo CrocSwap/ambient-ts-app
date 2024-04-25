@@ -87,6 +87,8 @@ function Reposition() {
         updateTransactionHash,
     } = useContext(ReceiptContext);
     const {
+        advancedLowTick,
+        advancedHighTick,
         simpleRangeWidth,
         setSimpleRangeWidth,
         setMaxRangePrice: setMaxPrice,
@@ -286,7 +288,12 @@ function Reposition() {
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
-    }, [position.positionId, rangeWidthPercentage]);
+    }, [
+        position.positionId,
+        rangeWidthPercentage,
+        pinnedLowTick,
+        pinnedHighTick,
+    ]);
 
     useEffect(() => {
         if (!position) {
@@ -318,6 +325,11 @@ function Reposition() {
             setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
     }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
+
+    useEffect(() => {
+        setPinnedLowTick(advancedLowTick);
+        setPinnedHighTick(advancedHighTick);
+    }, [advancedLowTick, advancedHighTick]);
 
     function mintArgsForReposition(
         lowTick: number,
