@@ -29,7 +29,7 @@ export default function LevelLine(props: LevelLineProps) {
 
     return (
         <Container width={width} height={height} percentage={percentage}>
-            <FilledArea percentage={percentage} />
+            <FilledArea percentage={20} />
         </Container>
     );
 }

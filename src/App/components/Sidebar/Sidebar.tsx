@@ -49,11 +49,9 @@ import {
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
-    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
-        useContext(SidebarContext);
+    const { sidebar, hideOnMobile } = useContext(SidebarContext);
 
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
@@ -96,7 +94,6 @@ function Sidebar() {
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
-    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
 
     const searchContainer: JSX.Element = (
         <SearchContainer
@@ -176,37 +173,6 @@ function Sidebar() {
         setIsDefaultOverridden(true);
         setOpenAllDefault(!openAllDefault);
     };
-
-    const closeSidebarImage = (
-        <svg
-            width='23'
-            height='24'
-            viewBox='0 0 23 24'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-        >
-            <path
-                d='M17.3333 4.5H5.66667C4.74619 4.5 4 5.24619 4 6.16667V17.8333C4 18.7538 4.74619 19.5 5.66667 19.5H17.3333C18.2538 19.5 19 18.7538 19 17.8333V6.16667C19 5.24619 18.2538 4.5 17.3333 4.5Z'
-                stroke='#7371FC'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            />
-            <path
-                d='M9 4.5V19.5'
-                stroke='#7371FC'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            />
-            <path
-                d='M15 14.5L12 12L15 9.5'
-                stroke='#7371FC'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-            />
-        </svg>
-    );
-
-    // TODO: why are we using an `<input>` as a clickable to close the sidebar?
 
     const searchContainerDisplay: JSX.Element = (
         <FlexContainer
