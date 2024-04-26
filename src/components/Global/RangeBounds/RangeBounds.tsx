@@ -52,10 +52,10 @@ interface RangeBoundsProps {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    maxPrice: number;
-    minPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
+    maxRangePrice: number;
+    minRangePrice: number;
+    setMaxRangePrice: Dispatch<SetStateAction<number>>;
+    setMinRangePrice: Dispatch<SetStateAction<number>>;
     isEditPanel?: boolean;
     isReposition?: boolean;
 }
@@ -86,10 +86,10 @@ export default function RangeBounds(props: RangeBoundsProps) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        maxPrice,
-        minPrice,
-        setMaxPrice,
-        setMinPrice,
+        maxRangePrice,
+        minRangePrice,
+        setMaxRangePrice,
+        setMinRangePrice,
 
         isRangeBoundsDisabled,
         customSwitch = false,
@@ -126,10 +126,10 @@ export default function RangeBounds(props: RangeBoundsProps) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        maxPrice,
-        minPrice,
-        setMaxPrice,
-        setMinPrice,
+        maxRangePrice,
+        minRangePrice,
+        setMaxRangePrice,
+        setMinRangePrice,
         minPriceInputString,
         maxPriceInputString,
     };

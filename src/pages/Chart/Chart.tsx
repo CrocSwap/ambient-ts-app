@@ -236,9 +236,9 @@ export default function Chart(props: propsIF) {
 
     const {
         minRangePrice: minPrice,
-        setMinRangePrice: setMinPrice,
+        setMinRangePrice,
         maxRangePrice: maxPrice,
-        setMaxRangePrice: setMaxPrice,
+        setMaxRangePrice,
         rescaleRangeBoundariesWithSlider,
         chartTriggeredBy,
         setChartTriggeredBy,
@@ -2486,17 +2486,16 @@ export default function Chart(props: propsIF) {
                         lookupChain(chainId).gridSize,
                     );
 
-                    setMaxPrice(
+                    setMaxRangePrice(
                         parseFloat(
                             pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                         ),
                     );
-                    setMinPrice(
+                    setMinRangePrice(
                         parseFloat(
                             pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                         ),
                     );
-                    console.log({ minPrice, maxPrice });
                 }
 
                 setSimpleRangeWidth(
@@ -5281,8 +5280,8 @@ export default function Chart(props: propsIF) {
                 (target: lineValue) => target.name === 'Max',
             )[0].value;
 
-            setMinPrice(low > high ? high : low);
-            setMaxPrice(low > high ? low : high);
+            setMinRangePrice(low > high ? high : low);
+            setMaxRangePrice(low > high ? low : high);
 
             if (lowLineMoved) {
                 setChartTriggeredBy('low_line');

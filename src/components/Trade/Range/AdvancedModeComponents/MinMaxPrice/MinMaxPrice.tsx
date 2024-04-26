@@ -11,7 +11,10 @@ import PriceInput from '../PriceInput/PriceInput';
 
 import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { exponentialNumRegEx } from '../../../../../ambient-utils/dataLayer';
+import {
+    exponentialNumRegEx,
+    truncateDecimals,
+} from '../../../../../ambient-utils/dataLayer';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 
@@ -28,10 +31,6 @@ interface propsIF {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    maxPrice: number;
-    minPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
 function MinMaxPrice(props: propsIF) {
@@ -46,10 +45,6 @@ function MinMaxPrice(props: propsIF) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        maxPrice,
-        minPrice,
-        setMaxPrice,
-        setMinPrice,
     } = props;
 
     const {
@@ -60,6 +55,10 @@ function MinMaxPrice(props: propsIF) {
         setAdvancedLowTick,
         pinnedDisplayPrices,
         setPinnedDisplayPrices,
+        minRangePrice,
+        maxRangePrice,
+        setMinRangePrice,
+        setMaxRangePrice,
     } = useContext(RangeContext);
 
     const handleMinPriceChangeEvent = (
@@ -75,8 +74,8 @@ function MinMaxPrice(props: propsIF) {
                 setMinPriceInputString(targetValue);
                 const targetAsFloat: number = parseFloat(targetValue);
                 isDenomBase
-                    ? setMinPrice(targetAsFloat)
-                    : setMaxPrice(targetAsFloat);
+                    ? setMinRangePrice(targetAsFloat)
+                    : setMaxRangePrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
@@ -96,8 +95,8 @@ function MinMaxPrice(props: propsIF) {
                 setMaxPriceInputString(targetValue);
                 const targetAsFloat: number = parseFloat(targetValue);
                 isDenomBase
-                    ? setMaxPrice(targetAsFloat)
-                    : setMinPrice(targetAsFloat);
+                    ? setMaxRangePrice(targetAsFloat)
+                    : setMinRangePrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
@@ -106,29 +105,58 @@ function MinMaxPrice(props: propsIF) {
 
     // Update the pinnedMaxPriceDisplay or pinnedMinPriceDisplay value
     const updatePinnedPriceDisplay = (
-        newMinValue: string,
-        newMaxValue: string,
+        newMinValue?: string,
+        newMaxValue?: string,
     ) => {
         if (pinnedDisplayPrices) {
-            setPinnedDisplayPrices({
-                ...pinnedDisplayPrices,
-                pinnedMinPriceDisplayTruncated: newMinValue,
-                pinnedMaxPriceDisplayTruncated: newMaxValue,
-            });
+            newMinValue && !newMaxValue
+                ? setPinnedDisplayPrices({
+                      ...pinnedDisplayPrices,
+                      pinnedMinPriceDisplayTruncated: newMinValue,
+                  })
+                : undefined;
+            newMaxValue && !newMinValue
+                ? setPinnedDisplayPrices({
+                      ...pinnedDisplayPrices,
+                      pinnedMaxPriceDisplayTruncated: newMaxValue,
+                  })
+                : undefined;
         }
     };
 
     useEffect(() => {
-        if (maxPrice !== undefined && minPrice !== undefined) {
-            const high = maxPrice;
-            const low = minPrice;
+        if (maxRangePrice !== undefined) {
+            const high = maxRangePrice;
             setMaxPriceInputString(
                 high !== undefined ? high.toString() : '0.0',
             );
-            setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
-            updatePinnedPriceDisplay(minPrice.toString(), maxPrice.toString());
+            const maxPriceTruncated =
+                maxRangePrice < 0.0001
+                    ? maxRangePrice.toExponential(2)
+                    : maxRangePrice < 2
+                    ? maxRangePrice > 0.1
+                        ? truncateDecimals(maxRangePrice, 4)
+                        : truncateDecimals(maxRangePrice, 6)
+                    : truncateDecimals(maxRangePrice, 2);
+            updatePinnedPriceDisplay(undefined, maxPriceTruncated);
         }
-    }, [maxPrice, minPrice]);
+    }, [maxRangePrice]);
+
+    useEffect(() => {
+        if (minRangePrice !== undefined) {
+            const low = minRangePrice;
+            setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
+            const minPriceTruncated =
+                minRangePrice < 0.0001
+                    ? minRangePrice.toExponential(2)
+                    : minRangePrice < 2
+                    ? minRangePrice > 0.1
+                        ? truncateDecimals(minRangePrice, 4)
+                        : truncateDecimals(minRangePrice, 6)
+                    : truncateDecimals(minRangePrice, 2);
+            updatePinnedPriceDisplay(minPriceTruncated, undefined);
+        }
+    }, [minRangePrice]);
 
     const increaseLowTick = (): void => {
         const updatedTick: number = rangeLowTick + tickSize;

@@ -91,8 +91,6 @@ function Reposition() {
         advancedHighTick,
         simpleRangeWidth,
         setSimpleRangeWidth,
-        setMaxRangePrice: setMaxPrice,
-        setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
         // setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
@@ -479,15 +477,11 @@ function Reposition() {
     useEffect(() => {
         if (!pinnedMinPriceDisplayTruncated) return;
         setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
-        if (pinnedMinPriceDisplayTruncated !== undefined) {
-            setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
-        }
     }, [pinnedMinPriceDisplayTruncated]);
 
     useEffect(() => {
         if (!pinnedMaxPriceDisplayTruncated) return;
         setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
-        setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
     }, [pinnedMaxPriceDisplayTruncated]);
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =

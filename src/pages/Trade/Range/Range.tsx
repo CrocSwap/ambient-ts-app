@@ -79,10 +79,10 @@ function Range(props: RangePropsIF) {
 
         simpleRangeWidth,
         setSimpleRangeWidth,
-        minRangePrice: minPrice,
-        maxRangePrice: maxPrice,
-        setMaxRangePrice: setMaxPrice,
-        setMinRangePrice: setMinPrice,
+        minRangePrice,
+        maxRangePrice,
+        setMaxRangePrice,
+        setMinRangePrice,
         setChartTriggeredBy,
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
@@ -548,10 +548,10 @@ function Range(props: RangePropsIF) {
             setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            setMaxPrice(
+            setMaxRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
-            setMinPrice(
+            setMinRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
             );
         }
@@ -655,10 +655,10 @@ function Range(props: RangePropsIF) {
                 }
             }
 
-            setMaxPrice(
+            setMaxRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
-            setMinPrice(
+            setMinRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
             );
         }
@@ -677,9 +677,8 @@ function Range(props: RangePropsIF) {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
-
-            const targetMinValue = minPrice;
-            const targetMaxValue = maxPrice;
+            const targetMinValue = minRangePrice;
+            const targetMaxValue = maxRangePrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
@@ -701,18 +700,6 @@ function Range(props: RangePropsIF) {
             !isDenomBase
                 ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
                 : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
-
-            !isDenomBase
-                ? setMinPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                      ),
-                  )
-                : setMaxPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                      ),
-                  );
 
             if (isLinesSwitched) {
                 isDenomBase
@@ -758,7 +745,13 @@ function Range(props: RangePropsIF) {
             setChartTriggeredBy('none');
             setIsLinesSwitched(false);
         }
-    }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
+    }, [
+        rangeLowBoundFieldBlurred,
+        chartTriggeredBy,
+        minRangePrice,
+        maxRangePrice,
+        isDenomBase,
+    ]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred || chartTriggeredBy === 'high_line') {
@@ -770,8 +763,8 @@ function Range(props: RangePropsIF) {
                 ' repo-info-max-price-display',
             ) as HTMLInputElement;
 
-            const targetMaxValue = maxPrice;
-            const targetMinValue = minPrice;
+            const targetMaxValue = maxRangePrice;
+            const targetMinValue = minRangePrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
@@ -788,18 +781,6 @@ function Range(props: RangePropsIF) {
                   )
                 : setRangeHighBoundNonDisplayPrice(
                       pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-                  );
-
-            isDenomBase
-                ? setMinPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                      ),
-                  )
-                : setMaxPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                      ),
                   );
 
             isDenomBase
@@ -855,7 +836,13 @@ function Range(props: RangePropsIF) {
             setChartTriggeredBy('none');
             setIsLinesSwitched(false);
         }
-    }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
+    }, [
+        rangeHighBoundFieldBlurred,
+        chartTriggeredBy,
+        minRangePrice,
+        maxRangePrice,
+        isDenomBase,
+    ]);
 
     const [
         amountToReduceNativeTokenQtyMainnet,
@@ -1065,10 +1052,10 @@ function Range(props: RangePropsIF) {
         rangeLowTick: defaultLowTick,
         rangeHighTick: defaultHighTick,
         disable: isInvalidRange || !isPoolInitialized,
-        maxPrice: maxPrice,
-        minPrice: minPrice,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
+        maxRangePrice: maxRangePrice,
+        minRangePrice: minRangePrice,
+        setMaxRangePrice: setMaxRangePrice,
+        setMinRangePrice: setMinRangePrice,
     };
 
     const rangeExtraInfoProps = {
