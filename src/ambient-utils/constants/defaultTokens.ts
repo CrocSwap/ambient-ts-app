@@ -452,6 +452,24 @@ export const scrollWrsETH: TokenIF = {
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
 };
 
+export const scrollSTONE: TokenIF = {
+    name: 'StakeStone Ether',
+    address: '0x80137510979822322193FC997d400D5A6C747bf7',
+    symbol: 'STONE',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollUniETH: TokenIF = {
+    name: 'Universal ETH',
+    address: '0x15eefe5b297136b8712291b632404b66a8ef4d25',
+    symbol: 'uniETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
@@ -623,6 +641,8 @@ export const defaultTokens: TokenIF[] = [
     scrollWrappedETH,
     scrollWstETH,
     scrollWrsETH,
+    scrollSTONE,
+    scrollUniETH,
     sepoliaETH,
     sepoliaUSDC,
     sepoliaWBTC,
