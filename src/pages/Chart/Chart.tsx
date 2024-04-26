@@ -161,6 +161,17 @@ interface propsIF {
     userTransactionData: Array<TransactionIF> | undefined;
 }
 
+export interface ChartThemeIF {
+    lightFillColor: d3.RGBColor | d3.HSLColor | null;
+    darkFillColor: string;
+    selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
+    // border
+    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    textColor: string;
+}
+
 export default function Chart(props: propsIF) {
     const {
         isTokenABase,
@@ -311,6 +322,47 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
+
+    const [chartThemeColors, setChartThemeColors] = useState<
+        ChartThemeIF | undefined
+    >(undefined);
+
+    useEffect(() => {
+        if (d3Container) {
+            const canvas = d3
+                .select(d3Container.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const style = getComputedStyle(canvas);
+            const lightFillColor = style.getPropertyValue('--accent5');
+            const selectedDateFillColor = style.getPropertyValue('--accent2');
+
+            const darkStrokeColor = style.getPropertyValue('--accent1');
+            const lightStrokeColor = style.getPropertyValue('--accent5');
+            const selectedDateStrokeColor = style.getPropertyValue('--accent2');
+
+            const d3LightFillColor = d3.color(lightFillColor);
+            const d3SelectedDateFillColor = d3.color(selectedDateFillColor);
+
+            const d3DarkStrokeColor = d3.color(darkStrokeColor);
+            const d3LightStrokeColor = d3.color(lightStrokeColor);
+            const d3SelectedDateStrokeColor = d3.color(selectedDateStrokeColor);
+
+            const chartThemeColors = {
+                lightFillColor: d3LightFillColor,
+                darkFillColor: '#24243e',
+                selectedDateFillColor: d3SelectedDateFillColor,
+                // border
+                lightStrokeColor: d3LightStrokeColor,
+                darkStrokeColor: d3DarkStrokeColor,
+                selectedDateStrokeColor: d3SelectedDateStrokeColor,
+                textColor: '',
+            };
+
+            setChartThemeColors(() => chartThemeColors);
+        }
+    }, [d3Container]);
 
     const location = useLocation();
 
@@ -5582,6 +5634,7 @@ export default function Chart(props: propsIF) {
                             setBandwidth={setBandwidth}
                             prevlastCandleTime={prevlastCandleTime}
                             setPrevLastCandleTime={setPrevLastCandleTime}
+                            chartThemeColors={chartThemeColors}
                         />
 
                         <VolumeBarCanvas
@@ -5590,6 +5643,7 @@ export default function Chart(props: propsIF) {
                             denomInBase={denomInBase}
                             selectedDate={selectedDate}
                             showVolume={showVolume}
+                            chartThemeColors={chartThemeColors}
                         />
 
                         {liquidityData && (
@@ -5608,6 +5662,7 @@ export default function Chart(props: propsIF) {
                                     mainCanvasBoundingClientRect
                                 }
                                 setLiqMaxActiveLiq={setLiqMaxActiveLiq}
+                                chartThemeColors={chartThemeColors}
                             />
                         )}
 
@@ -5742,6 +5797,7 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
+                                chartThemeColors={chartThemeColors}
                             />
                         </>
                     )}
@@ -5777,6 +5833,7 @@ export default function Chart(props: propsIF) {
                                 setIsChartZoom={setIsChartZoom}
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
+                                chartThemeColors={chartThemeColors}
                             />
                         </>
                     )}

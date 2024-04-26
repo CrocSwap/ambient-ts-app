@@ -2,6 +2,7 @@ import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { LiquidityRangeIF } from '../../../../ambient-utils/types';
+import { ChartThemeIF } from '../../Chart';
 
 export function getActiveLiqDepth(
     data: LiquidityRangeIF,
@@ -63,13 +64,27 @@ export function createAreaSeries(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function decorateForLiquidityArea(series: any, threshold: number) {
+export function decorateForLiquidityArea(
+    series: any,
+    threshold: number,
+    chartThemeColors: ChartThemeIF,
+) {
+    const d3BidColor = chartThemeColors.darkStrokeColor?.copy();
+    const d3AskColor = chartThemeColors.lightStrokeColor?.copy();
+
+    if (d3BidColor) d3BidColor.opacity = 0.7;
+    if (d3AskColor) d3AskColor.opacity = 0.7;
+
     series.decorate(
         (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
             if (d[0]?.liqPrices > threshold) {
-                context.fillStyle = liqBidColor;
+                context.fillStyle = d3BidColor
+                    ? d3BidColor.toString()
+                    : liqBidColor;
             } else {
-                context.fillStyle = liqAskColor;
+                context.fillStyle = d3AskColor
+                    ? d3AskColor.toString()
+                    : liqAskColor;
             }
         },
     );
