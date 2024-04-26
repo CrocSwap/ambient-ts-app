@@ -10,4 +10,5 @@ export interface brandAssetsIF {
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
+    heroImage: string;
 }

@@ -16,7 +16,8 @@ export default function Hero() {
         useContext(ChainDataContext);
     const { platformName } = useContext(BrandContext);
 
-    if (isActiveNetworkBlast) {
+    if (platformName === 'futa') {
+        console.log('WOW');
         return (
             <HeroContainer
                 justifyContent='center'
@@ -25,7 +26,68 @@ export default function Hero() {
                 fullHeight
                 fullWidth
                 id='hero'
-                className={styles.home_wallpaper}
+                className={styles['ambi']}
+            >
+                <FlexContainer
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    gap={32}
+                >
+                    <FlexContainer
+                        flexDirection={smallScreen ? 'column' : 'row'}
+                        alignItems='center'
+                        gap={8}
+                        style={{ verticalAlign: 'middle' }}
+                    >
+                        {platformName && (
+                            <>
+                                <p
+                                    className={styles.ambient_blast_logo}
+                                    style={{ fontSize: '110px' }}
+                                >
+                                    {platformName}
+                                </p>
+
+                                <Text
+                                    fontWeight='100'
+                                    color='text1'
+                                    align='center'
+                                    style={{
+                                        marginTop: '20px',
+                                        marginLeft: '15px',
+                                        marginRight: '15px',
+                                        fontSize: '30px',
+                                    }}
+                                >
+                                    X
+                                </Text>
+                            </>
+                        )}
+                        <img
+                            src={scrollLogo}
+                            alt=''
+                            width='70px'
+                            style={{
+                                marginTop: '8px',
+                                maxWidth: '60%',
+                            }}
+                        />
+                    </FlexContainer>
+                    <TradeNowButton fieldId='trade_now_btn_in_hero' />
+                </FlexContainer>
+            </HeroContainer>
+        );
+    } else if (isActiveNetworkBlast) {
+        return (
+            <HeroContainer
+                justifyContent='center'
+                alignItems='center'
+                rounded
+                fullHeight
+                fullWidth
+                id='hero'
+                className={styles['ambi']}
             >
                 <FlexContainer
                     flexDirection='column'
@@ -81,7 +143,7 @@ export default function Hero() {
                 fullHeight
                 fullWidth
                 id='hero'
-                className={styles.home_wallpaper}
+                className={styles['ambi']}
             >
                 <FlexContainer
                     flexDirection='column'
@@ -142,7 +204,7 @@ export default function Hero() {
                 fullHeight
                 fullWidth
                 id='hero'
-                className={styles.home_wallpaper}
+                className={styles['ambi']}
             >
                 <FlexContainer
                     flexDirection='column'

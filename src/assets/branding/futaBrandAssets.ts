@@ -1,9 +1,9 @@
-import { brandAssetsIF } from '../types';
+import { brandAssetsIF } from './types';
 import large from '../images/logos/large.svg';
 
-export const scrollBrandAssets: brandAssetsIF = {
+export const futaBrandAssets: brandAssetsIF = {
     networks: [
-        '0x82750', // scroll
+        '0xaa36a7', // sepolia
     ],
     color: {
         '0x1': 'orange',
@@ -14,8 +14,9 @@ export const scrollBrandAssets: brandAssetsIF = {
         '0xa0c71fd': 'orange',
         '0x13e31': 'orange',
     },
-    platformName: '',
+    platformName: 'futa',
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
+    heroImage: 'futa',
 };

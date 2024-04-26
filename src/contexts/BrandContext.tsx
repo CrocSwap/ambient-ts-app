@@ -7,6 +7,7 @@ import {
     blastBrandAssets,
     scrollBrandAssets,
     ambientBrandAssets,
+    futaBrandAssets,
 } from '../assets/branding';
 
 interface BrandContextIF {
@@ -16,6 +17,7 @@ interface BrandContextIF {
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
+    heroImage: string;
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -35,6 +37,8 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
                 return blastBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
+            case 'futa':
+                return futaBrandAssets;
             case 'ambient':
             default:
                 return ambientBrandAssets;
@@ -55,6 +59,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         headerImage: brandAssets.headerImage,
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,
+        heroImage: brandAssets.heroImage,
     };
 
     console.log(brandData);
