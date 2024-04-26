@@ -103,7 +103,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../utils/numbers';
-import { ChartContext } from '../../contexts/ChartContext';
+import { ChartContext, ChartThemeIF } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
 import {
     LS_KEY_CHART_ANNOTATIONS,
@@ -161,17 +161,6 @@ interface propsIF {
     userTransactionData: Array<TransactionIF> | undefined;
 }
 
-export interface ChartThemeIF {
-    lightFillColor: d3.RGBColor | d3.HSLColor | null;
-    darkFillColor: string;
-    selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
-    // border
-    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
-    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
-    selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
-    textColor: string;
-}
-
 export default function Chart(props: propsIF) {
     const {
         isTokenABase,
@@ -223,6 +212,8 @@ export default function Chart(props: propsIF) {
         },
         isMagnetActiveLocal,
         setChartContainerOptions,
+        chartThemeColors,
+        setChartThemeColors,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -322,10 +313,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
-
-    const [chartThemeColors, setChartThemeColors] = useState<
-        ChartThemeIF | undefined
-    >(undefined);
 
     useEffect(() => {
         if (d3Container) {

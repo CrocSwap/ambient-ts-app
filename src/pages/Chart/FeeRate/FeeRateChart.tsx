@@ -10,7 +10,7 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../ambient-utils/dataLayer';
-import { ChartThemeIF } from '../Chart';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface FreeRateData {
     feeData: Array<CandleDataIF>;

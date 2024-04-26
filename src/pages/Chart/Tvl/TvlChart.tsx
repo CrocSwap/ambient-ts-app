@@ -14,7 +14,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import { ChartThemeIF } from '../Chart';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface TvlData {
     tvlData: Array<CandleDataIF>;

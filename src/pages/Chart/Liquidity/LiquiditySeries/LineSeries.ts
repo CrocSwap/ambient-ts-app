@@ -3,7 +3,7 @@ import * as d3fc from 'd3fc';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import { LiquidityRangeIF } from '../../../../ambient-utils/types';
 import { getActiveLiqDepth } from './AreaSeries';
-import { ChartThemeIF } from '../../Chart';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 const lineSellColor = 'rgba(115, 113, 252)';
 const lineBuyColor = 'rgba(205, 193, 255)';
 
@@ -59,6 +59,7 @@ export function createLiquidityLineSeries(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     curve: any,
     curveType: 'curve' | 'depth',
+    chartThemeColors?: ChartThemeIF | undefined,
 ) {
     return d3fc
         .seriesCanvasLine()
@@ -84,10 +85,16 @@ export function createLiquidityLineSeries(
         .decorate((context: CanvasRenderingContext2D) => {
             context.lineWidth = 1.5;
             if (liqType === 'bid') {
-                context.strokeStyle = lineSellColor;
+                context.strokeStyle =
+                    chartThemeColors && chartThemeColors.darkStrokeColor
+                        ? chartThemeColors.darkStrokeColor.toString()
+                        : lineSellColor;
             }
             if (liqType === 'ask') {
-                context.strokeStyle = lineBuyColor;
+                context.strokeStyle =
+                    chartThemeColors && chartThemeColors.lightStrokeColor
+                        ? chartThemeColors.lightStrokeColor.toString()
+                        : lineBuyColor;
             }
         });
 }

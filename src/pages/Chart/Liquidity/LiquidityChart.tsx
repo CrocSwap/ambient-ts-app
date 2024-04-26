@@ -33,7 +33,7 @@ import {
 } from './LiquiditySeries/LineSeries';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../contexts/RangeContext';
-import { ChartThemeIF } from '../Chart';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface liquidityPropsIF {
     liqMode: string;

@@ -2,7 +2,7 @@ import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { LiquidityRangeIF } from '../../../../ambient-utils/types';
-import { ChartThemeIF } from '../../Chart';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 
 export function getActiveLiqDepth(
     data: LiquidityRangeIF,
@@ -99,17 +99,36 @@ export function createAreaSeriesLiquidity(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     curve: any,
     curveType: 'curve' | 'depth',
+    chartThemeColors?: ChartThemeIF | undefined,
 ) {
     return d3fc
         .seriesCanvasArea()
         .orient('horizontal')
         .curve(curve)
         .decorate((context: CanvasRenderingContext2D) => {
+            const d3LiqBidColor =
+                chartThemeColors && chartThemeColors.darkStrokeColor
+                    ? chartThemeColors.darkStrokeColor.copy()
+                    : undefined;
+
+            if (d3LiqBidColor) d3LiqBidColor.opacity = 0.3;
+
+            const d3LiqAskColor =
+                chartThemeColors && chartThemeColors.lightStrokeColor
+                    ? chartThemeColors.lightStrokeColor.copy()
+                    : undefined;
+
+            if (d3LiqAskColor) d3LiqAskColor.opacity = 0.3;
+
             if (liqType === 'bid') {
-                context.fillStyle = liqBidColor;
+                context.fillStyle = d3LiqBidColor
+                    ? d3LiqBidColor.toString()
+                    : liqBidColor;
             }
             if (liqType === 'ask') {
-                context.fillStyle = liqAskColor;
+                context.fillStyle = d3LiqAskColor
+                    ? d3LiqAskColor.toString()
+                    : liqAskColor;
             }
         })
         .mainValue((d: LiquidityRangeIF) => {
