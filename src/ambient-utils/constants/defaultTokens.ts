@@ -467,7 +467,8 @@ export const scrollUniETH: TokenIF = {
     symbol: 'uniETH',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471',
 };
 
 export const scrollRocketPoolETH: TokenIF = {
