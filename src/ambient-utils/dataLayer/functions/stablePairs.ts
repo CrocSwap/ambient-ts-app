@@ -5,11 +5,6 @@
 
 import { ZERO_ADDRESS } from '../../constants';
 import {
-    arbGoerliDAI,
-    arbGoerliUSDC,
-    goerliDAI,
-    goerliUSDC,
-    goerliUSDT,
     mainnetDAI,
     mainnetUSDC,
     blastUSDB,
@@ -29,6 +24,9 @@ import {
     scrollWrsETH,
     blastWrsETH,
     blastUSDPLUS,
+    mainnetLUSD,
+    scrollSTONE,
+    scrollUniETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -68,14 +66,10 @@ export function isWethToken(addr: string): boolean {
 export const STABLE_USD_TOKENS = [
     mainnetDAI.address,
     mainnetUSDC.address,
+    mainnetUSDT.address,
+    mainnetLUSD.address,
     blastUSDB.address,
     blastUSDPLUS.address,
-    mainnetUSDT.address,
-    goerliDAI.address,
-    goerliUSDC.address,
-    goerliUSDT.address,
-    arbGoerliDAI.address,
-    arbGoerliUSDC.address,
     scrollUSDC.address,
     scrollUSDT.address,
     scrollAxlUSDC.address,
@@ -87,8 +81,6 @@ export const STABLE_USD_TOKENS = [
 export const USDC_TOKENS = [
     mainnetUSDC.address,
     blastUSDB.address,
-    goerliUSDC.address,
-    arbGoerliUSDC.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
@@ -103,6 +95,8 @@ export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     scrollWstETH.address,
     scrollWrsETH.address,
+    scrollSTONE.address,
+    scrollUniETH.address,
     blastWrsETH.address,
     blastEzETH.address,
     mainnetSWETH.address,
@@ -110,7 +104,6 @@ export const STAKED_ETH_TOKENS = [
 
 export const WETH_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
-    '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // Goerli
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
     '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
     '0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14', // Sepolia

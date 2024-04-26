@@ -166,6 +166,15 @@
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png"
         },
         {
+            "address": "0xfd4D19F9FBb9F730C3C88a21755832BD2455144e",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "Super Sushi Samurai",
+            "symbol": "SSS",
+            "logoURI": "https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg"
+        },
+        {
             "address": "0x0B4d0ee29857c3961b380d4ec138EA5814E346b9",
             "chainId": 81457,
             "decimals": 18,
@@ -257,30 +266,6 @@
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
             "decimals": 18,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
-        },
-        {
-            "name": "USDCoin",
-            "address": "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C",
-            "symbol": "USDC",
-            "decimals": 6,
-            "chainId": 5,
-            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
-        },
-        {
-            "name": "Wrapped BTC",
-            "address": "0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05",
-            "symbol": "WBTC",
-            "decimals": 8,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
-        },
-        {
-            "name": "Native Ether",
-            "address": "0x0000000000000000000000000000000000000000",
-            "symbol": "ETH",
-            "decimals": 18,
             "chainId": 421613,
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
@@ -328,6 +313,22 @@
             "name": "Pirex Ether OFT",
             "address": "0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb",
             "symbol": "pxETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
+            "name": "Universal ETH",
+            "address": "0x15eefe5b297136b8712291b632404b66a8ef4d25",
+            "symbol": "uniETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471"
+        },
+        {
+            "name": "StakeStone Ether",
+            "address": "0x80137510979822322193FC997d400D5A6C747bf7",
+            "symbol": "STONE",
             "decimals": 18,
             "chainId": 534352,
             "logoURI": ""

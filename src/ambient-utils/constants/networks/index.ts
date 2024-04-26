@@ -1,6 +1,4 @@
 import { NetworkIF, TokenIF, chainIds } from '../../types';
-import { arbitrumGoerli } from './arbitrumGoerli';
-import { ethereumGoerli } from './ethereumGoerli';
 import { ethereumSepolia } from './ethereumSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
@@ -17,8 +15,6 @@ export const brand: string | undefined =
     process.env.REACT_APP_BRAND_ASSET_SET ?? 'ambient';
 
 const networks: NetworkIF[] = [
-    arbitrumGoerli,
-    ethereumGoerli,
     ethereumSepolia,
     ethereumMainnet,
     scrollMainnet,
@@ -64,8 +60,6 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
               blastSepolia.chainId,
               ethereumSepolia.chainId,
               scrollSepolia.chainId,
-              ethereumGoerli.chainId,
-              arbitrumGoerli.chainId,
           );
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
@@ -75,8 +69,6 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     ];
 }
 
-export { arbitrumGoerli };
-export { ethereumGoerli };
 export { ethereumSepolia };
 export { ethereumMainnet };
 export { scrollMainnet };

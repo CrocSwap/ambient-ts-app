@@ -30,6 +30,9 @@ import SYN from './SYN.png';
 import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
 import WRSETH from './WRSETH.png';
+import SSS from './SSS.png';
+import UNIETH from './UNIETH.png';
+import STONE from './STONE.png';
 import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
@@ -69,6 +72,9 @@ export {
     LDO,
     BLUR,
     WRSETH,
+    SSS,
+    UNIETH,
+    STONE,
     USDPLUS,
     PANDA,
     YIELD,
