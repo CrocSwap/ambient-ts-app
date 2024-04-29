@@ -38,3 +38,9 @@ export interface ChatRoomIF {
     isFavourite?: boolean;
     shownName?: string;
 }
+
+export interface ChatGoToChatParamsIF {
+    chain: string;
+    tokenA: string;
+    tokenB: string;
+}

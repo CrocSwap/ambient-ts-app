@@ -370,6 +370,30 @@
     border: 1px solid color-mix(in srgb, var(--accent1) 66%, transparent);
 }
 
+.btn_go_to_chart{
+    transition: all .2s ease-in-out;
+    font-size: .7rem;
+    border: 1px solid color-mix(in srgb, var(--accent1) 20%, transparent);
+    border-radius: .4rem;
+    padding: .3rem .7rem;
+    cursor: pointer;
+    color: var(--accent1);
+    position: absolute;
+    top: -5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99;
+}
+
+.btn_go_to_chart.active{
+    top: 5rem;
+}
+
+.btn_go_to_chart:hover{
+    background-color: var(--accent1);
+    color: white;
+}
+
 @media only screen and (max-width: 600px){
     .chat_notification {
 

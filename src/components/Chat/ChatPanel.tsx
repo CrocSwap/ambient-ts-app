@@ -28,6 +28,8 @@ import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { ChatVerificationTypes } from './ChatEnums';
 import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
+import { ChatGoToChatParamsIF } from './ChatIFs';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -127,6 +129,10 @@ function ChatPanel(props: propsIF) {
 
     const verifyBtnRef = useRef<HTMLDivElement>(null);
 
+    const [goToChartParams, setGoToChartParams] = useState<
+        ChatGoToChatParamsIF | undefined
+    >();
+
     const activateToastr = (
         message: string,
         type: 'success' | 'error' | 'warning' | 'info',
@@ -199,6 +205,8 @@ function ChatPanel(props: propsIF) {
         useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
+
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const [lastScrolledMessage, setLastScrolledMessage] = useState('');
     const [lastScrollListenerActive, setLastScrollListenerActive] =
@@ -585,6 +593,17 @@ function ChatPanel(props: propsIF) {
             }
             // domDebug('centerPoint' ,centerPoint.toString());
         }
+    };
+
+    const goToChartAction = () => {
+        if (goToChartParams) {
+            linkGenMarket.navigate({
+                chain: goToChartParams?.chain,
+                tokenA: goToChartParams?.tokenA,
+                tokenB: goToChartParams?.tokenB,
+            });
+        }
+        setGoToChartParams(undefined);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1180,6 +1199,17 @@ function ChatPanel(props: propsIF) {
                     handleConfirmDelete={handleConfirmDelete}
                     handleCancelDelete={handleCancelDelete}
                     rndShowPreviousMessages={rndPreviousMessagesButton}
+                    room={room}
+                    isFocusMentions={isFocusMentions}
+                    setIsFocusMentions={setIsFocusMentions}
+                    isCurrentPool={isCurrentPool}
+                    ensName={ensName}
+                    currentUser={currentUser}
+                    notifications={notifications}
+                    mentCount={mentions.length}
+                    mentionIndex={mentionIndex}
+                    setGoToChartParams={setGoToChartParams}
+                    setUserCurrentPool={setUserCurrentPool}
                 />
             </>
         );
@@ -1197,6 +1227,14 @@ function ChatPanel(props: propsIF) {
                 style={{ height: contentHeight, width: '100%' }}
             >
                 <div className={styles.chat_body}>
+                    <div
+                        className={`${styles.btn_go_to_chart} ${
+                            goToChartParams != undefined ? styles.active : ''
+                        }`}
+                        onClick={goToChartAction}
+                    >
+                        Go to Chart
+                    </div>
                     {header}
                     <Room
                         selectedRoom={room}
@@ -1216,6 +1254,7 @@ function ChatPanel(props: propsIF) {
                         mentionIndex={mentionIndex}
                         isModerator={isModerator}
                         isFocusMentions={isFocusMentions}
+                        setGoToChartParams={setGoToChartParams}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

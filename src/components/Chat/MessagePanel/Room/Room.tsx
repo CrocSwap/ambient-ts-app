@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useTokens } from '../../../../App/hooks/useTokens';
 import { PoolIF } from '../../../../ambient-utils/types';
@@ -7,10 +13,10 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import {
-    linkGenMethodsIF,
-    useLinkGen,
-} from '../../../../utils/hooks/useLinkGen';
-import { ChatRoomIF, GetTopPoolsResponse } from '../../ChatIFs';
+    ChatGoToChatParamsIF,
+    ChatRoomIF,
+    GetTopPoolsResponse,
+} from '../../ChatIFs';
 import {
     createRoomIF,
     getDefaultRooms,
@@ -20,16 +26,16 @@ import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
 
 interface propsIF {
-    selectedRoom: any;
-    setRoom: any;
-    room: any;
-    isCurrentPool: any;
-    setIsCurrentPool: any;
-    showCurrentPoolButton: any;
-    setShowCurrentPoolButton: any;
+    selectedRoom: string;
+    setRoom: Dispatch<SetStateAction<string>>;
+    room: string;
+    isCurrentPool: boolean;
+    setIsCurrentPool: Dispatch<SetStateAction<boolean>>;
+    showCurrentPoolButton: boolean;
+    setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     userCurrentPool: string;
     setUserCurrentPool: any;
-    ensName: any;
+    ensName: string;
     currentUser: any;
     isFocusMentions: boolean;
     setIsFocusMentions: any;
@@ -37,6 +43,9 @@ interface propsIF {
     mentCount: number;
     mentionIndex: number;
     isModerator: boolean;
+    setGoToChartParams?: Dispatch<
+        SetStateAction<ChatGoToChatParamsIF | undefined>
+    >;
 }
 
 export default function Room(props: propsIF) {
@@ -48,7 +57,8 @@ export default function Room(props: propsIF) {
     } = props;
     const rooms: PoolIF[] = [];
     const { favePools } = useContext(UserPreferenceContext);
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    const { baseToken, quoteToken, tokenA, tokenB } =
+        useContext(TradeDataContext);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [isHovering, setIsHovering] = useState(false);
@@ -79,7 +89,6 @@ export default function Room(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const { getTokensByNameOrSymbol } = useTokens(chainId, undefined);
 
     const processRoomList = async () => {
@@ -189,15 +198,35 @@ export default function Room(props: propsIF) {
         const room = roomList.find((room) => room.name === roomName);
 
         if (room && room.base && room.quote) {
-            const baseToken = getTokensByNameOrSymbol(room.base, true);
-            const quotes = getTokensByNameOrSymbol(room.quote);
+            const foundBase = getTokensByNameOrSymbol(room.base, true);
+            const foundQuote = getTokensByNameOrSymbol(room.quote, true);
 
-            if (baseToken.length > 0 && quotes.length > 0) {
-                linkGenMarket.navigate({
-                    chain: chainId,
-                    tokenA: baseToken[0].address,
-                    tokenB: quotes[0].address,
-                });
+            if (foundBase.length > 0 && foundQuote.length > 0) {
+                const base = foundBase[0];
+                const quote = foundQuote[0];
+
+                const [targetA, targetB] =
+                    tokenA.address.toLowerCase() === base.address.toLowerCase()
+                        ? [base.address, quote.address]
+                        : tokenA.address.toLowerCase() ===
+                          quote.address.toLowerCase()
+                        ? [quote.address, base.address]
+                        : tokenB.address.toLowerCase() ===
+                          base.address.toLowerCase()
+                        ? [quote.address, base.address]
+                        : [base.address, quote.address];
+
+                if (props.setGoToChartParams) {
+                    props.setGoToChartParams({
+                        chain: chainId,
+                        tokenA: targetA,
+                        tokenB: targetB,
+                    });
+                }
+            }
+        } else {
+            if (props.setGoToChartParams) {
+                props.setGoToChartParams(undefined);
             }
         }
     };
@@ -242,6 +271,7 @@ export default function Room(props: propsIF) {
                 }
             >
                 <div
+                    className={styles.room_name_wrapper}
                     onClick={() => handleDropdownMenu()}
                     style={{ flexGrow: '1' }}
                 >
@@ -249,6 +279,10 @@ export default function Room(props: propsIF) {
                     {/* {props.selectedRoom} */}
                     {getRoomName()}
                     {handleNotiDot(props.selectedRoom || '')}
+                    <RiArrowDownSLine
+                        className={styles.dd_icon + ' ' + styles.m_visible}
+                        size={22}
+                    />
                 </div>
                 {showCurrentPoolButton ? (
                     <div
@@ -273,7 +307,7 @@ export default function Room(props: propsIF) {
                 <div onClick={() => handleDropdownMenu()}> </div>
                 <div onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine
-                        className={styles.star_icon}
+                        className={styles.star_icon + ' ' + styles.m_hidden}
                         size={22}
                         id='room dropdown'
                     />
