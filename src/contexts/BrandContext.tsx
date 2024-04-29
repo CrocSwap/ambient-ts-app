@@ -6,7 +6,9 @@ import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,
     scrollBrandAssets,
-    ambientBrandAssets,
+    defaultBrandAssets,
+    ambientProductionBrandAssets,
+    ambientTestnetBrandAssets,
     futaBrandAssets,
 } from '../assets/branding';
 
@@ -39,15 +41,18 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
                 return scrollBrandAssets;
             case 'futa':
                 return futaBrandAssets;
-            case 'ambient':
+            case 'ambientProduction':
+                return ambientProductionBrandAssets;
+            case 'ambientTestnet':
+                return ambientTestnetBrandAssets;
             default:
-                return ambientBrandAssets;
+                return defaultBrandAssets;
         }
     }, [brand]);
 
     // hook to manage the active color theme in the app
     const skin: skinMethodsIF = useSkin(
-        blastBrandAssets.color,
+        brandAssets.color,
         chainData.chainId as chainIds,
     );
 

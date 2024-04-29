@@ -288,6 +288,7 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
+                    expandable={networks.length > 1}
                     logo={
                         lookupChain(chainId)
                             .displayName.toLowerCase()

@@ -38,10 +38,10 @@
     --text2: #8b98a5;
     --text3: #61646f;
 
-    --dark1: #06060C;
-    --dark2: #12121A;
-    --dark3: #1E1E24;
-    --dark4: #0E0E14;
+    --dark1: #06060c;
+    --dark2: #12121a;
+    --dark3: #1e1e24;
+    --dark4: #0e0e14;
 
     --accent1: #7371fc;
     --accent2: #e480ff;
@@ -150,7 +150,7 @@
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
-[data-theme='orange'] {
+[data-theme='orange_dark'] {
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
@@ -183,11 +183,11 @@
     --text1: #f0f0f8;
     --text2: #8b98a5;
     --text3: #61646f;
-    
-    --dark1: #06060C;
-    --dark2: #12121A;
-    --dark3: #1E1E24;
-    --dark4: #0E0E14;
+
+    --dark1: #06060c;
+    --dark2: #12121a;
+    --dark3: #1e1e24;
+    --dark4: #0e0e14;
     --accent1: #f2883a;
     --accent2: #ffae4d;
     --accent3: #5ffff2;
@@ -198,7 +198,7 @@
     --negative: #f6385b;
 
     --other-green: #6bae52;
-    --other-red: #ff5f40;
+    --other-red: #e75670;
 
     /* border */
     --color-border: 1px solid var(--accent1);
@@ -288,7 +288,7 @@
         0px 0px 12px rgba(254, 224, 181, 0.3),
         0px 0px 6px rgba(254, 224, 181, 0.3),
         0px 0px 3px rgba(254, 224, 181, 0.3);
-        --glow-light-box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+    --glow-light-box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),

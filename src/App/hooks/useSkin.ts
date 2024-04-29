@@ -3,7 +3,7 @@ import { chainIds } from '../../ambient-utils/types';
 import { chainColorScheme } from '../../assets/branding/types';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 
-export type skins = 'purple_dark' | 'purple_light' | 'orange';
+export type skins = 'purple_dark' | 'purple_light' | 'orange_dark';
 
 export interface skinMethodsIF {
     active: skins;
@@ -45,18 +45,19 @@ export const useSkin = (
         localStorage.setItem(LS_KEY, JSON.stringify(persisted));
     }
 
-    // fn to check for a color preference persisted in local storage
-    function getColorScheme(chn: chainIds): skins | undefined {
-        const persisted: Partial<chainColorScheme> | undefined = getFromLS();
-        if (persisted && persisted[chn]) {
-            return persisted[chn];
-        }
-    }
+    // // fn to check for a color preference persisted in local storage
+    // function getColorScheme(chn: chainIds): skins | undefined {
+    //     const persisted: Partial<chainColorScheme> | undefined = getFromLS();
+    //     if (persisted && persisted[chn]) {
+    //         return persisted[chn];
+    //     }
+    // }
 
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<skins>(
-        getColorScheme(chainId) ?? colorDefaults[chainId],
+        // getColorScheme(chainId) ??
+        colorDefaults[chainId],
     );
 
     // hook to hold a single color set for the app to return

@@ -1,13 +1,10 @@
 import { brandAssetsIF } from './types';
 import large from '../images/logos/large.svg';
 
-export const ambientBrandAssets: brandAssetsIF = {
+export const ambientProductionBrandAssets: brandAssetsIF = {
     networks: [
         '0x1', // ethereum mainnet
         '0x82750', // scroll mainnet
-        '0x8274f', // scroll sepolia
-        '0xaa36a7', // ethereum sepolia
-        '0xa0c71fd', // blast sepolia
         '0x13e31', // blast mainnet
     ],
     color: {
