@@ -7,10 +7,7 @@ export interface DiscontinuityProvider {
     copy(): DiscontinuityProvider;
 }
 
-export function filterCandleWithTransaction(
-    data: CandleDataIF[],
-    isShowLastData = true,
-) {
+export function filterCandleWithTransaction(data: CandleDataIF[]) {
     const filteredByNonTransaction = data
         .sort((a, b) => a.time - b.time)
         .map((item, index, array) => {

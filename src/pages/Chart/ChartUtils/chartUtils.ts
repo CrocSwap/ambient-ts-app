@@ -101,6 +101,10 @@ export type liquidityChartData = {
 export type scaleData = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     xScale: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    discontinuityXScale: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notDiscontinuityXScale: any;
     xScaleTime: d3.ScaleTime<number, number>;
     yScale: d3.ScaleLinear<number, number>;
     volumeScale: d3.ScaleLinear<number, number>;

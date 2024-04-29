@@ -238,7 +238,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 baseTokenAddress,
                 quoteTokenAddress,
                 candleTime,
-                1000,
+                nCandles,
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,

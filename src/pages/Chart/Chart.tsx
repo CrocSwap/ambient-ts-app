@@ -412,11 +412,10 @@ export default function Chart(props: propsIF) {
     }, [period, diffHashSigScaleData(scaleData, 'x')]);
 
     const calculateDiscontinuityRange = async (data: CandleDataChart[]) => {
-        /*  const timeGaps: { range: [number, number]; isAddedPixel: boolean }[] =
-             []; */
+        const localTimeGaps: { range: number[]; isAddedPixel: boolean }[] =
+            structuredClone(timeGaps);
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
-
         //    let pixel = 0;
         if (scaleData) {
             data.slice(isShowLatestCandle ? 2 : 1, data.length).forEach(
@@ -439,14 +438,15 @@ export default function Chart(props: propsIF) {
                             notTransactionDataTime,
                         ];
 
-                        const isRangeExists = timeGaps.findIndex(
+                        const isRangeExists = localTimeGaps.findIndex(
                             (gap: any) => gap.range[0] === newRange[0],
                         );
-                        const isRangeExistsNoTransaction = timeGaps.findIndex(
-                            (gap: any) => gap.range[1] === newRange[1],
-                        );
+                        const isRangeExistsNoTransaction =
+                            localTimeGaps.findIndex(
+                                (gap: any) => gap.range[1] === newRange[1],
+                            );
 
-                        const isSameRange = timeGaps.some(
+                        const isSameRange = localTimeGaps.some(
                             (gap: any) =>
                                 gap.range[0] === newRange[0] &&
                                 gap.range[1] === newRange[1],
@@ -454,25 +454,19 @@ export default function Chart(props: propsIF) {
 
                         if (!isSameRange) {
                             if (isRangeExists !== -1) {
-                                timeGaps[isRangeExists].range[1] =
+                                localTimeGaps[isRangeExists].range[1] =
                                     notTransactionDataTime;
-                                timeGaps[isRangeExists].isAddedPixel = false;
+                                localTimeGaps[isRangeExists].isAddedPixel =
+                                    false;
                             } else if (isRangeExistsNoTransaction !== -1) {
-                                console.log(
-                                    '121212121',
-                                    '5555',
-                                    { transationDataTime },
-                                    notTransactionDataTime,
-                                    new Date(transationDataTime),
-                                );
-
-                                timeGaps[isRangeExistsNoTransaction].range[0] =
-                                    transationDataTime;
-                                timeGaps[
+                                localTimeGaps[
+                                    isRangeExistsNoTransaction
+                                ].range[0] = transationDataTime;
+                                localTimeGaps[
                                     isRangeExistsNoTransaction
                                 ].isAddedPixel = false;
                             } else {
-                                timeGaps.push({
+                                localTimeGaps.push({
                                     range: newRange,
                                     isAddedPixel: false,
                                 });
@@ -485,29 +479,14 @@ export default function Chart(props: propsIF) {
                 },
             );
 
-            /*  const newDiscontinuityProvider = d3fc.discontinuityRange(
-                ...timeGaps.map((i: any) => i.range),
-            ); */
-            /*    const newDiscontinuityProvider = d3fc.discontinuityRange(
-                 ...timeGaps.map((i) => i.range),
-             );
- 
-             const min = scaleData.xScale.invert(pixel);
-             console.log({min,pixel});
-             
-             scaleData.xScale.domain([min,scaleData.xScale.domain()[1]])
- 
-             return newDiscontinuityProvider; */
-            //  setDiscontinuityProvider(newDiscontinuityProvider);
-            //  scaleData && discontinuityProvider && scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
+            setTimeGaps(localTimeGaps);
         }
     };
 
     const unparsedCandleData = useMemo(() => {
-        const data = filterCandleWithTransaction(
-            unparsedData.candles,
-            isShowLatestCandle,
-        ).sort((a, b) => b.time - a.time);
+        const data = filterCandleWithTransaction(unparsedData.candles).sort(
+            (a, b) => b.time - a.time,
+        );
 
         if (
             poolPriceWithoutDenom &&
@@ -573,6 +552,7 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(unparsedData.candles),
         poolPriceWithoutDenom,
         isShowLatestCandle,
+        isDiscontinuityScaleEnabled,
     ]);
 
     const calculateVisibleCandles = (
@@ -851,41 +831,75 @@ export default function Chart(props: propsIF) {
         (async () => {
             if (scaleData) {
                 timeGaps.forEach((element: any) => {
-                    const pix =
-                        scaleData.xScale(element.range[0]) -
-                        scaleData.xScale(element.range[1]);
+                    if (!element.isAddedPixel) {
+                        const pix =
+                            scaleData.discontinuityXScale(element.range[0]) -
+                            scaleData.discontinuityXScale(element.range[1]);
 
-                    if (!element.isAddedPixel && pix) {
-                        const min = scaleData.xScale.invert(pix);
-                        console.log(
-                            new Date(element.range[0]),
-                            new Date(element.range[1]),
-                            { pix },
-                            new Date(min),
-                            new Date(scaleData.xScale.invert(pix - 10)),
-                        );
+                        const min = scaleData.discontinuityXScale.invert(pix);
+                        const maxDom =
+                            scaleData.discontinuityXScale.domain()[1];
 
-                        const maxDom = scaleData.xScale.domain()[1];
-
+                        scaleData.discontinuityXScale.domain([min, maxDom]);
                         scaleData.xScale.domain([min, maxDom]);
                         element.isAddedPixel = true;
                         render();
+                        changeScale(false);
                     }
                 });
             }
         })().then(() => {
-            if (scaleData /* && discontinuityProvider */) {
+            if (scaleData) {
+                const data = isDiscontinuityScaleEnabled
+                    ? timeGaps.map((i: any) => i.range)
+                    : [];
+
                 const newDiscontinuityProvider = d3fc.discontinuityRange(
-                    ...timeGaps.map((i: any) => i.range),
+                    ...data,
                 );
 
                 scaleData.xScale.discontinuityProvider(
                     newDiscontinuityProvider,
                 );
+
                 render();
             }
         });
-    }, [diffHashSig(timeGaps)]);
+    }, [timeGaps]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const dom = isDiscontinuityScaleEnabled
+                ? scaleData.discontinuityXScale.domain()
+                : scaleData.notDiscontinuityXScale.domain();
+            scaleData.xScale.domain(dom);
+            render();
+            changeScale(false);
+        }
+    }, [isDiscontinuityScaleEnabled]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const xmin = scaleData.xScale.domain()[0];
+            const xmax = scaleData.xScale.domain()[1];
+
+            const filtered = visibleCandleData.filter(
+                (data: CandleDataChart) =>
+                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
+            );
+
+            const minTime = Math.min(...filtered.map((i) => i.time)) * 1000;
+
+            if (minTime > xmin) {
+                const dom = {
+                    lastCandleDate: minTime,
+                    domainBoundry: minTime - 500 * period * 1000,
+                };
+
+                setCandleDomains(dom);
+            }
+        }
+    }, [diffHashSigScaleData(scaleData, 'x')]);
 
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
@@ -1264,6 +1278,13 @@ export default function Chart(props: propsIF) {
 
                             props.setShowTooltip(true);
                         }
+
+                        scaleData?.discontinuityXScale.domain(
+                            scaleData.xScale.domain(),
+                        );
+                        scaleData?.notDiscontinuityXScale.domain(
+                            scaleData.xScale.domain(),
+                        );
                     })
                     .filter((event) => {
                         setSelectedDrawnShape(undefined);
@@ -2418,6 +2439,15 @@ export default function Chart(props: propsIF) {
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
             ]);
+
+            const localTimeGaps: { range: number[]; isAddedPixel: boolean }[] =
+                structuredClone(timeGaps);
+
+            localTimeGaps.forEach((item) => {
+                item.isAddedPixel = false;
+            });
+
+            setTimeGaps(localTimeGaps);
         }
     }
 
@@ -2855,6 +2885,8 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
+                    scaleData?.discontinuityXScale([0, event.detail.width]);
+                    scaleData?.notDiscontinuityXScale([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);
@@ -4309,6 +4341,7 @@ export default function Chart(props: propsIF) {
         period,
         currentPool,
         showSwap,
+        isDiscontinuityScaleEnabled,
     ]);
 
     useEffect(() => {
@@ -5001,7 +5034,7 @@ export default function Chart(props: propsIF) {
         const xmin = scaleData?.xScale.domain()[0] as number;
         const xmax = scaleData?.xScale.domain()[1] as number;
 
-        visibleCandleData.map((d: CandleDataIF) => {
+        visibleCandleData.map((d: CandleDataChart) => {
             avaregeHeight =
                 avaregeHeight +
                 Math.abs(
@@ -5018,7 +5051,7 @@ export default function Chart(props: propsIF) {
                     longestValue = d.volumeUSD;
                 }
 
-                filtered.push(d);
+                d.isShowData && filtered.push(d);
             }
         });
 
@@ -5027,6 +5060,7 @@ export default function Chart(props: propsIF) {
         longestValue = longestValue / 2;
 
         const nearest = snapForCandle(mouseX, filtered);
+
         const dateControl =
             nearest?.time * 1000 > startDate && nearest?.time * 1000 < lastDate;
 
@@ -5064,13 +5098,13 @@ export default function Chart(props: propsIF) {
                 denomInBase
                     ? d?.invMinPriceExclMEVDecimalCorrected
                     : d?.minPriceExclMEVDecimalCorrected,
-            );
+            ) as number;
 
             open = d3.min(tempFilterData, (d: CandleDataIF) =>
                 denomInBase
                     ? d?.invMaxPriceExclMEVDecimalCorrected
                     : d?.maxPriceExclMEVDecimalCorrected,
-            );
+            ) as number;
         }
 
         const diff = Math.abs(close - open);
@@ -5240,7 +5274,11 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
-    const setCrossHairDataFunc = (offsetX: number, offsetY: number) => {
+    const setCrossHairDataFunc = (
+        nearestTime: number,
+        offsetX: number,
+        offsetY: number,
+    ) => {
         if (scaleData) {
             const snapDiff =
                 scaleData?.xScale.invert(offsetX) % (period * 1000);
@@ -5251,16 +5289,24 @@ export default function Chart(props: propsIF) {
                     ? -1 * (period * 1000 - snapDiff)
                     : snapDiff);
 
+            const crTime =
+                snappedTime <= lastCandleData.time * 1000 &&
+                snappedTime >= firstCandleData.time * 1000 &&
+                nearestTime
+                    ? nearestTime * 1000
+                    : snappedTime;
+
             setCrosshairActive('chart');
 
             setCrosshairData([
                 {
-                    x: snappedTime,
+                    x: crTime,
                     y: scaleData?.yScale.invert(offsetY),
                 },
             ]);
         }
     };
+
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData && mainCanvasBoundingClientRect) {
             const { offsetX, offsetY } = getXandYLocationForChart(
@@ -5270,10 +5316,10 @@ export default function Chart(props: propsIF) {
 
             if (!isLineDrag) {
                 setChartMousemoveEvent(event);
-                setCrossHairDataFunc(offsetX, offsetY);
-
-                const { isHoverCandleOrVolumeData } =
+                const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
+
+                setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (
@@ -5728,6 +5774,9 @@ export default function Chart(props: propsIF) {
                             setBandwidth={setBandwidth}
                             prevlastCandleTime={prevlastCandleTime}
                             setPrevLastCandleTime={setPrevLastCandleTime}
+                            isDiscontinuityScaleEnabled={
+                                isDiscontinuityScaleEnabled
+                            }
                         />
 
                         <VolumeBarCanvas

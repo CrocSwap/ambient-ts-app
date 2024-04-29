@@ -42,7 +42,6 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
-import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -607,11 +606,7 @@ function TradeCandleStickChart(props: propsIF) {
             period
         ) {
             const temp = [...unparsedCandleData];
-
-            const data1 = filterCandleWithTransaction(temp).filter(
-                (item) => item.isShowData,
-            );
-            const boundaryCandles = data1.splice(0, mobileView ? 30 : 99);
+            const boundaryCandles = temp.splice(0, mobileView ? 30 : 99);
 
             const priceRange = d3fc
                 .extentLinear()
@@ -661,6 +656,8 @@ function TradeCandleStickChart(props: propsIF) {
                 setScaleData(() => {
                     return {
                         xScale: xScale,
+                        discontinuityXScale: xScale.copy(),
+                        notDiscontinuityXScale: xScale.copy(),
                         xScaleTime: xScaleTime,
                         yScale: yScale,
                         volumeScale: volumeScale,
@@ -823,6 +820,9 @@ function TradeCandleStickChart(props: propsIF) {
             centerX - diff * xAxisBuffer,
             centerX + diff * (1 - xAxisBuffer),
         ]);
+
+        scaleData?.discontinuityXScale.domain(xScale.domain());
+        scaleData?.notDiscontinuityXScale.domain(xScale.domain());
     };
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
