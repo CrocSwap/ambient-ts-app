@@ -274,31 +274,40 @@ export default function MessageInput(props: MessageInputProps) {
                 return;
             }
 
-            const parts = message.split(/\s+/);
+            if (!mentPanelActive) {
+                const parts = message.split(/\s+/);
 
-            const containsBlockedLink = parts.some((part) => {
-                const normalizedPart = formatURL(part);
+                const containsBlockedLink = parts.some((part) => {
+                    const normalizedPart = formatURL(part);
 
-                return (
-                    (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
-                    !isLinkInCrocodileLabsLinksForInput(normalizedPart)
-                );
-            });
+                    return (
+                        (isLink(normalizedPart) ||
+                            filterMessage(normalizedPart)) &&
+                        !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+                    );
+                });
 
-            const containsAllowedLink = parts.some((part) => {
-                const normalizedPart = formatURL(part);
-                return isLinkInCrocodileLabsLinks(normalizedPart);
-            });
-            if (containsBlockedLink && !containsAllowedLink) {
-                props.setShowPopUp(true);
-                props.setPopUpText('You cannot send this link.');
-            } else {
-                handleSendMsg(formatURL(message), roomId);
-                setMessage('');
-                setMentUser(null);
-                setPossibleMentUser(null);
-                dontShowEmojiPanel();
-                props.setShowPopUp(false);
+                const containsAllowedLink = parts.some((part) => {
+                    const normalizedPart = formatURL(part);
+                    return isLinkInCrocodileLabsLinks(normalizedPart);
+                });
+                if (containsBlockedLink && !containsAllowedLink) {
+                    props.setShowPopUp(true);
+                    props.setPopUpText('You cannot send this link.');
+                } else {
+                    handleSendMsg(formatURL(message), roomId);
+                    setMessage('');
+                    setMentUser(null);
+                    setPossibleMentUser(null);
+                    dontShowEmojiPanel();
+                    props.setShowPopUp(false);
+                }
+            }
+            // assign user for ment
+            else {
+                if (possibleMentUser != null) {
+                    userPickerForMention(possibleMentUser);
+                }
             }
         } else if (
             mentPanelActive &&
