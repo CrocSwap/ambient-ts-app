@@ -47,7 +47,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
 
     // hook to manage the active color theme in the app
     const skin: skinMethodsIF = useSkin(
-        blastBrandAssets.color,
+        brandAssets.color,
         chainData.chainId as chainIds,
     );
 

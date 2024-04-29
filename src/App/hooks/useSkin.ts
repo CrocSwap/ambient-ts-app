@@ -45,18 +45,19 @@ export const useSkin = (
         localStorage.setItem(LS_KEY, JSON.stringify(persisted));
     }
 
-    // fn to check for a color preference persisted in local storage
-    function getColorScheme(chn: chainIds): skins | undefined {
-        const persisted: Partial<chainColorScheme> | undefined = getFromLS();
-        if (persisted && persisted[chn]) {
-            return persisted[chn];
-        }
-    }
+    // // fn to check for a color preference persisted in local storage
+    // function getColorScheme(chn: chainIds): skins | undefined {
+    //     const persisted: Partial<chainColorScheme> | undefined = getFromLS();
+    //     if (persisted && persisted[chn]) {
+    //         return persisted[chn];
+    //     }
+    // }
 
     // name of the current skin in use by the app
     // defaults to value in local storage, uses value from params as fallback
     const [skin, setSkin] = useState<skins>(
-        getColorScheme(chainId) ?? colorDefaults[chainId],
+        // getColorScheme(chainId) ??
+        colorDefaults[chainId],
     );
 
     // hook to hold a single color set for the app to return
