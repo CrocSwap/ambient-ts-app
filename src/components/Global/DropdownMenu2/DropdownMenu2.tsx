@@ -84,6 +84,7 @@ export default function DropdownMenu2(props: propsIF) {
                 justifyContent='center'
                 fullWidth
                 onClick={() => expandable && toggleMenu()}
+                expandable={expandable}
                 style={{
                     minWidth: !desktopScreen
                         ? ''
