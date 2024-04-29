@@ -26,8 +26,8 @@ export function createLineSeries(
         });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decorateForLiquidityLine(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     series: any,
     threshold: number,
     chartThemeColors: ChartThemeIF,

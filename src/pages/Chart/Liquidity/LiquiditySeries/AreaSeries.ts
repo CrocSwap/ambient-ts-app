@@ -63,8 +63,8 @@ export function createAreaSeries(
         .yScale(yScale);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function decorateForLiquidityArea(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     series: any,
     threshold: number,
     chartThemeColors: ChartThemeIF,

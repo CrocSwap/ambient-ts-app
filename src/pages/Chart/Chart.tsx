@@ -103,7 +103,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../utils/numbers';
-import { ChartContext, ChartThemeIF } from '../../contexts/ChartContext';
+import { ChartContext } from '../../contexts/ChartContext';
 import { useDrawSettings } from '../../App/hooks/useDrawSettings';
 import {
     LS_KEY_CHART_ANNOTATIONS,
