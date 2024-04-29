@@ -6,7 +6,9 @@ import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
 import { blast } from './blastNetwork';
 import {
-    ambientBrandAssets,
+    ambientProductionBrandAssets,
+    ambientTestnetBrandAssets,
+    defaultBrandAssets,
     blastBrandAssets,
     scrollBrandAssets,
 } from '../../../assets/branding';
@@ -45,22 +47,11 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
         ? getNetworks(...blastBrandAssets.networks)
         : brand === 'scroll'
         ? getNetworks(...scrollBrandAssets.networks)
-        : brand === 'ambient'
-        ? getNetworks(...ambientBrandAssets.networks)
-        : brand === 'testnet'
-        ? getNetworks(
-              ethereumSepolia.chainId,
-              blastSepolia.chainId,
-              scrollSepolia.chainId,
-          )
-        : getNetworks(
-              ethereumMainnet.chainId,
-              blast.chainId,
-              scrollMainnet.chainId,
-              blastSepolia.chainId,
-              ethereumSepolia.chainId,
-              scrollSepolia.chainId,
-          );
+        : brand === 'ambientProduction'
+        ? getNetworks(...ambientProductionBrandAssets.networks)
+        : brand === 'ambientTestnet'
+        ? getNetworks(...ambientTestnetBrandAssets.networks)
+        : getNetworks(...defaultBrandAssets.networks);
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     return [
