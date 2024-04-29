@@ -3,7 +3,7 @@ import { chainIds } from '../../ambient-utils/types';
 import { chainColorScheme } from '../../assets/branding/types';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 
-export type skins = 'purple_dark' | 'purple_light' | 'orange';
+export type skins = 'purple_dark' | 'purple_light' | 'orange_dark';
 
 export interface skinMethodsIF {
     active: skins;

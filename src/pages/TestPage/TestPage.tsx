@@ -9,7 +9,9 @@ export default function TestPage() {
             <button onClick={() => skin.changeTo('purple_dark')}>
                 Purple Dark
             </button>
-            <button onClick={() => skin.changeTo('orange')}>Orange</button>
+            <button onClick={() => skin.changeTo('orange_dark')}>
+                Orange Dark
+            </button>
         </div>
     );
 }

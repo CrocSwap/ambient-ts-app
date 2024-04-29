@@ -150,7 +150,7 @@
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
-[data-theme='orange'] {
+[data-theme='orange_dark'] {
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
