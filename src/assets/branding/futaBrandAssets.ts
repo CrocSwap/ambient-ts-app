@@ -3,7 +3,7 @@ import large from '../images/logos/large.svg';
 
 export const futaBrandAssets: brandAssetsIF = {
     networks: [
-        '0x8274f', // scroll sepolia
+        '0xaa36a7', // ethereum sepolia
     ],
     color: {
         '0x1': 'orange_dark',
