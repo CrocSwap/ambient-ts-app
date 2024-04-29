@@ -7,7 +7,7 @@
 
 .modal_body {
     flex-direction: column-reverse;
-    border: solid 1px var(--accent1);
+    border: solid 1px transparent;
     background: var(--dark2);
     cursor: default;
 
