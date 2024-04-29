@@ -1,5 +1,9 @@
 import { useContext } from 'react';
-import { AiOutlineFullscreen, AiOutlineDollarCircle } from 'react-icons/ai';
+import {
+    AiOutlineFullscreen,
+    AiOutlineDollarCircle,
+    AiOutlineAreaChart,
+} from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -11,6 +15,7 @@ import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulate
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -25,6 +30,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
+
+    const { isDiscontinuityScaleEnabled, setIsDiscontinuityScaleEnabled } =
+        useContext(CandleContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -55,6 +63,29 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const graphSettingsContent = (
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={16}>
+            <DefaultTooltip
+                interactive
+                title={'Toggle Discontinuity Scale'}
+                enterDelay={500}
+            >
+                <HeaderButtons
+                    mobileHide
+                    onClick={() =>
+                        setIsDiscontinuityScaleEnabled((prev) => !prev)
+                    }
+                >
+                    <AiOutlineAreaChart
+                        size={20}
+                        id='trade_discontinuity_scale_button'
+                        aria-label='Toggle discontinuity scale button'
+                        style={{
+                            color: isDiscontinuityScaleEnabled
+                                ? 'var(--accent1)'
+                                : undefined,
+                        }}
+                    />
+                </HeaderButtons>
+            </DefaultTooltip>
             <DefaultTooltip
                 interactive
                 title={'Toggle USD Price Estimates'}

@@ -44,6 +44,8 @@ interface CandleContextIF {
     setCandleScale: Dispatch<SetStateAction<CandleScaleIF>>;
     candleTimeLocal: number | undefined;
     timeOfEndCandle: number | undefined;
+    isDiscontinuityScaleEnabled: boolean;
+    setIsDiscontinuityScaleEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -86,6 +88,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [timeOfEndCandle, setTimeOfEndCandle] = useState<
         number | undefined
     >();
+
+    const [isDiscontinuityScaleEnabled, setIsDiscontinuityScaleEnabled] =
+        useState(true);
 
     useEffect(() => {
         // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
@@ -149,6 +154,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleScale,
         candleTimeLocal,
         timeOfEndCandle,
+        isDiscontinuityScaleEnabled,
+        setIsDiscontinuityScaleEnabled,
     };
 
     useEffect(() => {
@@ -179,7 +186,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            fetchCandles(true);
+            // fetchCandles(true);
         }
     }, [
         isChartEnabled,
@@ -231,7 +238,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 baseTokenAddress,
                 quoteTokenAddress,
                 candleTime,
-                nCandles,
+                1000,
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,

@@ -120,6 +120,10 @@ import {
     pinTickToTickLower,
     pinTickToTickUpper,
 } from '../../ambient-utils/dataLayer/functions/pinTick';
+import {
+    DiscontinuityProvider,
+    filterCandleWithTransaction,
+} from './ChartUtils/discontinuityScaleUtils';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -215,8 +219,12 @@ export default function Chart(props: propsIF) {
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
-    const { setCandleDomains, setCandleScale, timeOfEndCandle } =
-        useContext(CandleContext);
+    const {
+        setCandleDomains,
+        setCandleScale,
+        timeOfEndCandle,
+        isDiscontinuityScaleEnabled,
+    } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
@@ -233,6 +241,9 @@ export default function Chart(props: propsIF) {
             lastCandleDate: undefined,
             domainBoundry: undefined,
         });
+
+    const [discontinuityProvider, setDiscontinuityProvider] =
+        useState<DiscontinuityProvider>();
 
     const {
         minRangePrice: minPrice,
@@ -283,6 +294,8 @@ export default function Chart(props: propsIF) {
     const [mouseLeaveEvent, setMouseLeaveEvent] =
         useState<MouseEvent<HTMLDivElement>>();
     const [chartZoomEvent, setChartZoomEvent] = useState('');
+
+    const [timeGaps, setTimeGaps] = useState<any>([]);
 
     const lineSellColor = 'rgba(115, 113, 252)';
     const lineBuyColor = 'rgba(205, 193, 255)';
@@ -398,13 +411,103 @@ export default function Chart(props: propsIF) {
         return checkShowLatestCandle(period, scaleData?.xScale);
     }, [period, diffHashSigScaleData(scaleData, 'x')]);
 
+    const calculateDiscontinuityRange = async (data: CandleDataChart[]) => {
+        /*  const timeGaps: { range: [number, number]; isAddedPixel: boolean }[] =
+             []; */
+        let notTransactionDataTime: undefined | number = undefined;
+        let transationDataTime: undefined | number = undefined;
+
+        //    let pixel = 0;
+        if (scaleData) {
+            data.slice(isShowLatestCandle ? 2 : 1, data.length).forEach(
+                (item) => {
+                    if (
+                        notTransactionDataTime === undefined &&
+                        !item.isShowData
+                    ) {
+                        notTransactionDataTime = item.time * 1000;
+                    }
+                    if (
+                        notTransactionDataTime !== undefined &&
+                        item.isShowData
+                    ) {
+                        transationDataTime = item.time * 1000;
+                    }
+                    if (notTransactionDataTime && transationDataTime) {
+                        const newRange = [
+                            transationDataTime,
+                            notTransactionDataTime,
+                        ];
+
+                        const isRangeExists = timeGaps.findIndex(
+                            (gap: any) => gap.range[0] === newRange[0],
+                        );
+                        const isRangeExistsNoTransaction = timeGaps.findIndex(
+                            (gap: any) => gap.range[1] === newRange[1],
+                        );
+
+                        const isSameRange = timeGaps.some(
+                            (gap: any) =>
+                                gap.range[0] === newRange[0] &&
+                                gap.range[1] === newRange[1],
+                        );
+
+                        if (!isSameRange) {
+                            if (isRangeExists !== -1) {
+                                timeGaps[isRangeExists].range[1] =
+                                    notTransactionDataTime;
+                                timeGaps[isRangeExists].isAddedPixel = false;
+                            } else if (isRangeExistsNoTransaction !== -1) {
+                                console.log(
+                                    '121212121',
+                                    '5555',
+                                    { transationDataTime },
+                                    notTransactionDataTime,
+                                    new Date(transationDataTime),
+                                );
+
+                                timeGaps[isRangeExistsNoTransaction].range[0] =
+                                    transationDataTime;
+                                timeGaps[
+                                    isRangeExistsNoTransaction
+                                ].isAddedPixel = false;
+                            } else {
+                                timeGaps.push({
+                                    range: newRange,
+                                    isAddedPixel: false,
+                                });
+                            }
+                        }
+
+                        notTransactionDataTime = undefined;
+                        transationDataTime = undefined;
+                    }
+                },
+            );
+
+            /*  const newDiscontinuityProvider = d3fc.discontinuityRange(
+                ...timeGaps.map((i: any) => i.range),
+            ); */
+            /*    const newDiscontinuityProvider = d3fc.discontinuityRange(
+                 ...timeGaps.map((i) => i.range),
+             );
+ 
+             const min = scaleData.xScale.invert(pixel);
+             console.log({min,pixel});
+             
+             scaleData.xScale.domain([min,scaleData.xScale.domain()[1]])
+ 
+             return newDiscontinuityProvider; */
+            //  setDiscontinuityProvider(newDiscontinuityProvider);
+            //  scaleData && discontinuityProvider && scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
+        }
+    };
+
     const unparsedCandleData = useMemo(() => {
-        const data = unparsedData.candles
-            .sort((a, b) => b.time - a.time)
-            .map((item) => ({
-                ...item,
-                isFakeData: false,
-            }));
+        const data = filterCandleWithTransaction(
+            unparsedData.candles,
+            isShowLatestCandle,
+        ).sort((a, b) => b.time - a.time);
 
         if (
             poolPriceWithoutDenom &&
@@ -453,6 +556,7 @@ export default function Chart(props: propsIF) {
                 invPriceCloseDecimalCorrected: fakeDataCloseWithDenom,
                 isCrocData: false,
                 isFakeData: true,
+                isShowData: true,
             };
 
             // added candle for pool price market price match
@@ -463,6 +567,7 @@ export default function Chart(props: propsIF) {
             }
         }
 
+        calculateDiscontinuityRange(data);
         return data;
     }, [
         diffHashSigChart(unparsedData.candles),
@@ -741,6 +846,47 @@ export default function Chart(props: propsIF) {
             );
         }
     }
+
+    useEffect(() => {
+        (async () => {
+            if (scaleData) {
+                timeGaps.forEach((element: any) => {
+                    const pix =
+                        scaleData.xScale(element.range[0]) -
+                        scaleData.xScale(element.range[1]);
+
+                    if (!element.isAddedPixel && pix) {
+                        const min = scaleData.xScale.invert(pix);
+                        console.log(
+                            new Date(element.range[0]),
+                            new Date(element.range[1]),
+                            { pix },
+                            new Date(min),
+                            new Date(scaleData.xScale.invert(pix - 10)),
+                        );
+
+                        const maxDom = scaleData.xScale.domain()[1];
+
+                        scaleData.xScale.domain([min, maxDom]);
+                        element.isAddedPixel = true;
+                        render();
+                    }
+                });
+            }
+        })().then(() => {
+            if (scaleData /* && discontinuityProvider */) {
+                const newDiscontinuityProvider = d3fc.discontinuityRange(
+                    ...timeGaps.map((i: any) => i.range),
+                );
+
+                scaleData.xScale.discontinuityProvider(
+                    newDiscontinuityProvider,
+                );
+                render();
+            }
+        });
+    }, [diffHashSig(timeGaps)]);
+
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);

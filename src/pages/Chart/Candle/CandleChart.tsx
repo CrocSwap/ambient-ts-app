@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
+    CandleDataChart,
     chartItemStates,
     renderCanvasArray,
     scaleData,
@@ -125,7 +126,7 @@ export default function CandleChart(props: candlePropsIF) {
     useEffect(() => {
         if (candlestick) {
             candlestick.decorate(
-                (context: CanvasRenderingContext2D, d: CandleDataIF) => {
+                (context: CanvasRenderingContext2D, d: CandleDataChart) => {
                     const nowDate = new Date();
 
                     const close = denomInBase
@@ -173,6 +174,11 @@ export default function CandleChart(props: candlePropsIF) {
                               d.time * 1000 < nowDate.getTime()
                             ? uniswapBorderColor
                             : crocBorderColor;
+
+                    if (!d.isShowData) {
+                        context.fillStyle = 'transparent';
+                        context.strokeStyle = 'transparent';
+                    }
                 },
             );
         }
