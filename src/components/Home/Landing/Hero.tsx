@@ -17,7 +17,6 @@ export default function Hero() {
     const { platformName } = useContext(BrandContext);
 
     if (platformName === 'futa') {
-        console.log('WOW');
         return (
             <HeroContainer
                 justifyContent='center'
@@ -26,7 +25,7 @@ export default function Hero() {
                 fullHeight
                 fullWidth
                 id='hero'
-                className={styles['ambi']}
+                className={styles['futa']}
             >
                 <FlexContainer
                     flexDirection='column'

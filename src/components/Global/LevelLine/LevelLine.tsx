@@ -11,7 +11,7 @@ const Container = styled.div<propsIF>`
     height: ${(props) => (props.height ? props.height : '6px')};
     flex-shrink: 0;
     border-radius: 10px;
-    background-color: var(--accent2);
+    background-color: rgba(115, 113, 252, 0.5);
     position: relative;
 `;
 
@@ -19,7 +19,7 @@ const FilledArea = styled.div<{ percentage: number }>`
     height: 100%;
     width: ${(props) => `${props.percentage}%`};
     border-radius: 10px;
-    background-color: var(--accent1);
+    background-color: rgba(115, 113, 252, 1);
     position: absolute;
     top: 0;
     left: 0;
