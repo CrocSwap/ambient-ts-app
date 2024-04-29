@@ -11,6 +11,7 @@ import {
     defaultBrandAssets,
     blastBrandAssets,
     scrollBrandAssets,
+    futaBrandAssets,
 } from '../../../assets/branding';
 
 export const brand: string | undefined =
@@ -47,6 +48,8 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
         ? getNetworks(...blastBrandAssets.networks)
         : brand === 'scroll'
         ? getNetworks(...scrollBrandAssets.networks)
+        : brand === 'futa'
+        ? getNetworks(...futaBrandAssets.networks)
         : brand === 'ambientProduction'
         ? getNetworks(...ambientProductionBrandAssets.networks)
         : brand === 'ambientTestnet'
