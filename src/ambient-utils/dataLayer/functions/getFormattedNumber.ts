@@ -15,6 +15,8 @@ type FormatParams = {
     removeCommas?: boolean;
     abbrevThreshold?: number;
     isLevel?: boolean;
+    isPercentage?: boolean;
+    mantissa?: number;
 };
 
 export function getFormattedNumber({
@@ -32,6 +34,8 @@ export function getFormattedNumber({
     removeCommas = false,
     abbrevThreshold = 10000,
     isLevel = false,
+    isPercentage = false,
+    mantissa = 2,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -65,7 +69,17 @@ export function getFormattedNumber({
             });
         } else if (value <= 10) {
             // prevent scientific notation for inputs
-            valueString = Number(value?.toPrecision(3)).toString();
+            valueString = Number(value?.toPrecision(4)).toString();
+        } else {
+            valueString = value.toLocaleString('en-US', {
+                minimumFractionDigits: minFracDigits,
+                maximumFractionDigits: maxFracDigits,
+            });
+        }
+    } else if (isLevel || isPercentage) {
+        if (Math.abs(value) >= abbrevThreshold) {
+            // use abbreviations (k, M, B, T) for big numbers
+            valueString = formatAbbrev(value, false, mantissa);
         } else {
             valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: minFracDigits,
@@ -99,7 +113,7 @@ export function getFormattedNumber({
         });
     } else if (Math.abs(value) >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
-        valueString = formatAbbrev(value, isTvl, isLevel ? 1 : 2);
+        valueString = formatAbbrev(value, isTvl, mantissa);
     } else {
         valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: minFracDigits,

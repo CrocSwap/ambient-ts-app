@@ -12,6 +12,7 @@ import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
+import { BatchedJsonRpcProvider } from '../utils/batchedProvider';
 import {
     limitParamsIF,
     linkGenMethodsIF,
@@ -22,7 +23,6 @@ import {
 import { NetworkIF, PoolIF, TokenIF } from '../ambient-utils/types';
 import {
     APP_ENVIRONMENT,
-    IS_LOCAL_ENV,
     ethereumMainnet,
     mainnetETH,
     getDefaultPairForChain,
@@ -32,6 +32,8 @@ import {
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { ethers } from 'ethers';
+import { translateTokenSymbol } from '../ambient-utils/dataLayer';
+import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -60,13 +62,19 @@ interface CrocEnvContextIF {
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
-const mainnetProvider = new ethers.providers.InfuraProvider(
-    'mainnet',
-    process.env.REACT_APP_INFURA_KEY || '360ea5fda45b4a22883de8522ebd639e',
-);
+const mainnetProvider = new BatchedJsonRpcProvider(
+    new ethers.providers.InfuraProvider(
+        'mainnet',
+        process.env.REACT_APP_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091',
+    ),
+).proxy;
 
-const scrollProvider = new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL);
-const blastProvider = new ethers.providers.JsonRpcProvider(BLAST_RPC_URL);
+const scrollProvider = new BatchedJsonRpcProvider(
+    new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL),
+).proxy;
+const blastProvider = new BatchedJsonRpcProvider(
+    new ethers.providers.JsonRpcProvider(BLAST_RPC_URL),
+).proxy;
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -89,15 +97,53 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
+
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB]: [TokenIF, TokenIF] =
-            getDefaultPairForChain(chainId);
+        const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
+            getDefaultPairForChain(chainData.chainId);
+
+        const savedTokenASymbol = localStorage.getItem('tokenA');
+        const savedTokenBSymbol = localStorage.getItem('tokenB');
+
+        const tokensMatchingA =
+            savedTokenASymbol === 'ETH'
+                ? [dfltTokenA]
+                : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
+        const tokensMatchingB =
+            savedTokenBSymbol === 'ETH'
+                ? [dfltTokenA]
+                : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
+
+        const firstTokenMatchingA = tokensMatchingA[0] || undefined;
+        const firstTokenMatchingB = tokensMatchingB[0] || undefined;
+
+        const isSavedTokenADefaultB = savedTokenASymbol
+            ? translateTokenSymbol(savedTokenASymbol) ===
+              translateTokenSymbol(dfltTokenB.symbol)
+            : false;
+
+        const isSavedTokenBDefaultA = savedTokenBSymbol
+            ? translateTokenSymbol(savedTokenBSymbol) ===
+              translateTokenSymbol(dfltTokenA.symbol)
+            : false;
+
+        const shouldReverseDefaultTokens =
+            isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
         // default URL params for swap and market modules
         const swapParams: swapParamsIF = {
             chain: chainId,
-            tokenA: tokenA.address,
-            tokenB: tokenB.address,
+            tokenA: firstTokenMatchingA
+                ? firstTokenMatchingA.address
+                : shouldReverseDefaultTokens
+                ? dfltTokenB.address
+                : dfltTokenA.address,
+            tokenB: firstTokenMatchingB
+                ? firstTokenMatchingB.address
+                : shouldReverseDefaultTokens
+                ? dfltTokenA.address
+                : dfltTokenB.address,
         };
 
         // default URL params for the limit module
@@ -123,6 +169,16 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
+    const nodeUrl =
+        chainData.nodeUrl.toLowerCase().includes('infura') &&
+        process.env.REACT_APP_INFURA_KEY
+            ? chainData.nodeUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+            : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+            ? BLAST_RPC_URL
+            : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+            ? SCROLL_RPC_URL
+            : chainData.nodeUrl;
+
     const provider = useMemo(
         () =>
             chainData.chainId === '0x1'
@@ -131,7 +187,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 ? scrollProvider
                 : chainData.chainId === '0x13e31'
                 ? blastProvider
-                : new ethers.providers.JsonRpcProvider(chainData.nodeUrl),
+                : new ethers.providers.JsonRpcProvider(nodeUrl),
         [chainData.chainId],
     );
 
@@ -190,15 +246,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         if (provider && crocEnv) {
             (async () => {
-                IS_LOCAL_ENV &&
-                    console.debug('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     mainnetETH.address,
                     ethereumMainnet.chainId,
                     crocEnv,
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;
-                setEthMainnetUsdPrice(usdPrice);
+                usdPrice !== Infinity && setEthMainnetUsdPrice(usdPrice);
             })();
         }
     }, [crocEnv, provider]);

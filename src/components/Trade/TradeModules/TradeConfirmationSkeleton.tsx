@@ -7,7 +7,10 @@ import Button from '../../Form/Button';
 // START: Import Other Local Files
 import { TokenIF } from '../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    uriToHttp,
+} from '../../../ambient-utils/dataLayer';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
@@ -27,6 +30,7 @@ interface propsIF {
     transactionHash: string;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     showConfirmation: boolean;
     statusText: string;
     onClose?: () => void;
@@ -38,6 +42,7 @@ interface propsIF {
     extraNotes?: React.ReactNode;
     priceImpactWarning?: JSX.Element | undefined;
     isAllowed?: boolean;
+    percentDiffUsdValue?: number | undefined;
 }
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
@@ -51,6 +56,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         transactionHash,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         statusText,
         showConfirmation,
         resetConfirmation,
@@ -59,6 +65,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         extraNotes,
         priceImpactWarning,
         isAllowed,
+        percentDiffUsdValue,
     } = props;
 
     const {
@@ -70,6 +77,17 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
 
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
+
+    const showWarning =
+        percentDiffUsdValue !== undefined && percentDiffUsdValue < -10;
+
+    const formattedUsdDifference =
+        percentDiffUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: percentDiffUsdValue,
+                  isPercentage: true,
+              }) + '%'
+            : undefined;
 
     const tokenDisplay = (
         <>
@@ -102,7 +120,18 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             </FlexContainer>
             <ConfirmationQuantityContainer>
                 <Text fontSize='header2' color='text1'>
-                    {tokenBQuantity}
+                    <span>{tokenBQuantity}</span>
+                    {showWarning && (
+                        <span
+                            style={
+                                showWarning
+                                    ? { color: 'var(--other-red)' }
+                                    : undefined
+                            }
+                        >
+                            {`${' '}(${formattedUsdDifference})`}
+                        </span>
+                    )}
                 </Text>
                 <FlexContainer
                     alignItems='center'
@@ -160,6 +189,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 />
                                 <Button
                                     idForDOM='set_skip_confirmation_button'
+                                    style={{ textTransform: 'none' }}
                                     title={statusText}
                                     action={() => {
                                         // if this modal is launched we can infer user wants confirmation
@@ -189,6 +219,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             newTransactionHash={transactionHash}
                             txErrorCode={txErrorCode}
                             txErrorMessage={txErrorMessage}
+                            txErrorJSON={txErrorJSON}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={initiate}
                             transactionPendingDisplayString={statusText}

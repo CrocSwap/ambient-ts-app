@@ -57,6 +57,13 @@ function RangeActionModal(props: propsIF) {
     const { type, position, onClose, isAccountView } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const {
+        crocEnv,
+        activeNetwork,
+        provider,
+        chainData: { chainId, poolIndex },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
 
     const {
         isAmbient,
@@ -67,7 +74,7 @@ function RangeActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isPositionInRange,
-    } = useProcessRange(position, userAddress, isAccountView);
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -77,13 +84,7 @@ function RangeActionModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const {
-        crocEnv,
-        activeNetwork,
-        provider,
-        chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
-    } = useContext(CrocEnvContext);
+
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
     const {
         addPendingTx,
@@ -229,7 +230,6 @@ function RangeActionModal(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
-                                lastBlockNumber,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
@@ -258,77 +258,7 @@ function RangeActionModal(props: propsIF) {
                     .catch((error) => console.error({ error }));
             })();
         }
-    }, [lastBlockNumber]);
-
-    const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
-    const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
-    const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
-    const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
-        useState<string>('');
-
-    // useEffect to update selected token balances
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && position.user && position.base && position.quote) {
-                crocEnv
-                    .token(position.base)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting base token wallet balance',
-                                );
-                            setBaseTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.base)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .walletDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug('setting quote token balance');
-
-                            setQuoteTokenBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-                crocEnv
-                    .token(position.quote)
-                    .balanceDisplay(position.user)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
-                            IS_LOCAL_ENV &&
-                                console.debug(
-                                    'setting quote token dex balance',
-                                );
-
-                            setQuoteTokenDexBalance(bal);
-                        }
-                    })
-                    .catch(console.error);
-            }
-        })();
-    }, [
-        crocEnv,
-        position.user,
-        position.base,
-        position.quote,
-        lastBlockNumber,
-    ]);
+    }, [Math.floor(Date.now() / 10000)]); // update every 10 seconds
 
     const [showSettings, setShowSettings] = useState(false);
 
@@ -336,12 +266,14 @@ function RangeActionModal(props: propsIF) {
     const [newTransactionHash, setNewTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
     };
 
     useEffect(() => {
@@ -397,6 +329,7 @@ function RangeActionModal(props: propsIF) {
                     console.error({ error });
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(parseErrorMessage(error));
+                    setTxErrorJSON(JSON.stringify(error));
                 }
             } else {
                 try {
@@ -417,6 +350,7 @@ function RangeActionModal(props: propsIF) {
                     IS_LOCAL_ENV && console.debug({ error });
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(parseErrorMessage(error));
+                    setTxErrorJSON(JSON.stringify(error));
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -439,6 +373,7 @@ function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(parseErrorMessage(error));
+                setTxErrorJSON(JSON.stringify(error));
             }
         } else {
             IS_LOCAL_ENV &&
@@ -567,6 +502,7 @@ function RangeActionModal(props: propsIF) {
                 console.error({ error });
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(parseErrorMessage(error));
+                setTxErrorJSON(JSON.stringify(error));
                 if (
                     error.reason === 'sending a transaction requires a signer'
                 ) {
@@ -697,6 +633,7 @@ function RangeActionModal(props: propsIF) {
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
                     txErrorMessage={txErrorMessage}
+                    txErrorJSON={txErrorJSON}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={
