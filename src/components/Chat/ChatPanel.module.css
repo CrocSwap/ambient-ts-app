@@ -388,6 +388,8 @@
     transition: all .2s ease-in-out;
     font-size: .7rem;
     border: 1px solid color-mix(in srgb, var(--accent1) 20%, transparent);
+    background-color: color-mix(in srgb, var(--accent1) 10%, transparent);
+    backdrop-filter: blur(10px);
     border-radius: .4rem;
     padding: .3rem .7rem;
     cursor: pointer;
@@ -397,6 +399,8 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 99;
+    border-radius: 10rem;
+    font-size: .78rem;
 }
 
 .btn_go_to_chart.active{

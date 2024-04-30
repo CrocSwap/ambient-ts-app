@@ -642,7 +642,7 @@ function ChatPanel(props: propsIF) {
                 if (mentRect.top < listRect.top) {
                     showPrev = true;
                 }
-                if (mentRect.bottom > listRect.bottom) {
+                if (mentRect.bottom > listRect.bottom + 20) {
                     showNext = true;
                 }
             }
