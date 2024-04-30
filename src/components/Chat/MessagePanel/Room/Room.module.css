@@ -172,6 +172,7 @@
     display: inline-block;
     vertical-align: bottom ;
     margin-left: .4rem;
+    float: right;
 }
 .only_mentions_wrapper{
     /* background: #34327e; */

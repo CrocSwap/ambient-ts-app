@@ -93,6 +93,7 @@ interface FullChatPropsIF {
         SetStateAction<ChatGoToChatParamsIF | undefined>
     >;
     setUserCurrentPool: any;
+    rndMentSkipper?: () => JSX.Element;
 }
 
 interface ChannelDisplayPropsIF {
@@ -740,6 +741,7 @@ function FullChat(props: FullChatPropsIF) {
             {chatNotification}
 
             {messageInput}
+            {props.rndMentSkipper && props.rndMentSkipper()}
             <div id='thelastmessage' />
         </div>
     );

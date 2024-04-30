@@ -81,7 +81,6 @@ const useChatSocket = (
     }
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
-    domDebug(' chat url', url);
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
@@ -398,7 +397,6 @@ const useChatSocket = (
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
 
     useEffect(() => {
-        domDebug('room changed', room);
         sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
         roomRef.current = room;
     }, [room]);

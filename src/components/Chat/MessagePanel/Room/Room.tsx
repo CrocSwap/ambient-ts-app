@@ -24,6 +24,7 @@ import {
 } from '../../ChatUtils';
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
+import Toggle from '../../../Form/Toggle';
 
 interface propsIF {
     selectedRoom: string;
@@ -386,20 +387,18 @@ export default function Room(props: propsIF) {
                             </span>
                             <span
                                 className={styles.only_mentions_toggle_wrapper}
-                            ></span>
-                            {props.mentCount > 0 && (
-                                <div
-                                    className={`${
-                                        styles.ment_text_info_wrapper
-                                    } ${
-                                        props.isFocusMentions
-                                            ? styles.opa_full
-                                            : ''
-                                    }`}
-                                >
-                                    {props.mentionIndex + 1}/ {props.mentCount}
-                                </div>
-                            )}
+                            >
+                                <Toggle
+                                    isOn={props.isFocusMentions}
+                                    handleToggle={() => {
+                                        props.setIsFocusMentions(
+                                            !props.isFocusMentions,
+                                        );
+                                    }}
+                                    Width={36}
+                                    id='tg_set_focus_mentions'
+                                ></Toggle>
+                            </span>
                         </div>
                     )}
                 </div>
