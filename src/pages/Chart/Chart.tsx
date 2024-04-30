@@ -1935,13 +1935,13 @@ export default function Chart(props: propsIF) {
 
                     if (!cancelDrag) {
                         if (
-                            !advancedMode ||
-                            (pathsToUpdateChart
-                                .filter((path) => path !== 'pool')
-                                .some((path) =>
-                                    location.pathname.includes(path),
-                                ) &&
-                                rangeWidthPercentage)
+                            (!advancedMode ||
+                                pathsToUpdateChart
+                                    .filter((path) => path !== 'pool')
+                                    .some((path) =>
+                                        location.pathname.includes(path),
+                                    )) &&
+                            rangeWidthPercentage
                         ) {
                             setSimpleRangeWidth(
                                 Math.floor(
