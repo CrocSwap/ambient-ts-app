@@ -167,7 +167,7 @@ export const PortfolioBannerRectangleContainer = styled.div`
 
     padding: 1rem;
     position: relative;
-    display: none;
+    // display: none;
 
     @media only screen and (min-width: 1200px) {
         display: flex;
@@ -181,6 +181,12 @@ export const PortfolioBannerLevelContainer = styled.div`
     backdrop-filter: 10px;
     padding: 4px 8px;
     height: auto;
+    display: none;
+
+    @media only screen and (min-width: 800px) {
+        display: flex;
+        flex-shrink: 0;
+    }
 `;
 
 export const PortfolioContainer = styled(FlexContainer)`

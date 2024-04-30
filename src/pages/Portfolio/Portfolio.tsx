@@ -415,6 +415,8 @@ function Portfolio(props: PortfolioPropsIF) {
                 paddingLeft: '8px',
             }}
         >
+            <PortfolioBanner {...portfolioBannerProps} />
+
             {connectedAccountActive && mobileDataToggle}
             {contentToRenderOnMobile}
         </FlexContainer>

@@ -607,7 +607,7 @@ export const NetworkItem = styled(motion.li)`
     align-items: center;
     transition: background 500ms;
     padding: 4px;
-    cursor: pointer;
+    // cursor: pointer;
     text-decoration: none;
 
     &:hover {
