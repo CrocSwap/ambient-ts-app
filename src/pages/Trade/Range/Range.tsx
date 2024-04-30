@@ -488,7 +488,6 @@ function Range(props: RangePropsIF) {
 
     useEffect(() => {
         setNewRangeTransactionHash('');
-        setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -514,6 +513,16 @@ function Range(props: RangePropsIF) {
             setRangeHighBoundNonDisplayPrice(Infinity);
         } else if (advancedMode) {
             setIsAmbient(false);
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            );
+
+            setPinnedDisplayPrices(pinnedDisplayPrices);
         } else {
             setIsAmbient(false);
             if (Math.abs(currentPoolPriceTick) === Infinity) return;
@@ -563,6 +572,9 @@ function Range(props: RangePropsIF) {
         baseToken.address + quoteToken.address,
         baseTokenDecimals,
         quoteTokenDecimals,
+        defaultLowTick,
+        defaultHighTick,
+        gridSize,
     ]);
 
     useEffect(() => {
