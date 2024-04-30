@@ -68,15 +68,17 @@ function RangesMenu(props: propsIF) {
         setRangeTicksCopied,
         setSimpleRangeWidth,
         setCurrentRangeInReposition,
-        setCurrentRangeInEdit,
         setCurrentRangeInAdd,
         setAdvancedHighTick,
         setAdvancedLowTick,
         setAdvancedMode,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
-    const { handlePulseAnimation, setActiveMobileComponent } =
-        useContext(TradeTableContext);
+    const {
+        handlePulseAnimation,
+        setActiveMobileComponent,
+        setCurrentPositionActive,
+    } = useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -197,15 +199,10 @@ function RangesMenu(props: propsIF) {
             })}
             onClick={() => {
                 setActiveMobileComponent('trade');
-                setSimpleRangeWidth(
-                    getDefaultRangeWidthForTokenPair(
-                        position.chainId,
-                        position.base.toLowerCase(),
-                        position.quote.toLowerCase(),
-                    ),
-                );
-                setCurrentRangeInEdit(position.positionId);
-                setCurrentRangeInAdd('');
+                setAdvancedLowTick(position.bidTick);
+                setAdvancedHighTick(position.askTick);
+                setAdvancedMode(true);
+                setCurrentPositionActive(position.positionId);
             }}
             state={{ position: position }}
         >
