@@ -270,9 +270,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     to={'/account'}
                     aria-label='Go to the account page '
                     tabIndex={0}
-                    onClick={() => {
-                        clickOutsideHandler(), console.log('yes');
-                    }}
+                    onClick={clickOutsideHandler}
                 >
                     <CgProfile />
                     My Account
