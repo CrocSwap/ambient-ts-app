@@ -20,6 +20,7 @@ interface BrandContextIF {
     showPoints: boolean;
     showDexStats: boolean;
     heroImage: string;
+    hero: Partial<Record<chainIds, [string, any]>> | undefined;
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -65,6 +66,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,
         heroImage: brandAssets.heroImage,
+        hero: brandAssets.hero,
     };
 
     console.log(brandData);

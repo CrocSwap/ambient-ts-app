@@ -1,5 +1,6 @@
 import { brandAssetsIF } from './types';
 import large from '../images/logos/large.svg';
+import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 
 export const futaBrandAssets: brandAssetsIF = {
     networks: [
@@ -19,4 +20,7 @@ export const futaBrandAssets: brandAssetsIF = {
     showPoints: true,
     showDexStats: true,
     heroImage: 'futa',
+    hero: {
+        '0xaa36a7': ['futa', scrollLogo],
+    },
 };

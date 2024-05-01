@@ -11,4 +11,5 @@ export interface brandAssetsIF {
     showPoints: boolean;
     showDexStats: boolean;
     heroImage: string;
+    hero?: Partial<Record<chainIds, [any, any]>>;
 }

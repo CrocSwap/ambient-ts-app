@@ -14,9 +14,33 @@ export default function Hero() {
     const smallScreen = useMediaQuery('(max-width: 1200px)');
     const { isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
-    const { platformName } = useContext(BrandContext);
+    const { platformName, hero } = useContext(BrandContext);
 
     if (platformName === 'futa') {
+        let left, right;
+        if (hero && hero['0xaa36a7']) {
+            const [first, second] = hero['0xaa36a7'];
+            left = (
+                <p
+                    className={styles.ambient_blast_logo}
+                    style={{ fontSize: '110px' }}
+                >
+                    {first}
+                </p>
+            );
+            right = (
+                <img
+                    src={second}
+                    alt=''
+                    width='70px'
+                    style={{
+                        marginTop: '8px',
+                        maxWidth: '60%',
+                    }}
+                />
+            );
+        }
+
         return (
             <HeroContainer
                 justifyContent='center'
@@ -39,39 +63,21 @@ export default function Hero() {
                         gap={8}
                         style={{ verticalAlign: 'middle' }}
                     >
-                        {platformName && (
-                            <>
-                                <p
-                                    className={styles.ambient_blast_logo}
-                                    style={{ fontSize: '110px' }}
-                                >
-                                    {platformName}
-                                </p>
-
-                                <Text
-                                    fontWeight='100'
-                                    color='text1'
-                                    align='center'
-                                    style={{
-                                        marginTop: '20px',
-                                        marginLeft: '15px',
-                                        marginRight: '15px',
-                                        fontSize: '30px',
-                                    }}
-                                >
-                                    X
-                                </Text>
-                            </>
-                        )}
-                        <img
-                            src={scrollLogo}
-                            alt=''
-                            width='70px'
+                        {left}
+                        <Text
+                            fontWeight='100'
+                            color='text1'
+                            align='center'
                             style={{
-                                marginTop: '8px',
-                                maxWidth: '60%',
+                                marginTop: '20px',
+                                marginLeft: '15px',
+                                marginRight: '15px',
+                                fontSize: '30px',
                             }}
-                        />
+                        >
+                            X
+                        </Text>
+                        {right}
                     </FlexContainer>
                     <TradeNowButton fieldId='trade_now_btn_in_hero' />
                 </FlexContainer>
