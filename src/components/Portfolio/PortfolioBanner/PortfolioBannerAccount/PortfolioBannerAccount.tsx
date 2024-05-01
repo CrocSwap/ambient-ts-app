@@ -102,7 +102,7 @@ export default function PortfolioBannerAccount(
                         onClick={handleCopyEnsName}
                     >
                         {isSmallScreen
-                            ? trimString(ensNameToDisplay, 5, 3, '...')
+                            ? trimString(ensNameToDisplay, 18, 3, '...')
                             : ensNameToDisplay}
                         {/* {isSmallScreen
                             ? trimString(truncatedAccountAddress, 5, 3, '...')
@@ -116,7 +116,7 @@ export default function PortfolioBannerAccount(
                         onClick={handleCopyAddress}
                     >
                         {isSmallScreen
-                            ? trimString(addressToDisplay ?? '', 7, 3, '...')
+                            ? trimString(addressToDisplay ?? '', 7, 4, '...')
                             : addressToDisplay}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
