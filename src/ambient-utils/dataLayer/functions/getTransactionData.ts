@@ -11,7 +11,6 @@ export const getTransactionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
-    lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
@@ -178,6 +177,8 @@ export const getTransactionData = async (
         baseTokenDecimals,
         quoteTokenDecimals,
     );
+
+    newTx.curentPoolPriceDisplayNum = poolPrice;
 
     if (quotePrice && basePrice) {
         newTx.totalValueUSD =

@@ -2,10 +2,11 @@ import { LimitOrderIF, TokenMethodsIF } from '../../types';
 import { getUnicodeCharacter } from './getUnicodeCharacter';
 import { getFormattedNumber } from './getFormattedNumber';
 
-export const getLimitPrice = (
+export const getLimitPriceForSidebar = (
     limitOrder: LimitOrderIF,
     tokens: TokenMethodsIF,
     isDenomBase: boolean,
+    isTradeDollarizationEnabled: boolean,
 ): string => {
     const baseToken = tokens.getTokenByAddress(limitOrder.base);
     const quoteToken = tokens.getTokenByAddress(limitOrder.quote);
@@ -19,18 +20,35 @@ export const getLimitPrice = (
 
     let output: string;
 
-    if (isDenomBase) {
-        const nonTruncatedPrice = limitOrder.invLimitPriceDecimalCorrected;
+    if (isTradeDollarizationEnabled) {
+        const nonTruncatedPrice = limitOrder.isBaseTokenMoneynessGreaterOrEqual
+            ? limitOrder.baseUsdPrice
+                ? limitOrder.limitPriceDecimalCorrected *
+                  limitOrder.baseUsdPrice
+                : undefined
+            : limitOrder.quoteUsdPrice
+            ? limitOrder.invLimitPriceDecimalCorrected *
+              limitOrder.quoteUsdPrice
+            : undefined;
         const truncatedPrice = getFormattedNumber({
             value: nonTruncatedPrice,
+            prefix: '$',
         });
-        output = quoteTokenCharacter + truncatedPrice;
+        output = truncatedPrice;
     } else {
-        const nonTruncatedPrice = limitOrder.limitPriceDecimalCorrected;
-        const truncatedPrice = getFormattedNumber({
-            value: nonTruncatedPrice,
-        });
-        output = baseTokenCharacter + truncatedPrice;
+        if (isDenomBase) {
+            const nonTruncatedPrice = limitOrder.invLimitPriceDecimalCorrected;
+            const truncatedPrice = getFormattedNumber({
+                value: nonTruncatedPrice,
+            });
+            output = quoteTokenCharacter + truncatedPrice;
+        } else {
+            const nonTruncatedPrice = limitOrder.limitPriceDecimalCorrected;
+            const truncatedPrice = getFormattedNumber({
+                value: nonTruncatedPrice,
+            });
+            output = baseTokenCharacter + truncatedPrice;
+        }
     }
 
     return output ?? '…';

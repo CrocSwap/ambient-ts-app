@@ -59,6 +59,7 @@ export function isTransactionFailedError(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseErrorMessage(error: any): string {
     const errorMessage =
+        error?.error?.data?.message ||
         error?.error?.message ||
         error?.data?.message ||
         error?.response?.data?.message ||

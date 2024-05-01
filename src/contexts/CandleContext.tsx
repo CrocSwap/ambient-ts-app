@@ -53,6 +53,7 @@ export const CandleContext = createContext<CandleContextIF>(
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+        isUserIdle,
     } = useContext(AppStateContext);
     const {
         chartSettings,
@@ -65,7 +66,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
+        useContext(CachedDataContext);
 
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
@@ -177,14 +179,15 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            const interval = setInterval(() => {
-                fetchCandles(true);
-            }, CACHE_UPDATE_FREQ_IN_MS);
-            return () => clearInterval(interval);
+            fetchCandles(true);
         }
     }, [
         isChartEnabled,
         isUserOnline,
+
+        isUserIdle
+            ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
+            : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.nCandles,
@@ -204,8 +207,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const candleTime = candleScale.isShowLatestCandle
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
-            const nCandles =
-                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
+
+            const nCandles = Math.min(
+                Math.max(candleScale?.nCandles || 7, 7),
+                2999,
+            );
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
@@ -228,6 +234,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 nCandles,
                 crocEnv,
                 cachedFetchTokenPrice,
+                cachedQuerySpotPrice,
             ).then((candles) => {
                 setCandleData(candles);
 
@@ -304,6 +311,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
+            cachedQuerySpotPrice,
             signal,
         )
             .then((incrCandles) => {

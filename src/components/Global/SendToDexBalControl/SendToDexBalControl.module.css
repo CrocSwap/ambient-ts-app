@@ -1,0 +1,11 @@
+.main_container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    margin: 1rem;
+}

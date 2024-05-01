@@ -347,7 +347,7 @@ export default function RangeLinesChart(props: propsIF) {
                             rescaleRangeBoundariesWithSlider &&
                             rescale
                         ) {
-                            changeScale();
+                            changeScale(false);
                         }
 
                         return newTargets;

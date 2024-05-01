@@ -14,6 +14,7 @@ import {
     TableBody,
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
+import { useMediaQuery } from '@material-ui/core';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -27,13 +28,15 @@ export interface HeaderItem {
 interface propsIF {
     allPools: Array<PoolDataIF>;
     goToMarket: (tknA: string, tknB: string) => void;
+    isExploreDollarizationEnabled: boolean;
 }
 
 function TopPools(props: propsIF) {
-    const { allPools, goToMarket } = props;
+    const { allPools, goToMarket, isExploreDollarizationEnabled } = props;
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
+    const showMobileVersion = useMediaQuery('(max-width: 500px)');
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -54,7 +57,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'Price',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: false,
@@ -68,7 +71,7 @@ function TopPools(props: propsIF) {
             sortable: true,
         },
         {
-            label: 'Change',
+            label: '24h Price Δ',
             hidden: true,
             align: 'right',
             responsive: 'lg',
@@ -84,7 +87,15 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <FlexContainer fullHeight fullWidth>
+        <FlexContainer
+            fullWidth
+            height={
+                showMobileVersion
+                    ? 'calc(100svh - 240px)'
+                    : 'calc(100svh - 200px)'
+            }
+            // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
+        >
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
@@ -104,6 +115,9 @@ function TopPools(props: propsIF) {
                                             key={JSON.stringify(pool) + idx}
                                             pool={pool}
                                             goToMarket={goToMarket}
+                                            isExploreDollarizationEnabled={
+                                                isExploreDollarizationEnabled
+                                            }
                                         />
                                     ))
                             ) : (
