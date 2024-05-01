@@ -10,6 +10,18 @@ export interface brandAssetsIF {
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
-    heroImage: string;
     hero?: Partial<Record<chainIds, [any, any]>>;
+}
+
+export interface networkPrefsIF {
+    color: skins;
+    hero: [string, string];
+}
+
+export interface brandIF {
+    networks: Partial<Record<chainIds, networkPrefsIF>>;
+    platformName: string;
+    showPoints: boolean;
+    showDexStats: boolean;
+    headerImage: string;
 }

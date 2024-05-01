@@ -1,5 +1,6 @@
-import { brandAssetsIF } from './types';
+import { brandAssetsIF, brandIF } from './types';
 import large from '../images/logos/large.svg';
+import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 
 export const ambientProductionBrandAssets: brandAssetsIF = {
     networks: [
@@ -20,5 +21,17 @@ export const ambientProductionBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
-    heroImage: 'stars',
+};
+
+export const ambientProductionBrandAssets2: brandIF = {
+    networks: {
+        '0xaa36a7': {
+            color: 'orange_dark',
+            hero: ['futa', scrollLogo],
+        },
+    },
+    platformName: 'futa',
+    showPoints: true,
+    showDexStats: true,
+    headerImage: large as string,
 };

@@ -23,5 +23,4 @@ export const defaultBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
-    heroImage: 'stars',
 };

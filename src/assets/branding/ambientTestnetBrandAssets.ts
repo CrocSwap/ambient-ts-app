@@ -20,5 +20,4 @@ export const ambientTestnetBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
-    heroImage: 'stars',
 };

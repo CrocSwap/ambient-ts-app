@@ -18,5 +18,4 @@ export const blastBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
-    heroImage: '/src/assets/images/home/home_wallpaper_compressed.png',
 };

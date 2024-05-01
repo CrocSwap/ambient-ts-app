@@ -1,5 +1,6 @@
-import { brandAssetsIF } from './types';
+import { brandAssetsIF, brandIF } from './types';
 import large from '../images/logos/large.svg';
+import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 
 export const scrollBrandAssets: brandAssetsIF = {
     networks: [
@@ -18,5 +19,17 @@ export const scrollBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
-    heroImage: '/src/assets/images/home/home_wallpaper_compressed.png',
+};
+
+export const scrollBrandAssets2: brandIF = {
+    networks: {
+        '0xaa36a7': {
+            color: 'orange_dark',
+            hero: ['futa', scrollLogo],
+        },
+    },
+    platformName: 'futa',
+    showPoints: true,
+    showDexStats: true,
+    headerImage: large as string,
 };
