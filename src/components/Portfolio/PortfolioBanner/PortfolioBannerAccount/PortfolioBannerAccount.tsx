@@ -78,6 +78,8 @@ export default function PortfolioBannerAccount(
         }
     }
 
+    console.log({ ensNameToDisplay });
+
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
@@ -102,9 +104,9 @@ export default function PortfolioBannerAccount(
                         {isSmallScreen
                             ? trimString(ensNameToDisplay, 5, 3, '...')
                             : ensNameToDisplay}
-                        {isSmallScreen
+                        {/* {isSmallScreen
                             ? trimString(truncatedAccountAddress, 5, 3, '...')
-                            : truncatedAccountAddress}
+                            : truncatedAccountAddress} */}
                     </FlexContainer>
                     <FlexContainer
                         fontWeight='300'

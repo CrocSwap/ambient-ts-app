@@ -173,6 +173,10 @@ export const PortfolioBannerRectangleContainer = styled.div`
         display: flex;
         flex-shrink: 0;
     }
+
+    @media only screen and (max-width: 800px) {
+        height: auto;
+    }
 `;
 export const PortfolioBannerLevelContainer = styled.div`
     display: flex;
