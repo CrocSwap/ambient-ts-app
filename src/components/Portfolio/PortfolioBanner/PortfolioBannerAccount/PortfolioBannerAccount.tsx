@@ -78,8 +78,6 @@ export default function PortfolioBannerAccount(
         }
     }
 
-    console.log({ ensNameToDisplay });
-
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
