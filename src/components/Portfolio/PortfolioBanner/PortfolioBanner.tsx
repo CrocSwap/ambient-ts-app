@@ -71,7 +71,7 @@ export default function PortfolioBanner(props: propsIF) {
             style={{ backgroundImage: `url(${accountImage})` }}
         >
             <FlexContainer
-                justifyContent={isSmallScreen ? 'center' : 'flex-end'}
+                justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
                 alignItems='baseline'
                 gap={16}
             >

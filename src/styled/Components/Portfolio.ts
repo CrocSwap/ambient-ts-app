@@ -148,6 +148,10 @@ export const PortfolioBannerMainContainer = styled(motion.main)`
     flex-direction: column;
     gap: 8px;
     padding: 3px 1rem;
+
+    @media only screen and (max-width: 800px) {
+        padding: 3px;
+    }
 `;
 
 export const PortfolioBannerRectangleContainer = styled.div`
