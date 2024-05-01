@@ -23,7 +23,8 @@ export const scrollBrandAssets: brandAssetsIF = {
 
 export const scrollBrandAssets2: brandIF = {
     networks: {
-        '0xaa36a7': {
+        // scroll mainnet
+        '0x82750': {
             color: 'orange_dark',
             hero: ['futa', scrollLogo],
         },

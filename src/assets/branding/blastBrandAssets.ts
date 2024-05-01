@@ -1,5 +1,6 @@
-import { brandAssetsIF } from './types';
+import { brandAssetsIF, brandIF } from './types';
 import large from '../images/logos/large.svg';
+import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const blastBrandAssets: brandAssetsIF = {
     networks: [
@@ -18,4 +19,17 @@ export const blastBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
+};
+
+export const blastBrandAssets2: brandIF = {
+    networks: {
+        '0x13e31': {
+            color: 'purple_dark',
+            hero: ['blast', blastLogo],
+        },
+    },
+    platformName: 'blast',
+    showPoints: true,
+    showDexStats: true,
+    headerImage: large as string,
 };

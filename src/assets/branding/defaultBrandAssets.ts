@@ -1,5 +1,7 @@
-import { brandAssetsIF } from './types';
+import { brandAssetsIF, brandIF } from './types';
 import large from '../images/logos/large.svg';
+import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
+import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const defaultBrandAssets: brandAssetsIF = {
     networks: [
@@ -23,4 +25,43 @@ export const defaultBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
+};
+
+export const blastBrandAssets2: brandIF = {
+    networks: {
+        // ethereum mainnet
+        '0x1': {
+            color: 'purple_dark',
+            hero: ['ambient', blastLogo],
+        },
+        // ethereum sepolia
+        '0xaa36a7': {
+            color: 'purple_dark',
+            hero: ['ambient', blastLogo],
+        },
+        // scroll mainnet
+        '0x82750': {
+            color: 'purple_dark',
+            hero: ['ambient', scrollLogo],
+        },
+        // scroll sepolia
+        '0x8274f': {
+            color: 'purple_dark',
+            hero: ['ambient', scrollLogo],
+        },
+        // blast mainnet
+        '0x13e31': {
+            color: 'purple_dark',
+            hero: ['ambient', blastLogo],
+        },
+        // blast logo
+        '0xa0c71fd': {
+            color: 'purple_dark',
+            hero: ['ambient', blastLogo],
+        },
+    },
+    platformName: 'blast',
+    showPoints: true,
+    showDexStats: true,
+    headerImage: large as string,
 };

@@ -1,5 +1,7 @@
-import { brandAssetsIF } from './types';
+import { brandAssetsIF, brandIF } from './types';
 import large from '../images/logos/large.svg';
+import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
+import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const ambientTestnetBrandAssets: brandAssetsIF = {
     networks: [
@@ -20,4 +22,28 @@ export const ambientTestnetBrandAssets: brandAssetsIF = {
     headerImage: large as string,
     showPoints: true,
     showDexStats: true,
+};
+
+export const ambientTestnetBrandAssets2: brandIF = {
+    networks: {
+        // ethereum sepolia
+        '0xaa36a7': {
+            color: 'purple_dark',
+            hero: ['ambient', scrollLogo],
+        },
+        // scroll sepolia
+        '0x8274f': {
+            color: 'purple_dark',
+            hero: ['ambient', scrollLogo],
+        },
+        // blast sepolia
+        '0xa0c71fd': {
+            color: 'purple_dark',
+            hero: ['ambient', blastLogo],
+        },
+    },
+    platformName: 'ambient',
+    showPoints: true,
+    showDexStats: true,
+    headerImage: large as string,
 };
