@@ -171,10 +171,10 @@ export const PortfolioBannerRectangleContainer = styled.div`
 
     padding: 1rem;
     position: relative;
-    // display: none;
+
+    display: flex;
 
     @media only screen and (min-width: 1200px) {
-        display: flex;
         flex-shrink: 0;
     }
 
