@@ -115,7 +115,7 @@ export default function PortfolioBannerAccount(
                     >
                         {isSmallScreen
                             ? trimString(addressToDisplay ?? '', 7, 4, '...')
-                            : addressToDisplay}
+                            : trimString(addressToDisplay ?? '', 6, 4, '…')}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
                             <FiExternalLink

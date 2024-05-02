@@ -92,6 +92,7 @@ export default function PortfolioBanner(props: propsIF) {
                         onClick={() =>
                             setIsTradeDollarizationEnabled((prev) => !prev)
                         }
+                        style={{ zIndex: '2' }}
                     >
                         <AiOutlineDollarCircle
                             size={20}
@@ -107,7 +108,7 @@ export default function PortfolioBanner(props: propsIF) {
                 </DefaultTooltip>
             </FlexContainer>
 
-            <PortfolioBannerLevelContainer>
+            <PortfolioBannerLevelContainer isAccountPage>
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}
