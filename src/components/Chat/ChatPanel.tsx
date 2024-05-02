@@ -988,8 +988,8 @@ function ChatPanel(props: propsIF) {
             {/* WBO - Feature : User Summary */}
 
             <UserSummary
-                // isActive={userSummaryActive}
-                isActive={userSummaryActive && false}
+                isActive={userSummaryActive}
+                // isActive={userSummaryActive && false}
                 toBottom={userSummaryToBottom}
                 user={selectedUserSummary}
                 mouseLeaveListener={summaryMouseLeaveListener}

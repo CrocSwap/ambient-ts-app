@@ -158,6 +158,10 @@ export default function MessageInput(props: MessageInputProps) {
     }
 
     useEffect(() => {
+        console.log(isMobileDevice());
+        console.log(isMobileDevice());
+        console.log(isMobileDevice());
+        console.log(isMobileDevice());
         setIsMobile(isMobileDevice());
     }, []);
 

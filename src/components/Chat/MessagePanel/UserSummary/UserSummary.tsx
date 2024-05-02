@@ -4,6 +4,7 @@ import {
     getUserLabelforSummary,
 } from '../../Model/UserSummaryModel';
 import styles from './UserSummary.module.css';
+import { getAvatarForChat } from '../../ChatRenderUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
@@ -38,7 +39,9 @@ export default function UserSummary(props: propsIF) {
             {props.user && (
                 <>
                     <div className={styles.summary_header}>
-                        <span className={styles.user_avatar}>{myJazzicon}</span>
+                        <span className={styles.user_avatar}>
+                            {getAvatarForChat(props.user)}
+                        </span>
                         <span className={styles.user_name}>
                             {getUserLabelforSummary(props.user)}
                         </span>

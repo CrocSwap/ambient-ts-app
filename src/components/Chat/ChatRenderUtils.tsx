@@ -6,6 +6,7 @@ import { User } from './Model/UserModel';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import styles from './ChatRenderUtils.module.css';
 import { AiOutlineFileImage } from 'react-icons/ai';
+import { UserSummaryModel } from './Model/UserSummaryModel';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -166,7 +167,10 @@ export const getAvatarForProfilePage = (
     );
 };
 
-export const getAvatarForChat = (user?: User, size?: number) => {
+export const getAvatarForChat = (
+    user?: User | UserSummaryModel,
+    size?: number,
+) => {
     if (!user) {
         return <Jazzicon diameter={25} seed={jsNumberForAddress('')} />;
     }

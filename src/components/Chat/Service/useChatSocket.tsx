@@ -104,7 +104,6 @@ const useChatSocket = (
     }, [isChatOpen]);
 
     useEffect(() => {
-        console.log('socket last msg');
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
                 newMsgListener(socketLastMessage.payload);

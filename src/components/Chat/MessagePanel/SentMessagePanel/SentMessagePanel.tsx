@@ -931,6 +931,13 @@ function SentMessagePanel(props: SentMessageProps) {
                             >
                                 {showAvatar && (
                                     <div
+                                        // onMouseLeave={props.mentionMouseLeftListener}
+                                        // onMouseEnter={(e) => {
+                                        //     props.mentionHoverListener(
+                                        //         e.currentTarget.getBoundingClientRect().top,
+                                        //         props.message.walletID,
+                                        //     );
+                                        // }}
                                         className={styles.avatar_jazzicons}
                                         onClick={goToProfilePage}
                                     >
