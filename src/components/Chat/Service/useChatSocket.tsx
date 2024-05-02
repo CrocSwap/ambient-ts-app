@@ -104,6 +104,7 @@ const useChatSocket = (
     }, [isChatOpen]);
 
     useEffect(() => {
+        console.log('socket last msg');
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
                 newMsgListener(socketLastMessage.payload);
@@ -397,6 +398,7 @@ const useChatSocket = (
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
 
     useEffect(() => {
+        if (roomRef.current == room) return;
         sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
         roomRef.current = room;
     }, [room]);
