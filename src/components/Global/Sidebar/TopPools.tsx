@@ -7,7 +7,6 @@ import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
 import { FlexContainer } from '../../../styled/Common';
 import {
-    HeaderGrid,
     ItemHeaderContainer,
     ItemsContainer,
     ViewMoreFlex,

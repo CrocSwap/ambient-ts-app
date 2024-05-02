@@ -6,7 +6,6 @@ import { TokenPriceFn } from '../../../ambient-utils/api';
 import PoolsListItem from './PoolsListItem';
 import { FlexContainer } from '../../../styled/Common';
 import {
-    HeaderGrid,
     ItemHeaderContainer,
     ItemsContainer,
     ViewMoreFlex,

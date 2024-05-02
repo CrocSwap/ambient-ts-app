@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { textColors } from '../../../../styled/Common/Types';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 interface PairDataItemIF {
     label: string;
@@ -33,6 +32,7 @@ const sideScroll = (
     }, speed);
 };
 export default function PoolData(props: PoolDataIF) {
+    // eslint-disable-next-line
     const contentWrapper = React.useRef<any>(null);
     const {
         poolPrice,
@@ -46,13 +46,6 @@ export default function PoolData(props: PoolDataIF) {
 
         return (
             <FlexContainer
-                as={motion.div}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                layout
                 fullHeight
                 flexDirection='column'
                 justifyContent='space-between'

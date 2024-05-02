@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AiOutlineFullscreen, AiOutlineDollarCircle } from 'react-icons/ai';
+import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';

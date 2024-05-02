@@ -5,7 +5,6 @@ import { TokenPriceFn } from '../../../ambient-utils/api';
 import { PoolIF } from '../../../ambient-utils/types';
 import PoolsListItem from './PoolsListItem';
 import {
-    HeaderGrid,
     ItemHeaderContainer,
     ItemsContainer,
 } from '../../../styled/Components/Sidebar';

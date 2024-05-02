@@ -15,7 +15,6 @@
 }
 
 .current_data_info {
-    padding: 0.3rem 0 0 0.3rem;
 
     /* extra small */
 
@@ -33,6 +32,7 @@
     gap: 4px;
 
     color: var(--text2);
+    height: 15px;
 }
 
 
