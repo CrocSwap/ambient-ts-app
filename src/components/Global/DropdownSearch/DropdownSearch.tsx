@@ -28,6 +28,7 @@ import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchR
 import { FaChevronDown } from 'react-icons/fa';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { AnimatePresence, motion } from 'framer-motion';
+import { AiOutlineFire } from 'react-icons/ai';
 
 interface optionItem {
     id: number;
@@ -35,23 +36,6 @@ interface optionItem {
     data: JSX.Element;
 }
 
-const variants = {
-    visible: {
-        height: '144px',
-    },
-    collapsed: {
-        height: '0',
-    },
-};
-
-const itemVariants: Variants = {
-    open: {
-        opacity: 1,
-        y: 0,
-        transition: { type: 'spring', stiffness: 300, damping: 24 },
-    },
-    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } },
-};
 const DropdownSearch = () => {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
@@ -151,7 +135,7 @@ const DropdownSearch = () => {
     const optionButtons = [
         {
             id: 1,
-            name: 'All Pairs',
+            name: 'Trending',
             data: (
                 <TopPools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -161,7 +145,7 @@ const DropdownSearch = () => {
         },
         {
             id: 2,
-            name: 'Favorite',
+            name: 'Favorites',
             data: (
                 <FavoritePools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -210,7 +194,14 @@ const DropdownSearch = () => {
                             : null
                     }`}
                 >
-                    {option.name}
+                    {option.name === 'Trending' ? (
+                        <FlexContainer gap={4} alignItems='center'>
+                            <AiOutlineFire />
+                            {option.name}
+                        </FlexContainer>
+                    ) : (
+                        option.name
+                    )}
                 </motion.button>
             ))}
         </FlexContainer>

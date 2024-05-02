@@ -295,8 +295,6 @@ input[type='number'] {
         background: var(--dark1);
     }
     .content-container-trade {
-        overflow: hidden;
-
         background: var(--dark1);
     }
 }

@@ -111,6 +111,7 @@ export const ItemContainer = styled.div`
     cursor: pointer;
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 30px;
+    align-items: center;
 
     &:hover {
         transition: var(--transition);
