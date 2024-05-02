@@ -10,13 +10,16 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import NotFound from '../../pages/NotFound/NotFound';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
+import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
+import { ChatVerificationTypes } from './ChatEnums';
+import { ChatGoToChatParamsIF } from './ChatIFs';
 import styles from './ChatPanel.module.css';
 import ChatToaster from './ChatToaster/ChatToaster';
 import { setLS } from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
@@ -26,10 +29,6 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-import { ChatVerificationTypes } from './ChatEnums';
-import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
-import { ChatGoToChatParamsIF } from './ChatIFs';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -151,9 +150,15 @@ function ChatPanel(props: propsIF) {
 
     const scrollToVeryBottom = () => {
         if (messageListWrapper.current) {
+            scrollToInstant(messageListWrapper.current.scrollHeight);
+        }
+    };
+
+    const scrollToInstant = (pos: number) => {
+        if (messageListWrapper.current) {
             messageListWrapper.current.scrollTo({
                 left: 0,
-                top: messageListWrapper.current.scrollHeight,
+                top: pos,
                 behavior: 'instant' as ScrollBehavior,
             });
         }
@@ -166,6 +171,8 @@ function ChatPanel(props: propsIF) {
             scrollToVeryBottom();
         }, 200);
     };
+
+    const [scrollRevertTarget, setScrollRevertTarget] = useState('');
 
     const {
         messages,
@@ -359,7 +366,7 @@ function ChatPanel(props: propsIF) {
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
-                if (result.status === 'Not OK') {
+                if (result && result.status === 'Not OK') {
                     // this flow moved to backend due to triggering more than one
                     // whole of initial data fetching process will be refactored
                     // saveUser(address, ensName).then((result: any) => {
@@ -381,7 +388,7 @@ function ChatPanel(props: propsIF) {
                         ).then(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
-                                if (result.status === 'OK') {
+                                if (result && result.status === 'OK') {
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     updateMessageUser(
                                         currentUser as string,
@@ -472,6 +479,12 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen]);
 
     useEffect(() => {
+        if (scrollRevertTarget.length > 0) {
+            const targetPos = calculateScrollTarget(scrollRevertTarget);
+            scrollToInstant(targetPos);
+            setScrollRevertTarget('');
+        }
+
         const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == userAddress;
         });
@@ -482,9 +495,6 @@ function ChatPanel(props: propsIF) {
 
         if (messages.length == 0) return;
     }, [messages, setMessages]);
-
-    // domDebug('address', userAddress);
-    domDebug('mentIndex', mentionIndex);
 
     function handleCloseChatPanel() {
         setIsChatOpen(false);
@@ -513,24 +523,16 @@ function ChatPanel(props: propsIF) {
         const nextPage = page + 1;
         setPage(nextPage);
 
+        if (messages.length > 0) {
+            setScrollRevertTarget(messages[0]._id);
+        }
+
         const data =
             room === 'Admins'
                 ? await getAllMessages(nextPage)
                 : await getMsgWithRestWithPagination(room, nextPage);
         if (data.length === 0) {
             setShowPreviousMessagesButton(false);
-        } else {
-            const scrollContainer = messageListWrapper.current; // Referring to the scrollable container
-            const scrollPositionBefore = scrollContainer
-                ? scrollContainer.scrollTop
-                : 1;
-            const scrollPositionAfter = scrollContainer
-                ? scrollContainer.scrollHeight / 4
-                : 1;
-            scrollContainer?.scrollTo(
-                0,
-                scrollPositionAfter - scrollPositionBefore,
-            );
         }
     };
 
@@ -604,7 +606,6 @@ function ChatPanel(props: propsIF) {
                     break;
                 }
             }
-            // domDebug('centerPoint' ,centerPoint.toString());
         }
     };
 
@@ -664,7 +665,6 @@ function ChatPanel(props: propsIF) {
                 if (panelScrollHeight - panelHeight - panelScrollTop > 40) {
                     handleFocusedMessageOnScroll();
                 } else {
-                    domDebug('selected message', '');
                     setLastScrolledMessage('');
 
                     // setLastScrolledMessage('');
@@ -980,6 +980,7 @@ function ChatPanel(props: propsIF) {
                             setVerifyOldMessagesStartDate={
                                 setVerifyOldMessagesStartDate
                             }
+                            isFocusMentions={isFocusMentions}
                         />
                     );
                 })}

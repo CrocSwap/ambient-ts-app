@@ -276,7 +276,7 @@
     width: 100%;
     height: auto;
     min-height: 53%;
-    padding: 0px 4px 8px;
+    padding: 4px 0px;
     box-sizing: border-box;
     flex: none;
     order: 4;

@@ -89,6 +89,7 @@ interface SentMessageProps {
     scrollToMessage: (messageId: string, flashAnimation?: boolean) => void;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     setVerifyOldMessagesStartDate: Dispatch<SetStateAction<Date>>;
+    isFocusMentions: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -759,6 +760,7 @@ function SentMessagePanel(props: SentMessageProps) {
             ${hasSeparator ? styles.has_separator : ''}
             ${
                 props.message.mentionedWalletID === props.address &&
+                props.isFocusMentions &&
                 props.address
                     ? styles.reader_mentioned
                     : ''
