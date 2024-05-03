@@ -622,7 +622,9 @@ function ChatPanel(props: propsIF) {
 
     const mentions = messages.filter((item) => {
         return (
-            item.mentionedWalletID == userAddress && userAddress !== undefined
+            item &&
+            item.mentionedWalletID == userAddress &&
+            userAddress !== undefined
         );
     });
 

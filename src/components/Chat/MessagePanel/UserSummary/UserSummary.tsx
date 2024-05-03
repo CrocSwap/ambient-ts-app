@@ -1,10 +1,9 @@
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     UserSummaryModel,
     getUserLabelforSummary,
 } from '../../Model/UserSummaryModel';
 import styles from './UserSummary.module.css';
-import { getAvatarForChat } from '../../ChatRenderUtils';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
@@ -17,12 +16,6 @@ interface propsIF {
 }
 
 export default function UserSummary(props: propsIF) {
-    const jazziconsSeed = props.user?.walletID.toLowerCase() || '';
-
-    const myJazzicon = (
-        <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
-
     const debug = false;
 
     return (

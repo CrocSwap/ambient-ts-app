@@ -55,7 +55,6 @@ const useChatSocket = (
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
-    const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
     const [notifications, setNotifications] = useState<Map<string, number>>();
     const [isVerified, setIsVerified] = useState<boolean>(false);
@@ -140,7 +139,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages(data.reverse());
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
         return data.reverse();
     }
@@ -154,7 +152,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages(data.reverse());
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
     }
 
@@ -167,7 +164,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages((prevMessages) => [...data, ...prevMessages]);
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
         return data;
     }
@@ -182,7 +178,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
 
         return data.reverse();
@@ -378,9 +373,10 @@ const useChatSocket = (
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
             if (data.length > 0) {
-                setLastMessage(data[data.length - 1]);
-                setLastMessageText(data[data.length - 1].text);
-                setMessageUser(data[data.length - 1].sender);
+                if (data[data.length - 1]) {
+                    setLastMessage(data[data.length - 1]);
+                    setMessageUser(data[data.length - 1].sender);
+                }
             }
 
             const userListData = await getUserListWithRest();
@@ -581,7 +577,6 @@ const useChatSocket = (
         setMessages([...messagesRef.current, data]);
         if (messagesRef.current[messagesRef.current.length - 1]) {
             setLastMessage(data);
-            setLastMessageText(data.message);
             setMessageUser(data.sender);
         }
     };
@@ -619,7 +614,6 @@ const useChatSocket = (
         sendMsg,
         lastMessage,
         messageUser,
-        lastMessageText,
         users,
         notifications,
         updateLikeDislike,
