@@ -1,4 +1,4 @@
-import { FlexContainer } from '../../../styled/Common';
+import { FlexContainer, Text } from '../../../styled/Common';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
@@ -65,15 +65,20 @@ export default function Hero() {
             // process content as a separator character
             case 'separator':
                 jsxOutput = (
-                    <img
-                        src={h.content}
-                        alt='separator character'
-                        width='70px'
+                    <Text
+                        fontWeight='200'
+                        // fontSize='800px'
+                        color='text1'
+                        align='center'
                         style={{
-                            marginTop: '8px',
-                            maxWidth: '60%',
+                            marginTop: '20px',
+                            marginLeft: '15px',
+                            marginRight: '15px',
+                            fontSize: '30px',
                         }}
-                    />
+                    >
+                        {h.content}
+                    </Text>
                 );
                 break;
         }
