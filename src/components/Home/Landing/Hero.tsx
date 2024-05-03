@@ -18,8 +18,9 @@ export default function Hero() {
 
     if (platformName === 'futa') {
         let left, right;
-        if (hero && hero['0xaa36a7']) {
-            const [first, second] = hero['0xaa36a7'];
+        if (hero) {
+            console.log(hero);
+            const [first, second] = hero;
             left = (
                 <p
                     className={styles.ambient_blast_logo}

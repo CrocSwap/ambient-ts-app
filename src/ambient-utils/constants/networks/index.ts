@@ -26,11 +26,10 @@ const networks: NetworkIF[] = [
     blast,
 ];
 
-function getNetworks(...chns: (string | chainIds)[]): {
+function getNetworks(chns: (string | chainIds)[]): {
     [x: string]: NetworkIF;
 } {
-    const chains: string[] = [chns].flat();
-    const networksToShow: NetworkIF[] = chains
+    const networksToShow: NetworkIF[] = chns
         .map((c: string) => {
             const network: NetworkIF | undefined = networks.find(
                 (n: NetworkIF) => n.chainId.toLowerCase() === c,
@@ -45,16 +44,16 @@ function getNetworks(...chns: (string | chainIds)[]): {
 
 export const supportedNetworks: { [x: string]: NetworkIF } =
     brand === 'blast'
-        ? getNetworks(...blastBrandAssets.networks)
+        ? getNetworks(Object.keys(blastBrandAssets.networks))
         : brand === 'scroll'
-        ? getNetworks(...scrollBrandAssets.networks)
+        ? getNetworks(Object.keys(scrollBrandAssets.networks))
         : brand === 'futa'
-        ? getNetworks(...futaBrandAssets.networks)
+        ? getNetworks(Object.keys(futaBrandAssets.networks))
         : brand === 'ambientProduction'
-        ? getNetworks(...ambientProductionBrandAssets.networks)
+        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
         : brand === 'ambientTestnet'
-        ? getNetworks(...ambientTestnetBrandAssets.networks)
-        : getNetworks(...defaultBrandAssets.networks);
+        ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+        : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     return [

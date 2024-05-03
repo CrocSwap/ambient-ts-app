@@ -11,11 +11,11 @@ export default function GlobalModalPortal(props: propsIF) {
     const { skin } = useContext(BrandContext);
     const { children } = props;
 
-    console.log(skin.active);
+    console.log(skin);
 
     const getGlobalModalPortal = (elem: ReactNode) => {
         return createPortal(
-            <div onClick={(e) => e.stopPropagation()} data-theme={skin.active}>
+            <div onClick={(e) => e.stopPropagation()} data-theme={skin}>
                 {elem}
             </div>,
             document.getElementById(GLOBAL_MODAL_PORTAL_ID) ?? document.body,
