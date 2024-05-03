@@ -70,20 +70,6 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
             : [{ content: 'ambient', processAs: 'separator' }];
     }
 
-    // function jsxifyHero(h: heroItem) {
-    //     let jsxOutput: JSX.Element;
-    //     if (h.processAs === 'text') {
-    //         jsxOutput = (
-    //             <p
-    //                 className={styles.ambient_blast_logo}
-    //                 style={{ fontSize: '110px' }}
-    //             >
-    //                 {first}
-    //             </p>
-    //         );
-    //     }
-    // }
-
     // data to be returned to the app
     const brandData: BrandContextIF = {
         skin: getSkin(),
@@ -94,8 +80,6 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         showDexStats: brandAssets.showDexStats,
         hero: getHero(),
     };
-
-    console.log(brandData);
 
     return (
         <BrandContext.Provider value={brandData}>
