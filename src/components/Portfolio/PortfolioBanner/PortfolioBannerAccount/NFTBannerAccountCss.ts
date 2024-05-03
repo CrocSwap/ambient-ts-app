@@ -19,13 +19,13 @@ const NFTBannerAccountContainer = styled.div<{
 
     display: grid;
 
-    width: 350px;
-    height: 570px;
+    width: ${({ isMobile }) => (isMobile ? '90vw' : '350px')};
+    height: ${({ isMobile }) => (isMobile ? '60vh' : '570px')};
 
     gap: 16px;
 
-    top: ${({ isMobile }) => (isMobile ? '8vh' : '0')};
-    left: ${({ isMobile }) => (isMobile ? '2vw' : '0')};
+    top: ${({ isMobile }) => (isMobile ? '10vh' : '0')};
+    left: ${({ isMobile }) => (isMobile ? '-1vw' : '0')};
     // transform: translate(-80%, 10%);
 
     border-radius: 4px;
