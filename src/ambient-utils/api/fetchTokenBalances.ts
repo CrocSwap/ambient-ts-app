@@ -6,6 +6,7 @@ import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import ambientTokenList from '../constants/ambient-token-list.json';
 import testnetTokenList from '../constants/testnet-token-list.json';
+import { BigNumber } from 'ethers';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -97,6 +98,7 @@ export const fetchTokenBalances = async (
             address: tokenBalance.token,
             symbol: tokenBalance.symbol,
             decimals: tokenBalance.decimals,
+            totalSupply: BigNumber.from(0),
             dexBalance: dexBalance,
         };
     };

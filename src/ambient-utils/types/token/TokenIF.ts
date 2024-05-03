@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { tokenListURIs } from '../../constants';
 
 // string-union type of all acceptable values for `fromList` property
@@ -12,6 +13,7 @@ export interface ServerTokenIF {
     address: string;
     symbol: string;
     decimals: number;
+    totalSupply?: BigNumber;
     chainId: number;
     logoURI: string;
 }

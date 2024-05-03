@@ -1,5 +1,5 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
-import { Contract, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
 import { TokenIF, otherTokenSources } from '../types/token/TokenIF';
 import { ZERO_ADDRESS } from '../constants';
@@ -8,6 +8,7 @@ export interface ContractDetails {
     address: string;
     chain: string;
     decimals: number | undefined;
+    totalSupply: number | undefined;
     symbol: string | undefined;
     name: string | undefined;
 }
@@ -27,6 +28,7 @@ export const fetchContractDetails = async (
             address: address,
             chainId: parseInt(_chainId),
             decimals: 18,
+            totalSupply: BigNumber.from(0),
             symbol: 'ETH',
             name: 'Native Ether',
             fromList: 'ambient',
@@ -38,11 +40,18 @@ export const fetchContractDetails = async (
     const contract = new Contract(address, ERC20_ABI, provider);
 
     let decimals,
+        totalSupply,
         symbol,
         name = undefined;
 
     try {
         decimals = await contract.decimals();
+    } catch (error) {
+        console.warn({ error });
+    }
+
+    try {
+        totalSupply = await contract.totalSupply();
     } catch (error) {
         console.warn({ error });
     }
@@ -74,6 +83,7 @@ export const fetchContractDetails = async (
         address: address,
         chainId: parseInt(_chainId),
         decimals: decimals,
+        totalSupply: totalSupply,
         symbol: symbol,
         name: name,
         fromList: provenance,

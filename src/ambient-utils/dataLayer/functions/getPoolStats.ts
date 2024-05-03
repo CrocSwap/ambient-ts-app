@@ -1,4 +1,4 @@
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, bigNumToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
@@ -131,6 +131,23 @@ export async function expandPoolStats(
         (quoteTokenListedDecimals ||
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
         DEFAULT_DECIMALS;
+
+    const baseTotalSupplyBigNum = (
+        await cachedTokenDetails(provider, base, chainId)
+    )?.totalSupply;
+
+    const quoteTotalSupplyBigNum = (
+        await cachedTokenDetails(provider, quote, chainId)
+    )?.totalSupply;
+
+    const baseTokenSupplyNum = baseTotalSupplyBigNum
+        ? bigNumToFloat(baseTotalSupplyBigNum)
+        : 0;
+    const quoteTokenSupplyNum = quoteTotalSupplyBigNum
+        ? bigNumToFloat(quoteTotalSupplyBigNum)
+        : 0;
+
+    console.log({ baseTokenSupplyNum, quoteTokenSupplyNum });
 
     const getSpotPrice = async () => {
         const spotPrice = await cachedQuerySpotPrice(
