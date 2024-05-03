@@ -1,9 +1,21 @@
 import styled from 'styled-components';
 
-const NFTBannerAccountContainer = styled.div`
+const NFTBannerWrapper = styled.div<{
+    isMobile?: boolean;
+}>`
+    //     display:  block;
+    //  width:  ${({ isMobile }) => (isMobile ? '100vw' : '0')};
+    //  height:  ${({ isMobile }) => (isMobile ? '100vh' : '0')};
+    // position: relative;
+    // overflow: visible;
+`;
+
+const NFTBannerAccountContainer = styled.div<{
+    isMobile?: boolean;
+}>`
     box-shadow: 4px 4px 6px #0d1117;
 
-    position: absolute;
+    position: fixed;
 
     display: grid;
 
@@ -12,9 +24,9 @@ const NFTBannerAccountContainer = styled.div`
 
     gap: 16px;
 
-    top: 30%;
-    left: 50%;
-    transform: translate(-80%, 10%);
+    top: ${({ isMobile }) => (isMobile ? '8vh' : '0')};
+    left: ${({ isMobile }) => (isMobile ? '2vw' : '0')};
+    // transform: translate(-80%, 10%);
 
     border-radius: 4px;
 
@@ -24,7 +36,7 @@ const NFTBannerAccountContainer = styled.div`
 
     background: #0d1117;
 
-    z-index: 5;
+    z-index: 9999999;
 `;
 
 const NFTBannerHeader = styled.div`
@@ -339,4 +351,5 @@ export {
     NFTHeaderSettings,
     SelectedJazzIcon,
     IconContainer,
+    NFTBannerWrapper,
 };

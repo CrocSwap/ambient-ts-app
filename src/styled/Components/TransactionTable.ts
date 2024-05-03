@@ -33,7 +33,7 @@ export const Row = styled(GridContainer)<{
     placeholder?: boolean;
     cursor?: string;
 }>`
-    position: relative;
+    /*position: relative;*/
     width: 100%;
     min-height: 35px;
     transition: var(--transition);

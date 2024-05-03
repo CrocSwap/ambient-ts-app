@@ -179,7 +179,7 @@ export const PortfolioBannerRectangleContainer = styled.div`
     position: relative;
 
     display: flex;
-    overflow: hidden;
+    /*overflow: hidden;*/
 
     @media only screen and (min-width: 1200px) {
         flex-shrink: 0;
