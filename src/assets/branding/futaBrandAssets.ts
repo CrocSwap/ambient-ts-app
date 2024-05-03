@@ -29,11 +29,7 @@ export const futaBrandAssets: brandIF = {
         // ethereum sepolia
         '0xaa36a7': {
             color: 'orange_dark',
-            hero: [
-                { content: 'futa', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
+            hero: [{ content: 'futa', processAs: 'text' }],
         },
     },
     platformName: 'futa',

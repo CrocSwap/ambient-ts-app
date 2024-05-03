@@ -6,7 +6,7 @@ import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 // import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { heroItem } from '../../../assets/branding/types';
@@ -15,7 +15,22 @@ export default function Hero() {
     const smallScreen = useMediaQuery('(max-width: 1200px)');
     // const { isActiveNetworkBlast, isActiveNetworkScroll } =
     //     useContext(ChainDataContext);
-    const { hero } = useContext(BrandContext);
+    const { hero, platformName } = useContext(BrandContext);
+
+    type cssSlugs = 'purple_waves' | 'stars';
+    const cssSlug = useMemo<cssSlugs>(() => {
+        let slug: cssSlugs;
+        switch (platformName) {
+            case 'futa':
+                slug = 'stars';
+                break;
+            case 'ambient':
+            default:
+                slug = 'purple_waves';
+                break;
+        }
+        return slug;
+    }, [platformName]);
 
     function makeHeroJSX(h: heroItem) {
         let jsxOutput: JSX.Element;
@@ -71,7 +86,7 @@ export default function Hero() {
             fullHeight
             fullWidth
             id='hero'
-            className={styles['futa']}
+            className={styles[cssSlug]}
         >
             <FlexContainer
                 flexDirection='column'
