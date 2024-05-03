@@ -23,6 +23,8 @@ import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 import { MdOutlineCloudDownload } from 'react-icons/md';
+import { trimString } from '../../../../ambient-utils/dataLayer';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -56,6 +58,7 @@ export default function PortfolioBannerAccount(
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
+    const isSmallScreen = useMediaQuery('(max-width: 800px)');
 
     const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
 
@@ -198,7 +201,12 @@ export default function PortfolioBannerAccount(
                         color='text1'
                         onClick={handleCopyEnsName}
                     >
-                        {ensNameToDisplay}
+                        {isSmallScreen
+                            ? trimString(ensNameToDisplay, 18, 3, '...')
+                            : ensNameToDisplay}
+                        {/* {isSmallScreen
+                            ? trimString(truncatedAccountAddress, 5, 3, '...')
+                            : truncatedAccountAddress} */}
                     </FlexContainer>
                     <FlexContainer
                         fontWeight='300'
@@ -207,7 +215,9 @@ export default function PortfolioBannerAccount(
                         cursor='pointer'
                         onClick={handleCopyAddress}
                     >
-                        {addressToDisplay}
+                        {isSmallScreen
+                            ? trimString(addressToDisplay ?? '', 7, 4, '...')
+                            : trimString(addressToDisplay ?? '', 6, 4, '…')}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
                             <FiExternalLink
