@@ -25,10 +25,15 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { MdClose } from 'react-icons/md';
 import SidebarSearchResults from '../../../App/components/Sidebar/SidebarSearchResults/SidebarSearchResults';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AiOutlineFire } from 'react-icons/ai';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TokenIF } from '../../../ambient-utils/types';
+import { useMediaQuery } from '@material-ui/core';
+import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
+import TokenIcon from '../TokenIcon/TokenIcon';
 
 interface optionItem {
     id: number;
@@ -39,13 +44,21 @@ interface optionItem {
 const DropdownSearch = () => {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
-    const [isOpen, setIsOpen] = useState(false);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const denomInBase = isDenomBase;
+
+    const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
+        ? [baseToken, quoteToken]
+        : [quoteToken, baseToken];
+    const smallScrenView = useMediaQuery('(max-width: 968px)');
 
     const searchDropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideWalletHandler = () => setIsOpen(false);
-    useOnClickOutside(searchDropdownItemRef, clickOutsideWalletHandler);
+    const clickOutsideHandler = () => setIsDropdownOpen(false);
+    useOnClickOutside(searchDropdownItemRef, clickOutsideHandler);
 
     const searchInputElementId = 'sidebar_search_input';
     const focusInput = (): void => {
@@ -173,10 +186,6 @@ const DropdownSearch = () => {
         setActiveOption(option);
     };
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
-
     const optionButtonsDisplay = (
         <FlexContainer flexDirection='row' gap={8} justifyContent='flex-start'>
             {optionButtons.map((option) => (
@@ -207,45 +216,86 @@ const DropdownSearch = () => {
         </FlexContainer>
     );
 
-    return (
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const dropdownSearchContent = (
         <AnimatePresence>
-            <div className={styles.main_container} ref={searchDropdownItemRef}>
-                <span
-                    style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}
-                    className={styles.arrow_icon}
-                    onClick={toggleDropdown}
+            <div className={styles.dropdown_container}>
+                {searchContainer}
+                {optionButtonsDisplay}
+
+                <motion.div
+                    className={styles.dropdown_content}
+                    initial={{ height: 0 }}
+                    animate={{ height: '164px' }}
+                    exit={{ height: 0 }}
+                    transition={{ type: 'spring', stiffness: 200 }}
                 >
-                    <FaChevronDown />
-                </span>
-
-                {isOpen && (
-                    <div className={styles.dropdown_container}>
-                        {searchContainer}
-                        {optionButtonsDisplay}
-
-                        <motion.div
-                            className={styles.dropdown_content}
-                            initial={{ height: 0 }}
-                            animate={{ height: '164px' }}
-                            exit={{ height: 0 }}
-                            transition={{ type: 'spring', stiffness: 200 }}
-                        >
-                            {searchData.isInputValid ? (
-                                <SidebarSearchResults
-                                    searchData={searchData}
-                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                    cachedFetchTokenPrice={
-                                        cachedFetchTokenPrice
-                                    }
-                                />
-                            ) : (
-                                activeOption?.data
-                            )}
-                        </motion.div>
-                    </div>
-                )}
+                    {searchData.isInputValid ? (
+                        <SidebarSearchResults
+                            searchData={searchData}
+                            cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        />
+                    ) : (
+                        activeOption?.data
+                    )}
+                </motion.div>
             </div>
         </AnimatePresence>
+    );
+
+    return (
+        <FlexContainer
+            gap={8}
+            className={styles.main_container}
+            ref={searchDropdownItemRef}
+        >
+            <HeaderButtons
+                id='token_pair_in_chart_header'
+                aria-label='toggle dropdown.'
+                onClick={toggleDropdown}
+                style={{ justifyContent: 'flex-start' }}
+            >
+                <FlexContainer
+                    id='trade_chart_header_token_pair_logos'
+                    role='button'
+                    gap={8}
+                >
+                    <TokenIcon
+                        token={topToken}
+                        src={topToken.logoURI}
+                        alt={topToken.symbol}
+                        size={smallScrenView ? 's' : 'l'}
+                    />
+                    <TokenIcon
+                        token={bottomToken}
+                        src={bottomToken.logoURI}
+                        alt={bottomToken.symbol}
+                        size={smallScrenView ? 's' : 'l'}
+                    />
+                </FlexContainer>
+                <HeaderText
+                    id='trade_chart_header_token_pair_symbols'
+                    fontSize='header1'
+                    fontWeight='300'
+                    color='text1'
+                    role='button'
+                    aria-live='polite'
+                    aria-atomic='true'
+                    aria-relevant='all'
+                    style={{ minWidth: '160px' }}
+                >
+                    {topToken.symbol} / {bottomToken.symbol}
+                </HeaderText>
+                <span className={styles.arrow_icon}>
+                    {isDropdownOpen ? <FaChevronDown /> : <FaChevronUp />}
+                </span>
+            </HeaderButtons>
+            {isDropdownOpen && dropdownSearchContent}
+        </FlexContainer>
     );
 };
 export default DropdownSearch;
