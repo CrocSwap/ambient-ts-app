@@ -151,7 +151,7 @@ export default function PoolsListItem(props: propsIF) {
             {isBaseTokenMoneynessGreaterOrEqual
                 ? pool.quote.symbol
                 : pool.base.symbol}{' '}
-            /
+            /{' '}
             {isBaseTokenMoneynessGreaterOrEqual
                 ? pool.base.symbol
                 : pool.quote.symbol}
