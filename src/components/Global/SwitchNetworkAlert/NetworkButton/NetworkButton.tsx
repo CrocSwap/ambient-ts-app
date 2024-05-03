@@ -15,7 +15,7 @@ export default function NetworkButton(props: propsIF) {
         <button
             className={styles.networkButton}
             onClick={() => clickHandler(id)}
-            style={{ background: theme }}
+            style={{ background: theme, cursor: 'pointer' }}
         >
             Switch to {name}
         </button>
