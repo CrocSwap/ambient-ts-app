@@ -1,21 +1,21 @@
 // import logoText from '../../../assets/images/logos/logo_text.png';
 import { FlexContainer, Text } from '../../../styled/Common';
-import blastLogo from '../../../assets/images/logos/blast_logo.svg';
-import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
+// import blastLogo from '../../../assets/images/logos/blast_logo.svg';
+// import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import styles from './BackgroundImages.module.css';
 import { HeroContainer } from '../../../styled/Components/Home';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useContext } from 'react';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
+// import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { heroItem } from '../../../assets/branding/types';
 
 export default function Hero() {
     const smallScreen = useMediaQuery('(max-width: 1200px)');
-    const { isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
-    const { platformName, hero } = useContext(BrandContext);
+    // const { isActiveNetworkBlast, isActiveNetworkScroll } =
+    //     useContext(ChainDataContext);
+    const { hero } = useContext(BrandContext);
 
     function makeHeroJSX(h: heroItem) {
         let jsxOutput: JSX.Element;
@@ -63,178 +63,207 @@ export default function Hero() {
         return jsxOutput;
     }
 
-    if (platformName === 'futa') {
-        return (
-            <HeroContainer
-                justifyContent='center'
+    return (
+        <HeroContainer
+            justifyContent='center'
+            alignItems='center'
+            rounded
+            fullHeight
+            fullWidth
+            id='hero'
+            className={styles['futa']}
+        >
+            <FlexContainer
+                flexDirection='column'
                 alignItems='center'
-                rounded
-                fullHeight
-                fullWidth
-                id='hero'
-                className={styles['futa']}
+                justifyContent='center'
+                gap={32}
             >
                 <FlexContainer
-                    flexDirection='column'
+                    flexDirection={smallScreen ? 'column' : 'row'}
                     alignItems='center'
-                    justifyContent='center'
-                    gap={32}
+                    gap={8}
+                    style={{ verticalAlign: 'middle' }}
                 >
-                    <FlexContainer
-                        flexDirection={smallScreen ? 'column' : 'row'}
-                        alignItems='center'
-                        gap={8}
-                        style={{ verticalAlign: 'middle' }}
-                    >
-                        {hero.map((h: heroItem) => makeHeroJSX(h))}
-                    </FlexContainer>
-                    <TradeNowButton fieldId='trade_now_btn_in_hero' />
+                    {hero.map((h: heroItem) => makeHeroJSX(h))}
                 </FlexContainer>
-            </HeroContainer>
-        );
-    } else if (isActiveNetworkBlast) {
-        return (
-            <HeroContainer
-                justifyContent='center'
-                alignItems='center'
-                rounded
-                fullHeight
-                fullWidth
-                id='hero'
-                className={styles['ambi']}
-            >
-                <FlexContainer
-                    flexDirection='column'
-                    alignItems='center'
-                    justifyContent='center'
-                    gap={32}
-                >
-                    <FlexContainer
-                        flexDirection={smallScreen ? 'column' : 'row'}
-                        alignItems='center'
-                        gap={8}
-                        style={{ verticalAlign: 'middle' }}
-                    >
-                        {platformName && (
-                            <>
-                                <p
-                                    className={styles.ambient_blast_logo}
-                                    style={{ fontSize: '90px' }}
-                                >
-                                    {platformName}
-                                </p>
-                                <Text
-                                    fontWeight='100'
-                                    color='text1'
-                                    align='center'
-                                    style={{
-                                        marginTop: '20px',
-                                        marginLeft: '15px',
-                                        fontSize: '30px',
-                                    }}
-                                >
-                                    X
-                                </Text>
-                            </>
-                        )}
-                        <img
-                            src={blastLogo}
-                            alt=''
-                            width='130px'
-                            style={{ marginTop: '8px', maxWidth: '60%' }}
-                        />
-                    </FlexContainer>
-                    <TradeNowButton fieldId='trade_now_btn_in_hero' />
-                </FlexContainer>
-            </HeroContainer>
-        );
-    } else if (isActiveNetworkScroll) {
-        return (
-            <HeroContainer
-                justifyContent='center'
-                alignItems='center'
-                rounded
-                fullHeight
-                fullWidth
-                id='hero'
-                className={styles['ambi']}
-            >
-                <FlexContainer
-                    flexDirection='column'
-                    alignItems='center'
-                    justifyContent='center'
-                    gap={32}
-                >
-                    <FlexContainer
-                        flexDirection={smallScreen ? 'column' : 'row'}
-                        alignItems='center'
-                        gap={8}
-                        style={{ verticalAlign: 'middle' }}
-                    >
-                        {platformName && (
-                            <>
-                                <p
-                                    className={styles.ambient_blast_logo}
-                                    style={{ fontSize: '110px' }}
-                                >
-                                    {platformName}
-                                </p>
+                <TradeNowButton fieldId='trade_now_btn_in_hero' />
+            </FlexContainer>
+        </HeroContainer>
+    );
 
-                                <Text
-                                    fontWeight='100'
-                                    color='text1'
-                                    align='center'
-                                    style={{
-                                        marginTop: '20px',
-                                        marginLeft: '15px',
-                                        marginRight: '15px',
-                                        fontSize: '30px',
-                                    }}
-                                >
-                                    X
-                                </Text>
-                            </>
-                        )}
-                        <img
-                            src={scrollLogo}
-                            alt=''
-                            width='70px'
-                            style={{
-                                marginTop: '8px',
-                                maxWidth: '60%',
-                            }}
-                        />
-                    </FlexContainer>
-                    <TradeNowButton fieldId='trade_now_btn_in_hero' />
-                </FlexContainer>
-            </HeroContainer>
-        );
-    } else {
-        return (
-            <HeroContainer
-                justifyContent='center'
-                alignItems='center'
-                rounded
-                fullHeight
-                fullWidth
-                id='hero'
-                className={styles['ambi']}
-            >
-                <FlexContainer
-                    flexDirection='column'
-                    alignItems='center'
-                    justifyContent='center'
-                    gap={32}
-                >
-                    <p
-                        className={styles.ambient_blast_logo}
-                        style={{ fontSize: '110px' }}
-                    >
-                        {platformName}
-                    </p>
-                    <TradeNowButton fieldId='trade_now_btn_in_hero' />
-                </FlexContainer>
-            </HeroContainer>
-        );
-    }
+    // if (platformName === 'futa') {
+    //     return (
+    //         <HeroContainer
+    //             justifyContent='center'
+    //             alignItems='center'
+    //             rounded
+    //             fullHeight
+    //             fullWidth
+    //             id='hero'
+    //             className={styles['futa']}
+    //         >
+    //             <FlexContainer
+    //                 flexDirection='column'
+    //                 alignItems='center'
+    //                 justifyContent='center'
+    //                 gap={32}
+    //             >
+    //                 <FlexContainer
+    //                     flexDirection={smallScreen ? 'column' : 'row'}
+    //                     alignItems='center'
+    //                     gap={8}
+    //                     style={{ verticalAlign: 'middle' }}
+    //                 >
+    //                     {hero.map((h: heroItem) => makeHeroJSX(h))}
+    //                 </FlexContainer>
+    //                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
+    //             </FlexContainer>
+    //         </HeroContainer>
+    //     );
+    // } else if (isActiveNetworkBlast) {
+    //     return (
+    //         <HeroContainer
+    //             justifyContent='center'
+    //             alignItems='center'
+    //             rounded
+    //             fullHeight
+    //             fullWidth
+    //             id='hero'
+    //             className={styles['ambi']}
+    //         >
+    //             <FlexContainer
+    //                 flexDirection='column'
+    //                 alignItems='center'
+    //                 justifyContent='center'
+    //                 gap={32}
+    //             >
+    //                 <FlexContainer
+    //                     flexDirection={smallScreen ? 'column' : 'row'}
+    //                     alignItems='center'
+    //                     gap={8}
+    //                     style={{ verticalAlign: 'middle' }}
+    //                 >
+    //                     {platformName && (
+    //                         <>
+    //                             <p
+    //                                 className={styles.ambient_blast_logo}
+    //                                 style={{ fontSize: '90px' }}
+    //                             >
+    //                                 {platformName}
+    //                             </p>
+    //                             <Text
+    //                                 fontWeight='100'
+    //                                 color='text1'
+    //                                 align='center'
+    //                                 style={{
+    //                                     marginTop: '20px',
+    //                                     marginLeft: '15px',
+    //                                     fontSize: '30px',
+    //                                 }}
+    //                             >
+    //                                 X
+    //                             </Text>
+    //                         </>
+    //                     )}
+    //                     <img
+    //                         src={blastLogo}
+    //                         alt=''
+    //                         width='130px'
+    //                         style={{ marginTop: '8px', maxWidth: '60%' }}
+    //                     />
+    //                 </FlexContainer>
+    //                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
+    //             </FlexContainer>
+    //         </HeroContainer>
+    //     );
+    // } else if (isActiveNetworkScroll) {
+    //     return (
+    //         <HeroContainer
+    //             justifyContent='center'
+    //             alignItems='center'
+    //             rounded
+    //             fullHeight
+    //             fullWidth
+    //             id='hero'
+    //             className={styles['ambi']}
+    //         >
+    //             <FlexContainer
+    //                 flexDirection='column'
+    //                 alignItems='center'
+    //                 justifyContent='center'
+    //                 gap={32}
+    //             >
+    //                 <FlexContainer
+    //                     flexDirection={smallScreen ? 'column' : 'row'}
+    //                     alignItems='center'
+    //                     gap={8}
+    //                     style={{ verticalAlign: 'middle' }}
+    //                 >
+    //                     {platformName && (
+    //                         <>
+    //                             <p
+    //                                 className={styles.ambient_blast_logo}
+    //                                 style={{ fontSize: '110px' }}
+    //                             >
+    //                                 {platformName}
+    //                             </p>
+
+    //                             <Text
+    //                                 fontWeight='100'
+    //                                 color='text1'
+    //                                 align='center'
+    //                                 style={{
+    //                                     marginTop: '20px',
+    //                                     marginLeft: '15px',
+    //                                     marginRight: '15px',
+    //                                     fontSize: '30px',
+    //                                 }}
+    //                             >
+    //                                 X
+    //                             </Text>
+    //                         </>
+    //                     )}
+    //                     <img
+    //                         src={scrollLogo}
+    //                         alt=''
+    //                         width='70px'
+    //                         style={{
+    //                             marginTop: '8px',
+    //                             maxWidth: '60%',
+    //                         }}
+    //                     />
+    //                 </FlexContainer>
+    //                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
+    //             </FlexContainer>
+    //         </HeroContainer>
+    //     );
+    // } else {
+    //     return (
+    //         <HeroContainer
+    //             justifyContent='center'
+    //             alignItems='center'
+    //             rounded
+    //             fullHeight
+    //             fullWidth
+    //             id='hero'
+    //             className={styles['ambi']}
+    //         >
+    //             <FlexContainer
+    //                 flexDirection='column'
+    //                 alignItems='center'
+    //                 justifyContent='center'
+    //                 gap={32}
+    //             >
+    //                 <p
+    //                     className={styles.ambient_blast_logo}
+    //                     style={{ fontSize: '110px' }}
+    //                 >
+    //                     {platformName}
+    //                 </p>
+    //                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
+    //             </FlexContainer>
+    //         </HeroContainer>
+    //     );
+    // }
 }

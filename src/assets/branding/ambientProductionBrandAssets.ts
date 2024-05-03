@@ -29,11 +29,7 @@ export const ambientProductionBrandAssets: brandIF = {
         // ethereum mainnet
         '0x1': {
             color: 'purple_dark',
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
+            hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // scroll mainnet
         '0x82750': {

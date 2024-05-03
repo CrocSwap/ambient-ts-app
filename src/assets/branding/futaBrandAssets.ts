@@ -30,7 +30,7 @@ export const futaBrandAssets: brandIF = {
         '0xaa36a7': {
             color: 'orange_dark',
             hero: [
-                { content: 'ambient', processAs: 'text' },
+                { content: 'futa', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
                 { content: scrollLogo, processAs: 'image' },
             ],
