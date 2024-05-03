@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { skins } from '../App/hooks/useSkin';
-import { brandIF } from '../assets/branding/types';
+import { brandIF, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
 import {
@@ -11,7 +11,6 @@ import {
     ambientTestnetBrandAssets,
     futaBrandAssets,
 } from '../assets/branding';
-import scrollLogo from '../assets/images/logos/scroll_brand_logo.svg';
 
 interface BrandContextIF {
     skin: skins;
@@ -20,7 +19,7 @@ interface BrandContextIF {
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
-    hero: [string, string];
+    hero: heroItem[];
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -63,11 +62,27 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         return networkPrefs ? networkPrefs.color : 'purple_dark';
     }
 
-    function getHero(): [string, string] {
+    function getHero(): heroItem[] {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
-        return networkPrefs ? networkPrefs.hero : ['ambient', scrollLogo];
+        return networkPrefs
+            ? networkPrefs.hero
+            : [{ content: 'ambient', processAs: 'separator' }];
     }
+
+    // function jsxifyHero(h: heroItem) {
+    //     let jsxOutput: JSX.Element;
+    //     if (h.processAs === 'text') {
+    //         jsxOutput = (
+    //             <p
+    //                 className={styles.ambient_blast_logo}
+    //                 style={{ fontSize: '110px' }}
+    //             >
+    //                 {first}
+    //             </p>
+    //         );
+    //     }
+    // }
 
     // data to be returned to the app
     const brandData: BrandContextIF = {

@@ -9,6 +9,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { BrandContext } from '../../../contexts/BrandContext';
+import { heroItem } from '../../../assets/branding/types';
 
 export default function Hero() {
     const smallScreen = useMediaQuery('(max-width: 1200px)');
@@ -16,22 +17,21 @@ export default function Hero() {
         useContext(ChainDataContext);
     const { platformName, hero } = useContext(BrandContext);
 
-    if (platformName === 'futa') {
-        let left, right;
-        if (hero) {
-            console.log(hero);
-            const [first, second] = hero;
-            left = (
+    function makeHeroJSX(h: heroItem) {
+        let jsxOutput: JSX.Element;
+        if (h.processAs === 'text') {
+            jsxOutput = (
                 <p
                     className={styles.ambient_blast_logo}
                     style={{ fontSize: '110px' }}
                 >
-                    {first}
+                    {h.content}
                 </p>
             );
-            right = (
+        } else if (h.processAs === 'image') {
+            jsxOutput = (
                 <img
-                    src={second}
+                    src={h.content}
                     alt=''
                     width='70px'
                     style={{
@@ -40,8 +40,30 @@ export default function Hero() {
                     }}
                 />
             );
+        } else if (h.processAs === 'separator') {
+            jsxOutput = (
+                <Text
+                    fontWeight='200'
+                    // fontSize='800px'
+                    color='text1'
+                    align='center'
+                    style={{
+                        marginTop: '20px',
+                        marginLeft: '15px',
+                        marginRight: '15px',
+                        fontSize: '30px',
+                    }}
+                >
+                    {h.content}
+                </Text>
+            );
+        } else {
+            jsxOutput = <></>;
         }
+        return jsxOutput;
+    }
 
+    if (platformName === 'futa') {
         return (
             <HeroContainer
                 justifyContent='center'
@@ -64,21 +86,7 @@ export default function Hero() {
                         gap={8}
                         style={{ verticalAlign: 'middle' }}
                     >
-                        {left}
-                        <Text
-                            fontWeight='100'
-                            color='text1'
-                            align='center'
-                            style={{
-                                marginTop: '20px',
-                                marginLeft: '15px',
-                                marginRight: '15px',
-                                fontSize: '30px',
-                            }}
-                        >
-                            X
-                        </Text>
-                        {right}
+                        {hero.map((h: heroItem) => makeHeroJSX(h))}
                     </FlexContainer>
                     <TradeNowButton fieldId='trade_now_btn_in_hero' />
                 </FlexContainer>

@@ -18,12 +18,17 @@ import { skins } from '../../App/hooks/useSkin';
 //     hero: [string, string];
 // }
 
+export interface heroItem {
+    content: string;
+    processAs: 'text' | 'image' | 'separator';
+}
+
 export type networkPrefs = Partial<
     Record<
         chainIds,
         {
             color: skins;
-            hero: [string, string];
+            hero: heroItem[];
         }
     >
 >;

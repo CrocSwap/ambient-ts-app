@@ -25,7 +25,11 @@ export const blastBrandAssets: brandIF = {
     networks: {
         '0x13e31': {
             color: 'purple_dark',
-            hero: ['blast', blastLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: blastLogo, processAs: 'image' },
+            ],
         },
     },
     platformName: 'blast',

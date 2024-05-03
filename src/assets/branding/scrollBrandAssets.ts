@@ -26,7 +26,11 @@ export const scrollBrandAssets: brandIF = {
         // scroll mainnet
         '0x82750': {
             color: 'orange_dark',
-            hero: ['futa', scrollLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
         },
     },
     platformName: 'futa',

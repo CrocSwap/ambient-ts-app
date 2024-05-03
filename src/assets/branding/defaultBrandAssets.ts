@@ -32,35 +32,59 @@ export const defaultBrandAssets: brandIF = {
         // ethereum mainnet
         '0x1': {
             color: 'purple_dark',
-            hero: ['ambient', blastLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: blastLogo, processAs: 'image' },
+            ],
         },
         // ethereum sepolia
         '0xaa36a7': {
             color: 'purple_dark',
-            hero: ['ambient', blastLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: blastLogo, processAs: 'image' },
+            ],
         },
         // scroll mainnet
         '0x82750': {
             color: 'purple_dark',
-            hero: ['ambient', scrollLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
         },
         // scroll sepolia
         '0x8274f': {
             color: 'purple_dark',
-            hero: ['ambient', scrollLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
         },
         // blast mainnet
         '0x13e31': {
             color: 'purple_dark',
-            hero: ['ambient', blastLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: blastLogo, processAs: 'image' },
+            ],
         },
         // blast logo
         '0xa0c71fd': {
             color: 'purple_dark',
-            hero: ['ambient', blastLogo],
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: blastLogo, processAs: 'image' },
+            ],
         },
     },
-    platformName: 'blast',
+    platformName: 'ambient',
     showPoints: true,
     showDexStats: true,
     headerImage: large as string,
