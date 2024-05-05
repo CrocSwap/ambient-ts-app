@@ -20,14 +20,18 @@ const RangeSlider: React.FC<CustomInputProps> = ({
     ariaLabelledBy = '',
     ariaLabel = '',
     id = '',
-    min = 1,
+    defaultValue = 10,
+    min = 0.1,
     max = 100,
     step = 1,
-    defaultValue = 0,
     onChange,
     percentageInput = false,
 }) => {
     const [isGrabbing, setIsGrabbing] = useState(false);
+
+    // useEffect(() => {
+    //     console.log({ min, defaultValue, step });
+    // }, [min, defaultValue, step]);
 
     const handleClick: MouseEventHandler<HTMLInputElement> = () => {
         setIsGrabbing(true);
@@ -36,6 +40,24 @@ const RangeSlider: React.FC<CustomInputProps> = ({
     const handleMouseUp: MouseEventHandler<HTMLInputElement> = () => {
         setIsGrabbing(false);
     };
+
+    min =
+        defaultValue <= 0.25
+            ? 0.1
+            : defaultValue <= 0.5
+            ? 0.25
+            : defaultValue <= 1
+            ? 0.5
+            : 1;
+
+    step =
+        defaultValue <= 0.25
+            ? 0.15
+            : defaultValue <= 0.5
+            ? 0.25
+            : defaultValue <= 1
+            ? 0.5
+            : 1;
 
     return (
         <RangeSliderWrapper

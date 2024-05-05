@@ -33,7 +33,8 @@ function RangeWidth(props: propsIF) {
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     // values to generate balanced mode preset buttons
-    const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    // const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    const balancedPresets: number[] = [0.1, 0.25, 0.5, 1, 5, 10, 25, 50, 100];
     // type annotation as union of number-literals in `balancedPresets`
     type presetValues = typeof balancedPresets[number];
 
