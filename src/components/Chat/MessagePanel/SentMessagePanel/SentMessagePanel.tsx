@@ -89,6 +89,7 @@ interface SentMessageProps {
     scrollToMessage: (messageId: string, flashAnimation?: boolean) => void;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     setVerifyOldMessagesStartDate: Dispatch<SetStateAction<Date>>;
+    isFocusMentions: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -527,8 +528,8 @@ function SentMessagePanel(props: SentMessageProps) {
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
         if (
-            (isLinkInCrocodileLabsLinks(word) ||
-                isLinkInCrocodileLabsLinksForInput(word)) &&
+            isLinkInCrocodileLabsLinks(word) &&
+            isLinkInCrocodileLabsLinksForInput(word) &&
             isValidUrl(word)
         ) {
             ret = (
@@ -759,6 +760,7 @@ function SentMessagePanel(props: SentMessageProps) {
             ${hasSeparator ? styles.has_separator : ''}
             ${
                 props.message.mentionedWalletID === props.address &&
+                props.isFocusMentions &&
                 props.address
                     ? styles.reader_mentioned
                     : ''
@@ -929,6 +931,13 @@ function SentMessagePanel(props: SentMessageProps) {
                             >
                                 {showAvatar && (
                                     <div
+                                        // onMouseLeave={props.mentionMouseLeftListener}
+                                        // onMouseEnter={(e) => {
+                                        //     props.mentionHoverListener(
+                                        //         e.currentTarget.getBoundingClientRect().top,
+                                        //         props.message.walletID,
+                                        //     );
+                                        // }}
                                         className={styles.avatar_jazzicons}
                                         onClick={goToProfilePage}
                                     >

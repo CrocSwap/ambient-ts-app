@@ -172,6 +172,7 @@
     display: inline-block;
     vertical-align: bottom ;
     margin-left: .4rem;
+    float: right;
 }
 .only_mentions_wrapper{
     /* background: #34327e; */
@@ -226,4 +227,60 @@
 
 .opa_full{
     opacity: 1;
+}
+
+
+.m_visible{
+    display: none !important;
+}
+
+
+@media only screen and (max-width: 600px){
+    .dropdown {
+        width: 100%;
+        margin: 8px 0;
+        padding: 4px;
+        text-align: center;
+    }
+
+
+    .dropdown_content{
+        position: absolute;
+    }
+
+    .current_pool{
+        display: none;
+    }
+
+    .m_hidden{
+        display: none !important;
+    }
+
+    .m_visible{
+        display: inline-block !important;
+    }
+
+    .dd_icon{
+        vertical-align: middle;
+    }
+
+    .dropdow_content{
+        position: absolute;
+        z-index: 99;
+        background: var(--dark3);
+        left: 0;
+        width: 100%;
+
+    }
+
+    .dropdown_item  {
+        text-align: center;
+        padding: .7rem;
+        font-size: .9rem;
+    }
+
+    .room_name_wrapper{
+        margin-left: -1rem;
+    }
+
 }

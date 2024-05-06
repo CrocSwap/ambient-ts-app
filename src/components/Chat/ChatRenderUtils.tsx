@@ -6,6 +6,7 @@ import { User } from './Model/UserModel';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import styles from './ChatRenderUtils.module.css';
 import { AiOutlineFileImage } from 'react-icons/ai';
+import { UserSummaryModel } from './Model/UserSummaryModel';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -133,18 +134,18 @@ export const getAvatarForProfilePage = (
     size?: number,
     canEdit?: boolean,
 ) => {
-    if (avatarImage && avatarImage.length > 0) {
-        return (
-            <span className={styles.nft_avatar_wrapper}>
-                {canEdit && (
-                    <>
-                        <div className={styles.nft_edit_overlay}></div>
-                        <div className={styles.nft_edit_icon}>
-                            <AiOutlineFileImage size={24}></AiOutlineFileImage>
-                        </div>
-                    </>
-                )}
+    return (
+        <span className={styles.nft_avatar_wrapper}>
+            {canEdit && (
+                <>
+                    <div className={styles.nft_edit_overlay}></div>
+                    <div className={styles.nft_edit_icon}>
+                        <AiOutlineFileImage size={24}></AiOutlineFileImage>
+                    </div>
+                </>
+            )}
 
+            {avatarImage && avatarImage.length > 0 ? (
                 <img
                     src={avatarImage}
                     className={`${styles.nft_avatar} ${
@@ -156,19 +157,20 @@ export const getAvatarForProfilePage = (
                         borderRadius: '50%',
                     }}
                 ></img>
-            </span>
-        );
-    } else {
-        return (
-            <Jazzicon
-                diameter={size}
-                seed={jsNumberForAddress(walletID.toLocaleLowerCase())}
-            />
-        );
-    }
+            ) : (
+                <Jazzicon
+                    diameter={size}
+                    seed={jsNumberForAddress(walletID.toLocaleLowerCase())}
+                />
+            )}
+        </span>
+    );
 };
 
-export const getAvatarForChat = (user?: User, size?: number) => {
+export const getAvatarForChat = (
+    user?: User | UserSummaryModel,
+    size?: number,
+) => {
     if (!user) {
         return <Jazzicon diameter={25} seed={jsNumberForAddress('')} />;
     }

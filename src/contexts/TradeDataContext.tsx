@@ -5,7 +5,7 @@ import {
     blastETH,
     blastUSDB,
     getDefaultPairForChain,
-    goerliETH,
+    mainnetETH,
 } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
@@ -160,7 +160,7 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = React.useState(goerliETH);
+    const [soloToken, setSoloToken] = React.useState(mainnetETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);

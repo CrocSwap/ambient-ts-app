@@ -1,30 +1,33 @@
 import styled from 'styled-components';
 
-const NFTBannerAccountContainer = styled.div`
+const NFTBannerAccountContainer = styled.div<{
+    isMobile?: boolean;
+}>`
     box-shadow: 4px 4px 6px #0d1117;
 
-    position: absolute;
+    position: fixed;
 
     display: grid;
 
-    width: 350px;
-    height: 570px;
+    width: ${({ isMobile }) => (isMobile ? '90vw' : '350px')};
+    height: ${({ isMobile }) => (isMobile ? '70vh' : '570px')};
 
-    gap: 16px;
+    gap: ${({ isMobile }) => (isMobile ? '1vw' : '16px')};
 
-    top: 30%;
-    left: 50%;
-    transform: translate(-80%, 10%);
+    top: ${({ isMobile }) => (isMobile ? '10vh' : '0')};
+    left: ${({ isMobile }) => (isMobile ? '-1vw' : 'calc(50vw - 320px)')};
+    transform: ${({ isMobile }) =>
+        isMobile ? 'translate(0,0)' : 'translateX(-50%)'};
 
     border-radius: 4px;
 
     border-width: 0.5px;
     border-style: solid;
-    border-color: #7371fc;
+    border-color: var(--accent1);
 
     background: #0d1117;
 
-    z-index: 5;
+    z-index: 9999999;
 `;
 
 const NFTBannerHeader = styled.div`
@@ -57,11 +60,13 @@ const NFTDisplay = styled.div<{
     overflow-x: hidden;
 `;
 
-const NFTImgContainer = styled.div`
+const NFTImgContainer = styled.div<{
+    isMobile?: boolean;
+}>`
     position: relative;
     display: flex;
 
-    padding-bottom: 3px;
+    padding-bottom: ${({ isMobile }) => (isMobile ? '2vw' : '3px')};
 
     justify-content: center;
     align-items: center;
@@ -99,6 +104,7 @@ const NFTImg = styled.img<{
     selectedNFT: boolean;
     selectedThumbnail: boolean;
     isSelectThumbnail: boolean;
+    isMobile?: boolean;
 }>`
     border: 2.25px solid
         ${({ selectedNFT, selectedThumbnail }) =>
@@ -109,8 +115,8 @@ const NFTImg = styled.img<{
                 : 'transparent'};
     border-radius: 8px;
 
-    width: 75px;
-    height: 75px;
+    width: ${({ isMobile }) => (isMobile ? '20vw' : '75px')};
+    height: ${({ isMobile }) => (isMobile ? '20vw' : '75px')};
 
     &:hover {
         border-color: ${({ isSelectThumbnail }) =>
@@ -301,7 +307,7 @@ const NFTBannerFooter = styled.div`
 `;
 
 const SaveButton = styled.div`
-    background: #7371fc;
+    background: var(--accent1);
     display: flex;
 
     height: 30px;
