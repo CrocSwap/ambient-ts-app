@@ -23,6 +23,7 @@ import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import FavButton from './FavButton';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     pool: PoolIF;
@@ -111,46 +112,50 @@ export default function PoolsListItem(props: propsIF) {
             ? [pool.quote.address, pool.base.address]
             : [pool.base.address, pool.quote.address];
 
+    const mobileScreen = useMediaQuery('(max-width: 500px)');
+
     const poolDisplay = (
         <FlexContainer gap={8} alignItems='center'>
-            <FlexContainer gap={4}>
-                <TokenIcon
-                    token={
-                        isBaseTokenMoneynessGreaterOrEqual
-                            ? pool.quote
-                            : pool.base
-                    }
-                    src={uriToHttp(
-                        (isBaseTokenMoneynessGreaterOrEqual
-                            ? poolData.quoteLogoUri
-                            : poolData.baseLogoUri) ?? '...',
-                    )}
-                    alt={
-                        isBaseTokenMoneynessGreaterOrEqual
-                            ? pool.quote.symbol
-                            : pool.base.symbol
-                    }
-                    size='m'
-                />
-                <TokenIcon
-                    token={
-                        isBaseTokenMoneynessGreaterOrEqual
-                            ? pool.base
-                            : pool.quote
-                    }
-                    src={uriToHttp(
-                        (isBaseTokenMoneynessGreaterOrEqual
-                            ? poolData.baseLogoUri
-                            : poolData.quoteLogoUri) ?? '...',
-                    )}
-                    alt={
-                        isBaseTokenMoneynessGreaterOrEqual
-                            ? pool.base.symbol
-                            : pool.quote.symbol
-                    }
-                    size='m'
-                />
-            </FlexContainer>
+            {!mobileScreen && (
+                <FlexContainer gap={4}>
+                    <TokenIcon
+                        token={
+                            isBaseTokenMoneynessGreaterOrEqual
+                                ? pool.quote
+                                : pool.base
+                        }
+                        src={uriToHttp(
+                            (isBaseTokenMoneynessGreaterOrEqual
+                                ? poolData.quoteLogoUri
+                                : poolData.baseLogoUri) ?? '...',
+                        )}
+                        alt={
+                            isBaseTokenMoneynessGreaterOrEqual
+                                ? pool.quote.symbol
+                                : pool.base.symbol
+                        }
+                        size='m'
+                    />
+                    <TokenIcon
+                        token={
+                            isBaseTokenMoneynessGreaterOrEqual
+                                ? pool.base
+                                : pool.quote
+                        }
+                        src={uriToHttp(
+                            (isBaseTokenMoneynessGreaterOrEqual
+                                ? poolData.baseLogoUri
+                                : poolData.quoteLogoUri) ?? '...',
+                        )}
+                        alt={
+                            isBaseTokenMoneynessGreaterOrEqual
+                                ? pool.base.symbol
+                                : pool.quote.symbol
+                        }
+                        size='m'
+                    />
+                </FlexContainer>
+            )}
             {isBaseTokenMoneynessGreaterOrEqual
                 ? pool.quote.symbol
                 : pool.base.symbol}{' '}

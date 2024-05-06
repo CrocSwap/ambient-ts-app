@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface PairDataItemIF {
     label: string;
     value: string;
@@ -55,6 +56,8 @@ export default function PoolData(props: PoolDataIF) {
         isPoolPriceChangePositive,
     } = props;
 
+    const mobileView = useMediaQuery('(max-width: 500px)');
+
     function PairDataItem(props: PairDataItemIF) {
         const { label, value, color, onClick } = props;
 
@@ -68,7 +71,7 @@ export default function PoolData(props: PoolDataIF) {
                 aria-label={`${label} is ${value}`}
                 style={{
                     cursor: onClick ? 'pointer' : 'default',
-                    width: '90px',
+                    width: mobileView ? 'auto' : '90px',
                 }}
                 onClick={onClick ?? undefined}
             >
@@ -154,7 +157,7 @@ export default function PoolData(props: PoolDataIF) {
     if (example) return trial;
 
     return (
-        <FlexContainer flexDirection='row'>
+        <MainContainer>
             {pairItemData.map((item) => (
                 <PairDataItem
                     key={item.label + item.value}
@@ -164,9 +167,19 @@ export default function PoolData(props: PoolDataIF) {
                     onClick={item?.onClick}
                 />
             ))}
-        </FlexContainer>
+        </MainContainer>
     );
 }
+const MainContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+
+    @media only screen and (max-width: 500px) {
+        width: 100px;
+        overflow-x: scroll;
+        gap: 1rem;
+    }
+`;
 
 const ContentWrapper = styled.div`
     display: flex;

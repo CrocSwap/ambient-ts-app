@@ -15,7 +15,7 @@
   position: absolute;
   display: flex;
 
-padding: 16px;
+padding: 4px;
 flex-direction: column;
 border-radius: 4px;
 border: 1px solid var(--dark3, #1E1E24);
@@ -31,7 +31,7 @@ z-index: 9999;
 
  .dropdown_content{
     display: flex;
-width: 515px;
+width: 340px;
 overflow-y: scroll;
 
 flex-direction: column;
@@ -67,4 +67,20 @@ cursor: pointer;
   padding: 0 4px;
   transform: 0.3s;
   cursor: pointer;
+}
+
+@media (min-width: 500px) {
+  .dropdown_container{
+  
+  padding: 16px;
+
+  
+  }
+  .dropdown_content{
+  
+width: 515px;
+
+
+
+}
 }
