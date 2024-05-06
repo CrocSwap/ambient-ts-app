@@ -218,11 +218,19 @@ export default function Room(props: propsIF) {
                         : [base.address, quote.address];
 
                 if (props.setGoToChartParams) {
-                    props.setGoToChartParams({
-                        chain: chainId,
-                        tokenA: targetA,
-                        tokenB: targetB,
-                    });
+                    if (
+                        base.symbol != baseToken.symbol ||
+                        quote.symbol != quoteToken.symbol
+                    ) {
+                        props.setGoToChartParams({
+                            chain: chainId,
+                            tokenA: targetA,
+                            tokenB: targetB,
+                        });
+                    } // same base quote, dont show go to room btn
+                    else {
+                        props.setGoToChartParams(undefined);
+                    }
                 }
             }
         } else {
