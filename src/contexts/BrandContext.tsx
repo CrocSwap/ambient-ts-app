@@ -1,21 +1,25 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
-import { brandAssetsIF } from '../assets/branding/types';
+import { skins } from '../App/hooks/useSkin';
+import { brandIF, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,
     scrollBrandAssets,
-    ambientBrandAssets,
+    defaultBrandAssets,
+    ambientProductionBrandAssets,
+    ambientTestnetBrandAssets,
+    futaBrandAssets,
 } from '../assets/branding';
 
 interface BrandContextIF {
-    skin: skinMethodsIF;
+    skin: skins;
     platformName: string;
     networks: chainIds[];
     headerImage: string;
     showPoints: boolean;
     showDexStats: boolean;
+    hero: heroItem[];
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -29,35 +33,53 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const FALLBACK_SET = 'ambient';
     const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? FALLBACK_SET;
-    const brandAssets = useMemo<brandAssetsIF>(() => {
+    const brandAssets = useMemo<brandIF>(() => {
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
-            case 'ambient':
+            case 'futa':
+                return futaBrandAssets;
+            case 'ambientProduction':
+                return ambientProductionBrandAssets;
+            case 'ambientTestnet':
+                return ambientTestnetBrandAssets;
             default:
-                return ambientBrandAssets;
+                return defaultBrandAssets;
         }
     }, [brand]);
 
     // hook to manage the active color theme in the app
-    const skin: skinMethodsIF = useSkin(
-        blastBrandAssets.color,
-        chainData.chainId as chainIds,
-    );
+    // const skin: skinMethodsIF = useSkin(
+    //     brandAssets.color,
+    //     chainData.chainId as chainIds,
+    // );
+
+    function getSkin(): skins {
+        const networkPrefs =
+            brandAssets.networks[chainData.chainId as chainIds];
+        return networkPrefs ? networkPrefs.color : 'purple_dark';
+    }
+
+    function getHero(): heroItem[] {
+        const networkPrefs =
+            brandAssets.networks[chainData.chainId as chainIds];
+        return networkPrefs
+            ? networkPrefs.hero
+            : [{ content: 'ambient', processAs: 'separator' }];
+    }
 
     // data to be returned to the app
     const brandData: BrandContextIF = {
-        skin,
+        skin: getSkin(),
         platformName: brandAssets.platformName,
-        networks: brandAssets.networks,
+        networks: Object.keys(brandAssets.networks) as chainIds[],
         headerImage: brandAssets.headerImage,
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,
+        hero: getHero(),
     };
-
-    console.log(brandData);
 
     return (
         <BrandContext.Provider value={brandData}>

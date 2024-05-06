@@ -6,9 +6,12 @@ import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
 import { blast } from './blastNetwork';
 import {
-    ambientBrandAssets,
+    ambientProductionBrandAssets,
+    ambientTestnetBrandAssets,
+    defaultBrandAssets,
     blastBrandAssets,
     scrollBrandAssets,
+    futaBrandAssets,
 } from '../../../assets/branding';
 
 export const brand: string | undefined =
@@ -23,11 +26,10 @@ const networks: NetworkIF[] = [
     blast,
 ];
 
-function getNetworks(...chns: (string | chainIds)[]): {
+function getNetworks(chns: (string | chainIds)[]): {
     [x: string]: NetworkIF;
 } {
-    const chains: string[] = [chns].flat();
-    const networksToShow: NetworkIF[] = chains
+    const networksToShow: NetworkIF[] = chns
         .map((c: string) => {
             const network: NetworkIF | undefined = networks.find(
                 (n: NetworkIF) => n.chainId.toLowerCase() === c,
@@ -42,25 +44,16 @@ function getNetworks(...chns: (string | chainIds)[]): {
 
 export const supportedNetworks: { [x: string]: NetworkIF } =
     brand === 'blast'
-        ? getNetworks(...blastBrandAssets.networks)
+        ? getNetworks(Object.keys(blastBrandAssets.networks))
         : brand === 'scroll'
-        ? getNetworks(...scrollBrandAssets.networks)
-        : brand === 'ambient'
-        ? getNetworks(...ambientBrandAssets.networks)
-        : brand === 'testnet'
-        ? getNetworks(
-              ethereumSepolia.chainId,
-              blastSepolia.chainId,
-              scrollSepolia.chainId,
-          )
-        : getNetworks(
-              ethereumMainnet.chainId,
-              blast.chainId,
-              scrollMainnet.chainId,
-              blastSepolia.chainId,
-              ethereumSepolia.chainId,
-              scrollSepolia.chainId,
-          );
+        ? getNetworks(Object.keys(scrollBrandAssets.networks))
+        : brand === 'futa'
+        ? getNetworks(Object.keys(futaBrandAssets.networks))
+        : brand === 'ambientProduction'
+        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
+        : brand === 'ambientTestnet'
+        ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+        : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     return [

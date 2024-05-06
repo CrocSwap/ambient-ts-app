@@ -24,7 +24,13 @@ export type textColors =
 
 export type Fonts = 'font-logo' | 'font-family' | 'roboto' | 'mono';
 
-export type FontSizes = 'header1' | 'header2' | 'header' | 'body' | 'mini';
+export type FontSizes =
+    | 'header1'
+    | 'header2'
+    | 'header'
+    | 'body'
+    | 'mini'
+    | string;
 export type FontWeights = '100' | '200' | '300' | '400' | '500' | 'lighter';
 export type JustifyContent =
     | 'flex-start'

@@ -1,21 +1,21 @@
-import { brandAssetsIF } from './types';
+import { brandIF } from './types';
 import large from '../images/logos/large.svg';
+import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 
-export const scrollBrandAssets: brandAssetsIF = {
-    networks: [
-        '0x82750', // scroll
-    ],
-    color: {
-        '0x1': 'orange',
-        '0x82750': 'orange',
-        '0x5': 'orange',
-        '0x8274f': 'orange',
-        '0xaa36a7': 'orange',
-        '0xa0c71fd': 'orange',
-        '0x13e31': 'orange',
+export const scrollBrandAssets: brandIF = {
+    networks: {
+        // scroll mainnet
+        '0x82750': {
+            color: 'orange_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
+        },
     },
-    platformName: '',
-    headerImage: large as string,
+    platformName: 'futa',
     showPoints: true,
     showDexStats: true,
+    headerImage: large as string,
 };

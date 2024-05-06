@@ -1,15 +1,20 @@
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 import { FlexContainer } from '../../../styled/Common';
 
-export const Menu = styled(FlexContainer)`
+interface MenuProps {
+    expandable: boolean;
+}
+export const Menu = styled(FlexContainer)<MenuProps>`
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-    position: relative;
     z-index: 999;
-
+    ${({ expandable }) =>
+        expandable &&
+        css`
+            cursor: pointer !important;
+        `}
     @media only screen and (min-width: 1020px) {
-        justify-content: space-between;
         gap: 0;
     }
 `;

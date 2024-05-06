@@ -171,7 +171,7 @@ export default function App() {
             <FlexContainer
                 flexDirection='column'
                 className={containerStyle}
-                data-theme={skin.active}
+                data-theme={skin}
             >
                 {!isWalletChainSupported && <SwitchNetwork />}
                 {showPoints && showPointSystemPopup && (
@@ -370,7 +370,7 @@ export default function App() {
                     </Routes>
                 </section>
             </FlexContainer>
-            <div className='footer_container'>
+            <div data-theme={skin} className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
                     currentLocation !== '/terms' &&
@@ -382,7 +382,7 @@ export default function App() {
                     <SidebarFooter />
                 )}
             </div>
-            <GlobalPopup />
+            <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWagmiModalOpen && <WalletModalWagmi />}
         </>
