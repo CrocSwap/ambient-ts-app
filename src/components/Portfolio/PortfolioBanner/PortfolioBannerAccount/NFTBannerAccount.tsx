@@ -20,7 +20,6 @@ import {
     SelectedNFTImg,
     SelectedJazzIcon,
     IconContainer,
-    NFTBannerWrapper,
 } from './NFTBannerAccountCss';
 import {
     NftDataIF,
