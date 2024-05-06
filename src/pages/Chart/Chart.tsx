@@ -423,7 +423,7 @@ export default function Chart(props: propsIF) {
     const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    const drawSettings = useDrawSettings();
+    const drawSettings = useDrawSettings(chartThemeColors);
     const getDollarPrice = useDollarPrice();
 
     const {
@@ -3296,6 +3296,8 @@ export default function Chart(props: propsIF) {
                                     rayLine.xScale().range(range);
 
                                     if (ctx) ctx.setLineDash(item.line.dash);
+
+                                    console.log(item.line.color);
                                     rayLine.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.strokeStyle =
@@ -5870,6 +5872,7 @@ export default function Chart(props: propsIF) {
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}
                     drawnShapeHistory={drawnShapeHistory}
+                    chartThemeColors={chartThemeColors}
                 />
             )}
 
