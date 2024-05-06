@@ -11,6 +11,14 @@ import {
     ambientTestnetBrandAssets,
     futaBrandAssets,
 } from '../assets/branding';
+import { UserDataContext } from './UserDataContext';
+
+const PREMIUM_THEMES_IN_ENV = {
+    theme1: 'REACT_APP_THEME_1_ACCOUNTS',
+    theme2: 'REACT_APP_THEME_2_ACCOUNTS',
+};
+
+type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
 interface BrandContextIF {
     skin: skins;
@@ -20,15 +28,35 @@ interface BrandContextIF {
     showPoints: boolean;
     showDexStats: boolean;
     hero: heroItem[];
+    premium: Record<premiumThemes, boolean>;
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
 
 export const BrandContextProvider = (props: { children: React.ReactNode }) => {
+    const { userAddress } = useContext(UserDataContext);
     const { chainData } = useContext(TradeDataContext);
 
     // brand asset set to consume as specified in environmental variable
     // can also provide a fallback if a custom brand is missing values
+
+    const premiumAccess = useMemo<Map<premiumThemes, boolean>>(() => {
+        const hasPremium = new Map<premiumThemes, boolean>();
+        Object.entries(PREMIUM_THEMES_IN_ENV).forEach((themeMeta) => {
+            const [themeName, envKey] = themeMeta;
+            const raw: string | undefined = process.env[envKey];
+            if (raw) {
+                const addresses: string[] = raw.split(',');
+                hasPremium.set(
+                    themeName as premiumThemes,
+                    userAddress ? addresses.includes(userAddress) : false,
+                );
+            }
+        });
+        return hasPremium;
+    }, [userAddress]);
+
+    // console.log(premiumAccess);
 
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const FALLBACK_SET = 'ambient';
@@ -60,6 +88,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
         return networkPrefs ? networkPrefs.color : 'purple_dark';
+        // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
     }
 
     function getHero(): heroItem[] {
@@ -79,6 +108,10 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         showPoints: brandAssets.showPoints,
         showDexStats: brandAssets.showDexStats,
         hero: getHero(),
+        premium: {
+            theme1: premiumAccess.get('theme1') as boolean,
+            theme2: premiumAccess.get('theme2') as boolean,
+        },
     };
 
     return (
