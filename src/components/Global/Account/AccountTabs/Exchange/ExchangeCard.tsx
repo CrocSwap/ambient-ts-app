@@ -130,7 +130,7 @@ export default function ExchangeCard(props: propsIF) {
             <p className={styles.value}>
                 {getFormattedNumber({
                     value: tokenUsdPrice * (dexBalanceDisplayNum ?? 0),
-                    isUSD: true,
+                    prefix: '$',
                 })}
             </p>
             <p className={styles.amount}>{dexBalanceTruncated}</p>
