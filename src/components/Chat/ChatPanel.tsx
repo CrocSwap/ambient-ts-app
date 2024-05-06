@@ -900,7 +900,7 @@ function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => {
-                    if (item.mentionedWalletID === userAddress) {
+                    if (item && item.mentionedWalletID === userAddress) {
                         mentionIxdexPointer += 1;
                     }
                     return (
