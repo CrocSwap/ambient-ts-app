@@ -13,7 +13,10 @@ import {
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../ambient-utils/api';
-import { ItemContainer } from '../../../styled/Components/Sidebar';
+import {
+    ItemContainer,
+    MainItemContainer,
+} from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
@@ -159,34 +162,37 @@ export default function PoolsListItem(props: propsIF) {
     );
 
     return (
-        <ItemContainer
-            as={Link}
-            to={linkGenMarket.getFullURL({
-                chain: chainId,
-                tokenA: addrTokenA,
-                tokenB: addrTokenB,
-            })}
-            color='text2'
-        >
-            {[
-                [poolDisplay],
-                `${poolData.poolPrice ?? '...'}`,
-                `${
-                    poolData.poolVolume24h
-                        ? '$' + poolData.poolVolume24h
-                        : '...'
-                }`,
-                `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
-                <FavButton
-                    key={'pool'}
-                    handleFavButton={handleFavButton}
-                    isButtonFavorited={isButtonFavorited}
-                />,
-            ].map((item, idx) => (
-                <FlexContainer key={idx} padding='4px 0'>
-                    {item}
-                </FlexContainer>
-            ))}
-        </ItemContainer>
+        <MainItemContainer style={{ width: '100%' }}>
+            <ItemContainer
+                as={Link}
+                to={linkGenMarket.getFullURL({
+                    chain: chainId,
+                    tokenA: addrTokenA,
+                    tokenB: addrTokenB,
+                })}
+                color='text2'
+            >
+                {[
+                    [poolDisplay],
+                    `${poolData.poolPrice ?? '...'}`,
+                    `${
+                        poolData.poolVolume24h
+                            ? '$' + poolData.poolVolume24h
+                            : '...'
+                    }`,
+                    `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
+                ].map((item, idx) => (
+                    <FlexContainer key={idx} padding='4px 0'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </ItemContainer>
+
+            <FavButton
+                key={'pool'}
+                handleFavButton={handleFavButton}
+                isButtonFavorited={isButtonFavorited}
+            />
+        </MainItemContainer>
     );
 }

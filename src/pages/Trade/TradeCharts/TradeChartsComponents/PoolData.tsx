@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { textColors } from '../../../../styled/Common/Types';
 import styled from 'styled-components';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 interface PairDataItemIF {
     label: string;
     value: string;
@@ -34,6 +36,18 @@ const sideScroll = (
 export default function PoolData(props: PoolDataIF) {
     // eslint-disable-next-line
     const contentWrapper = React.useRef<any>(null);
+    const { poolData } = useContext(PoolContext);
+    const { liquidityFee } = useContext(GraphDataContext);
+
+    const { poolTvl, poolFeesTotal, poolVolume24h } = poolData;
+    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
+        'en-US',
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
     const {
         poolPrice,
         poolPriceChangeString,
@@ -71,7 +85,7 @@ export default function PoolData(props: PoolDataIF) {
     const pairItemData = [
         {
             label: 'Price',
-            value: `$${poolPrice}`,
+            value: poolPrice ? `${poolPrice}` : '...',
             onClick: () => toggleDidUserFlipDenom(),
         },
         {
@@ -79,12 +93,28 @@ export default function PoolData(props: PoolDataIF) {
             value: `${poolPriceChangeString}`,
             color: isPoolPriceChangePositive ? 'positive' : 'negative',
         },
-        { label: '24h Volume', value: '...' },
-        { label: 'TVL', value: '...' },
-        { label: 'Fee Rate', value: '...' },
-        { label: 'FDV', value: '...' },
-        { label: 'Pool Created', value: '...' },
-        { label: 'Token Taxes', value: '...' },
+
+        {
+            label: '24h Volume',
+            value: poolVolume24h ? `$${poolVolume24h.toString()}` : '...',
+        },
+        {
+            label: 'TVL',
+            value: poolTvl ? `$${poolTvl?.toString()}` : '...',
+        },
+        {
+            label: 'Fee Rate',
+            value: `${liquidityProviderFeeString?.toString() || '...'}%`,
+        },
+
+        {
+            label: 'Total Fees',
+            value: poolFeesTotal ? `$${poolFeesTotal?.toString()}` : '...',
+        },
+
+        // { label: 'FDV', value: '...' },
+        // { label: 'Pool Created', value: '...' },
+        // { label: 'Token Taxes', value: '...' },
     ];
 
     useEffect(

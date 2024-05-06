@@ -103,6 +103,20 @@ export const ItemsContainer = styled.div`
     }
 `;
 
+export const MainItemContainer = styled.div`
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    align-items: center;
+
+    &:hover {
+        transition: var(--transition);
+        background: var(--dark2);
+    }
+`;
 export const ItemContainer = styled.div`
     // max-height: 25px;
     overflow: hidden;
@@ -110,7 +124,7 @@ export const ItemContainer = styled.div`
     border-radius: var(--border-radius);
     cursor: pointer;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 30px;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
     align-items: center;
 
     &:hover {
