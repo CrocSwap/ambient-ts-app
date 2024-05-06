@@ -16,6 +16,7 @@ import * as d3fc from 'd3fc';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSig,
+    diffHashSigChart,
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
@@ -28,10 +29,12 @@ import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
 import {
     CandleDataIF,
+    CandleDomainIF,
     CandleScaleIF,
     TransactionIF,
 } from '../../../ambient-utils/types';
 import {
+    CandleDataChart,
     chartItemStates,
     getInitialDisplayCandleCount,
     liquidityChartData,
@@ -42,6 +45,7 @@ import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
+import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -75,6 +79,9 @@ function TradeCandleStickChart(props: propsIF) {
         setCandleScale,
         candleScale,
         timeOfEndCandle,
+        isDiscontinuityScaleEnabled,
+        setIsDiscontinuityScaleEnabled,
+        setCandleDomains,
     } = useContext(CandleContext);
     const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
         useContext(ChartContext);
@@ -93,6 +100,11 @@ function TradeCandleStickChart(props: propsIF) {
 
     const unparsedCandleData = candleData?.candles;
 
+    const [
+        localIsDiscontinuityScaleEnabled,
+        setLocalIsDiscontinuityScaleEnabled,
+    ] = useState(isDiscontinuityScaleEnabled);
+
     const [scaleData, setScaleData] = useState<scaleData | undefined>();
     const [liquidityScale, setLiquidityScale] = useState<
         d3.ScaleLinear<number, number> | undefined
@@ -105,6 +117,9 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
 
+    const [isFetchingEnoughData, setIsFetchingEnoughData] = useState(true);
+
+    const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(0);
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
@@ -159,6 +174,13 @@ function TradeCandleStickChart(props: propsIF) {
 
     useEffect(() => {
         setSelectedDrawnShape(undefined);
+        if (scaleData) {
+            const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
+
+            scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
+        }
+
+        setIsFetchingEnoughData(true);
     }, [period, tokenPair]);
 
     useEffect(() => {
@@ -709,12 +731,35 @@ function TradeCandleStickChart(props: propsIF) {
                     }
 
                     const diffDomain = Math.abs(domain[1] - domain[0]);
-                    const factorDomain = diffDomain / (prevPeriod * 1000);
+
+                    const filteredCandle = filterCandleWithTransaction(
+                        unparsedCandleData,
+                    ).filter((i: CandleDataChart) => {
+                        return (
+                            i.time * 1000 <= domain[1] &&
+                            i.time * 1000 >= domain[0] &&
+                            (i.isShowData || !isDiscontinuityScaleEnabled)
+                        );
+                    });
+
+                    let showCandleCount = filteredCandle.length;
+                    if (filteredCandle) {
+                        const gapCandleCount = Math.floor(
+                            (filteredCandle[filteredCandle.length - 1].time *
+                                1000 -
+                                domain[0]) /
+                                (prevPeriod * 1000),
+                        );
+
+                        if (gapCandleCount > 0) {
+                            showCandleCount = gapCandleCount + showCandleCount;
+                        }
+                    }
 
                     const domainCenter =
                         Math.max(domain[1], domain[0]) - diffDomain / 2;
 
-                    const newDiffDomain = period * 1000 * factorDomain;
+                    const newDiffDomain = period * 1000 * showCandleCount;
 
                     const d1 = domainCenter + newDiffDomain / 2;
                     const d0 = domainCenter - newDiffDomain / 2;
@@ -820,9 +865,6 @@ function TradeCandleStickChart(props: propsIF) {
             centerX - diff * xAxisBuffer,
             centerX + diff * (1 - xAxisBuffer),
         ]);
-
-        scaleData?.discontinuityXScale.domain(xScale.domain());
-        scaleData?.notDiscontinuityXScale.domain(xScale.domain());
     };
     const resetChart = () => {
         if (scaleData && unparsedCandleData) {
@@ -871,6 +913,77 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [chartSettings.candleTime.global.defaults.length]);
 
+    useEffect(() => {
+        if (isDiscontinuityScaleEnabled && fetchCountForEnoughData < 5) {
+            if (
+                unparsedCandleData &&
+                period &&
+                unparsedCandleData[0].period === period
+            ) {
+                const candles = filterCandleWithTransaction(
+                    unparsedCandleData,
+                ).filter((i) => i.isShowData);
+
+                const minTime = unparsedCandleData[0].time * 1000;
+
+                if (candles.length < 100 && !timeOfEndCandle) {
+                    const dom = {
+                        lastCandleDate: minTime,
+                        domainBoundry: minTime - 300 * period * 1000,
+                    };
+
+                    setFetchCountForEnoughData(fetchCountForEnoughData + 1);
+                    setCandleDomains((prev: CandleDomainIF) => {
+                        if (prev && prev.domainBoundry && prev.lastCandleDate) {
+                            const nCandles = Math.floor(
+                                (prev.lastCandleDate - prev.domainBoundry) /
+                                    (period * 1000),
+                            );
+
+                            const newNCandles = Math.floor(
+                                (dom.lastCandleDate - dom.domainBoundry) /
+                                    (period * 1000),
+                            );
+                            if (nCandles === newNCandles) {
+                                dom.domainBoundry =
+                                    dom.domainBoundry + period * 1000;
+                            }
+                        }
+
+                        return dom;
+                    });
+                } else {
+                    setIsFetchingEnoughData(false);
+                }
+            }
+        } else {
+            setIsFetchingEnoughData(false);
+        }
+    }, [
+        diffHashSigChart(unparsedCandleData),
+        period,
+        prevPeriod === period,
+        isDiscontinuityScaleEnabled,
+    ]);
+
+    useEffect(() => {
+        if (
+            fetchCountForEnoughData > 3 &&
+            unparsedCandleData &&
+            localIsDiscontinuityScaleEnabled
+        ) {
+            const candles = filterCandleWithTransaction(
+                unparsedCandleData,
+            ).filter((i) => i.isShowData);
+
+            if (candles.length < 50) {
+                setLocalIsDiscontinuityScaleEnabled(false);
+                setIsDiscontinuityScaleEnabled(false);
+                setFetchCountForEnoughData(-1);
+            }
+        }
+    }, [fetchCountForEnoughData]);
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
@@ -879,7 +992,8 @@ function TradeCandleStickChart(props: propsIF) {
                 isPoolInitialized !== undefined &&
                 prevPeriod === period &&
                 period === candleData?.duration &&
-                !isFetchingCandle ? (
+                !isFetchingCandle &&
+                !isFetchingEnoughData ? (
                     <Chart
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}

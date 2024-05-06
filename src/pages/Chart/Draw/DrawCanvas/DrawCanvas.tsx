@@ -80,6 +80,7 @@ interface DrawCanvasProps {
     quoteTokenDecimals: number;
     baseTokenDecimals: number;
     setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
+    bandwidth: number;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -207,7 +208,9 @@ function DrawCanvas(props: DrawCanvasProps) {
 
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
-        const nearest = snapForCandle(offsetX, visibleCandleData);
+        const filteredData = visibleCandleData.filter((i) => i.isShowData);
+
+        const nearest = snapForCandle(offsetX, filteredData);
 
         const high = denomInBase
             ? nearest?.invMinPriceExclMEVDecimalCorrected
@@ -768,7 +771,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                     }
 
                     if (activeDrawingType === 'DPRange') {
-                        const lineOfBand = createPointsOfDPRangeLine(lineData);
+                        const lineOfBand = createPointsOfDPRangeLine(
+                            lineData,
+                            scaleData.xScale,
+                        );
 
                         if (drawSettings[activeDrawingType].border.active) {
                             const lineOfBand = createPointsOfBandLine(lineData);
@@ -813,9 +819,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                             0,
                         );
 
-                        const lengthAsBars = Math.abs(
-                            lineData[0].x - lineData[1].x,
-                        );
+                        // const lengthAsBars = Math.abs(
+                        //     lineData[0].x - lineData[1].x,
+                        // );
+
                         const lengthAsDate =
                             (lineData[0].x > lineData[1].x ? '-' : '') +
                             formatTimeDifference(
@@ -922,12 +929,34 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 scaleData.xScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 16,
                             );
+
+                            let showCandleCount = filtered.length;
+
+                            if (filtered) {
+                                const gapMinCandleCount = Math.floor(
+                                    (filtered[filtered.length - 1].time * 1000 -
+                                        lineData[0].x) /
+                                        (period * 1000),
+                                );
+
+                                if (gapMinCandleCount > 0) {
+                                    showCandleCount =
+                                        gapMinCandleCount + showCandleCount;
+                                }
+
+                                const gapMaxCandleCount = Math.floor(
+                                    (lineData[1].x - filtered[0].time * 1000) /
+                                        (period * 1000),
+                                );
+
+                                if (gapMaxCandleCount > 0) {
+                                    showCandleCount =
+                                        gapMaxCandleCount + showCandleCount;
+                                }
+                            }
+
                             ctx.fillText(
-                                (lengthAsBars / (1000 * period))
-                                    .toFixed(0)
-                                    .toString() +
-                                    ' bars,  ' +
-                                    lengthAsDate,
+                                showCandleCount + ' bars,  ' + lengthAsDate,
                                 scaleData.xScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 33,
                             );

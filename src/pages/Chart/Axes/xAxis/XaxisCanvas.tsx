@@ -13,6 +13,7 @@ import {
     scaleData,
     selectedDrawnData,
     setCanvasResolution,
+    timeGapsValue,
 } from '../../ChartUtils/chartUtils';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
@@ -54,6 +55,8 @@ interface xAxisIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     d3Xaxis: MutableRefObject<any>;
     isUpdatingShape: boolean;
+    timeGaps: timeGapsValue[];
+    isDiscontinuityScaleEnabled: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -84,6 +87,8 @@ function XAxisCanvas(props: xAxisIF) {
         toolbarWidth,
         d3Xaxis,
         isUpdatingShape,
+        timeGaps,
+        isDiscontinuityScaleEnabled,
     } = props;
 
     const { timeOfEndCandle } = useContext(CandleContext);
@@ -178,11 +183,33 @@ function XAxisCanvas(props: xAxisIF) {
 
                 const ticks = scaleData?.xScaleTime.ticks(factor);
 
-                const data = correctStyleForData(
+                let data = correctStyleForData(
                     scaleData?.xScale.domain()[0],
                     scaleData?.xScale.domain()[1],
                     ticks,
                 );
+
+                if (isDiscontinuityScaleEnabled) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    data = data.map((itemA: any) => {
+                        const dateTimestamp = new Date(itemA.date).getTime();
+                        for (const gap of timeGaps) {
+                            const startRange = gap.range[0];
+                            const endRange = gap.range[1];
+                            if (
+                                dateTimestamp >= startRange &&
+                                dateTimestamp <= endRange &&
+                                !itemA.style
+                            ) {
+                                return {
+                                    ...itemA,
+                                    date: new Date(endRange),
+                                };
+                            }
+                        }
+                        return itemA;
+                    });
+                }
 
                 data.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
@@ -230,35 +257,37 @@ function XAxisCanvas(props: xAxisIF) {
                                 const indexValue = data.findIndex(
                                     (d1: xAxisTick) => d1.date === d.date,
                                 );
+                                const maxIndex =
+                                    indexValue === data.length - 1
+                                        ? indexValue
+                                        : indexValue + 1;
+                                const minIndex =
+                                    indexValue === 0
+                                        ? indexValue
+                                        : indexValue - 1;
+                                const lastData = data[maxIndex];
+                                const beforeData = data[minIndex];
+
+                                const lastDataLocation = scaleData.xScale(
+                                    lastData.date,
+                                );
+                                const beforeDataLocation = scaleData.xScale(
+                                    beforeData.date,
+                                );
+                                const currentDataLocation = scaleData.xScale(
+                                    d.date,
+                                );
+
+                                const isTimeZoneStartLastData = isTimeZoneStart(
+                                    lastData.date,
+                                );
+
                                 if (!d.style) {
-                                    const maxIndex =
-                                        indexValue === data.length - 1
-                                            ? indexValue
-                                            : indexValue + 1;
-                                    const minIndex =
-                                        indexValue === 0
-                                            ? indexValue
-                                            : indexValue - 1;
-                                    const lastData = data[maxIndex];
-                                    const beforeData = data[minIndex];
-
-                                    const lastDataLocation = scaleData.xScale(
-                                        lastData.date,
-                                    );
-                                    const beforeDataLocation = scaleData.xScale(
-                                        beforeData.date,
-                                    );
-                                    const currentDataLocation =
-                                        scaleData.xScale(d.date);
-
-                                    const isTimeZoneStartLastData =
-                                        isTimeZoneStart(lastData.date);
-
                                     if (
                                         Math.abs(
                                             currentDataLocation -
                                                 beforeDataLocation,
-                                        ) > 20
+                                        ) > 30
                                     ) {
                                         if (
                                             !isTimeZoneStartLastData ||
@@ -275,11 +304,35 @@ function XAxisCanvas(props: xAxisIF) {
                                         }
                                     }
                                 } else {
-                                    context.fillText(
-                                        formatValue,
-                                        xScale(d.date.getTime()),
-                                        Y + tickSize,
+                                    const indexValue = data.findIndex(
+                                        (d1: xAxisTick) =>
+                                            d1.date === d.date && d1.style,
                                     );
+
+                                    const minIndex =
+                                        indexValue === 0
+                                            ? indexValue
+                                            : indexValue - 1;
+                                    const beforeData = data[minIndex];
+
+                                    const beforeDataLocation = scaleData.xScale(
+                                        beforeData.date,
+                                    );
+                                    const currentDataLocation =
+                                        scaleData.xScale(d.date);
+
+                                    if (
+                                        Math.abs(
+                                            currentDataLocation -
+                                                beforeDataLocation,
+                                        ) > 25
+                                    ) {
+                                        context.fillText(
+                                            formatValue,
+                                            xScale(d.date.getTime()),
+                                            Y + tickSize,
+                                        );
+                                    }
                                 }
                             }
                         }

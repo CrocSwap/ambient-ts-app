@@ -142,6 +142,11 @@ export type zoomUtils = {
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
 };
 
+export type timeGapsValue = {
+    range: number[];
+    isAddedPixel: boolean;
+};
+
 export type orderHistory = {
     tsId: string;
     tsStart: Date;

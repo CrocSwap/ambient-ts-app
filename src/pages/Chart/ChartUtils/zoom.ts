@@ -8,12 +8,15 @@ const maxNumCandlesForZoom = 2000;
 export class Zoom {
     setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>;
     period: number;
+    isDiscontinuityScaleEnabled: boolean;
     constructor(
         setCandleDomains: Dispatch<SetStateAction<CandleDomainIF>>,
         period: number,
+        isDiscontinuityScaleEnabled: boolean,
     ) {
         this.setCandleDomains = setCandleDomains;
         this.period = period;
+        this.isDiscontinuityScaleEnabled = isDiscontinuityScaleEnabled;
     }
 
     private isNegativeZero(value: number) {
@@ -219,7 +222,9 @@ export class Zoom {
     public getNewCandleDataLeft(newBoundary: number, firstCandleTime: number) {
         // Implementation for getting new candle data
         if (newBoundary && firstCandleTime && newBoundary < firstCandleTime) {
-            const newLastCandle = newBoundary - 100 * this.period * 1000;
+            const newCandleCount = this.isDiscontinuityScaleEnabled ? 500 : 100;
+            const newLastCandle =
+                newBoundary - newCandleCount * this.period * 1000;
 
             const candleDomain = {
                 lastCandleDate: firstCandleTime,
