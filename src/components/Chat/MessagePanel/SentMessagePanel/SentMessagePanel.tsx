@@ -434,7 +434,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         word.slice(1) === props.ensName ||
                                         word.slice(1) ===
                                             props.connectedAccountActive
-                                            ? '#7371FC'
+                                            ? 'var(--accent1)'
                                             : 'white',
                                 }}
                             >
@@ -489,7 +489,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         word.slice(1) === props.ensName ||
                                         word.slice(1) ===
                                             props.connectedAccountActive
-                                            ? '#7371FC'
+                                            ? 'var(--accent1)'
                                             : 'white',
                                 }}
                             >

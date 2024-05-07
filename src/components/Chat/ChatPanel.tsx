@@ -695,7 +695,7 @@ function ChatPanel(props: propsIF) {
             }
             setScrollDirection('Scroll Up');
         }
-
+        setUserSummaryActive(false);
         checkMents();
     };
 
@@ -999,6 +999,7 @@ function ChatPanel(props: propsIF) {
                     setUserSummaryActive(true);
                 }}
                 verticalPosition={userSummaryVerticalPosition}
+                isCurrentUser={currentUser == selectedUserSummary?._id}
             />
         </div>
     );

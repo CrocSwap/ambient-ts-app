@@ -15,9 +15,9 @@ import {
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
-import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import NFTBannerAccount from './NFTBannerAccount';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -73,28 +73,23 @@ export default function PortfolioBannerAccount(
 
     const { getUserAvatar } = useChatApi();
 
+    domDebug('resolved address', resolvedAddress);
+
+    const fetchAvatar = async () => {
+        if (resolvedAddress || userAddress) {
+            const avatar = await getUserAvatar(resolvedAddress || userAddress);
+            setUserProfileNFT(avatar.avatarImage);
+            setUserThumbnailNFT(avatar.avatarThumbnail);
+        }
+    };
+
     useEffect(() => {
-        const fetchAvatar = async () => {
-            if (userAddress) {
-                const avatar = await getUserAvatar(
-                    resolvedAddress !== undefined && resolvedAddress.length > 0
-                        ? resolvedAddress
-                        : userAddress,
-                );
-                setUserProfileNFT(avatar.avatarImage);
-                setUserThumbnailNFT(avatar.avatarThumbnail);
-            }
-        };
         fetchAvatar();
     }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
         setShowNFTPage(false);
     }, [resolvedAddress]);
-
-    domDebug('resolved address', resolvedAddress);
-    domDebug('user address', userAddress);
-    domDebug('ua_profile', userProfileNFT);
 
     function handleCopyEnsName() {
         copy(
@@ -148,9 +143,6 @@ export default function PortfolioBannerAccount(
         setIsfetchNftTriggered(() => true);
     }
 
-    domDebug('showNftPage', showNFTPage);
-    domDebug('resolvedAddress', resolvedAddress);
-
     return (
         <PortfolioBannerMainContainer
             animate={showAccountDetails ? 'open' : 'closed'}
@@ -172,9 +164,13 @@ export default function PortfolioBannerAccount(
                     <ProfileSettingsContainer
                         placement={NFTData ? true : false}
                     >
-                        {userAddress &&
+                        {(resolvedAddress || userAddress) &&
                             getAvatarForProfilePage(
-                                userAddress,
+                                resolvedAddress
+                                    ? resolvedAddress
+                                    : userAddress
+                                    ? userAddress
+                                    : '',
                                 userProfileNFT,
                                 65,
                                 resolvedAddress !== undefined &&

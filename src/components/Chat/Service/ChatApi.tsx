@@ -209,18 +209,15 @@ const useChatApi = () => {
 
     async function getUserAvatar(walletID: string) {
         if (walletID && walletID.length > 0) {
-            if (userAddress) {
-                const response = await fetch(
-                    CHAT_BACKEND_URL + getUserAvatarEndpoint + '/' + walletID,
-                    {
-                        method: 'GET',
-                    },
-                );
-                const data = await response.json();
-                return data;
-            }
+            const response = await fetch(
+                CHAT_BACKEND_URL + getUserAvatarEndpoint + '/' + walletID,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
         }
-
         return '';
     }
 
