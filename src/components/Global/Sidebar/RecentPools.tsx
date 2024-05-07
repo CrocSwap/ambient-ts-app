@@ -28,7 +28,7 @@ function RecentPools(props: propsIF) {
             gap={8}
         >
             <ItemHeaderContainer color='text2'>
-                {['Pair', 'Price', 'Volume', 'TVL'].map((item) => (
+                {['Pair', 'Price', 'Volume', 'TVL', ''].map((item) => (
                     <FlexContainer key={item}>{item}</FlexContainer>
                 ))}
             </ItemHeaderContainer>
