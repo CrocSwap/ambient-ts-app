@@ -695,7 +695,7 @@ function ChatPanel(props: propsIF) {
             }
             setScrollDirection('Scroll Up');
         }
-
+        setUserSummaryActive(false);
         checkMents();
     };
 
@@ -900,7 +900,7 @@ function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => {
-                    if (item.mentionedWalletID === userAddress) {
+                    if (item && item.mentionedWalletID === userAddress) {
                         mentionIxdexPointer += 1;
                     }
                     return (
@@ -999,6 +999,7 @@ function ChatPanel(props: propsIF) {
                     setUserSummaryActive(true);
                 }}
                 verticalPosition={userSummaryVerticalPosition}
+                isCurrentUser={currentUser == selectedUserSummary?._id}
             />
         </div>
     );

@@ -1,6 +1,23 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import { useContext, useEffect, useState } from 'react';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { MdOutlineCloudDownload } from 'react-icons/md';
+import { trimString } from '../../../../ambient-utils/dataLayer';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    PortfolioBannerMainContainer,
+    ProfileSettingsContainer,
+} from '../../../../styled/Components/Portfolio';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
+import useChatApi from '../../../Chat/Service/ChatApi';
+import NFTBannerAccount from './NFTBannerAccount';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -8,23 +25,6 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     jazziconsToDisplay: JSX.Element | null;
 }
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { FlexContainer } from '../../../../styled/Common';
-import {
-    PortfolioBannerMainContainer,
-    ProfileSettingsContainer,
-} from '../../../../styled/Components/Portfolio';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import NFTBannerAccount from './NFTBannerAccount';
-import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
-import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
-import useChatApi from '../../../Chat/Service/ChatApi';
-import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
-import { MdOutlineCloudDownload } from 'react-icons/md';
-import { trimString } from '../../../../ambient-utils/dataLayer';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -56,7 +56,8 @@ export default function PortfolioBannerAccount(
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
-        chainData: { blockExplorer, chainId },
+        // chainData: { blockExplorer, chainId },
+        chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
     const isSmallScreen = useMediaQuery('(max-width: 800px)');
 
@@ -72,28 +73,29 @@ export default function PortfolioBannerAccount(
 
     const { getUserAvatar } = useChatApi();
 
+    domDebug('resolved address', resolvedAddress);
+
+    const fetchAvatar = async () => {
+        if (resolvedAddress || userAddress) {
+            const avatar = await getUserAvatar(
+                resolvedAddress
+                    ? resolvedAddress
+                    : userAddress
+                    ? userAddress
+                    : '',
+            );
+            setUserProfileNFT(avatar.avatarImage);
+            setUserThumbnailNFT(avatar.avatarThumbnail);
+        }
+    };
+
     useEffect(() => {
-        const fetchAvatar = async () => {
-            if (userAddress) {
-                const avatar = await getUserAvatar(
-                    resolvedAddress !== undefined && resolvedAddress.length > 0
-                        ? resolvedAddress
-                        : userAddress,
-                );
-                setUserProfileNFT(avatar.avatarImage);
-                setUserThumbnailNFT(avatar.avatarThumbnail);
-            }
-        };
         fetchAvatar();
     }, [resolvedAddress, userAddress]);
 
     useEffect(() => {
         setShowNFTPage(false);
     }, [resolvedAddress]);
-
-    domDebug('resolved address', resolvedAddress);
-    domDebug('user address', userAddress);
-    domDebug('ua_profile', userProfileNFT);
 
     function handleCopyEnsName() {
         copy(
@@ -168,26 +170,30 @@ export default function PortfolioBannerAccount(
                     <ProfileSettingsContainer
                         placement={NFTData ? true : false}
                     >
-                        {userAddress &&
+                        {(resolvedAddress || userAddress) &&
                             getAvatarForProfilePage(
-                                userAddress,
+                                resolvedAddress
+                                    ? resolvedAddress
+                                    : userAddress
+                                    ? userAddress
+                                    : '',
                                 userProfileNFT,
                                 65,
                                 resolvedAddress !== undefined &&
                                     resolvedAddress.length > 0
                                     ? false
-                                    : NFTData &&
-                                          NFTData.find(
-                                              (nftChainList) =>
-                                                  nftChainList.chainId ===
-                                                  chainId,
-                                          ) &&
-                                          NFTData.find(
-                                              (nftChainList) =>
-                                                  nftChainList.chainId ===
-                                                  chainId,
-                                          )?.userHasNFT &&
-                                          true,
+                                    : // NFTData &&
+                                      //       NFTData.find(
+                                      //           (nftChainList) =>
+                                      //               nftChainList.chainId ===
+                                      //               chainId,
+                                      //       ) &&
+                                      //       NFTData.find(
+                                      //           (nftChainList) =>
+                                      //               nftChainList.chainId ===
+                                      //               chainId,
+                                      //       )?.userHasNFT &&
+                                      true,
                             )}
                     </ProfileSettingsContainer>
                 </span>
@@ -234,26 +240,25 @@ export default function PortfolioBannerAccount(
                 </FlexContainer>
             </FlexContainer>
 
-            {showNFTPage &&
-                NFTData &&
-                NFTData.find(
-                    (nftChainList) => nftChainList.chainId === chainId,
-                ) &&
-                NFTData.find((nftChainList) => nftChainList.chainId === chainId)
-                    ?.userHasNFT && (
-                    <NFTBannerAccount
-                        setShowNFTPage={setShowNFTPage}
-                        showNFTPage={showNFTPage}
-                        NFTData={NFTData}
-                        isfetchNftTriggered={isfetchNftTriggered}
-                        setIsfetchNftTriggered={setIsfetchNftTriggered}
-                        NFTFetchSettings={NFTFetchSettings}
-                        setNFTFetchSettings={setNFTFetchSettings}
-                        setNftTestWalletInput={setNftTestWalletInput}
-                        nftTestWalletInput={nftTestWalletInput}
-                        handleTestWalletChange={handleTestWalletChange}
-                    />
-                )}
+            {showNFTPage && NFTData && (
+                // NFTData.find(
+                //     (nftChainList) => nftChainList.chainId === chainId,
+                // ) &&
+                // NFTData.find((nftChainList) => nftChainList.chainId === chainId)
+                //     ?.userHasNFT &&
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                    NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    nftTestWalletInput={nftTestWalletInput}
+                    handleTestWalletChange={handleTestWalletChange}
+                />
+            )}
 
             {isWalletPanelActive && (
                 <div

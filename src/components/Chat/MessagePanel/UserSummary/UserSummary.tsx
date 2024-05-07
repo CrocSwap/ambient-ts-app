@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     UserSummaryModel,
@@ -13,10 +14,25 @@ interface propsIF {
     verticalPosition: number;
     mouseLeaveListener: any;
     mouseEnterListener: any;
+    isCurrentUser?: boolean;
 }
 
 export default function UserSummary(props: propsIF) {
     const debug = false;
+
+    const navigate = useNavigate();
+
+    const goToProfile = () => {
+        if (props.user) {
+            navigate(
+                props.isCurrentUser
+                    ? 'account'
+                    : props.user?.ensName
+                    ? props.user?.ensName
+                    : props.user?.walletID,
+            );
+        }
+    };
 
     return (
         <div
@@ -31,7 +47,10 @@ export default function UserSummary(props: propsIF) {
         >
             {props.user && (
                 <>
-                    <div className={styles.summary_header}>
+                    <div
+                        className={styles.summary_header}
+                        onClick={goToProfile}
+                    >
                         <span className={styles.user_avatar}>
                             {getAvatarForChat(props.user)}
                         </span>
