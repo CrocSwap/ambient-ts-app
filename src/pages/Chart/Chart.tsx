@@ -286,8 +286,8 @@ export default function Chart(props: propsIF) {
         useState<MouseEvent<HTMLDivElement>>();
     const [chartZoomEvent, setChartZoomEvent] = useState('');
 
-    const lineSellColor = 'rgba(115, 113, 252)';
-    const lineBuyColor = 'rgba(205, 193, 255)';
+    const [lineSellColor, setLineSellColor] = useState('rgba(115, 113, 252)');
+    const [lineBuyColor, setLineBuyColor] = useState('rgba(205, 193, 255)');
 
     const {
         showFeeRate,
@@ -335,6 +335,12 @@ export default function Chart(props: propsIF) {
             const d3DarkStrokeColor = d3.color(darkStrokeColor);
             const d3LightStrokeColor = d3.color(lightStrokeColor);
             const d3SelectedDateStrokeColor = d3.color(selectedDateStrokeColor);
+
+            const lineSellColor = style.getPropertyValue('--accent1');
+            const lineBuyColor = style.getPropertyValue('--accent5');
+
+            setLineSellColor(() => lineSellColor.toString());
+            setLineBuyColor(() => lineBuyColor.toString());
 
             const chartThemeColors = {
                 lightFillColor: d3LightFillColor,

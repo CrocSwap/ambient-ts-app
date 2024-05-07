@@ -12,7 +12,7 @@ export const defaultBrandAssets: brandIF = {
         },
         // ethereum sepolia
         '0xaa36a7': {
-            color: 'purple_dark',
+            color: 'orange_dark',
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // scroll mainnet
