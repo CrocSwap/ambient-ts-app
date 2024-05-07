@@ -549,19 +549,23 @@ function SentMessagePanel(props: SentMessageProps) {
                 props.message.mentionedWalletID
             ) {
                 mentFound.val = true;
+
                 ret = (
-                    <span
-                        onMouseEnter={(e) => {
-                            props.mentionHoverListener(
-                                e.currentTarget.getBoundingClientRect().top,
-                                props.message.mentionedWalletID,
-                            );
-                        }}
-                        onMouseLeave={props.mentionMouseLeftListener}
-                        className={styles.mentioned_name_token}
-                    >
-                        {word}
-                    </span>
+                    <>
+                        <span> {word.slice(0, word.lastIndexOf('@'))} </span>
+                        <span
+                            onMouseEnter={(e) => {
+                                props.mentionHoverListener(
+                                    e.currentTarget.getBoundingClientRect().top,
+                                    props.message.mentionedWalletID,
+                                );
+                            }}
+                            onMouseLeave={props.mentionMouseLeftListener}
+                            className={styles.mentioned_name_token}
+                        >
+                            {word.slice(word.lastIndexOf('@'), word.length)}
+                        </span>
+                    </>
                 );
             } else {
                 ret = <span> {word} </span>;
