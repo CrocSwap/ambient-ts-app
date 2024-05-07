@@ -77,7 +77,13 @@ export default function PortfolioBannerAccount(
 
     const fetchAvatar = async () => {
         if (resolvedAddress || userAddress) {
-            const avatar = await getUserAvatar(resolvedAddress || userAddress);
+            const avatar = await getUserAvatar(
+                resolvedAddress
+                    ? resolvedAddress
+                    : userAddress
+                    ? userAddress
+                    : '',
+            );
             setUserProfileNFT(avatar.avatarImage);
             setUserThumbnailNFT(avatar.avatarThumbnail);
         }
