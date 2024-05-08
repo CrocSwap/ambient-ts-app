@@ -323,6 +323,7 @@ export default function Chart(props: propsIF) {
 
             const style = getComputedStyle(canvas);
             const lightFillColor = style.getPropertyValue('--accent5');
+            const darFillColor = style.getPropertyValue('--dark2');
             const selectedDateFillColor = style.getPropertyValue('--accent2');
 
             const darkStrokeColor = style.getPropertyValue('--accent1');
@@ -330,6 +331,7 @@ export default function Chart(props: propsIF) {
             const selectedDateStrokeColor = style.getPropertyValue('--accent2');
 
             const d3LightFillColor = d3.color(lightFillColor);
+            const d3DarkFillColor = d3.color(darFillColor);
             const d3SelectedDateFillColor = d3.color(selectedDateFillColor);
 
             const d3DarkStrokeColor = d3.color(darkStrokeColor);
@@ -344,7 +346,7 @@ export default function Chart(props: propsIF) {
 
             const chartThemeColors = {
                 lightFillColor: d3LightFillColor,
-                darkFillColor: '#24243e',
+                darkFillColor: d3DarkFillColor,
                 selectedDateFillColor: d3SelectedDateFillColor,
                 // border
                 lightStrokeColor: d3LightStrokeColor,

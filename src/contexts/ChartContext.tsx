@@ -97,7 +97,7 @@ interface ChartContextIF {
 
 export interface ChartThemeIF {
     lightFillColor: d3.RGBColor | d3.HSLColor | null;
-    darkFillColor: string;
+    darkFillColor: d3.RGBColor | d3.HSLColor | null;
     selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
     // border
     lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
