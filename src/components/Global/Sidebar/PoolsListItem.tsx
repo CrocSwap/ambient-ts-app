@@ -24,6 +24,7 @@ import TokenIcon from '../TokenIcon/TokenIcon';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import FavButton from './FavButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { SidebarContext } from '../../../contexts/SidebarContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -33,6 +34,8 @@ interface propsIF {
 
 export default function PoolsListItem(props: propsIF) {
     const { pool } = props;
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const {
         chainData: { chainId, poolIndex },
@@ -167,7 +170,12 @@ export default function PoolsListItem(props: propsIF) {
     );
 
     return (
-        <MainItemContainer style={{ width: '100%' }}>
+        <MainItemContainer
+            style={{ width: '100%' }}
+            onClick={() => {
+                if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
+            }}
+        >
             <ItemContainer
                 as={Link}
                 to={linkGenMarket.getFullURL({

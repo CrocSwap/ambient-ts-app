@@ -35,6 +35,7 @@ import styles from './TradeCharts.module.css';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useDollarPrice from '../../Chart/ChartUtils/getDollarPrice';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
+import { SidebarContext } from '../../../contexts/SidebarContext';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -75,6 +76,8 @@ function TradeCharts(props: propsIF) {
     const getDollarPrice = useDollarPrice();
 
     const { isDenomBase } = useContext(TradeDataContext);
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -356,7 +359,12 @@ function TradeCharts(props: propsIF) {
                     {timeFrameContent}
                     {chartTooltip}
                 </div>
-                <div style={{ width: '100%', height: '100%' }}>
+                <div
+                    style={{ width: '100%', height: '100%' }}
+                    onClick={() => {
+                        if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
+                    }}
+                >
                     <TradeCandleStickChart
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
