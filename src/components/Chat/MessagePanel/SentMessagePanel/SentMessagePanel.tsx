@@ -554,13 +554,13 @@ function SentMessagePanel(props: SentMessageProps) {
                     <>
                         <span> {word.slice(0, word.lastIndexOf('@'))} </span>
                         <span
-                            onMouseEnter={(e) => {
+                            onClick={(e) => {
                                 props.mentionHoverListener(
                                     e.currentTarget.getBoundingClientRect().top,
                                     props.message.mentionedWalletID,
                                 );
                             }}
-                            onMouseLeave={props.mentionMouseLeftListener}
+                            // onMouseLeave={props.mentionMouseLeftListener}
                             className={styles.mentioned_name_token}
                         >
                             {word.slice(word.lastIndexOf('@'), word.length)}
@@ -786,6 +786,9 @@ function SentMessagePanel(props: SentMessageProps) {
             onMouseEnter={() => {
                 // setIsMoreButtonPressed(false);
                 setTimestampForChildRefresh(new Date().getTime());
+            }}
+            onClick={() => {
+                props.mentionMouseLeftListener();
             }}
         >
             {!props.message.isDeleted || props.isModerator ? (
