@@ -29,6 +29,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
+import { useMediaQuery } from '@material-ui/core';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -173,6 +174,8 @@ function ChatPanel(props: propsIF) {
     };
 
     const [scrollRevertTarget, setScrollRevertTarget] = useState('');
+
+    const isMobile = useMediaQuery('(max-width: 800px)');
 
     const {
         messages,
@@ -983,6 +986,7 @@ function ChatPanel(props: propsIF) {
                                 setVerifyOldMessagesStartDate
                             }
                             isFocusMentions={isFocusMentions}
+                            isMobile={isMobile}
                         />
                     );
                 })}
@@ -1151,6 +1155,7 @@ function ChatPanel(props: propsIF) {
             setSelectedMessageForReply={setSelectedMessageForReply}
             sendMessageListener={sendMessageListener}
             isChatOpen={isChatOpen}
+            isMobile={isMobile}
         />
     );
 

@@ -90,6 +90,7 @@ interface SentMessageProps {
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     setVerifyOldMessagesStartDate: Dispatch<SetStateAction<Date>>;
     isFocusMentions: boolean;
+    isMobile: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -556,7 +557,8 @@ function SentMessagePanel(props: SentMessageProps) {
                         <span
                             onClick={(e) => {
                                 props.mentionHoverListener(
-                                    e.currentTarget.getBoundingClientRect().top,
+                                    e.currentTarget.getBoundingClientRect()
+                                        .top - (props.isMobile ? 40 : 0),
                                     props.message.mentionedWalletID,
                                 );
                             }}
