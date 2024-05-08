@@ -1,26 +1,26 @@
-.nft_avatar_wrapper{
+.nft_avatar_wrapper {
     position: relative;
     overflow: hidden;
     border-radius: 50%;
 }
 
-.nft_avatar_wrapper svg{
+.nft_avatar_wrapper svg {
     cursor: default !important;
 }
-.nft_edit_icon svg{
+.nft_edit_icon svg {
     cursor: pointer !important;
 }
-.nft_edit_overlay{
-    transition: all .2s ease-in-out;
+.nft_edit_overlay {
+    transition: all 0.2s ease-in-out;
     position: absolute;
     opacity: 0;
-    background-color: var(--accent1);
+    background: linear-gradient(0deg, var(--accent1) 0%, transparent 100%);
     width: 100%;
     height: 100%;
     cursor: pointer;
 }
 
-.nft_edit_icon{
+.nft_edit_icon {
     opacity: 0;
     position: absolute;
     left: 50%;
@@ -29,14 +29,14 @@
     color: white;
 }
 
-.nft_edit_icon svg{
+.nft_edit_icon svg {
     fill: white;
 }
 
-.nft_avatar_wrapper:hover .nft_edit_overlay{
-    opacity: .5;
+.nft_avatar_wrapper:hover .nft_edit_overlay {
+    opacity: 0.5;
 }
 
-.nft_avatar_wrapper:hover .nft_edit_icon{
+.nft_avatar_wrapper:hover .nft_edit_icon {
     opacity: 1;
 }

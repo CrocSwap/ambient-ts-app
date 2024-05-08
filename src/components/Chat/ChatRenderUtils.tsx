@@ -5,8 +5,8 @@ import { User } from './Model/UserModel';
 
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import styles from './ChatRenderUtils.module.css';
-import { AiOutlineFileImage } from 'react-icons/ai';
 import { UserSummaryModel } from './Model/UserSummaryModel';
+import { FiEdit3 } from 'react-icons/fi';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -140,7 +140,7 @@ export const getAvatarForProfilePage = (
                 <>
                     <div className={styles.nft_edit_overlay}></div>
                     <div className={styles.nft_edit_icon}>
-                        <AiOutlineFileImage size={24}></AiOutlineFileImage>
+                        <FiEdit3 size={24}></FiEdit3>
                     </div>
                 </>
             )}
