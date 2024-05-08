@@ -27,6 +27,8 @@ import {
     mainnetLUSD,
     scrollSTONE,
     scrollUniETH,
+    scrollDAI,
+    scrollPxETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -72,6 +74,7 @@ export const STABLE_USD_TOKENS = [
     blastUSDPLUS.address,
     scrollUSDC.address,
     scrollUSDT.address,
+    scrollDAI.address,
     scrollAxlUSDC.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
@@ -93,13 +96,14 @@ export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
 
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
+    mainnetSWETH.address,
     scrollWstETH.address,
     scrollWrsETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
+    scrollPxETH.address,
     blastWrsETH.address,
     blastEzETH.address,
-    mainnetSWETH.address,
 ].map((x) => x.toLowerCase());
 
 export const WETH_TOKENS = [
