@@ -65,13 +65,17 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={16}>
             <DefaultTooltip
                 interactive
-                title={'Toggle Discontinuity Scale'}
+                title={'Toggle Condensed Mode'}
                 enterDelay={500}
             >
                 <HeaderButtons
-                    mobileHide
+                    disabled={isDiscontinuityScaleEnabled.disabled}
                     onClick={() =>
-                        setIsDiscontinuityScaleEnabled((prev) => !prev)
+                        setIsDiscontinuityScaleEnabled({
+                            condensedMode:
+                                !isDiscontinuityScaleEnabled.condensedMode,
+                            disabled: isDiscontinuityScaleEnabled.disabled,
+                        })
                     }
                 >
                     <AiOutlineAreaChart
@@ -79,7 +83,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         id='trade_discontinuity_scale_button'
                         aria-label='Toggle discontinuity scale button'
                         style={{
-                            color: isDiscontinuityScaleEnabled
+                            color: isDiscontinuityScaleEnabled.condensedMode
                                 ? 'var(--accent1)'
                                 : undefined,
                         }}

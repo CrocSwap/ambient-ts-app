@@ -103,7 +103,7 @@ function TradeCandleStickChart(props: propsIF) {
     const [
         localIsDiscontinuityScaleEnabled,
         setLocalIsDiscontinuityScaleEnabled,
-    ] = useState(isDiscontinuityScaleEnabled);
+    ] = useState(isDiscontinuityScaleEnabled.condensedMode);
 
     const [scaleData, setScaleData] = useState<scaleData | undefined>();
     const [liquidityScale, setLiquidityScale] = useState<
@@ -173,14 +173,33 @@ function TradeCandleStickChart(props: propsIF) {
     }, [userTransactionsByPool]);
 
     useEffect(() => {
+        if (
+            scaleData &&
+            !isNaN(scaleData.notDiscontinuityXScale.domain()[0]) &&
+            !isNaN(scaleData.notDiscontinuityXScale.domain()[1])
+        ) {
+            console.log(
+                'scaleData.notDiscontinuityXScale.domain()',
+                scaleData.notDiscontinuityXScale.domain(),
+            );
+            // scaleData.xScale.domain(scaleData.notDiscontinuityXScale.domain());
+        }
+    }, [tokenPair]);
+
+    useEffect(() => {
         setSelectedDrawnShape(undefined);
         if (scaleData) {
             const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
-
             scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
         }
 
         setIsFetchingEnoughData(true);
+        setFetchCountForEnoughData(0);
+        setLocalIsDiscontinuityScaleEnabled(true);
+        setIsDiscontinuityScaleEnabled({
+            condensedMode: true,
+            disabled: false,
+        });
     }, [period, tokenPair]);
 
     useEffect(() => {
@@ -914,7 +933,10 @@ function TradeCandleStickChart(props: propsIF) {
     }, [chartSettings.candleTime.global.defaults.length]);
 
     useEffect(() => {
-        if (isDiscontinuityScaleEnabled && fetchCountForEnoughData < 5) {
+        if (
+            isDiscontinuityScaleEnabled.condensedMode &&
+            fetchCountForEnoughData < 30
+        ) {
             if (
                 unparsedCandleData &&
                 period &&
@@ -929,7 +951,7 @@ function TradeCandleStickChart(props: propsIF) {
                 if (candles.length < 100 && !timeOfEndCandle) {
                     const dom = {
                         lastCandleDate: minTime,
-                        domainBoundry: minTime - 300 * period * 1000,
+                        domainBoundry: minTime - 350 * period * 1000,
                     };
 
                     setFetchCountForEnoughData(fetchCountForEnoughData + 1);
@@ -953,22 +975,26 @@ function TradeCandleStickChart(props: propsIF) {
                         return dom;
                     });
                 } else {
+                    console.log('sbebebebebebbep nassssssssssssssssiiiiii');
+
                     setIsFetchingEnoughData(false);
                 }
             }
         } else {
+            console.log('sbebebebebebbep');
+
             setIsFetchingEnoughData(false);
         }
     }, [
         diffHashSigChart(unparsedCandleData),
         period,
         prevPeriod === period,
-        isDiscontinuityScaleEnabled,
+        isDiscontinuityScaleEnabled.condensedMode,
     ]);
 
     useEffect(() => {
         if (
-            fetchCountForEnoughData > 3 &&
+            fetchCountForEnoughData > 4 &&
             unparsedCandleData &&
             localIsDiscontinuityScaleEnabled
         ) {
@@ -976,9 +1002,14 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData,
             ).filter((i) => i.isShowData);
 
-            if (candles.length < 50) {
+            console.log('54645645', candles.length);
+
+            if (candles.length < 20) {
                 setLocalIsDiscontinuityScaleEnabled(false);
-                setIsDiscontinuityScaleEnabled(false);
+                setIsDiscontinuityScaleEnabled({
+                    condensedMode: false,
+                    disabled: true,
+                });
                 setFetchCountForEnoughData(-1);
             }
         }
@@ -1025,6 +1056,9 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                         updateURL={updateURL}
                         userTransactionData={userTransactionData}
+                        isDiscontinuityScaleEnabled={
+                            isDiscontinuityScaleEnabled
+                        }
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

@@ -120,7 +120,7 @@ export class Zoom {
         mouseX: number,
     ) {
         const beforeMinDomain = scaleData.xScale.domain()[0];
-        const domain = this.changeCandleSize(scaleData.xScale, deltaX, mouseX);
+        const domain = this.changeCandleSize(scaleData, deltaX, mouseX);
 
         if (domain) {
             scaleData?.xScale.domain(domain);
@@ -148,7 +148,7 @@ export class Zoom {
             this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
 
             const domain = this.changeCandleSize(
-                scaleData?.xScale,
+                scaleData,
                 deltaX,
                 mouseX,
                 lastCandleDate,
@@ -186,6 +186,13 @@ export class Zoom {
             scaleData?.xScale.range()[1] - deltaX,
         );
 
+        const notDisNewMinDomain = scaleData?.notDiscontinuityXScale.invert(
+            scaleData?.xScale.range()[0] - deltaX,
+        );
+        const notDisNewMaxDomain = scaleData?.notDiscontinuityXScale.invert(
+            scaleData?.xScale.range()[1] - deltaX,
+        );
+
         if (deltaX > 0 || checkTouchPadZeroNegative) {
             this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
         } else {
@@ -193,6 +200,10 @@ export class Zoom {
                 this.getNewCandleDataRight(scaleData, lastCandleDate);
             }
         }
+        scaleData.notDiscontinuityXScale.domain([
+            notDisNewMinDomain,
+            notDisNewMaxDomain,
+        ]);
 
         scaleData?.xScale.domain([newMinDomain, newMaxDomain]);
     }
@@ -237,7 +248,7 @@ export class Zoom {
 
     public changeCandleSize(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        xScale: any,
+        scaleData: any,
         deltaX: number,
         mouseX: number,
         zoomCandle?: number | Date,
@@ -246,18 +257,34 @@ export class Zoom {
             ? zoomCandle
             : findSnapTime(mouseX, this.period);
 
-        const domain = xScale.domain();
-        const pixelPoint = xScale(point);
-        const maxDomainPixel = xScale(domain[1]);
-        const minDomainPixel = xScale(domain[0]);
+        const domain = scaleData.xScale.domain();
+        const pixelPoint = scaleData.xScale(point);
+        const maxDomainPixel = scaleData.xScale(domain[1]);
+        const minDomainPixel = scaleData.xScale(domain[0]);
         const gapRight = maxDomainPixel - pixelPoint;
         const gapLeft = pixelPoint - minDomainPixel;
 
         const zoomPixelMax = (deltaX * gapRight) / (gapLeft + gapRight);
         const zoomPixelMin = (deltaX * gapLeft) / (gapLeft + gapRight);
 
-        const newMinDomain = xScale.invert(xScale.range()[0] - zoomPixelMin);
-        const newMaxDomain = xScale.invert(xScale.range()[1] + zoomPixelMax);
+        const newMinDomain = scaleData.xScale.invert(
+            scaleData.xScale.range()[0] - zoomPixelMin,
+        );
+        const newMaxDomain = scaleData.xScale.invert(
+            scaleData.xScale.range()[1] + zoomPixelMax,
+        );
+
+        const notDisNewMinDomain = scaleData?.notDiscontinuityXScale.invert(
+            scaleData?.xScale.range()[0] - zoomPixelMin,
+        );
+        const notDisNewMaxDomain = scaleData?.notDiscontinuityXScale.invert(
+            scaleData?.xScale.range()[1] - zoomPixelMax,
+        );
+
+        scaleData.notDiscontinuityXScale.domain([
+            notDisNewMinDomain,
+            notDisNewMaxDomain,
+        ]);
 
         return [newMinDomain, newMaxDomain];
     }
@@ -381,7 +408,7 @@ export class Zoom {
             const point = firstTouch - (firstTouch - secondTouch) / 2;
 
             const domain = this.changeCandleSize(
-                scaleData?.xScale,
+                scaleData,
                 deltaX,
                 firstTouch,
                 point,

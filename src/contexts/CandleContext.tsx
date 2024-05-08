@@ -25,6 +25,7 @@ import {
 } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
+import { condensedMode } from '../pages/Chart/ChartUtils/chartUtils';
 
 interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -44,8 +45,8 @@ interface CandleContextIF {
     setCandleScale: Dispatch<SetStateAction<CandleScaleIF>>;
     candleTimeLocal: number | undefined;
     timeOfEndCandle: number | undefined;
-    isDiscontinuityScaleEnabled: boolean;
-    setIsDiscontinuityScaleEnabled: Dispatch<SetStateAction<boolean>>;
+    isDiscontinuityScaleEnabled: condensedMode;
+    setIsDiscontinuityScaleEnabled: Dispatch<SetStateAction<condensedMode>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -90,7 +91,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     >();
 
     const [isDiscontinuityScaleEnabled, setIsDiscontinuityScaleEnabled] =
-        useState(true);
+        useState({
+            condensedMode: true,
+            disabled: false,
+        });
 
     useEffect(() => {
         // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
@@ -186,7 +190,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            // fetchCandles(true);
+            if (candleData && candleData.candles && candleTimeLocal) {
+                const nowTime = Math.floor(Date.now() / 1000);
+
+                fetchCandlesByNumDurations(200, nowTime);
+            }
         }
     }, [
         isChartEnabled,
@@ -197,7 +205,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleScale.nCandles,
+        // candleScale.nCandles,
         candleScale.isShowLatestCandle,
     ]);
 
@@ -300,7 +308,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return numDurations > 2999 ? 2999 : numDurations;
     }, [minTimeMemo, domainBoundaryInSeconds]);
 
-    const fetchCandlesByNumDurations = (numDurations: number) => {
+    const fetchCandlesByNumDurations = (
+        numDurations: number,
+        minTimeMemo: number,
+    ) => {
         if (!crocEnv || !candleTimeLocal) {
             return;
         }
@@ -374,7 +385,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
-            fetchCandlesByNumDurations(numDurationsNeeded);
+            minTimeMemo &&
+                fetchCandlesByNumDurations(numDurationsNeeded, minTimeMemo);
         }
     }, [numDurationsNeeded]);
     useEffect(() => {

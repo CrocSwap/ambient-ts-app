@@ -163,6 +163,11 @@ export type orderHistory = {
     tokenBAmount: number;
 };
 
+export type condensedMode = {
+    condensedMode: boolean;
+    disabled: boolean;
+};
+
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
     const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
     const context = canvas.getContext('2d') as CanvasRenderingContext2D;
