@@ -2,6 +2,7 @@ import React, {
     ChangeEvent,
     KeyboardEvent,
     useContext,
+    useEffect,
     useRef,
     useState,
 } from 'react';
@@ -34,6 +35,8 @@ import { TokenIF } from '../../../ambient-utils/types';
 import { useMediaQuery } from '@material-ui/core';
 import { HeaderButtons, HeaderText } from '../../../styled/Components/Chart';
 import TokenIcon from '../TokenIcon/TokenIcon';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 interface optionItem {
     id: number;
@@ -46,7 +49,8 @@ const DropdownSearch = () => {
         useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const denomInBase = isDenomBase;
@@ -57,7 +61,7 @@ const DropdownSearch = () => {
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
     const searchDropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => setIsDropdownOpen(false);
+    const clickOutsideHandler = () => setIsPoolDropdownOpen(false);
     useOnClickOutside(searchDropdownItemRef, clickOutsideHandler);
 
     const searchInputElementId = 'sidebar_search_input';
@@ -68,6 +72,14 @@ const DropdownSearch = () => {
 
         inputField.focus();
     };
+
+    const isEscapePressed = useKeyPress('Escape');
+    useEffect(() => {
+        if (isEscapePressed) {
+            setIsPoolDropdownOpen(false);
+            searchData.clearInput();
+        }
+    }, [isEscapePressed]);
 
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -120,6 +132,10 @@ const DropdownSearch = () => {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
+
+                        if (isPoolDropdownOpen) {
+                            setIsPoolDropdownOpen(false);
+                        }
                     }
                 }}
                 spellCheck='false'
@@ -217,7 +233,7 @@ const DropdownSearch = () => {
     );
 
     const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
+        setIsPoolDropdownOpen(!isPoolDropdownOpen);
     };
 
     const dropdownSearchContent = (
@@ -291,10 +307,10 @@ const DropdownSearch = () => {
                     {topToken.symbol} / {bottomToken.symbol}
                 </HeaderText>
                 <span className={styles.arrow_icon}>
-                    {isDropdownOpen ? <FaChevronDown /> : <FaChevronUp />}
+                    {isPoolDropdownOpen ? <FaChevronDown /> : <FaChevronUp />}
                 </span>
             </HeaderButtons>
-            {isDropdownOpen && dropdownSearchContent}
+            {isPoolDropdownOpen && dropdownSearchContent}
         </FlexContainer>
     );
 };
