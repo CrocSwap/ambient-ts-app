@@ -58,14 +58,16 @@ export default function FavoritePools(props: propsIF) {
                 </ViewMoreFlex>
             )}
             <ItemsContainer>
-                {favePools.pools.map((pool, idx) => (
-                    <PoolsListItem
-                        key={idx}
-                        pool={pool}
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={props.cachedFetchTokenPrice}
-                    />
-                ))}
+                {favePools.pools
+                    .filter((pool) => pool.chainId === chainId)
+                    .map((pool, idx) => (
+                        <PoolsListItem
+                            key={idx}
+                            pool={pool}
+                            cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            cachedFetchTokenPrice={props.cachedFetchTokenPrice}
+                        />
+                    ))}
             </ItemsContainer>
         </FlexContainer>
     );
