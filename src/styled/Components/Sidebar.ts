@@ -228,10 +228,10 @@ export const ResultsContainer = styled(FlexContainer)`
 
 export const Results = styled(GridContainer)`
     cursor: pointer;
+    height: 24px;
 
     &:hover {
         transition: var(--transition);
-        background: var(--dark1);
-        cursor: pointer;
+        background: var(--dark2);
     }
 `;
