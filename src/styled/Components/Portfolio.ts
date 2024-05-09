@@ -306,6 +306,9 @@ export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
     justify-content: center;
     align-items: center;
 
+    height: 65px;
+    width: 65px;
+
     ${({ placement }) => {
         if (placement) {
             return `

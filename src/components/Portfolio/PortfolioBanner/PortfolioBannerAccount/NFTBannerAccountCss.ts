@@ -324,6 +324,28 @@ const SaveButton = styled.div`
     }
 `;
 
+const ScrollableContainer = styled.div`
+    position: relative;
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent1) var(--dark1);
+    background: var(--dark1);
+
+    &::-webkit-scrollbar {
+        display: 'none';
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: var(--dark1);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--dark3);
+    }
+`;
+
 export {
     NFTBannerAccountContainer,
     NFTBannerHeader,
@@ -345,4 +367,5 @@ export {
     NFTHeaderSettings,
     SelectedJazzIcon,
     IconContainer,
+    ScrollableContainer,
 };

@@ -20,6 +20,7 @@ import {
     SelectedNFTImg,
     SelectedJazzIcon,
     IconContainer,
+    ScrollableContainer,
 } from './NFTBannerAccountCss';
 import {
     NftDataIF,
@@ -516,105 +517,115 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             </div>
 
             {!isLoading ? (
-                <NFTDisplay template={nftArray.length}>
-                    {nftArray.map((item: NftDataIF, index: number) =>
-                        (item.contractName === 'jazzicon' ||
-                            item.contractName === 'blockie') &&
-                        userAddress
-                            ? defaultAvatar(item.contractName, userAddress)
-                            : item.cachedUrl && (
-                                  <NFTImgContainer
-                                      isMobile={isMobile}
-                                      key={index}
-                                      id='continer'
-                                  >
-                                      <CheckBoxContainer
+                <ScrollableContainer>
+                    <NFTDisplay template={nftArray.length}>
+                        {nftArray.map((item: NftDataIF, index: number) =>
+                            (item.contractName === 'jazzicon' ||
+                                item.contractName === 'blockie') &&
+                            userAddress
+                                ? defaultAvatar(item.contractName, userAddress)
+                                : item.cachedUrl && (
+                                      <NFTImgContainer
+                                          isMobile={isMobile}
                                           key={index}
-                                          onClick={(
-                                              event: React.MouseEvent<HTMLDivElement>,
-                                          ) => {
-                                              event.stopPropagation();
-                                              setIsContractNameOptionTabActive(
-                                                  false,
-                                              );
-                                              if (isSelectThumbnail) {
-                                                  setIsDefaultThumbnail(false);
-                                                  setSelectedThumbnail(item);
-                                              } else {
-                                                  setIsDefaultNft(false);
-                                                  setSelectedNft(item);
-                                              }
-                                          }}
+                                          id='continer'
                                       >
-                                          <NFTImg
-                                              selectedNFT={
-                                                  selectedNft
-                                                      ? selectedNft.cachedUrl ===
-                                                        item.cachedUrl
-                                                      : false
-                                              }
-                                              selectedThumbnail={
-                                                  selectedThumbnail
-                                                      ? selectedThumbnail.thumbnailUrl ===
-                                                        item.thumbnailUrl
-                                                      : false
-                                              }
-                                              isSelectThumbnail={
-                                                  isSelectThumbnail
-                                              }
+                                          <CheckBoxContainer
                                               key={index}
-                                              // alt='Content not found'
-                                              onError={() =>
-                                                  onErrorIndex.push(index)
-                                              }
-                                              src={
-                                                  item.cachedUrl
-                                                      ? handleImgSrc(
-                                                            onErrorIndex,
-                                                            isSelectThumbnail
-                                                                ? item.thumbnailUrl
-                                                                : item.cachedUrl,
-                                                            index,
-                                                        )
-                                                      : nftPlaceHolder
-                                              }
-                                              isMobile={isMobile}
-                                          ></NFTImg>
-                                          {selectedNft &&
-                                              item.cachedUrl ===
-                                                  selectedNft.cachedUrl && (
-                                                  <img
-                                                      src={nftSelected}
-                                                      style={{
-                                                          position: 'absolute',
-                                                          top: '72%',
-                                                          left: '72%',
-                                                          width: '20px',
-                                                          height: '20px',
-                                                      }}
-                                                      alt=''
-                                                  />
-                                              )}
-                                          {selectedThumbnail &&
-                                              item.thumbnailUrl ===
-                                                  selectedThumbnail.thumbnailUrl && (
-                                                  <img
-                                                      src={thumbnailSelected}
-                                                      style={{
-                                                          position: 'absolute',
-                                                          top: '72%',
-                                                          left: '72%',
-                                                          width: '20px',
-                                                          height: '20px',
-                                                      }}
-                                                      alt=''
-                                                  />
-                                              )}
-                                      </CheckBoxContainer>
-                                  </NFTImgContainer>
-                              ),
-                    )}
-                </NFTDisplay>
+                                              onClick={(
+                                                  event: React.MouseEvent<HTMLDivElement>,
+                                              ) => {
+                                                  event.stopPropagation();
+                                                  setIsContractNameOptionTabActive(
+                                                      false,
+                                                  );
+                                                  if (isSelectThumbnail) {
+                                                      setIsDefaultThumbnail(
+                                                          false,
+                                                      );
+                                                      setSelectedThumbnail(
+                                                          item,
+                                                      );
+                                                  } else {
+                                                      setIsDefaultNft(false);
+                                                      setSelectedNft(item);
+                                                  }
+                                              }}
+                                          >
+                                              <NFTImg
+                                                  selectedNFT={
+                                                      selectedNft
+                                                          ? selectedNft.cachedUrl ===
+                                                            item.cachedUrl
+                                                          : false
+                                                  }
+                                                  selectedThumbnail={
+                                                      selectedThumbnail
+                                                          ? selectedThumbnail.thumbnailUrl ===
+                                                            item.thumbnailUrl
+                                                          : false
+                                                  }
+                                                  isSelectThumbnail={
+                                                      isSelectThumbnail
+                                                  }
+                                                  key={index}
+                                                  // alt='Content not found'
+                                                  onError={() =>
+                                                      onErrorIndex.push(index)
+                                                  }
+                                                  src={
+                                                      item.cachedUrl
+                                                          ? handleImgSrc(
+                                                                onErrorIndex,
+                                                                isSelectThumbnail
+                                                                    ? item.thumbnailUrl
+                                                                    : item.cachedUrl,
+                                                                index,
+                                                            )
+                                                          : nftPlaceHolder
+                                                  }
+                                                  isMobile={isMobile}
+                                              ></NFTImg>
+                                              {selectedNft &&
+                                                  item.cachedUrl ===
+                                                      selectedNft.cachedUrl && (
+                                                      <img
+                                                          src={nftSelected}
+                                                          style={{
+                                                              position:
+                                                                  'absolute',
+                                                              top: '72%',
+                                                              left: '72%',
+                                                              width: '20px',
+                                                              height: '20px',
+                                                          }}
+                                                          alt=''
+                                                      />
+                                                  )}
+                                              {selectedThumbnail &&
+                                                  item.thumbnailUrl ===
+                                                      selectedThumbnail.thumbnailUrl && (
+                                                      <img
+                                                          src={
+                                                              thumbnailSelected
+                                                          }
+                                                          style={{
+                                                              position:
+                                                                  'absolute',
+                                                              top: '72%',
+                                                              left: '72%',
+                                                              width: '20px',
+                                                              height: '20px',
+                                                          }}
+                                                          alt=''
+                                                      />
+                                                  )}
+                                          </CheckBoxContainer>
+                                      </NFTImgContainer>
+                                  ),
+                        )}
+                    </NFTDisplay>
+                </ScrollableContainer>
             ) : (
                 <Spinner size={100} bg='var(--dark2)' centered />
             )}
