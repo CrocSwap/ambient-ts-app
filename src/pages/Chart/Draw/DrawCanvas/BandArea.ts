@@ -51,6 +51,7 @@ export function createPointsOfBandLine(data: lineData[]) {
 
     return lineOfBand;
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createPointsOfDPRangeLine(data: lineData[], xScale: any) {
     const startX = Math.min(xScale(data[0].x), xScale(data[1].x));
     const startY = Math.max(data[0].y, data[1].y);
