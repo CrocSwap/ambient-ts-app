@@ -132,10 +132,6 @@ const DropdownSearch = () => {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
-
-                        if (isPoolDropdownOpen) {
-                            setIsPoolDropdownOpen(false);
-                        }
                     }
                 }}
                 spellCheck='false'

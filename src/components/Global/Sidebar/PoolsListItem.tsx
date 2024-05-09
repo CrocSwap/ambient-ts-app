@@ -170,12 +170,7 @@ export default function PoolsListItem(props: propsIF) {
     );
 
     return (
-        <MainItemContainer
-            style={{ width: '100%' }}
-            onClick={() => {
-                if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
-            }}
-        >
+        <MainItemContainer style={{ width: '100%' }}>
             <ItemContainer
                 as={Link}
                 to={linkGenMarket.getFullURL({
@@ -184,6 +179,9 @@ export default function PoolsListItem(props: propsIF) {
                     tokenB: addrTokenB,
                 })}
                 color='text2'
+                onClick={() => {
+                    if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
+                }}
             >
                 {[
                     [poolDisplay],
