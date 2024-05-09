@@ -307,7 +307,7 @@ const DropdownSearch = () => {
                     {topToken.symbol} / {bottomToken.symbol}
                 </HeaderText>
                 <span className={styles.arrow_icon}>
-                    {isPoolDropdownOpen ? <FaChevronDown /> : <FaChevronUp />}
+                    {isPoolDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
                 </span>
             </HeaderButtons>
             {isPoolDropdownOpen && dropdownSearchContent}
