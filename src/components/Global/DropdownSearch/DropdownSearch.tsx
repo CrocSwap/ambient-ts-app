@@ -164,7 +164,7 @@ const DropdownSearch = () => {
     const optionButtons = [
         {
             id: 1,
-            name: 'Trending',
+            name: 'Top Pools',
             data: (
                 <TopPools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -240,7 +240,7 @@ const DropdownSearch = () => {
         <AnimatePresence>
             <div className={styles.dropdown_container}>
                 {searchContainer}
-                {optionButtonsDisplay}
+                {searchData.isInputValid || optionButtonsDisplay}
 
                 <motion.div
                     className={styles.dropdown_content}
