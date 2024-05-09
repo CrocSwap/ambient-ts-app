@@ -69,6 +69,13 @@ cursor: pointer;
   cursor: pointer;
 }
 
+@media (min-width: 780px){
+  .dropdown_container{
+  left: 30px;
+
+  
+  }
+}
 @media (min-width: 500px) {
   .dropdown_container{
   

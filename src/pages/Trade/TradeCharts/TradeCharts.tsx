@@ -23,7 +23,7 @@ import {
     LS_KEY_SUBCHART_SETTINGS,
 } from '../../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../../ambient-utils/dataLayer';
-import { CandleDataIF } from '../../../ambient-utils/types';
+import { CandleDataIF, TokenIF } from '../../../ambient-utils/types';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../styled/Common';
@@ -75,9 +75,13 @@ function TradeCharts(props: propsIF) {
     const { selectedDate, setSelectedDate, updateURL } = props;
     const getDollarPrice = useDollarPrice();
 
-    const { isDenomBase } = useContext(TradeDataContext);
+    const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
+
+    const [topToken, bottomToken]: [TokenIF, TokenIF] = isDenomBase
+        ? [baseToken, quoteToken]
+        : [quoteToken, baseToken];
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -251,11 +255,17 @@ function TradeCharts(props: propsIF) {
             </div>
         </div>
     );
+    const candleTime = chartSettings.candleTime.global;
+    const matchingCandleTime = candleTime.defaults.find(
+        (item) => item.seconds === candleTime.time,
+    );
 
     const chartTooltip = (
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
                 <div className={styles.current_data_info}>
+                    {`${topToken.symbol} / ${bottomToken.symbol} • ${matchingCandleTime?.readable} • `}
+
                     {currentData &&
                         'O: ' +
                             getDollarPrice(
