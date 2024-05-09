@@ -822,25 +822,6 @@ export default function Chart(props: propsIF) {
         }
     }
 
-    // useEffect(() => {
-    //     if (scaleData) {
-    //         const dom = scaleData?.xScale.domain();
-    //         const filtered = visibleCandleData.filter(
-    //             (data: CandleDataIF) =>
-    //                 data.time * 1000 >= dom[0] &&
-    //                 data.time * 1000 <= lastCandleData.time * 1000,
-    //         );
-
-    //         if (
-    //             filtered.length === 100 &&
-    //             isShowLatestCandle &&
-    //             resetDomain === undefined
-    //         ) {
-    //             setResetDomain(dom);
-    //         }
-    //     }
-    // }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData]);
-
     const [first, setfirst] = useState(true);
     useEffect(() => {
         (async () => {
@@ -882,6 +863,37 @@ export default function Chart(props: propsIF) {
 
                         if (check) {
                             scaleData.xScale.domain([min, maxDom]);
+
+                            const filteredCandle = visibleCandleData.filter(
+                                (i: CandleDataChart) => {
+                                    return (
+                                        i.time * 1000 <= maxDom &&
+                                        i.time * 1000 >= min
+                                    );
+                                },
+                            );
+
+                            let candleCount = filteredCandle.length;
+                            const gapMinCandleCount = Math.floor(
+                                (filteredCandle[filteredCandle.length - 1]
+                                    .time *
+                                    1000 -
+                                    min) /
+                                    (period * 1000),
+                            );
+
+                            if (gapMinCandleCount > 0) {
+                                candleCount = gapMinCandleCount + candleCount;
+                            }
+
+                            if (
+                                resetDomain === undefined &&
+                                isShowLatestCandle &&
+                                candleCount === 100
+                            ) {
+                                setResetDomain(scaleData.xScale.domain());
+                            }
+
                             element.isAddedPixel = true;
                             render();
                             changeScale(false);

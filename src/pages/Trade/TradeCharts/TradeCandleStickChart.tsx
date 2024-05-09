@@ -184,7 +184,6 @@ function TradeCandleStickChart(props: propsIF) {
         }
         setIsFetchingEnoughData(true);
         setFetchCountForEnoughData(1);
-        console.log('fFetchCountForEnoughData');
     }, [period, tokenPair]);
 
     useEffect(() => {
@@ -935,6 +934,7 @@ function TradeCandleStickChart(props: propsIF) {
                     !timeOfEndCandle &&
                     fetchCountForEnoughData < 5
                 ) {
+                    setIsFetchingEnoughData(true);
                     const dom = {
                         lastCandleDate: minTime,
                         domainBoundry: minTime - 200 * period * 1000,
