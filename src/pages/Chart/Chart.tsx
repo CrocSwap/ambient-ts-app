@@ -540,7 +540,7 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(unparsedData.candles),
         poolPriceWithoutDenom,
         isShowLatestCandle,
-        isCondensedModeEnabled.condensedMode,
+        isCondensedModeEnabled,
     ]);
 
     const calculateVisibleCandles = (
@@ -563,7 +563,7 @@ export default function Chart(props: propsIF) {
                 (data: CandleDataChart) =>
                     data.time * 1000 >= xmin &&
                     data.time * 1000 <= xmax &&
-                    (data.isShowData || !isCondensedModeEnabled.condensedMode),
+                    (data.isShowData || !isCondensedModeEnabled),
             );
 
             return filtered;
@@ -678,12 +678,8 @@ export default function Chart(props: propsIF) {
     const debouncedGetNewCandleDataRight = useDebounce(localCandleDomains, 500);
 
     const zoomBase = useMemo(() => {
-        return new Zoom(
-            setLocalCandleDomains,
-            period,
-            isCondensedModeEnabled.condensedMode,
-        );
-    }, [period, isCondensedModeEnabled.condensedMode]);
+        return new Zoom(setLocalCandleDomains, period, isCondensedModeEnabled);
+    }, [period, isCondensedModeEnabled]);
 
     useEffect(() => {
         useHandleSwipeBack(d3Container, toolbarRef);
@@ -837,10 +833,7 @@ export default function Chart(props: propsIF) {
                 scaleData.xScale.range([0, width]);
 
                 timeGaps.forEach((element: timeGapsValue) => {
-                    if (
-                        !element.isAddedPixel &&
-                        isCondensedModeEnabled.condensedMode
-                    ) {
+                    if (!element.isAddedPixel && isCondensedModeEnabled) {
                         if (first && localFirst) {
                             scaleData.notDiscontinuityXScale.domain(
                                 scaleData.xScale.domain(),
@@ -903,7 +896,7 @@ export default function Chart(props: propsIF) {
             }
         })().then(() => {
             if (scaleData) {
-                const data = isCondensedModeEnabled.condensedMode
+                const data = isCondensedModeEnabled
                     ? timeGaps.map((i: timeGapsValue) => i.range)
                     : [];
 
@@ -921,11 +914,7 @@ export default function Chart(props: propsIF) {
     }, [timeGaps, diffHashSigScaleData(scaleData, 'x')]);
 
     useEffect(() => {
-        if (
-            !isCondensedModeEnabled.condensedMode &&
-            scaleData &&
-            isShowLatestCandle
-        ) {
+        if (!isCondensedModeEnabled && scaleData && isShowLatestCandle) {
             const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
 
             scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
@@ -933,7 +922,7 @@ export default function Chart(props: propsIF) {
             changeScale(false);
             render();
         }
-    }, [isCondensedModeEnabled.condensedMode]);
+    }, [isCondensedModeEnabled]);
 
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
@@ -2462,10 +2451,7 @@ export default function Chart(props: propsIF) {
                 (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
 
             setPrevLastCandleTime(snappedTime / 1000);
-            if (
-                !isCondensedModeEnabled.condensedMode ||
-                resetDomain === undefined
-            ) {
+            if (!isCondensedModeEnabled || resetDomain === undefined) {
                 if (scaleData) {
                     scaleData.xScale.discontinuityProvider(
                         d3fc.discontinuityRange(...[]),
@@ -4441,7 +4427,7 @@ export default function Chart(props: propsIF) {
         period,
         currentPool,
         showSwap,
-        isCondensedModeEnabled.condensedMode,
+        isCondensedModeEnabled,
     ]);
 
     useEffect(() => {
@@ -5151,8 +5137,7 @@ export default function Chart(props: propsIF) {
                     longestValue = d.volumeUSD;
                 }
 
-                (d.isShowData || !isCondensedModeEnabled.condensedMode) &&
-                    filtered.push(d);
+                (d.isShowData || !isCondensedModeEnabled) && filtered.push(d);
             }
         });
 
@@ -5875,9 +5860,7 @@ export default function Chart(props: propsIF) {
                             setBandwidth={setBandwidth}
                             prevlastCandleTime={prevlastCandleTime}
                             setPrevLastCandleTime={setPrevLastCandleTime}
-                            isDiscontinuityScaleEnabled={
-                                isCondensedModeEnabled.condensedMode
-                            }
+                            isDiscontinuityScaleEnabled={isCondensedModeEnabled}
                         />
 
                         <VolumeBarCanvas
@@ -6109,9 +6092,7 @@ export default function Chart(props: propsIF) {
                             d3Xaxis={d3XaxisRef}
                             isUpdatingShape={isUpdatingShape}
                             timeGaps={timeGaps}
-                            isDiscontinuityScaleEnabled={
-                                isCondensedModeEnabled.condensedMode
-                            }
+                            isDiscontinuityScaleEnabled={isCondensedModeEnabled}
                         />
                     </div>
                 </div>

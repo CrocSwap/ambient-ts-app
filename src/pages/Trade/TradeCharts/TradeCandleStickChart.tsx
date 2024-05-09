@@ -741,8 +741,7 @@ function TradeCandleStickChart(props: propsIF) {
                         return (
                             i.time * 1000 <= domain[1] &&
                             i.time * 1000 >= domain[0] &&
-                            (i.isShowData ||
-                                !isCondensedModeEnabled.condensedMode)
+                            (i.isShowData || !isCondensedModeEnabled)
                         );
                     });
 
@@ -918,7 +917,7 @@ function TradeCandleStickChart(props: propsIF) {
     }, [chartSettings.candleTime.global.defaults.length]);
 
     useEffect(() => {
-        if (isCondensedModeEnabled.condensedMode) {
+        if (isCondensedModeEnabled) {
             if (
                 unparsedCandleData &&
                 unparsedCandleData[0].period === period &&
@@ -975,7 +974,7 @@ function TradeCandleStickChart(props: propsIF) {
         diffHashSigChart(unparsedCandleData),
         period,
         prevPeriod === period,
-        isCondensedModeEnabled.condensedMode,
+        isCondensedModeEnabled,
         fetchCountForEnoughData,
     ]);
 

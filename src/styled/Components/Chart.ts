@@ -3,7 +3,6 @@ import { FlexContainer, Text } from '../Common';
 
 export const HeaderButtons = styled.button<{
     mobileHide?: boolean;
-    disabled?: boolean;
 }>`
     display: flex;
     flex-direction: row;
@@ -17,16 +16,6 @@ export const HeaderButtons = styled.button<{
 
     &:focus-visible {
         box-shadow: var(--glow-light-box-shadow);
-    }
-    ${({ disabled }) => disabled && 'disabled'};
-    ${({ disabled }) => (disabled ? 'cursor: not-allowed' : 'cursor: pointer')};
-
-    &:hover > svg {
-        ${({ disabled }) =>
-            disabled &&
-            `color: var(--text2);
-            cursor: not-allowed;
-        `}
     }
     @media (max-width: 680px) {
         ${({ mobileHide }) => mobileHide && 'display: none'};

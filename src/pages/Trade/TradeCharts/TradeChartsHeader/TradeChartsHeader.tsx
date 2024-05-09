@@ -69,13 +69,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons
-                    disabled={isCondensedModeEnabled.disabled}
                     onClick={() =>
-                        setIsCondensedModeEnabled({
-                            condensedMode:
-                                !isCondensedModeEnabled.condensedMode,
-                            disabled: isCondensedModeEnabled.disabled,
-                        })
+                        setIsCondensedModeEnabled(!isCondensedModeEnabled)
                     }
                 >
                     <AiOutlineAreaChart
@@ -83,7 +78,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         id='trade_Condensed_Mode_button'
                         aria-label='Toggle condensed mode button'
                         style={{
-                            color: isCondensedModeEnabled.condensedMode
+                            color: isCondensedModeEnabled
                                 ? 'var(--accent1)'
                                 : undefined,
                         }}

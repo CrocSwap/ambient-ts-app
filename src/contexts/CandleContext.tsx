@@ -25,7 +25,6 @@ import {
 } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
-import { condensedMode } from '../pages/Chart/ChartUtils/chartUtils';
 
 interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -45,8 +44,8 @@ interface CandleContextIF {
     setCandleScale: Dispatch<SetStateAction<CandleScaleIF>>;
     candleTimeLocal: number | undefined;
     timeOfEndCandle: number | undefined;
-    isCondensedModeEnabled: condensedMode;
-    setIsCondensedModeEnabled: Dispatch<SetStateAction<condensedMode>>;
+    isCondensedModeEnabled: boolean;
+    setIsCondensedModeEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -90,10 +89,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         number | undefined
     >();
 
-    const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState({
-        condensedMode: true,
-        disabled: false,
-    });
+    const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
 
     useEffect(() => {
         // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
