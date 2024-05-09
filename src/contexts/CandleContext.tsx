@@ -45,8 +45,8 @@ interface CandleContextIF {
     setCandleScale: Dispatch<SetStateAction<CandleScaleIF>>;
     candleTimeLocal: number | undefined;
     timeOfEndCandle: number | undefined;
-    isDiscontinuityScaleEnabled: condensedMode;
-    setIsDiscontinuityScaleEnabled: Dispatch<SetStateAction<condensedMode>>;
+    isCondensedModeEnabled: condensedMode;
+    setIsCondensedModeEnabled: Dispatch<SetStateAction<condensedMode>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -90,11 +90,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         number | undefined
     >();
 
-    const [isDiscontinuityScaleEnabled, setIsDiscontinuityScaleEnabled] =
-        useState({
-            condensedMode: true,
-            disabled: false,
-        });
+    const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState({
+        condensedMode: true,
+        disabled: false,
+    });
 
     useEffect(() => {
         // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
@@ -158,8 +157,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setCandleScale,
         candleTimeLocal,
         timeOfEndCandle,
-        isDiscontinuityScaleEnabled,
-        setIsDiscontinuityScaleEnabled,
+        isCondensedModeEnabled,
+        setIsCondensedModeEnabled,
     };
 
     useEffect(() => {
@@ -237,7 +236,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
             const defaultCandleDuration =
                 chartSettings?.candleTimeGlobal || 3600;
-
             fetchCandleSeriesHybrid(
                 true,
                 chainData,

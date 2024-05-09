@@ -31,7 +31,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
-    const { isDiscontinuityScaleEnabled, setIsDiscontinuityScaleEnabled } =
+    const { isCondensedModeEnabled, setIsCondensedModeEnabled } =
         useContext(CandleContext);
 
     const [, copy] = useCopyToClipboard();
@@ -69,21 +69,21 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons
-                    disabled={isDiscontinuityScaleEnabled.disabled}
+                    disabled={isCondensedModeEnabled.disabled}
                     onClick={() =>
-                        setIsDiscontinuityScaleEnabled({
+                        setIsCondensedModeEnabled({
                             condensedMode:
-                                !isDiscontinuityScaleEnabled.condensedMode,
-                            disabled: isDiscontinuityScaleEnabled.disabled,
+                                !isCondensedModeEnabled.condensedMode,
+                            disabled: isCondensedModeEnabled.disabled,
                         })
                     }
                 >
                     <AiOutlineAreaChart
                         size={20}
-                        id='trade_discontinuity_scale_button'
-                        aria-label='Toggle discontinuity scale button'
+                        id='trade_Condensed_Mode_button'
+                        aria-label='Toggle condensed mode button'
                         style={{
-                            color: isDiscontinuityScaleEnabled.condensedMode
+                            color: isCondensedModeEnabled.condensedMode
                                 ? 'var(--accent1)'
                                 : undefined,
                         }}
