@@ -14,7 +14,7 @@
     transition: all 0.2s ease-in-out;
     position: absolute;
     opacity: 0;
-    background: linear-gradient(0deg, var(--accent1) 0%, transparent 100%);
+    background: linear-gradient(0deg, var(--accent1) 15%, transparent 100%);
     width: 100%;
     height: 100%;
     cursor: pointer;
@@ -30,7 +30,8 @@
 }
 
 .nft_edit_icon svg {
-    fill: white;
+    fill: transparent;
+    stroke: var(--text1);
 }
 
 .nft_avatar_wrapper:hover .nft_edit_overlay {
