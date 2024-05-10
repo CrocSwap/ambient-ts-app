@@ -166,15 +166,6 @@
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png"
         },
         {
-            "address": "0xfd4D19F9FBb9F730C3C88a21755832BD2455144e",
-            "chainId": 81457,
-            "decimals": 18,
-            "fromList": "/ambient-token-list.json",
-            "name": "Super Sushi Samurai",
-            "symbol": "SSS",
-            "logoURI": "https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg"
-        },
-        {
             "address": "0x0B4d0ee29857c3961b380d4ec138EA5814E346b9",
             "chainId": 81457,
             "decimals": 18,
@@ -356,6 +347,14 @@
             "decimals": 18,
             "chainId": 534352,
             "logoURI": "https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670"
+        },
+        {
+            "name": "SCRIBES",
+            "address": "0x122aD65A36ab6Dc12261C977e5e63a54ED1bA9E6",
+            "symbol": "SCRIBES",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
         },
         {
             "name": "Native Ether",
