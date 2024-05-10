@@ -11,7 +11,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import TradeSwap from '../pages/Trade/Swap/Swap';
@@ -39,7 +38,6 @@ import Accessibility from '../pages/Accessibility/Accessibility';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
-import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import FAQPoints from '../pages/FAQ/FAQPoints';
 import Explore from '../pages/Explore/Explore';
@@ -67,9 +65,8 @@ export default function App() {
         dismissPointSystemPopup,
     } = useContext(AppStateContext);
     const { defaultUrlParams } = useContext(CrocEnvContext);
-    const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
-        sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
+        sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
@@ -79,41 +76,6 @@ export default function App() {
         currentLocation.startsWith('/swap') && !smallScreen
             ? 'swap-body'
             : null;
-
-    // Show sidebar on all pages except for home, swap, chat, and 404
-    const sidebarRender = smallScreen ? (
-        <Sidebar />
-    ) : (
-        currentLocation !== '/' &&
-        currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        !currentLocation.includes('/faq') &&
-        !currentLocation.includes('/chat') &&
-        !currentLocation.includes('/initpool') &&
-        !fullScreenChart && (
-            // isChainSupported &&
-            <Sidebar />
-        )
-    );
-
-    const sidebarDislayStyle = isSidebarOpen
-        ? 'sidebar_content_layout'
-        : 'sidebar_content_layout_close';
-
-    const showSidebarOrNullStyle = smallScreen
-        ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/faq') ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
-        ? 'hide_sidebar'
-        : sidebarDislayStyle;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -181,11 +143,9 @@ export default function App() {
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
                 />
-                <section
-                    className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
-                >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
-                        sidebarRender}
+                <section className={`${swapBodyStyle}`}>
+                    {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                        sidebarRender} */}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
