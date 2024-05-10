@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
- 
+    padding-left: 4px;
 }
 
 .main_time_frame_container {
@@ -11,8 +11,6 @@
     align-items: center;
     gap: 4px;
 }
-
-
 
 .active_selected_button,
 .non_active_selected_button {
