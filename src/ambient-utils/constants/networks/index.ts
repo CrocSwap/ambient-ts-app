@@ -6,23 +6,23 @@ import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
 import { blast } from './blastNetwork';
 
-export const IS_BLAST_SITE = process.env.REACT_APP_IS_BLAST_SITE
-    ? process.env.REACT_APP_IS_BLAST_SITE?.toLowerCase() === 'true'
+export const IS_BLAST_SITE = import.meta.env.VITE_IS_BLAST_SITE
+    ? import.meta.env.VITE_IS_BLAST_SITE?.toLowerCase() === 'true'
     : false;
 
 export const IS_SCROLL_SITE =
-    process.env.REACT_APP_IS_SCROLL_SITE !== undefined
-        ? process.env.REACT_APP_IS_SCROLL_SITE.toLowerCase() === 'true'
+    import.meta.env.VITE_IS_SCROLL_SITE !== undefined
+        ? import.meta.env.VITE_IS_SCROLL_SITE.toLowerCase() === 'true'
         : false;
 
 export const IS_PRODUCTION_SITE =
-    process.env.REACT_APP_IS_PRODUCTION_SITE !== undefined
-        ? process.env.REACT_APP_IS_PRODUCTION_SITE.toLowerCase() === 'true'
+    import.meta.env.VITE_IS_PRODUCTION_SITE !== undefined
+        ? import.meta.env.VITE_IS_PRODUCTION_SITE.toLowerCase() === 'true'
         : false;
 
 export const IS_TESTNET_SITE =
-    process.env.REACT_APP_IS_TESTNET_SITE !== undefined
-        ? process.env.REACT_APP_IS_TESTNET_SITE.toLowerCase() === 'true'
+    import.meta.env.VITE_IS_TESTNET_SITE !== undefined
+        ? import.meta.env.VITE_IS_TESTNET_SITE.toLowerCase() === 'true'
         : false;
 
 export const supportedNetworks: { [x: string]: NetworkIF } = IS_BLAST_SITE

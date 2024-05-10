@@ -8,8 +8,8 @@ export function validateChainId(chainIdToValidate: string): boolean {
 
 // Lists the chain IDs that app should be supported by network selectors and the like
 export function getSupportedChainIds(): Array<string> {
-    if (process.env.REACT_APP_CHAIN_IDS) {
-        return process.env.REACT_APP_CHAIN_IDS.split(',');
+    if (import.meta.env.VITE_CHAIN_IDS) {
+        return import.meta.env.VITE_CHAIN_IDS.split(',');
     } else {
         return DFLT_SUPPORTED_CHAINS;
     }

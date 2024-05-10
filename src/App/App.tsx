@@ -31,7 +31,7 @@ import './App.css';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
+import GateWalletModal from './components/WalletModal/GateWalletModal';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
@@ -42,7 +42,6 @@ import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import FAQPoints from '../pages/FAQ/FAQPoints';
-import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
@@ -62,13 +61,12 @@ export default function App() {
             isEnabled: isChatEnabled,
         },
         theme: { selected: selectedTheme },
-        wagmiModal: { isOpen: isWagmiModalOpen },
+        walletModal: { isOpen: isWalletModalOpen },
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { isWalletChainSupported, defaultUrlParams } =
-        useContext(CrocEnvContext);
+    const { defaultUrlParams } = useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
@@ -172,7 +170,6 @@ export default function App() {
                 className={containerStyle}
                 data-theme={selectedTheme}
             >
-                {!isWalletChainSupported && <SwitchNetwork />}
                 {showPointSystemPopup && (
                     <PointSystemPopup
                         dismissPointSystemPopup={dismissPointSystemPopup}
@@ -383,7 +380,7 @@ export default function App() {
             </div>
             <GlobalPopup />
             <SnackbarComponent />
-            {isWagmiModalOpen && <WalletModalWagmi />}
+            {isWalletModalOpen && <GateWalletModal />}
         </>
     );
 }

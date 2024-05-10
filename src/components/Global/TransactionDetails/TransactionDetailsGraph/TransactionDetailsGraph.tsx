@@ -50,8 +50,8 @@ export default function TransactionDetailsGraph(
     const oneHourMiliseconds = 60 * 60 * 1000;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+        import.meta.env.VITE_CACHE_SERVER_IS_ENABLED !== undefined
+            ? import.meta.env.VITE_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
     const baseTokenAddress = tx.base;
