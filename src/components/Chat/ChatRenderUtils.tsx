@@ -140,7 +140,7 @@ export const getAvatarForProfilePage = (
                 <>
                     <div className={styles.nft_edit_overlay}></div>
                     <div className={styles.nft_edit_icon}>
-                        <FiEdit3 size={24}></FiEdit3>
+                        <FiEdit3 size={22}></FiEdit3>
                     </div>
                 </>
             )}
