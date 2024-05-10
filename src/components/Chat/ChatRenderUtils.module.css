@@ -14,29 +14,54 @@
     transition: all 0.2s ease-in-out;
     position: absolute;
     opacity: 0;
-    background: linear-gradient(0deg, var(--accent1) 0%, transparent 100%);
+    background: linear-gradient(0deg, var(--accent1) 0%, color-mix(in srgb, var(--accent1) 10%, transparent) 100%);
     width: 100%;
     height: 100%;
     cursor: pointer;
+    z-index: 10;
 }
 
 .nft_edit_icon {
+    transition: all .2s ease-in-out;
     opacity: 0;
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 110%;
     transform: translate(-50%, -50%);
     color: white;
+    z-index: 11;
 }
 
 .nft_edit_icon svg {
     fill: white;
 }
 
+.nft_avatar_wrapper:hover{
+    /* box-shadow: 0 5px 40px 0 color-mix(in srgb, var(--accent1) 40%, transparent); */
+    /* box-shadow: 0 0px 40px 0 color-mix(in srgb, var(--accent1) 40%, transparent); */
+}
 .nft_avatar_wrapper:hover .nft_edit_overlay {
-    opacity: 0.5;
+    opacity: .7;
 }
 
 .nft_avatar_wrapper:hover .nft_edit_icon {
     opacity: 1;
+    top: 50%;
+}
+
+
+
+.blockie_wrapper{
+    overflow: hidden;
+    display: inline-block;
+    border-radius: 100vw;
+    position: relative;
+}
+
+
+.blockie_wrapper canvas{
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
 }

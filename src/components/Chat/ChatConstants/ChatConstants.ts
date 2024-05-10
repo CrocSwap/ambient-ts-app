@@ -12,3 +12,13 @@ export const CROCODILE_LABS_LINKS = [
 
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
+
+export const AVATAR_TYPES = {
+    JAZZ: '_jazz_',
+    BLOCKIE: '_blockie_',
+};
+
+export const AVATAR_TYPES_SET = new Set([
+    AVATAR_TYPES.JAZZ,
+    AVATAR_TYPES.BLOCKIE,
+]);
