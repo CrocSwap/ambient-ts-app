@@ -37,6 +37,8 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         RETH: 45,
         SWETH: 45,
         PXETH: 45,
+        STONE: 40,
+        UNIETH: 40,
         PEPE: 0,
     };
     const translatedSymbol = getTranslatedSymbol(tokenSymbol);
