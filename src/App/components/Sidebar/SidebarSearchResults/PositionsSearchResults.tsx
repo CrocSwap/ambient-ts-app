@@ -17,6 +17,7 @@ import {
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -80,6 +81,8 @@ function PositionLI(props: PositionLiPropsIF) {
 
 export default function PositionsSearchResults(props: propsIF) {
     const { searchedPositions } = props;
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const {
         chainData: { chainId },
@@ -95,6 +98,7 @@ export default function PositionsSearchResults(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleClick = (position: PositionIF): void => {
+        if (isPoolDropdownOpen) setIsPoolDropdownOpen(false);
         setOutsideControl(true);
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.positionId);
