@@ -1,4 +1,5 @@
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { useNavigate } from 'react-router-dom';
+import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     UserSummaryModel,
     getUserLabelforSummary,
@@ -13,21 +14,30 @@ interface propsIF {
     verticalPosition: number;
     mouseLeaveListener: any;
     mouseEnterListener: any;
+    isCurrentUser?: boolean;
 }
 
 export default function UserSummary(props: propsIF) {
-    const jazziconsSeed = props.user?.walletID.toLowerCase() || '';
-
-    const myJazzicon = (
-        <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
-
     const debug = false;
+
+    const navigate = useNavigate();
+
+    const goToProfile = () => {
+        if (props.user) {
+            navigate(
+                props.isCurrentUser
+                    ? 'account'
+                    : props.user?.ensName
+                    ? props.user?.ensName
+                    : props.user?.walletID,
+            );
+        }
+    };
 
     return (
         <div
             id='user_summary_wrapper'
-            onMouseLeave={props.mouseLeaveListener}
+            // onMouseLeave={props.mouseLeaveListener}
             onMouseEnter={props.mouseEnterListener}
             className={`${styles.user_summary_wrapper} 
             ${props.toBottom ? styles.to_bottom : ' '}
@@ -37,8 +47,13 @@ export default function UserSummary(props: propsIF) {
         >
             {props.user && (
                 <>
-                    <div className={styles.summary_header}>
-                        <span className={styles.user_avatar}>{myJazzicon}</span>
+                    <div
+                        className={styles.summary_header}
+                        onClick={goToProfile}
+                    >
+                        <span className={styles.user_avatar}>
+                            {getAvatarForChat(props.user)}
+                        </span>
                         <span className={styles.user_name}>
                             {getUserLabelforSummary(props.user)}
                         </span>

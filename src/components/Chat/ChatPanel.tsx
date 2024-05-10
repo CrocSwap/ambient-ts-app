@@ -10,13 +10,16 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import NotFound from '../../pages/NotFound/NotFound';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
+import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
+import { ChatVerificationTypes } from './ChatEnums';
+import { ChatGoToChatParamsIF } from './ChatIFs';
 import styles from './ChatPanel.module.css';
 import ChatToaster from './ChatToaster/ChatToaster';
 import { setLS } from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
@@ -26,8 +29,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-import { ChatVerificationTypes } from './ChatEnums';
-import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
+import { useMediaQuery } from '@material-ui/core';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -50,7 +52,7 @@ function ChatPanel(props: propsIF) {
 
     if (!isChatEnabled) return <NotFound />;
 
-    const messageEnd = useRef<HTMLDivElement>(null);
+    const messageListWrapper = useRef<HTMLDivElement>(null);
     const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
     const [isModerator, setIsModerator] = useState(false);
@@ -127,6 +129,13 @@ function ChatPanel(props: propsIF) {
 
     const verifyBtnRef = useRef<HTMLDivElement>(null);
 
+    const [goToChartParams, setGoToChartParams] = useState<
+        ChatGoToChatParamsIF | undefined
+    >();
+
+    const [showPrevMents, setShowPrevMents] = useState(false);
+    const [showNextMents, setShowNextMents] = useState(false);
+
     const activateToastr = (
         message: string,
         type: 'success' | 'error' | 'warning' | 'info',
@@ -137,26 +146,36 @@ function ChatPanel(props: propsIF) {
     };
 
     const freezePanel = () => {
-        messageEnd.current?.style.setProperty('opacity', '0');
+        messageListWrapper.current?.style.setProperty('opacity', '0');
     };
 
     const scrollToVeryBottom = () => {
-        if (messageEnd.current) {
-            messageEnd.current.scrollTo({
+        if (messageListWrapper.current) {
+            scrollToInstant(messageListWrapper.current.scrollHeight);
+        }
+    };
+
+    const scrollToInstant = (pos: number) => {
+        if (messageListWrapper.current) {
+            messageListWrapper.current.scrollTo({
                 left: 0,
-                top: messageEnd.current.scrollHeight,
+                top: pos,
                 behavior: 'instant' as ScrollBehavior,
             });
         }
     };
 
     const activatePanel = () => {
-        messageEnd.current?.style.setProperty('opacity', '1');
+        messageListWrapper.current?.style.setProperty('opacity', '1');
         scrollToVeryBottom();
         setTimeout(() => {
             scrollToVeryBottom();
         }, 200);
     };
+
+    const [scrollRevertTarget, setScrollRevertTarget] = useState('');
+
+    const isMobile = useMediaQuery('(max-width: 800px)');
 
     const {
         messages,
@@ -195,10 +214,12 @@ function ChatPanel(props: propsIF) {
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
-    const { isUserConnected, resolvedAddressFromContext } =
+    const { isUserConnected, resolvedAddressFromContext, setCurrentUserID } =
         useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
+
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const [lastScrolledMessage, setLastScrolledMessage] = useState('');
     const [lastScrollListenerActive, setLastScrollListenerActive] =
@@ -230,14 +251,14 @@ function ChatPanel(props: propsIF) {
         // CHAT_FEATURES_WBO -  Feature : User Summary
         const userDetails = await getUserSummaryDetails(walletID);
         setSelectedUserSummary(userDetails);
-        if (!messageEnd.current) return;
+        if (!messageListWrapper.current) return;
 
         const wrapperCenterPoint =
-            messageEnd.current.getBoundingClientRect().height / 2 +
-            messageEnd.current.getBoundingClientRect().top;
+            messageListWrapper.current.getBoundingClientRect().height / 2 +
+            messageListWrapper.current.getBoundingClientRect().top;
         setUserSummaryActive(true);
         setUserSummaryVerticalPosition(
-            elementTop - messageEnd.current.getBoundingClientRect().top,
+            elementTop - messageListWrapper.current.getBoundingClientRect().top,
         );
         if (elementTop >= wrapperCenterPoint) {
             setUserSummaryToBottom(false);
@@ -348,7 +369,7 @@ function ChatPanel(props: propsIF) {
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
-                if (result.status === 'Not OK') {
+                if (result && result.status === 'Not OK') {
                     // this flow moved to backend due to triggering more than one
                     // whole of initial data fetching process will be refactored
                     // saveUser(address, ensName).then((result: any) => {
@@ -360,6 +381,7 @@ function ChatPanel(props: propsIF) {
                         ? setIsModerator(true)
                         : setIsModerator(false);
                     setCurrentUser(result.userData._id);
+                    setCurrentUserID(result.userData._id);
                     setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
                         updateUser(
@@ -369,7 +391,7 @@ function ChatPanel(props: propsIF) {
                         ).then(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
-                                if (result.status === 'OK') {
+                                if (result && result.status === 'OK') {
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     updateMessageUser(
                                         currentUser as string,
@@ -390,18 +412,6 @@ function ChatPanel(props: propsIF) {
             setCurrentUser(undefined);
         }
     }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
-
-    // useEffect(() => {
-    //     if(userAddress){
-    //         getUserAvatarImageAndID().then((result: any) => {
-    //             console.log(result)
-    //             if (result.status === 'OK') {
-    //                 setUserAccountProfile(() => result.userData.avatarImage)
-    //             }
-    //         });
-
-    //     }
-    // },[userAddress, isUserConnected])
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -432,12 +442,12 @@ function ChatPanel(props: propsIF) {
         const msgEl = document.querySelector(
             '.messageBubble[data-message-id="' + messageId + '"]',
         );
-        if (msgEl && messageEnd.current) {
-            // messageEnd.current.scrollTop = messageEnd.current.scrollHeight - msgElOffsetTop + msgElHeight - messageEnd.current.getBoundingClientRect().height;
+        if (msgEl && messageListWrapper.current) {
+            // messageListWrapper.current.scrollTop = messageListWrapper.current.scrollHeight - msgElOffsetTop + msgElHeight - messageListWrapper.current.getBoundingClientRect().height;
             setTimeout(() => {
                 const target = calculateScrollTarget(messageId);
-                if (messageEnd && messageEnd.current) {
-                    messageEnd.current.scrollTop = target;
+                if (messageListWrapper && messageListWrapper.current) {
+                    messageListWrapper.current.scrollTop = target;
                     if (flashAnimation) {
                         setTimeout(() => {
                             msgEl.classList.add(styles.purple_flashed);
@@ -472,6 +482,12 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen]);
 
     useEffect(() => {
+        if (scrollRevertTarget.length > 0) {
+            const targetPos = calculateScrollTarget(scrollRevertTarget);
+            scrollToInstant(targetPos);
+            setScrollRevertTarget('');
+        }
+
         const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == userAddress;
         });
@@ -483,21 +499,25 @@ function ChatPanel(props: propsIF) {
         if (messages.length == 0) return;
     }, [messages, setMessages]);
 
-    // domDebug('address', userAddress);
-
     function handleCloseChatPanel() {
         setIsChatOpen(false);
     }
 
     const scrollToBottomButton = async () => {
-        if (!messageEnd.current) return;
+        if (!messageListWrapper.current) return;
 
-        messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
+        messageListWrapper.current.scrollTo(
+            0,
+            messageListWrapper.current.scrollHeight,
+        );
         setTimeout(() => {
-            if (!messageEnd.current) return;
+            if (!messageListWrapper.current) return;
 
             setIsScrollToBottomButtonPressed(true);
-            messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
+            messageListWrapper.current.scrollTo(
+                0,
+                messageListWrapper.current.scrollHeight,
+            );
         }, 101);
         setScrollDirection('Scroll Down');
     };
@@ -506,24 +526,16 @@ function ChatPanel(props: propsIF) {
         const nextPage = page + 1;
         setPage(nextPage);
 
+        if (messages.length > 0) {
+            setScrollRevertTarget(messages[0]._id);
+        }
+
         const data =
             room === 'Admins'
                 ? await getAllMessages(nextPage)
                 : await getMsgWithRestWithPagination(room, nextPage);
         if (data.length === 0) {
             setShowPreviousMessagesButton(false);
-        } else {
-            const scrollContainer = messageEnd.current; // Referring to the scrollable container
-            const scrollPositionBefore = scrollContainer
-                ? scrollContainer.scrollTop
-                : 1;
-            const scrollPositionAfter = scrollContainer
-                ? scrollContainer.scrollHeight / 4
-                : 1;
-            scrollContainer?.scrollTo(
-                0,
-                scrollPositionAfter - scrollPositionBefore,
-            );
         }
     };
 
@@ -542,8 +554,11 @@ function ChatPanel(props: propsIF) {
 
         const timeout = overrideTimeout ? overrideTimeout : 1000;
         const timer = setTimeout(() => {
-            if (!messageEnd.current) return;
-            messageEnd.current.scrollTo(0, messageEnd.current.scrollHeight);
+            if (!messageListWrapper.current) return;
+            messageListWrapper.current.scrollTo(
+                0,
+                messageListWrapper.current.scrollHeight,
+            );
         }, timeout);
         setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
@@ -558,8 +573,8 @@ function ChatPanel(props: propsIF) {
 
     const calculateScrollTarget = (messageId: string) => {
         if (
-            messageEnd &&
-            messageEnd.current &&
+            messageListWrapper &&
+            messageListWrapper.current &&
             messageId &&
             messageId.length > 0
         ) {
@@ -572,18 +587,18 @@ function ChatPanel(props: propsIF) {
 
                 return target;
             }
-            return messageEnd.current.scrollHeight;
+            return messageListWrapper.current.scrollHeight;
         }
         return 0;
     };
 
     const handleFocusedMessageOnScroll = () => {
         if (
-            messageEnd &&
-            messageEnd.current &&
+            messageListWrapper &&
+            messageListWrapper.current &&
             lastScrollListenerRef.current == true
         ) {
-            const rect = messageEnd.current.getBoundingClientRect();
+            const rect = messageListWrapper.current.getBoundingClientRect();
             const bubbles = document.querySelectorAll('.messageBubble');
             for (let i = 0; i < bubbles.length; i++) {
                 const el = bubbles[i];
@@ -594,22 +609,67 @@ function ChatPanel(props: propsIF) {
                     break;
                 }
             }
-            // domDebug('centerPoint' ,centerPoint.toString());
+        }
+    };
+
+    const goToChartAction = () => {
+        if (goToChartParams) {
+            linkGenMarket.navigate({
+                chain: goToChartParams?.chain,
+                tokenA: goToChartParams?.tokenA,
+                tokenB: goToChartParams?.tokenB,
+            });
+        }
+        setGoToChartParams(undefined);
+    };
+
+    const mentions = messages.filter((item) => {
+        return (
+            item &&
+            item.mentionedWalletID == userAddress &&
+            userAddress !== undefined
+        );
+    });
+
+    const checkMents = () => {
+        const mentionElements = document.querySelectorAll('.mentionedMessage');
+        if (
+            messageListWrapper.current &&
+            messageListWrapper.current.getBoundingClientRect() &&
+            mentionElements.length > 0
+        ) {
+            const listRect = messageListWrapper.current.getBoundingClientRect();
+
+            let showPrev = false;
+            let showNext = false;
+
+            for (let i = 0; i < mentionElements.length; i++) {
+                const mentRect = mentionElements[i].getBoundingClientRect();
+                if (mentRect.top < listRect.top) {
+                    showPrev = true;
+                }
+                if (mentRect.bottom > listRect.bottom + 20) {
+                    showNext = true;
+                }
+            }
+
+            setShowPrevMents(showPrev);
+            setShowNextMents(showNext);
         }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
         if (lastScrollListenerRef.current === true) {
-            if (isChatOpen && messageEnd.current) {
-                const panelScrollHeight = messageEnd.current.scrollHeight;
+            if (isChatOpen && messageListWrapper.current) {
+                const panelScrollHeight =
+                    messageListWrapper.current.scrollHeight;
                 const panelHeight =
-                    messageEnd.current.getBoundingClientRect().height;
-                const panelScrollTop = messageEnd.current.scrollTop;
+                    messageListWrapper.current.getBoundingClientRect().height;
+                const panelScrollTop = messageListWrapper.current.scrollTop;
                 if (panelScrollHeight - panelHeight - panelScrollTop > 40) {
                     handleFocusedMessageOnScroll();
                 } else {
-                    domDebug('selected message', '');
                     setLastScrolledMessage('');
 
                     // setLastScrolledMessage('');
@@ -638,76 +698,54 @@ function ChatPanel(props: propsIF) {
             }
             setScrollDirection('Scroll Up');
         }
-
-        if (mentions.length > 0) {
-            let currentIndex = 0;
-
-            const mentionElements =
-                document.querySelectorAll('.mentionedMessage');
-
-            for (let i = 0; i < mentionElements.length; i++) {
-                if (
-                    messageEnd.current &&
-                    messageEnd.current.getBoundingClientRect() &&
-                    mentionElements[i].getBoundingClientRect().bottom <
-                        messageEnd.current.getBoundingClientRect().bottom
-                ) {
-                    const attribute =
-                        mentionElements[i].getAttribute('data-ment-index');
-                    currentIndex = parseInt(attribute as string);
-                } else {
-                    break;
-                }
-            }
-            setMentionIndex(currentIndex);
-        }
+        setUserSummaryActive(false);
+        checkMents();
     };
 
-    const mentions = messages.filter((item) => {
-        return (
-            item.mentionedWalletID == userAddress && userAddress !== undefined
-        );
-    });
-
     const handleMentionSkipper = (way: number) => {
-        let targetElement = null;
-        // down
-        const mentionElements = document.querySelectorAll('.mentionedMessage');
-        if (way == 1) {
-            for (let i = 0; i < mentionElements.length; i++) {
-                if (
-                    messageEnd.current &&
-                    messageEnd.current.getBoundingClientRect() &&
-                    mentionElements[i].getBoundingClientRect().bottom >
-                        messageEnd.current.getBoundingClientRect().bottom
-                ) {
-                    targetElement = mentionElements[i];
-                    break;
+        if (
+            messageListWrapper.current &&
+            messageListWrapper.current.getBoundingClientRect()
+        ) {
+            let targetElement = null;
+            const wrapperRect =
+                messageListWrapper.current.getBoundingClientRect();
+            // down
+            const mentionElements =
+                document.querySelectorAll('.mentionedMessage');
+            if (way == 1) {
+                for (let i = 0; i < mentionElements.length; i++) {
+                    const mRect = mentionElements[i].getBoundingClientRect();
+                    if (mRect.bottom > wrapperRect.bottom) {
+                        targetElement = mentionElements[i];
+                        break;
+                    }
                 }
             }
-        }
-        // up
-        else if (way === -1) {
-            for (let i = mentionElements.length - 1; i >= 0; i--) {
-                if (
-                    messageEnd.current &&
-                    messageEnd.current.getBoundingClientRect() &&
-                    mentionElements[i].getBoundingClientRect().top <
-                        messageEnd.current.getBoundingClientRect().top
-                ) {
-                    targetElement = mentionElements[i];
-                    break;
+            // up
+            else if (way === -1) {
+                for (let i = mentionElements.length - 1; i >= 0; i--) {
+                    const mRect = mentionElements[i].getBoundingClientRect();
+                    if (mRect.top < wrapperRect.top) {
+                        targetElement = mentionElements[i];
+                        break;
+                    }
                 }
             }
-        }
-        // last
-        else {
-            targetElement = mentionElements.item(mentionElements.length - 1);
-        }
+            // last
+            else {
+                targetElement = mentionElements.item(
+                    mentionElements.length - 1,
+                );
+            }
 
-        if (targetElement != null && messageEnd.current) {
-            messageEnd.current.scrollTop =
-                getChatBubbleYPos(targetElement, messageEnd.current) - 40;
+            if (targetElement != null) {
+                messageListWrapper.current.scrollTop =
+                    getChatBubbleYPos(
+                        targetElement,
+                        messageListWrapper.current,
+                    ) - 40;
+            }
         }
     };
 
@@ -858,14 +896,14 @@ function ChatPanel(props: propsIF) {
     let mentionIxdexPointer = 0;
     const messageList = (
         <div
-            ref={messageEnd}
+            ref={messageListWrapper}
             className={styles.scrollable_div}
             onScroll={handleScroll}
             id='chatmessage'
         >
             {messages &&
                 messages.map((item, i) => {
-                    if (item.mentionedWalletID === userAddress) {
+                    if (item && item.mentionedWalletID === userAddress) {
                         mentionIxdexPointer += 1;
                     }
                     return (
@@ -947,6 +985,8 @@ function ChatPanel(props: propsIF) {
                             setVerifyOldMessagesStartDate={
                                 setVerifyOldMessagesStartDate
                             }
+                            isFocusMentions={isFocusMentions}
+                            isMobile={isMobile}
                         />
                     );
                 })}
@@ -954,8 +994,8 @@ function ChatPanel(props: propsIF) {
             {/* WBO - Feature : User Summary */}
 
             <UserSummary
-                // isActive={userSummaryActive}
-                isActive={userSummaryActive && false}
+                isActive={userSummaryActive}
+                // isActive={userSummaryActive && false}
                 toBottom={userSummaryToBottom}
                 user={selectedUserSummary}
                 mouseLeaveListener={summaryMouseLeaveListener}
@@ -963,6 +1003,7 @@ function ChatPanel(props: propsIF) {
                     setUserSummaryActive(true);
                 }}
                 verticalPosition={userSummaryVerticalPosition}
+                isCurrentUser={currentUser == selectedUserSummary?._id}
             />
         </div>
     );
@@ -1114,8 +1155,51 @@ function ChatPanel(props: propsIF) {
             setSelectedMessageForReply={setSelectedMessageForReply}
             sendMessageListener={sendMessageListener}
             isChatOpen={isChatOpen}
+            isMobile={isMobile}
         />
     );
+
+    const mentSkipperComponent = () => {
+        if (mentions.length > 0 && isChatOpen && isFocusMentions) {
+            return (
+                <>
+                    {showPrevMents && (
+                        <div
+                            className={styles.ment_skip_button}
+                            onClick={() => {
+                                handleMentionSkipper(-1);
+                            }}
+                        >
+                            <IoIosArrowUp size={22} />
+                        </div>
+                    )}
+                    {showNextMents && (
+                        <div
+                            className={styles.ment_skip_button_down}
+                            onClick={() => {
+                                handleMentionSkipper(1);
+                            }}
+                        >
+                            <IoIosArrowDown size={22} />
+                        </div>
+                    )}
+                    {showNextMents && (
+                        <div
+                            className={styles.ment_skip_button_last}
+                            onClick={() => {
+                                handleMentionSkipper(2);
+                            }}
+                        >
+                            <IoIosArrowDown size={22} />
+                            Last Mention
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        return <></>;
+    };
 
     const handleConfirmDelete = async () => {
         deleteMsgFromList(selectedMessageIdForDeletion);
@@ -1191,6 +1275,18 @@ function ChatPanel(props: propsIF) {
                     handleConfirmDelete={handleConfirmDelete}
                     handleCancelDelete={handleCancelDelete}
                     rndShowPreviousMessages={rndPreviousMessagesButton}
+                    room={room}
+                    isFocusMentions={isFocusMentions}
+                    setIsFocusMentions={setIsFocusMentions}
+                    isCurrentPool={isCurrentPool}
+                    ensName={ensName}
+                    currentUser={currentUser}
+                    notifications={notifications}
+                    mentCount={mentions.length}
+                    mentionIndex={mentionIndex}
+                    setGoToChartParams={setGoToChartParams}
+                    setUserCurrentPool={setUserCurrentPool}
+                    rndMentSkipper={mentSkipperComponent}
                 />
             </>
         );
@@ -1208,11 +1304,18 @@ function ChatPanel(props: propsIF) {
                 style={{ height: contentHeight, width: '100%' }}
             >
                 <div className={styles.chat_body}>
+                    <div
+                        className={`${styles.btn_go_to_chart} ${
+                            goToChartParams != undefined ? styles.active : ''
+                        }`}
+                        onClick={goToChartAction}
+                    >
+                        Go to Chart
+                    </div>
                     {header}
                     <Room
                         selectedRoom={room}
                         setRoom={setRoom}
-                        isFullScreen={isFullScreen}
                         room={room}
                         setIsCurrentPool={setIsCurrentPool}
                         isCurrentPool={isCurrentPool}
@@ -1222,14 +1325,13 @@ function ChatPanel(props: propsIF) {
                         setUserCurrentPool={setUserCurrentPool}
                         currentUser={currentUser}
                         ensName={ensName}
-                        setFavoritePools={setFavoritePools}
-                        favoritePools={favoritePools}
                         setIsFocusMentions={setIsFocusMentions}
                         notifications={notifications}
                         mentCount={mentions.length}
                         mentionIndex={mentionIndex}
                         isModerator={isModerator}
                         isFocusMentions={isFocusMentions}
+                        setGoToChartParams={setGoToChartParams}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
@@ -1283,41 +1385,8 @@ function ChatPanel(props: propsIF) {
                 </div>
             </div>
 
-            {mentions.length > 0 && isChatOpen && isFocusMentions && (
-                <>
-                    {mentionIndex > 0 && (
-                        <div
-                            className={styles.ment_skip_button}
-                            onClick={() => {
-                                handleMentionSkipper(-1);
-                            }}
-                        >
-                            <IoIosArrowUp size={22} />
-                        </div>
-                    )}
-                    {mentionIndex < mentions.length - 1 && (
-                        <div
-                            className={styles.ment_skip_button_down}
-                            onClick={() => {
-                                handleMentionSkipper(1);
-                            }}
-                        >
-                            <IoIosArrowDown size={22} />
-                        </div>
-                    )}
-                    {mentionIndex < mentions.length - 1 && (
-                        <div
-                            className={styles.ment_skip_button_last}
-                            onClick={() => {
-                                handleMentionSkipper(2);
-                            }}
-                        >
-                            <IoIosArrowDown size={22} />
-                            Last Mention
-                        </div>
-                    )}
-                </>
-            )}
+            {mentSkipperComponent()}
+
             <ChatConfirmationPanel
                 isActive={showDeleteConfirmation && isChatOpen}
                 title='Delete Message'

@@ -17,15 +17,16 @@ import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 // import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
+import {
+    filterMessage,
+    formatURL,
+    isLink,
+    isLinkInCrocodileLabsLinks,
+    isLinkInCrocodileLabsLinksForInput,
+} from '../../ChatUtils';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import {
-    isLink,
-    filterMessage,
-    formatURL,
-    isLinkInCrocodileLabsLinksForInput,
-} from '../../ChatUtils';
 
 interface MessageInputProps {
     currentUser: string;
@@ -58,13 +59,10 @@ interface MessageInputProps {
     sendMessageCooldown: number;
     sendMessageListener?: () => void;
     isChatOpen?: boolean;
+    isMobile?: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
-    const isMobileDevice = () => {
-        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    };
-
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
@@ -73,7 +71,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
-    const [isMobile, setIsMobile] = useState<boolean>(false);
 
     // disabled for now due to es-lint warnings
     // const {
@@ -101,7 +98,6 @@ export default function MessageInput(props: MessageInputProps) {
 
             const selectionStart = inputRef.current.selectionStart as number;
 
-            // Create the new message by inserting the emoji at the selection start position
             const newMessage =
                 currentMessage.slice(0, selectionStart) +
                 emoji +
@@ -111,17 +107,14 @@ export default function MessageInput(props: MessageInputProps) {
                 setMessage(newMessage);
                 setInputLength(newMessage.length);
 
-                // Calculate the new cursor position after emoji insertion
                 const newCursorPosition = selectionStart + emoji.length;
 
-                // Update the input value and set the cursor position
                 inputRef.current.value = newMessage;
                 inputRef.current.setSelectionRange(
                     newCursorPosition,
                     newCursorPosition,
                 );
 
-                // Ensure the cursor remains active by focusing on the input element
                 inputRef.current.focus();
             } else {
                 props.setShowPopUp(true);
@@ -161,10 +154,6 @@ export default function MessageInput(props: MessageInputProps) {
     }
 
     useEffect(() => {
-        setIsMobile(isMobileDevice());
-    }, []);
-
-    useEffect(() => {
         messageInputText();
     }, [isUserConnected, userAddress]);
 
@@ -184,11 +173,21 @@ export default function MessageInput(props: MessageInputProps) {
         if (message === '') {
             return;
         }
-        const normalizedMessage = formatURL(message);
-        if (
-            (isLink(normalizedMessage) || filterMessage(normalizedMessage)) &&
-            !isLinkInCrocodileLabsLinksForInput(normalizedMessage)
-        ) {
+        const parts = message.split(/\s+/);
+
+        const containsBlockedLink = parts.some((part) => {
+            const normalizedPart = formatURL(part);
+            return (
+                (isLink(normalizedPart) || filterMessage(normalizedPart)) &&
+                !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+            );
+        });
+
+        const containsAllowedLink = parts.some((part) => {
+            const normalizedPart = formatURL(part);
+            return isLinkInCrocodileLabsLinks(normalizedPart);
+        });
+        if (containsBlockedLink && !containsAllowedLink) {
             props.setShowPopUp(true);
             props.setPopUpText('You cannot send this link.');
         } else {
@@ -221,15 +220,12 @@ export default function MessageInput(props: MessageInputProps) {
         setInputLength(newMessage.length);
         setCursorPosition(e.currentTarget.selectionStart);
 
-        // Check if the message length is less than or equal to 140 characters,
-        // and hide the pop-up message if it was shown previously
         if (newMessage.length <= 140) {
             props.setShowPopUp(false);
         }
     };
 
     const handleInputClick = () => {
-        // Update cursor position when the user clicks inside the input field
         if (inputRef.current) {
             setCursorPosition(inputRef.current.selectionStart);
         }
@@ -253,8 +249,6 @@ export default function MessageInput(props: MessageInputProps) {
     // };
 
     const isEmoji = (char: string) => {
-        // You can implement a more comprehensive check for emojis
-        // For simplicity, this example only checks for surrogate pairs
         return /[\uD800-\uDFFF]/.test(char);
     };
 
@@ -267,29 +261,44 @@ export default function MessageInput(props: MessageInputProps) {
 
             return;
         }
-
         if (e.key === 'Enter') {
-            if (
-                (isLink(message) || filterMessage(message)) &&
-                !isLinkInCrocodileLabsLinksForInput(message)
-            ) {
-                props.setShowPopUp(true);
-                props.setPopUpText('You cannot send this link.');
-            } else {
-                // send msg if ment panel is not active
-                if (!mentPanelActive) {
+            if (message === '') {
+                return;
+            }
+
+            if (!mentPanelActive) {
+                const parts = message.split(/\s+/);
+
+                const containsBlockedLink = parts.some((part) => {
+                    const normalizedPart = formatURL(part);
+
+                    return (
+                        (isLink(normalizedPart) ||
+                            filterMessage(normalizedPart)) &&
+                        !isLinkInCrocodileLabsLinksForInput(normalizedPart)
+                    );
+                });
+
+                const containsAllowedLink = parts.some((part) => {
+                    const normalizedPart = formatURL(part);
+                    return isLinkInCrocodileLabsLinks(normalizedPart);
+                });
+                if (containsBlockedLink && !containsAllowedLink) {
+                    props.setShowPopUp(true);
+                    props.setPopUpText('You cannot send this link.');
+                } else {
                     handleSendMsg(formatURL(message), roomId);
+                    setMessage('');
                     setMentUser(null);
                     setPossibleMentUser(null);
-                    setMessage('');
                     dontShowEmojiPanel();
                     props.setShowPopUp(false);
                 }
-                // assign user for ment
-                else {
-                    if (possibleMentUser != null) {
-                        userPickerForMention(possibleMentUser);
-                    }
+            }
+            // assign user for ment
+            else {
+                if (possibleMentUser != null) {
+                    userPickerForMention(possibleMentUser);
                 }
             }
         } else if (
@@ -548,11 +557,11 @@ export default function MessageInput(props: MessageInputProps) {
                             onClick={handleInputClick}
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
-                            tabIndex={-1}
-                            autoFocus={
-                                (props.appPage && !isMobile) ||
-                                props.isReplyButtonPressed
-                            }
+                            // tabIndex={-1}
+                            // autoFocus={
+                            //     (props.appPage && !props.isMobile) ||
+                            //     props.isReplyButtonPressed
+                            // }
                             maxLength={140}
                             ref={inputRef}
                         />

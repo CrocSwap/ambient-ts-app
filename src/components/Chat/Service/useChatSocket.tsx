@@ -55,7 +55,6 @@ const useChatSocket = (
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
-    const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
     const [notifications, setNotifications] = useState<Map<string, number>>();
     const [isVerified, setIsVerified] = useState<boolean>(false);
@@ -81,7 +80,6 @@ const useChatSocket = (
     }
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
-    domDebug(' chat url', url);
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
@@ -107,8 +105,6 @@ const useChatSocket = (
     useEffect(() => {
         switch (socketLastMessage.type) {
             case 'msg-recieve-2':
-                console.log(socketLastMessage.payload);
-                console.log('.........................');
                 newMsgListener(socketLastMessage.payload);
                 break;
             case 'message-deleted-listener':
@@ -143,7 +139,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages(data.reverse());
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
         return data.reverse();
     }
@@ -157,7 +152,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages(data.reverse());
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
     }
 
@@ -170,7 +164,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages((prevMessages) => [...data, ...prevMessages]);
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
         return data;
     }
@@ -185,7 +178,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
 
         return data.reverse();
@@ -381,9 +373,10 @@ const useChatSocket = (
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
             if (data.length > 0) {
-                setLastMessage(data[data.length - 1]);
-                setLastMessageText(data[data.length - 1].text);
-                setMessageUser(data[data.length - 1].sender);
+                if (data[data.length - 1]) {
+                    setLastMessage(data[data.length - 1]);
+                    setMessageUser(data[data.length - 1].sender);
+                }
             }
 
             const userListData = await getUserListWithRest();
@@ -400,7 +393,7 @@ const useChatSocket = (
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
 
     useEffect(() => {
-        domDebug('room changed', room);
+        if (roomRef.current == room) return;
         sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
         roomRef.current = room;
     }, [room]);
@@ -532,25 +525,14 @@ const useChatSocket = (
     async function updateUserWithAvatarImage(
         userId: string,
         avatarImage: string,
+        avatarThumbnail?: string,
+        avatarType?: number,
     ) {
-        // rest implementation to be removed
-        // const response = await fetch(
-        //     CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
-        //     {
-        //         method: 'PUT',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({
-        //             _id: _id,
-        //             ensName: ensName,
-        //             avatarImage: userAvatarImage,
-        //         }),
-        //     },
-        // );
-        // const data = await response.json();
-
         sendToSocket('set-avatar', {
             userId,
             avatarImage,
+            avatarThumbnail,
+            avatarType,
         });
     }
 
@@ -597,7 +579,6 @@ const useChatSocket = (
         setMessages([...messagesRef.current, data]);
         if (messagesRef.current[messagesRef.current.length - 1]) {
             setLastMessage(data);
-            setLastMessageText(data.message);
             setMessageUser(data.sender);
         }
     };
@@ -635,7 +616,6 @@ const useChatSocket = (
         sendMsg,
         lastMessage,
         messageUser,
-        lastMessageText,
         users,
         notifications,
         updateLikeDislike,

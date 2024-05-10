@@ -36,3 +36,5 @@ export const getUserAvatarImageByAccountEndpoint =
     apiBase + 'auth/getUserAvatarImageByAccount';
 
 export const getUserAvatarEndpoint = apiBase + 'auth/getUserAvatar';
+
+export const getTopRoomsEndpoint = apiBase + 'messages/getTopRooms';

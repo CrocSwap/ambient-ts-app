@@ -89,6 +89,8 @@ interface SentMessageProps {
     scrollToMessage: (messageId: string, flashAnimation?: boolean) => void;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     setVerifyOldMessagesStartDate: Dispatch<SetStateAction<Date>>;
+    isFocusMentions: boolean;
+    isMobile: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -433,7 +435,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         word.slice(1) === props.ensName ||
                                         word.slice(1) ===
                                             props.connectedAccountActive
-                                            ? '#7371FC'
+                                            ? 'var(--accent1)'
                                             : 'white',
                                 }}
                             >
@@ -488,7 +490,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         word.slice(1) === props.ensName ||
                                         word.slice(1) ===
                                             props.connectedAccountActive
-                                            ? '#7371FC'
+                                            ? 'var(--accent1)'
                                             : 'white',
                                 }}
                             >
@@ -527,8 +529,8 @@ function SentMessagePanel(props: SentMessageProps) {
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
         if (
-            (isLinkInCrocodileLabsLinks(word) ||
-                isLinkInCrocodileLabsLinksForInput(word)) &&
+            isLinkInCrocodileLabsLinks(word) &&
+            isLinkInCrocodileLabsLinksForInput(word) &&
             isValidUrl(word)
         ) {
             ret = (
@@ -548,19 +550,24 @@ function SentMessagePanel(props: SentMessageProps) {
                 props.message.mentionedWalletID
             ) {
                 mentFound.val = true;
+
                 ret = (
-                    <span
-                        onMouseEnter={(e) => {
-                            props.mentionHoverListener(
-                                e.currentTarget.getBoundingClientRect().top,
-                                props.message.mentionedWalletID,
-                            );
-                        }}
-                        onMouseLeave={props.mentionMouseLeftListener}
-                        className={styles.mentioned_name_token}
-                    >
-                        {word}
-                    </span>
+                    <>
+                        <span> {word.slice(0, word.lastIndexOf('@'))} </span>
+                        <span
+                            onClick={(e) => {
+                                props.mentionHoverListener(
+                                    e.currentTarget.getBoundingClientRect()
+                                        .top - (props.isMobile ? 40 : 0),
+                                    props.message.mentionedWalletID,
+                                );
+                            }}
+                            // onMouseLeave={props.mentionMouseLeftListener}
+                            className={styles.mentioned_name_token}
+                        >
+                            {word.slice(word.lastIndexOf('@'), word.length)}
+                        </span>
+                    </>
                 );
             } else {
                 ret = <span> {word} </span>;
@@ -759,6 +766,7 @@ function SentMessagePanel(props: SentMessageProps) {
             ${hasSeparator ? styles.has_separator : ''}
             ${
                 props.message.mentionedWalletID === props.address &&
+                props.isFocusMentions &&
                 props.address
                     ? styles.reader_mentioned
                     : ''
@@ -780,6 +788,9 @@ function SentMessagePanel(props: SentMessageProps) {
             onMouseEnter={() => {
                 // setIsMoreButtonPressed(false);
                 setTimestampForChildRefresh(new Date().getTime());
+            }}
+            onClick={() => {
+                props.mentionMouseLeftListener();
             }}
         >
             {!props.message.isDeleted || props.isModerator ? (
@@ -929,6 +940,13 @@ function SentMessagePanel(props: SentMessageProps) {
                             >
                                 {showAvatar && (
                                     <div
+                                        // onMouseLeave={props.mentionMouseLeftListener}
+                                        // onMouseEnter={(e) => {
+                                        //     props.mentionHoverListener(
+                                        //         e.currentTarget.getBoundingClientRect().top,
+                                        //         props.message.walletID,
+                                        //     );
+                                        // }}
                                         className={styles.avatar_jazzicons}
                                         onClick={goToProfilePage}
                                     >
