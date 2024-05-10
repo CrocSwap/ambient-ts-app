@@ -17,6 +17,7 @@ import {
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -71,6 +72,8 @@ function LimitOrderLI(props: limitOrderPropsIF) {
 
 export default function OrdersSearchResults(props: propsIF) {
     const { searchedLimitOrders } = props;
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const {
         chainData: { chainId },
@@ -135,7 +138,13 @@ export default function OrdersSearchResults(props: propsIF) {
                             </Text>
                         ))}
                     </GridContainer>
-                    <ResultsContainer flexDirection='column'>
+                    <ResultsContainer
+                        flexDirection='column'
+                        onClick={() => {
+                            if (isPoolDropdownOpen)
+                                setIsPoolDropdownOpen(false);
+                        }}
+                    >
                         {searchedLimitOrders
                             .slice(0, 4)
                             .map((limitOrder: LimitOrderIF) => (
