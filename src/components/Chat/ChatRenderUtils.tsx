@@ -12,7 +12,7 @@ import styles from './ChatRenderUtils.module.css';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import { FiEdit3 } from 'react-icons/fi';
 import Blockies from 'react-blockies';
-import { AVATAR_TYPES, AVATAR_TYPES_SET } from './ChatConstants/ChatConstants';
+import { AVATAR_TYPES } from './ChatConstants/ChatConstants';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -190,7 +190,7 @@ export const getAvatarForProfilePage = (
                 <>
                     <div className={styles.nft_edit_overlay}></div>
                     <div className={styles.nft_edit_icon}>
-                        <FiEdit3 size={24}></FiEdit3>
+                        <FiEdit3 size={22}></FiEdit3>
                     </div>
                 </>
             )}

@@ -30,10 +30,15 @@
     transform: translate(-50%, -50%);
     color: white;
     z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nft_edit_icon svg {
-    fill: white;
+    fill: transparent;
+    stroke: var(--text1);
+
 }
 
 .nft_avatar_wrapper:hover{

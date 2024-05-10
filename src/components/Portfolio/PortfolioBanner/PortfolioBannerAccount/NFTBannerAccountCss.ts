@@ -10,7 +10,7 @@ const NFTBannerAccountContainer = styled.div<{
     display: grid;
 
     width: ${({ isMobile }) => (isMobile ? '90vw' : '350px')};
-    height: ${({ isMobile }) => (isMobile ? '70vh' : '570px')};
+    max-height: ${({ isMobile }) => (isMobile ? '70vh' : '570px')};
 
     gap: ${({ isMobile }) => (isMobile ? '1vw' : '16px')};
 
@@ -178,8 +178,6 @@ const NFTBannerFilter = styled.div`
 
     gap: 5px;
 
-    margin-left: 22px;
-
     align-items: center;
     justify-content: center;
 `;
@@ -328,10 +326,9 @@ const ScrollableContainer = styled.div`
     position: relative;
     flex-grow: 1;
     overflow-y: auto;
-    height: 100%;
+    max-height: 310px;
     scrollbar-width: thin;
     scrollbar-color: var(--accent1) var(--dark1);
-    background: var(--dark1);
 
     &::-webkit-scrollbar {
         display: 'none';
@@ -344,6 +341,17 @@ const ScrollableContainer = styled.div`
     &::-webkit-scrollbar-thumb {
         background-color: var(--dark3);
     }
+`;
+const HeaderText = styled.div<{ fontSize?: string }>`
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 0.2rem;
+    font-family: var(--font-family);
+    font-weight: 300;
+    font-size: ${({ fontSize }) => (fontSize ? fontSize : '18px')};
+    line-height: var(--header2-lh);
+    letter-spacing: -0.02em;
+    color: var(--text1);
 `;
 
 export {
@@ -368,4 +376,5 @@ export {
     SelectedJazzIcon,
     IconContainer,
     ScrollableContainer,
+    HeaderText,
 };

@@ -489,7 +489,7 @@ function ChatPanel(props: propsIF) {
         }
 
         const mentionsInScope = messages.filter((item) => {
-            return item.mentionedWalletID == userAddress;
+            return item && item.mentionedWalletID == userAddress;
         });
 
         if (mentionIndex == -1) {
@@ -903,6 +903,9 @@ function ChatPanel(props: propsIF) {
         >
             {messages &&
                 messages.map((item, i) => {
+                    if (!item) {
+                        return <></>;
+                    }
                     if (item && item.mentionedWalletID === userAddress) {
                         mentionIxdexPointer += 1;
                     }
@@ -912,7 +915,7 @@ function ChatPanel(props: propsIF) {
                             isUserLoggedIn={isUserConnected as boolean}
                             message={item}
                             ensName={ensName}
-                            isCurrentUser={item.sender === currentUser}
+                            isCurrentUser={item && item.sender === currentUser}
                             currentUser={currentUser}
                             resolvedAddress={resolvedAddressFromContext}
                             connectedAccountActive={userAddress}
@@ -927,7 +930,7 @@ function ChatPanel(props: propsIF) {
                             }
                             previousMessage={i === 0 ? null : messages[i - 1]}
                             mentionIndex={
-                                item.mentionedWalletID === userAddress
+                                item && item.mentionedWalletID === userAddress
                                     ? mentionIxdexPointer - 1
                                     : undefined
                             }
@@ -947,8 +950,8 @@ function ChatPanel(props: propsIF) {
                             isSubscriptionsEnabled={isSubscriptionsEnabled}
                             isChatOpen={isChatOpen}
                             address={userAddress}
-                            isDeleted={item.isDeleted}
-                            deletedMessageText={item.deletedMessageText}
+                            isDeleted={item && item.isDeleted}
+                            deletedMessageText={item && item.deletedMessageText}
                             addReactionListener={reactionBtnListener}
                             isDeleteMessageButtonPressed={
                                 isDeleteMessageButtonPressed

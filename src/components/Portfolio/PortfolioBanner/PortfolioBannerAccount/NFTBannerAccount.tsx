@@ -21,6 +21,7 @@ import {
     SelectedJazzIcon,
     IconContainer,
     ScrollableContainer,
+    HeaderText,
 } from './NFTBannerAccountCss';
 import {
     NftDataIF,
@@ -36,7 +37,6 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import useChatSocket from '../../../Chat/Service/useChatSocket';
 import { trimString } from '../../../../ambient-utils/dataLayer';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { useMediaQuery } from '@material-ui/core';
@@ -112,9 +112,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         undefined,
     );
 
-    const [isDefaultNft, setIsDefaultNft] = useState(false);
-    const [isDefaultThumbnail, setIsDefaultThumbnail] = useState(false);
-
     const [selectedThumbnail, setSelectedThumbnail] = useState<
         NftDataIF | undefined
     >(undefined);
@@ -148,7 +145,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nftContractName: any[] = [];
-        nftContractName.push({ name: 'All Nfts', address: 'all' });
 
         NFTData?.map((item) => {
             item.data.map((nftData) => {
@@ -166,6 +162,10 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 }
             });
         });
+
+        if (nftContractName && nftContractName.length > 0) {
+            nftContractName.push({ name: 'All Nfts', address: 'all' });
+        }
 
         setNftContractName(() => nftContractName);
     }, [NFTData]);
@@ -316,10 +316,15 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         >
             <div>
                 <NFTBannerHeader>
-                    <div></div>
-                    <div style={{ transform: 'translate(20%, 0)' }}>
-                        Select Avatar
+                    <div style={{ width: '25px' }}>
+                        <FiRefreshCw
+                            size={18}
+                            onClick={() => {
+                                setIsfetchNftTriggered(() => true);
+                            }}
+                        />
                     </div>
+                    <HeaderText>Select Avatar</HeaderText>
                     <VscClose
                         size={25}
                         onClick={() => {
@@ -377,7 +382,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                         )}
                                 </SelectedJazzIcon>
                             )}
-                            <div>Profile</div>
+                            <HeaderText fontSize={'13px'}>Profile</HeaderText>
                         </IconContainer>
                         <IconContainer>
                             {/* {!isDefaultThumbnail && selectedThumbnail ? ( */}
@@ -428,7 +433,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                         )}
                                 </SelectedJazzIcon>
                             )}
-                            <div>Thumbnail</div>
+                            <HeaderText fontSize={'13px'}>Thumbnail</HeaderText>
                         </IconContainer>
                     </SelectedNftCotainer>
                     {nftContractName.length > 0 && (
@@ -490,13 +495,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                     </DropDownListContainer>
                                 )}
                             </DropDownContainer>
-
-                            <FiRefreshCw
-                                size={18}
-                                onClick={() => {
-                                    setIsfetchNftTriggered(() => true);
-                                }}
-                            />
                         </NFTBannerFilter>
                     )}
                     {isWalletPanelActive && (
@@ -562,14 +560,10 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                                       false,
                                                   );
                                                   if (isSelectThumbnail) {
-                                                      setIsDefaultThumbnail(
-                                                          false,
-                                                      );
                                                       setSelectedThumbnail(
                                                           item,
                                                       );
                                                   } else {
-                                                      setIsDefaultNft(false);
                                                       setSelectedNft(item);
                                                   }
                                               }}
