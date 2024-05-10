@@ -866,6 +866,15 @@
     font-weight: bold;
     cursor: pointer;
     color: var(--accent1);
+    padding: .15rem .2rem;
+    transition: all .2s ease-in-out;
+}
+
+.mentioned_name_token:hover{
+    background: rgba(255,255,255, .1);
+    box-shadow: 0 0 10px 0 color-mix(in srgb, var(--accent1) 20%,  transparent);
+    color:color-mix(in srgb, var(--accent1) 50%, white);
+    border-radius: .4rem;
 }
 
 .vrf_msg_dbg{

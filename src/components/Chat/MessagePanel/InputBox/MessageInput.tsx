@@ -59,13 +59,10 @@ interface MessageInputProps {
     sendMessageCooldown: number;
     sendMessageListener?: () => void;
     isChatOpen?: boolean;
+    isMobile?: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
-    const isMobileDevice = () => {
-        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    };
-
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
@@ -74,7 +71,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
-    const [isMobile, setIsMobile] = useState<boolean>(false);
 
     // disabled for now due to es-lint warnings
     // const {
@@ -156,14 +152,6 @@ export default function MessageInput(props: MessageInputProps) {
             return 'Please connect wallet to chat.';
         }
     }
-
-    useEffect(() => {
-        console.log(isMobileDevice());
-        console.log(isMobileDevice());
-        console.log(isMobileDevice());
-        console.log(isMobileDevice());
-        setIsMobile(isMobileDevice());
-    }, []);
 
     useEffect(() => {
         messageInputText();
@@ -569,11 +557,11 @@ export default function MessageInput(props: MessageInputProps) {
                             onClick={handleInputClick}
                             onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
-                            tabIndex={-1}
-                            autoFocus={
-                                (props.appPage && !isMobile) ||
-                                props.isReplyButtonPressed
-                            }
+                            // tabIndex={-1}
+                            // autoFocus={
+                            //     (props.appPage && !props.isMobile) ||
+                            //     props.isReplyButtonPressed
+                            // }
                             maxLength={140}
                             ref={inputRef}
                         />

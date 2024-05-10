@@ -37,7 +37,7 @@ export default function UserSummary(props: propsIF) {
     return (
         <div
             id='user_summary_wrapper'
-            onMouseLeave={props.mouseLeaveListener}
+            // onMouseLeave={props.mouseLeaveListener}
             onMouseEnter={props.mouseEnterListener}
             className={`${styles.user_summary_wrapper} 
             ${props.toBottom ? styles.to_bottom : ' '}
