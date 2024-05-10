@@ -11,13 +11,9 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     align-items: center;
-    padding: 0.5rem 0.5rem 0.5rem 0;
-    height: 40px;
 }
 
 .current_data_info {
-    padding: 0.3rem 0 0 0.3rem;
-
     /* extra small */
 
     font-family: 'Lexend Deca';
@@ -34,10 +30,8 @@
     gap: 4px;
 
     color: var(--text2);
-}
-
-.settings_container:not(:last-child) {
-    border-right: var(--grey-light-border);
+    height: 15px;
+    padding-left: 4px;
 }
 
 .active_selected_button,
@@ -75,9 +69,4 @@
 
 .non_active_selected_button {
     color: var(--text2);
-}
-
-.border_left {
-    text-decoration: underline;
-    text-underline-offset: 3px;
 }
