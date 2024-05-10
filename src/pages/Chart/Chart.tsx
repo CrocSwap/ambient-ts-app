@@ -66,6 +66,7 @@ import {
     fillLiqAdvanced,
     findSnapTime,
     formatTimeDifference,
+    getCandleCount,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
     getXandYLocationForChartDrag,
@@ -3375,66 +3376,21 @@ export default function Chart(props: propsIF) {
                                                 ),
                                                 yAxisLabelPlacement + 16,
                                             );
-
-                                            const filteredCandle =
-                                                visibleCandleData.filter(
-                                                    (i: CandleDataChart) => {
-                                                        return (
-                                                            i.time * 1000 <=
-                                                                Math.max(
-                                                                    item.data[0]
-                                                                        .x,
-                                                                    item.data[1]
-                                                                        .x,
-                                                                ) &&
-                                                            i.time * 1000 >=
-                                                                Math.min(
-                                                                    item.data[0]
-                                                                        .x,
-                                                                    item.data[1]
-                                                                        .x,
-                                                                )
-                                                        );
-                                                    },
+                                            const min = Math.min(
+                                                item.data[0].x,
+                                                item.data[1].x,
+                                            );
+                                            const max = Math.max(
+                                                item.data[0].x,
+                                                item.data[1].x,
+                                            );
+                                            const showCandleCount =
+                                                getCandleCount(
+                                                    visibleCandleData,
+                                                    [min, max],
+                                                    period,
+                                                    isCondensedModeEnabled,
                                                 );
-
-                                            let showCandleCount =
-                                                filteredCandle.length;
-
-                                            if (filteredCandle) {
-                                                const gapMinCandleCount =
-                                                    Math.floor(
-                                                        (filteredCandle[
-                                                            filteredCandle.length -
-                                                                1
-                                                        ].time *
-                                                            1000 -
-                                                            item.data[0].x) /
-                                                            (period * 1000),
-                                                    );
-
-                                                if (gapMinCandleCount > 0) {
-                                                    showCandleCount =
-                                                        gapMinCandleCount +
-                                                        showCandleCount;
-                                                }
-
-                                                const gapMaxCandleCount =
-                                                    Math.floor(
-                                                        (item.data[1].x -
-                                                            filteredCandle[0]
-                                                                .time *
-                                                                1000) /
-                                                            (period * 1000),
-                                                    );
-
-                                                if (gapMaxCandleCount > 0) {
-                                                    showCandleCount =
-                                                        gapMaxCandleCount +
-                                                        showCandleCount;
-                                                }
-                                            }
-
                                             ctx.fillText(
                                                 showCandleCount +
                                                     ' bars,  ' +

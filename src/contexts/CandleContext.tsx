@@ -160,6 +160,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         setCandleData(undefined);
         setTimeOfEndCandle(undefined);
+        setIsCondensedModeEnabled(true);
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {

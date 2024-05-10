@@ -44,7 +44,10 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { xAxisBuffer } from '../../Chart/ChartUtils/chartConstants';
+import {
+    maxRequestCountForCondensed,
+    xAxisBuffer,
+} from '../../Chart/ChartUtils/chartConstants';
 import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -113,7 +116,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isFetchingEnoughData, setIsFetchingEnoughData] = useState(true);
 
-    const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(1);
+    const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(0);
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
@@ -167,24 +170,18 @@ function TradeCandleStickChart(props: propsIF) {
     }, [userTransactionsByPool]);
 
     useEffect(() => {
-        if (
-            scaleData &&
-            !isNaN(scaleData.notDiscontinuityXScale.domain()[0]) &&
-            !isNaN(scaleData.notDiscontinuityXScale.domain()[1])
-        ) {
-            // scaleData.xScale.domain(scaleData.notDiscontinuityXScale.domain());
-        }
-    }, [tokenPair]);
+        setIsFetchingEnoughData(true);
+        setSelectedDrawnShape(undefined);
+
+        setFetchCountForEnoughData(0);
+    }, [period, tokenPair]);
 
     useEffect(() => {
-        setSelectedDrawnShape(undefined);
-        if (scaleData) {
+        if (isFetchingEnoughData && scaleData) {
             const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
             scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
         }
-        setIsFetchingEnoughData(true);
-        setFetchCountForEnoughData(1);
-    }, [period, tokenPair]);
+    }, [isFetchingEnoughData]);
 
     useEffect(() => {
         if (unparsedLiquidityData !== undefined) {
@@ -746,7 +743,7 @@ function TradeCandleStickChart(props: propsIF) {
                     });
 
                     let showCandleCount = filteredCandle.length;
-                    if (filteredCandle) {
+                    if (filteredCandle && showCandleCount) {
                         const gapCandleCount = Math.floor(
                             (filteredCandle[filteredCandle.length - 1].time *
                                 1000 -
@@ -920,6 +917,7 @@ function TradeCandleStickChart(props: propsIF) {
         if (isCondensedModeEnabled) {
             if (
                 unparsedCandleData &&
+                unparsedCandleData.length > 0 &&
                 unparsedCandleData[0].period === period &&
                 period
             ) {
@@ -931,7 +929,7 @@ function TradeCandleStickChart(props: propsIF) {
                 if (
                     candles.length < 100 &&
                     !timeOfEndCandle &&
-                    fetchCountForEnoughData < 5
+                    fetchCountForEnoughData < maxRequestCountForCondensed
                 ) {
                     setIsFetchingEnoughData(true);
                     const dom = {
@@ -960,7 +958,11 @@ function TradeCandleStickChart(props: propsIF) {
                         return dom;
                     });
                 } else {
-                    if (fetchCountForEnoughData > 4) {
+                    if (
+                        fetchCountForEnoughData ===
+                            maxRequestCountForCondensed &&
+                        period !== 86400
+                    ) {
                         chartSettings.candleTime.global.changeTime(86400);
                     } else {
                         setIsFetchingEnoughData(false);

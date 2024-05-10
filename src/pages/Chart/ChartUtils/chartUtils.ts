@@ -563,3 +563,39 @@ export function checkShowLatestCandle(
     }
     return false;
 }
+
+export function getCandleCount(
+    data: CandleDataChart[],
+    domain: number[],
+    period: number,
+    isCondensedMode: boolean,
+) {
+    const min = domain[0];
+    const max = domain[1];
+
+    const filtered = data.filter(
+        (data: CandleDataIF) =>
+            data.time * 1000 >= min && data.time * 1000 <= max,
+    );
+
+    let dataLenght = filtered.length;
+
+    if (filtered && dataLenght && isCondensedMode) {
+        const maxGap = Math.floor(
+            (max - filtered[0].time * 1000) / (period * 1000),
+        );
+        const minGap = Math.floor(
+            (filtered[filtered.length - 1].time * 1000 - min) / (period * 1000),
+        );
+        if (maxGap > 0) {
+            dataLenght = dataLenght + maxGap;
+        }
+        if (minGap > 0) {
+            dataLenght = dataLenght + minGap;
+        }
+    } else {
+        dataLenght = Math.floor((max - min) / (period * 1000));
+    }
+
+    return dataLenght;
+}

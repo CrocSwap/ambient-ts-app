@@ -12,6 +12,7 @@ import {
     drawnShapeEditAttributes,
     findSnapTime,
     formatTimeDifference,
+    getCandleCount,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -43,6 +44,7 @@ import {
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
+import { CandleContext } from '../../../../contexts/CandleContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -116,6 +118,8 @@ function DrawCanvas(props: DrawCanvasProps) {
     const {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
+
+    const { isCondensedModeEnabled } = useContext(CandleContext);
 
     const circleSeries = createCircle(
         scaleData?.xScale,
@@ -208,9 +212,8 @@ function DrawCanvas(props: DrawCanvasProps) {
 
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
-        const filteredData = visibleCandleData.filter((i) => i.isShowData);
 
-        const nearest = snapForCandle(offsetX, filteredData);
+        const nearest = snapForCandle(offsetX, visibleCandleData);
 
         const high = denomInBase
             ? nearest?.invMinPriceExclMEVDecimalCorrected
@@ -291,7 +294,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             valueX = scaleData.xScale.invert(offsetX);
         }
 
-        return { valueX: valueX, valueY: valueY };
+        return { valueX: valueX, valueY: valueY, nearest: nearest };
     }
 
     useEffect(() => {
@@ -499,12 +502,12 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
-                const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                const { valueX, valueY, nearest } = getXandYvalueOfDrawnShape(
                     offsetX,
                     offsetY,
                 );
 
-                setCrossHairDataFunc(offsetX, offsetY);
+                setCrossHairDataFunc(nearest, offsetX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 
@@ -930,30 +933,14 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 dpRangeLabelYPlacement + 16,
                             );
 
-                            let showCandleCount = filtered.length;
-
-                            if (filtered) {
-                                const gapMinCandleCount = Math.floor(
-                                    (filtered[filtered.length - 1].time * 1000 -
-                                        lineData[0].x) /
-                                        (period * 1000),
-                                );
-
-                                if (gapMinCandleCount > 0) {
-                                    showCandleCount =
-                                        gapMinCandleCount + showCandleCount;
-                                }
-
-                                const gapMaxCandleCount = Math.floor(
-                                    (lineData[1].x - filtered[0].time * 1000) /
-                                        (period * 1000),
-                                );
-
-                                if (gapMaxCandleCount > 0) {
-                                    showCandleCount =
-                                        gapMaxCandleCount + showCandleCount;
-                                }
-                            }
+                            const min = Math.min(lineData[0].x, lineData[1].x);
+                            const max = Math.max(lineData[0].x, lineData[1].x);
+                            const showCandleCount = getCandleCount(
+                                visibleCandleData,
+                                [min, max],
+                                period,
+                                isCondensedModeEnabled,
+                            );
 
                             ctx.fillText(
                                 showCandleCount + ' bars,  ' + lengthAsDate,
