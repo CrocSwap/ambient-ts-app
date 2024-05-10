@@ -12,7 +12,7 @@ import { Chip } from '../Chip';
 import { ExplanationButton } from '../Icons/Icons.styles';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
-    isEthPairWithStakedEth,
+    isETHPair,
     isStablePair,
     truncateDecimals,
 } from '../../../ambient-utils/dataLayer';
@@ -41,7 +41,7 @@ function RangeWidth(props: propsIF) {
 
     const shouldDisplaySub5PercentWidths =
         isStablePair(tokenA.address, tokenB.address) ||
-        isEthPairWithStakedEth(tokenA.address, tokenB.address);
+        isETHPair(tokenA.address, tokenB.address);
 
     // values to generate balanced mode preset buttons
     // const balancedPresets: number[] = [5, 10, 25, 50, 100];
