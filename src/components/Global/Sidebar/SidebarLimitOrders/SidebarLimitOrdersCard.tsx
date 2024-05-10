@@ -39,11 +39,7 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     });
 
     return (
-        <ItemContainer
-            numCols={3}
-            color='text2'
-            onClick={() => handleClick(order)}
-        >
+        <ItemContainer color='text2' onClick={() => handleClick(order)}>
             {[
                 isDenomBase
                     ? `${order?.baseSymbol} / ${order?.quoteSymbol}`
