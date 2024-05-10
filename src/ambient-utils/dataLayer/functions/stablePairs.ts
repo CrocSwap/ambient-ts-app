@@ -27,6 +27,9 @@ import {
     mainnetLUSD,
     scrollSTONE,
     scrollUniETH,
+    scrollDAI,
+    scrollPxETH,
+    scrollRocketPoolETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -45,16 +48,18 @@ export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
 
-export function isStakedEthToken(addr: string): boolean {
-    return STAKED_ETH_TOKENS.includes(addr.toLowerCase());
+export function isETHorStakedEthToken(addr: string): boolean {
+    return (
+        addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
+    );
+}
+
+export function isETHPair(addr1: string, addr2: string): boolean {
+    return isETHorStakedEthToken(addr1) && isETHorStakedEthToken(addr2);
 }
 
 export function isWbtcToken(addr: string): boolean {
     return WBTC_TOKENS.includes(addr.toLowerCase());
-}
-
-export function isEthPairWithStakedEth(base: string, quote: string): boolean {
-    return base === ZERO_ADDRESS && isStakedEthToken(quote);
 }
 
 // @return true if the token is a WETH or wrapped native token asset
@@ -72,6 +77,7 @@ export const STABLE_USD_TOKENS = [
     blastUSDPLUS.address,
     scrollUSDC.address,
     scrollUSDT.address,
+    scrollDAI.address,
     scrollAxlUSDC.address,
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
@@ -93,13 +99,15 @@ export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
 
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
+    mainnetSWETH.address,
     scrollWstETH.address,
     scrollWrsETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
+    scrollPxETH.address,
+    scrollRocketPoolETH.address,
     blastWrsETH.address,
     blastEzETH.address,
-    mainnetSWETH.address,
 ].map((x) => x.toLowerCase());
 
 export const WETH_TOKENS = [

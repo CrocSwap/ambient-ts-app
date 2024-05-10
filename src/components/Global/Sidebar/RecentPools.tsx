@@ -4,7 +4,10 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenPriceFn } from '../../../ambient-utils/api';
 import { PoolIF } from '../../../ambient-utils/types';
 import PoolsListItem from './PoolsListItem';
-import { HeaderGrid, ItemsContainer } from '../../../styled/Components/Sidebar';
+import {
+    ItemHeaderContainer,
+    ItemsContainer,
+} from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
@@ -18,14 +21,18 @@ function RecentPools(props: propsIF) {
     const { recentPools } = useContext(SidebarContext);
 
     return (
-        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
-            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
-                {['Pool', 'Volume', 'TVL'].map((item) => (
-                    <FlexContainer key={item} justifyContent='center'>
-                        {item}
-                    </FlexContainer>
+        <FlexContainer
+            flexDirection='column'
+            fontSize='body'
+            fullHeight
+            gap={8}
+        >
+            <ItemHeaderContainer color='text2'>
+                {['Pair', 'Price', 'Volume', 'TVL', ''].map((item) => (
+                    <FlexContainer key={item}>{item}</FlexContainer>
                 ))}
-            </HeaderGrid>
+            </ItemHeaderContainer>
+
             <ItemsContainer>
                 {recentPools.get(5).map((pool: PoolIF) => (
                     <PoolsListItem
