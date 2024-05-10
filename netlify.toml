@@ -27,3 +27,7 @@
   path = "/*"
   function = "country-redirect"
 
+[[plugins]]
+package = "@netlify/plugin-sitemap"
+  [plugins.inputs]
+  buildDir = "."

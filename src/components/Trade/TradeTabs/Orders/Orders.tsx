@@ -498,7 +498,10 @@ function Orders(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
+        <FlexContainer
+            flexDirection='column'
+            style={{ height: isSmallScreen ? '95%' : '100%' }}
+        >
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

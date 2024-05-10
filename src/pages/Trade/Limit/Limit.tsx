@@ -109,6 +109,7 @@ export default function Limit() {
         poolPriceNonDisplay,
         primaryQuantity,
         setPrimaryQuantity,
+        isTokenABase,
     } = useContext(TradeDataContext);
     const { liquidityFee } = useContext(GraphDataContext);
     const { urlParamMap, updateURL } = useTradeData();
@@ -163,6 +164,16 @@ export default function Limit() {
     useEffect(() => {
         activeTxHash.current = '';
     }, [tokenA.address + tokenB.address, primaryQuantity]);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            setLimitButtonErrorMessage('...');
+            setTokenBInputQty('');
+        } else {
+            setLimitButtonErrorMessage('...');
+            setTokenAInputQty('');
+        }
+    }, [tokenA.address + tokenB.address]);
 
     // TODO: is possible we can convert this to use the TradeTokenContext
     // However, unsure if the fact that baseToken comes from pool affects this
@@ -800,6 +811,21 @@ export default function Limit() {
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
+
+    const percentDiffUsdValue =
+        usdValueTokenA && usdValueTokenB
+            ? ((usdValueTokenB * parseFloat(tokenBInputQty) -
+                  usdValueTokenA * parseFloat(tokenAInputQty)) /
+                  (usdValueTokenA * parseFloat(tokenAInputQty))) *
+              100
+            : 0;
+
     return (
         <TradeModuleSkeleton
             chainId={chainId}
@@ -826,6 +852,9 @@ export default function Limit() {
                     handleLimitButtonMessage={handleLimitButtonMessage}
                     toggleDexSelection={toggleDexSelection}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                    usdValueTokenA={usdValueTokenA}
+                    usdValueTokenB={usdValueTokenB}
+                    percentDiffUsdValue={percentDiffUsdValue}
                 />
             }
             inputOptions={
@@ -873,6 +902,7 @@ export default function Limit() {
                         endDisplayPrice={endDisplayPrice}
                         limitAllowed={limitAllowed}
                         limitButtonErrorMessage={limitButtonErrorMessage}
+                        percentDiffUsdValue={percentDiffUsdValue}
                     />
                 ) : (
                     <></>

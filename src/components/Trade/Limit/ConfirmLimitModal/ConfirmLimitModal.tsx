@@ -22,6 +22,7 @@ interface propsIF {
     onClose: () => void;
     limitAllowed: boolean;
     limitButtonErrorMessage: string;
+    percentDiffUsdValue: number;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -41,6 +42,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         onClose = () => null,
         limitAllowed,
         limitButtonErrorMessage,
+        percentDiffUsdValue,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -147,6 +149,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
             isAllowed={limitAllowed}
+            percentDiffUsdValue={percentDiffUsdValue}
         />
     );
 }

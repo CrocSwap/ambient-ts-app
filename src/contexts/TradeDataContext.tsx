@@ -1,11 +1,11 @@
-import React, { createContext, useEffect, useMemo } from 'react';
+import React, { createContext, useEffect, useMemo, useState } from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     blastETH,
     blastUSDB,
     getDefaultPairForChain,
-    goerliETH,
+    mainnetETH,
 } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
@@ -26,6 +26,7 @@ export interface TradeDataContextIF {
     primaryQuantity: string;
     limitTick: number | undefined;
     poolPriceNonDisplay: number;
+    currentPoolPriceTick: number;
     slippageTolerance: number;
 
     setTokenA: React.Dispatch<React.SetStateAction<TokenIF>>;
@@ -53,6 +54,9 @@ export interface TradeDataContextIF {
         baseAddress: string,
         quoteAddress: string,
     ) => number;
+
+    noGoZoneBoundaries: number[];
+    setNoGoZoneBoundaries: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 export const TradeDataContext = createContext<TradeDataContextIF>(
@@ -75,6 +79,9 @@ export const TradeDataContextProvider = (props: {
     const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] = getDefaultPairForChain(
         chainData.chainId,
     );
+
+    // Limit NoGoZone
+    const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 
@@ -153,7 +160,7 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = React.useState(goerliETH);
+    const [soloToken, setSoloToken] = React.useState(mainnetETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);
@@ -188,6 +195,14 @@ export const TradeDataContextProvider = (props: {
         undefined,
     );
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = React.useState(0);
+
+    const currentPoolPriceTick = useMemo(
+        () =>
+            poolPriceNonDisplay === undefined
+                ? 0
+                : Math.log(poolPriceNonDisplay) / Math.log(1.0001),
+        [poolPriceNonDisplay],
+    );
 
     useEffect(() => {
         setPoolPriceNonDisplay(0);
@@ -233,6 +248,7 @@ export const TradeDataContextProvider = (props: {
         primaryQuantity,
         limitTick,
         poolPriceNonDisplay,
+        currentPoolPriceTick,
         slippageTolerance,
         setTokenA,
         setTokenB,
@@ -253,6 +269,8 @@ export const TradeDataContextProvider = (props: {
         chooseNetwork,
         defaultRangeWidthForActivePool,
         getDefaultRangeWidthForTokenPair,
+        noGoZoneBoundaries,
+        setNoGoZoneBoundaries,
     };
 
     return (
