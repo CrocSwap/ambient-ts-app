@@ -73,8 +73,6 @@ export default function PortfolioBannerAccount(
 
     const { getUserAvatar } = useChatApi();
 
-    const [avatarType, setAvatarType] = useState(0);
-
     domDebug('resolved address', resolvedAddress);
 
     const fetchAvatar = async () => {
@@ -88,7 +86,6 @@ export default function PortfolioBannerAccount(
             );
             setUserProfileNFT(avatar.avatarImage);
             setUserThumbnailNFT(avatar.avatarThumbnail);
-            setAvatarType(avatar.avatarType);
         }
     };
 

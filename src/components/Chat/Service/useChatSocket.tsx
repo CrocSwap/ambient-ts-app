@@ -526,13 +526,11 @@ const useChatSocket = (
         userId: string,
         avatarImage: string,
         avatarThumbnail?: string,
-        avatarType?: number,
     ) {
         sendToSocket('set-avatar', {
             userId,
             avatarImage,
             avatarThumbnail,
-            avatarType,
         });
     }
 
