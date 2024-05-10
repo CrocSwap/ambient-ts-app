@@ -14,6 +14,8 @@ import {
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
+import scrollLogo from './assets/images/networks/scroll.png';
+import blastLogo from './assets/images/networks/blast_logo.png';
 
 const metadata = {
     name: 'Ambient Finance',
@@ -36,6 +38,12 @@ createWeb3Modal({
     ethersConfig,
     chains: Object.values(supportedNetworks).map((network) => network.chain),
     projectId: WALLETCONNECT_PROJECT_ID as string,
+    chainImages: {
+        81457: blastLogo,
+        168587773: blastLogo,
+        534351: scrollLogo,
+        534352: scrollLogo,
+    },
     enableAnalytics: false,
 });
 
