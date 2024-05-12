@@ -155,7 +155,12 @@ export const useAppChain = (): {
                                 isPathPointsTabOnAccount ||
                                 isPathOnExplore
                             ) {
-                                window.location.reload();
+                                if (
+                                    activeNetwork.chainId !=
+                                    incomingChainFromWallet
+                                ) {
+                                    window.location.reload();
+                                }
                             } else {
                                 linkGenCurrent.navigate();
                             }
