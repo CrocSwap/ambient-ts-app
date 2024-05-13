@@ -109,6 +109,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     const [isSelectThumbnail, setIsSelectThumbnail] = useState(false);
 
+    const [isSaveActive, setIsSaveActive] = useState<number>(0);
+
     const [selectedNft, setSelectedNft] = useState<NftDataIF | undefined>(
         undefined,
     );
@@ -263,11 +265,26 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 setUserProfileNFT(() => '');
             }
 
-            updateUserWithAvatarImage(
+            const res = updateUserWithAvatarImage(
                 userID,
                 selectedNft ? selectedNft.cachedUrl : '',
                 selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
             );
+
+            res.then(() => {
+                const savingTimeOut = setTimeout(() => {
+                    setIsSaveActive(2);
+                }, 1500);
+
+                const savedTimeOut = setTimeout(() => {
+                    setIsSaveActive(0);
+                }, 3500);
+
+                return () => {
+                    clearTimeout(savingTimeOut);
+                    clearTimeout(savedTimeOut);
+                };
+            });
         }
     }
 
@@ -662,12 +679,18 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
             <NFTBannerFooter>
                 <SaveButton
+                    isActive={isSaveActive}
                     onClick={(event: React.MouseEvent<HTMLDivElement>) => {
                         event.stopPropagation();
                         handleNftSelection();
+                        setIsSaveActive(1);
                     }}
                 >
-                    Save
+                    {isSaveActive === 1
+                        ? 'Saving..'
+                        : isSaveActive === 2
+                        ? 'Saved'
+                        : 'Save'}
                 </SaveButton>
             </NFTBannerFooter>
         </NFTBannerAccountContainer>

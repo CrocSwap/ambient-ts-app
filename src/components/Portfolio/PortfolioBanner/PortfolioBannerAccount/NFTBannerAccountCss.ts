@@ -304,8 +304,33 @@ const NFTBannerFooter = styled.div`
     justify-content: center;
 `;
 
-const SaveButton = styled.div`
+const SaveButton = styled.div<{ isActive: number }>`
+    @keyframes pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+
     background: var(--accent1);
+
+    ${({ isActive }) => {
+        if (isActive === 1) {
+            return `
+                animation: pulse 1.5s ease-in-out infinite;
+            `;
+        } else if (isActive === 2) {
+            return `
+            background: var(--positive);
+            `;
+        }
+    }}
+
+    transition: all 500ms ease;
+
     display: flex;
 
     height: 30px;
