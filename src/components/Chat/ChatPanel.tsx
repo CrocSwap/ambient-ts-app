@@ -57,27 +57,13 @@ function ChatPanel(props: propsIF) {
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
+    const [isPosition, setIsPosition] = useState(false);
 
     const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
         room,
         isSubscriptionsEnabled,
         isChatOpen,
     );
-
-    const { transactionsByUser, userTransactionsByPool, transactionsByPool } =
-        useContext(GraphDataContext);
-
-    useEffect(() => {
-        (async () => {
-            const txSummary = await getTxSummary(
-                '0x7eb891451609e9e86fd441e6578efacadc1dcadaf06c480fd23288d8afea6929',
-                transactionsByUser.changes,
-                userTransactionsByPool.changes,
-                transactionsByPool.changes,
-            );
-            console.log({ txSummary });
-        })();
-    }, []);
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
@@ -312,6 +298,8 @@ function ChatPanel(props: propsIF) {
                         }
                         nextMessage={i === 0 ? null : messages[i - 1]}
                         key={item._id}
+                        isPosition={isPosition}
+                        setIsPosition={setIsPosition}
                     />
                 ))}
         </div>
@@ -415,6 +403,8 @@ function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
+            isPosition={isPosition}
+            setIsPosition={setIsPosition}
         />
     );
 
