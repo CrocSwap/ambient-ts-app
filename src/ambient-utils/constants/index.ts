@@ -128,4 +128,4 @@ export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
 export const WALLETCONNECT_PROJECT_ID = import.meta.env
     .VITE_WALLETCONNECT_PROJECT_ID
     ? import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
-    : undefined;
+    : '37e833557d495d07825c0c6815ac9d93';
