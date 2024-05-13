@@ -39,6 +39,11 @@ export const CHAT_ENABLED =
         ? import.meta.env.VITE_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const VIEW_ONLY =
+    import.meta.env.VITE_VIEW_ONLY !== undefined
+        ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
+        : false;
+
 export const BLOCK_POLLING_RPC_URL =
     import.meta.env.VITE_BLOCK_POLLING_RPC_URL !== undefined
         ? import.meta.env.VITE_BLOCK_POLLING_RPC_URL

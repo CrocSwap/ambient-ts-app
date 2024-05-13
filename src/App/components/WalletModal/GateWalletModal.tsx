@@ -10,17 +10,18 @@ import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useWeb3Modal } from '@web3modal/ethers5/react';
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+import { VIEW_ONLY } from '../../../ambient-utils/constants';
 
 export default function GateWalletModal() {
     const {
         walletModal: { close: closeModal },
     } = useContext(AppStateContext);
 
-    const notAvailable = import.meta.env.VITE_VIEW_ONLY;
+    const walletConnectionsAllowed = !VIEW_ONLY;
     const [recordAgreed, __, termUrls] = useTermsAgreed();
     const { open: openW3Modal } = useWeb3Modal();
 
-    return !notAvailable ? (
+    return walletConnectionsAllowed ? (
         <Modal onClose={closeModal} title='Welcome'>
             <div className={styles.main_container}>
                 <section className={styles.first_section}>
