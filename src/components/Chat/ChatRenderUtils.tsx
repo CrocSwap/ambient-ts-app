@@ -226,7 +226,15 @@ export const getAvatarForChat = (
     size?: number,
 ) => {
     if (!user) {
-        return <Jazzicon diameter={25} seed={jsNumberForAddress('')} />;
+        return (
+            <div
+                className={styles.avatar_placeholder}
+                style={{
+                    width: size ? size + 'px' : '25px',
+                    height: size ? size + 'px' : '25px',
+                }}
+            ></div>
+        );
     }
     return getAvatar(
         user.walletID,

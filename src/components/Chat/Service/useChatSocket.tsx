@@ -549,6 +549,8 @@ const useChatSocket = (
             if (e._id == data.userId) {
                 newUsersList.push({ ...e, avatarImage: data.avatarImage });
                 refreshMessages = true;
+            } else {
+                newUsersList.push({ ...e });
             }
         });
 

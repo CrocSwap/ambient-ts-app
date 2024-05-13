@@ -54,6 +54,12 @@
     top: 50%;
 }
 
+.avatar_placeholder{
+    display: inline-block;
+    border-radius: 100vw;
+    background-color: var(--dark2);
+}
+
 
 
 .blockie_wrapper{
