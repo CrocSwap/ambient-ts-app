@@ -274,7 +274,6 @@ function Trade() {
                     flexDirection='column'
                     fullWidth
                     background='dark2'
-                    gap={8}
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
