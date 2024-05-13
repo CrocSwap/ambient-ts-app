@@ -191,7 +191,9 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 ? scrollProvider
                 : chainData.chainId === '0x13e31'
                 ? blastProvider
-                : new ethers.providers.JsonRpcProvider(nodeUrl),
+                : new BatchedJsonRpcProvider(
+                      new ethers.providers.StaticJsonRpcProvider(nodeUrl),
+                  ).proxy,
         [chainData.chainId],
     );
 
