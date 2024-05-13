@@ -322,11 +322,13 @@ const SaveButton = styled.div`
     }
 `;
 
-const ScrollableContainer = styled.div`
+const ScrollableContainer = styled.div<{
+    isMobile?: boolean;
+}>`
     position: relative;
     flex-grow: 1;
     overflow-y: auto;
-    max-height: 310px;
+    max-height: ${({ isMobile }) => (isMobile ? '30vh' : '310px')};
     scrollbar-width: thin;
     scrollbar-color: var(--accent1) var(--dark1);
 
