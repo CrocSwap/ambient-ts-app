@@ -11,7 +11,12 @@ import RangeSlider from '../RangeSlider';
 import { Chip } from '../Chip';
 import { ExplanationButton } from '../Icons/Icons.styles';
 import { FlexContainer, Text } from '../../../styled/Common';
-import { truncateDecimals } from '../../../ambient-utils/dataLayer';
+import {
+    isETHPair,
+    isStablePair,
+    truncateDecimals,
+} from '../../../ambient-utils/dataLayer';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -32,8 +37,17 @@ function RangeWidth(props: propsIF) {
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+
+    const shouldDisplaySub5PercentWidths =
+        isStablePair(tokenA.address, tokenB.address) ||
+        isETHPair(tokenA.address, tokenB.address);
+
     // values to generate balanced mode preset buttons
-    const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    // const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    const balancedPresets: number[] = shouldDisplaySub5PercentWidths
+        ? [0.1, 0.25, 0.5, 1, 5, 10, 100]
+        : [5, 10, 25, 50, 100];
     // type annotation as union of number-literals in `balancedPresets`
     type presetValues = typeof balancedPresets[number];
 

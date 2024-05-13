@@ -10,7 +10,7 @@ export const HeaderButtons = styled.button<{ mobileHide?: boolean }>`
     border: none;
     background: transparent;
     cursor: pointer;
-    gap: 4px;
+    gap: 8px;
 
     &:focus-visible {
         box-shadow: var(--glow-light-box-shadow);
