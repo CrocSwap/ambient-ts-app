@@ -264,6 +264,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
             updateUserWithAvatarImage(
                 userID,
+                userAddress ? userAddress : '',
                 selectedNft ? selectedNft.cachedUrl : '',
                 selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
             );

@@ -7,12 +7,13 @@ import {
 import { Message } from './Model/MessageModel';
 import { User } from './Model/UserModel';
 
+import Blockies from 'react-blockies';
+import { FiEdit3 } from 'react-icons/fi';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { AVATAR_TYPES } from './ChatConstants/ChatConstants';
+import { UserAvatarDataIF } from './ChatIFs';
 import styles from './ChatRenderUtils.module.css';
 import { UserSummaryModel } from './Model/UserSummaryModel';
-import { FiEdit3 } from 'react-icons/fi';
-import Blockies from 'react-blockies';
-import { AVATAR_TYPES } from './ChatConstants/ChatConstants';
 
 export const getAvatarFromMessage = (message: Message) => {
     return (
@@ -233,6 +234,20 @@ export const getAvatarForChat = (
             ? user.avatarThumbnail
             : user.avatarImage,
         size ? size : 25,
+        false,
+    );
+};
+
+export const getAvatarComponent = (
+    walletID: string,
+    resp: UserAvatarDataIF,
+    size = 50,
+    showThumb = false,
+) => {
+    return getAvatar(
+        walletID,
+        showThumb ? resp.avatarThumbnail : resp.avatarImage,
+        size,
         false,
     );
 };

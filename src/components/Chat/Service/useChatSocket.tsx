@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 
 import {
@@ -37,6 +37,7 @@ import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
 import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 const useChatSocket = (
     room: string,
@@ -79,6 +80,8 @@ const useChatSocket = (
         queryParams = { ...queryParams, ensName: ensName };
     }
 
+    const { updateUserAvatarData } = useContext(UserDataContext);
+
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
     const {
         lastMessage: socketLastMessage,
@@ -115,6 +118,7 @@ const useChatSocket = (
                 break;
             case 'set-avatar-listener':
                 userListLightUpdate(socketLastMessage.payload);
+                handlePossibleAvatarChange(socketLastMessage.payload);
                 break;
             case 'noti':
                 notiListener(socketLastMessage.payload);
@@ -524,11 +528,13 @@ const useChatSocket = (
 
     async function updateUserWithAvatarImage(
         userId: string,
+        walletID: string,
         avatarImage: string,
         avatarThumbnail?: string,
     ) {
         sendToSocket('set-avatar', {
             userId,
+            walletID,
             avatarImage,
             avatarThumbnail,
         });
@@ -556,6 +562,16 @@ const useChatSocket = (
         });
         setUserMap(usmp);
         setMessages([...messagesRef.current]);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function handlePossibleAvatarChange(data: any) {
+        if (data.walletID) {
+            updateUserAvatarData(data.walletID, {
+                avatarImage: data.avatarImage,
+                avatarThumbnail: data.avatarThumbnail,
+            });
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
