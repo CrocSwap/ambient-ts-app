@@ -918,6 +918,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 true,
                                             );
                                         }}
+                                        userMap={props.userMap}
                                     />
                                 </div>
                             ) : (
