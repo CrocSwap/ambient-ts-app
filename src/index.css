@@ -1,7 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
 
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
@@ -293,6 +295,11 @@
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
+
+    --font-logo: 'Kode Mono', sans-serif;
+    --font-family: 'Kode Mono', sans-serif;
+    --roboto: 'Kode Mono', monospace;
+    --mono: 'Kode Mono', 'Lexend Deca' sans-serif;
 }
 
 *::placeholder {

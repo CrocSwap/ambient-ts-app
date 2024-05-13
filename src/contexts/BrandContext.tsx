@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import { ReactNode, createContext, useContext, useMemo } from 'react';
 import { skins } from '../App/hooks/useSkin';
-import { brandIF, heroItem } from '../assets/branding/types';
+import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
 import { chainIds } from '../ambient-utils/types';
 import {
@@ -22,6 +22,7 @@ type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
 interface BrandContextIF {
     skin: skins;
+    fontSet: fontSets;
     platformName: string;
     networks: chainIds[];
     headerImage: string;
@@ -33,7 +34,7 @@ interface BrandContextIF {
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
 
-export const BrandContextProvider = (props: { children: React.ReactNode }) => {
+export const BrandContextProvider = (props: { children: ReactNode }) => {
     const { userAddress } = useContext(UserDataContext);
     const { chainData } = useContext(TradeDataContext);
 
@@ -55,8 +56,6 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
         });
         return hasPremium;
     }, [userAddress]);
-
-    // console.log(premiumAccess);
 
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const FALLBACK_SET = 'ambient';
@@ -102,6 +101,7 @@ export const BrandContextProvider = (props: { children: React.ReactNode }) => {
     // data to be returned to the app
     const brandData: BrandContextIF = {
         skin: getSkin(),
+        fontSet: brandAssets.fontSet,
         platformName: brandAssets.platformName,
         networks: Object.keys(brandAssets.networks) as chainIds[],
         headerImage: brandAssets.headerImage,
