@@ -10,7 +10,6 @@ import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 // import { BiGitBranch } from 'react-icons/bi';
 // import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
@@ -21,6 +20,10 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import {
+    useWeb3ModalAccount,
+    useSwitchNetwork,
+} from '@web3modal/ethers5/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
@@ -48,11 +51,11 @@ import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 // import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { BrandContext } from '../../../contexts/BrandContext';
 
 const PageHeader = function () {
     const {
@@ -60,14 +63,17 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
+    const { headerImage } = useContext(BrandContext);
 
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
 
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
+        useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
     const {
@@ -83,7 +89,10 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
-    const { switchNetwork } = useSwitchNetwork();
+    const { isConnected } = useWeb3ModalAccount();
+    const switchNetwork = isConnected
+        ? useSwitchNetwork().switchNetwork
+        : undefined;
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -117,7 +126,7 @@ const PageHeader = function () {
         <Button
             idForDOM='connect_wallet_button_page_header'
             title={desktopScreen ? 'Connect Wallet' : 'Connect'}
-            action={openWagmiModal}
+            action={openWalletModal}
             thin
             flat
         ></Button>
@@ -151,9 +160,12 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice = getFormattedNumber({
-        value: poolPriceDisplayWithDenom,
-    });
+    const truncatedPoolPrice =
+        usdPrice && isTradeDollarizationEnabled
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : getFormattedNumber({
+                  value: poolPriceDisplayWithDenom,
+              });
 
     useEffect(() => {
         const path = location.pathname;
@@ -354,10 +366,17 @@ const PageHeader = function () {
             data-testid={'page-header'}
             fixed={location.pathname === '/'}
         >
-            <div>
+            <div
+                onClick={(event: React.MouseEvent) => {
+                    event?.stopPropagation();
+                    if (appHeaderDropdown.isActive) {
+                        appHeaderDropdown.setIsActive(false);
+                    }
+                }}
+            >
                 <LogoContainer to='/' aria-label='Home'>
                     {desktopScreen ? (
-                        <img src={mainLogo} alt='ambient' />
+                        <img src={headerImage} alt='ambient' />
                     ) : (
                         <LogoText src={logo} alt='ambient' />
                     )}

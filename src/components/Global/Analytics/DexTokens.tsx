@@ -56,6 +56,7 @@ function DexTokens(props: propsIF) {
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
     const smallScreen: boolean = useMediaQuery('(max-width: 640px)');
+    const showMobileVersion = useMediaQuery('(max-width: 500px)');
 
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
@@ -118,7 +119,14 @@ function DexTokens(props: propsIF) {
     ];
 
     return (
-        <FlexContainer fullHeight fullWidth>
+        <FlexContainer
+            fullWidth
+            height={
+                showMobileVersion
+                    ? 'calc(100svh - 240px)'
+                    : 'calc(100svh - 200px)'
+            }
+        >
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>

@@ -547,7 +547,17 @@ function Transactions(props: propsIF) {
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef} id='current_row_scroll'>
+            <ul
+                ref={listRef}
+                id='current_row_scroll'
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { height: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 380px)' }
+                        : undefined
+                }
+            >
                 {!isAccountView &&
                     unindexedNonFailedTransactions.length > 0 &&
                     unindexedNonFailedTransactions.reverse().map((tx, idx) => {
@@ -685,7 +695,10 @@ function Transactions(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
+        <FlexContainer
+            flexDirection='column'
+            style={{ height: isSmallScreen ? '95%' : '100%' }}
+        >
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

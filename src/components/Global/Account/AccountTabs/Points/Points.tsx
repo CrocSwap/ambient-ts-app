@@ -72,15 +72,11 @@ export default function Points(props: propsIF) {
                             pointsAccrued={
                                 connectedAccountActive
                                     ? connectedUserBlastXp.dataReceived === true
-                                        ? (
-                                              connectedUserBlastXp.data
-                                                  ?.points ?? 0
-                                          ).toLocaleString()
+                                        ? connectedUserBlastXp.data?.points ??
+                                          '0'
                                         : '...'
                                     : resolvedUserBlastXp.dataReceived === true
-                                    ? (
-                                          resolvedUserBlastXp.data?.points ?? 0
-                                      ).toLocaleString()
+                                    ? resolvedUserBlastXp.data?.points ?? '0'
                                     : '...'
                             }
                             logo={blastLogo}
@@ -93,15 +89,10 @@ export default function Points(props: propsIF) {
                             pointsAccrued={
                                 connectedAccountActive
                                     ? connectedUserBlastXp.dataReceived === true
-                                        ? (
-                                              connectedUserBlastXp.data?.gold ??
-                                              0
-                                          ).toLocaleString()
+                                        ? connectedUserBlastXp.data?.gold ?? '0'
                                         : '...'
                                     : resolvedUserBlastXp.dataReceived === true
-                                    ? (
-                                          resolvedUserBlastXp.data?.gold ?? 0
-                                      ).toLocaleString()
+                                    ? resolvedUserBlastXp.data?.gold ?? '0'
                                     : '...'
                             }
                             logo={blastLogo}
@@ -116,6 +107,15 @@ export default function Points(props: propsIF) {
                     padding='8px'
                 >
                     <ViewMoreButton>View Details</ViewMoreButton>
+                </FlexContainer>
+            </Link>
+            <Link to={'/faq'}>
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='8px'
+                >
+                    <ViewMoreButton>View FAQ</ViewMoreButton>
                 </FlexContainer>
             </Link>
         </div>

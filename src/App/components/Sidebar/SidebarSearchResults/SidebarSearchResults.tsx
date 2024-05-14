@@ -26,9 +26,6 @@ export default function SidebarSearchResults(props: propsIF) {
             flexDirection='column'
             fullHeight
             fullWidth
-            margin='8px 8px 0 8px'
-            padding='8px'
-            background='dark2'
             gap={8}
         >
             <Text fontSize='header2' color='accent5'>

@@ -8,6 +8,7 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import { FlexContainer } from '../../../../styled/Common';
 import { ItemContainer } from '../../../../styled/Components/Sidebar';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     order: LimitOrderIF;
@@ -16,6 +17,7 @@ interface propsIF {
 export default function SidebarLimitOrdersCard(props: propsIF) {
     const { order, handleClick } = props;
     const { tokens } = useContext(TokenContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const baseTokenMoneyness = getMoneynessRankByAddr(order.base);
     const quoteTokenMoneyness = getMoneynessRankByAddr(order.quote);
@@ -23,7 +25,12 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     const isDenomBase = baseTokenMoneyness < quoteTokenMoneyness;
 
     // human-readable limit price to display in the DOM
-    const price = getLimitPriceForSidebar(order, tokens, isDenomBase);
+    const price = getLimitPriceForSidebar(
+        order,
+        tokens,
+        isDenomBase,
+        isTradeDollarizationEnabled,
+    );
 
     // human-readable limit order value to display in the DOM
     const value = getFormattedNumber({
@@ -32,11 +39,7 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     });
 
     return (
-        <ItemContainer
-            numCols={3}
-            color='text2'
-            onClick={() => handleClick(order)}
-        >
+        <ItemContainer color='text2' onClick={() => handleClick(order)}>
             {[
                 isDenomBase
                     ? `${order?.baseSymbol} / ${order?.quoteSymbol}`

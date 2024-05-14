@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AiOutlineFullscreen } from 'react-icons/ai';
+import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -10,6 +10,8 @@ import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo'
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { BsFullscreen } from 'react-icons/bs';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -21,6 +23,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         tradeTableState,
         isCandleDataNull,
     } = useContext(ChartContext);
+
+    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
+        useContext(PoolContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -50,7 +55,29 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     };
 
     const graphSettingsContent = (
-        <FlexContainer justifyContent='flex-end' alignItems='center' gap={16}>
+        <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
+            <DefaultTooltip
+                interactive
+                title={'Toggle USD Price Estimates'}
+                enterDelay={500}
+            >
+                <HeaderButtons
+                    onClick={() =>
+                        setIsTradeDollarizationEnabled((prev) => !prev)
+                    }
+                >
+                    <AiOutlineDollarCircle
+                        size={20}
+                        id='trade_dollarized_prices_button'
+                        aria-label='Toggle dollarized prices button'
+                        style={{
+                            color: isTradeDollarizationEnabled
+                                ? 'var(--accent1)'
+                                : undefined,
+                        }}
+                    />
+                </HeaderButtons>
+            </DefaultTooltip>
             <DefaultTooltip
                 interactive
                 title={'Toggle Full Screen Chart'}
@@ -60,7 +87,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     mobileHide
                     onClick={() => setIsChartFullScreen(!isChartFullScreen)}
                 >
-                    <AiOutlineFullscreen
+                    <BsFullscreen
                         size={20}
                         id='trade_chart_full_screen_button'
                         aria-label='Full screen chart button'
@@ -86,7 +113,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     return (
         <FlexContainer
             justifyContent='space-between'
-            padding={props.tradePage ? '12px 12px 0px 12px' : '4px 4px 8px 4px'}
+            padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
         >
             <TradeChartsTokenInfo />
             {tradeTableState === 'Expanded' || showNoChartData
