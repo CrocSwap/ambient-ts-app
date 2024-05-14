@@ -30,6 +30,7 @@ interface BrandContextIF {
     showDexStats: boolean;
     hero: heroItem[];
     premium: Record<premiumThemes, boolean>;
+    includeCanto: boolean;
 }
 
 export const BrandContext = createContext<BrandContextIF>({} as BrandContextIF);
@@ -112,6 +113,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
             theme1: premiumAccess.get('theme1') as boolean,
             theme2: premiumAccess.get('theme2') as boolean,
         },
+        includeCanto: brandAssets.includeCanto,
     };
 
     return (

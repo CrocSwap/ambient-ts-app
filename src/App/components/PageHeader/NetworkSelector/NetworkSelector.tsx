@@ -9,10 +9,7 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
-import {
-    supportedNetworks,
-    INCLUDE_CANTO_LINK,
-} from '../../../../ambient-utils/constants';
+import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -38,7 +35,7 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { networks, platformName } = useContext(BrandContext);
+    const { networks, platformName, includeCanto } = useContext(BrandContext);
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams] = useSearchParams();
@@ -308,7 +305,7 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x13e31') && blastNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
-                        {INCLUDE_CANTO_LINK &&
+                        {includeCanto &&
                             platformName === 'ambient' &&
                             cantoNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}

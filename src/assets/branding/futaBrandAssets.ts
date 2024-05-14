@@ -14,4 +14,5 @@ export const futaBrandAssets: brandIF = {
     showPoints: true,
     showDexStats: true,
     headerImage: large as string,
+    includeCanto: false,
 };

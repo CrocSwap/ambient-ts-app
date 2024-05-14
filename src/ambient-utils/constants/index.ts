@@ -55,11 +55,6 @@ export const SCROLL_RPC_URL =
         ? process.env.REACT_APP_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
 
-export const INCLUDE_CANTO_LINK =
-    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
-        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
-        : false;
-
 export const DISABLE_INIT_SETTINGS =
     process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
         ? process.env.REACT_APP_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'

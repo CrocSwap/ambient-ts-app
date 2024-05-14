@@ -25,4 +25,5 @@ export interface brandIF {
     showPoints: boolean;
     showDexStats: boolean;
     headerImage: string;
+    includeCanto: boolean;
 }

@@ -57,4 +57,5 @@ export const defaultBrandAssets: brandIF = {
     showPoints: true,
     showDexStats: true,
     headerImage: large as string,
+    includeCanto: true,
 };
