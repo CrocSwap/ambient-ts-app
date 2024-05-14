@@ -14,8 +14,6 @@ import { useLocation } from 'react-router-dom';
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import {
-    MAX_TICK,
-    MIN_TICK,
     pinTickLower,
     pinTickUpper,
     tickToPrice,
@@ -118,6 +116,10 @@ import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import useDollarPrice from './ChartUtils/getDollarPrice';
+import {
+    pinTickToTickLower,
+    pinTickToTickUpper,
+} from '../../ambient-utils/dataLayer/functions/pinTick';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -210,6 +212,8 @@ export default function Chart(props: propsIF) {
         },
         isMagnetActiveLocal,
         setChartContainerOptions,
+        chartThemeColors,
+        setChartThemeColors,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -253,6 +257,9 @@ export default function Chart(props: propsIF) {
         setIsTokenAPrimary,
         limitTick,
         setLimitTick,
+        currentPoolPriceTick,
+        noGoZoneBoundaries,
+        setNoGoZoneBoundaries,
     } = currentPool;
 
     const [isChartZoom, setIsChartZoom] = useState(false);
@@ -279,8 +286,8 @@ export default function Chart(props: propsIF) {
         useState<MouseEvent<HTMLDivElement>>();
     const [chartZoomEvent, setChartZoomEvent] = useState('');
 
-    const lineSellColor = 'rgba(115, 113, 252)';
-    const lineBuyColor = 'rgba(205, 193, 255)';
+    const [lineSellColor, setLineSellColor] = useState('rgba(115, 113, 252)');
+    const [lineBuyColor, setLineBuyColor] = useState('rgba(205, 193, 255)');
 
     const {
         showFeeRate,
@@ -306,6 +313,51 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        if (d3Container) {
+            const canvas = d3
+                .select(d3Container.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const style = getComputedStyle(canvas);
+            const lightFillColor = style.getPropertyValue('--accent5');
+            const darFillColor = style.getPropertyValue('--dark2');
+            const selectedDateFillColor = style.getPropertyValue('--accent2');
+
+            const darkStrokeColor = style.getPropertyValue('--accent1');
+            const lightStrokeColor = style.getPropertyValue('--accent5');
+            const selectedDateStrokeColor = style.getPropertyValue('--accent2');
+
+            const d3LightFillColor = d3.color(lightFillColor);
+            const d3DarkFillColor = d3.color(darFillColor);
+            const d3SelectedDateFillColor = d3.color(selectedDateFillColor);
+
+            const d3DarkStrokeColor = d3.color(darkStrokeColor);
+            const d3LightStrokeColor = d3.color(lightStrokeColor);
+            const d3SelectedDateStrokeColor = d3.color(selectedDateStrokeColor);
+
+            const lineSellColor = style.getPropertyValue('--accent1');
+            const lineBuyColor = style.getPropertyValue('--accent5');
+
+            setLineSellColor(() => lineSellColor.toString());
+            setLineBuyColor(() => lineBuyColor.toString());
+
+            const chartThemeColors = {
+                lightFillColor: d3LightFillColor,
+                darkFillColor: d3DarkFillColor,
+                selectedDateFillColor: d3SelectedDateFillColor,
+                // border
+                lightStrokeColor: d3LightStrokeColor,
+                darkStrokeColor: d3DarkStrokeColor,
+                selectedDateStrokeColor: d3SelectedDateStrokeColor,
+                textColor: '',
+            };
+
+            setChartThemeColors(() => chartThemeColors);
+        }
+    }, [d3Container]);
 
     const location = useLocation();
 
@@ -379,7 +431,7 @@ export default function Chart(props: propsIF) {
     const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    const drawSettings = useDrawSettings();
+    const drawSettings = useDrawSettings(chartThemeColors);
     const getDollarPrice = useDollarPrice();
 
     const {
@@ -557,9 +609,6 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [marketLine, setMarketLine] = useState<any>();
 
-    // NoGoZone
-    const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([[0, 0]]);
-
     const [mainZoom, setMainZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
 
@@ -592,11 +641,6 @@ export default function Chart(props: propsIF) {
     ] = useState(false);
 
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
-
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined
-            ? 0
-            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const isScientific = poolPriceNonDisplay
         ? poolPriceNonDisplay.toString().includes('e')
@@ -1417,8 +1461,8 @@ export default function Chart(props: propsIF) {
      * @returns {Object} An object containing 'noGoZoneMin' and 'noGoZoneMax'.
      */
     const getNoZoneData = () => {
-        const noGoZoneMin = noGoZoneBoundaries[0][0];
-        const noGoZoneMax = noGoZoneBoundaries[0][1];
+        const noGoZoneMin = noGoZoneBoundaries[0];
+        const noGoZoneMax = noGoZoneBoundaries[1];
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
     };
 
@@ -3260,6 +3304,7 @@ export default function Chart(props: propsIF) {
                                     rayLine.xScale().range(range);
 
                                     if (ctx) ctx.setLineDash(item.line.dash);
+
                                     rayLine.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.strokeStyle =
@@ -3814,28 +3859,30 @@ export default function Chart(props: propsIF) {
         renderCanvasArray([d3CanvasMarketLine]);
     }, [market, marketLine]);
 
-    const pinTickToTickLower = (poolPriceTick: number, gridSize: number) => {
-        const tickGrid = Math.floor(poolPriceTick / gridSize) * gridSize;
-        const horizon = Math.floor(MIN_TICK / gridSize) * gridSize;
+    useEffect(() => {
+        const noGoZoneBoundaries = noGoZone(
+            currentPoolPriceTick,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lookupChain(chainId).gridSize,
+        );
+        setNoGoZoneBoundaries(() => {
+            return noGoZoneBoundaries;
+        });
+    }, [
+        currentPoolPriceTick,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        lookupChain(chainId).gridSize,
+        isDenomBase,
+    ]);
 
-        const lowTickNoGoZone = Math.max(tickGrid, horizon);
-
-        return lowTickNoGoZone;
-    };
-    const pinTickToTickUpper = (poolPriceTick: number, gridSize: number) => {
-        const tickGrid = Math.ceil(poolPriceTick / gridSize) * gridSize;
-        const horizon = Math.ceil(MAX_TICK / gridSize) * gridSize;
-
-        const highTickNoGoZone = Math.min(tickGrid, horizon);
-
-        return highTickNoGoZone;
-    };
-    function noGoZone(
+    const noGoZone = (
         poolPriceTick: number,
         baseTokenDecimals: number,
         quoteTokenDecimals: number,
         gridSize: number,
-    ) {
+    ) => {
         const lowTickNoGoZone =
             pinTickToTickLower(poolPriceTick, gridSize) - gridSize;
         const highTickNoGoZone =
@@ -3870,27 +3917,8 @@ export default function Chart(props: propsIF) {
               );
 
         setLimitTickNearNoGoZone(lowTickDisplayPrice, highTickDisplayPrice);
-        return [[lowTickDisplayPrice, highTickDisplayPrice]];
-    }
-
-    useEffect(() => {
-        const noGoZoneBoundaries = noGoZone(
-            currentPoolPriceTick,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            lookupChain(chainId).gridSize,
-        );
-
-        setNoGoZoneBoundaries(() => {
-            return noGoZoneBoundaries;
-        });
-    }, [
-        currentPoolPriceTick,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        lookupChain(chainId).gridSize,
-        isDenomBase,
-    ]);
+        return [lowTickDisplayPrice, highTickDisplayPrice];
+    };
 
     const getYAxisBoundary = (isTriggeredByZoom: boolean) => {
         let minYBoundary = undefined;
@@ -5602,6 +5630,7 @@ export default function Chart(props: propsIF) {
                             setBandwidth={setBandwidth}
                             prevlastCandleTime={prevlastCandleTime}
                             setPrevLastCandleTime={setPrevLastCandleTime}
+                            chartThemeColors={chartThemeColors}
                         />
 
                         <VolumeBarCanvas
@@ -5610,6 +5639,7 @@ export default function Chart(props: propsIF) {
                             denomInBase={denomInBase}
                             selectedDate={selectedDate}
                             showVolume={showVolume}
+                            chartThemeColors={chartThemeColors}
                         />
 
                         {liquidityData && (
@@ -5628,6 +5658,7 @@ export default function Chart(props: propsIF) {
                                     mainCanvasBoundingClientRect
                                 }
                                 setLiqMaxActiveLiq={setLiqMaxActiveLiq}
+                                chartThemeColors={chartThemeColors}
                             />
                         )}
 
@@ -5762,6 +5793,7 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
+                                chartThemeColors={chartThemeColors}
                             />
                         </>
                     )}
@@ -5797,6 +5829,7 @@ export default function Chart(props: propsIF) {
                                 setIsChartZoom={setIsChartZoom}
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
+                                chartThemeColors={chartThemeColors}
                             />
                         </>
                     )}
@@ -5846,6 +5879,7 @@ export default function Chart(props: propsIF) {
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}
                     drawnShapeHistory={drawnShapeHistory}
+                    chartThemeColors={chartThemeColors}
                 />
             )}
 

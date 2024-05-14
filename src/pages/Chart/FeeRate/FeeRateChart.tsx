@@ -10,6 +10,7 @@ import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../ambient-utils/dataLayer';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface FreeRateData {
     feeData: Array<CandleDataIF>;
@@ -35,6 +36,7 @@ interface FreeRateData {
     lastCandleData: any;
     isToolbarOpen: boolean;
     toolbarWidth: number;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -61,6 +63,7 @@ function FeeRateChart(props: FreeRateData) {
         lastCandleData,
         isToolbarOpen,
         toolbarWidth,
+        chartThemeColors,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -168,7 +171,13 @@ function FeeRateChart(props: FreeRateData) {
     ]);
 
     useEffect(() => {
-        if (feeRateyScale !== undefined && scaleData !== undefined) {
+        if (
+            feeRateyScale !== undefined &&
+            scaleData !== undefined &&
+            chartThemeColors
+        ) {
+            const d3Feerate = chartThemeColors.darkStrokeColor?.copy();
+
             const lineSeries = d3fc
                 .seriesCanvasLine()
                 .xScale(scaleData.xScale)
@@ -176,7 +185,7 @@ function FeeRateChart(props: FreeRateData) {
                 .mainValue((d: any) => d.averageLiquidityFee)
                 .crossValue((d: any) => d.time * 1000)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = '#7371FC';
+                    selection.strokeStyle = d3Feerate ? d3Feerate : '#7371FC';
                     selection.strokeWidth = 1;
                 });
 

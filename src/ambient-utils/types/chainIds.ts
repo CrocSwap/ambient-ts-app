@@ -1,0 +1,8 @@
+export type chainIds =
+    | '0x1'
+    | '0x5'
+    | '0x82750'
+    | '0xaa36a7'
+    | '0xa0c71fd'
+    | '0x8274f'
+    | '0x13e31';

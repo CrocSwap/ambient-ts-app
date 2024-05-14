@@ -39,9 +39,9 @@ export default function TokensArrow(props: TokensArrowPropsIF) {
                         y2='7.41031'
                         gradientUnits='userSpaceOnUse'
                     >
-                        <stop stopColor='#7371FC' />
-                        <stop offset='0.494792' stopColor='#7371FC' />
-                        <stop offset='1' stopColor='#7371FC' />
+                        <stop style={{ stopColor: 'var(--accent1)' }} />
+                        <stop style={{ stopColor: 'var(--accent1)' }} />
+                        <stop style={{ stopColor: 'var(--accent1)' }} />
                     </linearGradient>
                 </defs>
             </TokenArrow>
