@@ -119,7 +119,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         NftDataIF | undefined
     >(undefined);
 
-    const { updateUserWithAvatarImage } = useChatSocket(
+    const { updateUserWithAvatarImage, addListener } = useChatSocket(
         '',
         true,
         false,
@@ -254,15 +254,15 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     function saveSelectedNFT(userID: string | undefined) {
         if (userID) {
             if (selectedThumbnail) {
-                setUserThumbnailNFT(() => selectedThumbnail.cachedUrl);
+                // setUserThumbnailNFT(() => selectedThumbnail.cachedUrl);
             } else if (selectedThumbnail === undefined) {
-                setUserThumbnailNFT(() => '');
+                // setUserThumbnailNFT(() => '');
             }
 
             if (selectedNft && userProfileNFT !== selectedNft?.cachedUrl) {
-                setUserProfileNFT(() => selectedNft.cachedUrl);
+                // setUserProfileNFT(() => selectedNft.cachedUrl);
             } else if (selectedNft === undefined) {
-                setUserProfileNFT(() => '');
+                // setUserProfileNFT(() => '');
             }
 
             const res = updateUserWithAvatarImage(
@@ -272,20 +272,20 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
             );
 
-            res.then(() => {
-                const savingTimeOut = setTimeout(() => {
-                    setIsSaveActive(2);
-                }, 1500);
+            // res.then(() => {
+            //     const savingTimeOut = setTimeout(() => {
+            //         setIsSaveActive(2);
+            //     }, 1500);
 
-                const savedTimeOut = setTimeout(() => {
-                    setIsSaveActive(0);
-                }, 3500);
+            //     const savedTimeOut = setTimeout(() => {
+            //         setIsSaveActive(0);
+            //     }, 3500);
 
-                return () => {
-                    clearTimeout(savingTimeOut);
-                    clearTimeout(savedTimeOut);
-                };
-            });
+            //     return () => {
+            //         clearTimeout(savingTimeOut);
+            //         clearTimeout(savedTimeOut);
+            //     };
+            // });
         }
     }
 
@@ -297,8 +297,31 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const socketAvatarSetListener = (payload: any) => {
+        if (payload.userId == currentUserID) {
+            setUserThumbnailNFT(() => payload.avatarThumbnail);
+            setUserProfileNFT(() => payload.avatarImage);
+            setIsSaveActive(2);
+            const savedTimeOut = setTimeout(() => {
+                setIsSaveActive(0);
+            }, 1000);
+            return () => {
+                clearTimeout(savedTimeOut);
+            };
+        }
+        console.log('.........................');
+        console.log(payload);
+        console.log('.........................');
+    };
+
     useEffect(() => {
         document.body.addEventListener('keydown', openWalletAddressPanel);
+        addListener({
+            msg: 'set-avatar-listener',
+            componentId: 'NFTBannerAccount',
+            listener: socketAvatarSetListener,
+        });
     }, []);
 
     const defaultAvatar = (walletID: string, nftData: NftDataIF) => {
