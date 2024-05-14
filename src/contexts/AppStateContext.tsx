@@ -15,6 +15,7 @@ import {
     CACHE_UPDATE_FREQ_IN_MS,
     DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
     DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+    VIEW_ONLY,
 } from '../ambient-utils/constants';
 import {
     getCtaDismissalsFromLocalStorage,
@@ -165,7 +166,7 @@ export const AppStateContextProvider = (props: {
             walletModal: {
                 isOpen: isGateWalletModalOpen,
                 open: () => {
-                    if (!hasAgreedTerms) openGateWalletModal();
+                    if (!hasAgreedTerms || VIEW_ONLY) openGateWalletModal();
                     else openW3Modal();
                 },
                 close: closeGateWalletModal,
