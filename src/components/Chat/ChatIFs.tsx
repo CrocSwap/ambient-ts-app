@@ -44,3 +44,8 @@ export interface ChatGoToChatParamsIF {
     tokenA: string;
     tokenB: string;
 }
+
+export interface UserAvatarDataIF {
+    avatarImage: string;
+    avatarThumbnail: string;
+}

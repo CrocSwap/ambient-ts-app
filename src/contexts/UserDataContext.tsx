@@ -10,6 +10,8 @@ import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
+import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
+import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -38,6 +40,11 @@ interface UserDataContextIF {
     setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
     nftTestWalletAddress: string;
     setNftTestWalletAddress: Dispatch<SetStateAction<string>>;
+    userAvatarData: UserAvatarDataIF | undefined;
+    updateUserAvatarData: (
+        walletID: string,
+        avatarData: UserAvatarDataIF,
+    ) => void;
 }
 
 export interface UserXpDataIF {
@@ -107,6 +114,10 @@ export const UserDataContextProvider = (props: {
     const [nftTestWalletAddress, setNftTestWalletAddress] =
         useState<string>('');
 
+    const [userAvatarData, setUserAvatarData] = useState<
+        UserAvatarDataIF | undefined
+    >();
+
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -122,8 +133,23 @@ export const UserDataContextProvider = (props: {
                     console.error({ error });
                 }
             }
+
+            // fetch user avatar
+            if (userAddress) {
+                const resp = await getAvatarRest(userAddress);
+                setUserAvatarData(resp);
+            }
         })();
     }, [ensNameFromWagmi, userAddress]);
+
+    const updateUserAvatarData = (
+        walletID: string,
+        avatarData: UserAvatarDataIF,
+    ) => {
+        if (walletID == userAddress) {
+            setUserAvatarData(avatarData);
+        }
+    };
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,
@@ -149,6 +175,8 @@ export const UserDataContextProvider = (props: {
         isfetchNftTriggered,
         nftTestWalletAddress,
         setNftTestWalletAddress,
+        userAvatarData,
+        updateUserAvatarData,
     };
 
     return (

@@ -1,19 +1,18 @@
-import Jazzicon from 'react-jazzicon/dist/Jazzicon';
+import { useContext } from 'react';
+import { FiCopy, FiExternalLink } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { getChainExplorer } from '../../../../ambient-utils/dataLayer';
+import { getAvatarComponent } from '../../../../components/Chat/ChatRenderUtils';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
-    NameDisplay,
-    WalletDisplay,
     CopyButton,
+    NameDisplay,
     NameDisplayContainer,
+    WalletDisplay,
 } from '../../../../styled/Components/Header';
-import { jsNumberForAddress } from 'react-jazzicon';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { getChainExplorer } from '../../../../ambient-utils/dataLayer';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
@@ -28,7 +27,7 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { userAddress, resolvedAddressFromContext } =
+    const { userAddress, resolvedAddressFromContext, userAvatarData } =
         useContext(UserDataContext);
     const blockExplorer = getChainExplorer(chainId);
     const link = resolvedAddressFromContext
@@ -38,10 +37,9 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
     return (
         <NameDisplayContainer gap={4} alignItems='center'>
             <Link to={link}>
-                <Jazzicon
-                    diameter={50}
-                    seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
-                />
+                {userAddress &&
+                    userAvatarData &&
+                    getAvatarComponent(userAddress, userAvatarData, 50)}
             </Link>
 
             <FlexContainer alignItems='center' flexDirection='column'>
