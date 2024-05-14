@@ -1,58 +1,59 @@
-import { NetworkIF, TokenIF } from '../../types';
+import { NetworkIF, TokenIF, chainIds } from '../../types';
 import { ethereumSepolia } from './ethereumSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
 import { blastSepolia } from './blastSepolia';
 import { blast } from './blastNetwork';
+import {
+    ambientProductionBrandAssets,
+    ambientTestnetBrandAssets,
+    defaultBrandAssets,
+    blastBrandAssets,
+    scrollBrandAssets,
+    futaBrandAssets,
+} from '../../../assets/branding';
 
-export const IS_BLAST_SITE = import.meta.env.VITE_IS_BLAST_SITE
-    ? import.meta.env.VITE_IS_BLAST_SITE?.toLowerCase() === 'true'
-    : false;
+export const brand: string | undefined =
+    import.meta.env.VITE_BRAND_ASSET_SET ?? '';
 
-export const IS_SCROLL_SITE =
-    import.meta.env.VITE_IS_SCROLL_SITE !== undefined
-        ? import.meta.env.VITE_IS_SCROLL_SITE.toLowerCase() === 'true'
-        : false;
+const networks: NetworkIF[] = [
+    ethereumSepolia,
+    ethereumMainnet,
+    scrollMainnet,
+    scrollSepolia,
+    blastSepolia,
+    blast,
+];
 
-export const IS_PRODUCTION_SITE =
-    import.meta.env.VITE_IS_PRODUCTION_SITE !== undefined
-        ? import.meta.env.VITE_IS_PRODUCTION_SITE.toLowerCase() === 'true'
-        : false;
+function getNetworks(chns: (string | chainIds)[]): {
+    [x: string]: NetworkIF;
+} {
+    const networksToShow: NetworkIF[] = chns
+        .map((c: string) => {
+            const network: NetworkIF | undefined = networks.find(
+                (n: NetworkIF) => n.chainId.toLowerCase() === c,
+            );
+            return network;
+        })
+        .filter((n: NetworkIF | undefined) => !!n) as NetworkIF[];
+    const output: { [x: string]: NetworkIF } = {};
+    networksToShow.forEach((n: NetworkIF) => (output[n.chainId] = n));
+    return output;
+}
 
-export const IS_TESTNET_SITE =
-    import.meta.env.VITE_IS_TESTNET_SITE !== undefined
-        ? import.meta.env.VITE_IS_TESTNET_SITE.toLowerCase() === 'true'
-        : false;
-
-export const supportedNetworks: { [x: string]: NetworkIF } = IS_BLAST_SITE
-    ? {
-          [blast.chainId]: blast,
-      }
-    : IS_SCROLL_SITE
-    ? {
-          [scrollMainnet.chainId]: scrollMainnet,
-      }
-    : IS_PRODUCTION_SITE
-    ? {
-          [ethereumMainnet.chainId]: ethereumMainnet,
-          [blast.chainId]: blast,
-          [scrollMainnet.chainId]: scrollMainnet,
-      }
-    : IS_TESTNET_SITE
-    ? {
-          [ethereumSepolia.chainId]: ethereumSepolia,
-          [blastSepolia.chainId]: blastSepolia,
-          [scrollSepolia.chainId]: scrollSepolia,
-      }
-    : {
-          [ethereumMainnet.chainId]: ethereumMainnet,
-          [blast.chainId]: blast,
-          [scrollMainnet.chainId]: scrollMainnet,
-          [blastSepolia.chainId]: blastSepolia,
-          [ethereumSepolia.chainId]: ethereumSepolia,
-          [scrollSepolia.chainId]: scrollSepolia,
-      };
+export const supportedNetworks: { [x: string]: NetworkIF } =
+    brand === 'blast'
+        ? getNetworks(Object.keys(blastBrandAssets.networks))
+        : brand === 'scroll'
+        ? getNetworks(Object.keys(scrollBrandAssets.networks))
+        : brand === 'futa'
+        ? getNetworks(Object.keys(futaBrandAssets.networks))
+        : brand === 'ambientProduction'
+        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
+        : brand === 'ambientTestnet'
+        ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+        : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     return [

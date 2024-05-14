@@ -13,6 +13,7 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 import { Text } from '../../styled/Common';
 import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { BrandContext } from '../../contexts/BrandContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -53,6 +54,8 @@ export default function Home() {
         }
     }, [switchNetwork]);
 
+    const { showPoints, showDexStats } = useContext(BrandContext);
+
     const PointSystemContainer = styled.section`
         margin: 0 auto;
         display: flex;
@@ -80,24 +83,28 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            <PointSystemContainer>
-                <Text fontSize='header1'>Points system now live!</Text>
+            {showPoints && (
+                <PointSystemContainer>
+                    <Text fontSize='header1'>Points system now live!</Text>
 
-                <Link to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}>
-                    <Text
-                        fontSize='header2'
-                        color='accent1'
-                        style={{ textDecoration: 'underline' }}
+                    <Link
+                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
                     >
-                        {isUserConnected
-                            ? ' View your current XP here'
-                            : 'View XP leaderboard'}
-                    </Text>
-                </Link>
-            </PointSystemContainer>
+                        <Text
+                            fontSize='header2'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            {isUserConnected
+                                ? ' View your current XP here'
+                                : 'View XP leaderboard'}
+                        </Text>
+                    </Link>
+                </PointSystemContainer>
+            )}
             <div>
                 <TopPools />
-                <Stats />
+                {showDexStats && <Stats />}
             </div>
             <LandingSections />
         </section>

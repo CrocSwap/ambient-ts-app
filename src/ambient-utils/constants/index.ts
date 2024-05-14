@@ -59,11 +59,6 @@ export const SCROLL_RPC_URL =
         ? import.meta.env.VITE_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
 
-export const INCLUDE_CANTO_LINK =
-    import.meta.env.VITE_INCLUDE_CANTO_LINK !== undefined
-        ? import.meta.env.VITE_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
-        : false;
-
 export const DISABLE_INIT_SETTINGS =
     import.meta.env.VITE_DISABLE_INIT_SETTINGS !== undefined
         ? import.meta.env.VITE_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'

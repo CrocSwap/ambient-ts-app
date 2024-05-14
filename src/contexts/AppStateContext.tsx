@@ -4,7 +4,6 @@ import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
-import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
 import {
@@ -30,15 +29,9 @@ interface AppStateContextIF {
         isActive: boolean;
         setIsActive: (val: boolean) => void;
     };
-
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
-    skin: skinMethodsIF;
-    theme: {
-        selected: 'dark' | 'light';
-        setSelected: (val: 'dark' | 'light') => void;
-    };
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -66,7 +59,6 @@ export const AppStateContext = createContext<AppStateContextIF>(
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -96,7 +88,6 @@ export const AppStateContextProvider = (props: {
     // I.e. updated if and only if their conrents need to be updated.
     const snackbar = useSnackbar();
     const globalPopup = useGlobalPopup();
-    const skin = useSkin('purple_dark');
 
     const [isGateWalletModalOpen, openGateWalletModal, closeGateWalletModal] =
         useModal();
@@ -162,8 +153,6 @@ export const AppStateContextProvider = (props: {
                 isActive: isTutorialMode,
                 setIsActive: setIsTutorialMode,
             },
-            skin,
-            theme: { selected: theme, setSelected: setTheme },
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
@@ -191,7 +180,6 @@ export const AppStateContextProvider = (props: {
             // directly references in above appState object
             snackbar,
             globalPopup,
-            skin,
             isChatOpen,
             isChatEnabled,
             isServerEnabled,
@@ -200,7 +188,6 @@ export const AppStateContextProvider = (props: {
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
-            theme,
             isGateWalletModalOpen,
             openGateWalletModal,
             closeGateWalletModal,
@@ -222,10 +209,8 @@ export const AppStateContextProvider = (props: {
     };
 
     useIdleTimer({
-        //    onPrompt,
         onIdle,
         onActive,
-        //    onAction,
         timeout: 1000 * 60 * 1, // set user to idle after 1 minute
         promptTimeout: 0,
         events: [

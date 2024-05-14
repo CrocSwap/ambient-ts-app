@@ -38,6 +38,7 @@ import Accessibility from '../pages/Accessibility/Accessibility';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
+import { BrandContext } from '../contexts/BrandContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import FAQPoints from '../pages/FAQ/FAQPoints';
 import Explore from '../pages/Explore/Explore';
@@ -58,13 +59,13 @@ export default function App() {
             setIsOpen: setChatOpen,
             isEnabled: isChatEnabled,
         },
-        theme: { selected: selectedTheme },
         walletModal: { isOpen: isWalletModalOpen },
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
     } = useContext(AppStateContext);
     const { defaultUrlParams } = useContext(CrocEnvContext);
+    const { skin, showPoints } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
@@ -130,9 +131,9 @@ export default function App() {
             <FlexContainer
                 flexDirection='column'
                 className={containerStyle}
-                data-theme={selectedTheme}
+                data-theme={skin}
             >
-                {showPointSystemPopup && (
+                {showPoints && showPointSystemPopup && (
                     <PointSystemPopup
                         dismissPointSystemPopup={dismissPointSystemPopup}
                     />
@@ -326,7 +327,7 @@ export default function App() {
                     </Routes>
                 </section>
             </FlexContainer>
-            <div className='footer_container'>
+            <div data-theme={skin} className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
                     currentLocation !== '/terms' &&
@@ -338,7 +339,7 @@ export default function App() {
                     <SidebarFooter />
                 )}
             </div>
-            <GlobalPopup />
+            <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
         </>
