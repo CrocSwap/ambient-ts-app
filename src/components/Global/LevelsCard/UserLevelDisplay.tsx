@@ -31,10 +31,10 @@ export default function UserLevelDisplay(props: Props) {
             : '...';
 
     const linkToNavigateTo = user
-        ? `/account/${user}/xp`
+        ? `/${user}/xp`
         : resolvedAddressFromContext
-        ? `/account/${resolvedAddressFromContext}/xp`
-        : `/account/${userAddress}/xp`;
+        ? `/${resolvedAddressFromContext}/xp`
+        : `/${userAddress}/xp`;
 
     const progressPercentage = progressToNextLevel(globalPoints ?? 0);
 
@@ -44,6 +44,10 @@ export default function UserLevelDisplay(props: Props) {
         minFracDigits: 0,
         maxFracDigits: 0,
         isLevel: true,
+        mantissa:
+            (currentLevel || 1) >= 100000 && (currentLevel || 1) < 1000000
+                ? 0
+                : 1,
     });
 
     return (

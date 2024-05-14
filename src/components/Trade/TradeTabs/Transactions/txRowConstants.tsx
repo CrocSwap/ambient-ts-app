@@ -14,6 +14,9 @@ import React, { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
+import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 interface propsIF {
     txHashTruncated: string;
@@ -37,6 +40,9 @@ interface propsIF {
     truncatedLowDisplayPrice: string | undefined;
     truncatedHighDisplayPrice: string | undefined;
     priceCharacter: string;
+    displayPriceNumInUsd: number | undefined;
+    lowDisplayPriceInUsd: number | undefined;
+    highDisplayPriceInUsd: number | undefined;
     truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
     truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
@@ -52,6 +58,7 @@ interface propsIF {
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
     tx: TransactionIF;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 // * This file contains constants used in the rendering of transaction rows in the transaction table.
@@ -90,6 +97,9 @@ export const txRowConstants = (props: propsIF) => {
         type,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
+        displayPriceNumInUsd,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         priceCharacter,
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPriceDenomByMoneyness,
@@ -97,9 +107,10 @@ export const txRowConstants = (props: propsIF) => {
         truncatedDisplayPrice,
         handleWalletClick,
         handleWalletCopy,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
-
     const { tokens } = useContext(TokenContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
@@ -141,6 +152,18 @@ export const txRowConstants = (props: propsIF) => {
             </TextOnlyTooltip>
         </RowItem>
     );
+
+    const formattedUsdPrice = displayPriceNumInUsd
+        ? getFormattedNumber({ value: displayPriceNumInUsd, prefix: '$' })
+        : '...';
+
+    const formattedLowUsdPrice = lowDisplayPriceInUsd
+        ? getFormattedNumber({ value: lowDisplayPriceInUsd, prefix: '$' })
+        : '...';
+
+    const formattedHighUsdPrice = highDisplayPriceInUsd
+        ? getFormattedNumber({ value: highDisplayPriceInUsd, prefix: '$' })
+        : '...';
 
     const usdValueWithTooltip = (
         <RowItem
@@ -290,20 +313,37 @@ export const txRowConstants = (props: propsIF) => {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <RowItem hover>
-                <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
-                    <div>
-                        <span>
-                            {tx.baseSymbol} / {tx.quoteSymbol}
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={tradeLinkPath}>
+                        <span style={{ textTransform: 'none' }}>
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${tx.quoteSymbol} / ${tx.baseSymbol}`
+                                : `${tx.baseSymbol} / ${tx.quoteSymbol}`}
                         </span>
                         <FiExternalLink
                             size={10}
                             color='white'
                             style={{ marginLeft: '.5rem' }}
                         />
-                    </div>
-                </a>
-            </RowItem>
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a href={tradeLinkPath} target='_blank' rel='noreferrer'>
+                        <div>
+                            <span style={{ textTransform: 'none' }}>
+                                {tx.baseSymbol} / {tx.quoteSymbol}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 
@@ -505,18 +545,38 @@ export const txRowConstants = (props: propsIF) => {
             tabIndex={0}
         >
             <p>
-                <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
+                <span>
+                    {truncatedLowDisplayPrice && !isTradeDollarizationEnabled
+                        ? priceCharacter
+                        : isTradeDollarizationEnabled
+                        ? ''
+                        : '…'}
+                </span>
                 <span>
                     {isAccountView
-                        ? truncatedLowDisplayPriceDenomByMoneyness
+                        ? isTradeDollarizationEnabled
+                            ? formattedLowUsdPrice
+                            : truncatedLowDisplayPriceDenomByMoneyness
+                        : isTradeDollarizationEnabled
+                        ? formattedLowUsdPrice
                         : truncatedLowDisplayPrice}
                 </span>
             </p>
             <p>
-                <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
+                <span>
+                    {truncatedHighDisplayPrice && !isTradeDollarizationEnabled
+                        ? priceCharacter
+                        : isTradeDollarizationEnabled
+                        ? ''
+                        : '…'}
+                </span>
                 <span>
                     {isAccountView
-                        ? truncatedHighDisplayPriceDenomByMoneyness
+                        ? isTradeDollarizationEnabled
+                            ? formattedHighUsdPrice
+                            : truncatedHighDisplayPriceDenomByMoneyness
+                        : isTradeDollarizationEnabled
+                        ? formattedHighUsdPrice
                         : truncatedHighDisplayPrice}
                 </span>
             </p>
@@ -544,15 +604,23 @@ export const txRowConstants = (props: propsIF) => {
                     <span>
                         {(
                             isAccountView
-                                ? truncatedDisplayPriceDenomByMoneyness
-                                : truncatedDisplayPrice
+                                ? !isTradeDollarizationEnabled &&
+                                  truncatedDisplayPriceDenomByMoneyness
+                                : !isTradeDollarizationEnabled &&
+                                  truncatedDisplayPrice
                         )
                             ? priceCharacter
+                            : isTradeDollarizationEnabled
+                            ? ''
                             : '…'}
                     </span>
                     <span>
                         {isAccountView
-                            ? truncatedDisplayPriceDenomByMoneyness
+                            ? isTradeDollarizationEnabled
+                                ? formattedUsdPrice
+                                : truncatedDisplayPriceDenomByMoneyness
+                            : isTradeDollarizationEnabled
+                            ? formattedUsdPrice
                             : truncatedDisplayPrice}
                     </span>
                 </p>

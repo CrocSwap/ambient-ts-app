@@ -1,4 +1,11 @@
-import { UserXpIF, UserXpServerIF, XpSnapshotServerIF } from '../types';
+import {
+    BlastUserGoldServerIF,
+    BlastUserXpIF,
+    BlastUserXpServerIF,
+    UserXpIF,
+    UserXpServerIF,
+    XpSnapshotServerIF,
+} from '../types';
 
 interface argsIF {
     user: string;
@@ -55,9 +62,23 @@ function mapUserXpResponseToUserXp(userXp: UserXpServerIF): UserXpIF {
     };
 }
 
+function mapBlastUserXpResponseToBlastUserXp(
+    blastUserXp: BlastUserXpServerIF,
+    blastUserGold: BlastUserGoldServerIF,
+): BlastUserXpIF {
+    const points = Math.floor(blastUserXp.points || 0).toLocaleString();
+    const gold = (blastUserGold.points || 0).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
+    return {
+        points,
+        gold,
+    };
+}
+
 export const fetchUserXpData = async (args: argsIF) => {
     const { user, chainId } = args;
-    console.log(`Fetching Xp for ${user} on chain ${chainId}...`);
 
     const userXpEndpoint = 'https://ambindexer.net/xp/user?';
 
@@ -71,10 +92,36 @@ export const fetchUserXpData = async (args: argsIF) => {
         .then((response) => response?.json())
         .then((parsedResponse) =>
             mapUserXpResponseToUserXp(parsedResponse.data),
-        )
-        .catch(console.error);
+        );
 
     return userXpFetchData;
+};
+
+export const fetchBlastUserXpData = async (args: argsIF) => {
+    const { user } = args;
+
+    const blastUserXpEndpoint =
+        'https://ambindexer.net/blastPoints/v1/byUser/bridge/' + user + '/';
+
+    const blastUserGoldEndpoint =
+        'https://ambindexer.net/blastPoints/v1/byUser/gold/' + user + '/';
+
+    const blastUserXpFetchData = fetch(blastUserXpEndpoint).then((response) => {
+        return response?.json();
+    });
+
+    const blastUserGoldFetchData = fetch(blastUserGoldEndpoint).then(
+        (response) => {
+            return response?.json();
+        },
+    );
+
+    const blastUserData = mapBlastUserXpResponseToBlastUserXp(
+        await blastUserXpFetchData,
+        await blastUserGoldFetchData,
+    );
+
+    return blastUserData;
 };
 
 export const fetchXpLeadersData = async (

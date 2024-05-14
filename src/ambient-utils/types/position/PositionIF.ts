@@ -18,6 +18,7 @@ export interface PositionIF {
     baseName: string;
     quoteName: string;
     poolPriceInTicks: number;
+    curentPoolPriceDisplayNum: number;
     isPositionInRange: boolean;
     lowRangeDisplayInBase: string;
     lowRangeShortDisplayInBase: string;
@@ -50,6 +51,9 @@ export interface PositionIF {
     bidTickInvPriceDecimalCorrected: number;
     askTickPriceDecimalCorrected: number;
     askTickInvPriceDecimalCorrected: number;
+    baseUsdPrice: number | undefined;
+    quoteUsdPrice: number | undefined;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
     source: string;
     lastMintTx: string;
     firstMintTx: string;
@@ -57,4 +61,10 @@ export interface PositionIF {
     rewardLiq: number;
     ambientLiq: number;
     aprEst: number;
+    isBid?: boolean;
+    liqRefreshTime?: number;
+    aprDuration?: number;
+    aprPostLiq?: number;
+    aprContributedLiq?: number;
+    onChainConstructedPosition?: boolean;
 }

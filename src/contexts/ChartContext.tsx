@@ -1,5 +1,6 @@
 import React, {
     createContext,
+    Dispatch,
     SetStateAction,
     useContext,
     useEffect,
@@ -23,7 +24,6 @@ import {
     drawDataHistory,
     selectedDrawnData,
 } from '../pages/Chart/ChartUtils/chartUtils';
-import { ChainDataContext } from './ChainDataContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -49,6 +49,10 @@ interface ChartContextIF {
     setIsMagnetActive: React.Dispatch<{ value: boolean }>;
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
+    isCandleDataNull: boolean;
+    setNumCandlesFetched: React.Dispatch<number | undefined>;
+    numCandlesFetched: number | undefined;
+    setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
     undoRedoOptions: {
@@ -85,6 +89,21 @@ interface ChartContextIF {
     setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
     isMagnetActiveLocal: boolean;
     setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
+    setChartThemeColors: React.Dispatch<
+        SetStateAction<ChartThemeIF | undefined>
+    >;
+    chartThemeColors: ChartThemeIF | undefined;
+}
+
+export interface ChartThemeIF {
+    lightFillColor: d3.RGBColor | d3.HSLColor | null;
+    darkFillColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
+    // border
+    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    textColor: string;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -103,6 +122,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     if (CHART_SAVED_HEIGHT_LOCAL_STORAGE) {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
+
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
     const chartAnnotations: {
         isMagnetActive: boolean;
@@ -149,6 +170,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         default: CHART_DEFAULT_HEIGHT,
     });
 
+    const [chartThemeColors, setChartThemeColors] = useState<
+        ChartThemeIF | undefined
+    >(undefined);
+
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
         const updateDimension = () => {
@@ -194,8 +219,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             : undefined;
 
     const isChartEnabled =
-        !!process.env.REACT_APP_CHART_IS_ENABLED &&
-        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+        !!import.meta.env.VITE_CHART_IS_ENABLED &&
+        import.meta.env.VITE_CHART_IS_ENABLED.toLowerCase() === 'false'
             ? false
             : true;
 
@@ -208,9 +233,19 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isToolbarOpen, setIsToolbarOpen] =
         useState<boolean>(initialIsToolbarOpen);
 
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const [numCandlesFetched, setNumCandlesFetched] = useState<
+        number | undefined
+    >();
 
-    const chartSettings = useChartSettings(isActiveNetworkBlast);
+    const currentPoolString =
+        undoRedoOptions.currentPool.tokenA.address +
+        '/' +
+        undoRedoOptions.currentPool.tokenB.address;
+
+    const chartSettings = useChartSettings(
+        numCandlesFetched,
+        currentPoolString,
+    );
 
     const chartContext = {
         chartSettings,
@@ -226,6 +261,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsMagnetActive,
         isChangeScaleChart,
         setIsChangeScaleChart,
+        isCandleDataNull,
+        setIsCandleDataNull,
         isToolbarOpen,
         setIsToolbarOpen,
         undoRedoOptions,
@@ -240,6 +277,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsChartHeightMinimum,
         isMagnetActiveLocal,
         setIsMagnetActiveLocal,
+        numCandlesFetched,
+        setNumCandlesFetched,
+        chartThemeColors,
+        setChartThemeColors,
     };
 
     useEffect(() => {

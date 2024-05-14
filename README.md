@@ -28,7 +28,7 @@ Configure your build environment by adding a dotfile (e.g. `.env.local`) with va
 
 This allows the app to interface with different networks as defined in the SDK (not all deployments support all networks).
 
-Format: `REACT_APP_CHAIN_IDS=0x1,0x82750,0x5`
+Format: `VITE_CHAIN_IDS=0x1,0x82750,0x5`
 
 Notes:
   * `0x1` → Ethereum Mainnet
@@ -39,7 +39,7 @@ Notes:
 
 This is a key for the Infura API which is used to pull metadata from on-chain.
 
-Format: `REACT_APP_INFURA_KEY=*********************`
+Format: `VITE_INFURA_KEY=*********************`
 
 Notes:
   * Please use your own Infura key for development purposes.

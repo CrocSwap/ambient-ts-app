@@ -19,6 +19,7 @@ interface propsIF {
     tokenPair: TokenPairIF;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     slippageTolerancePercentage: number;
@@ -30,6 +31,7 @@ interface propsIF {
     isTokenAPrimary: boolean;
     priceImpactWarning: JSX.Element | undefined;
     isSaveAsDexSurplusChecked: boolean;
+    percentDiffUsdValue: number | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -42,6 +44,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         tokenPair,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         resetConfirmation,
         showConfirmation,
         slippageTolerancePercentage,
@@ -53,6 +56,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         isTokenAPrimary,
         priceImpactWarning,
         isSaveAsDexSurplusChecked,
+        percentDiffUsdValue,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -254,6 +258,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             transactionHash={newSwapTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             showConfirmation={showConfirmation}
             statusText={
                 !showConfirmation
@@ -266,6 +271,7 @@ export default function ConfirmSwapModal(props: propsIF) {
                 isWaitingForPriceChangeAckt && priceIncreaseComponent
             }
             priceImpactWarning={priceImpactWarning}
+            percentDiffUsdValue={percentDiffUsdValue}
         />
     );
 }

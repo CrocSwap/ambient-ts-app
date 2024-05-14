@@ -12,6 +12,9 @@ import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from '@ethersproject/providers';
+import { getPositionHash } from './getPositionHash';
+import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { getMoneynessRankByAddr } from './getMoneynessRank';
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -19,14 +22,16 @@ export const getPositionData = async (
     crocEnv: CrocEnv,
     provider: Provider,
     chainId: string,
-    lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
     skipENSFetch?: boolean,
 ): Promise<PositionIF> => {
-    const newPosition = { ...position } as PositionIF;
+    const newPosition = {
+        serverPositionId: position.positionId,
+        ...position,
+    } as PositionIF;
 
     const baseTokenAddress =
         position.base.length === 40 ? '0x' + position.base : position.base;
@@ -39,11 +44,8 @@ export const getPositionData = async (
         baseTokenAddress,
         quoteTokenAddress,
         chainId,
-        lastBlockNumber,
+        Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
     );
-
-    const baseMetadata = cachedTokenDetails(provider, position.base, chainId);
-    const quoteMetadata = cachedTokenDetails(provider, position.quote, chainId);
 
     const basePricePromise = cachedFetchTokenPrice(
         baseTokenAddress,
@@ -55,6 +57,52 @@ export const getPositionData = async (
         chainId,
         crocEnv,
     );
+
+    const baseTokenName = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.name;
+    const quoteTokenName = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.name;
+
+    const baseTokenLogoURI = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.logoURI;
+    const quoteTokenLogoURI = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.logoURI;
+
+    const baseTokenListedDecimals = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.decimals;
+    const quoteTokenListedDecimals = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.decimals;
+
+    const baseTokenListedSymbol = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
+    )?.symbol;
+    const quoteTokenListedSymbol = tokensOnChain.find(
+        (token) =>
+            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
+    )?.symbol;
+
+    const DEFAULT_DECIMALS = 18;
+    const baseTokenDecimals = baseTokenListedDecimals
+        ? baseTokenListedDecimals
+        : (await cachedTokenDetails(provider, position.base, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS;
+    const quoteTokenDecimals = quoteTokenListedDecimals
+        ? quoteTokenListedDecimals
+        : (await cachedTokenDetails(provider, position.quote, chainId))
+              ?.decimals ?? DEFAULT_DECIMALS;
 
     newPosition.ensResolution = skipENSFetch
         ? ''
@@ -71,24 +119,50 @@ export const getPositionData = async (
 
     newPosition.isPositionInRange = isPositionInRange;
 
-    const DEFAULT_DECIMALS = 18;
-    const baseTokenDecimals =
-        (await baseMetadata)?.decimals ?? DEFAULT_DECIMALS;
-    const quoteTokenDecimals =
-        (await quoteMetadata)?.decimals ?? DEFAULT_DECIMALS;
-
     newPosition.baseDecimals = baseTokenDecimals;
     newPosition.quoteDecimals = quoteTokenDecimals;
 
-    newPosition.baseSymbol = (await baseMetadata)?.symbol ?? '';
+    newPosition.baseSymbol = baseTokenListedSymbol
+        ? baseTokenListedSymbol
+        : (await cachedTokenDetails(provider, position.base, chainId))
+              ?.symbol ?? '';
+    newPosition.quoteSymbol = quoteTokenListedSymbol
+        ? quoteTokenListedSymbol
+        : (await cachedTokenDetails(provider, position.quote, chainId))
+              ?.symbol ?? '';
 
-    newPosition.quoteSymbol = (await quoteMetadata)?.symbol ?? '';
-
-    newPosition.baseName = (await baseMetadata)?.name ?? '';
-    newPosition.quoteName = (await quoteMetadata)?.name ?? '';
+    newPosition.baseName = baseTokenName
+        ? baseTokenName
+        : (await cachedTokenDetails(provider, position.base, chainId))?.name ??
+          '';
+    newPosition.quoteName = quoteTokenName
+        ? quoteTokenName
+        : (await cachedTokenDetails(provider, position.quote, chainId))?.name ??
+          '';
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+    const basePrice = await basePricePromise;
+    const quotePrice = await quotePricePromise;
+
+    newPosition.isBaseTokenMoneynessGreaterOrEqual =
+        getMoneynessRankByAddr(baseTokenAddress) -
+            getMoneynessRankByAddr(quoteTokenAddress) >=
+        0;
+
+    newPosition.baseUsdPrice = basePrice?.usdPrice;
+    newPosition.quoteUsdPrice = quotePrice?.usdPrice;
+
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: position.positionType === 'ambient',
+        user: position.user,
+        baseAddress: position.base,
+        quoteAddress: position.quote,
+        poolIdx: position.poolIdx,
+        bidTick: position.bidTick,
+        askTick: position.askTick,
+    });
 
     const lowerPriceDisplayInBase =
         1 /
@@ -117,15 +191,6 @@ export const getPositionData = async (
         baseTokenDecimals,
         quoteTokenDecimals,
     );
-
-    const baseTokenLogoURI = tokensOnChain.find(
-        (token) =>
-            token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
-    )?.logoURI;
-    const quoteTokenLogoURI = tokensOnChain.find(
-        (token) =>
-            token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
-    )?.logoURI;
 
     newPosition.baseTokenLogoURI = baseTokenLogoURI ?? '';
     newPosition.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
@@ -225,18 +290,21 @@ export const getPositionData = async (
         zeroDisplay: '0',
     });
 
-    const basePrice = await basePricePromise;
-    const quotePrice = await quotePricePromise;
     const poolPrice = toDisplayPrice(
         await poolPriceNonDisplay,
         baseTokenDecimals,
         quoteTokenDecimals,
     );
+    newPosition.curentPoolPriceDisplayNum = poolPrice;
 
     if (quotePrice && basePrice) {
         newPosition.totalValueUSD =
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (
             newPosition.feesLiqQuoteDecimalCorrected &&
             newPosition.feesLiqBaseDecimalCorrected
@@ -247,16 +315,24 @@ export const getPositionData = async (
     } else if (basePrice) {
         const quotePrice = basePrice.usdPrice * poolPrice;
         newPosition.totalValueUSD =
-            quotePrice * newPosition.positionLiqQuoteDecimalCorrected +
-            basePrice.usdPrice * newPosition.positionLiqBaseDecimalCorrected;
+            quotePrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0)) +
+            basePrice.usdPrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0));
         if (newPosition.feesLiqBaseDecimalCorrected)
             newPosition.feesValueUSD =
                 basePrice.usdPrice * newPosition.feesLiqBaseDecimalCorrected;
     } else if (quotePrice) {
         const basePrice = quotePrice.usdPrice / poolPrice;
         newPosition.totalValueUSD =
-            basePrice * newPosition.positionLiqBaseDecimalCorrected +
-            quotePrice.usdPrice * newPosition.positionLiqQuoteDecimalCorrected;
+            basePrice *
+                (newPosition.positionLiqBaseDecimalCorrected +
+                    (newPosition.feesLiqBaseDecimalCorrected || 0)) +
+            quotePrice.usdPrice *
+                (newPosition.positionLiqQuoteDecimalCorrected +
+                    (newPosition.feesLiqQuoteDecimalCorrected || 0));
         if (newPosition.feesLiqQuoteDecimalCorrected)
             newPosition.feesValueUSD =
                 quotePrice.usdPrice * newPosition.feesLiqQuoteDecimalCorrected;
@@ -268,6 +344,8 @@ export const getPositionData = async (
     newPosition.apy = position.aprEst * 100;
 
     newPosition.serverPositionId = position.positionId;
+
+    newPosition.positionId = posHash;
 
     return newPosition;
 };

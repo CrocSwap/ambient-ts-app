@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import {
     getChainStats,
     getFormattedNumber,
-    getSupportedChainIds,
 } from '../../../ambient-utils/dataLayer';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -19,18 +18,15 @@ import {
     GCGO_BLAST_URL,
     GCGO_ETHEREUM_URL,
     GCGO_SCROLL_URL,
-    IS_TESTNET_SITE,
+    // IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useProvider } from 'wagmi';
 import { TokenContext } from '../../../contexts/TokenContext';
 
 interface StatCardProps {
     title: string;
     value: string | number;
 }
-
-const supportedNetworks = getSupportedChainIds();
 
 function StatCard(props: StatCardProps) {
     const { title, value } = props;
@@ -59,11 +55,30 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats() {
-    const { mainnetProvider } = useContext(CrocEnvContext);
+    const { mainnetProvider, scrollProvider, blastProvider } =
+        useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const allDefaultTokens = tokens.allDefaultTokens;
-    const scrollProvider = useProvider({ chainId: +'0x82750' });
-    const blastProvider = useProvider({ chainId: +'0x13e31' });
+
+    const mainnetCrocEnv = useMemo(
+        () =>
+            mainnetProvider
+                ? new CrocEnv(mainnetProvider, undefined)
+                : undefined,
+        [mainnetProvider !== undefined],
+    );
+
+    const scrollCrocEnv = useMemo(
+        () =>
+            scrollProvider ? new CrocEnv(scrollProvider, undefined) : undefined,
+        [scrollProvider !== undefined],
+    );
+
+    const blastCrocEnv = useMemo(
+        () =>
+            blastProvider ? new CrocEnv(blastProvider, undefined) : undefined,
+        [blastProvider !== undefined],
+    );
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -77,161 +92,157 @@ export default function Stats() {
 
     useEffect(() => {
         if (
-            mainnetProvider !== undefined &&
-            scrollProvider !== undefined &&
-            blastProvider !== undefined &&
+            mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
             allDefaultTokens.length > 0
         ) {
             let tvlTotalUsd = 0,
                 volumeTotalUsd = 0,
                 feesTotalUsd = 0;
 
-            let numChainsToAggregate = 0;
-            if (supportedNetworks.includes('0x1')) numChainsToAggregate += 1;
-            if (supportedNetworks.includes('0x82750'))
-                numChainsToAggregate += 1;
-            if (supportedNetworks.includes('0x13e31'))
-                numChainsToAggregate += 1;
-
+            const numChainsToAggregate = 3;
             let resultsReceived = 0;
 
-            if (supportedNetworks.includes('0x1')) {
-                const mainnetCrocEnv = mainnetProvider
-                    ? new CrocEnv(mainnetProvider, undefined)
-                    : undefined;
-                if (!mainnetCrocEnv) return;
-                getChainStats(
-                    '0x1',
-                    mainnetCrocEnv,
-                    GCGO_ETHEREUM_URL,
-                    cachedFetchTokenPrice,
-                    allDefaultTokens,
-                ).then((dexStats) => {
-                    if (!dexStats) {
-                        return;
-                    }
-                    tvlTotalUsd += dexStats.tvlTotalUsd;
-                    volumeTotalUsd += dexStats.volumeTotalUsd;
-                    feesTotalUsd += dexStats.feesTotalUsd;
+            getChainStats(
+                'cumulative',
+                '0x1',
+                mainnetCrocEnv,
+                GCGO_ETHEREUM_URL,
+                cachedFetchTokenPrice,
+                15,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
 
-                    resultsReceived += 1;
+                resultsReceived += 1;
+                // IS_LOCAL_ENV &&
+                //     console.log(
+                //         'mainnet cumulative vol: ',
+                //         dexStats.volumeTotalUsd.toLocaleString(),
+                //     );
 
-                    if (resultsReceived === numChainsToAggregate) {
-                        setTotalTvlString(
-                            getFormattedNumber({
-                                value: tvlTotalUsd,
-                                prefix: '$',
-                                isTvl: true,
-                            }),
-                        );
-                        setTotalVolumeString(
-                            getFormattedNumber({
-                                value: volumeTotalUsd,
-                                prefix: '$',
-                            }),
-                        );
-                        setTotalFeesString(
-                            getFormattedNumber({
-                                value: feesTotalUsd,
-                                prefix: '$',
-                            }),
-                        );
-                    }
-                });
-            }
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                }
+            });
 
-            if (supportedNetworks.includes('0x82750')) {
-                const scrollCrocEnv = scrollProvider
-                    ? new CrocEnv(scrollProvider, undefined)
-                    : undefined;
-                if (!scrollCrocEnv) return;
+            getChainStats(
+                'cumulative',
+                '0x82750',
+                scrollCrocEnv,
+                GCGO_SCROLL_URL,
+                cachedFetchTokenPrice,
+                15,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                // IS_LOCAL_ENV &&
+                // console.log(
+                //     'scroll cumulative vol: ',
+                //     dexStats.volumeTotalUsd.toLocaleString(),
+                // );
 
-                getChainStats(
-                    '0x82750',
-                    scrollCrocEnv,
-                    GCGO_SCROLL_URL,
-                    cachedFetchTokenPrice,
-                    allDefaultTokens,
-                ).then((dexStats) => {
-                    if (!dexStats) {
-                        return;
-                    }
-                    tvlTotalUsd += dexStats.tvlTotalUsd;
-                    volumeTotalUsd += dexStats.volumeTotalUsd;
-                    feesTotalUsd += dexStats.feesTotalUsd;
-                    resultsReceived += 1;
-                    if (resultsReceived === numChainsToAggregate) {
-                        setTotalTvlString(
-                            getFormattedNumber({
-                                value: tvlTotalUsd,
-                                prefix: '$',
-                                isTvl: true,
-                            }),
-                        );
-                        setTotalVolumeString(
-                            getFormattedNumber({
-                                value: volumeTotalUsd,
-                                prefix: '$',
-                            }),
-                        );
-                        setTotalFeesString(
-                            getFormattedNumber({
-                                value: feesTotalUsd,
-                                prefix: '$',
-                            }),
-                        );
-                    }
-                });
-            }
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                }
+            });
 
-            if (supportedNetworks.includes('0x13e31')) {
-                const blastCrocEnv = blastProvider
-                    ? new CrocEnv(blastProvider, undefined)
-                    : undefined;
-                if (!blastCrocEnv) return;
-
-                getChainStats(
-                    '0x13e31',
-                    blastCrocEnv,
-                    GCGO_BLAST_URL,
-                    cachedFetchTokenPrice,
-                    allDefaultTokens,
-                ).then((dexStats) => {
-                    if (!dexStats) {
-                        return;
-                    }
-                    tvlTotalUsd += dexStats.tvlTotalUsd;
-                    volumeTotalUsd += dexStats.volumeTotalUsd;
-                    feesTotalUsd += dexStats.feesTotalUsd;
-                    resultsReceived += 1;
-                    if (resultsReceived === numChainsToAggregate) {
-                        setTotalTvlString(
-                            getFormattedNumber({
-                                value: tvlTotalUsd,
-                                prefix: '$',
-                                isTvl: true,
-                            }),
-                        );
-                        setTotalVolumeString(
-                            getFormattedNumber({
-                                value: volumeTotalUsd,
-                                prefix: '$',
-                            }),
-                        );
-                        setTotalFeesString(
-                            getFormattedNumber({
-                                value: feesTotalUsd,
-                                prefix: '$',
-                            }),
-                        );
-                    }
-                });
-            }
+            getChainStats(
+                'cumulative',
+                '0x13e31',
+                blastCrocEnv,
+                GCGO_BLAST_URL,
+                cachedFetchTokenPrice,
+                15,
+                allDefaultTokens,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
+                tvlTotalUsd += dexStats.tvlTotalUsd;
+                volumeTotalUsd += dexStats.volumeTotalUsd;
+                feesTotalUsd += dexStats.feesTotalUsd;
+                resultsReceived += 1;
+                // IS_LOCAL_ENV &&
+                //     console.log(
+                //         'blast cumulative vol: ',
+                //         dexStats.volumeTotalUsd.toLocaleString(),
+                //     );
+                if (resultsReceived === numChainsToAggregate) {
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
+                    );
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                }
+            });
         }
     }, [
-        mainnetProvider !== undefined &&
-            scrollProvider !== undefined &&
-            blastProvider !== undefined &&
+        mainnetCrocEnv !== undefined &&
+            scrollCrocEnv !== undefined &&
+            blastCrocEnv !== undefined &&
             allDefaultTokens.length > 0,
     ]);
 
@@ -251,15 +262,7 @@ export default function Stats() {
     ];
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
-    const statsTitle = IS_TESTNET_SITE
-        ? 'Testnet Stats'
-        : !supportedNetworks.includes('0x1') &&
-          supportedNetworks.includes('0x82750')
-        ? 'Ambient x Scroll Stats'
-        : !supportedNetworks.includes('0x1') &&
-          supportedNetworks.includes('0x13e31')
-        ? 'Ambient x Blast Stats'
-        : 'Ambient Finance Stats';
+    const statsTitle = 'Ambient Finance Stats';
 
     const mobileWrapper = (
         <Fade up>

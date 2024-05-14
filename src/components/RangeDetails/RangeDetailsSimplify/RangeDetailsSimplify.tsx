@@ -1,5 +1,5 @@
 import styles from './RangeDetailsSimplify.module.css';
-import { PositionIF } from '../../../ambient-utils/types';
+import { BlastRewardsDataIF, PositionIF } from '../../../ambient-utils/types';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
@@ -12,13 +12,16 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import InfoRow from '../../Global/InfoRow';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
+    timeFirstMintMemo: number;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
     isAccountView: boolean;
     updatedPositionApy: number | undefined;
+    blastRewardsData: BlastRewardsDataIF;
 }
 
 // TODO: refactor to using styled-components
@@ -29,8 +32,11 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         quoteFeesDisplay,
         isAccountView,
         updatedPositionApy,
+        blastRewardsData,
+        timeFirstMintMemo,
     } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,
@@ -63,7 +69,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         quoteDisplayFrontend,
         elapsedTimeString,
         elapsedTimeSinceFirstMintString,
-    } = useProcessRange(position, userAddress, isAccountView);
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
@@ -71,14 +77,12 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { chainData } = useContext(CrocEnvContext);
+    const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
     const [_, copy] = useCopyToClipboard();
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount
-            ? '/account'
-            : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
 
@@ -138,7 +142,7 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                 {showFullAddresses
                     ? ensName
                         ? ensName
-                        : ownerId
+                        : userNameToDisplay
                     : userNameToDisplay}
             </p>
             <RiExternalLinkLine />
@@ -172,8 +176,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
         ? 'In Range'
         : 'Out of Range';
 
-    const submissionTime =
-        moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm') +
+    const firstMintTime =
+        moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
         ' ' +
         '(' +
         elapsedTimeSinceFirstMintString +
@@ -192,18 +196,6 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             content: isAmbient ? 'Ambient' : 'Range',
             explanation: 'e.g. Range, Ambient ',
         },
-        {
-            title: 'Submit Time ',
-            content: submissionTime,
-            explanation:
-                'The time the owner first added liquidity at these prices',
-        },
-        {
-            title: 'Position Slot ID ',
-            content: posHashContent,
-            // eslint-disable-next-line quotes
-            explanation: "A unique identifier for this user's position",
-        },
 
         {
             title: 'Wallet ',
@@ -215,7 +207,11 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             content: status,
             explanation: 'e.g. Ambient / In Range / Out of Range',
         },
-
+        {
+            title: 'Value ',
+            content: usdValue,
+            explanation: 'The approximate US dollar value of the limit order',
+        },
         {
             title: 'Token 1 ',
             content: baseTokenSymbol + ' - ' + baseTokenName,
@@ -250,6 +246,12 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             title: 'Token 2 Qty ',
             content: quoteDisplayFrontend + ' ' + quoteTokenSymbol,
             explanation: 'The quantity of token #2 in the token pair',
+        },
+        {
+            title: 'Time First Minted ',
+            content: firstMintTime,
+            explanation:
+                'The time the owner first added liquidity at these prices',
         },
         {
             title: 'Range Min ',
@@ -290,22 +292,14 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                 'The estimated APR of the position based on rewards earned',
         },
         {
-            title: 'Value ',
-            content: usdValue,
-            explanation: 'The approximate US dollar value of the limit order',
+            title: 'Position Slot ID ',
+            content: posHashContent,
+            // eslint-disable-next-line quotes
+            explanation: "A unique identifier for this user's position",
         },
+
         ...(!isAmbient
             ? [
-                  {
-                      title: 'Token 1 Unclaimed Rewards ',
-                      content: baseFeesDisplay + ' ' + baseTokenSymbol,
-                      explanation: 'Token #1 unclaimed rewards',
-                  },
-                  {
-                      title: 'Token 2 Unclaimed Rewards ',
-                      content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
-                      explanation: 'Token #2 unclaimed rewards',
-                  },
                   {
                       title: 'Low Tick ',
                       content: position.bidTick.toString(),
@@ -322,12 +316,57 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             : []),
     ];
 
-    if (submissionTime !== updateTime) {
-        infoContent.splice(2, 0, {
-            title: 'Update Time ',
-            content: updateTime,
-            explanation: 'Time the owner last updated the limit at this price',
-        });
+    if (!isAmbient) {
+        infoContent.splice(
+            10,
+            0,
+            {
+                title: 'Token 1 Unclaimed Rewards ',
+                content: baseFeesDisplay + ' ' + baseTokenSymbol,
+                explanation: 'Token #1 unclaimed rewards',
+            },
+            {
+                title: 'Token 2 Unclaimed Rewards ',
+                content: quoteFeesDisplay + ' ' + quoteTokenSymbol,
+                explanation: 'Token #2 unclaimed rewards',
+            },
+        );
+    }
+
+    if (isActiveNetworkBlast) {
+        infoContent.splice(
+            isAmbient ? 10 : 12,
+            0,
+            {
+                title: 'BLAST points ',
+                content: blastRewardsData.points,
+                explanation: 'BLAST points earned by the position',
+            },
+            {
+                title: 'BLAST gold ',
+                content: blastRewardsData.gold,
+                explanation: 'BLAST gold earned by the position',
+            },
+        );
+    }
+
+    if (firstMintTime !== updateTime) {
+        infoContent.splice(
+            isAmbient
+                ? isActiveNetworkBlast
+                    ? 13
+                    : 11
+                : isActiveNetworkBlast
+                ? 15
+                : 13,
+            0,
+            {
+                title: 'Time Last Updated ',
+                content: updateTime,
+                explanation:
+                    'Time the owner last updated the position at these prices',
+            },
+        );
     }
 
     return (
@@ -335,7 +374,16 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             <div className={styles.main_container}>
                 <section>
                     {infoContent
-                        .slice(0, infoContent.length / 2)
+                        .slice(
+                            0,
+                            isAmbient
+                                ? isActiveNetworkBlast
+                                    ? 12
+                                    : 10
+                                : isActiveNetworkBlast
+                                ? 14
+                                : 12,
+                        )
                         .map((info, idx) => (
                             <InfoRow
                                 key={info.title + idx}
@@ -348,7 +396,16 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
 
                 <section>
                     {infoContent
-                        .slice(infoContent.length / 2, infoContent.length)
+                        .slice(
+                            isAmbient
+                                ? isActiveNetworkBlast
+                                    ? 12
+                                    : 10
+                                : isActiveNetworkBlast
+                                ? 14
+                                : 12,
+                            infoContent.length,
+                        )
                         .map((info, idx) => (
                             <InfoRow
                                 key={info.title + idx}

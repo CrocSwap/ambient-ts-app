@@ -13,33 +13,31 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
+    name: string;
+    icon: JSX.Element;
+    data: JSX.Element;
     children?: ReactNode;
     shouldDisplayContentWhenUserNotLoggedIn: boolean;
     isDefaultOverridden: boolean;
-    item: {
-        name: string;
-        icon: ReactNode;
-        data: ReactNode;
-    };
-    idx: number | string;
     openAllDefault?: boolean;
     sidebar: sidebarMethodsIF;
 }
 
 export default function SidebarAccordion(props: propsIF) {
     const {
+        name,
+        icon,
+        data,
         shouldDisplayContentWhenUserNotLoggedIn,
-        idx,
-        item,
         isDefaultOverridden,
         sidebar,
     } = props;
 
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { isUserConnected } = useContext(UserDataContext);
-    const isTopPools = item.name === 'Top Pools';
+    const isTopPools = name === 'Top Pools';
 
     const [isOpen, setIsOpen] = useState(isTopPools);
 
@@ -64,7 +62,7 @@ export default function SidebarAccordion(props: propsIF) {
             style={{ overflow: 'hidden' }}
             onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
         >
-            {item.data}
+            {data}
         </motion.div>
     );
 
@@ -113,12 +111,10 @@ export default function SidebarAccordion(props: propsIF) {
                     padding='8px'
                     color='text2'
                 >
-                    <p>
-                        Your recent {item.name.toLowerCase()} will display here.
-                    </p>
+                    <p>Your recent {name.toLowerCase()} will display here.</p>
                     <Button
-                        idForDOM={`connect_wallet_button_in_sidebar_${item.name}`}
-                        action={openWagmiModal}
+                        idForDOM={`connect_wallet_button_in_sidebar_${name}`}
+                        action={openWalletModal}
                         flat
                         thin
                         title='Connect Wallet'
@@ -137,12 +133,11 @@ export default function SidebarAccordion(props: propsIF) {
             style={{ flexShrink: '1', overflow: 'hidden' }}
         >
             <AccordionHeader
-                key={idx}
                 onClick={() => handleAccordionClick()}
                 open={sidebar.isOpen}
             >
                 <FlexContainer
-                    id={`sidebar_header_${item.name
+                    id={`sidebar_header_${name
                         .replaceAll(' ', '_')
                         .toLowerCase()}`}
                     flexDirection='row'
@@ -151,10 +146,10 @@ export default function SidebarAccordion(props: propsIF) {
                     gap={8}
                 >
                     {sidebar.isOpen && <ArrowIcon size={12} open={isOpen} />}
-                    {item.icon}
+                    {icon}
                     {sidebar.isOpen && (
                         <Text fontSize='body' fontWeight='500'>
-                            {item.name}
+                            {name}
                         </Text>
                     )}
                 </FlexContainer>

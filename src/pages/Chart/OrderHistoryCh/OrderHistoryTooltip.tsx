@@ -17,6 +17,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useContext, useState } from 'react';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
@@ -50,6 +51,8 @@ export default function OrderHistoryTooltip(props: {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+
+    const { setCurrentTxActiveInTransactions } = useContext(TradeTableContext);
 
     function handleOpenExplorer(txHash: string) {
         const explorerUrl = `${blockExplorer}tx/${txHash}`;
@@ -101,6 +104,9 @@ export default function OrderHistoryTooltip(props: {
                                 );
                             }
 
+                            if (!shouldDeselect)
+                                setCurrentTxActiveInTransactions('');
+
                             return shouldDeselect;
                         });
                         setHoverOHTooltip(false);
@@ -111,8 +117,8 @@ export default function OrderHistoryTooltip(props: {
                             color={
                                 (denomInBase && !hoveredOrderHistory.isBuy) ||
                                 (!denomInBase && hoveredOrderHistory.isBuy)
-                                    ? '#CDC1FF'
-                                    : '#7371fc'
+                                    ? 'var(--accent5)'
+                                    : 'var(--accent1)'
                             }
                             size={'15px'}
                         >
@@ -142,15 +148,21 @@ export default function OrderHistoryTooltip(props: {
                                     : hoveredOrderHistory.quoteSymbol}
                             </StyledHeader>
                         )}
-                        <img
-                            src={uriToHttp(
-                                denomInBase
-                                    ? hoveredOrderHistory.baseTokenLogoURI
-                                    : hoveredOrderHistory.quoteTokenLogoURI,
-                            )}
-                            alt='base token'
-                            style={{ width: '18px' }}
-                        />
+                        {(
+                            denomInBase
+                                ? hoveredOrderHistory.baseTokenLogoURI
+                                : hoveredOrderHistory.quoteTokenLogoURI
+                        ) ? (
+                            <img
+                                src={uriToHttp(
+                                    denomInBase
+                                        ? hoveredOrderHistory.baseTokenLogoURI
+                                        : hoveredOrderHistory.quoteTokenLogoURI,
+                                )}
+                                alt='base token'
+                                style={{ width: '18px' }}
+                            />
+                        ) : undefined}
                     </OrderHistoryHeader>
                     <OrderHistoryBody>
                         <StyledHeader color={'#8b98a5'} size={'13px'}>

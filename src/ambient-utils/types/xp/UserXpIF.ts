@@ -16,6 +16,22 @@ export interface UserXpServerIF {
     chainId?: string;
     pointsHistory?: Array<XpSnapshotServerIF>;
 }
+
+export interface BlastUserXpServerIF {
+    points: number;
+    startBlock: number;
+    endBlock: number;
+}
+export interface BlastUserGoldServerIF {
+    points: number;
+    startBlock: number;
+    endBlock: number;
+}
+
+export interface BlastUserXpIF {
+    points: string;
+    gold: string;
+}
 export interface XpSnapshotIF {
     addedPoints: number;
     retroPoints: number;
@@ -35,5 +51,10 @@ export interface UserXpIF {
     chainId?: string;
     currentLevel: number;
     pointsRemainingToNextLevel: number;
+    blastUserXp?: number;
     pointsHistory?: Array<XpSnapshotIF>;
+}
+
+export interface BlastXpIF {
+    points: number;
 }

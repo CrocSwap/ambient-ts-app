@@ -19,6 +19,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
     position: PositionIF;
@@ -47,6 +48,7 @@ function RangesRow(props: propsIF) {
     } = useContext(AppStateContext);
     const { showAllData: showAllDataSelection, currentPositionActive } =
         useContext(TradeTableContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { currentRangeInReposition, currentRangeInAdd } =
         useContext(RangeContext);
@@ -85,7 +87,9 @@ function RangesRow(props: propsIF) {
         elapsedTimeString,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessRange(position, userAddress, isAccountView);
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
+    } = useProcessRange(position, crocEnv, userAddress, isAccountView);
 
     const rangeDetailsProps = {
         isPositionInRange: isPositionInRange,
@@ -122,11 +126,11 @@ function RangesRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    function scrollToDiv() {
+    function scrollToDiv(block?: 'start' | 'center' | 'end' | 'nearest') {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'nearest',
+            block: block || 'nearest',
             inline: 'nearest',
         });
     }
@@ -141,6 +145,14 @@ function RangesRow(props: propsIF) {
         copy(posHash.toString());
         openSnackbar(`${posHash.toString()} copied`, 'info');
     }
+
+    useEffect(() => {
+        position.onChainConstructedPosition &&
+        position.positionId === currentPositionActive
+            ? // scroll to show the placeholder and unindexed position row
+              scrollToDiv('end')
+            : null;
+    }, [position.onChainConstructedPosition]);
 
     useEffect(() => {
         position.positionId === currentPositionActive ? scrollToDiv() : null;
@@ -199,6 +211,8 @@ function RangesRow(props: propsIF) {
         rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         isAccountView,
         isAmbient,
         minRangeDenomByMoneyness,
@@ -210,6 +224,7 @@ function RangesRow(props: propsIF) {
         isPositionInRange,
         baseTokenAddress,
         quoteTokenAddress,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {
@@ -268,7 +283,6 @@ function RangesRow(props: propsIF) {
                 <div data-label='menu'>
                     <RangesMenu
                         {...rangeMenuProps}
-                        isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
                         isAccountView={isAccountView}
                         openDetailsModal={openDetailsModal}

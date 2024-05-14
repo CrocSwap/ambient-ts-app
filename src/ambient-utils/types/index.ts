@@ -12,6 +12,8 @@ export * from './pool';
 // PositionIF, PositionServerIF
 export * from './position';
 
+export * from './chainIds';
+
 // TokenIF, TokenListIF
 export * from './token';
 
@@ -31,6 +33,9 @@ export * from './NetworkIF';
 export * from './ScaleDataIF';
 
 export * from './TradeTableDataRow';
+
+// directions for table sorting (ascending/descending/null)
+export * from './sortDirections';
 
 export enum RecordType {
     Position = 'PositionIF',

@@ -67,8 +67,14 @@ export default function Account(props: propsIF) {
 
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const levelDropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideWalletHandler = () => setShowWalletDropdown(false);
-    const clickOutsideLevelHandler = () => setShowLevelDropdown(false);
+    const clickOutsideWalletHandler = () => {
+        setShowWalletDropdown(false);
+        appHeaderDropdown.setIsActive(false);
+    };
+    const clickOutsideLevelHandler = () => {
+        setShowLevelDropdown(false);
+        appHeaderDropdown.setIsActive(false);
+    };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideWalletHandler);
     UseOnClickOutside(levelDropdownItemRef, clickOutsideLevelHandler);
 
@@ -131,6 +137,10 @@ export default function Account(props: propsIF) {
         minFracDigits: 0,
         maxFracDigits: 0,
         isLevel: true,
+        mantissa:
+            (currentLevel || 1) >= 100000 && (currentLevel || 1) < 1000000
+                ? 0
+                : 1,
     });
 
     const currentLevelDisplay =

@@ -5,23 +5,15 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
-import { ConnectArgs, Connector } from '@wagmi/core';
+import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers5/react';
 import { checkBlacklist } from '../ambient-utils/constants';
-import { UserXpIF } from '../ambient-utils/types';
+import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
     disconnectUser: () => void;
-    connectUser: (args?: Partial<ConnectArgs> | undefined) => void;
-    connectError: Error | null;
-    connectIsLoading: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    connectors: Connector<any, any, any>[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    pendingConnector: Connector<any, any, any> | undefined;
 
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
@@ -33,6 +25,11 @@ interface UserDataContextIF {
 export interface UserXpDataIF {
     dataReceived: boolean;
     data: UserXpIF | undefined;
+}
+
+export interface BlastUserXpDataIF {
+    dataReceived: boolean;
+    data: BlastUserXpIF | undefined;
 }
 
 export const UserDataContext = createContext<UserDataContextIF>(
@@ -47,33 +44,17 @@ export const UserDataContextProvider = (props: {
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
 
-    const { address: userAddress, isConnected: isUserConnected } = useAccount();
+    const { address: userAddress, isConnected: isUserConnected } =
+        useWeb3ModalAccount();
     const { disconnect: disconnectUser } = useDisconnect();
-    const {
-        connect: connectUser,
-        connectors,
-        error: connectError,
-        isLoading: connectIsLoading,
-        pendingConnector,
-    } = useConnect({
-        onSettled(data, error) {
-            if (error) console.error({ error });
-            const connectedAddress = data?.account;
-            const isBlacklisted = connectedAddress
-                ? checkBlacklist(connectedAddress)
-                : false;
-            if (isBlacklisted) disconnectUser();
-        },
-    });
-    const { data: ensNameFromWagmi } = useEnsName({ address: userAddress });
+    const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
+    if (isBlacklisted) disconnectUser();
 
     const [ensName, setEnsName] = useState('');
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (ensNameFromWagmi) {
-                setEnsName(ensNameFromWagmi);
-            } else if (userAddress) {
+            if (userAddress) {
                 try {
                     const ensResult = await fetchEnsAddress(userAddress);
                     if (ensResult) setEnsName(ensResult);
@@ -84,18 +65,13 @@ export const UserDataContextProvider = (props: {
                 }
             }
         })();
-    }, [ensNameFromWagmi, userAddress]);
+    }, [userAddress]);
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
         disconnectUser,
         ensName,
-        connectUser,
-        connectors,
-        connectError,
-        connectIsLoading,
-        pendingConnector,
         resolvedAddressFromContext,
         setResolvedAddressInContext,
         secondaryEnsFromContext,

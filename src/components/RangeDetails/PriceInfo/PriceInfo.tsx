@@ -3,14 +3,17 @@ import styles from './PriceInfo.module.css';
 import Apy from '../../Global/Tabs/Apy/Apy';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { TokenIF } from '../../../ambient-utils/types';
-import { useContext, useEffect, useState } from 'react';
+import {
+    PositionIF,
+    BlastRewardsDataIF,
+    TokenIF,
+} from '../../../ambient-utils/types';
+import { useContext } from 'react';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { PositionRewardsDataIF } from '../../../ambient-utils/types/xp';
-import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
+    position: PositionIF;
     usdValue: string;
     lowRangeDisplay: string;
     highRangeDisplay: string;
@@ -29,7 +32,11 @@ interface propsIF {
     maxRangeDenomByMoneyness: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    positionId: string;
+    blastRewardsData: BlastRewardsDataIF;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
+    isAccountView: boolean;
+    baseTokenCharacter: string;
+    quoteTokenCharacter: string;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -52,7 +59,11 @@ export default function PriceInfo(props: propsIF) {
         maxRangeDenomByMoneyness,
         baseTokenAddress,
         quoteTokenAddress,
-        positionId,
+        blastRewardsData,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView,
+        baseTokenCharacter,
+        quoteTokenCharacter,
     } = props;
 
     const { pathname } = useLocation();
@@ -61,6 +72,11 @@ export default function PriceInfo(props: propsIF) {
     const isOnTradeRoute = pathname.includes('trade');
     const { tokens } = useContext(TokenContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
+
+    const isDenomBaseLocal = isAccountView
+        ? !isBaseTokenMoneynessGreaterOrEqual
+        : isDenomBase;
+
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -81,14 +97,14 @@ export default function PriceInfo(props: propsIF) {
             size='s'
         />
     );
-    const unknownTokenLogoDisplay = (
-        <TokenIcon
-            token={undefined}
-            src={undefined}
-            alt={undefined}
-            size='xs'
-        />
-    );
+    // const unknownTokenLogoDisplay = (
+    //     <TokenIcon
+    //         token={undefined}
+    //         src={undefined}
+    //         alt={undefined}
+    //         size='xs'
+    //     />
+    // );
 
     const totalValue = (
         <div className={styles.value_content}>
@@ -130,8 +146,12 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '0'
                         : isOnTradeRoute
-                        ? lowRangeDisplay
-                        : minRangeDenomByMoneyness}
+                        ? (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + lowRangeDisplay
+                        : (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + minRangeDenomByMoneyness}
                 </h2>
             </section>
 
@@ -141,68 +161,71 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '∞'
                         : isOnTradeRoute
-                        ? highRangeDisplay
-                        : maxRangeDenomByMoneyness}
+                        ? (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + highRangeDisplay
+                        : (isDenomBaseLocal
+                              ? quoteTokenCharacter
+                              : baseTokenCharacter) + maxRangeDenomByMoneyness}
                 </h2>
             </section>
         </div>
     );
 
+    const baseTokenLargeDisplay = (
+        <TokenIcon
+            token={baseToken}
+            src={baseTokenLogoURI}
+            alt={baseTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const quoteTokenLargeDisplay = (
+        <TokenIcon
+            token={quoteToken}
+            src={quoteTokenLogoURI}
+            alt={quoteTokenSymbol}
+            size='2xl'
+        />
+    );
+
     const tokenPairDetails = (
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                <TokenIcon
-                    token={baseToken}
-                    src={baseTokenLogoURI}
-                    alt={baseTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={quoteToken}
-                    src={quoteTokenLogoURI}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
+                {isDenomBaseLocal
+                    ? baseTokenLargeDisplay
+                    : quoteTokenLargeDisplay}
+                {isDenomBaseLocal
+                    ? quoteTokenLargeDisplay
+                    : baseTokenLargeDisplay}
             </div>
             <p>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                {isDenomBaseLocal ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBaseLocal ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
 
     const showEarnedRewards = isActiveNetworkBlast;
 
-    const [positionRewards, setPositionRewards] =
-        useState<PositionRewardsDataIF>({
-            'BLAST points': '…',
-            'BLAST gold': '…',
-        });
-
-    // useEffect(() => {
-    //     fetchPositionRewardsData({ positionId }).then((rewards) => {
-    //         rewards && setPositionRewards(rewards);
-    //     });
-    // }, [lastBlockNumber]);
-
-    useEffect(() => {
-        fetchPositionRewardsData({ positionId }).then((rewards) => {
-            rewards && setPositionRewards(rewards);
-        });
-        // update every 10 seconds
-        const interval = setInterval(() => {
-            fetchPositionRewardsData({ positionId }).then((rewards) => {
-                rewards && setPositionRewards(rewards);
-            });
-        }, 10000);
-        return () => clearInterval(interval);
-    }, []);
-
     const rewardsContent = (
         <section>
             <span className={styles.divider} />
             <div>Rewards:</div>
-            {Object.entries(positionRewards).map(([rewardType, reward]) => {
+            <BlastRewardRow
+                key={'BLAST points'}
+                rewardType={'BLAST points'}
+                reward={blastRewardsData.points}
+                logo={blastLogo}
+            />
+            <BlastRewardRow
+                key={'BLAST gold'}
+                rewardType={'BLAST gold'}
+                reward={blastRewardsData.gold}
+                logo={blastLogo}
+            />
+            {/* {Object.entries(blastPointsData).map(([rewardType, reward]) => {
                 const logo =
                     rewardType === 'BLAST points' ||
                     rewardType === 'BLAST' ||
@@ -225,7 +248,7 @@ export default function PriceInfo(props: propsIF) {
                         logo={logo}
                     />
                 );
-            })}
+            })} */}
         </section>
     );
 

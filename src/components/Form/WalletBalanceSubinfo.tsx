@@ -10,7 +10,7 @@ import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExpla
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 interface PropsIF {
     usdValueForDom: string;
     showWallet: boolean | undefined;
@@ -21,11 +21,12 @@ interface PropsIF {
     onToggleDex: () => void;
     availableBalance?: number;
     onMaxButtonClick?: () => void;
-    onRefresh?: () => void;
+    percentDiffUsdValue: number | undefined;
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
         usdValueForDom,
+        percentDiffUsdValue,
         showWallet,
         isWithdraw,
         balance,
@@ -40,39 +41,57 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
 
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    // const walletEnabledIcon = (
+    //     <svg
+    //         width='17'
+    //         height='15'
+    //         viewBox='0 0 17 15'
+    //         fill='none'
+    //         xmlns='http://www.w3.org/2000/svg'
+    //         style={{ stroke: 'var(--accent1)' }} // Use CSS variable here
+    //     >
+    //         <path
+    //             d='M14.6666 7.50001V4.16668H2.99992C2.55789 4.16668 2.13397 3.99108 1.82141 3.67852C1.50885 3.36596 1.33325 2.94204 1.33325 2.50001M1.33325 2.50001C1.33325 1.58334 2.08325 0.833344 2.99992 0.833344H12.9999V4.16668M1.33325 2.50001V12.5C1.33325 13.4167 2.08325 14.1667 2.99992 14.1667H14.6666V10.8333M12.9999 7.50001C12.5579 7.50001 12.134 7.67561 11.8214 7.98817C11.5088 8.30073 11.3333 8.72465 11.3333 9.16668C11.3333 10.0833 12.0833 10.8333 12.9999 10.8333H16.3333V7.50001H12.9999Z'
+    //             strokeLinecap='round'
+    //             strokeLinejoin='round'
+    //         />
+    //     </svg>
+    // );
 
-    const walletWithTooltip = (
-        <IconWithTooltip
-            title={`${
-                isWithdraw ? 'Use Wallet Balance Only' : 'Withdraw to Wallet'
-            }`}
-            placement='bottom'
-        >
-            <div
-                style={
-                    !isWithdraw && isActiveNetworkBlast
-                        ? { paddingTop: '2px', cursor: 'default' }
-                        : { paddingTop: '2px', cursor: 'pointer' }
-                }
-                onClick={
-                    !isWithdraw && isActiveNetworkBlast
-                        ? undefined
-                        : onToggleDex
-                }
-            >
-                <img
-                    src={!isDexSelected ? walletEnabledIcon : walletIcon}
-                    width='20'
-                />
-            </div>
-        </IconWithTooltip>
-    );
-
-    const exchangeWithTooltip = isActiveNetworkBlast ? (
-        isWithdraw && (
+    const walletWithTooltip =
+        isWithdraw || !isDexSelected ? (
             <IconWithTooltip
-                title={`${'Use Wallet and Exchange Balance'}`}
+                title={`${
+                    isWithdraw
+                        ? 'Use Wallet Balance Only'
+                        : 'Withdraw to Wallet'
+                }`}
+                placement='bottom'
+            >
+                <div
+                    style={
+                        !isWithdraw
+                            ? { paddingTop: '2px', cursor: 'default' }
+                            : { paddingTop: '2px', cursor: 'pointer' }
+                    }
+                    onClick={!isWithdraw ? undefined : onToggleDex}
+                >
+                    <img
+                        src={!isDexSelected ? walletEnabledIcon : walletIcon}
+                        width='20'
+                    />
+                </div>
+            </IconWithTooltip>
+        ) : null;
+
+    const exchangeWithTooltip =
+        isWithdraw || isDexSelected ? (
+            <IconWithTooltip
+                title={`${
+                    isWithdraw
+                        ? 'Use Wallet and Exchange Balance'
+                        : 'Send to Exchange Balance'
+                }`}
                 placement='bottom'
             >
                 <div
@@ -81,37 +100,14 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                         filter: !isDexSelected
                             ? 'grayscale(100%)'
                             : 'contrast(1) brightness(1) saturate(1)',
-                        cursor: 'pointer',
+                        cursor: isWithdraw ? 'pointer' : 'default',
                     }}
                     onClick={onToggleDex}
                 >
                     <img src={ambientLogo} width='20' alt='surplus' />
                 </div>
             </IconWithTooltip>
-        )
-    ) : (
-        <IconWithTooltip
-            title={`${
-                isWithdraw
-                    ? 'Use Wallet and Exchange Balance'
-                    : 'Add to Exchange Balance'
-            }`}
-            placement='bottom'
-        >
-            <div
-                style={{
-                    padding: '2px 4px 0 4px',
-                    filter: !isDexSelected
-                        ? 'grayscale(100%)'
-                        : 'contrast(1) brightness(1) saturate(1)',
-                    cursor: 'pointer',
-                }}
-                onClick={onToggleDex}
-            >
-                <img src={ambientLogo} width='20' alt='surplus' />
-            </div>
-        </IconWithTooltip>
-    );
+        ) : null;
 
     const walletPriceWithTooltip = (
         <DefaultTooltip
@@ -238,6 +234,18 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
             </MaxButton>
         </DefaultTooltip>
     );
+    const showWarning =
+        usdValueForDom &&
+        percentDiffUsdValue !== undefined &&
+        percentDiffUsdValue < -10;
+
+    const formattedUsdDifference =
+        percentDiffUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: percentDiffUsdValue,
+                  isPercentage: true,
+              }) + '%'
+            : undefined;
 
     return (
         <FlexContainer
@@ -247,8 +255,13 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
             gap={4}
             fontSize='body'
             color='text2'
+            cursor='default'
         >
-            <p>{usdValueForDom}</p>
+            <p style={showWarning ? { color: 'var(--other-red)' } : undefined}>
+                {showWarning
+                    ? `${usdValueForDom} ${' '}(${formattedUsdDifference})`
+                    : usdValueForDom}
+            </p>
             {showWallet && (
                 <FlexContainer
                     role='button'
@@ -266,12 +279,6 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     {exchangeWithTooltip}
                 </FlexContainer>
             )}
-
-            {/* {onRefresh && (
-                <RefreshButton onClick={onRefresh} aria-label='Refresh data'>
-                    <FiRefreshCw size={18} />
-                </RefreshButton>
-            )} */}
         </FlexContainer>
     );
 }

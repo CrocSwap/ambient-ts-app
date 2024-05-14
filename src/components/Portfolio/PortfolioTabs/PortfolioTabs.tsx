@@ -33,18 +33,23 @@ import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 import {
+    CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
 } from '../../../ambient-utils/constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
-import { UserXpDataIF } from '../../../contexts/UserDataContext';
+import {
+    BlastUserXpDataIF,
+    UserXpDataIF,
+} from '../../../contexts/UserDataContext';
+import medal from '../../../assets/images/icons/medal.svg';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -53,6 +58,7 @@ interface propsIF {
     connectedAccountActive: boolean;
     fullLayoutActive: boolean;
     resolvedUserXp: UserXpDataIF;
+    resolvedUserBlastXp: BlastUserXpDataIF;
 }
 
 // React functional component
@@ -63,6 +69,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive,
         fullLayoutActive,
         resolvedUserXp,
+        resolvedUserBlastXp,
     } = props;
 
     const {
@@ -71,6 +78,12 @@ export default function PortfolioTabs(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+
+    const {
+        server: { isEnabled: isServerEnabled },
+        isUserIdle,
+    } = useContext(AppStateContext);
+
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         crocEnv,
@@ -78,7 +91,6 @@ export default function PortfolioTabs(props: propsIF) {
         provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
     const { positionsByUser, limitOrdersByUser, transactionsByUser } =
         useContext(GraphDataContext);
@@ -133,7 +145,6 @@ export default function PortfolioTabs(props: propsIF) {
                                 crocEnv,
                                 provider,
                                 chainId,
-                                lastBlockNumber,
                                 cachedFetchTokenPrice,
                                 cachedQuerySpotPrice,
                                 cachedTokenDetails,
@@ -182,7 +193,6 @@ export default function PortfolioTabs(props: propsIF) {
                                     crocEnv,
                                     provider,
                                     chainId,
-                                    lastBlockNumber,
                                     cachedFetchTokenPrice,
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
@@ -216,11 +226,10 @@ export default function PortfolioTabs(props: propsIF) {
                 simpleCalc: true,
                 annotateMEV: false,
                 ensResolution: true,
-                n: 100, // fetch last 100 changes,
+                n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
                 provider,
-                lastBlockNumber: lastBlockNumber,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
                 cachedTokenDetails: cachedTokenDetails,
@@ -243,6 +252,7 @@ export default function PortfolioTabs(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (
+                isServerEnabled &&
                 !connectedAccountActive &&
                 !!tokens.tokenUniv &&
                 resolvedAddress &&
@@ -263,10 +273,14 @@ export default function PortfolioTabs(props: propsIF) {
     }, [
         resolvedAddress,
         connectedAccountActive,
-        lastBlockNumber,
+        isUserIdle
+            ? Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS))
+            : Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
         !!tokens.tokenUniv,
         !!crocEnv,
         !!provider,
+
+        isServerEnabled,
     ]);
 
     const activeAccountPositionData = connectedAccountActive
@@ -321,6 +335,7 @@ export default function PortfolioTabs(props: propsIF) {
     // props for <Points/> React Element
     const pointsProps = {
         resolvedUserXp: resolvedUserXp,
+        resolvedUserBlastXp: resolvedUserBlastXp,
         connectedAccountActive: connectedAccountActive,
     };
 
@@ -359,7 +374,7 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Points',
             content: <Points {...pointsProps} />,
-            icon: rangePositionsImage,
+            icon: medal,
         },
         {
             label: 'Exchange Balances',
@@ -392,7 +407,7 @@ export default function PortfolioTabs(props: propsIF) {
         {
             label: 'Points',
             content: <Points {...pointsProps} />,
-            icon: rangePositionsImage,
+            icon: medal,
         },
         {
             label: 'Exchange Balances',

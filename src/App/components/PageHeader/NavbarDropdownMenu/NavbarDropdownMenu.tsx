@@ -6,7 +6,7 @@ import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsMedium } from 'react-icons/bs';
 import { SiGitbook } from 'react-icons/si';
 import { RiSpyFill } from 'react-icons/ri';
-import { FaDiscord } from 'react-icons/fa';
+import { FaDiscord, FaQuestion } from 'react-icons/fa';
 import '../../../App.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { openInNewTab } from '../../../../ambient-utils/dataLayer';
@@ -38,7 +38,7 @@ function NavbarDropdownMenu(props: propsIF) {
         props;
 
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
     const [, , termsUrls] = useTermsAgreed();
@@ -93,6 +93,11 @@ function NavbarDropdownMenu(props: propsIF) {
             resource: `${window.location.origin}/${termsUrls.tos}`,
             text: 'Terms of Service',
         },
+        {
+            icon: <FaQuestion size={20} />,
+            resource: `${window.location.origin}/faq`,
+            text: 'FAQ',
+        },
     ];
 
     return (
@@ -135,7 +140,7 @@ function NavbarDropdownMenu(props: propsIF) {
                         <NavbarLogoutContainer>
                             <NavbarDropdownItem
                                 connectButton
-                                onClick={openWagmiModal}
+                                onClick={openWalletModal}
                             >
                                 Connect Wallet
                             </NavbarDropdownItem>
