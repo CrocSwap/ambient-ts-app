@@ -24,6 +24,7 @@ interface IPortfolioBannerAccountPropsIF {
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
     jazziconsToDisplay: JSX.Element | null;
+    connectedAccountActive: boolean;
 }
 
 export default function PortfolioBannerAccount(
@@ -37,6 +38,7 @@ export default function PortfolioBannerAccount(
         resolvedAddress,
         truncatedAccountAddress,
         ensNameAvailable,
+        connectedAccountActive,
     } = props;
 
     const {
@@ -163,7 +165,8 @@ export default function PortfolioBannerAccount(
                     onClick={() => {
                         !(
                             resolvedAddress !== undefined &&
-                            resolvedAddress.length > 0
+                            resolvedAddress.length > 0 &&
+                            !connectedAccountActive
                         ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
@@ -180,7 +183,8 @@ export default function PortfolioBannerAccount(
                                 userProfileNFT,
                                 65,
                                 resolvedAddress !== undefined &&
-                                    resolvedAddress.length > 0
+                                    resolvedAddress.length > 0 &&
+                                    !connectedAccountActive
                                     ? false
                                     : // NFTData &&
                                       //       NFTData.find(
