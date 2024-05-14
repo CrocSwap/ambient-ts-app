@@ -26,7 +26,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
-    switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
+    switchNetwork: ((chainId_: number) => void) | undefined;
 }
 
 export default function NetworkSelector(props: propsIF) {

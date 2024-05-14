@@ -4,11 +4,10 @@ import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { Chain } from 'wagmi';
 import { bigNumToFloat } from '@crocswap-libs/sdk';
 
-const wagmiChain = {
-    id: 168587773,
+const chain = {
+    chainId: 168587773,
     name: 'Blast Sepolia',
     network: 'blast-sepolia',
     nativeCurrency: {
@@ -31,13 +30,13 @@ const wagmiChain = {
         },
     },
     testnet: true,
-} as const satisfies Chain;
+};
 
 export const blastSepolia: NetworkIF = {
     chainId: '0xa0c71fd',
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: 'https://sepolia.blast.io/',
-    wagmiChain,
+    chain: chain,
     shouldPollBlock: true,
     marketData: '0x1',
     defaultPair: [blastSepoliaETH, blastSepoliaUSDB],

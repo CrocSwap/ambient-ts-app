@@ -219,8 +219,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             : undefined;
 
     const isChartEnabled =
-        !!process.env.REACT_APP_CHART_IS_ENABLED &&
-        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+        !!import.meta.env.VITE_CHART_IS_ENABLED &&
+        import.meta.env.VITE_CHART_IS_ENABLED.toLowerCase() === 'false'
             ? false
             : true;
 

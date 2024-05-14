@@ -14,8 +14,8 @@ import {
 import { UserDataContext } from './UserDataContext';
 
 const PREMIUM_THEMES_IN_ENV = {
-    theme1: 'REACT_APP_THEME_1_ACCOUNTS',
-    theme2: 'REACT_APP_THEME_2_ACCOUNTS',
+    theme1: 'VITE_THEME_1_ACCOUNTS',
+    theme2: 'VITE_THEME_2_ACCOUNTS',
 };
 
 type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
@@ -59,7 +59,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     }, [userAddress]);
 
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
-    const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? '';
+    const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
         switch (brand) {
             case 'blast':

@@ -1,5 +1,4 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { mainnet as wagmiChain } from 'wagmi/chains';
 import {
     mainnetETH,
     mainnetUSDC,
@@ -15,15 +14,41 @@ import { Provider } from '@ethersproject/providers';
 import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 const PROVIDER_KEY =
-    process.env.NODE_ENV === 'test'
-        ? process.env.PROVIDER_KEY
-        : process.env.REACT_APP_INFURA_KEY;
+    import.meta.env.NODE_ENV === 'test'
+        ? import.meta.env.PROVIDER_KEY
+        : import.meta.env.VITE_INFURA_KEY;
+
+const chain = {
+    chainId: 1,
+    name: 'Ethereum',
+    network: 'homestead',
+    nativeCurrency: {
+        name: 'Ether',
+        symbol: 'ETH',
+        decimals: 18,
+    },
+    rpcUrls: {
+        default: {
+            http: ['https://mainnet.infura.io/v3/' + PROVIDER_KEY],
+        },
+        public: {
+            http: ['https://mainnet.infura.io/v3/' + PROVIDER_KEY],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: 'Etherscan',
+            url: 'https://etherscan.io',
+        },
+    },
+    testnet: false,
+};
 
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
     graphCacheUrl: GCGO_ETHEREUM_URL,
     evmRpcUrl: 'https://mainnet.infura.io/v3/' + PROVIDER_KEY,
-    wagmiChain,
+    chain: chain,
     shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [mainnetETH, mainnetUSDC],

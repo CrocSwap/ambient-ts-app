@@ -15,7 +15,7 @@ import {
 } from '../../../assets/branding';
 
 export const brand: string | undefined =
-    process.env.REACT_APP_BRAND_ASSET_SET ?? 'ambient';
+    import.meta.env.VITE_BRAND_ASSET_SET ?? '';
 
 const networks: NetworkIF[] = [
     ethereumSepolia,
