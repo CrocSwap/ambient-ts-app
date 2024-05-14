@@ -1,14 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
-import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
-import drawRect from '../../../../assets/images/icons/draw/rect.svg';
-import dprange from '../../../../assets/images/icons/draw/dprange.svg';
-// import drawAngle from '../../../../assets/images/icons/draw/angle_line.svg';
-import horizontalRay from '../../../../assets/images/icons/draw/horizontal_ray.svg';
-import fibRetracement from '../../../../assets/images/icons/draw/fibonacci_retracement.svg';
-import magnet from '../../../../assets/images/icons/draw/snap.svg';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import trashIcon from '../../../../assets/images/icons/draw/delete.svg';
 import undoIcon from '../../../../assets/images/icons/draw/undo.svg';
 import redoIcon from '../../../../assets/images/icons/draw/redo.svg';
 import { ArrowContainer } from '../../../../styled/Components/Chart';
@@ -16,6 +7,7 @@ import { useMediaQuery } from '@material-ui/core';
 import { actionKeyIF, actionStackIF } from '../../ChartUtils/useUndoRedo';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 import HoveredTooltip from './HoveredTooltip';
+import DrawCross from '../../../../assets/images/icons/draw/DrawCrossSvg';
 import {
     ArrowContainerContainer,
     ArrowRight,
@@ -23,7 +15,6 @@ import {
     DividerButton,
     DividerContainer,
     DrawlistContainer,
-    IconActive,
     IconActiveContainer,
     IconCard,
     IconFillContainer,
@@ -32,6 +23,13 @@ import {
     UndoButtonSvg,
     UndoRedoButtonActive,
 } from './ToolbarCss';
+import SnapSvg from '../../../../assets/images/icons/draw/SnapSvg';
+import DrawLineSvg from '../../../../assets/images/icons/draw/DrawLineSvg';
+import HorizontalRaySvg from '../../../../assets/images/icons/draw/HorizontalRaySvg';
+import RectSvg from '../../../../assets/images/icons/draw/RectSvg';
+import FibRetracementSvg from '../../../../assets/images/icons/draw/FibRetracementSvg';
+import DpRangeSvg from '../../../../assets/images/icons/draw/DpRangeSvg';
+import DeleteSvg from '../../../../assets/images/icons/draw/DeleteSvg';
 
 /* interface ToolbarProps {
   
@@ -54,7 +52,8 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    const mobileView = useMediaQuery('(max-width: 600px)');
+    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const {
         toolbarRef,
@@ -69,6 +68,7 @@ function ChartToolbar() {
             undoStack,
             drawActionStack,
             actionKey,
+            drawnShapeHistory,
         },
         activeDrawingType,
         setActiveDrawingType,
@@ -77,6 +77,8 @@ function ChartToolbar() {
         setIsMagnetActiveLocal,
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    const { chartThemeColors } = useContext(ChartContext);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false); /*  */
@@ -114,12 +116,28 @@ function ChartToolbar() {
 
     const drawIconList: IconList[] = [
         {
-            icon: drawCross,
+            icon: (
+                <DrawCross
+                    stroke={
+                        activeDrawingType === 'Cross'
+                            ? 'var(--accent1)'
+                            : '#f0f0f8'
+                    }
+                />
+            ),
             label: 'Cross',
             description: 'Crosshair',
         },
         {
-            icon: drawLine,
+            icon: (
+                <DrawLineSvg
+                    stroke={
+                        activeDrawingType === 'Brush'
+                            ? 'var(--accent1)'
+                            : '#f0f0f8'
+                    }
+                />
+            ),
             label: 'Brush',
             description: 'Trend Line',
         },
@@ -128,22 +146,54 @@ function ChartToolbar() {
         //     label: 'Angle',
         // },
         {
-            icon: horizontalRay,
+            icon: (
+                <HorizontalRaySvg
+                    stroke={
+                        activeDrawingType === 'Ray'
+                            ? 'var(--accent1)'
+                            : '#f0f0f8'
+                    }
+                />
+            ),
             label: 'Ray',
             description: 'Horizontal Ray',
         },
         {
-            icon: drawRect,
+            icon: (
+                <RectSvg
+                    stroke={
+                        activeDrawingType === 'Rect'
+                            ? 'var(--accent1)'
+                            : '#f0f0f8'
+                    }
+                />
+            ),
             label: 'Rect',
             description: 'Rectangle',
         },
         {
-            icon: fibRetracement,
+            icon: (
+                <FibRetracementSvg
+                    stroke={
+                        activeDrawingType === 'FibRetracement'
+                            ? 'var(--accent1)'
+                            : '#f0f0f8'
+                    }
+                />
+            ),
             label: 'FibRetracement',
             description: 'Fib Retracement',
         },
         {
-            icon: dprange,
+            icon: (
+                <DpRangeSvg
+                    stroke={
+                        activeDrawingType === 'DPRange'
+                            ? 'var(--accent1)'
+                            : '#f0f0f8'
+                    }
+                />
+            ),
             label: 'DPRange',
             description: 'Date & Price Range',
         },
@@ -152,7 +202,7 @@ function ChartToolbar() {
 
     const indicatorIconList: IconList[] = [
         {
-            icon: magnet,
+            icon: <SnapSvg stroke={'#f0f0f8'} />,
             label: 'magnet',
             description: 'Magnet Mode',
         },
@@ -266,7 +316,11 @@ function ChartToolbar() {
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
-            marginTopValue={chartContainerOptions.top - 57}
+            marginTopValue={
+                chartContainerOptions.top -
+                57 -
+                (mobileView && !smallScreen ? 20 : 0)
+            }
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
@@ -303,19 +357,17 @@ function ChartToolbar() {
                                             handleDrawModeChange(item)
                                         }
                                     >
-                                        <IconActive
-                                            isActive={
-                                                activeDrawingType === item.label
-                                            }
-                                            src={item.icon}
-                                            alt=''
-                                        />
+                                        {item.icon}
+                                        {/* activeDrawingType === item.label */}
                                     </IconActiveContainer>
 
                                     {hoveredTool &&
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -325,6 +377,15 @@ function ChartToolbar() {
                                 <IconCard key={index}>
                                     <IconFillContainer
                                         isActive={isMagnetActive.value}
+                                        fill={
+                                            chartThemeColors &&
+                                            chartThemeColors.darkStrokeColor
+                                                ? chartThemeColors.darkStrokeColor
+                                                      .copy()
+                                                      .darker(0.7)
+                                                      .toString()
+                                                : 'var(--accent1)'
+                                        }
                                         onClick={() =>
                                             !mobileView &&
                                             handleActivateIndicator(item)
@@ -341,17 +402,16 @@ function ChartToolbar() {
                                             handleActivateIndicator(item)
                                         }
                                     >
-                                        <IconActive
-                                            isActive={false}
-                                            src={item.icon}
-                                            alt=''
-                                        />
+                                        {item.icon}
                                     </IconFillContainer>
 
                                     {hoveredTool &&
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -422,6 +482,9 @@ function ChartToolbar() {
                                         hoveredTool === item.description && (
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
+                                                height={22}
+                                                width={125}
+                                                arrow={true}
                                             ></HoveredTooltip>
                                         )}
                                 </IconCard>
@@ -440,13 +503,22 @@ function ChartToolbar() {
                                     }
                                     onTouchStart={() => handleDeleteAll()}
                                 >
-                                    <img src={trashIcon} alt='' />
+                                    <DeleteSvg
+                                        stroke={
+                                            drawnShapeHistory.length > 0
+                                                ? '#f0f0f8'
+                                                : '#61646f'
+                                        }
+                                    />
                                 </IconActiveContainer>
 
                                 {hoveredTool &&
                                     hoveredTool === 'Delete All' && (
                                         <HoveredTooltip
                                             hoveredTool={hoveredTool}
+                                            height={22}
+                                            width={125}
+                                            arrow={true}
                                         ></HoveredTooltip>
                                     )}
                             </IconCard>

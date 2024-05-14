@@ -36,6 +36,7 @@ interface InitConfirmationProps {
     isTxCompletedRange: boolean;
     errorCode?: string;
     txErrorMessage?: string;
+    txErrorJSON?: string;
     handleNavigation: () => void;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
@@ -131,6 +132,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             setIsDenomBase={setIsDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
             initialPrice={initialPriceInBaseDenom}
+            slippageTolerance={3}
             isInitPage
         />
     );

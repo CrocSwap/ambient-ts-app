@@ -10,17 +10,20 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import InfoRow from '../../InfoRow';
+import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
     isAccountView: boolean;
+    timeFirstMintMemo: number | undefined;
 }
 
 // TODO: refactor to using styled-components
 function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
-    const { tx, isAccountView } = props;
+    const { tx, isAccountView, timeFirstMintMemo } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const {
         ensName,
@@ -49,9 +52,8 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-    } = useProcessTransaction(tx, userAddress);
-
-    const { chainData } = useContext(CrocEnvContext);
+        elapsedTimeString,
+    } = useProcessTransaction(tx, userAddress, crocEnv);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
@@ -60,11 +62,11 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const isBuy = tx.isBid || tx.isBuy;
 
     const isSwap = tx.entityType === 'swap' || tx.entityType === 'limitOrder';
+    const isLimitRemoval =
+        tx.entityType === 'limitOrder' && tx.changeType === 'burn';
 
     function handleOpenWallet() {
-        const walletUrl = isOwnerActiveAccount
-            ? '/account'
-            : `/account/${ownerId}`;
+        const walletUrl = isOwnerActiveAccount ? '/account' : `/${ownerId}`;
         window.open(walletUrl);
     }
     function handleOpenExplorer() {
@@ -148,23 +150,23 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
     const entityType = tx.entityType;
 
     const changeTypeDisplay =
-        changeType === 'mint'
+        changeType === 'harvest'
+            ? 'Range Harvest'
+            : changeType === 'mint'
             ? entityType === 'limitOrder'
-                ? 'Add to Limit'
+                ? 'Limit Add'
                 : positionType === 'concentrated'
-                ? 'Add to Range Position'
-                : 'Add to Ambient Position'
+                ? 'Concentrated Range Add'
+                : 'Ambient Range Add'
             : changeType === 'burn'
             ? entityType === 'limitOrder'
-                ? 'Remove from Limit'
+                ? 'Limit Removal'
                 : positionType === 'concentrated'
-                ? 'Removal from Range Position'
-                : positionType === 'ambient'
-                ? 'Removal from Ambient Position'
-                : 'Market'
+                ? 'Concentrated Range Removal'
+                : 'Ambient Range Removal'
             : changeType === 'recover'
-            ? 'Claim from Limit'
-            : 'Market';
+            ? 'Limit Claim'
+            : 'Market Order';
 
     // Create a data array for the info and map through it here
     const infoContent = [
@@ -173,9 +175,20 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             content: (
                 <div style={{ cursor: 'default' }}>{changeTypeDisplay}</div>
             ),
-            explanation: 'Transaction type explanation',
+            explanation: 'e.g. Market, Limit, Range',
         },
 
+        {
+            title: 'Transaction Time ',
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
+                    {' '}
+                    {'(' + elapsedTimeString + ' ago)'}
+                </div>
+            ),
+            explanation: 'The transaction confirmation time',
+        },
         {
             title: 'Wallet ',
             content: walletContent,
@@ -189,20 +202,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: 'Time ',
-            content: (
-                <div style={{ cursor: 'default' }}>
-                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
-                </div>
-            ),
-            explanation: 'The transaction confirmation time',
-        },
-
-        {
             title: isSwap ? 'From Token ' : 'Token 1 ',
             content: (
                 <div style={{ cursor: 'default' }}>
-                    {isBuy ? baseTokenSymbol : quoteTokenSymbol}
+                    {isBuy
+                        ? baseTokenSymbol + ' - ' + tx.baseName
+                        : quoteTokenSymbol + ' - ' + tx.quoteName}
                 </div>
             ),
             explanation: 'The symbol (short name) of the sell token',
@@ -215,33 +220,42 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: isSwap ? 'From Qty ' : 'Token 1 Qty',
+            title: isLimitRemoval
+                ? 'From Qty Removed '
+                : isSwap
+                ? 'From Qty '
+                : 'Token 1 Qty',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
                               tx.changeType === 'burn' ||
-                              tx.changeType === 'mint'
+                              tx.changeType === 'mint' ||
+                              isLimitRemoval
                                   ? baseQuantityDisplay
                                   : estimatedBaseFlowDisplay || '0.00'
                           } ${baseTokenSymbol}`
                         : `${
                               tx.entityType !== 'limitOrder' ||
                               tx.changeType === 'burn' ||
-                              tx.changeType === 'mint'
+                              tx.changeType === 'mint' ||
+                              isLimitRemoval
                                   ? quoteQuantityDisplay
                                   : estimatedQuoteFlowDisplay || '0.00'
                           } ${quoteTokenSymbol}`}
                 </div>
             ),
-            explanation:
-                'The quantity of the sell token (scaled by its decimals value)',
+            explanation: `The quantity of the sell token ${
+                isLimitRemoval ? 'removed ' : ''
+            }`,
         },
 
         {
             title: isSwap ? 'To Token ' : 'Token 2 ',
-            content: !isBuy ? baseTokenSymbol : quoteTokenSymbol,
+            content: !isBuy
+                ? baseTokenSymbol + ' - ' + tx.baseName
+                : quoteTokenSymbol + ' - ' + tx.quoteName,
             explanation: 'The symbol (short name) of the buy token',
         },
 
@@ -252,29 +266,41 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         },
 
         {
-            title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
+            title: isLimitRemoval
+                ? 'To Token Claimed '
+                : isSwap
+                ? 'To Qty '
+                : 'Token 2 Qty ',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
                         ? `${
                               tx.entityType !== 'limitOrder' ||
-                              tx.changeType === 'recover'
+                              tx.changeType === 'recover' ||
+                              isLimitRemoval
                                   ? baseQuantityDisplay
                                   : estimatedBaseFlowDisplay || '0.00'
                           } ${baseTokenSymbol}`
                         : `${
                               tx.entityType !== 'limitOrder' ||
-                              tx.changeType === 'recover'
+                              tx.changeType === 'recover' ||
+                              isLimitRemoval
                                   ? quoteQuantityDisplay
                                   : estimatedQuoteFlowDisplay || '0.00'
                           } ${quoteTokenSymbol}`}
                 </div>
             ),
-            explanation:
-                'The quantity of the to/buy token (scaled by its decimals value)',
+            explanation: `The quantity of the to/buy token ${
+                isLimitRemoval ? 'claimed ' : ''
+            }`,
         },
         {
-            title: isSwap ? 'Price ' : 'Low Price Boundary',
+            title:
+                tx.entityType === 'swap'
+                    ? 'Price '
+                    : tx.entityType === 'limitOrder'
+                    ? 'Limit Price '
+                    : 'Low Price Boundary',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isSwap
@@ -285,20 +311,23 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                             : isDenomBase
                             ? `1 ${baseTokenSymbol} = ${truncatedDisplayPrice} ${quoteTokenSymbol}`
                             : `1 ${quoteTokenSymbol} = ${truncatedDisplayPrice} ${baseTokenSymbol}`
+                        : isAmbient
+                        ? '0.00'
                         : isAccountView
                         ? isBaseTokenMoneynessGreaterOrEqual
                             ? `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                             : `1 ${baseTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                        : isAmbient
-                        ? '0.00'
                         : isDenomBase
                         ? `1 ${baseTokenSymbol} = ${truncatedLowDisplayPrice} ${quoteTokenSymbol}`
                         : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
                 </div>
             ),
-            explanation: isSwap
-                ? 'The transaction price'
-                : 'The low price boundary',
+            explanation:
+                tx.entityType === 'swap'
+                    ? 'The effective conversion rate for the swap'
+                    : tx.entityType === 'limitOrder'
+                    ? 'The pool price at which the limit order will be 100% filled and claimable'
+                    : 'The low price boundary of the range',
         },
         ...(isSwap
             ? [
@@ -314,16 +343,16 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             : [
                   {
                       title: 'High Price Boundary',
-                      content: isAccountView
+                      content: isAmbient
+                          ? '∞'
+                          : isAccountView
                           ? isBaseTokenMoneynessGreaterOrEqual
                               ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                               : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                          : isAmbient
-                          ? '∞'
                           : isDenomBase
                           ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
                           : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
-                      explanation: 'The high price boundary',
+                      explanation: 'The upper price boundary of the range',
                   },
                   {
                       title: 'Value ',
@@ -335,6 +364,25 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                   },
               ]),
     ];
+
+    if (timeFirstMintMemo && timeFirstMintMemo !== tx.txTime) {
+        infoContent.splice(2, 0, {
+            title: 'Time First Minted ',
+            content:
+                moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
+                ' ' +
+                '(' +
+                getElapsedTime(
+                    moment(Date.now()).diff(
+                        timeFirstMintMemo * 1000,
+                        'seconds',
+                    ),
+                ) +
+                ' ago)',
+            explanation:
+                'The time the owner first added liquidity at these prices',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>

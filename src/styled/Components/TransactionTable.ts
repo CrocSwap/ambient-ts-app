@@ -31,6 +31,7 @@ export const Row = styled(GridContainer)<{
     active?: boolean;
     user?: boolean;
     placeholder?: boolean;
+    cursor?: string;
 }>`
     position: relative;
     width: 100%;
@@ -39,7 +40,7 @@ export const Row = styled(GridContainer)<{
 
     padding: 0 8px;
     gap: 4px;
-    cursor: pointer;
+    cursor: ${({ cursor }) => cursor || 'pointer'};
 
     & > * {
         font-weight: 300;
@@ -117,23 +118,23 @@ export const TransactionRow = styled(Row)`
                     minmax(85px, 1.5fr) minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
-                ? `grid-template-columns: minmax(100px, 1fr) minmax(55px, 1.5fr)
+                ? `grid-template-columns: minmax(70px, 1fr) minmax(110px, 1.5fr)
                         minmax(85px, 1.5fr) minmax(80px, 1.3fr)
-                        minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(30px, 25%)`
+                        minmax(70px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(30px, 25%)`
                 : `grid-template-columns:
-                minmax(80px, 1fr) minmax(90px, 1fr) minmax(80px, 1fr)
+                minmax(80px, 1fr) minmax(110px, 1fr) minmax(80px, 1fr)
                         minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(80px,1.7fr)
                         minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`
             : size === 'small'
             ? `grid-template-columns:
-                    minmax(110px, 1.5fr) minmax(30px, 1.3fr)
+                    minmax(110px, 1.2fr) minmax(30px, 1.3fr)
                     minmax(90px, 1fr) minmax(5px, 1fr)`
             : size === 'medium'
             ? `grid-template-columns:
-                        minmax(100px, 1fr) minmax(110px, 1.5fr) minmax(80px, 1.3fr)
+                        minmax(100px, 1fr) minmax(110px, 1.2fr) minmax(80px, 1.3fr)
                         minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
             : `grid-template-columns:
-            minmax(80px, 1fr) minmax(90px, 1fr) minmax(110px, 1fr)
+            minmax(80px, 1fr) minmax(90px, 1fr) minmax(110px, 1.2fr)
                         minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(80px,1.7fr)
                         minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
 `;
@@ -146,17 +147,17 @@ export const OrderRow = styled(Row)`
                     minmax(85px, 1.5fr) minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
-                ? 'grid-template-columns: minmax(55px, 1.5fr) minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(30px, 2fr)'
+                ? 'grid-template-columns: minmax(100px, 1fr) minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(170px, 2fr)'
                 : `grid-template-columns:
-                    minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
-                    minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr) 2fr 2fr 1.2fr 14%`
+                    minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
+                    minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr) 2fr 2fr 1.2fr minmax(170px, 2fr)`
             : size === 'small'
             ? 'grid-template-columns: minmax(80px, 2.2fr) 1fr 1.8fr minmax(30px, 1fr)'
             : size === 'medium'
-            ? 'grid-template-columns: minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(30px, 2fr)'
+            ? 'grid-template-columns: minmax(100px, 1fr) 1.2fr 1.1fr 1.4fr 1.6fr minmax(40px,1fr) minmax(140px, 2fr)'
             : `grid-template-columns:
-                        minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
-                        minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr)2fr 2fr 1.2fr 14%`};
+                        minmax(80px, 1fr) minmax(100px, 1fr) minmax(95px, 1fr)
+                        minmax(70px, 1fr) minmax(64px, 1fr) minmax(50px, 1fr) minmax(85px,1fr) minmax(85px,1fr)  minmax(85px,1fr)  minmax(40px,1fr) 14%`};
 `;
 
 export const RangeRow = styled(Row)<{
@@ -166,30 +167,30 @@ export const RangeRow = styled(Row)<{
         ${
             account
                 ? size === 'small'
-                    ? `grid-template-columns: minmax(55px, 1fr)
+                    ? `grid-template-columns: minmax(100px, 1fr)
                         minmax(80px, 1fr) minmax(50px, 1fr) minmax(40px, 1fr)
                         minmax(30px, 1.5fr) minmax(15px, 1fr)`
                     : size === 'medium'
-                    ? `grid-template-columns: minmax(40px, 1fr)
+                    ? `grid-template-columns: minmax(100px, 1fr)
                         minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                         minmax(86px, 1fr) minmax(44px, 1fr) minmax(25px, 1fr) minmax(100px, 1fr)`
                     : ` grid-template-columns:
-                        minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                        minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
                         minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                         minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
                 : !leaderboard
                 ? size === 'small'
                     ? `grid-template-columns:
-                            minmax(110px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                            minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
                             minmax(25px, 1fr) minmax(30px, 20%)`
                     : size === 'medium'
                     ? `grid-template-columns:
-                                minmax(110px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+                                minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                                 minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
                     : ` grid-template-columns:
-                                minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                                minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr)
                                 minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
-                                minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
+                                minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr) minmax(107px, 2fr)`
                 : size === 'small'
                 ? `grid-template-columns:
                         minmax(110px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
@@ -199,7 +200,7 @@ export const RangeRow = styled(Row)<{
                             minmax(110px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                             minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
                 : ` grid-template-columns: 50px
-                            minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                            minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr)
                             minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                             minmax(100px, 1fr) minmax(60px, 1fr)  minmax(107px, 2fr)`
         };

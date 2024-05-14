@@ -9,7 +9,10 @@ export const MainSection = styled.section<{
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
     grid-template-columns: auto 380px;
-    height: calc(100dvh - 150px);
+    height: ${(props) =>
+        props.isDropdown && !props.isSmallScreen
+            ? 'calc(100dvh - 85px)'
+            : 'calc(100dvh - 150px)'};
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
@@ -122,7 +125,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
 
         @media (min-width: 1200px) {
             background: var(--dark2);
-            padding: 8px 8px 3px 8px;
+           
         }
 
         @media ((min-width: 801px) and (max-width:1200px)) {

@@ -17,6 +17,7 @@ import {
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -39,6 +40,8 @@ export default function SidebarLimitOrders(props: propsIF) {
     const {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
+    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
 
     const location = useLocation();
 
@@ -61,11 +64,23 @@ export default function SidebarLimitOrders(props: propsIF) {
         setCurrentLimitOrderActive(limitOrder.limitOrderId);
         setShowAllData(false);
         const { base, quote, isBid, bidTick, askTick } = limitOrder;
+        const shouldReverse =
+            tokenA.address.toLowerCase() ===
+                (limitOrder.isBid
+                    ? limitOrder.quote.toLowerCase()
+                    : limitOrder.base.toLowerCase()) ||
+            tokenB.address.toLowerCase() ===
+                (limitOrder.isBid
+                    ? limitOrder.base.toLowerCase()
+                    : limitOrder.quote.toLowerCase());
+        if (shouldReverse) {
+            setIsTokenAPrimary(!isTokenAPrimary);
+        }
         // URL params for link to limit page
         const limitLinkParams: limitParamsIF = {
             chain: chainId,
-            tokenA: base,
-            tokenB: quote,
+            tokenA: isBid ? base : quote,
+            tokenB: isBid ? quote : base,
             limitTick: isBid ? bidTick : askTick,
         };
         // navigate user to limit page with URL params defined above
@@ -81,7 +96,7 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' fontSize='body' fullHeight>
-            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
+            <HeaderGrid color='text2' padding='4px 0'>
                 {['Pool', 'Price', 'Value'].map((item) => (
                     <FlexContainer key={item} justifyContent='center'>
                         {item}

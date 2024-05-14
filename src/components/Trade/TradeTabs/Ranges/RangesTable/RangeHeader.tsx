@@ -12,8 +12,9 @@ interface propsIF {
         sortable: boolean;
         alignRight?: boolean;
         alignCenter?: boolean;
+        leftPadding?: number;
+        rightPadding?: number;
     };
-
     sortBy: RangeSortType;
     setSortBy: Dispatch<SetStateAction<RangeSortType>>;
     reverseSort: boolean;
@@ -21,7 +22,16 @@ interface propsIF {
 }
 function RangeHeader(props: propsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
-    const { name, show, slug, sortable, alignRight, alignCenter } = header;
+    const {
+        name,
+        show,
+        slug,
+        sortable,
+        alignRight,
+        alignCenter,
+        rightPadding,
+        leftPadding,
+    } = header;
 
     function handleClick(slug: RangeSortType) {
         IS_LOCAL_ENV && console.debug(slug);
@@ -80,6 +90,9 @@ function RangeHeader(props: propsIF) {
                     <Text
                         fontSize='mini'
                         color='text2'
+                        padding={`0 ${
+                            !arrow && rightPadding ? rightPadding : 0
+                        }px 0 ${leftPadding || 0}px`}
                         align={
                             alignRight
                                 ? 'right'
@@ -87,6 +100,7 @@ function RangeHeader(props: propsIF) {
                                 ? 'center'
                                 : 'left'
                         }
+                        style={{ textTransform: 'none' }}
                     >
                         {name} {arrow}
                     </Text>

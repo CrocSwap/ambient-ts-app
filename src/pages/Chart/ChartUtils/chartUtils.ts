@@ -7,12 +7,13 @@ import {
 } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
-import { CandleDataIF } from '../../../ambient-utils/types';
+import { CandleDataIF, LiquidityRangeIF } from '../../../ambient-utils/types';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     initialDisplayCandleCount,
     initialDisplayCandleCountForMobile,
 } from './chartConstants';
+import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -102,6 +103,8 @@ export type scaleData = {
     yScale: d3.ScaleLinear<number, number>;
     volumeScale: d3.ScaleLinear<number, number>;
     xExtent: [number, number];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    priceRange: any;
 };
 
 export type crosshair = {
@@ -113,6 +116,9 @@ export type chartItemStates = {
     showVolume: boolean;
     showFeeRate: boolean;
     liqMode: string;
+    showSwap: boolean;
+    showLiquidity: boolean;
+    showHistorical: boolean;
 };
 
 export type lineValue = {
@@ -128,6 +134,22 @@ export interface SubChartValue {
 export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
+};
+
+export type orderHistory = {
+    tsId: string;
+    tsStart: Date;
+    tsEnd: Date;
+    orderPrice: number;
+    orderPriceCompleted: number;
+    orderType: string;
+    orderDirection: string;
+    orderStatus: string;
+    orderDolarAmount: number;
+    tokenA: string;
+    tokenAAmount: number;
+    tokenB: string;
+    tokenBAmount: number;
 };
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
@@ -240,6 +262,37 @@ export function fillLiqAdvanced(
                         standardDeviation,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
+                });
+            }
+        }
+    }
+}
+
+export interface LiquidityRangeIFChart extends LiquidityRangeIF {
+    isFakeData?: boolean;
+}
+
+export function fillLiqInfinity(
+    yScaleMaxDomain: number,
+    liquidityBidData: LiquidityRangeIFChart[],
+    isDenomBase: boolean,
+) {
+    if (liquidityBidData.length > 1) {
+        const newFakeValue = yScaleMaxDomain * 2;
+
+        const lastBidData = liquidityBidData[liquidityBidData.length - 1];
+        if (yScaleMaxDomain >= getBidPriceValue(lastBidData, isDenomBase)) {
+            if (isDenomBase) {
+                liquidityBidData.push({
+                    ...lastBidData,
+                    isFakeData: true,
+                    upperBoundInvPriceDecimalCorrected: newFakeValue,
+                });
+            } else {
+                liquidityBidData.push({
+                    ...lastBidData,
+                    isFakeData: true,
+                    lowerBoundPriceDecimalCorrected: newFakeValue,
                 });
             }
         }
@@ -480,4 +533,22 @@ export function isTimeZoneStart(date: Date): boolean {
     } catch (error) {
         return false;
     }
+}
+
+export function checkShowLatestCandle(
+    period: number,
+    xScale?: d3.ScaleLinear<number, number, never>,
+) {
+    if (xScale) {
+        const xDomain = xScale.domain();
+        const nowDate = Date.now();
+        const snapDiff = nowDate % (period * 1000);
+        const snappedTime = nowDate + (period * 1000 - snapDiff);
+
+        const isShowLatestCandle =
+            xDomain[0] < snappedTime && snappedTime < xDomain[1];
+
+        return isShowLatestCandle;
+    }
+    return false;
 }

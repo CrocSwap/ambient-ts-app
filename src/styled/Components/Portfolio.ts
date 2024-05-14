@@ -18,9 +18,7 @@ export const PortfolioTabsPortfolioTabsContainer = styled.div`
 
     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
         margin: 0 auto;
-        width: 90%;
-        margin-left: 30px;
-
+        width: 100%;
         padding: 0 1rem;
     }
 `;
@@ -149,7 +147,17 @@ export const PortfolioBannerMainContainer = styled(motion.main)`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 3px 1rem;
+    border-radius: 50px 4px 4px 50px;
+    background: rgba(18, 18, 26, 0.3);
+    padding: 4px;
+    width: 380.16px;
+
+    /* blur/card */
+    backdrop-filter: blur(10px);
+
+    @media only screen and (max-width: 800px) {
+        padding: 3px;
+    }
 `;
 
 export const PortfolioBannerRectangleContainer = styled.div`
@@ -165,13 +173,37 @@ export const PortfolioBannerRectangleContainer = styled.div`
     justify-content: space-between;
     align-items: flex-end;
 
-    border-radius: 24px;
+    border-radius: 24px 24px 0px 0px;
 
     padding: 1rem;
     position: relative;
-    display: none;
+
+    display: flex;
+    overflow: hidden;
 
     @media only screen and (min-width: 1200px) {
+        flex-shrink: 0;
+    }
+
+    @media only screen and (max-width: 800px) {
+        height: auto;
+    }
+`;
+
+export const PortfolioBannerLevelContainer = styled.div<{
+    isAccountPage?: boolean;
+}>`
+    display: flex;
+    background: ${({ isAccountPage }) =>
+        isAccountPage ? 'rgba(18, 18, 26, 0.90)' : 'rgba(23, 29, 39, 0.7)'};
+    border-radius: 8px;
+    backdrop-filter: 10px;
+    padding: 4px 8px;
+    height: auto;
+    display: none;
+    z-index: 2;
+
+    @media only screen and (min-width: 800px) {
         display: flex;
         flex-shrink: 0;
     }

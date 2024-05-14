@@ -13,18 +13,24 @@ import {
     toDisplayPrice,
     priceHalfAboveTick,
     priceHalfBelowTick,
+    CrocEnv,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
+    crocEnv: CrocEnv | undefined,
     isAccountView = false,
 ) => {
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const blockExplorer = getChainExplorer(tx.chainId);
 
     const txHash = tx.txHash;
@@ -32,18 +38,22 @@ export const useProcessTransaction = (
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
+    const isOwnerActiveAccount =
+        ownerId.toLowerCase() === account?.toLowerCase();
+
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: tx.user };
     const { data, error } = useFetchBatch<'ens_address'>(body);
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
     const ensName = ensAddress || tx.ensResolution || null;
-
-    const isOwnerActiveAccount =
-        ownerId.toLowerCase() === account?.toLowerCase();
 
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
@@ -74,6 +84,49 @@ export const useProcessTransaction = (
         (transactionBaseAddressLowerCase === tokenBAddressLowerCase ||
             transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
+
+    useEffect(() => {
+        if (crocEnv) {
+            const fetchTokenPrice = async () => {
+                const baseTokenPrice =
+                    (await cachedFetchTokenPrice(tx.base, tx.chainId, crocEnv))
+                        ?.usdPrice || 0.0;
+                const quoteTokenPrice =
+                    (await cachedFetchTokenPrice(tx.quote, tx.chainId, crocEnv))
+                        ?.usdPrice || 0.0;
+
+                if (baseTokenPrice) {
+                    setBasePrice(baseTokenPrice);
+                } else if (quoteTokenPrice && tx.curentPoolPriceDisplayNum) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / tx.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
+                }
+                if (quoteTokenPrice) {
+                    setQuotePrice(quoteTokenPrice);
+                } else if (baseTokenPrice && tx.curentPoolPriceDisplayNum) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * tx.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
+                }
+            };
+
+            fetchTokenPrice();
+        }
+    }, [
+        tx.base,
+        tx.quote,
+        tx.chainId,
+        crocEnv !== undefined,
+        tx.curentPoolPriceDisplayNum,
+    ]);
+
+    let displayPriceNumInUsd;
+    let lowDisplayPriceInUsd;
+    let highDisplayPriceInUsd;
     let truncatedDisplayPrice;
     let truncatedDisplayPriceDenomByMoneyness;
     let truncatedLowDisplayPrice;
@@ -140,6 +193,22 @@ export const useProcessTransaction = (
             truncatedDisplayPrice = isDenomBase
                 ? invertedPriceTruncated
                 : nonInvertedPriceTruncated;
+
+            displayPriceNumInUsd = isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
+                        ? priceDecimalCorrected * basePrice
+                        : undefined
+                    : quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
+                    : undefined
+                : isDenomBase
+                ? quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice
+                ? priceDecimalCorrected * basePrice
+                : undefined;
         } else {
             truncatedDisplayPrice = undefined;
         }
@@ -186,6 +255,38 @@ export const useProcessTransaction = (
                 isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedAskPriceTruncated}`
                     : `${invertedAskPriceTruncated}`;
+
+            lowDisplayPriceInUsd = isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
+                        ? bidTickPriceDecimalCorrected * basePrice
+                        : undefined
+                    : quotePrice
+                    ? bidTickInvPriceDecimalCorrected * quotePrice
+                    : undefined
+                : isDenomBase
+                ? quotePrice
+                    ? bidTickInvPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice
+                ? bidTickPriceDecimalCorrected * basePrice
+                : undefined;
+
+            highDisplayPriceInUsd = isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
+                        ? askTickPriceDecimalCorrected * basePrice
+                        : undefined
+                    : quotePrice
+                    ? askTickInvPriceDecimalCorrected * quotePrice
+                    : undefined
+                : isDenomBase
+                ? quotePrice
+                    ? askTickInvPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice
+                ? askTickPriceDecimalCorrected * basePrice
+                : undefined;
         } else {
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
@@ -209,6 +310,22 @@ export const useProcessTransaction = (
         truncatedDisplayPrice = isDenomBase
             ? invertedPriceTruncated
             : nonInvertedPriceTruncated;
+
+        displayPriceNumInUsd = isAccountView
+            ? isBaseTokenMoneynessGreaterOrEqual
+                ? basePrice
+                    ? priceDecimalCorrected * basePrice
+                    : undefined
+                : quotePrice
+                ? invPriceDecimalCorrected * quotePrice
+                : undefined
+            : isDenomBase
+            ? quotePrice
+                ? invPriceDecimalCorrected * quotePrice
+                : undefined
+            : basePrice
+            ? priceDecimalCorrected * basePrice
+            : undefined;
     }
 
     if (
@@ -225,7 +342,9 @@ export const useProcessTransaction = (
         });
 
         estimatedQuoteFlowDisplay = getFormattedNumber({
-            value: baseFlowAbsNum * middlePriceDisplayNum,
+            value: isDenomBase
+                ? baseFlowAbsNum * middlePriceDisplayNum
+                : baseFlowAbsNum / middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }
@@ -242,7 +361,9 @@ export const useProcessTransaction = (
             zeroDisplay: '0',
         });
         estimatedBaseFlowDisplay = getFormattedNumber({
-            value: quoteFlowAbsNum / middlePriceDisplayNum,
+            value: isDenomBase
+                ? quoteFlowAbsNum / middlePriceDisplayNum
+                : quoteFlowAbsNum * middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }
@@ -314,12 +435,12 @@ export const useProcessTransaction = (
 
     const usdValueString = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     const totalFlowUSD = getFormattedNumber({
         value: totalFlowAbsNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // --------------------------------------------------------
@@ -338,7 +459,7 @@ export const useProcessTransaction = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(ownerId, 7, 4, '…');
 
     const txHashTruncated = trimString(txHash, 9, 0, '…');
 
@@ -404,6 +525,9 @@ export const useProcessTransaction = (
         userNameToDisplay,
         // Price and Price type data
         priceType,
+        displayPriceNumInUsd,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPrice,
@@ -411,6 +535,8 @@ export const useProcessTransaction = (
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
         middlePriceDisplayNum,
+        basePrice,
+        quotePrice,
         estimatedBaseFlowDisplay,
         estimatedQuoteFlowDisplay,
         // Transaction type and side data

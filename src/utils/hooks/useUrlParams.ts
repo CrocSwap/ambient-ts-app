@@ -2,11 +2,10 @@ import { useContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../ambient-utils/api';
-import { useProvider, useSwitchNetwork } from 'wagmi';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
-import { getDefaultPairForChain } from '../../ambient-utils/constants';
+// import { getDefaultPairForChain } from '../../ambient-utils/constants';
 import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
@@ -34,7 +33,7 @@ interface urlParamsMethodsIF {
 export const useUrlParams = (
     tokens: tokenMethodsIF,
     dfltChainId: string,
-    provider?: ethers.providers.Provider,
+    provider: ethers.providers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
@@ -69,8 +68,6 @@ export const useUrlParams = (
         // return array of required URL params
         return paramsForPage;
     }, [linkGenCurrent.currentPage]);
-
-    const { switchNetwork } = useSwitchNetwork();
 
     // map of all params in the current URL string
     const urlParamMap = useMemo<Map<validParamsType, string>>(() => {
@@ -185,26 +182,31 @@ export const useUrlParams = (
         if (lookup) {
             return lookup;
         } else {
-            const provider = inflateProvider(chainId);
+            // const provider = inflateProvider(chainId);
             if (provider) {
-                return fetchContractDetails(provider, addr, chainId);
+                return fetchContractDetails(
+                    provider,
+                    addr,
+                    chainId,
+                    'on_chain_by_URL_param',
+                );
             }
         }
     }
 
-    function inflateProvider(chainId: string) {
-        if (!provider) {
-            provider = useProvider({ chainId: parseInt(chainId) });
-            if (!provider) {
-                console.warn(
-                    'Cannot set provider to lookup token address on chain',
-                    chainId,
-                );
-                return undefined;
-            }
-        }
-        return provider;
-    }
+    // function inflateProvider(chainId: string) {
+    //     if (!provider) {
+    //         provider = useProvider({ chainId: parseInt(chainId) });
+    //         if (!provider) {
+    //             console.warn(
+    //                 'Cannot set provider to lookup token address on chain',
+    //                 chainId,
+    //             );
+    //             return undefined;
+    //         }
+    //     }
+    //     return provider;
+    // }
 
     function processOptParam(
         paramName: validParamsType,
@@ -237,11 +239,12 @@ export const useUrlParams = (
         return undefined;
     }
 
-    function processDefaultTokens(chainToUse: string) {
-        const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
-        setTokenA(dfltA);
-        setTokenB(dfltB);
-    }
+    // removing to allow the first default token to be set as token b by default
+    // function processDefaultTokens(chainToUse: string) {
+    //     const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
+    //     setTokenA(dfltA);
+    //     setTokenB(dfltB);
+    // }
 
     useEffect((): (() => void) => {
         let flag = true;
@@ -265,25 +268,23 @@ export const useUrlParams = (
             if (tokenPair && tokenPair[0].decimals && tokenPair[1].decimals) {
                 setTokenA(tokenPair[0]);
                 setTokenB(tokenPair[1]);
-            } else {
-                processDefaultTokens(chainToUse);
             }
+            //  else {
+            //     processDefaultTokens(chainToUse);
+            // }
         };
 
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
-            if (urlParamMap.has('chain')) {
-                switchNetwork && switchNetwork(parseInt(chainToUse));
-            }
-
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');
             if (tokenA && tokenB) {
                 processTokenAddr(tokenA, tokenB, chainToUse);
-            } else {
-                processDefaultTokens(chainToUse);
             }
+            // else {
+            //     processDefaultTokens(chainToUse);
+            // }
 
             processOptParam('limitTick', async (tick: string) => {
                 setLimitTick(parseInt(tick));

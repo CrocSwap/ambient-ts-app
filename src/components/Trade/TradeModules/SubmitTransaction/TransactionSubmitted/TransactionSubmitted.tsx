@@ -6,6 +6,7 @@ import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
+import { useWeb3ModalProvider } from '@web3modal/ethers5/react';
 
 interface PropsIF {
     type:
@@ -15,6 +16,7 @@ interface PropsIF {
         | 'Reposition'
         | 'Remove'
         | 'Harvest'
+        | 'Claim'
         | 'Reset';
     hash: string;
     tokenBAddress: string;
@@ -47,12 +49,14 @@ export default function TransactionSubmitted(props: PropsIF) {
 
     const logoURI = tokenBImage;
 
+    const { walletProvider } = useWeb3ModalProvider();
     const handleAddToMetaMask = async () => {
         await addTokenToWallet(
             tokenBAddress,
             tokenBSymbol,
             tokenBDecimals,
             logoURI,
+            walletProvider,
         );
     };
 
@@ -139,6 +143,14 @@ export default function TransactionSubmitted(props: PropsIF) {
                       }`
                     : type === 'Remove'
                     ? `Removal ${
+                          isTransactionFailed
+                              ? 'Failed'
+                              : isConfirmed
+                              ? 'Success!'
+                              : 'Submitted'
+                      }`
+                    : type === 'Claim'
+                    ? `Claim ${
                           isTransactionFailed
                               ? 'Failed'
                               : isConfirmed

@@ -53,8 +53,9 @@ export const PoolDisplayContainer = styled.section`
 export const PoolNameWrapper = styled.p`
     margin-left: 1rem;
     display: none;
+    text-transform: none;
 
-    @media (min-width: 400px) and (max-width: 640px) {
+    @media (min-width: 450px) and (max-width: 640px) {
         display: flex;
     }
 `;
@@ -86,9 +87,9 @@ export const TableBody = styled.tbody`
 export const TableHeadWrapper = styled.thead`
     background: var(--dark1);
     position: sticky;
-    top: 0;
+    top: -1px;
     height: 25px;
-    z-index: 3;
+    z-index: 1;
     &::before,
     &::after {
         content: '';
@@ -203,6 +204,10 @@ export const TableRow = styled.tr`
 `;
 
 interface TableCellProps {
+    display?: string;
+    flexDirection?: string;
+    alignItems?: string;
+    justifyContent?: string;
     hidden?: boolean;
     sm?: boolean;
     lg?: boolean;
@@ -234,9 +239,9 @@ const mediaStyles = {
     `,
 };
 export const TableCell = styled.td<TableCellProps>`
+    flex-direction: 
     white-space: nowrap;
     color: var(--text1);
-
     text-align: ${({ left }) => (left ? 'left' : 'right')};
 
     ${({ hidden }) =>

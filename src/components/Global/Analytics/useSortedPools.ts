@@ -1,26 +1,28 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
+import { sortDirections } from '../../../ambient-utils/types';
 
-export type sortType = 'price' | 'tvl' | 'volume' | 'change' | null;
-export type directionType = 'ascending' | 'descending' | null;
+export type sortType = 'price' | 'tvl' | '24h vol.' | '24h price δ' | null;
 type sortableKeysType = 'priceChange' | 'tvl' | 'volume';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
     current: sortType;
-    direction: directionType;
+    direction: sortDirections;
     updateSort: (type: sortType) => void;
 }
 
 // hook to sort pools in the Explore module
-export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
+export const useSortedPools = (
+    allPools: Array<PoolDataIF>,
+): SortedPoolMethodsIF => {
     // default sort values (`null` will sort by TVL)
-    const DEFAULT_SORT: sortType = 'tvl';
-    const DEFAULT_DIRECTION: directionType = 'ascending';
+    const DEFAULT_SORT: sortType = '24h vol.';
+    const DEFAULT_DIRECTION: sortDirections = 'ascending';
     // hooks to hold current sort values
     const [sortBy, setSortBy] = useState<sortType>(DEFAULT_SORT);
     const [direction, setDirection] =
-        useState<directionType>(DEFAULT_DIRECTION);
+        useState<sortDirections>(DEFAULT_DIRECTION);
 
     // logic to apply the correct sort as specified by the user
     const sortedPools = useMemo<PoolDataIF[]>(() => {
@@ -34,10 +36,10 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
             );
         // logic router for sort mechanism, default goes last
         switch (sortBy) {
-            case 'volume':
+            case '24h vol.':
                 output = sort('volume');
                 break;
-            case 'change':
+            case '24h price δ':
                 output = sort('priceChange');
                 break;
             case 'tvl':
@@ -57,7 +59,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
             let needsDemotion: boolean;
             // assign bool based on given value for a given key
             switch (sortBy) {
-                case 'change':
+                case '24h price δ':
                     needsDemotion = p.priceChangeStr === '';
                     break;
                 default:
@@ -73,7 +75,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
     // fn to respond to user clicks and update sort values correctly
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
-            let updatedDirection: directionType;
+            let updatedDirection: sortDirections;
             switch (direction) {
                 case null:
                     updatedDirection = 'ascending';

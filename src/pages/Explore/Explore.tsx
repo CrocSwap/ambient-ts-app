@@ -1,69 +1,218 @@
 import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
+import DexTokens from '../../components/Global/Analytics/DexTokens';
 import { ExploreContext } from '../../contexts/ExploreContext';
+import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
-import styled from 'styled-components/macro';
-import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import Toggle from '../../components/Form/Toggle';
+import { FlexContainer, Text } from '../../styled/Common';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
-export default function Explore() {
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-    // metadata only
-    const { poolList } = useContext(PoolContext);
+interface ExploreIF {
+    view: 'pools' | 'tokens';
+}
+
+export default function Explore(props: ExploreIF) {
+    const { view } = props;
     // full expanded data set
-    const { pools } = useContext(ExploreContext);
+    const {
+        pools,
+        tokens,
+        isExploreDollarizationEnabled,
+        setIsExploreDollarizationEnabled,
+    } = useContext(ExploreContext);
+    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { poolList } = useContext(PoolContext);
+    const {
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkMainnet,
+    } = useContext(ChainDataContext);
 
-    // hook to produce human-readable time since fetch for DOM
-    const timeSince: useTimeElapsedIF = useTimeElapsed(
-        pools.all.length,
-        pools.retrievedAt,
-        lastBlockNumber,
-    );
-
-    // fn wrapper to get pools
-    const getPools = async (): Promise<void> => {
-        // make sure crocEnv exists and pool metadata is present
+    const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {
-            // clear text in DOM for time since last update
-            timeSince.reset();
-            // use metadata to get expanded pool data
-            pools.getAll(poolList, crocEnv, chainData.chainId);
-            // disable autopolling of infura
-            pools.autopoll.disable();
+            pools.getLimited(poolList, crocEnv, chainData.chainId);
         }
     };
 
-    // get expanded pool metadata
+    // trigger process to fetch and format token data when page loads with
+    // ... gatekeeping to prevent re-fetch if data is already loaded
     useEffect(() => {
-        // prevent rapid-fire of requests to infura
-        pools.autopoll.allowed && getPools();
-    }, [crocEnv, chainData.chainId, poolList.length]);
+        if (crocEnv !== undefined && tokens.data.length === 0) {
+            tokens.update();
+        }
+    }, [crocEnv !== undefined]);
+
+    const getAllPools = async (): Promise<void> => {
+        // make sure crocEnv exists and pool metadata is present
+        if (crocEnv && poolList.length) {
+            // clear text in DOM for time since last update
+            pools.reset();
+            // use metadata to get expanded pool data
+            getLimitedPools().then(() => {
+                pools.getExtra(poolList, crocEnv, chainData.chainId);
+            });
+        }
+    };
+
+    // get expanded pool metadata, if not already fetched
+    useEffect(() => {
+        if (crocEnv !== undefined && poolList.length === 0) {
+            getAllPools();
+        }
+    }, [crocEnv, poolList.length]);
+
+    // logic to handle onClick navigation action
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    function goToMarket(tknA: string, tknB: string): void {
+        linkGenMarket.navigate({
+            chain: chainData.chainId,
+            tokenA: tknA,
+            tokenB: tknB,
+        });
+    }
+
+    const titleTextPools: string = isActiveNetworkMainnet
+        ? 'Top Ambient Pools on Ethereum'
+        : isActiveNetworkBlast
+        ? 'Top Ambient Pools on Blast'
+        : isActiveNetworkScroll
+        ? 'Top Ambient Pools on Scroll'
+        : 'Top Pools on Ambient';
+
+    const titleTextTokens: string = isActiveNetworkMainnet
+        ? 'Active Tokens on Ethereum'
+        : isActiveNetworkBlast
+        ? 'Active Tokens on Blast'
+        : isActiveNetworkScroll
+        ? 'Active Tokens on Scroll'
+        : 'Top Pools on Ambient';
+
+    const titleTextForDOM: string =
+        view === 'pools' ? titleTextPools : titleTextTokens;
+
+    // logic router to dispatch the correct action for a refresh button click
+    function handleRefresh(): void {
+        switch (view) {
+            case 'pools':
+                getAllPools();
+                break;
+            case 'tokens':
+                tokens.update();
+                break;
+        }
+    }
+
+    const linkGenExplorePools: linkGenMethodsIF = useLinkGen('explorePools');
+    const linkGenExploreTokens: linkGenMethodsIF = useLinkGen('exploreTokens');
+    function changeView(current: 'pools' | 'tokens') {
+        if (current === 'pools') {
+            linkGenExploreTokens.navigate();
+        } else if (current === 'tokens') {
+            linkGenExplorePools.navigate();
+        }
+    }
 
     return (
         <Section>
             <MainWrapper>
-                <TitleText>Top Pools on Ambient</TitleText>
-                <Refresh>
-                    {/* <RefreshText>{timeSince.value}</RefreshText> */}
-                    {/* Above line was commented to temporarily remove 'Last Updated: ' timestamp */}
-                    {/* Refer to issue #2737 */}
-
-                    <RefreshButton onClick={() => getPools()}>
-                        <RefreshIcon />
-                    </RefreshButton>
-                </Refresh>
+                <TitleText>{titleTextForDOM}</TitleText>
             </MainWrapper>
-            <TopPools allPools={pools.all} chainId={chainData.chainId} />
+            <OptionsWrapper>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={12}
+                    marginLeft='12px'
+                >
+                    <Text>Pools</Text>
+                    <Toggle
+                        isOn={view === 'tokens'}
+                        id={'explore_page_'}
+                        handleToggle={() => changeView(view)}
+                    />
+                    <Text>Tokens</Text>
+                </FlexContainer>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={12}
+                    marginLeft='12px'
+                >
+                    {view === 'pools' && (
+                        <DefaultTooltip
+                            interactive
+                            title={'Toggle USD Price Estimates'}
+                            enterDelay={500}
+                        >
+                            <Refresh>
+                                <RefreshButton
+                                    onClick={() =>
+                                        setIsExploreDollarizationEnabled(
+                                            (prev) => !prev,
+                                        )
+                                    }
+                                >
+                                    <DollarizationIcon
+                                        isExploreDollarizationEnabled={
+                                            isExploreDollarizationEnabled
+                                        }
+                                    />
+                                </RefreshButton>
+                            </Refresh>
+                        </DefaultTooltip>
+                    )}
+                    <DefaultTooltip
+                        interactive
+                        title={
+                            view === 'pools'
+                                ? 'Refresh Top Pools'
+                                : 'Refresh Active Tokens'
+                        }
+                        enterDelay={500}
+                    >
+                        <Refresh>
+                            <RefreshButton onClick={() => handleRefresh()}>
+                                <RefreshIcon />
+                            </RefreshButton>
+                        </Refresh>
+                    </DefaultTooltip>
+                </FlexContainer>
+            </OptionsWrapper>
+
+            {view === 'pools' && (
+                <TopPools
+                    allPools={pools.all}
+                    goToMarket={goToMarket}
+                    isExploreDollarizationEnabled={
+                        isExploreDollarizationEnabled
+                    }
+                />
+            )}
+            {view === 'tokens' && (
+                <DexTokens
+                    dexTokens={tokens.data}
+                    chainId={chainData.chainId}
+                    goToMarket={goToMarket}
+                />
+            )}
         </Section>
     );
 }
 
 const Section = styled.section`
     background: var(--dark2);
-    height: calc(100vh - 56px);
+    @media (max-width: 500px) {
+        height: calc(100svh - 70px);
+    }
+    @media (min-width: 500px) {
+        height: calc(100svh - 82px);
+    }
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -85,6 +234,14 @@ const MainWrapper = styled.div`
     user-select: none;
 `;
 
+const OptionsWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    user-select: none;
+`;
+
 const TitleText = styled.h2`
     /* Responsive font size for smaller screens */
     @media (max-width: 768px) {
@@ -96,6 +253,7 @@ const TitleText = styled.h2`
         font-size: 20px;
     }
 `;
+
 const Refresh = styled.div`
     display: flex;
     flex-direction: row;
@@ -113,18 +271,20 @@ const RefreshButton = styled.button`
     align-items: center;
     background-color: var(--dark3);
     border-radius: var(--border-radius);
-
     border: none;
     outline: none;
 `;
 
-// const RefreshText = styled.p`
-//     /* Hide the RefreshText on screens smaller than 600px */
-//     @media (max-width: 600px) {
-//         display: none;
-//     }
-// `;
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: var(--header2-size);
     cursor: pointer;
+`;
+
+const DollarizationIcon = styled(AiOutlineDollarCircle)<{
+    isExploreDollarizationEnabled?: boolean;
+}>`
+    font-size: var(--header2-size);
+    cursor: pointer;
+    color: ${({ isExploreDollarizationEnabled }) =>
+        isExploreDollarizationEnabled && 'var(--accent1)'};
 `;

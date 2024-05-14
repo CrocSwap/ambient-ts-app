@@ -1,16 +1,12 @@
-import {
-    getFormattedNumber,
-    translateToken,
-} from '../../ambient-utils/dataLayer';
+import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
-import { memo, useContext, useEffect, useState } from 'react';
-import { formatTokenInput } from '../../utils/numbers';
+import { memo } from 'react';
+import { formatTokenInput, stringToBigNumber } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { BigNumber } from 'ethers';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -22,6 +18,7 @@ interface propsIF {
     handleTokenInputEvent: (val: string) => void;
     reverseTokens: () => void;
     handleToggleDexSelection: () => void;
+    usdValue: number | undefined;
     handleRefresh?: () => void;
     parseTokenInput?: (val: string, isMax?: boolean) => void | string;
     fieldId?: string;
@@ -33,6 +30,9 @@ interface propsIF {
     isWithdraw?: boolean;
     disabledContent?: React.ReactNode;
     amountToReduceNativeTokenQty: number;
+    isInitPage?: boolean | undefined;
+    tokenDecimals?: number;
+    percentDiffUsdValue?: number;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -57,47 +57,29 @@ function TokenInputWithWalletBalance(props: propsIF) {
         parseTokenInput,
         handleRefresh,
         amountToReduceNativeTokenQty,
+        isInitPage,
+        usdValue,
+        percentDiffUsdValue,
     } = props;
 
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
-
-    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
-
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
-    const pricedToken = translateToken(token.address, chainId);
-
-    useEffect(() => {
-        if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(pricedToken, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                const usdValueNum: number | undefined =
-                    price !== undefined && tokenInput !== ''
-                        ? price.usdPrice * parseFloat(tokenInput)
-                        : undefined;
-                const usdValueTruncated =
-                    usdValueNum !== undefined
-                        ? getFormattedNumber({
-                              value: usdValueNum,
-                              isUSD: true,
-                          })
-                        : undefined;
-                usdValueTruncated !== undefined
-                    ? setUsdValueForDom(usdValueTruncated)
-                    : setUsdValueForDom('');
-            } else {
-                setUsdValueForDom(undefined);
-            }
-        });
-    }, [crocEnv, chainId, pricedToken, tokenInput]);
+    const usdValueForDom =
+        usdValue && parseFloat(tokenInput) > 0
+            ? getFormattedNumber({
+                  value: usdValue * parseFloat(tokenInput),
+                  prefix: '$',
+              })
+            : '';
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
+
+    const walletBalanceBigNum = tokenBalance
+        ? stringToBigNumber(tokenBalance, token.decimals)
+        : BigNumber.from(0);
+
+    const dexBalanceBigNum = tokenDexBalance
+        ? stringToBigNumber(tokenDexBalance, token.decimals)
+        : BigNumber.from(0);
 
     const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
     const walletAndExchangeBalance =
@@ -108,7 +90,25 @@ function TokenInputWithWalletBalance(props: propsIF) {
                   ).toString(),
               )
             : '...';
+    const walletAndExchangeBalanceBigNum =
+        walletBalanceBigNum.add(dexBalanceBigNum);
     const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
+    const balanceBigNum = !isDexSelected
+        ? walletBalanceBigNum
+        : walletAndExchangeBalanceBigNum;
+
+    const balanceBigNumString = balanceBigNum.toString();
+
+    // function to insert character at index from end of string
+    const insertCharAt = (str: string, index: number, char: string) =>
+        str.slice(0, -index) + char + str.slice(-index);
+
+    const balBigNumStringScaled = insertCharAt(
+        balanceBigNumString.padStart(token.decimals, '0'),
+        token.decimals,
+        '.',
+    );
+
     const balanceToDisplay = getFormattedNumber({
         value: parseFloat(balance) ?? undefined,
     });
@@ -116,9 +116,13 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const subtractBuffer = (balance: string) =>
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
+            : isInitPage
+            ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
             : balance;
 
-    const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
+    const balanceWithBuffer = balance
+        ? subtractBuffer(balBigNumStringScaled)
+        : '...';
 
     const handleMaxButtonClick = () => {
         if (
@@ -143,8 +147,10 @@ function TokenInputWithWalletBalance(props: propsIF) {
             const balance = subtractBuffer(
                 isDexSelected ? walletBalance : walletAndExchangeBalance,
             );
-            parseTokenInput && parseTokenInput(balance);
-            handleTokenInputEvent(balance);
+            if (walletBalance !== walletAndExchangeBalance) {
+                parseTokenInput && parseTokenInput(balance);
+                handleTokenInputEvent(balance);
+            }
         }
         handleToggleDexSelection();
     };
@@ -157,6 +163,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                         ? ''
                         : usdValueForDom
                 }
+                percentDiffUsdValue={percentDiffUsdValue}
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
@@ -171,7 +178,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 onMaxButtonClick={
                     !hideWalletMaxButton ? handleMaxButtonClick : undefined
                 }
-                onRefresh={handleRefresh}
             />
         </>
     );
@@ -188,7 +194,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 isLoading={isLoading}
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
-                parseInput={parseTokenInput}
                 disabledContent={disabledContent}
             />
             {handleRefresh && (

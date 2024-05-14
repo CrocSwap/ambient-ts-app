@@ -11,7 +11,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
 import TradeSwap from '../pages/Trade/Swap/Swap';
@@ -31,7 +30,7 @@ import './App.css';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
+import GateWalletModal from './components/WalletModal/GateWalletModal';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
@@ -39,13 +38,14 @@ import Accessibility from '../pages/Accessibility/Accessibility';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
-import { ChartContext } from '../contexts/ChartContext';
+import { BrandContext } from '../contexts/BrandContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
-import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import FAQPoints from '../pages/FAQ/FAQPoints';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
+import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 
 /** ***** React Function *******/
 export default function App() {
@@ -59,14 +59,15 @@ export default function App() {
             setIsOpen: setChatOpen,
             isEnabled: isChatEnabled,
         },
-        theme: { selected: selectedTheme },
-        wagmiModal: { isOpen: isWagmiModalOpen },
+        walletModal: { isOpen: isWalletModalOpen },
+        appHeaderDropdown,
+        showPointSystemPopup,
+        dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { isWalletChainSupported, defaultUrlParams } =
-        useContext(CrocEnvContext);
-    const { isFullScreen: fullScreenChart } = useContext(ChartContext);
+    const { defaultUrlParams } = useContext(CrocEnvContext);
+    const { skin, showPoints } = useContext(BrandContext);
     const {
-        sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
+        sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
@@ -76,39 +77,6 @@ export default function App() {
         currentLocation.startsWith('/swap') && !smallScreen
             ? 'swap-body'
             : null;
-
-    // Show sidebar on all pages except for home, swap, chat, and 404
-    const sidebarRender = smallScreen ? (
-        <Sidebar />
-    ) : (
-        currentLocation !== '/' &&
-        currentLocation !== '/swap' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        !currentLocation.includes('/chat') &&
-        !currentLocation.includes('/initpool') &&
-        !fullScreenChart && (
-            // isChainSupported &&
-            <Sidebar />
-        )
-    );
-
-    const sidebarDislayStyle = isSidebarOpen
-        ? 'sidebar_content_layout'
-        : 'sidebar_content_layout_close';
-
-    const showSidebarOrNullStyle = smallScreen
-        ? sidebarDislayStyle
-        : currentLocation == '/' ||
-          currentLocation == '/swap' ||
-          currentLocation == '/404' ||
-          currentLocation == '/terms' ||
-          currentLocation == '/privacy' ||
-          currentLocation.includes('/chat') ||
-          currentLocation.startsWith('/swap')
-        ? 'hide_sidebar'
-        : sidebarDislayStyle;
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -163,16 +131,22 @@ export default function App() {
             <FlexContainer
                 flexDirection='column'
                 className={containerStyle}
-                data-theme={selectedTheme}
+                data-theme={skin}
             >
-                {!isWalletChainSupported && <SwitchNetwork />}
+                {showPoints && showPointSystemPopup && (
+                    <PointSystemPopup
+                        dismissPointSystemPopup={dismissPointSystemPopup}
+                    />
+                )}
                 <AppOverlay />
                 <PageHeader />
-                <section
-                    className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}
-                >
-                    {(!currentLocation.startsWith('/swap') || smallScreen) &&
-                        sidebarRender}
+                <div
+                    className={appHeaderDropdown.isActive ? 'app_blur' : ''}
+                    onClick={() => appHeaderDropdown.setIsActive(false)}
+                />
+                <section className={`${swapBodyStyle}`}>
+                    {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
+                        sidebarRender} */}
                     <Routes>
                         <Route index element={<Home />} />
                         <Route
@@ -254,8 +228,45 @@ export default function App() {
                         <Route path='initpool/:params' element={<InitPool />} />
                         <Route path='account' element={<Portfolio />} />
                         <Route
+                            path='xp-leaderboard'
+                            element={<Portfolio isLevelsPage isRanksPage />}
+                        />
+                        <Route
+                            path='account/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='account/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+                        <Route
+                            path='account/:address/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+
+                        <Route
+                            path='/:address/points'
+                            element={<Portfolio isPointsTab />}
+                        />
+                        <Route
+                            path='account/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
+                            path='account/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route
                             path='account/:address'
                             element={<Portfolio />}
+                        />
+                        <Route
+                            path='account/:address/xp'
+                            element={<Portfolio isLevelsPage />}
                         />
                         <Route
                             path='swap'
@@ -263,10 +274,31 @@ export default function App() {
                                 <Navigate replace to={defaultUrlParams.swap} />
                             }
                         />
-                        <Route path='explore' element={<Explore />} />
+                        {/* refactor EXPLORE as a nested route */}
+                        <Route
+                            path='explore'
+                            element={<Navigate to='/explore/pools' replace />}
+                        />
+                        <Route
+                            path='explore/pools'
+                            element={<Explore view='pools' />}
+                        />
+                        <Route
+                            path='explore/tokens'
+                            element={<Explore view='tokens' />}
+                        />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
+                        <Route
+                            path='faq'
+                            element={<Navigate to='/faq/points' replace />}
+                        />
+                        <Route path='faq/points' element={<FAQPoints />} />
+                        <Route
+                            path='faq/points/:params'
+                            element={<FAQPoints />}
+                        />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
@@ -277,6 +309,16 @@ export default function App() {
                             />
                         )}
                         <Route path='/:address' element={<Portfolio />} />
+                        <Route
+                            path='/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
@@ -285,20 +327,21 @@ export default function App() {
                     </Routes>
                 </section>
             </FlexContainer>
-            <div className='footer_container'>
+            <div data-theme={skin} className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
                     currentLocation !== '/terms' &&
                     currentLocation !== '/privacy' &&
+                    currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
                 {showMobileVersion && currentLocation !== '/' && (
                     <SidebarFooter />
                 )}
             </div>
-            <GlobalPopup />
+            <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
-            {isWagmiModalOpen && <WalletModalWagmi />}
+            {isWalletModalOpen && <GateWalletModal />}
         </>
     );
 }

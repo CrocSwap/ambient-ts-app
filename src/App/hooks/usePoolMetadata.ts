@@ -12,10 +12,12 @@ import {
     CACHE_UPDATE_FREQ_IN_MS,
 } from '../../ambient-utils/constants';
 import {
+    LimitOrderIF,
     LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
     TokenIF,
+    TransactionIF,
     TransactionServerIF,
 } from '../../ambient-utils/types';
 import {
@@ -31,13 +33,13 @@ import {
     getPositionData,
     getTransactionData,
 } from '../../ambient-utils/dataLayer';
-import useDebounce from './useDebounce';
 import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { AppStateContext } from '../../contexts/AppStateContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -60,8 +62,12 @@ interface PoolParamsHookIF {
 
 // Hooks to update metadata and volume/TVL/liquidity curves on a per-pool basis
 export function usePoolMetadata(props: PoolParamsHookIF) {
-    const { tokenA, tokenB, baseToken, quoteToken } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        defaultRangeWidthForActivePool,
+        poolPriceNonDisplay,
+    } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         setUserPositionsByPool,
@@ -72,11 +78,15 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLimitOrdersByPool,
         setUserLimitOrdersByPool,
         setLiquidity,
-        setLiquidityPending,
         setLiquidityFee,
     } = useContext(GraphDataContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
+
+    const {
+        server: { isEnabled: isServerEnabled },
+        isUserIdle,
+    } = useContext(AppStateContext);
 
     const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
         useContext(RangeContext);
@@ -122,99 +132,180 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tokenB.chainId,
     ]);
 
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(props.lastBlockNumber, 2000);
-
     // Token and range housekeeping when switching pairs
     useEffect(() => {
-        if (contextMatchesParams && props.crocEnv) {
+        if (
+            contextMatchesParams &&
+            props.crocEnv &&
+            tokenA.address &&
+            tokenB.address
+        ) {
+            const sortedTokens = sortBaseQuoteTokens(
+                tokenA.address,
+                tokenB.address,
+            );
             if (!ticksInParams) {
                 setAdvancedLowTick(0);
                 setAdvancedHighTick(0);
                 setAdvancedMode(false);
-                props.setSimpleRangeWidth(10);
+                props.setSimpleRangeWidth(defaultRangeWidthForActivePool);
             }
 
-            const tokenAAddress = tokenA.address;
-            const tokenBAddress = tokenB.address;
-
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-
-                setBaseTokenAddress(sortedTokens[0]);
-                setQuoteTokenAddress(sortedTokens[1]);
-                if (tokenA.address === sortedTokens[0]) {
-                    setIsTokenABase(true);
-                    setBaseTokenDecimals(tokenA.decimals);
-                    setQuoteTokenDecimals(tokenB.decimals);
-                } else {
-                    setIsTokenABase(false);
-                    setBaseTokenDecimals(tokenB.decimals);
-                    setQuoteTokenDecimals(tokenA.decimals);
-                }
+            setBaseTokenAddress(sortedTokens[0]);
+            setQuoteTokenAddress(sortedTokens[1]);
+            if (tokenA.address === sortedTokens[0]) {
+                setIsTokenABase(true);
+                setBaseTokenDecimals(tokenA.decimals);
+                setQuoteTokenDecimals(tokenB.decimals);
+            } else {
+                setIsTokenABase(false);
+                setBaseTokenDecimals(tokenB.decimals);
+                setQuoteTokenDecimals(tokenA.decimals);
             }
         }
     }, [
         contextMatchesParams,
-        tokenA.address,
-        tokenB.address,
-        quoteTokenAddress,
+        tokenA.address + tokenB.address,
         props.chainData.chainId,
         props.chainData.poolIndex,
-        props.searchableTokens,
+        // props.searchableTokens,
         props.lastBlockNumber == 0,
         !!props.crocEnv,
     ]);
 
-    // Reset loading states when token values change
+    const [newTxByPoolData, setNewTxByPoolData] = useState<
+        TransactionIF[] | undefined
+    >([]);
+
+    const [newLimitsByPoolData, setNewLimitsByPoolData] = useState<
+        LimitOrderIF[] | undefined
+    >([]);
+
+    const [newRangesByPoolData, setNewRangesByPoolData] = useState<
+        PositionIF[] | undefined
+    >([]);
+
+    const [newLeaderboardByPoolData, setNewLeaderboardByPoolData] = useState<
+        PositionIF[] | undefined
+    >([]);
+
     useEffect(() => {
-        setDataLoadingStatus({
-            datasetName: 'isPoolRangeDataLoading',
-            loadingStatus: true,
-        });
-        setDataLoadingStatus({
-            datasetName: 'isPoolTxDataLoading',
-            loadingStatus: true,
-        });
-        setDataLoadingStatus({
-            datasetName: 'isPoolOrderDataLoading',
-            loadingStatus: true,
-        });
-        setDataLoadingStatus({
-            datasetName: 'isConnectedUserRangeDataLoading',
-            loadingStatus: true,
-        });
-        setDataLoadingStatus({
-            datasetName: 'isConnectedUserPoolOrderDataLoading',
-            loadingStatus: true,
-        });
-    }, [baseToken.address, quoteToken.address]);
+        // reset new data when switching pairs
+        setNewTxByPoolData(undefined);
+        setNewLimitsByPoolData(undefined);
+        setNewRangesByPoolData(undefined);
+        setNewLeaderboardByPoolData(undefined);
+    }, [baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
+        if (newTxByPoolData) {
+            const filteredNewTxByPoolData = newTxByPoolData.filter((tx) => {
+                return (
+                    tx.base.toLowerCase() === baseTokenAddress.toLowerCase() &&
+                    tx.quote.toLowerCase() === quoteTokenAddress.toLowerCase()
+                );
+            });
+            if (filteredNewTxByPoolData.length > 0) {
+                setTransactionsByPool({
+                    dataReceived: true,
+                    changes: filteredNewTxByPoolData,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isPoolTxDataLoading',
+                    loadingStatus: false,
+                });
+            }
+        }
+    }, [newTxByPoolData, baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
+        if (newLimitsByPoolData) {
+            const filteredNewLimitsByPoolData = newLimitsByPoolData.filter(
+                (limit) => {
+                    return (
+                        limit.base.toLowerCase() ===
+                            baseTokenAddress.toLowerCase() &&
+                        limit.quote.toLowerCase() ===
+                            quoteTokenAddress.toLowerCase()
+                    );
+                },
+            );
+            if (filteredNewLimitsByPoolData.length > 0) {
+                setLimitOrdersByPool({
+                    dataReceived: true,
+                    limitOrders: filteredNewLimitsByPoolData,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isPoolOrderDataLoading',
+                    loadingStatus: false,
+                });
+            }
+        }
+    }, [newLimitsByPoolData, baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
+        if (newRangesByPoolData) {
+            const filteredNewRangesByPoolData = newRangesByPoolData.filter(
+                (position) => {
+                    return (
+                        position.base.toLowerCase() ===
+                            baseTokenAddress.toLowerCase() &&
+                        position.quote.toLowerCase() ===
+                            quoteTokenAddress.toLowerCase()
+                    );
+                },
+            );
+            if (filteredNewRangesByPoolData.length > 0) {
+                setPositionsByPool({
+                    dataReceived: true,
+                    positions: filteredNewRangesByPoolData,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isPoolRangeDataLoading',
+                    loadingStatus: false,
+                });
+            }
+        }
+    }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
+        if (newLeaderboardByPoolData) {
+            const filteredNewLeaderboardByPoolData =
+                newLeaderboardByPoolData.filter((position) => {
+                    return (
+                        position.base.toLowerCase() ===
+                            baseTokenAddress.toLowerCase() &&
+                        position.quote.toLowerCase() ===
+                            quoteTokenAddress.toLowerCase()
+                    );
+                });
+            if (filteredNewLeaderboardByPoolData.length > 0) {
+                setLeaderboardByPool({
+                    dataReceived: true,
+                    positions: filteredNewLeaderboardByPoolData,
+                });
+                setDataLoadingStatus({
+                    datasetName: 'isPoolRangeDataLoading',
+                    loadingStatus: false,
+                });
+            }
+        }
+    }, [newLeaderboardByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
         if (
             contextMatchesParams &&
             props.crocEnv &&
-            props.provider !== undefined
+            props.provider !== undefined &&
+            isServerEnabled
         ) {
-            const tokenAAddress = tokenA.address;
-            const tokenBAddress = tokenB.address;
-
-            if (tokenAAddress && tokenBAddress) {
-                const sortedTokens = sortBaseQuoteTokens(
-                    tokenAAddress,
-                    tokenBAddress,
-                );
-
+            if (baseTokenAddress && quoteTokenAddress) {
                 // retrieve pool liquidity provider fee
                 if (props.isServerEnabled) {
                     cachedGetLiquidityFee(
-                        sortedTokens[0],
-                        sortedTokens[1],
+                        baseTokenAddress,
+                        quoteTokenAddress,
                         props.chainData.poolIndex,
                         props.chainData.chainId,
                         props.graphCacheUrl,
@@ -233,8 +324,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     fetch(
                         allPositionsCacheEndpoint +
                             new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 annotate: 'true', // token quantities
@@ -261,7 +352,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -272,18 +362,26 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     ),
                                 )
                                     .then((updatedPositions) => {
-                                        setPositionsByPool({
-                                            dataReceived: true,
-                                            positions: updatedPositions,
-                                        });
-                                        setDataLoadingStatus({
-                                            datasetName:
-                                                'isPoolRangeDataLoading',
-                                            loadingStatus: false,
-                                        });
+                                        if (updatedPositions.length > 0) {
+                                            setNewRangesByPoolData(
+                                                updatedPositions,
+                                            );
+                                        } else {
+                                            setNewRangesByPoolData(undefined);
+                                            setPositionsByPool({
+                                                dataReceived: false,
+                                                positions: [],
+                                            });
+                                            setDataLoadingStatus({
+                                                datasetName:
+                                                    'isPoolRangeDataLoading',
+                                                loadingStatus: false,
+                                            });
+                                        }
                                     })
                                     .catch(console.error);
                             } else {
+                                setNewRangesByPoolData(undefined);
                                 setPositionsByPool({
                                     dataReceived: false,
                                     positions: [],
@@ -303,8 +401,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     fetch(
                         poolPositionsCacheEndpoint +
                             new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 ensResolution: 'true',
@@ -333,7 +431,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -358,12 +455,22 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             )
                                             .slice(0, 10);
 
-                                        setLeaderboardByPool({
-                                            dataReceived: true,
-                                            positions: top10Positions,
-                                        });
+                                        if (top10Positions.length > 0) {
+                                            setNewLeaderboardByPoolData(
+                                                top10Positions,
+                                            );
+                                        } else {
+                                            setNewLeaderboardByPoolData(
+                                                undefined,
+                                            );
+                                        }
                                     })
                                     .catch(console.error);
+                            } else {
+                                setLeaderboardByPool({
+                                    dataReceived: false,
+                                    positions: [],
+                                });
                             }
                         })
                         .catch(console.error);
@@ -371,8 +478,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
                         tokenList: props.searchableTokens,
-                        base: sortedTokens[0],
-                        quote: sortedTokens[1],
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
                         poolIdx: props.chainData.poolIndex,
                         chainId: props.chainData.chainId,
                         annotate: true,
@@ -384,17 +491,22 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,
-                        lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
                         cachedQuerySpotPrice: props.cachedQuerySpotPrice,
                         cachedTokenDetails: props.cachedTokenDetails,
                         cachedEnsResolve: props.cachedEnsResolve,
                     })
                         .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
+                            if (
+                                poolChangesJsonData &&
+                                poolChangesJsonData.length > 0
+                            ) {
+                                setNewTxByPoolData(poolChangesJsonData);
+                            } else {
+                                setNewTxByPoolData(undefined);
                                 setTransactionsByPool({
                                     dataReceived: true,
-                                    changes: poolChangesJsonData,
+                                    changes: [],
                                 });
                                 setDataLoadingStatus({
                                     datasetName: 'isPoolTxDataLoading',
@@ -412,8 +524,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     fetch(
                         poolLimitOrderStatesCacheEndpoint +
                             new URLSearchParams({
-                                base: sortedTokens[0].toLowerCase(),
-                                quote: sortedTokens[1].toLowerCase(),
+                                base: baseTokenAddress.toLowerCase(),
+                                quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
                                 n: '200',
@@ -435,7 +547,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 crocEnv,
                                                 provider,
                                                 props.chainData.chainId,
-                                                props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
                                                 props.cachedQuerySpotPrice,
                                                 props.cachedTokenDetails,
@@ -445,16 +556,25 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         },
                                     ),
                                 ).then((updatedLimitOrderStates) => {
-                                    setLimitOrdersByPool({
-                                        dataReceived: true,
-                                        limitOrders: updatedLimitOrderStates,
-                                    });
-                                    setDataLoadingStatus({
-                                        datasetName: 'isPoolOrderDataLoading',
-                                        loadingStatus: false,
-                                    });
+                                    if (updatedLimitOrderStates.length > 0) {
+                                        setNewLimitsByPoolData(
+                                            updatedLimitOrderStates,
+                                        );
+                                    } else {
+                                        setNewLimitsByPoolData(undefined);
+                                        setLimitOrdersByPool({
+                                            dataReceived: false,
+                                            limitOrders: [],
+                                        });
+                                        setDataLoadingStatus({
+                                            datasetName:
+                                                'isPoolOrderDataLoading',
+                                            loadingStatus: false,
+                                        });
+                                    }
                                 });
                             } else {
+                                setNewLimitsByPoolData(undefined);
                                 setLimitOrdersByPool({
                                     dataReceived: false,
                                     limitOrders: [],
@@ -467,7 +587,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         })
                         .catch(console.error);
                     if (props.userAddress) {
-                        // retrieve user_pool_positions
                         const userPoolTransactionsCacheEndpoint =
                             GCGO_OVERRIDE_URL
                                 ? GCGO_OVERRIDE_URL + '/user_pool_txs?'
@@ -476,8 +595,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             userPoolTransactionsCacheEndpoint +
                                 new URLSearchParams({
                                     user: props.userAddress,
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
+                                    base: baseTokenAddress.toLowerCase(),
+                                    quote: quoteTokenAddress.toLowerCase(),
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
@@ -503,7 +622,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -547,8 +665,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             userPoolPositionsCacheEndpoint +
                                 new URLSearchParams({
                                     user: props.userAddress,
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
+                                    base: baseTokenAddress.toLowerCase(),
+                                    quote: quoteTokenAddress.toLowerCase(),
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
@@ -571,7 +689,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -617,8 +734,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             userPoolLimitOrdersCacheEndpoint +
                                 new URLSearchParams({
                                     user: props.userAddress,
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
+                                    base: baseTokenAddress.toLowerCase(),
+                                    quote: quoteTokenAddress.toLowerCase(),
                                     poolIdx:
                                         props.chainData.poolIndex.toString(),
                                     chainId: props.chainData.chainId,
@@ -646,7 +763,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     crocEnv,
                                                     provider,
                                                     props.chainData.chainId,
-                                                    props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
@@ -689,15 +805,16 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.userAddress,
         props.receiptCount,
         contextMatchesParams,
-        tokenA.address,
-        tokenB.address,
-        quoteTokenAddress,
+        baseTokenAddress + quoteTokenAddress,
         props.chainData.chainId,
-        props.chainData.poolIndex,
         props.searchableTokens,
-        lastBlockNumWait,
+        isUserIdle
+            ? Math.floor(Date.now() / 60000) // cache for 60 seconds if idle
+            : Math.floor(Date.now() / 10000), // cache for 10 seconds if not idle
         !!props.crocEnv,
         !!props.provider,
+
+        isServerEnabled,
     ]);
 
     useEffect(() => {
@@ -709,40 +826,38 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             poolIndex: props.chainData.poolIndex,
         };
 
-        // Set the pending data before making the request
-        setLiquidityPending(request);
-
-        const crocEnv = props.crocEnv;
         if (
             props.isChartEnabled &&
+            poolPriceNonDisplay !== 0 &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            props.chainData &&
-            props.lastBlockNumber &&
-            crocEnv
-        )
+            props.chainData.poolIndex &&
+            props.crocEnv
+        ) {
             fetchPoolLiquidity(
                 props.chainData.chainId,
                 baseTokenAddress.toLowerCase(),
                 quoteTokenAddress.toLowerCase(),
                 props.chainData.poolIndex,
-                crocEnv,
+                props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
-                        setLiquidity(liqCurve);
+                        setLiquidity(liqCurve, request);
                     }
                 })
                 .catch(console.error);
+        }
     }, [
-        baseTokenAddress,
-        quoteTokenAddress,
-        props.chainData.chainId,
-        props.chainData.poolIndex,
-        lastBlockNumWait,
+        baseTokenAddress +
+            quoteTokenAddress +
+            props.chainData.chainId +
+            props.chainData.poolIndex,
+        poolPriceNonDisplay,
         props.isChartEnabled,
+        props.crocEnv !== undefined,
     ]);
 
     return {

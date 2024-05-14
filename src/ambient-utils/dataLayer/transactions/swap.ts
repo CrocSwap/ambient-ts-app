@@ -19,8 +19,8 @@ export async function performSwap(params: PerformSwapParams) {
         buyTokenAddress,
         sellTokenAddress,
         slippageTolerancePercentage,
-        isWithdrawFromDexChecked = false,
-        isSaveAsDexSurplusChecked = true,
+        isWithdrawFromDexChecked = true,
+        isSaveAsDexSurplusChecked = false,
     } = params;
 
     const plan = isQtySell
@@ -32,7 +32,10 @@ export async function performSwap(params: PerformSwapParams) {
           });
 
     const tx = await plan.swap({
-        surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+        settlement: {
+            sellDexSurplus: isWithdrawFromDexChecked,
+            buyDexSurplus: isSaveAsDexSurplusChecked,
+        },
     });
 
     return tx;

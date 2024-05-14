@@ -12,7 +12,7 @@ import {
 import { LimitOrderIF } from '../../ambient-utils/types';
 
 import {
-    concPosSlot,
+    CrocEnv,
     priceHalfAboveTick,
     priceHalfBelowTick,
     toDisplayPrice,
@@ -23,13 +23,20 @@ import moment from 'moment';
 import { getAddress } from 'ethers/lib/utils.js';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
+    crocEnv: CrocEnv | undefined,
     account = '',
     isAccountView = false,
 ) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { ensName: ensNameConnectedUser } = useContext(UserDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
     const blockExplorer = getChainExplorer(limitOrder.chainId);
 
     const selectedBaseToken = baseToken.address.toLowerCase();
@@ -47,13 +54,73 @@ export const useProcessOrder = (
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
 
+    const [basePrice, setBasePrice] = useState<number | undefined>();
+    const [quotePrice, setQuotePrice] = useState<number | undefined>();
+
+    useEffect(() => {
+        if (crocEnv) {
+            const fetchTokenPrice = async () => {
+                const baseTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            limitOrder.base,
+                            limitOrder.chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+                const quoteTokenPrice =
+                    (
+                        await cachedFetchTokenPrice(
+                            limitOrder.quote,
+                            limitOrder.chainId,
+                            crocEnv,
+                        )
+                    )?.usdPrice || 0.0;
+
+                if (baseTokenPrice) {
+                    setBasePrice(baseTokenPrice);
+                } else if (
+                    quoteTokenPrice &&
+                    limitOrder.curentPoolPriceDisplayNum
+                ) {
+                    // this may be backwards
+                    const estimatedBasePrice =
+                        quoteTokenPrice / limitOrder.curentPoolPriceDisplayNum;
+                    setBasePrice(estimatedBasePrice);
+                }
+                if (quoteTokenPrice) {
+                    setQuotePrice(quoteTokenPrice);
+                } else if (
+                    baseTokenPrice &&
+                    limitOrder.curentPoolPriceDisplayNum
+                ) {
+                    const estimatedQuotePrice =
+                        baseTokenPrice * limitOrder.curentPoolPriceDisplayNum;
+                    setQuotePrice(estimatedQuotePrice);
+                }
+            };
+
+            fetchTokenPrice();
+        }
+    }, [
+        limitOrder.base,
+        limitOrder.quote,
+        limitOrder.chainId,
+        crocEnv !== undefined,
+        limitOrder.curentPoolPriceDisplayNum,
+    ]);
+
     /* eslint-disable-next-line camelcase */
     const body = { config_path: 'ens_address', address: limitOrder.user };
     const { data, error } = useFetchBatch<'ens_address'>(body);
 
     let ensAddress = null;
     if (data && !error) {
-        ensAddress = data.ens_address;
+        // prevent showing ens address if it is the same as the connected user due to async issue when switching tables
+        ensAddress =
+            data.ens_address !== ensNameConnectedUser
+                ? data.ens_address
+                : undefined;
     }
 
     const ownerId = ensAddress || getAddress(limitOrder.user);
@@ -61,17 +128,23 @@ export const useProcessOrder = (
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
-    const posHash = concPosSlot(
-        limitOrder.user ?? '',
-        limitOrder.base ?? '',
-        limitOrder.quote ?? '',
-        limitOrder.bidTick ?? '',
-        limitOrder.askTick ?? '',
-        limitOrder.poolIdx ?? '',
-    ).toString();
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: limitOrder.user ?? '',
+        baseAddress: limitOrder.base ?? '',
+        quoteAddress: limitOrder.quote ?? '',
+        poolIdx: limitOrder.poolIdx ?? 0,
+        bidTick: limitOrder.bidTick ?? 0,
+        askTick: limitOrder.askTick ?? 0,
+    });
+
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
+        string | undefined
+    >();
+
+    const [displayPriceInUsd, setDisplayPriceInUsd] = useState<
         string | undefined
     >();
 
@@ -112,6 +185,10 @@ export const useProcessOrder = (
     const [finishPriceDisplay, setFinishPriceDisplay] = useState<
         string | undefined
     >();
+    const [
+        finishPriceDisplayDenomByMoneyness,
+        setFinishPriceDisplayDenomByMoneyness,
+    ] = useState<string | undefined>();
     const [initialTokenQty, setInitialTokenQty] = useState<string | undefined>(
         undefined,
     );
@@ -204,7 +281,7 @@ export const useProcessOrder = (
 
     const usdValue = getFormattedNumber({
         value: usdValueNum,
-        isUSD: true,
+        prefix: '$',
     });
 
     // -----------------------------------------------------------------------------------------
@@ -230,7 +307,21 @@ export const useProcessOrder = (
         ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
         : 0;
 
+    const elapsedTimeSinceFirstMintInSecondsNum = limitOrder.timeFirstMint
+        ? moment(Date.now()).diff(limitOrder.timeFirstMint * 1000, 'seconds')
+        : 0;
+
+    const elapsedTimeSinceCrossInSecondsNum = limitOrder.crossTime
+        ? moment(Date.now()).diff(limitOrder.crossTime * 1000, 'seconds')
+        : 0;
+
     const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
+    const elapsedTimeSinceFirstMintString = getElapsedTime(
+        elapsedTimeSinceFirstMintInSecondsNum,
+    );
+    const elapsedTimeSinceCrossString = getElapsedTime(
+        elapsedTimeSinceCrossInSecondsNum,
+    );
 
     // ----------------------------------------------------------------------
 
@@ -238,7 +329,7 @@ export const useProcessOrder = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 6, 4, '…');
+        : trimString(ownerId, 7, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
@@ -263,14 +354,37 @@ export const useProcessOrder = (
                 zeroDisplay: '0',
             });
 
+            const displayPriceNumInUsd = isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? basePrice
+                        ? priceDecimalCorrected * basePrice
+                        : undefined
+                    : quotePrice
+                    ? invPriceDecimalCorrected * quotePrice
+                    : undefined
+                : basePrice && quotePrice
+                ? isDenomBase
+                    ? invPriceDecimalCorrected * quotePrice
+                    : priceDecimalCorrected * basePrice
+                : undefined;
+
+            const formattedUsdPrice = displayPriceNumInUsd
+                ? getFormattedNumber({
+                      value: displayPriceNumInUsd,
+                      prefix: '$',
+                  })
+                : '...';
+
+            setDisplayPriceInUsd(formattedUsdPrice);
+
             const truncatedDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
-                    ? nonInvertedPriceTruncated
-                    : invertedPriceTruncated;
+                    ? baseTokenCharacter + nonInvertedPriceTruncated
+                    : quoteTokenCharacter + invertedPriceTruncated;
 
             const truncatedDisplayPrice = isDenomBase
-                ? `${invertedPriceTruncated}`
-                : `${nonInvertedPriceTruncated}`;
+                ? `${quoteTokenCharacter}${invertedPriceTruncated}`
+                : `${baseTokenCharacter}${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
             setTruncatedDisplayPriceDenomByMoneyness(
@@ -359,11 +473,24 @@ export const useProcessOrder = (
 
             const finishPriceDisplayNum = isDenomBase
                 ? isBid
-                    ? bidTickInvPrice
-                    : askTickInvPrice
+                    ? askTickInvPrice
+                    : bidTickInvPrice
                 : isBid
                 ? bidTickPrice
                 : askTickPrice;
+
+            const finishPriceDenomByMoneyness =
+                isBaseTokenMoneynessGreaterOrEqual
+                    ? isBid
+                        ? bidTickPrice
+                        : askTickPrice
+                    : isBid
+                    ? askTickInvPrice
+                    : bidTickInvPrice;
+
+            const finishPriceDisplayDenomByMoneyness = getFormattedNumber({
+                value: finishPriceDenomByMoneyness,
+            });
 
             const finishPriceDisplay = getFormattedNumber({
                 value: finishPriceDisplayNum,
@@ -378,6 +505,9 @@ export const useProcessOrder = (
             );
             setMiddlePriceDisplay(middlePriceDisplay);
             setFinishPriceDisplay(finishPriceDisplay);
+            setFinishPriceDisplayDenomByMoneyness(
+                finishPriceDisplayDenomByMoneyness,
+            );
 
             const finalTokenQty = !isBid
                 ? limitOrder.claimableLiqBaseDecimalCorrected
@@ -402,7 +532,13 @@ export const useProcessOrder = (
                     : invIntialTokenQtyTruncated,
             );
         }
-    }, [diffHashSig(limitOrder), isDenomBase, isAccountView]);
+    }, [
+        diffHashSig(limitOrder),
+        isDenomBase,
+        isAccountView,
+        basePrice,
+        quotePrice,
+    ]);
 
     return {
         // wallet and id data
@@ -461,6 +597,8 @@ export const useProcessOrder = (
         middlePriceDisplay,
         middlePriceDisplayDenomByMoneyness,
         finishPriceDisplay,
+        finishPriceDisplayDenomByMoneyness,
+        displayPriceInUsd,
 
         // transaction matches selected token
         orderMatchesSelectedTokens,
@@ -468,6 +606,8 @@ export const useProcessOrder = (
         blockExplorer,
 
         elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
+        elapsedTimeSinceCrossString,
         initialTokenQty,
         baseTokenAddress: limitOrder.base,
         quoteTokenAddress: limitOrder.quote,

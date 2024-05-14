@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../constants';
+import { GCGO_OVERRIDE_URL } from '../constants';
 import { TokenIF, TransactionServerIF } from '../types';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
@@ -25,7 +25,6 @@ interface argsIF {
     crocEnv: CrocEnv;
     graphCacheUrl: string;
     provider: Provider;
-    lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
@@ -50,7 +49,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         crocEnv,
         graphCacheUrl,
         provider,
-        lastBlockNumber,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
         cachedTokenDetails,
@@ -60,8 +58,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
     const poolRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_txs?'
         : graphCacheUrl + '/pool_txs?';
-
-    IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 
     const poolChanges = fetch(
         period && time
@@ -113,7 +109,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         crocEnv,
                         provider,
                         chainId,
-                        lastBlockNumber,
                         cachedFetchTokenPrice,
                         cachedQuerySpotPrice,
                         cachedTokenDetails,

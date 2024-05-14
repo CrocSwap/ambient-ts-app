@@ -13,6 +13,7 @@ import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 type ItemIF = {
     slug: string;
@@ -24,11 +25,13 @@ interface propsIF {
     tx: TransactionIF;
     controlItems: ItemIF[];
     positionApy: number | undefined;
+    isAccountView: boolean;
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { tx, controlItems, positionApy } = props;
+    const { tx, controlItems, positionApy, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -54,7 +57,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         quoteTokenCharacter,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessTransaction(tx, userAddress);
+    } = useProcessTransaction(tx, userAddress, crocEnv);
 
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
@@ -67,25 +70,37 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
+    const baseIcon = (
+        <TokenIcon
+            token={baseToken}
+            src={uriToHttp(baseTokenLogo)}
+            alt={baseTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const quoteIcon = (
+        <TokenIcon
+            token={quoteToken}
+            src={uriToHttp(quoteTokenLogo)}
+            alt={quoteTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const isDenomBaseLocal = isAccountView
+        ? !isBaseTokenMoneynessGreaterOrEqual
+        : isDenomBase;
+
     const tokenPairDetails = (
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                <TokenIcon
-                    token={baseToken}
-                    src={uriToHttp(baseTokenLogo)}
-                    alt={baseTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={quoteToken}
-                    src={uriToHttp(quoteTokenLogo)}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
+                {isDenomBaseLocal ? baseIcon : quoteIcon}
+                {isDenomBaseLocal ? quoteIcon : baseIcon}
             </div>
             <p>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                {isDenomBaseLocal ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBaseLocal ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
@@ -99,7 +114,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             className={styles.info_container}
         >
             <Row>
-                <span>Total Value: </span>
+                <span>Order Value: </span>
                 <DefaultTooltip
                     interactive
                     title={usdValue}
@@ -116,15 +131,23 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const isAmbient = tx.positionType === 'ambient';
 
-    const typeDisplay = tx.entityType
-        ? tx.entityType === 'swap'
-            ? 'Market'
-            : tx.entityType === 'liqchange'
-            ? tx.changeType === 'mint'
-                ? 'Add to Range'
-                : 'Remove from Range'
-            : 'Limit'
-        : '...';
+    const changeType = tx.changeType;
+    const entityType = tx.entityType;
+
+    const changeTypeDisplay =
+        changeType === 'harvest'
+            ? 'Range Harvest'
+            : changeType === 'mint'
+            ? entityType === 'limitOrder'
+                ? 'Limit'
+                : 'Range'
+            : changeType === 'burn'
+            ? entityType === 'limitOrder'
+                ? 'Limit Removal'
+                : 'Range Removal'
+            : changeType === 'recover'
+            ? 'Limit Claim'
+            : 'Market';
 
     const txTypeContent = (
         <motion.div
@@ -136,116 +159,152 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         >
             <Row>
                 <span>Order Type: </span>
-                <div className={styles.info_text}>{typeDisplay}</div>
+                <div className={styles.info_text}>{changeTypeDisplay}</div>
             </Row>
         </motion.div>
     );
 
     const buyQuoteRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.quoteSymbol + ': '
-                    : 'Buy: '}
-            </p>
-            <div>
-                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
-                    ? quoteQuantityDisplay
-                    : estimatedQuoteFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={quoteToken}
-                    src={uriToHttp(quoteTokenLogo)}
-                    alt={quoteTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
-    );
-    const sellBaseRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.baseSymbol + ': '
-                    : 'Sell: '}
-            </p>
-            <div>
-                {tx.entityType !== 'limitOrder' ||
-                tx.changeType === 'burn' ||
-                tx.changeType === 'mint'
-                    ? baseQuantityDisplay
-                    : estimatedBaseFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={baseToken}
-                    src={uriToHttp(baseTokenLogo)}
-                    alt={baseTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.quoteSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.quoteSymbol + ' Claimed: '
+                        : 'Buy: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'recover' ||
+                    tx.changeType === 'burn'
+                        ? quoteQuantityDisplay
+                        : estimatedQuoteFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={quoteToken}
+                        src={uriToHttp(quoteTokenLogo)}
+                        alt={quoteTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
-    const isBuyTransactionDetails = (
-        <div className={styles.tx_details}>
-            {isDenomBase ? sellBaseRow : buyQuoteRow}
-            <span className={styles.divider}></span>
-            {isDenomBase ? buyQuoteRow : sellBaseRow}
-        </div>
+    const sellBaseRow = (
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.baseSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.baseSymbol + ' Removed: '
+                        : 'Sell: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'burn' ||
+                    tx.changeType === 'mint'
+                        ? baseQuantityDisplay
+                        : estimatedBaseFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={baseToken}
+                        src={uriToHttp(baseTokenLogo)}
+                        alt={baseTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
     const buyBaseRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}
-            </p>
-
-            <div>
-                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
-                    ? baseQuantityDisplay
-                    : estimatedBaseFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={baseToken}
-                    src={uriToHttp(baseTokenLogo)}
-                    alt={baseTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.baseSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.baseSymbol + ' Claimed: '
+                        : 'Buy: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'recover' ||
+                    tx.changeType === 'burn'
+                        ? baseQuantityDisplay
+                        : estimatedBaseFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={baseToken}
+                        src={uriToHttp(baseTokenLogo)}
+                        alt={baseTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
     const sellQuoteRow = (
-        <Row>
-            <p>
-                {tx.entityType === 'liqchange'
-                    ? tx.quoteSymbol + ': '
-                    : 'Sell: '}
-            </p>
-            <div>
-                {tx.entityType !== 'limitOrder' ||
-                tx.changeType === 'burn' ||
-                tx.changeType === 'mint'
-                    ? quoteQuantityDisplay
-                    : estimatedQuoteFlowDisplay || '0.00'}
-                <TokenIcon
-                    token={quoteToken}
-                    src={uriToHttp(quoteTokenLogo)}
-                    alt={quoteTokenSymbol}
-                    size='xs'
-                />
-            </div>
-        </Row>
-    );
-
-    const isSellTransactionDetails = (
-        <div className={styles.tx_details}>
-            {isDenomBase ? buyBaseRow : sellQuoteRow}
-            <span className={styles.divider}></span>
-            {isDenomBase ? sellQuoteRow : buyBaseRow}
-        </div>
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <p>
+                    {tx.entityType === 'liqchange'
+                        ? tx.quoteSymbol + ': '
+                        : tx.changeType === 'burn'
+                        ? tx.quoteSymbol + ' Removed: '
+                        : 'Sell: '}
+                </p>
+                <div className={styles.info_text}>
+                    {tx.entityType !== 'limitOrder' ||
+                    tx.changeType === 'burn' ||
+                    tx.changeType === 'mint'
+                        ? quoteQuantityDisplay
+                        : estimatedQuoteFlowDisplay || '0.00'}
+                    <TokenIcon
+                        token={quoteToken}
+                        src={uriToHttp(quoteTokenLogo)}
+                        alt={quoteTokenSymbol}
+                        size='s'
+                    />
+                </div>
+            </Row>
+        </motion.div>
     );
 
     const PriceDisplay = (
         <div className={styles.min_max_price}>
-            <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
+            <p>
+                {tx.entityType === 'liqchange'
+                    ? 'Price Range'
+                    : tx.entityType === 'limitOrder'
+                    ? 'Limit Price'
+                    : 'Price'}
+            </p>
             {isAmbient ? (
                 <span className={styles.min_price}>
                     {'0'}
@@ -257,13 +316,13 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             ) : isOnTradeRoute ? (
                 <span className={styles.min_price}>
                     {truncatedDisplayPrice
-                        ? isDenomBase
+                        ? isDenomBaseLocal
                             ? quoteTokenCharacter + truncatedDisplayPrice
                             : baseTokenCharacter + truncatedDisplayPrice
                         : null}
 
                     {truncatedLowDisplayPrice
-                        ? isDenomBase
+                        ? isDenomBaseLocal
                             ? quoteTokenCharacter + truncatedLowDisplayPrice
                             : baseTokenCharacter + truncatedLowDisplayPrice
                         : null}
@@ -271,7 +330,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
                     {truncatedHighDisplayPrice
-                        ? isDenomBase
+                        ? isDenomBaseLocal
                             ? quoteTokenCharacter + truncatedHighDisplayPrice
                             : baseTokenCharacter + truncatedHighDisplayPrice
                         : null}
@@ -323,12 +382,25 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
+                {isDenomBaseLocal
+                    ? isBuy
+                        ? sellBaseRow
+                        : buyBaseRow
+                    : isBuy
+                    ? buyQuoteRow
+                    : sellQuoteRow}
+                {isDenomBaseLocal
+                    ? isBuy
+                        ? buyQuoteRow
+                        : sellQuoteRow
+                    : isBuy
+                    ? sellBaseRow
+                    : buyBaseRow}
                 {controlItems[2] && totalValueContent}
-                {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
-                {tx.entityType === 'liqchange' ? (
+                {tx.entityType === 'liqchange' && positionApy !== 0 ? (
                     <Apy
-                        amount={positionApy || undefined}
+                        amount={positionApy}
                         fs='48px'
                         lh='60px'
                         center

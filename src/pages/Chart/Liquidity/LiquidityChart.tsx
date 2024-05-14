@@ -19,6 +19,7 @@ import {
     lineValue,
     liquidityChartData,
     renderCanvasArray,
+    renderChart,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
@@ -32,6 +33,7 @@ import {
 } from './LiquiditySeries/LineSeries';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../contexts/RangeContext';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -49,6 +51,7 @@ interface liquidityPropsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mainCanvasBoundingClientRect: any;
     setLiqMaxActiveLiq: React.Dispatch<number | undefined>;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 type nearestLiquidity = {
@@ -116,6 +119,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         isActiveDragOrZoom,
         mainCanvasBoundingClientRect,
         setLiqMaxActiveLiq,
+        chartThemeColors,
     } = props;
 
     const currentPoolPriceTick =
@@ -226,10 +230,22 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             }
         }
         return undefined;
-    }, [liqDataBid, liqDataAsk, liqMode, diffHashSigScaleData(scaleData, 'y')]);
+    }, [
+        liqDataBid,
+        liqDataAsk,
+        liqDataDepthBid,
+        liqDataDepthAsk,
+        scaleData && liquidityDepthScale && liquidityScale,
+        liqMode,
+        diffHashSigScaleData(scaleData, 'y'),
+    ]);
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
         useState<string>('none');
+
+    useEffect(() => {
+        renderChart();
+    }, [liquidityScale === undefined, liquidityDepthScale === undefined]);
 
     useEffect(() => {
         if (
@@ -283,24 +299,56 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             setLineLiqDepthAskSeries(() => d3CanvasLiqAskChartDepthLine);
         }
-    }, [scaleData, liquidityScale, pool, liquidityDepthScale]);
+    }, [
+        scaleData,
+        liquidityScale,
+        pool,
+        liquidityDepthScale,
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
+        isDenomBase,
+    ]);
 
     useEffect(() => {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
-        if (liqSeries) {
-            decorateForLiquidityArea(liqSeries, thresholdCurve);
-            decorateForLiquidityLine(lineLiqSeries, thresholdCurve);
+        if (liqSeries && chartThemeColors) {
+            decorateForLiquidityArea(
+                liqSeries,
+                thresholdCurve,
+                chartThemeColors,
+            );
+            decorateForLiquidityLine(
+                lineLiqSeries,
+                thresholdCurve,
+                chartThemeColors,
+            );
         }
-        if (liqDepthAskSeries) {
-            decorateForLiquidityArea(liqDepthAskSeries, thresholdDepth);
-            decorateForLiquidityLine(lineLiqDepthAskSeries, thresholdDepth);
+        if (liqDepthAskSeries && chartThemeColors) {
+            decorateForLiquidityArea(
+                liqDepthAskSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
+            decorateForLiquidityLine(
+                lineLiqDepthAskSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
         }
 
-        if (liqDepthBidSeries) {
-            decorateForLiquidityArea(liqDepthBidSeries, thresholdDepth);
-            decorateForLiquidityLine(lineLiqDepthBidSeries, thresholdDepth);
+        if (liqDepthBidSeries && chartThemeColors) {
+            decorateForLiquidityArea(
+                liqDepthBidSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
+            decorateForLiquidityLine(
+                lineLiqDepthBidSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
         }
     }, [
         liqMode,
@@ -483,14 +531,16 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     ]);
                     scaleData?.yScale.range([event.detail.height, 0]);
 
-                    liqSeries.context(ctx);
-                    liqDepthBidSeries.context(ctx);
-                    liqDepthAskSeries.context(ctx);
-                    lineLiqDepthAskSeries.context(ctx);
-                    lineLiqDepthBidSeries.context(ctx);
+                    liqSeries?.context(ctx);
+                    liqDepthBidSeries?.context(ctx);
+                    liqDepthAskSeries?.context(ctx);
+                    lineLiqDepthAskSeries?.context(ctx);
+                    lineLiqDepthBidSeries?.context(ctx);
 
-                    lineLiqSeries.context(ctx);
+                    lineLiqSeries?.context(ctx);
                 });
+
+            renderChart();
         }
     }, [
         liqDataAsk,
@@ -501,8 +551,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqSeries,
         liqDepthBidSeries,
         liqDepthAskSeries,
-        liquidityScale,
-        liquidityDepthScale,
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
         liqMode,
         location.pathname,
         ranges,
@@ -563,9 +613,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', () => {
-                    highlightedAreaCurveSeries.context(ctx);
-                    highlightedAreaAskSeries.context(ctx);
-                    highlightedAreaBidSeries.context(ctx);
+                    highlightedAreaCurveSeries?.context(ctx);
+                    highlightedAreaAskSeries?.context(ctx);
+                    highlightedAreaBidSeries?.context(ctx);
                 });
         }
     }, [

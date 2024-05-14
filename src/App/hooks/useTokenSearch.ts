@@ -108,10 +108,19 @@ export const useTokenSearch = (
                 return listA.concat(dedupedListB);
             };
             // array of ambient and uniswap tokens, no dupes
-            const baseTokenList: TokenIF[] = patchLists(
-                tokens.defaultTokens,
-                tokens.getTokensFromList(tokenListURIs.uniswap),
-            );
+            const baseTokenList: TokenIF[] =
+                chainId === '0x1'
+                    ? patchLists(
+                          tokens.getTokensFromList(tokenListURIs.ambient),
+                          tokens.getTokensFromList(tokenListURIs.uniswap),
+                      )
+                    : chainId === '0x82750'
+                    ? patchLists(
+                          tokens.getTokensFromList(tokenListURIs.ambient),
+                          tokens.getTokensFromList(tokenListURIs.scroll),
+                      )
+                    : tokens.getTokensFromList(tokenListURIs.ambient);
+
             // ERC-20 tokens from connected wallet subject to universe verification
             const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
                 (tkn: TokenIF) => tokens.verify(tkn.address),
@@ -210,7 +219,7 @@ export const useTokenSearch = (
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
         chainId,
-        tokens.defaultTokens,
+        tokens.tokenUniv,
         walletTknAddresses,
         getRecentTokens().length,
         validatedInput,

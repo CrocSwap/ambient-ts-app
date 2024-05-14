@@ -32,11 +32,13 @@ interface propsIF {
     showConfirmation: boolean;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     resetConfirmation: () => void;
     isAdd: boolean;
     tokenAQty: string;
     tokenBQty: string;
     onClose: () => void;
+    slippageTolerance: number;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -52,12 +54,14 @@ function ConfirmRangeModal(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         showConfirmation,
         resetConfirmation,
         isAdd,
         tokenAQty,
         tokenBQty,
         onClose = () => null,
+        slippageTolerance,
     } = props;
 
     const { tokenA, tokenB, isDenomBase } = useContext(TradeDataContext);
@@ -174,7 +178,8 @@ function ConfirmRangeModal(props: propsIF) {
                     </FlexContainer>
                 </GridContainer>
             </FeeTierDisplay>
-            {isAmbient || (
+
+            {
                 <SelectedRange
                     isDenomBase={isDenomBaseLocalToRangeConfirm}
                     setIsDenomBase={setIsDenomBaseocalToRangeConfirm}
@@ -184,8 +189,9 @@ function ConfirmRangeModal(props: propsIF) {
                     pinnedMinPriceDisplayTruncatedInQuote={memoMinPriceQuote}
                     pinnedMaxPriceDisplayTruncatedInBase={memoMaxPriceBase}
                     pinnedMaxPriceDisplayTruncatedInQuote={memoMaxPriceQuote}
+                    slippageTolerance={slippageTolerance}
                 />
-            )}
+            }
         </>
     );
 
@@ -197,6 +203,7 @@ function ConfirmRangeModal(props: propsIF) {
             transactionHash={newRangeTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             showConfirmation={showConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             statusText={

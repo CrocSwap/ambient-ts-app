@@ -18,6 +18,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
@@ -39,11 +40,9 @@ function OrderRow(props: propsIF) {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const {
-        showAllData: showAllDataSelection,
-        currentLimitOrderActive,
-        setCurrentLimitOrderActive,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, currentLimitOrderActive } =
+        useContext(TradeTableContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -62,6 +61,7 @@ function OrderRow(props: propsIF) {
         isOrderFilled,
         isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
+        displayPriceInUsd,
         sideType,
         usdValue,
         baseTokenSymbol,
@@ -81,7 +81,7 @@ function OrderRow(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
-    } = useProcessOrder(limitOrder, userAddress, isAccountView);
+    } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
@@ -125,7 +125,7 @@ function OrderRow(props: propsIF) {
         const element = document.getElementById(orderDomId);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
@@ -196,6 +196,7 @@ function OrderRow(props: propsIF) {
         priceCharacter,
         priceStyle,
         truncatedDisplayPrice,
+        displayPriceInUsd,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
         sideCharacter,
@@ -208,6 +209,7 @@ function OrderRow(props: propsIF) {
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
         fillPercentage,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {
@@ -227,14 +229,6 @@ function OrderRow(props: propsIF) {
         statusDisplay,
     } = orderRowConstants(orderRowConstantsProps);
 
-    function handleRowClick() {
-        if (limitOrder.limitOrderId === currentLimitOrderActive) {
-            return;
-        }
-        setCurrentLimitOrderActive('');
-        openDetailsModal();
-    }
-
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
@@ -253,7 +247,7 @@ function OrderRow(props: propsIF) {
                 active={limitOrder.limitOrderId === currentLimitOrderActive}
                 user={userNameToDisplay === 'You' && showAllData}
                 id={orderDomId}
-                onClick={handleRowClick}
+                onClick={openDetailsModal}
                 ref={currentLimitOrderActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
@@ -284,6 +278,7 @@ function OrderRow(props: propsIF) {
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
                         setLimitModalAction={setLimitModalAction}
+                        tableView={tableView}
                     />
                 </div>
             </OrderRowStyled>

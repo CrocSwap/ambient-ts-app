@@ -21,6 +21,7 @@ function TransactionRow(props: propsIF) {
     const { idForDOM, tableView, tx, isAccountView, openDetailsModal } = props;
 
     const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         txHash,
@@ -34,6 +35,9 @@ function TransactionRow(props: propsIF) {
         truncatedDisplayPrice,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
+        displayPriceNumInUsd,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         sideType,
         type,
         usdValue,
@@ -51,7 +55,8 @@ function TransactionRow(props: propsIF) {
         priceCharacter,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(tx, userAddress, isAccountView);
+        isBaseTokenMoneynessGreaterOrEqual,
+    } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
         snackbar: { open: openSnackbar },
@@ -79,7 +84,7 @@ function TransactionRow(props: propsIF) {
         const element = document.getElementById(idForDOM);
         element?.scrollIntoView({
             behavior: 'smooth',
-            block: 'end',
+            block: 'nearest',
             inline: 'nearest',
         });
     }
@@ -120,8 +125,6 @@ function TransactionRow(props: propsIF) {
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
-        console.log('handleKeyPress');
-
         if (event.key === 'Enter') {
             openDetailsModal();
         } else if (event.ctrlKey && event.key === 'c') {
@@ -157,6 +160,9 @@ function TransactionRow(props: propsIF) {
         negativeDisplayColor,
         negativeArrow,
         type,
+        displayPriceNumInUsd,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         priceCharacter,
@@ -166,6 +172,7 @@ function TransactionRow(props: propsIF) {
         truncatedDisplayPrice,
         handleWalletClick,
         handleWalletCopy,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {

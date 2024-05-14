@@ -4,7 +4,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { Chip } from '../../../../Form/Chip';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { FiExternalLink } from 'react-icons/fi';
-import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
@@ -17,6 +17,7 @@ import {
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { getPositionHash } from '../../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 interface PropsIF {
     transaction: {
@@ -70,14 +71,15 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         ? quoteTokenCharacter
         : baseTokenCharacter;
 
-    const posHash = concPosSlot(
-        userAddress ?? '',
-        transaction.details?.baseAddress ?? '',
-        transaction.details?.quoteAddress ?? '',
-        transaction.details?.lowTick ?? 0,
-        transaction.details?.highTick ?? 0,
-        transaction.details?.poolIdx ?? 0,
-    ).toString();
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: userAddress ?? '',
+        baseAddress: transaction.details?.baseAddress ?? '',
+        quoteAddress: transaction.details?.quoteAddress ?? '',
+        poolIdx: transaction.details?.poolIdx ?? 0,
+        bidTick: transaction.details?.lowTick ?? 0,
+        askTick: transaction.details?.highTick ?? 0,
+    });
 
     const limitPrice =
         transaction.details &&
@@ -109,7 +111,11 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
             {trimString(posHash.toString(), 9, 0, '…')}
         </RowItem>
     );
-    const wallet = <p>you</p>;
+    const wallet = (
+        <RowItem style={{ textTransform: 'lowercase' }}>
+            <p>you</p>
+        </RowItem>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -118,6 +124,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                 user={showAllData}
                 placeholder
                 tabIndex={0}
+                cursor='default'
             >
                 {tableView === 'large' && (
                     <div>

@@ -42,6 +42,10 @@ import ContentContainer from '../../components/Global/ContentContainer/ContentCo
 import { PoolContext } from '../../contexts/PoolContext';
 import { MdAutoGraph } from 'react-icons/md';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
+import PointsBanner from './PointsBanner';
+
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { BrandContext } from '../../contexts/BrandContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -51,7 +55,8 @@ function Trade() {
         chainData: { chainId },
         provider,
     } = useContext(CrocEnvContext);
-    const { setIsCandleSelected, isCandleDataNull } = useContext(CandleContext);
+    const { setIsCandleSelected } = useContext(CandleContext);
+    const { showPoints } = useContext(BrandContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -61,12 +66,16 @@ function Trade() {
         canvasRef,
         tradeTableState,
         isChartHeightMinimum,
+        isCandleDataNull,
         setIsChartHeightMinimum,
     } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
+
+    const { showTopPtsBanner, dismissTopBannerPopup } =
+        useContext(AppStateContext);
     const {
         setOutsideControl,
         setSelectedOutsideTab,
@@ -172,14 +181,10 @@ function Trade() {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
-    const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
-
     const tradeChartsProps = {
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
-        isChartLoading,
-        setIsChartLoading,
         updateURL,
     };
 
@@ -254,15 +259,13 @@ function Trade() {
                 </ContentContainer>
             )}
 
-            {!isChartLoading &&
-                !isChartHeightMinimum &&
-                activeMobileComponent === 'chart' && <ChartToolbar />}
+            {!isChartHeightMinimum && activeMobileComponent === 'chart' && (
+                <ChartToolbar />
+            )}
         </MainSection>
     );
 
     if (showActiveMobileComponent) return mobileTrade;
-
-    const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     return (
         <>
@@ -271,10 +274,15 @@ function Trade() {
                     flexDirection='column'
                     fullWidth
                     background='dark2'
-                    gap={8}
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
+                    {showTopPtsBanner && showPoints && (
+                        <div style={{ padding: '0 8px' }}>
+                            <PointsBanner dismissElem={dismissTopBannerPopup} />
+                        </div>
+                    )}
+
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer
@@ -342,7 +350,7 @@ function Trade() {
                             }}
                             bounds={'parent'}
                         >
-                            {showNoChartData && (
+                            {(isCandleDataNull || !isPoolInitialized) && (
                                 <NoChartData
                                     chainId={chainId}
                                     tokenA={
@@ -355,9 +363,10 @@ function Trade() {
                                     isTableExpanded={
                                         tradeTableState == 'Expanded'
                                     }
+                                    isPoolInitialized={isPoolInitialized}
                                 />
                             )}
-                            {!showNoChartData && isPoolInitialized && (
+                            {!isCandleDataNull && isPoolInitialized && (
                                 <ChartContainer fullScreen={isChartFullScreen}>
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
@@ -391,7 +400,7 @@ function Trade() {
                         }}
                     />
                 </FlexContainer>
-                {!isChartLoading && !isChartHeightMinimum && <ChartToolbar />}
+                {!isChartHeightMinimum && <ChartToolbar />}
             </MainSection>
         </>
     );

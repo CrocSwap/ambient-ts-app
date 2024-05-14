@@ -212,7 +212,7 @@ export const TokenQuantityInput = styled.input`
     line-height: var(--header1-lh);
     color: var(--text1);
     text-align: start;
-    width: 80%;
+    width: 95%;
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0;
     max-height: 23px;
@@ -353,7 +353,7 @@ export const ConfirmationQuantityContainer = styled.div`
     grid-template-columns: auto 140px;
     align-items: center;
     background: var(--dark2);
-    padding: 0 2rem;
+    padding: 0 1rem 0 1rem;
     border-radius: var(--border-radius);
 `;
 

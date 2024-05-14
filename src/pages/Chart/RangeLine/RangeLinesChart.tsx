@@ -113,7 +113,17 @@ export default function RangeLinesChart(props: propsIF) {
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((context: any) => {
-                    context.fillStyle = '#7371FC1A';
+                    const style = getComputedStyle(context.canvas);
+
+                    const fillColor = style.getPropertyValue('--accent1');
+
+                    const d3AreaFillColor = d3.color(fillColor);
+
+                    if (d3AreaFillColor) d3AreaFillColor.opacity = 0.075;
+
+                    context.fillStyle = d3AreaFillColor
+                        ? d3AreaFillColor
+                        : '#7371FC1A';
                 });
 
             const triangleRange = createTriangle(
@@ -133,7 +143,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return horizontalBand;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, isDenomBase]);
 
     useEffect(() => {
         if (
@@ -160,7 +170,7 @@ export default function RangeLinesChart(props: propsIF) {
                 return newTargets;
             });
         }
-    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth]);
+    }, [minPrice, maxPrice, advancedMode, simpleRangeWidth, topBoundary]);
 
     useEffect(() => {
         if (position !== undefined) {
@@ -219,7 +229,7 @@ export default function RangeLinesChart(props: propsIF) {
                     });
             }
         }
-    }, [ranges, horizontalLine, location.pathname]);
+    }, [ranges, horizontalLine, horizontalBand, triangle, location.pathname]);
 
     useEffect(() => {
         const passValue =
@@ -347,7 +357,7 @@ export default function RangeLinesChart(props: propsIF) {
                             rescaleRangeBoundariesWithSlider &&
                             rescale
                         ) {
-                            changeScale();
+                            changeScale(false);
                         }
 
                         return newTargets;

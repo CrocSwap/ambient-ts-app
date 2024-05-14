@@ -17,7 +17,6 @@ import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalan
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -28,6 +27,9 @@ interface propsIF {
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
+    usdValueTokenA: number | undefined;
+    usdValueTokenB: number | undefined;
+    percentDiffUsdValue: number | undefined;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -40,13 +42,14 @@ function LimitTokenInput(props: propsIF) {
         handleLimitButtonMessage,
         toggleDexSelection,
         amountToReduceNativeTokenQty,
+        usdValueTokenA,
+        usdValueTokenB,
+        percentDiffUsdValue,
     } = props;
 
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setIsTokenAPrimaryRange, isTokenAPrimaryRange } =
-        useContext(RangeContext);
     const { pool } = useContext(PoolContext);
     const {
         baseToken: {
@@ -71,7 +74,6 @@ function LimitTokenInput(props: propsIF) {
         isDenomBase,
         setIsTokenAPrimary,
         setLimitTick,
-        setPoolPriceNonDisplay,
         primaryQuantity,
         setPrimaryQuantity,
     } = useContext(TradeDataContext);
@@ -87,7 +89,6 @@ function LimitTokenInput(props: propsIF) {
 
     const reverseTokens = (): void => {
         setLimitTick(undefined);
-        setPoolPriceNonDisplay(0);
 
         const limitLinkParams: limitParamsIF = {
             chain: chainId,
@@ -97,7 +98,6 @@ function LimitTokenInput(props: propsIF) {
         // navigate user to limit page with URL params defined above
         linkGenLimit.navigate(limitLinkParams);
         setIsTokenAPrimary(!isTokenAPrimary);
-        setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
     };
 
     useEffect(() => {
@@ -154,7 +154,8 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        setTokenBInputQty(truncatedTokenBQty);
+        // prevent momentary display of 'Infinity' for limit price on initial load
+        limitTickDisplayPrice && setTokenBInputQty(truncatedTokenBQty);
     };
 
     const handleTokenBChangeEvent = (value?: string) => {
@@ -197,7 +198,7 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 
-        setTokenAInputQty(truncatedTokenAQty);
+        limitTickDisplayPrice && setTokenAInputQty(truncatedTokenAQty);
     };
 
     return (
@@ -220,6 +221,7 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                usdValue={usdValueTokenA}
             />
             <FlexContainer
                 fullWidth
@@ -249,6 +251,8 @@ function LimitTokenInput(props: propsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
+                usdValue={usdValueTokenB}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
         </FlexContainer>
     );

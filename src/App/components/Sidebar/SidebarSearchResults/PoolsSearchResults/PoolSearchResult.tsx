@@ -2,8 +2,10 @@ import { PoolIF } from '../../../../../ambient-utils/types';
 import { PoolStatsFn } from '../../../../../ambient-utils/dataLayer';
 import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { usePoolStats } from '../../../../hooks/usePoolStats';
 import { Results } from '../../../../../styled/Components/Sidebar';
+import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { useContext } from 'react';
 
 interface propsIF {
     pool: PoolIF;
@@ -14,22 +16,18 @@ interface propsIF {
 }
 
 export default function PoolSearchResult(props: propsIF) {
-    const {
-        pool,
-        handleClick,
-        cachedPoolStatsFetch,
-        cachedFetchTokenPrice,
-        crocEnv,
-    } = props;
+    const { pool, handleClick } = props;
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
-    // hook to get volume and TVL for the current pool
-    const [volume, tvl] = usePoolStats(
-        pool,
-        undefined,
-        cachedPoolStatsFetch,
-        cachedFetchTokenPrice,
-        crocEnv,
-    );
+    const poolData = useFetchPoolStats(pool);
+
+    function handleClickFunction() {
+        handleClick(pool.base.address, pool.quote.address);
+        if (isPoolDropdownOpen) {
+            setIsPoolDropdownOpen(false);
+        }
+    }
 
     return (
         <Results
@@ -39,13 +37,21 @@ export default function PoolSearchResult(props: propsIF) {
             fontSize='body'
             color='text2'
             padding='4px'
-            onClick={() => handleClick(pool.base.address, pool.quote.address)}
+            onClick={handleClickFunction}
         >
             <p>
                 {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
             </p>
-            <p style={{ textAlign: 'center' }}>{volume}</p>
-            <p style={{ textAlign: 'center' }}>{tvl}</p>
+            <p style={{ textAlign: 'center' }}>
+                {`${
+                    poolData.poolVolume24h
+                        ? '$' + poolData.poolVolume24h
+                        : '...'
+                }`}
+            </p>
+            <p style={{ textAlign: 'center' }}>
+                {`${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`}
+            </p>
         </Results>
     );
 }

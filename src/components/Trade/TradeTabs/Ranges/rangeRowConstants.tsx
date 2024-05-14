@@ -1,7 +1,6 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { PositionIF, TokenIF } from '../../../../ambient-utils/types';
-import { NavLink } from 'react-router-dom';
 import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -17,6 +16,9 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
+
 interface propsIF {
     posHashTruncated: string;
     usdValue: string;
@@ -32,6 +34,8 @@ interface propsIF {
     ownerId: string;
     ambientOrMin: string;
     ambientOrMax: string;
+    lowDisplayPriceInUsd: string;
+    highDisplayPriceInUsd: string;
     apyClassname: string | undefined;
     apyString: string | undefined;
     minRangeDenomByMoneyness: string | undefined;
@@ -49,6 +53,7 @@ interface propsIF {
     position: PositionIF;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 export default function rangeRowConstants(props: propsIF) {
@@ -73,6 +78,8 @@ export default function rangeRowConstants(props: propsIF) {
         rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         isAccountView,
         isAmbient,
         minRangeDenomByMoneyness,
@@ -84,7 +91,10 @@ export default function rangeRowConstants(props: propsIF) {
         isPositionInRange,
         baseTokenAddress,
         quoteTokenAddress,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
+
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
     const baseToken: TokenIF | undefined =
@@ -138,7 +148,7 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='value'
             className='base_color'
         >
-            {'$' + usdValue}
+            {usdValue}
         </FlexContainer>
     );
 
@@ -256,11 +266,43 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={linkGenPool.getFullURL(poolLinkParams)}>
-                <div>
-                    {baseTokenSymbol} / {quoteTokenSymbol}
-                </div>
-            </NavLink>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={linkGenPool.getFullURL(poolLinkParams)}>
+                        <span style={{ textTransform: 'none' }}>
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a
+                        href={linkGenPool.getFullURL(poolLinkParams)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <div>
+                            <span style={{ textTransform: 'none' }}>
+                                {isBaseTokenMoneynessGreaterOrEqual
+                                    ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                    : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 
@@ -359,10 +401,14 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='min price'
             className='base_color'
         >
-            <span>{sideCharacter}</span>
+            <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
             <span>
                 {isAccountView && !isAmbient
-                    ? minRangeDenomByMoneyness || '…'
+                    ? isTradeDollarizationEnabled
+                        ? lowDisplayPriceInUsd
+                        : minRangeDenomByMoneyness || '…'
+                    : isTradeDollarizationEnabled
+                    ? lowDisplayPriceInUsd
                     : ambientOrMin || '…'}
             </span>
         </FlexContainer>
@@ -388,10 +434,14 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='max price'
             className='base_color'
         >
-            <span>{sideCharacter}</span>
+            <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
             <span>
                 {isAccountView
-                    ? maxRangeDenomByMoneyness || '…'
+                    ? isTradeDollarizationEnabled
+                        ? highDisplayPriceInUsd
+                        : maxRangeDenomByMoneyness || '…'
+                    : isTradeDollarizationEnabled
+                    ? highDisplayPriceInUsd
                     : ambientOrMax || '…'}
             </span>
         </FlexContainer>
@@ -405,18 +455,26 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
         >
             <p>
-                <span>{sideCharacter}</span>
+                <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView && !isAmbient
-                        ? minRangeDenomByMoneyness || '…'
+                        ? isTradeDollarizationEnabled
+                            ? lowDisplayPriceInUsd
+                            : minRangeDenomByMoneyness || '…'
+                        : isTradeDollarizationEnabled
+                        ? lowDisplayPriceInUsd
                         : ambientOrMin || '…'}
                 </span>
             </p>
             <p>
-                <span>{sideCharacter}</span>
+                <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView
-                        ? maxRangeDenomByMoneyness || '…'
+                        ? isTradeDollarizationEnabled
+                            ? highDisplayPriceInUsd
+                            : maxRangeDenomByMoneyness || '…'
+                        : isTradeDollarizationEnabled
+                        ? highDisplayPriceInUsd
                         : ambientOrMax || '…'}
                 </span>
             </p>
@@ -478,7 +536,7 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const rangeDisplay = (
-        <FlexContainer padding='0 0 0 8px' data-label='status'>
+        <FlexContainer padding='0 0 0 18px' data-label='status'>
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}

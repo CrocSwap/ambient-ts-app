@@ -1,6 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { NavLink } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
@@ -15,6 +14,8 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -38,6 +39,7 @@ interface propsIF {
     sideCharacter: string;
     limitOrder: LimitOrderIF;
     priceCharacter: string;
+    displayPriceInUsd: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
     isOwnerActiveAccount: boolean;
@@ -51,6 +53,7 @@ interface propsIF {
     handleWalletCopy: () => void;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 // * This file contains constants used in the rendering of order rows in the order table.
@@ -77,8 +80,8 @@ export const orderRowConstants = (props: propsIF) => {
         quoteTokenSymbol,
         elapsedTimeString,
         isAccountView,
-        priceCharacter,
         truncatedDisplayPrice,
+        displayPriceInUsd,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
         sideCharacter,
@@ -91,9 +94,11 @@ export const orderRowConstants = (props: propsIF) => {
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
         fillPercentage,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
 
     const { tokens } = useContext(TokenContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
@@ -252,12 +257,45 @@ export const orderRowConstants = (props: propsIF) => {
     const tokenPair = (
         <div
             className='base_color'
-            data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={linkGenLimit.getFullURL(limitLinkParams)}>
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </NavLink>
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
+                        <span style={{ textTransform: 'none' }}>
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
+                        </span>
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a
+                        href={linkGenLimit.getFullURL(limitLinkParams)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <div>
+                            <span style={{ textTransform: 'none' }}>
+                                {isBaseTokenMoneynessGreaterOrEqual
+                                    ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                    : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 
@@ -354,10 +392,13 @@ export const orderRowConstants = (props: propsIF) => {
         >
             {(
                 <p>
-                    <span>{priceCharacter}</span>
                     <span>
                         {isAccountView
-                            ? truncatedDisplayPriceDenomByMoneyness
+                            ? isTradeDollarizationEnabled
+                                ? displayPriceInUsd
+                                : truncatedDisplayPriceDenomByMoneyness
+                            : isTradeDollarizationEnabled
+                            ? displayPriceInUsd
                             : truncatedDisplayPrice}
                     </span>
                 </p>

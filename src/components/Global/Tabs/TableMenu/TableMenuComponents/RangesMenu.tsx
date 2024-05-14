@@ -11,7 +11,6 @@ import {
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
-import { IS_LOCAL_ENV } from '../../../../../ambient-utils/constants';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
@@ -34,13 +33,13 @@ interface propsIF {
     rangeDetailsProps: any;
     position: PositionIF;
     isPositionEmpty: boolean;
-    isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
     isAccountView: boolean;
     openDetailsModal: () => void;
     openActionModal: () => void;
     setRangeModalAction: React.Dispatch<React.SetStateAction<RangeModalAction>>;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // React functional component
@@ -48,7 +47,6 @@ function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        isEmpty,
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
@@ -58,6 +56,7 @@ function RangesMenu(props: propsIF) {
         openDetailsModal: openRangeDetailsModal,
         openActionModal: openRangeActionModal,
         setRangeModalAction,
+        tableView,
     } = props;
 
     const {
@@ -91,17 +90,21 @@ function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { tokenA, tokenB, getDefaultRangeWidthForTokenPair } =
+        useContext(TradeDataContext);
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
 
     // ----------------------
 
-    const view1 = useMediaQuery('(max-width: 600px)');
-    const view3 = useMediaQuery('(min-width: 1800px)');
+    // const view1 = useMediaQuery('(max-width: 600px)');
+    // const view3 = useMediaQuery('(min-width: 1800px)');
 
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+
+    const feesAvailableForHarvest =
+        (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? sidebar.isOpen
@@ -124,7 +127,6 @@ function RangesMenu(props: propsIF) {
             setSimpleRangeWidth(100);
             setAdvancedMode(false);
         } else {
-            IS_LOCAL_ENV && console.debug({ position });
             setAdvancedLowTick(position.bidTick);
             setAdvancedHighTick(position.askTick);
             setAdvancedMode(true);
@@ -136,25 +138,34 @@ function RangesMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
+    const shouldCopyQuoteToTokenA =
+        tokenAAddress.toLowerCase() === position.quote.toLowerCase() ||
+        tokenBAddress.toLowerCase() === position.base.toLowerCase();
+
     const repositionButton = (
         <Link
             id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
-                tokenA:
-                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
-                        ? position.quote
-                        : position.base,
-                tokenB:
-                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
-                        ? position.base
-                        : position.quote,
+                tokenA: shouldCopyQuoteToTokenA
+                    ? position.quote
+                    : position.base,
+                tokenB: shouldCopyQuoteToTokenA
+                    ? position.base
+                    : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
             onClick={() => {
-                setSimpleRangeWidth(10);
+                setActiveMobileComponent('trade');
+                setSimpleRangeWidth(
+                    getDefaultRangeWidthForTokenPair(
+                        position.chainId,
+                        position.base.toLowerCase(),
+                        position.quote.toLowerCase(),
+                    ),
+                );
                 setCurrentRangeInReposition(position.positionId);
                 setCurrentRangeInAdd('');
             }}
@@ -233,7 +244,10 @@ function RangesMenu(props: propsIF) {
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
-        !isAmbient && positionMatchesLoggedInUser ? (
+        !isAmbient &&
+        positionMatchesLoggedInUser &&
+        // show harvest button if fees are available for harvest or if on mainnet
+        (feesAvailableForHarvest || chainId === '0x1') ? (
             <Chip
                 id={`harvest_position_${position.positionId}`}
                 onClick={() => openActionModal('Harvest')}
@@ -257,29 +271,39 @@ function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {!view1 && showRepositionButton && repositionButton}
-            {!view1 &&
+            {tableView !== 'small' && showRepositionButton && repositionButton}
+            {tableView !== 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {view3 && !isEmpty && removeButton}
-            {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount && !view1 && copyButton}
+            {(tableView === 'large' ||
+                (!showRepositionButton && tableView !== 'small')) &&
+                !isPositionEmpty &&
+                removeButton}
+            {tableView === 'large' && !isPositionEmpty && harvestButton}
+            {!userMatchesConnectedAccount &&
+                tableView !== 'small' &&
+                copyButton}
         </div>
     );
 
     const dropdownMenuContent = (
         <div className={styles.menu_column}>
-            {view1 &&
+            {tableView === 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {!view3 && !isEmpty && harvestButton}
-            {!view3 && !isEmpty && removeButton}
+            {tableView !== 'large' && !isPositionEmpty && harvestButton}
+            {(tableView === 'small' ||
+                (showRepositionButton && tableView !== 'large')) &&
+                !isPositionEmpty &&
+                removeButton}
             {detailsButton}
             {!isAccountView && walletButton}
-            {view1 && showRepositionButton && repositionButton}
-            {!userMatchesConnectedAccount && view1 && copyButton}
+            {tableView === 'small' && showRepositionButton && repositionButton}
+            {!userMatchesConnectedAccount &&
+                tableView === 'small' &&
+                copyButton}
         </div>
     );
 

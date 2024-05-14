@@ -16,7 +16,7 @@ import InfoRow from '../../Global/InfoRow';
 
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
-
+    timeFirstMintMemo: number;
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
 
@@ -50,9 +50,10 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         usdValue,
         limitOrder,
         isAccountView,
+        timeFirstMintMemo,
     } = props;
 
-    const { chainData } = useContext(CrocEnvContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -70,14 +71,17 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         quoteTokenAddressLowerCase,
         startPriceDisplay,
         middlePriceDisplay,
-        truncatedDisplayPrice,
-        truncatedDisplayPriceDenomByMoneyness,
+        finishPriceDisplay,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
+        finishPriceDisplayDenomByMoneyness,
         isLimitOrderPartiallyFilled,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
-    } = useProcessOrder(limitOrder, userAddress, isAccountView);
+        elapsedTimeString,
+        elapsedTimeSinceFirstMintString,
+        elapsedTimeSinceCrossString,
+    } = useProcessOrder(limitOrder, crocEnv, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
@@ -160,9 +164,25 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         </div>
     );
 
-    const submissionTime = moment(limitOrder.timeFirstMint * 1000).format(
-        'MM/DD/YYYY HH:mm',
-    );
+    const submissionTime =
+        moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeSinceFirstMintString +
+        ' ago)';
+
+    const updateTime =
+        moment(limitOrder.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeString +
+        ' ago)';
+    const crossTime =
+        moment(limitOrder.crossTime * 1000).format('MM/DD/YYYY HH:mm') +
+        ' ' +
+        '(' +
+        elapsedTimeSinceCrossString +
+        ' ago)';
 
     const status = isOrderFilled
         ? 'Fill Complete'
@@ -176,6 +196,12 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             content: 'Limit',
             explanation: 'A limit order is a type of range position ',
         },
+        {
+            title: 'Submit Time ',
+            content: submissionTime,
+            explanation: 'Time the owner first added a limit at this price',
+        },
+
         {
             title: 'Wallet ',
             content: walletContent,
@@ -191,11 +217,6 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
         // { title: 'Submit Transaction ', content: txContent, explanation: 'this is explanation' },
         // { title: 'Claim Transaction ', content: txContent, explanation: 'this is explanation' },
 
-        {
-            title: 'Submit Time ',
-            content: submissionTime,
-            explanation: 'The time the owner first added a limit at this price',
-        },
         // { title: 'Fill Time ', content: fillTime, explanation: 'this is explanation' },
         {
             title: 'Status ',
@@ -299,17 +320,17 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
                 : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
-                'The effective conversion price - halfway between start and finish',
+                'The effective conversion price halfway between start and end',
         },
         {
             title: 'Fill End ',
             content: isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
-                    ? `1  ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${baseTokenSymbol}`
-                    : `1  ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness}  ${quoteTokenSymbol}`
+                    ? `1  ${quoteTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
+                    : `1  ${baseTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
                 : isDenomBase
-                ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
-                : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
+                ? `1  ${baseTokenSymbol} = ${finishPriceDisplay}  ${quoteTokenSymbol}`
+                : `1  ${quoteTokenSymbol} = ${finishPriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
                 'Price at which conversion ends and limit order can be claimed',
@@ -320,6 +341,22 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             explanation: 'The approximate US dollar value of the limit order',
         },
     ];
+
+    if (isOrderFilled) {
+        infoContent.splice(6, 0, {
+            title: 'Fill Time ',
+            content: crossTime,
+            explanation:
+                'Time the pool price crossed the limit (Fill End) price',
+        });
+    }
+    if (submissionTime !== updateTime) {
+        infoContent.splice(2, 0, {
+            title: 'Update Time ',
+            content: updateTime,
+            explanation: 'Time the owner last updated the limit at this price',
+        });
+    }
 
     return (
         <div className={styles.tx_details_container}>

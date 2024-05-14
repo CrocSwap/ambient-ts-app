@@ -55,3 +55,26 @@ export function isTransactionFailedError(
 
     return false;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseErrorMessage(error: any): string {
+    const errorMessage =
+        error?.error?.data?.message ||
+        error?.error?.message ||
+        error?.data?.message ||
+        error?.response?.data?.message ||
+        error?.details ||
+        error?.shortMessage ||
+        error?.message ||
+        error;
+
+    if (typeof errorMessage === 'object') {
+        try {
+            return JSON.stringify(errorMessage);
+        } catch {
+            return String(errorMessage);
+        }
+    }
+
+    return String(errorMessage);
+}
