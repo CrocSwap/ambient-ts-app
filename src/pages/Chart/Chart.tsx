@@ -592,6 +592,10 @@ export default function Chart(props: propsIF) {
         return prev.time < current.time ? prev : current;
     });
 
+    const [visibleDateForCandle, setVisibleDateForCandle] = useState(
+        lastCandleData.time * 1000,
+    );
+
     const [bandwidth, setBandwidth] = useState(5);
 
     const toolbarWidth = isToolbarOpen
@@ -822,7 +826,7 @@ export default function Chart(props: propsIF) {
     const [first, setfirst] = useState(true);
     useEffect(() => {
         (async () => {
-            if (scaleData) {
+            if (scaleData && timeGaps.length > 0) {
                 let localFirst = true;
                 const canvas = d3
                     .select(d3CanvasMain.current)
@@ -832,73 +836,73 @@ export default function Chart(props: propsIF) {
                 const rectCanvas = canvas.getBoundingClientRect();
                 const width = rectCanvas.width;
                 scaleData.xScale.range([0, width]);
+                const lastDateArray = timeGaps
+                    .sort((a, b) => b.range[1] - a.range[1])
+                    .filter((i) => i.isAddedPixel);
+                let lastDate: undefined | number = undefined;
+                if (lastDateArray.length > 0) {
+                    lastDate = lastDateArray[0].range[1];
+                }
 
-                timeGaps.forEach((element: timeGapsValue) => {
-                    if (!element.isAddedPixel && isCondensedModeEnabled) {
-                        if (first && localFirst) {
-                            scaleData.notDiscontinuityXScale.domain(
-                                scaleData.xScale.domain(),
-                            );
-                            setfirst(false);
-                            localFirst = false;
-                        }
+                timeGaps
+                    .filter((i) => !i.isAddedPixel)
+                    .forEach((element: timeGapsValue) => {
+                        if (isCondensedModeEnabled) {
+                            if (first && localFirst) {
+                                scaleData.notDiscontinuityXScale.domain(
+                                    scaleData.xScale.domain(),
+                                );
+                                setfirst(false);
+                                localFirst = false;
+                            }
 
-                        const pix =
-                            scaleData.xScale(element.range[0]) -
-                            scaleData.xScale(element.range[1]);
+                            const pix =
+                                scaleData.xScale(element.range[0]) -
+                                scaleData.xScale(element.range[1]);
 
-                        const min = scaleData.xScale.invert(pix);
-                        const maxDom = scaleData.xScale.domain()[1];
+                            let min = scaleData.xScale.invert(pix);
+                            let maxDom = scaleData.xScale.domain()[1];
 
-                        const dom = scaleData?.xScale.domain();
-                        const check =
-                            element.range[1] < dom[1] &&
-                            element.range[1] > dom[0];
+                            const dom = scaleData?.xScale.domain();
+                            const check =
+                                element.range[1] < dom[1] &&
+                                element.range[1] > dom[0];
 
-                        if (check) {
-                            scaleData.xScale.domain([min, maxDom]);
-
-                            const filteredCandle = visibleCandleData.filter(
-                                (i: CandleDataChart) => {
-                                    return (
-                                        i.time * 1000 <= maxDom &&
-                                        i.time * 1000 >= min
+                            if (check) {
+                                if (lastDate && lastDate < element.range[1]) {
+                                    min = scaleData.xScale.domain()[0];
+                                    maxDom = scaleData.xScale.invert(
+                                        scaleData.xScale.range()[1] - pix,
                                     );
-                                },
-                            );
+                                }
+                                scaleData.xScale.domain([min, maxDom]);
 
-                            let candleCount = filteredCandle.length;
-                            const gapMinCandleCount = Math.floor(
-                                (filteredCandle[filteredCandle.length - 1]
-                                    .time *
-                                    1000 -
-                                    min) /
-                                    (period * 1000),
-                            );
+                                element.isAddedPixel = true;
 
-                            if (gapMinCandleCount > 0) {
-                                candleCount = gapMinCandleCount + candleCount;
+                                const candleCount = getCandleCount(
+                                    visibleCandleData,
+                                    [min, maxDom],
+                                    period,
+                                    isCondensedModeEnabled,
+                                );
+
+                                if (
+                                    resetDomain === undefined &&
+                                    isShowLatestCandle &&
+                                    candleCount === 100
+                                ) {
+                                    setResetDomain(scaleData.xScale.domain());
+                                }
                             }
-
-                            if (
-                                resetDomain === undefined &&
-                                isShowLatestCandle &&
-                                candleCount === 100
-                            ) {
-                                setResetDomain(scaleData.xScale.domain());
-                            }
-
-                            element.isAddedPixel = true;
-                            render();
-                            changeScale(false);
                         }
-                    }
-                });
+                    });
             }
         })().then(() => {
             if (scaleData) {
                 const data = isCondensedModeEnabled
-                    ? timeGaps.map((i: timeGapsValue) => i.range)
+                    ? timeGaps
+                          .filter((element) => element.isAddedPixel)
+                          .map((i: timeGapsValue) => i.range)
                     : [];
 
                 const newDiscontinuityProvider = d3fc.discontinuityRange(
@@ -909,10 +913,12 @@ export default function Chart(props: propsIF) {
                     newDiscontinuityProvider,
                 );
 
+                setVisibleDateForCandle(scaleData.xScale.domain()[1]);
+
                 render();
             }
         });
-    }, [timeGaps, diffHashSigScaleData(scaleData, 'x')]);
+    }, [diffHashSig(timeGaps), diffHashSigScaleData(scaleData, 'x')]);
 
     useEffect(() => {
         if (!isCondensedModeEnabled && scaleData && isShowLatestCandle) {
@@ -5817,6 +5823,7 @@ export default function Chart(props: propsIF) {
                             prevlastCandleTime={prevlastCandleTime}
                             setPrevLastCandleTime={setPrevLastCandleTime}
                             isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                            visibleDateForCandle={visibleDateForCandle}
                         />
 
                         <VolumeBarCanvas
@@ -5825,6 +5832,7 @@ export default function Chart(props: propsIF) {
                             denomInBase={denomInBase}
                             selectedDate={selectedDate}
                             showVolume={showVolume}
+                            visibleDateForCandle={visibleDateForCandle}
                         />
 
                         {liquidityData && (

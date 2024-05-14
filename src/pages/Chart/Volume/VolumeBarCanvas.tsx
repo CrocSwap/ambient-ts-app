@@ -11,11 +11,18 @@ interface propsIF {
     denomInBase: boolean;
     volumeData: Array<CandleDataIF>;
     showVolume: boolean;
+    visibleDateForCandle: number;
 }
 
 export default function VolumeBarCanvas(props: propsIF) {
-    const { scaleData, selectedDate, denomInBase, volumeData, showVolume } =
-        props;
+    const {
+        scaleData,
+        selectedDate,
+        denomInBase,
+        volumeData,
+        showVolume,
+        visibleDateForCandle,
+    } = props;
 
     const d3CanvasBar = useRef<HTMLCanvasElement | null>(null);
 
@@ -68,10 +75,15 @@ export default function VolumeBarCanvas(props: propsIF) {
                             : close > open
                             ? 'rgba(205,193,255, 0.5)'
                             : 'rgba(115,113,252, 0.5)';
+
+                    if (d.time * 1000 > visibleDateForCandle) {
+                        context.fillStyle = 'transparent';
+                        context.strokeStyle = 'transparent';
+                    }
                 },
             );
         }
-    }, [barSeries, selectedDate]);
+    }, [barSeries, selectedDate, visibleDateForCandle]);
 
     useEffect(() => {
         if (showVolume) {
