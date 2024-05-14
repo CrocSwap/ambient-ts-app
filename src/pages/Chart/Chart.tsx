@@ -3305,7 +3305,6 @@ export default function Chart(props: propsIF) {
 
                                     if (ctx) ctx.setLineDash(item.line.dash);
 
-                                    console.log(item.line.color);
                                     rayLine.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.strokeStyle =
