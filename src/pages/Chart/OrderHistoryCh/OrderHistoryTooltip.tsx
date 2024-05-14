@@ -117,8 +117,8 @@ export default function OrderHistoryTooltip(props: {
                             color={
                                 (denomInBase && !hoveredOrderHistory.isBuy) ||
                                 (!denomInBase && hoveredOrderHistory.isBuy)
-                                    ? '#CDC1FF'
-                                    : '#7371fc'
+                                    ? 'var(--accent5)'
+                                    : 'var(--accent1)'
                             }
                             size={'15px'}
                         >

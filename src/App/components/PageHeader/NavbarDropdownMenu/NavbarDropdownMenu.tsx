@@ -38,7 +38,7 @@ function NavbarDropdownMenu(props: propsIF) {
         props;
 
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
     const [, , termsUrls] = useTermsAgreed();
@@ -140,7 +140,7 @@ function NavbarDropdownMenu(props: propsIF) {
                         <NavbarLogoutContainer>
                             <NavbarDropdownItem
                                 connectButton
-                                onClick={openWagmiModal}
+                                onClick={openWalletModal}
                             >
                                 Connect Wallet
                             </NavbarDropdownItem>
