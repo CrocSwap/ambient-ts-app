@@ -151,6 +151,39 @@ function XAxisCanvas(props: xAxisIF) {
         return formatValue;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filterClosePoints = (
+        data: xAxisTick[],
+        threshold: number,
+        xScale: any,
+    ) => {
+        const filteredData = [data[0]];
+        for (let i = 1; i < data.length; i++) {
+            const currentDataLocation = xScale(data[i].date);
+            const previousDataLocation = xScale(data[i - 1].date);
+            const nextDataLocation = xScale(data[i + 1]?.date);
+
+            const currentStyle = data[i].style;
+            const nextStyle = data[i + 1]?.style;
+            const checkPrevData =
+                Math.abs(currentDataLocation - previousDataLocation) >
+                threshold;
+            const checkNextData =
+                Math.abs(currentDataLocation - nextDataLocation) > threshold;
+
+            if (checkPrevData && checkNextData) {
+                filteredData.push(data[i]);
+            } else if (checkPrevData && !checkNextData) {
+                if (!currentStyle && nextStyle) {
+                    filteredData.push(data[i + 1]);
+                } else {
+                    filteredData.push(data[i]);
+                }
+            }
+        }
+        return filteredData;
+    };
+
     const drawXaxis = (
         context: CanvasRenderingContext2D,
         xScale: d3.ScaleLinear<number, number>,
@@ -211,7 +244,9 @@ function XAxisCanvas(props: xAxisIF) {
                     });
                 }
 
-                data.forEach((d: xAxisTick) => {
+                const filteredData = filterClosePoints(data, 30, xScale);
+
+                filteredData.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
@@ -254,85 +289,18 @@ function XAxisCanvas(props: xAxisIF) {
                             )
                         ) {
                             if (formatValue) {
-                                const indexValue = data.findIndex(
-                                    (d1: xAxisTick) => d1.date === d.date,
-                                );
-                                const maxIndex =
-                                    indexValue === data.length - 1
-                                        ? indexValue
-                                        : indexValue + 1;
-                                const minIndex =
-                                    indexValue === 0
-                                        ? indexValue
-                                        : indexValue - 1;
-                                const lastData = data[maxIndex];
-                                const beforeData = data[minIndex];
-
-                                const lastDataLocation = scaleData.xScale(
-                                    lastData.date,
-                                );
-                                const beforeDataLocation = scaleData.xScale(
-                                    beforeData.date,
-                                );
-                                const currentDataLocation = scaleData.xScale(
-                                    d.date,
-                                );
-
-                                const isTimeZoneStartLastData = isTimeZoneStart(
-                                    lastData.date,
-                                );
-
                                 if (!d.style) {
-                                    if (
-                                        Math.abs(
-                                            currentDataLocation -
-                                                beforeDataLocation,
-                                        ) > 30
-                                    ) {
-                                        if (
-                                            !isTimeZoneStartLastData ||
-                                            Math.abs(
-                                                lastDataLocation -
-                                                    currentDataLocation,
-                                            ) > 20
-                                        ) {
-                                            context.fillText(
-                                                formatValue,
-                                                currentDataLocation,
-                                                Y + tickSize,
-                                            );
-                                        }
-                                    }
+                                    context.fillText(
+                                        formatValue,
+                                        xScale(d.date.getTime()),
+                                        Y + tickSize,
+                                    );
                                 } else {
-                                    const indexValue = data.findIndex(
-                                        (d1: xAxisTick) =>
-                                            d1.date === d.date && d1.style,
+                                    context.fillText(
+                                        formatValue,
+                                        xScale(d.date.getTime()),
+                                        Y + tickSize,
                                     );
-
-                                    const minIndex =
-                                        indexValue === 0
-                                            ? indexValue
-                                            : indexValue - 1;
-                                    const beforeData = data[minIndex];
-
-                                    const beforeDataLocation = scaleData.xScale(
-                                        beforeData.date,
-                                    );
-                                    const currentDataLocation =
-                                        scaleData.xScale(d.date);
-
-                                    if (
-                                        Math.abs(
-                                            currentDataLocation -
-                                                beforeDataLocation,
-                                        ) > 25
-                                    ) {
-                                        context.fillText(
-                                            formatValue,
-                                            xScale(d.date.getTime()),
-                                            Y + tickSize,
-                                        );
-                                    }
                                 }
                             }
                         }
