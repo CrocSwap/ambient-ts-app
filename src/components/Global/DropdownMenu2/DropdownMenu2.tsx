@@ -84,7 +84,6 @@ export default function DropdownMenu2(props: propsIF) {
                 justifyContent='center'
                 fullWidth
                 onClick={() => expandable && toggleMenu()}
-                expandable={expandable}
                 style={{
                     minWidth: !desktopScreen
                         ? ''
@@ -95,7 +94,11 @@ export default function DropdownMenu2(props: propsIF) {
             >
                 <MenuItem gap={4}>
                     {desktopScreen && (
-                        <Icon justifyContent='center' alignItems='center'>
+                        <Icon
+                            justifyContent='center'
+                            alignItems='center'
+                            expandable={expandable}
+                        >
                             <img
                                 src={logo}
                                 alt={title}
