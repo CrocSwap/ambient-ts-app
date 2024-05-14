@@ -10,7 +10,6 @@ import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 // import { BiGitBranch } from 'react-icons/bi';
 // import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
@@ -53,6 +52,7 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { BrandContext } from '../../../contexts/BrandContext';
 
 const PageHeader = function () {
     const {
@@ -60,6 +60,7 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
+    const { headerImage } = useContext(BrandContext);
 
     const {
         wagmiModal: { open: openWagmiModal },
@@ -369,7 +370,7 @@ const PageHeader = function () {
             >
                 <LogoContainer to='/' aria-label='Home'>
                     {desktopScreen ? (
-                        <img src={mainLogo} alt='ambient' />
+                        <img src={headerImage} alt='ambient' />
                     ) : (
                         <LogoText src={logo} alt='ambient' />
                     )}
