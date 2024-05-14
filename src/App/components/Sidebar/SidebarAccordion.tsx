@@ -34,7 +34,7 @@ export default function SidebarAccordion(props: propsIF) {
     } = props;
 
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { isUserConnected } = useContext(UserDataContext);
     const isTopPools = name === 'Top Pools';
@@ -114,7 +114,7 @@ export default function SidebarAccordion(props: propsIF) {
                     <p>Your recent {name.toLowerCase()} will display here.</p>
                     <Button
                         idForDOM={`connect_wallet_button_in_sidebar_${name}`}
-                        action={openWagmiModal}
+                        action={openWalletModal}
                         flat
                         thin
                         title='Connect Wallet'

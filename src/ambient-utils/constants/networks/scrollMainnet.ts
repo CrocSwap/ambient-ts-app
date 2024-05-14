@@ -14,12 +14,12 @@ import { GCGO_SCROLL_URL } from '../gcgo';
 import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 export const SCROLL_RPC_URL =
-    process.env.REACT_APP_SCROLL_RPC_URL !== undefined
-        ? process.env.REACT_APP_SCROLL_RPC_URL
+    import.meta.env.VITE_SCROLL_RPC_URL !== undefined
+        ? import.meta.env.VITE_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
 
-const wagmiChain = {
-    id: 534352,
+const chain = {
+    chainId: 534352,
     name: 'Scroll',
     network: 'scroll',
     nativeCurrency: {
@@ -48,15 +48,15 @@ export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
     graphCacheUrl: GCGO_SCROLL_URL,
     evmRpcUrl: SCROLL_RPC_URL,
-    wagmiChain,
+    chain: chain,
     shouldPollBlock: true,
     marketData: '0x82750',
     defaultPair: [scrollETH, scrollUSDC],
     topPools: [
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollUSDT, scrollUSDC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollWrsETH, scrollETH, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollUSDT, scrollUSDC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
