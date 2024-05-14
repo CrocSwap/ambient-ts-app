@@ -10,6 +10,7 @@ export const futaBrandAssets: brandIF = {
         },
     },
     platformName: 'futa',
+    fontSet: 'futa',
     showPoints: true,
     showDexStats: true,
     headerImage: large as string,

@@ -6,6 +6,8 @@ export interface heroItem {
     processAs: 'text' | 'image' | 'separator';
 }
 
+export type fontSets = 'ambient' | 'futa';
+
 export type networkPrefs = Partial<
     Record<
         chainIds,
@@ -18,6 +20,7 @@ export type networkPrefs = Partial<
 
 export interface brandIF {
     networks: networkPrefs;
+    fontSet: fontSets;
     platformName: string;
     showPoints: boolean;
     showDexStats: boolean;
