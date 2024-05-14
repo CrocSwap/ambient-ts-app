@@ -89,6 +89,21 @@ interface ChartContextIF {
     setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
     isMagnetActiveLocal: boolean;
     setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
+    setChartThemeColors: React.Dispatch<
+        SetStateAction<ChartThemeIF | undefined>
+    >;
+    chartThemeColors: ChartThemeIF | undefined;
+}
+
+export interface ChartThemeIF {
+    lightFillColor: d3.RGBColor | d3.HSLColor | null;
+    darkFillColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
+    // border
+    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    textColor: string;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -154,6 +169,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         max: CHART_MAX_HEIGHT,
         default: CHART_DEFAULT_HEIGHT,
     });
+
+    const [chartThemeColors, setChartThemeColors] = useState<
+        ChartThemeIF | undefined
+    >(undefined);
 
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
@@ -260,6 +279,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsMagnetActiveLocal,
         numCandlesFetched,
         setNumCandlesFetched,
+        chartThemeColors,
+        setChartThemeColors,
     };
 
     useEffect(() => {
