@@ -5,7 +5,7 @@ import {
     blastETH,
     blastUSDB,
     getDefaultPairForChain,
-    goerliETH,
+    mainnetETH,
 } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
@@ -45,7 +45,6 @@ export interface TradeDataContextIF {
     setSlippageTolerance: React.Dispatch<React.SetStateAction<number>>;
 
     chainData: ChainSpec;
-    isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
     defaultRangeWidthForActivePool: number;
@@ -70,8 +69,7 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
-        useAppChain();
+    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
@@ -160,7 +158,7 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = React.useState(goerliETH);
+    const [soloToken, setSoloToken] = React.useState(mainnetETH);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);
@@ -264,7 +262,6 @@ export const TradeDataContextProvider = (props: {
         setPoolPriceNonDisplay,
         setSlippageTolerance,
         chainData,
-        isWalletChainSupported,
         activeNetwork,
         chooseNetwork,
         defaultRangeWidthForActivePool,

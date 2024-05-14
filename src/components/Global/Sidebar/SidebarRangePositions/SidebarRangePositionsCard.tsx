@@ -93,11 +93,7 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     });
 
     return (
-        <RangeItemContainer
-            numCols={4}
-            color='text2'
-            onClick={() => handleClick(position)}
-        >
+        <RangeItemContainer color='text2' onClick={() => handleClick(position)}>
             {[pair, rangeDisplay, value].map((item) => (
                 <FlexContainer
                     key={item}

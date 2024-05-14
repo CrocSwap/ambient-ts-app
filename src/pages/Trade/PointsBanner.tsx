@@ -27,15 +27,15 @@ export default function PointsBanner(props: propsIF) {
     // @Junior feel free to change the DOM to a `<Link />` element
     const navigate = useNavigate();
 
-    // hook to allow the wagmi modal to be launched
-    const { wagmiModal } = useContext(AppStateContext);
+    // hook to allow the wallet modal to be launched
+    const { walletModal } = useContext(AppStateContext);
 
     // boolean to determine if user wallet is authenticated in the app
     const { isUserConnected } = useContext(UserDataContext);
 
     // click handler when user clicks the button to connect a wallet
     function connectWallet(): void {
-        wagmiModal.open();
+        walletModal.open();
     }
 
     // click handler when user clicks the button to view the leaderboard

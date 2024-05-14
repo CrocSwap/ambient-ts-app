@@ -99,6 +99,14 @@
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
+            "name": "USD+",
+            "address": "0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd",
+            "symbol": "USD+",
+            "decimals": 18,
+            "chainId": 81457,
+            "logoURI": ""
+        },
+        {
             "address": "0x42E12D42b3d6C4A74a88A61063856756Ea2DB357",
             "chainId": 81457,
             "decimals": 18,
@@ -249,30 +257,6 @@
             "address": "0x0000000000000000000000000000000000000000",
             "symbol": "ETH",
             "decimals": 18,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
-        },
-        {
-            "name": "USDCoin",
-            "address": "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C",
-            "symbol": "USDC",
-            "decimals": 6,
-            "chainId": 5,
-            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
-        },
-        {
-            "name": "Wrapped BTC",
-            "address": "0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05",
-            "symbol": "WBTC",
-            "decimals": 8,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
-        },
-        {
-            "name": "Native Ether",
-            "address": "0x0000000000000000000000000000000000000000",
-            "symbol": "ETH",
-            "decimals": 18,
             "chainId": 421613,
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
@@ -325,6 +309,22 @@
             "logoURI": ""
         },
         {
+            "name": "Universal ETH",
+            "address": "0x15eefe5b297136b8712291b632404b66a8ef4d25",
+            "symbol": "uniETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471"
+        },
+        {
+            "name": "StakeStone Ether",
+            "address": "0x80137510979822322193FC997d400D5A6C747bf7",
+            "symbol": "STONE",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
             "name": "Wrapped Kelp DAO Restaked ETH",
             "address": "0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f",
             "symbol": "wrsETH",
@@ -347,6 +347,14 @@
             "decimals": 18,
             "chainId": 534352,
             "logoURI": "https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670"
+        },
+        {
+            "name": "SCRIBES",
+            "address": "0x122aD65A36ab6Dc12261C977e5e63a54ED1bA9E6",
+            "symbol": "SCRIBES",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
         },
         {
             "name": "Native Ether",
