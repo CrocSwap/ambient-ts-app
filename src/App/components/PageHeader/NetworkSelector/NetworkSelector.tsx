@@ -9,10 +9,7 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
-import {
-    supportedNetworks,
-    INCLUDE_CANTO_LINK,
-} from '../../../../ambient-utils/constants';
+import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -26,10 +23,10 @@ import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { getSupportedChainIds } from '../../../../ambient-utils/dataLayer';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
-    switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
+    switchNetwork: ((chainId_: number) => void) | undefined;
 }
 
 export default function NetworkSelector(props: propsIF) {
@@ -38,13 +35,14 @@ export default function NetworkSelector(props: propsIF) {
         chooseNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { networks, platformName, includeCanto } = useContext(BrandContext);
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
-    const chains: ChainSpec[] = getSupportedChainIds().map((chain: string) =>
+    const chains: ChainSpec[] = networks.map((chain: string) =>
         lookupChain(chain),
     );
 
@@ -287,6 +285,7 @@ export default function NetworkSelector(props: propsIF) {
                     marginTop={'50px'}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
+                    expandable={networks.length > 1}
                     logo={
                         lookupChain(chainId)
                             .displayName.toLowerCase()
@@ -306,7 +305,9 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x13e31') && blastNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
-                        {INCLUDE_CANTO_LINK && cantoNetwork}
+                        {includeCanto &&
+                            platformName === 'ambient' &&
+                            cantoNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
                         {chainMap.has('0xa0c71fd') && blastSepoliaNetwork}
                         {chainMap.has('0x8274f') && scrollSepoliaNetwork}

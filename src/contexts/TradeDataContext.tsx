@@ -45,7 +45,6 @@ export interface TradeDataContextIF {
     setSlippageTolerance: React.Dispatch<React.SetStateAction<number>>;
 
     chainData: ChainSpec;
-    isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
     defaultRangeWidthForActivePool: number;
@@ -70,8 +69,7 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
-        useAppChain();
+    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
@@ -264,7 +262,6 @@ export const TradeDataContextProvider = (props: {
         setPoolPriceNonDisplay,
         setSlippageTolerance,
         chainData,
-        isWalletChainSupported,
         activeNetwork,
         chooseNetwork,
         defaultRangeWidthForActivePool,
