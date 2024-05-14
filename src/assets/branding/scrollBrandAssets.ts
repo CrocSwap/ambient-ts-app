@@ -14,7 +14,7 @@ export const scrollBrandAssets: brandIF = {
             ],
         },
     },
-    platformName: 'futa',
+    platformName: 'scroll',
     fontSet: 'ambient',
     showPoints: true,
     showDexStats: true,
