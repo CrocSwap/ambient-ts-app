@@ -1159,6 +1159,7 @@ function ChatPanel(props: propsIF) {
             sendMessageListener={sendMessageListener}
             isChatOpen={isChatOpen}
             isMobile={isMobile}
+            userMap={userMap}
         />
     );
 

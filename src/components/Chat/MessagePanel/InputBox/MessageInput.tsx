@@ -60,6 +60,7 @@ interface MessageInputProps {
     sendMessageListener?: () => void;
     isChatOpen?: boolean;
     isMobile?: boolean;
+    userMap?: Map<string, User>;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -527,6 +528,7 @@ export default function MessageInput(props: MessageInputProps) {
                                     props.isReplyButtonPressed
                                 }
                                 messageObj={props.selectedMessageForReply}
+                                userMap={props.userMap}
                             />
                         ) : (
                             ''
