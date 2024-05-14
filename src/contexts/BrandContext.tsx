@@ -59,8 +59,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     }, [userAddress]);
 
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
-    const FALLBACK_SET = 'ambient';
-    const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? FALLBACK_SET;
+    const brand: string = process.env.REACT_APP_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
         switch (brand) {
             case 'blast':
