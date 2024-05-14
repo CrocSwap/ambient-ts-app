@@ -33,7 +33,10 @@ import {
 } from './LiquiditySeries/LineSeries';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../contexts/RangeContext';
-import { pathsToUpdateChart } from '../../../contexts/ChartContext';
+import {
+    pathsToUpdateChart,
+    ChartThemeIF,
+} from '../../../contexts/ChartContext';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -51,6 +54,7 @@ interface liquidityPropsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mainCanvasBoundingClientRect: any;
     setLiqMaxActiveLiq: React.Dispatch<number | undefined>;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 type nearestLiquidity = {
@@ -118,6 +122,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         isActiveDragOrZoom,
         mainCanvasBoundingClientRect,
         setLiqMaxActiveLiq,
+        chartThemeColors,
     } = props;
 
     const currentPoolPriceTick =
@@ -311,18 +316,42 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
-        if (liqSeries) {
-            decorateForLiquidityArea(liqSeries, thresholdCurve);
-            decorateForLiquidityLine(lineLiqSeries, thresholdCurve);
+        if (liqSeries && chartThemeColors) {
+            decorateForLiquidityArea(
+                liqSeries,
+                thresholdCurve,
+                chartThemeColors,
+            );
+            decorateForLiquidityLine(
+                lineLiqSeries,
+                thresholdCurve,
+                chartThemeColors,
+            );
         }
-        if (liqDepthAskSeries) {
-            decorateForLiquidityArea(liqDepthAskSeries, thresholdDepth);
-            decorateForLiquidityLine(lineLiqDepthAskSeries, thresholdDepth);
+        if (liqDepthAskSeries && chartThemeColors) {
+            decorateForLiquidityArea(
+                liqDepthAskSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
+            decorateForLiquidityLine(
+                lineLiqDepthAskSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
         }
 
-        if (liqDepthBidSeries) {
-            decorateForLiquidityArea(liqDepthBidSeries, thresholdDepth);
-            decorateForLiquidityLine(lineLiqDepthBidSeries, thresholdDepth);
+        if (liqDepthBidSeries && chartThemeColors) {
+            decorateForLiquidityArea(
+                liqDepthBidSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
+            decorateForLiquidityLine(
+                lineLiqDepthBidSeries,
+                thresholdDepth,
+                chartThemeColors,
+            );
         }
     }, [
         liqMode,

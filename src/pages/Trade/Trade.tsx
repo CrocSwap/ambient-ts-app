@@ -45,6 +45,7 @@ import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
 
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { BrandContext } from '../../contexts/BrandContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -55,6 +56,7 @@ function Trade() {
         provider,
     } = useContext(CrocEnvContext);
     const { setIsCandleSelected } = useContext(CandleContext);
+    const { showPoints } = useContext(BrandContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -272,11 +274,10 @@ function Trade() {
                     flexDirection='column'
                     fullWidth
                     background='dark2'
-                    gap={8}
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
-                    {showTopPtsBanner && (
+                    {showTopPtsBanner && showPoints && (
                         <div style={{ padding: '0 8px' }}>
                             <PointsBanner dismissElem={dismissTopBannerPopup} />
                         </div>
