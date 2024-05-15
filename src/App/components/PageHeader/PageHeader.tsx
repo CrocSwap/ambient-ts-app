@@ -90,6 +90,7 @@ const PageHeader = function () {
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
     const { isConnected } = useWeb3ModalAccount();
+    console.log({ isConnected });
     const switchNetwork = isConnected
         ? useSwitchNetwork().switchNetwork
         : undefined;
