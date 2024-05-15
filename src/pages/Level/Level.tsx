@@ -16,7 +16,7 @@ import { getAvatarRest } from '../../components/Chat/ChatUtilsHelper';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { XpLeadersContext } from '../../contexts/XpLeadersContext';
 
-interface LevelPropsIF {
+interface propsIF {
     resolvedAddress: string;
     connectedAccountActive: boolean;
     truncatedAccountAddressOrEnsName: string;
@@ -26,7 +26,7 @@ interface LevelPropsIF {
     isViewMoreActive?: boolean;
     setIsViewMoreActive?: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function Level(props: LevelPropsIF) {
+export default function Level(props: propsIF) {
     const {
         resolvedAddress,
         connectedAccountActive,
@@ -247,7 +247,6 @@ export default function Level(props: LevelPropsIF) {
                             </div> */}
                         </FlexContainer>
                     </FlexContainer>
-
                     <RankTable
                         xpLeaders={xpLeaders}
                         selectedXpLeaderboardType={selectedXpLeaderboardType}

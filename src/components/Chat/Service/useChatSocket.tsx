@@ -547,15 +547,15 @@ const useChatSocket = (
         userId: string,
         walletID: string,
         avatarImage: string,
-        avatarCompressed: string,
         avatarThumbnail?: string,
+        avatarCompressed?: string,
     ) {
         sendToSocket('set-avatar', {
             userId,
             walletID,
             avatarImage,
-            avatarCompressed,
             avatarThumbnail,
+            avatarCompressed,
         });
     }
 

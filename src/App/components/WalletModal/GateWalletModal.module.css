@@ -11,6 +11,26 @@
     height: 100%;
 }
 
+.not_available_container {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    min-height: 220px;
+    background: var(--dark1);
+
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    font-weight: 300;
+    gap: 10px;
+    padding: 1rem;
+}
+
+.not_available_container section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 .main_container section {
     display: flex;
     flex-direction: column;

@@ -442,8 +442,8 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         isSameLocation ? sameLocationData : yScale(limit),
                         X,
-                        '#7772FE',
-                        'white',
+                        'rgba(235, 235, 255)',
+                        'black',
                         tick,
                         undefined,
                         yAxisCanvasWidth,
@@ -538,7 +538,17 @@ function YAxisCanvas(props: yAxisIF) {
                     const rectHeight =
                         yScale(secondPointInDenom) - yScale(firstPointInDenom);
 
-                    context.fillStyle = 'rgba(115, 113, 252, 0.075)';
+                    const style = getComputedStyle(canvas);
+                    const darkFillColor = style.getPropertyValue('--accent1');
+
+                    const d3LightFillColor = d3.color(darkFillColor);
+
+                    if (d3LightFillColor) d3LightFillColor.opacity = 0.075;
+
+                    context.fillStyle = d3LightFillColor
+                        ? d3LightFillColor.toString()
+                        : 'rgba(115, 113, 252, 0.075)';
+
                     context.fillRect(
                         0,
                         yScale(firstPointInDenom),
@@ -550,7 +560,9 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         yScale(shapeDataWithDenom),
                         X,
-                        'rgba(115, 113, 252, 1)',
+                        darkFillColor
+                            ? darkFillColor
+                            : 'rgba(115, 113, 252, 1)',
                         'white',
                         shapePoint,
                         undefined,
