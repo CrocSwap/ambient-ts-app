@@ -21,27 +21,9 @@ export const SCROLL_RPC_URL =
 const chain = {
     chainId: 534352,
     name: 'Scroll',
-    network: 'scroll',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: [SCROLL_RPC_URL],
-        },
-        public: {
-            http: ['https://rpc.scroll.io/'],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Scrollscan',
-            url: 'https://scrollscan.com',
-        },
-    },
-    testnet: false,
+    currency: 'ETH',
+    rpcUrl: 'https://rpc.scroll.io/',
+    explorerUrl: 'https://scrollscan.com',
 };
 
 export const scrollMainnet: NetworkIF = {
