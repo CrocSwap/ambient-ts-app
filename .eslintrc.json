@@ -1,8 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es2021": true,
-        "jest": true
+        "es2021": true
     },
     "extends": [
         "eslint:recommended",
@@ -28,7 +27,7 @@
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-unused-vars": [
             "warn", // or "error"
-            { 
+            {
                 "argsIgnorePattern": "^_",
                 "varsIgnorePattern": "^_",
                 "caughtErrorsIgnorePattern": "^_"

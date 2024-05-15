@@ -1,5 +1,4 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { sepolia as wagmiChain } from 'wagmi/chains';
 import { sepoliaETH, sepoliaUSDC, sepoliaWBTC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -8,15 +7,23 @@ import { Provider } from '@ethersproject/providers';
 import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 const PROVIDER_KEY =
-    process.env.NODE_ENV === 'test'
-        ? process.env.PROVIDER_KEY
-        : process.env.REACT_APP_INFURA_KEY;
+    import.meta.env.NODE_ENV === 'test'
+        ? import.meta.env.PROVIDER_KEY
+        : import.meta.env.VITE_INFURA_KEY;
+
+const chain = {
+    chainId: 11155111,
+    name: 'Sepolia',
+    currency: 'ETH',
+    rpcUrl: 'https://rpc.sepolia.org',
+    explorerUrl: 'https://sepolia.etherscan.io',
+};
 
 export const ethereumSepolia: NetworkIF = {
     chainId: '0xaa36a7',
     graphCacheUrl: GCGO_TESTNET_URL,
     evmRpcUrl: 'https://sepolia.infura.io/v3/' + PROVIDER_KEY,
-    wagmiChain,
+    chain: chain,
     shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [sepoliaETH, sepoliaUSDC],
