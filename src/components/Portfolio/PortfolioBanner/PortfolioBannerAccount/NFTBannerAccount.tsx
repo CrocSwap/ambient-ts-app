@@ -316,7 +316,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     const NftComponentItemRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
-        isMobile && setShowNFTPage(false);
+        setShowNFTPage(false);
     };
 
     useOnClickOutside(NftComponentItemRef, clickOutsideHandler);
