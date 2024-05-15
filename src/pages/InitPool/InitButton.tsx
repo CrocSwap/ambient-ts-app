@@ -38,7 +38,7 @@ interface PropsIF {
 }
 export default function InitButton(props: PropsIF) {
     const {
-        wagmiModal: { open: openWagmiModalWallet },
+        walletModal: { open: openWalletModalWallet },
     } = useContext(AppStateContext);
     const { approve, isApprovalPending } = useApprove();
 
@@ -223,7 +223,7 @@ export default function InitButton(props: PropsIF) {
             <Button
                 idForDOM='connect_wallet_init_page_button'
                 title='Connect Wallet'
-                action={openWagmiModalWallet}
+                action={openWalletModalWallet}
                 flat={true}
             />
         );
