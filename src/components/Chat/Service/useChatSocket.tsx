@@ -133,7 +133,6 @@ const useChatSocket = (
                         (e) => e.msg === socketLastMessage.type,
                     );
                     willBeCalled.map((e) => {
-                        console.log('calling listener');
                         e.listener(socketLastMessage.payload);
                     });
                 }
