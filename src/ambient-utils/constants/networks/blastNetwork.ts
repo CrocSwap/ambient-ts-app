@@ -21,27 +21,9 @@ export const BLAST_RPC_URL =
 const chain = {
     chainId: 81457,
     name: 'Blast',
-    network: 'blast',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: [BLAST_RPC_URL],
-        },
-        public: {
-            http: [BLAST_RPC_URL],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Blastscan',
-            url: 'https://blastscan.io',
-        },
-    },
-    testnet: false,
+    currency: 'ETH',
+    rpcUrl: 'https://rpc.blast.io/',
+    explorerUrl: 'https://blastscan.io',
 };
 
 export const blast: NetworkIF = {
