@@ -35,8 +35,6 @@ export default async (request: Request, context: Context) => {
         blacklistArg ? blacklistArg.split(',') : [],
     );
 
-    console.log(context.geo.country.code);
-
     // if user not in blocked country, show website
     if (!blacklist.includes(context.geo.country.code)) {
         return;
