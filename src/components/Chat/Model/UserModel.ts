@@ -5,6 +5,7 @@ export interface User {
     verifyDate: Date;
     avatarImage: string;
     avatarThumbnail: string;
+    avatarCompressed: string;
 }
 
 const hasEnsName = (user: User) => {
