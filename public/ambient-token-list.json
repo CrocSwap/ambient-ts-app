@@ -341,6 +341,14 @@
             "logoURI": ""
         },
         {
+            "name": "Wrapped SOL",
+            "address": "0xcdf95e1f720caade4b1dc83abfe15400d2a458ad",
+            "symbol": "SOL",
+            "decimals": 9,
+            "chainId": 534352,
+            "logoURI": "https://cryptologos.cc/logos/solana-sol-logo.png"
+        },
+        {
             "name": "Skydrome",
             "address": "0x95a52ec1d60e74cd3eb002fe54a2c74b185a4c16",
             "symbol": "SKY",
