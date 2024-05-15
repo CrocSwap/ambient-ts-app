@@ -217,6 +217,8 @@ export default function Chart(props: propsIF) {
         },
         isMagnetActiveLocal,
         setChartContainerOptions,
+        chartThemeColors,
+        setChartThemeColors,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -294,11 +296,10 @@ export default function Chart(props: propsIF) {
     const [mouseLeaveEvent, setMouseLeaveEvent] =
         useState<MouseEvent<HTMLDivElement>>();
     const [chartZoomEvent, setChartZoomEvent] = useState('');
-
     const [timeGaps, setTimeGaps] = useState<timeGapsValue[]>([]);
 
-    const lineSellColor = 'rgba(115, 113, 252)';
-    const lineBuyColor = 'rgba(205, 193, 255)';
+    const [lineSellColor, setLineSellColor] = useState('rgba(115, 113, 252)');
+    const [lineBuyColor, setLineBuyColor] = useState('rgba(205, 193, 255)');
 
     const {
         showFeeRate,
@@ -324,6 +325,51 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
+
+    useEffect(() => {
+        if (d3Container) {
+            const canvas = d3
+                .select(d3Container.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const style = getComputedStyle(canvas);
+            const lightFillColor = style.getPropertyValue('--accent5');
+            const darFillColor = style.getPropertyValue('--dark2');
+            const selectedDateFillColor = style.getPropertyValue('--accent2');
+
+            const darkStrokeColor = style.getPropertyValue('--accent1');
+            const lightStrokeColor = style.getPropertyValue('--accent5');
+            const selectedDateStrokeColor = style.getPropertyValue('--accent2');
+
+            const d3LightFillColor = d3.color(lightFillColor);
+            const d3DarkFillColor = d3.color(darFillColor);
+            const d3SelectedDateFillColor = d3.color(selectedDateFillColor);
+
+            const d3DarkStrokeColor = d3.color(darkStrokeColor);
+            const d3LightStrokeColor = d3.color(lightStrokeColor);
+            const d3SelectedDateStrokeColor = d3.color(selectedDateStrokeColor);
+
+            const lineSellColor = style.getPropertyValue('--accent1');
+            const lineBuyColor = style.getPropertyValue('--accent5');
+
+            setLineSellColor(() => lineSellColor.toString());
+            setLineBuyColor(() => lineBuyColor.toString());
+
+            const chartThemeColors = {
+                lightFillColor: d3LightFillColor,
+                darkFillColor: d3DarkFillColor,
+                selectedDateFillColor: d3SelectedDateFillColor,
+                // border
+                lightStrokeColor: d3LightStrokeColor,
+                darkStrokeColor: d3DarkStrokeColor,
+                selectedDateStrokeColor: d3SelectedDateStrokeColor,
+                textColor: '',
+            };
+
+            setChartThemeColors(() => chartThemeColors);
+        }
+    }, [d3Container]);
 
     const location = useLocation();
 
@@ -396,8 +442,8 @@ export default function Chart(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
-    8;
-    const drawSettings = useDrawSettings();
+
+    const drawSettings = useDrawSettings(chartThemeColors);
     const getDollarPrice = useDollarPrice();
 
     const {
@@ -3506,6 +3552,7 @@ export default function Chart(props: propsIF) {
                                     rayLine.xScale().range(range);
 
                                     if (ctx) ctx.setLineDash(item.line.dash);
+
                                     rayLine.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.strokeStyle =
@@ -5849,6 +5896,7 @@ export default function Chart(props: propsIF) {
                             setPrevLastCandleTime={setPrevLastCandleTime}
                             isDiscontinuityScaleEnabled={isCondensedModeEnabled}
                             visibleDateForCandle={visibleDateForCandle}
+                            chartThemeColors={chartThemeColors}
                         />
 
                         <VolumeBarCanvas
@@ -5858,6 +5906,7 @@ export default function Chart(props: propsIF) {
                             selectedDate={selectedDate}
                             showVolume={showVolume}
                             visibleDateForCandle={visibleDateForCandle}
+                            chartThemeColors={chartThemeColors}
                         />
 
                         {liquidityData && (
@@ -5876,6 +5925,7 @@ export default function Chart(props: propsIF) {
                                     mainCanvasBoundingClientRect
                                 }
                                 setLiqMaxActiveLiq={setLiqMaxActiveLiq}
+                                chartThemeColors={chartThemeColors}
                             />
                         )}
 
@@ -6011,6 +6061,7 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
+                                chartThemeColors={chartThemeColors}
                             />
                         </>
                     )}
@@ -6046,6 +6097,7 @@ export default function Chart(props: propsIF) {
                                 setIsChartZoom={setIsChartZoom}
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
+                                chartThemeColors={chartThemeColors}
                             />
                         </>
                     )}
@@ -6097,6 +6149,7 @@ export default function Chart(props: propsIF) {
                     setIsShapeEdited={setIsShapeEdited}
                     addDrawActionStack={addDrawActionStack}
                     drawnShapeHistory={drawnShapeHistory}
+                    chartThemeColors={chartThemeColors}
                 />
             )}
 

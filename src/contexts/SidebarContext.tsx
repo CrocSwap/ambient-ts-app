@@ -24,6 +24,8 @@ interface SidebarStateIF {
     sidebar: sidebarMethodsIF;
     hideOnMobile: boolean;
     toggleMobileModeVisibility: () => void;
+    setIsPoolDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isPoolDropdownOpen: boolean;
 }
 
 export const SidebarContext = createContext<SidebarStateIF>(
@@ -109,12 +111,16 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
         }
     }, [lastReceiptHash]);
 
+    const [isPoolDropdownOpen, setIsPoolDropdownOpen] = useState(false);
+
     // data to return from this context
     const sidebarState = {
         sidebar,
         recentPools,
         hideOnMobile,
         toggleMobileModeVisibility,
+        isPoolDropdownOpen,
+        setIsPoolDropdownOpen,
     };
 
     return (

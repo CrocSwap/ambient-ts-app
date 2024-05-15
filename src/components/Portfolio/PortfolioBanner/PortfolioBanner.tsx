@@ -23,6 +23,7 @@ import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { HeaderButtons } from '../../../styled/Components/Chart';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { FlexContainer } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -37,6 +38,7 @@ export default function PortfolioBanner(props: propsIF) {
     const { connectedUserXp } = useContext(ChainDataContext);
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
+    const isSmallScreen = useMediaQuery('(max-width: 800px)');
 
     const xpData =
         connectedAccountActive || location.pathname === '/account/xp'
@@ -69,7 +71,7 @@ export default function PortfolioBanner(props: propsIF) {
             style={{ backgroundImage: `url(${accountImage})` }}
         >
             <FlexContainer
-                justifyContent='flex-end'
+                justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
                 alignItems='baseline'
                 gap={16}
             >
@@ -90,6 +92,7 @@ export default function PortfolioBanner(props: propsIF) {
                         onClick={() =>
                             setIsTradeDollarizationEnabled((prev) => !prev)
                         }
+                        style={{ zIndex: '2' }}
                     >
                         <AiOutlineDollarCircle
                             size={20}
@@ -105,7 +108,7 @@ export default function PortfolioBanner(props: propsIF) {
                 </DefaultTooltip>
             </FlexContainer>
 
-            <PortfolioBannerLevelContainer>
+            <PortfolioBannerLevelContainer isAccountPage>
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}

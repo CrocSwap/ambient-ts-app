@@ -1,15 +1,84 @@
 import { useMemo } from 'react';
 import {
-    defaultFibonacciDrawnShapeEditAttributes,
-    defaultLineDrawnShapeEditAttributes,
-    defaultRectDrawnShapeEditAttributes,
-    defaultDpRangeDrawnShapeEditAttributes,
+    drawnShapeDefaultDash,
+    drawnShapeDefaultLineWidth,
     fibDefaultLevels,
+    fibonacciDefaultDash,
 } from '../../pages/Chart/ChartUtils/drawConstants';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
 import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartConstants';
+import { ChartThemeIF } from '../../contexts/ChartContext';
 
-export const useDrawSettings = () => {
+export const useDrawSettings = (chartThemeColors: ChartThemeIF | undefined) => {
+    const drawnShapeDefaultColor =
+        chartThemeColors && chartThemeColors.darkStrokeColor
+            ? chartThemeColors.darkStrokeColor.toString()
+            : '#7371fc';
+
+    const d3BackgroundColor = chartThemeColors
+        ? chartThemeColors.darkStrokeColor?.copy()
+        : undefined;
+
+    if (d3BackgroundColor) d3BackgroundColor.opacity = 0.15;
+
+    const drawnShapeDefaultBackgroundColor = d3BackgroundColor
+        ? d3BackgroundColor.toString()
+        : 'rgba(115, 113, 252, 0.15)';
+
+    const defaultShapeAttributes = {
+        color: drawnShapeDefaultColor,
+        lineWidth: drawnShapeDefaultLineWidth,
+        dash: drawnShapeDefaultDash,
+    };
+
+    const defaultShapeBackgroundAttributes = {
+        color: drawnShapeDefaultBackgroundColor,
+        lineWidth: drawnShapeDefaultLineWidth,
+        dash: drawnShapeDefaultDash,
+    };
+
+    const defaultFibonacciShapeAttributes = {
+        color: drawnShapeDefaultColor,
+        lineWidth: drawnShapeDefaultLineWidth,
+        dash: fibonacciDefaultDash,
+    };
+
+    const defaultLineDrawnShapeEditAttributes = {
+        line: { active: true, ...defaultShapeAttributes },
+        border: { active: false, ...defaultShapeAttributes },
+        background: { active: false, ...defaultShapeBackgroundAttributes },
+    };
+
+    const defaultFibonacciDrawnShapeEditAttributes = {
+        line: { active: true, ...defaultFibonacciShapeAttributes },
+        border: { active: false, ...defaultShapeAttributes },
+        background: { active: false, ...defaultShapeBackgroundAttributes },
+        extraData: fibDefaultLevels,
+        extendLeft: false,
+        extendRight: false,
+        labelPlacement: 'Left',
+        labelAlignment: 'Middle',
+        reverse: false,
+    };
+
+    const defaultRectDrawnShapeEditAttributes = {
+        line: { active: false, ...defaultShapeAttributes },
+        border: { active: true, ...defaultShapeAttributes },
+        background: { active: true, ...defaultShapeBackgroundAttributes },
+    };
+
+    const defaultDpRangeDrawnShapeEditAttributes = {
+        line: { active: true, ...defaultShapeAttributes },
+        border: { active: false, ...defaultShapeAttributes },
+        background: { active: true, ...defaultShapeBackgroundAttributes },
+    };
+
+    // const defaultDrawnShapeEditAttributes = {
+    //     border: { active: true, ...defaultShapeAttributes },
+    //     background: { active: true, ...defaultShapeBackgroundAttributes },
+    //     line: { active: false, ...defaultShapeAttributes },
+    // };
+
     function getLineOptions(itemType: string) {
         const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
 
@@ -62,6 +131,15 @@ export const useDrawSettings = () => {
             ['Rect']: rectOptions,
             ['FibRetracement']: fibRetracementOptions,
             ['DPRange']: dPRangeOptions,
+            ['defaultBrush']: defaultLineDrawnShapeEditAttributes,
+            ['defaultRay']: defaultLineDrawnShapeEditAttributes,
+            ['defaultRect']: defaultRectDrawnShapeEditAttributes,
+            ['defaultFibRetracement']: defaultFibonacciDrawnShapeEditAttributes,
+            ['defaultDPRange']: defaultDpRangeDrawnShapeEditAttributes,
+            ['defaultShapeAttributes']: defaultShapeAttributes,
+            ['drawnShapeDefaultDash']: drawnShapeDefaultDash,
+            ['drawnShapeDefaultColor']: drawnShapeDefaultColor,
+            ['drawnShapeDefaultLineWidth']: drawnShapeDefaultLineWidth,
         };
     }, [
         diffHashSig(brushOptions),
