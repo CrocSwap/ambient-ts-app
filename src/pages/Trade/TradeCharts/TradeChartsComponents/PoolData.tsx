@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { textColors } from '../../../../styled/Common/Types';
 import styled from 'styled-components';
@@ -119,11 +119,6 @@ export default function PoolData(props: PoolDataIF) {
         // { label: 'Pool Created', value: '...' },
         // { label: 'Token Taxes', value: '...' },
     ];
-
-    useEffect(
-        () => console.log('here', contentWrapper.current),
-        [contentWrapper.current],
-    );
 
     const trial = (
         <FlexContainer flexDirection='row'>

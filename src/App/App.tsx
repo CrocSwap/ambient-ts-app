@@ -30,7 +30,7 @@ import './App.css';
 import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
+import GateWalletModal from './components/WalletModal/GateWalletModal';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
@@ -38,9 +38,9 @@ import Accessibility from '../pages/Accessibility/Accessibility';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
 import { SidebarContext } from '../contexts/SidebarContext';
+import { BrandContext } from '../contexts/BrandContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import FAQPoints from '../pages/FAQ/FAQPoints';
-import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
@@ -59,14 +59,13 @@ export default function App() {
             setIsOpen: setChatOpen,
             isEnabled: isChatEnabled,
         },
-        theme: { selected: selectedTheme },
-        wagmiModal: { isOpen: isWagmiModalOpen },
+        walletModal: { isOpen: isWalletModalOpen },
         appHeaderDropdown,
         showPointSystemPopup,
         dismissPointSystemPopup,
     } = useContext(AppStateContext);
-    const { isWalletChainSupported, defaultUrlParams } =
-        useContext(CrocEnvContext);
+    const { defaultUrlParams } = useContext(CrocEnvContext);
+    const { skin, showPoints } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
@@ -132,10 +131,9 @@ export default function App() {
             <FlexContainer
                 flexDirection='column'
                 className={containerStyle}
-                data-theme={selectedTheme}
+                data-theme={skin}
             >
-                {!isWalletChainSupported && <SwitchNetwork />}
-                {showPointSystemPopup && (
+                {showPoints && showPointSystemPopup && (
                     <PointSystemPopup
                         dismissPointSystemPopup={dismissPointSystemPopup}
                     />
@@ -329,7 +327,7 @@ export default function App() {
                     </Routes>
                 </section>
             </FlexContainer>
-            <div className='footer_container'>
+            <div data-theme={skin} className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
                     currentLocation !== '/terms' &&
@@ -341,9 +339,9 @@ export default function App() {
                     <SidebarFooter />
                 )}
             </div>
-            <GlobalPopup />
+            <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
-            {isWagmiModalOpen && <WalletModalWagmi />}
+            {isWalletModalOpen && <GateWalletModal />}
         </>
     );
 }

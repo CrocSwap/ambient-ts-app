@@ -12,6 +12,8 @@ export * from './pool';
 // PositionIF, PositionServerIF
 export * from './position';
 
+export * from './chainIds';
+
 // TokenIF, TokenListIF
 export * from './token';
 
