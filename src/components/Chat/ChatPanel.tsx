@@ -772,30 +772,35 @@ function ChatPanel(props: propsIF) {
             verifyDate = verificationDate;
         }
 
-        window.ethereum
-            .request({
-                method: 'personal_sign',
-                params: [message, userAddress, ''],
-            })
-            // eslint-disable-next-line
-            .then((signedMessage: any) => {
-                verifyUser(signedMessage, verifyDate);
-                if (verificationType != 0) {
+        if (window.ethereum && window.ethereum.request) {
+            window.ethereum
+                .request({
+                    method: 'personal_sign',
+                    params: [message, userAddress, ''],
+                })
+                // eslint-disable-next-line
+                .then((signedMessage: any) => {
+                    verifyUser(signedMessage, verifyDate);
+                    if (verificationType != 0) {
+                        setTimeout(() => {
+                            setShowVerifyOldMessagesPanel(false);
+                            updateUnverifiedMessages(
+                                verificationDate,
+                                new Date(),
+                            );
+                        }, 1000);
+                    }
+                    setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
                     setTimeout(() => {
-                        setShowVerifyOldMessagesPanel(false);
-                        updateUnverifiedMessages(verificationDate, new Date());
-                    }, 1000);
-                }
-                setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
-                setTimeout(() => {
-                    updateUserCache();
-                    activateToastr('Your wallet is verified!', 'success');
-                }, 500);
-            })
-            // eslint-disable-next-line
-            .catch((error: any) => {
-                // Handle error
-            });
+                        updateUserCache();
+                        activateToastr('Your wallet is verified!', 'success');
+                    }, 500);
+                })
+                // eslint-disable-next-line
+                .catch((error: any) => {
+                    // Handle error
+                });
+        }
     };
 
     const resetReplyState = () => {
@@ -1340,25 +1345,7 @@ function ChatPanel(props: propsIF) {
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
                     {rndPreviousMessagesButton()}
-                    {/* <div className={styles.scroll_up}>
-                        {showPreviousMessagesButton ? (
-                            <RiArrowUpSLine
-                                role='button'
-                                size={27}
-                                color='var(--accent1)'
-                                onClick={() => getPreviousMessages()}
-                                tabIndex={0}
-                                aria-label='Show previous messages'
-                                style={{ cursor: 'pointer' }}
-                                title='Show previous messages'
-                                className={styles.scroll_to_icon}
-                            />
-                        ) : (
-                            ''
-                        )}
-                    </div> */}
                     {messageList}
-
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
