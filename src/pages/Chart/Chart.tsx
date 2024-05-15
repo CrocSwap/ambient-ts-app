@@ -162,6 +162,7 @@ interface propsIF {
     candleTimeInSeconds: number | undefined;
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
+    setPrevCandleCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -188,6 +189,7 @@ export default function Chart(props: propsIF) {
         candleTimeInSeconds,
         updateURL,
         userTransactionData,
+        setPrevCandleCount,
     } = props;
 
     const {
@@ -579,7 +581,11 @@ export default function Chart(props: propsIF) {
             period,
             mobileView,
         );
-    }, [diffHashSigScaleData(scaleData), unparsedCandleData]);
+    }, [
+        diffHashSigScaleData(scaleData),
+        unparsedCandleData,
+        isCondensedModeEnabled,
+    ]);
 
     const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
@@ -915,10 +921,15 @@ export default function Chart(props: propsIF) {
 
                 setVisibleDateForCandle(scaleData.xScale.domain()[1]);
 
+                changeScale(false);
                 render();
             }
         });
-    }, [diffHashSig(timeGaps), diffHashSigScaleData(scaleData, 'x')]);
+    }, [
+        diffHashSig(timeGaps),
+        diffHashSigScaleData(scaleData, 'x'),
+        isCondensedModeEnabled,
+    ]);
 
     useEffect(() => {
         if (!isCondensedModeEnabled && scaleData && isShowLatestCandle) {
@@ -1057,6 +1068,19 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [diffHashSigScaleData(scaleData, 'x'), period, isChartZoom]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const domain = scaleData?.xScale.domain();
+            const showCandleCount = getCandleCount(
+                visibleCandleData,
+                domain,
+                period,
+                isCondensedModeEnabled,
+            );
+            setPrevCandleCount(showCandleCount);
+        }
+    }, [diffHashSigScaleData(scaleData, 'x')]);
 
     useEffect(() => {
         if (isChartZoom) {
@@ -5462,7 +5486,8 @@ export default function Chart(props: propsIF) {
     };
     useEffect(() => {
         if (scaleData && scaleData?.xScale) {
-            const xmin = scaleData?.xScale.domain()[0];
+            const dom = scaleData?.xScale.domain();
+            const xmin = dom[0];
 
             const filtered = unparsedCandleData?.filter(
                 (data: CandleDataIF) => data.time * 1000 >= xmin,

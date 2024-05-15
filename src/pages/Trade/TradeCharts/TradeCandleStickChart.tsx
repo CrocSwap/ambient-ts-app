@@ -34,7 +34,6 @@ import {
     TransactionIF,
 } from '../../../ambient-utils/types';
 import {
-    CandleDataChart,
     chartItemStates,
     getInitialDisplayCandleCount,
     liquidityChartData,
@@ -120,6 +119,7 @@ function TradeCandleStickChart(props: propsIF) {
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
+    const [prevCandleCount, setPrevCandleCount] = useState<number>(0);
 
     const {
         tokenA,
@@ -731,35 +731,10 @@ function TradeCandleStickChart(props: propsIF) {
                     }
 
                     const diffDomain = Math.abs(domain[1] - domain[0]);
-
-                    const filteredCandle = filterCandleWithTransaction(
-                        unparsedCandleData,
-                    ).filter((i: CandleDataChart) => {
-                        return (
-                            i.time * 1000 <= domain[1] &&
-                            i.time * 1000 >= domain[0] &&
-                            (i.isShowData || !isCondensedModeEnabled)
-                        );
-                    });
-
-                    let showCandleCount = filteredCandle.length;
-                    if (filteredCandle && showCandleCount) {
-                        const gapCandleCount = Math.floor(
-                            (filteredCandle[filteredCandle.length - 1].time *
-                                1000 -
-                                domain[0]) /
-                                (prevPeriod * 1000),
-                        );
-
-                        if (gapCandleCount > 0) {
-                            showCandleCount = gapCandleCount + showCandleCount;
-                        }
-                    }
-
                     const domainCenter =
                         Math.max(domain[1], domain[0]) - diffDomain / 2;
 
-                    const newDiffDomain = period * 1000 * showCandleCount;
+                    const newDiffDomain = period * 1000 * prevCandleCount;
 
                     const d1 = domainCenter + newDiffDomain / 2;
                     const d0 = domainCenter - newDiffDomain / 2;
@@ -1021,6 +996,7 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                         updateURL={updateURL}
                         userTransactionData={userTransactionData}
+                        setPrevCandleCount={setPrevCandleCount}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />
