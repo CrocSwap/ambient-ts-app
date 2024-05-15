@@ -547,12 +547,14 @@ const useChatSocket = (
         userId: string,
         walletID: string,
         avatarImage: string,
+        avatarCompressed: string,
         avatarThumbnail?: string,
     ) {
         sendToSocket('set-avatar', {
             userId,
             walletID,
             avatarImage,
+            avatarCompressed,
             avatarThumbnail,
         });
     }
@@ -589,6 +591,7 @@ const useChatSocket = (
             updateUserAvatarData(data.walletID, {
                 avatarImage: data.avatarImage,
                 avatarThumbnail: data.avatarThumbnail,
+                avatarCompressed: data.avatarCompressed,
             });
         }
     }
