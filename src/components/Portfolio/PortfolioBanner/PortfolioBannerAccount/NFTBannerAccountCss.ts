@@ -15,7 +15,7 @@ const NFTBannerAccountContainer = styled.div<{
     gap: ${({ isMobile }) => (isMobile ? '1vw' : '16px')};
 
     top: ${({ isMobile }) => (isMobile ? '10vh' : '0')};
-    left: ${({ isMobile }) => (isMobile ? '-1vw' : 'calc(50vw - 320px)')};
+    left: ${({ isMobile }) => (isMobile ? '-1vw' : 'calc(50vw - 50px)')};
     transform: ${({ isMobile }) =>
         isMobile ? 'translate(0,0)' : 'translateX(-50%)'};
 

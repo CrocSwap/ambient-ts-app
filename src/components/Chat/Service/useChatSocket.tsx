@@ -39,6 +39,13 @@ import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 
+type ChatSocketListener = {
+    msg: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    listener: (payload: any) => void;
+    componentId: string;
+};
+
 const useChatSocket = (
     room: string,
     areSubscriptionsEnabled = true,
@@ -67,6 +74,8 @@ const useChatSocket = (
     const roomRef = useRef<string>(room);
 
     const messagesRef = useRef<Message[]>([]);
+    const [listeners, setListeners] = useState<ChatSocketListener[]>([]);
+
     messagesRef.current = messages;
 
     let queryParams: ChatWsQueryParams = {
@@ -119,6 +128,14 @@ const useChatSocket = (
             case 'set-avatar-listener':
                 userListLightUpdate(socketLastMessage.payload);
                 handlePossibleAvatarChange(socketLastMessage.payload);
+                if (listeners.some((e) => e.msg === socketLastMessage.type)) {
+                    const willBeCalled = listeners.filter(
+                        (e) => e.msg === socketLastMessage.type,
+                    );
+                    willBeCalled.map((e) => {
+                        e.listener(socketLastMessage.payload);
+                    });
+                }
                 break;
             case 'noti':
                 notiListener(socketLastMessage.payload);
@@ -627,6 +644,12 @@ const useChatSocket = (
         }
     };
 
+    const addListener = (listener: ChatSocketListener) => {
+        if (!listeners.some((e) => e.componentId === listener.componentId)) {
+            setListeners([...listeners, listener]);
+        }
+    };
+
     return {
         messages,
         sendMsg,
@@ -650,6 +673,7 @@ const useChatSocket = (
         updateUnverifiedMessages,
         getMentionsWithRest,
         updateUserWithAvatarImage,
+        addListener,
     };
 };
 
