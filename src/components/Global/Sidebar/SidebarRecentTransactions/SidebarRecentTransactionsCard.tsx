@@ -25,11 +25,7 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
     });
 
     return (
-        <ItemContainer
-            numCols={3}
-            color='text2'
-            onClick={() => handleClick(tx)}
-        >
+        <ItemContainer color='text2' onClick={() => handleClick(tx)}>
             {[`${tx.baseSymbol} / ${tx.quoteSymbol}`, txType, txValue].map(
                 (item) => (
                     <FlexContainer
