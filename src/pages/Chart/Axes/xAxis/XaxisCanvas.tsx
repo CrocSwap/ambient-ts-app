@@ -349,7 +349,18 @@ function XAxisCanvas(props: xAxisIF) {
                         xScale(shapeData.data[1].x) -
                         xScale(shapeData.data[0].x);
 
-                    context.fillStyle = 'rgba(115, 113, 252, 0.1)';
+                    const style = getComputedStyle(canvas);
+
+                    const darkFillColor = style.getPropertyValue('--accent1');
+
+                    const d3LightFillColor = d3.color(darkFillColor);
+
+                    if (d3LightFillColor) d3LightFillColor.opacity = 0.075;
+
+                    context.fillStyle = d3LightFillColor
+                        ? d3LightFillColor.toString()
+                        : 'rgba(115, 113, 252, 0.1)';
+
                     context.fillRect(
                         xScale(shapeData.data[0].x),
                         height * 0.175,
@@ -380,7 +391,10 @@ function XAxisCanvas(props: xAxisIF) {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = 'rgba(115, 113, 252, 1)';
+                                context.fillStyle = darkFillColor
+                                    ? darkFillColor
+                                    : 'rgba(115, 113, 252, 1)';
+
                                 context.fillRect(
                                     shapePoint - textWidth / 2,
                                     height * 0.175,
