@@ -27,4 +27,7 @@ export interface PoolStatIF {
     feesTotalUsd?: number;
     basePrice?: number;
     quotePrice?: number;
+
+    baseFdvUsd?: number;
+    quoteFdvUsd?: number;
 }
