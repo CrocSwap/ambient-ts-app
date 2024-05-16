@@ -89,6 +89,9 @@ const useChatSocket = (
         queryParams = { ...queryParams, ensName: ensName };
     }
 
+    domDebug('queryParams', queryParams);
+    domDebug('address', address);
+
     const { updateUserAvatarData } = useContext(UserDataContext);
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';

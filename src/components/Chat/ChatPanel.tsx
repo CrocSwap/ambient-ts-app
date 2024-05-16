@@ -772,7 +772,11 @@ function ChatPanel(props: propsIF) {
             verifyDate = verificationDate;
         }
 
-        if (window.ethereum && window.ethereum.request) {
+        if (
+            window.ethereum &&
+            window.ethereum.request &&
+            typeof window.ethereum.request === 'function'
+        ) {
             window.ethereum
                 .request({
                     method: 'personal_sign',
