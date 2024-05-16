@@ -314,9 +314,9 @@ function ChatPanel(props: propsIF) {
             return;
         }
 
-        if (notConnectedUserInterval) {
-            clearInterval(notConnectedUserInterval);
-        }
+        // if (notConnectedUserInterval) {
+        //     clearInterval(notConnectedUserInterval);
+        // }
 
         if (userAddress == undefined) {
             if (isChatOpen == false) return;
@@ -326,7 +326,7 @@ function ChatPanel(props: propsIF) {
             setNotConnectedUserInterval(interval);
         }
 
-        return clearInterval(notConnectedUserInterval);
+        // return clearInterval(notConnectedUserInterval);
     }, [userAddress, room, isChatOpen]);
 
     useEffect(() => {
@@ -772,7 +772,11 @@ function ChatPanel(props: propsIF) {
             verifyDate = verificationDate;
         }
 
-        if (window.ethereum && window.ethereum.request) {
+        if (
+            window.ethereum &&
+            window.ethereum.request &&
+            typeof window.ethereum.request === 'function'
+        ) {
             window.ethereum
                 .request({
                     method: 'personal_sign',
