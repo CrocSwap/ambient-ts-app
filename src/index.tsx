@@ -61,6 +61,12 @@ createWeb3Modal({
         534352: scrollLogo,
     },
     enableAnalytics: false,
+    themeVariables: {
+        '--w3m-color-mix': 'var(--dark2)',
+        '--w3m-color-mix-strength': 40,
+        '--w3m-font-family': 'var(--font-family)',
+        '--w3m-accent': 'var(--accent1)',
+    },
 });
 
 const root = ReactDOM.createRoot(
