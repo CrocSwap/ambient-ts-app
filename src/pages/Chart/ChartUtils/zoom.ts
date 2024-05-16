@@ -186,13 +186,6 @@ export class Zoom {
             scaleData?.xScale.range()[1] - deltaX,
         );
 
-        const notDisNewMinDomain = scaleData?.notDiscontinuityXScale.invert(
-            scaleData?.xScale.range()[0] - deltaX,
-        );
-        const notDisNewMaxDomain = scaleData?.notDiscontinuityXScale.invert(
-            scaleData?.xScale.range()[1] - deltaX,
-        );
-
         if (deltaX > 0 || checkTouchPadZeroNegative) {
             this.getNewCandleDataLeft(newMinDomain, firstCandleDate);
         } else {
@@ -200,10 +193,6 @@ export class Zoom {
                 this.getNewCandleDataRight(scaleData, lastCandleDate);
             }
         }
-        scaleData.notDiscontinuityXScale.domain([
-            notDisNewMinDomain,
-            notDisNewMaxDomain,
-        ]);
 
         scaleData?.xScale.domain([newMinDomain, newMaxDomain]);
     }
@@ -273,19 +262,6 @@ export class Zoom {
         const newMaxDomain = scaleData.xScale.invert(
             scaleData.xScale.range()[1] + zoomPixelMax,
         );
-
-        const notDisNewMinDomain = scaleData?.notDiscontinuityXScale.invert(
-            scaleData?.xScale.range()[0] - zoomPixelMin,
-        );
-        const notDisNewMaxDomain = scaleData?.notDiscontinuityXScale.invert(
-            scaleData?.xScale.range()[1] - zoomPixelMax,
-        );
-
-        scaleData.notDiscontinuityXScale.domain([
-            notDisNewMinDomain,
-            notDisNewMaxDomain,
-        ]);
-
         return [newMinDomain, newMaxDomain];
     }
 
