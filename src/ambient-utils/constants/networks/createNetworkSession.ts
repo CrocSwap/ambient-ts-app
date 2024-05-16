@@ -40,7 +40,7 @@ export const createNetworkSession = async ({
         if (retData === undefined || retData === null) {
             retData = await setter();
         }
-        if (retData === undefined || retData === null || retData === '') {
+        if (retData === undefined || retData === null) {
             throw new Error('Could not set a required variable');
         }
         return retData;
