@@ -1129,6 +1129,15 @@ export default function Chart(props: propsIF) {
     }, [diffHashSigScaleData(scaleData, 'x')]);
 
     useEffect(() => {
+        if (isCondensedModeEnabled) {
+            const isShowSelectedDate = unparsedCandleData.find(
+                (i: CandleDataChart) => i.time * 1000 === selectedDate,
+            )?.isShowData;
+            !isShowSelectedDate && setSelectedDate(undefined);
+        }
+    }, [isCondensedModeEnabled]);
+
+    useEffect(() => {
         if (isChartZoom) {
             setIsChangeScaleChart(true);
         }
