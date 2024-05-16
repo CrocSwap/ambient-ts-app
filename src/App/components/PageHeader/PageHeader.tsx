@@ -20,6 +20,10 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import {
+    useWeb3ModalAccount,
+    useSwitchNetwork,
+} from '@web3modal/ethers5/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
@@ -47,7 +51,6 @@ import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 // import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -63,7 +66,7 @@ const PageHeader = function () {
     const { headerImage } = useContext(BrandContext);
 
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
@@ -86,7 +89,10 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
-    const { switchNetwork } = useSwitchNetwork();
+    const { isConnected } = useWeb3ModalAccount();
+    const switchNetwork = isConnected
+        ? useSwitchNetwork().switchNetwork
+        : undefined;
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -120,7 +126,7 @@ const PageHeader = function () {
         <Button
             idForDOM='connect_wallet_button_page_header'
             title={desktopScreen ? 'Connect Wallet' : 'Connect'}
-            action={openWagmiModal}
+            action={openWalletModal}
             thin
             flat
         ></Button>

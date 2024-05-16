@@ -57,7 +57,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const isUserConnected = useSimulatedIsUserConnected();
 
     const {
-        wagmiModal: { open: openModalWallet },
+        walletModal: { open: openModalWallet },
     } = useContext(AppStateContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);

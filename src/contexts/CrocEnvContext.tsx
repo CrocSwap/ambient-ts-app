@@ -7,7 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { useSigner } from 'wagmi';
+import { useWeb3ModalProvider } from '@web3modal/ethers5/react';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
@@ -47,7 +47,6 @@ interface CrocEnvContextIF {
     setCrocEnv: (val: CrocEnv | undefined) => void;
     selectedNetwork: NetworkIF;
     chainData: ChainSpec;
-    isWalletChainSupported: boolean;
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
@@ -65,25 +64,30 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 const mainnetProvider = new BatchedJsonRpcProvider(
     new ethers.providers.InfuraProvider(
         'mainnet',
-        process.env.REACT_APP_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091',
+        import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091',
     ),
 ).proxy;
 
 const scrollProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.JsonRpcProvider(SCROLL_RPC_URL),
+    new ethers.providers.StaticJsonRpcProvider(SCROLL_RPC_URL),
 ).proxy;
 const blastProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.JsonRpcProvider(BLAST_RPC_URL),
+    new ethers.providers.StaticJsonRpcProvider(BLAST_RPC_URL),
 ).proxy;
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
+    const { chainData, activeNetwork, chooseNetwork } =
         useContext(TradeDataContext);
 
     const { userAddress } = useContext(UserDataContext);
-    const { data: signer, isError, error, status: signerStatus } = useSigner();
-
+    const { walletProvider } = useWeb3ModalProvider();
+    let w3provider;
+    let signer: ethers.Signer | undefined;
+    if (walletProvider) {
+        w3provider = new ethers.providers.Web3Provider(walletProvider);
+        signer = w3provider.getSigner();
+    }
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
@@ -171,8 +175,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const nodeUrl =
         chainData.nodeUrl.toLowerCase().includes('infura') &&
-        process.env.REACT_APP_INFURA_KEY
-            ? chainData.nodeUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+        import.meta.env.VITE_INFURA_KEY
+            ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
             : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
             ? BLAST_RPC_URL
             : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
@@ -187,7 +191,9 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 ? scrollProvider
                 : chainData.chainId === '0x13e31'
                 ? blastProvider
-                : new ethers.providers.JsonRpcProvider(nodeUrl),
+                : new BatchedJsonRpcProvider(
+                      new ethers.providers.StaticJsonRpcProvider(nodeUrl),
+                  ).proxy,
         [chainData.chainId],
     );
 
@@ -198,12 +204,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             console.debug({ provider });
             console.debug({ signer });
             console.debug({ crocEnv });
-            console.debug({ signerStatus });
         }
-        if (isError) {
-            console.error({ error });
-            setCrocEnv(undefined);
-        } else if (!provider && !signer) {
+        if (!provider && !signer) {
             APP_ENVIRONMENT === 'local' &&
                 console.debug('setting crocEnv to undefined');
             setCrocEnv(undefined);
@@ -239,7 +241,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     }, [
         crocEnv === undefined,
         chainData.chainId,
-        signer,
+        signer === undefined,
+        userAddress,
         activeNetwork.chainId,
     ]);
 
@@ -266,7 +269,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         setCrocEnv,
         selectedNetwork: activeNetwork,
         chainData,
-        isWalletChainSupported,
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,

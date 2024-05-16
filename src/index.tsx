@@ -6,29 +6,26 @@ import App from './App/App';
 import './i18n/config';
 import { StyleSheetManager } from 'styled-components';
 import isValidProp from '@emotion/is-prop-valid';
-import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 
-import { infuraProvider } from 'wagmi/providers/infura';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
-
-import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
-    BLAST_RPC_URL,
-    SCROLL_RPC_URL,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
+import scrollLogo from './assets/images/networks/scroll.png';
+import blastLogo from './assets/images/networks/blast_logo.png';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
  * cost of higher load times, especially when pre-loading isn't happening. See:
- * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042 */
-const doReload = JSON.parse(
-    localStorage.getItem('ambiAppReloadTrigger') || 'true',
-);
+ * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042
+ *
+ * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
+const doReload =
+    JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
+    navigator.userAgent.includes('Chrome');
 if (doReload) {
     localStorage.setItem('ambiAppReloadTrigger', 'false');
     location.reload();
@@ -36,100 +33,58 @@ if (doReload) {
     localStorage.setItem('ambiAppReloadTrigger', 'true');
 }
 
-// Don't bother rendering page if this is a reload, because it'll slow down the full load
-if (!doReload) {
-    const { chains, provider, webSocketProvider } = configureChains(
-        Object.values(supportedNetworks).map((network) => network.wagmiChain),
-        [
-            infuraProvider({
-                apiKey:
-                    process.env.REACT_APP_INFURA_KEY ||
-                    '4741d1713bff4013bc3075ed6e7ce091', // front-end dev key
-            }),
+const metadata = {
+    name: 'Ambient Finance',
+    description:
+        'Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever',
+    url: 'https://ambient.finance', // origin must match your domain & subdomain
+    icons: [
+        'https://ambient.finance/apple-touch-icon.png',
+        'https://ambient.finance/favicon-32x32.png',
+        'https://ambient.finance/favicon-16x16.png',
+    ],
+};
 
-            jsonRpcProvider({
-                rpc: (chain: Chain) => {
-                    if (chain.id === 534352) {
-                        return { http: SCROLL_RPC_URL };
-                    } else if (chain.id === 81457) {
-                        return { http: BLAST_RPC_URL };
-                    } else if (chain.id === 534351) {
-                        return { http: 'https://sepolia-rpc.scroll.io' };
-                    } else if (chain.id === 168587773) {
-                        return { http: 'https://sepolia.blast.io' };
-                    } else {
-                        return { http: '' };
-                    }
-                },
-            }),
-        ],
-    );
+const ethersConfig = defaultConfig({
+    metadata,
+    defaultChainId: 1,
+});
 
-    // Set up client
-    const client = createClient({
-        autoConnect: true,
-        connectors: [
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'MetaMask',
-                    shimDisconnect: true,
-                },
-            }),
-            new WalletConnectConnector({
-                chains,
-                options: {
-                    projectId: WALLETCONNECT_PROJECT_ID || '',
-                    isNewChainsStale: false,
-                },
-            }),
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'Rabby',
-                    shimDisconnect: true,
-                },
-            }),
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'Brave',
-                    shimDisconnect: true,
-                },
-            }),
-            new InjectedConnector({
-                chains,
-                options: {
-                    name: 'Other (Injected) Wallet',
-                    shimDisconnect: true,
-                },
-            }),
-        ],
-        provider,
-        webSocketProvider,
-    });
+createWeb3Modal({
+    ethersConfig,
+    chains: Object.values(supportedNetworks).map((network) => network.chain),
+    projectId: WALLETCONNECT_PROJECT_ID as string,
+    chainImages: {
+        81457: blastLogo,
+        168587773: blastLogo,
+        534351: scrollLogo,
+        534352: scrollLogo,
+    },
+    enableAnalytics: false,
+    themeVariables: {
+        '--w3m-color-mix': 'var(--dark2)',
+        '--w3m-color-mix-strength': 40,
+        '--w3m-font-family': 'var(--font-family)',
+        '--w3m-accent': 'var(--accent1)',
+    },
+});
 
-    const root = ReactDOM.createRoot(
-        document.getElementById('root') as HTMLElement,
-    );
+const root = ReactDOM.createRoot(
+    document.getElementById('root') as HTMLElement,
+);
 
-    root.render(
-        <React.StrictMode>
-            <WagmiConfig client={client}>
-                <BrowserRouter>
-                    <GlobalContexts>
-                        <StyleSheetManager
-                            shouldForwardProp={(propName) =>
-                                isValidProp(propName)
-                            }
-                        >
-                            <App />
-                        </StyleSheetManager>
+root.render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <GlobalContexts>
+                <StyleSheetManager
+                    shouldForwardProp={(propName) => isValidProp(propName)}
+                >
+                    <App />
+                </StyleSheetManager>
 
-                        <div id={GLOBAL_MODAL_PORTAL_ID} />
-                    </GlobalContexts>
-                </BrowserRouter>
-            </WagmiConfig>
-        </React.StrictMode>,
-    );
-}
+                <div id={GLOBAL_MODAL_PORTAL_ID} />
+            </GlobalContexts>
+        </BrowserRouter>
+    </React.StrictMode>,
+);
