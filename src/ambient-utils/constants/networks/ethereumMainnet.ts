@@ -21,27 +21,9 @@ const PROVIDER_KEY =
 const chain = {
     chainId: 1,
     name: 'Ethereum',
-    network: 'homestead',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: ['https://mainnet.infura.io/v3/' + PROVIDER_KEY],
-        },
-        public: {
-            http: ['https://mainnet.infura.io/v3/' + PROVIDER_KEY],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Etherscan',
-            url: 'https://etherscan.io',
-        },
-    },
-    testnet: false,
+    currency: 'ETH',
+    rpcUrl: 'https://eth.llamarpc.com',
+    explorerUrl: 'https://etherscan.io',
 };
 
 export const ethereumMainnet: NetworkIF = {
@@ -53,8 +35,8 @@ export const ethereumMainnet: NetworkIF = {
     marketData: '0x1',
     defaultPair: [mainnetETH, mainnetUSDC],
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetSYN, mainnetETH, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetRPL, lookupChain('0x1').poolIndex),
         new TopPool(mainnetMKR, mainnetETH, lookupChain('0x1').poolIndex),

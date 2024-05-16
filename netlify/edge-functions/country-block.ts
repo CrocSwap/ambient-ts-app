@@ -40,6 +40,8 @@ export default async (request: Request, context: Context) => {
         return;
     }
 
+    console.log(context.geo.country.name);
+
     const html = `
     <!DOCTYPE html>
     <html lang="en">
