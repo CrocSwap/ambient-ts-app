@@ -875,11 +875,9 @@ export default function Chart(props: propsIF) {
         }
     }
 
-    const [first, setfirst] = useState(true);
     useEffect(() => {
         (async () => {
             if (scaleData && timeGaps.length > 0) {
-                let localFirst = true;
                 const canvas = d3
                     .select(d3CanvasMain.current)
                     .select('canvas')
@@ -900,14 +898,6 @@ export default function Chart(props: propsIF) {
                     .filter((i) => !i.isAddedPixel)
                     .forEach((element: timeGapsValue) => {
                         if (isCondensedModeEnabled) {
-                            if (first && localFirst) {
-                                scaleData.notDiscontinuityXScale.domain(
-                                    scaleData.xScale.domain(),
-                                );
-                                setfirst(false);
-                                localFirst = false;
-                            }
-
                             const pix =
                                 scaleData.xScale(element.range[0]) -
                                 scaleData.xScale(element.range[1]);
@@ -3000,8 +2990,6 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
-                    scaleData?.discontinuityXScale([0, event.detail.width]);
-                    scaleData?.notDiscontinuityXScale([0, event.detail.width]);
                     scaleData?.yScale.range([event.detail.height, 0]);
                     ctx.setLineDash([4, 2]);
                     crosshairVerticalCanvas.context(ctx);

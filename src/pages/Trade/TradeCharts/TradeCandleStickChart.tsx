@@ -678,8 +678,6 @@ function TradeCandleStickChart(props: propsIF) {
                 setScaleData(() => {
                     return {
                         xScale: xScale,
-                        discontinuityXScale: xScale.copy(),
-                        notDiscontinuityXScale: xScale.copy(),
                         xScaleTime: xScaleTime,
                         yScale: yScale,
                         volumeScale: volumeScale,
