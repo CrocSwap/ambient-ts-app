@@ -296,10 +296,10 @@
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 
-    /* --font-logo: 'Kode Mono', sans-serif;
+    --font-logo: 'Kode Mono', sans-serif;
     --font-family: 'Kode Mono', sans-serif;
     --roboto: 'Kode Mono', monospace;
-    --mono: 'Kode Mono', 'Lexend Deca' sans-serif; */
+    --mono: 'Kode Mono', 'Lexend Deca' sans-serif;
 }
 
 *::placeholder {
