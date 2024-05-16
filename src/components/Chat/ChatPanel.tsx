@@ -314,9 +314,9 @@ function ChatPanel(props: propsIF) {
             return;
         }
 
-        // if (notConnectedUserInterval) {
-        //     clearInterval(notConnectedUserInterval);
-        // }
+        if (notConnectedUserInterval) {
+            clearInterval(notConnectedUserInterval);
+        }
 
         if (userAddress == undefined) {
             if (isChatOpen == false) return;
@@ -326,7 +326,7 @@ function ChatPanel(props: propsIF) {
             setNotConnectedUserInterval(interval);
         }
 
-        // return clearInterval(notConnectedUserInterval);
+        return clearInterval(notConnectedUserInterval);
     }, [userAddress, room, isChatOpen]);
 
     useEffect(() => {
