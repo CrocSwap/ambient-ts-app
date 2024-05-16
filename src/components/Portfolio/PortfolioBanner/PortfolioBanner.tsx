@@ -10,7 +10,7 @@ import {
     PortfolioBannerLevelContainer,
     PortfolioBannerRectangleContainer,
 } from '../../../styled/Components/Portfolio';
-import accountImage from '../../../assets/images/backgrounds/account_image.svg';
+import NoisyLines from '../../NoisyLines/NoisyLines';
 import {
     UserDataContext,
     UserXpDataIF,
@@ -66,14 +66,39 @@ export default function PortfolioBanner(props: propsIF) {
 
     const userLink = ensName ?? userAddress;
 
+    const addressOfAccountDisplayed = connectedAccountActive
+        ? userAddress
+        : resolvedAddress;
+
+    if (!addressOfAccountDisplayed) return null;
+
     return (
-        <PortfolioBannerRectangleContainer
-            style={{ backgroundImage: `url(${accountImage})` }}
-        >
+        <PortfolioBannerRectangleContainer style={{ position: 'relative' }}>
+            <NoisyLines
+                numLines={10}
+                width={1825}
+                height={136}
+                opacityStart={0.01}
+                opacityMid={1}
+                opacityEnd={0.0}
+                opacityMidPosition={0.8}
+                amplitudeStart={160}
+                amplitudeMid={150}
+                amplitudeEnd={0.01}
+                amplitudeMidPosition={0.95}
+                noiseScale={0.008}
+                noiseStart={0.01}
+                noiseMid={0.9}
+                noiseEnd={1}
+                noiseMidPosition={0.8}
+                seed={addressOfAccountDisplayed}
+                animationDuration={3000}
+            />
             <FlexContainer
                 justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
                 alignItems='baseline'
                 gap={16}
+                style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 1 }} // Positioned above the NoisyLines component
             >
                 <PortfolioBannerAccount
                     ensName={ensName}
@@ -108,7 +133,10 @@ export default function PortfolioBanner(props: propsIF) {
                 </DefaultTooltip>
             </FlexContainer>
 
-            <PortfolioBannerLevelContainer isAccountPage>
+            <PortfolioBannerLevelContainer
+                isAccountPage
+                style={{ position: 'absolute', bottom: 0, right: 0, zIndex: 1 }} // Positioned above the NoisyLines component
+            >
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}
