@@ -47,12 +47,15 @@ export default function PortfolioBanner(props: propsIF) {
 
     const ensNameAvailable = ensName !== '';
 
-    const jazziconsSeed = resolvedAddress
+    const addressOfAccountDisplayed = resolvedAddress
         ? resolvedAddress.toLowerCase()
         : userAddress?.toLowerCase() ?? '';
 
     const myJazzicon = (
-        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
+        <Jazzicon
+            diameter={50}
+            seed={jsNumberForAddress(addressOfAccountDisplayed)}
+        />
     );
 
     const truncatedAccountAddress = connectedAccountActive
@@ -65,10 +68,6 @@ export default function PortfolioBanner(props: propsIF) {
             : null;
 
     const userLink = ensName ?? userAddress;
-
-    const addressOfAccountDisplayed = connectedAccountActive
-        ? userAddress
-        : resolvedAddress;
 
     if (!addressOfAccountDisplayed) return null;
 
