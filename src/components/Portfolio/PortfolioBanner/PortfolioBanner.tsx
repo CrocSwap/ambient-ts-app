@@ -15,7 +15,7 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import { useContext, useEffect, useMemo, useRef } from 'react';
+import { useContext, useMemo } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
@@ -73,10 +73,12 @@ export default function PortfolioBanner(props: propsIF) {
 
     // determine size of banner to properly make width of background
     const BANNER_ID = 'portfolio_banner_elem';
-    const parentWidth = useMemo<number>(() => {
+    const [pWidth, pHeight] = useMemo<[number, number]>(() => {
         const parentElem: HTMLElement | null =
             document.getElementById(BANNER_ID);
-        return parentElem ? parentElem.offsetWidth : 1825;
+        const width: number = parentElem ? parentElem.offsetWidth : 1825;
+        const height: number = parentElem ? parentElem.offsetHeight : 200;
+        return [width, height];
     }, []);
 
     return (
@@ -86,8 +88,8 @@ export default function PortfolioBanner(props: propsIF) {
         >
             <NoisyLines
                 numLines={10}
-                width={parentWidth}
-                height={136}
+                width={pWidth || 1}
+                height={pHeight || 1}
                 opacityStart={0.01}
                 opacityMid={1}
                 opacityEnd={0.0}
