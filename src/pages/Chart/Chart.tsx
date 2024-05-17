@@ -231,8 +231,6 @@ export default function Chart(props: propsIF) {
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
-    const [resetDomain, setResetDomain] = useState();
-
     const [liqMaxActiveLiq, setLiqMaxActiveLiq] = useState<
         number | undefined
     >();
@@ -457,12 +455,15 @@ export default function Chart(props: propsIF) {
         return checkShowLatestCandle(period, scaleData?.xScale);
     }, [period, diffHashSigScaleData(scaleData, 'x')]);
 
+    /**
+     * This function processes a given data array to calculate discontinuities in time intervals and updates them.
+     * @param data
+     */
     const calculateDiscontinuityRange = async (data: CandleDataChart[]) => {
         const localTimeGaps: { range: number[]; isAddedPixel: boolean }[] =
             structuredClone(timeGaps);
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
-        //    let pixel = 0;
         if (scaleData) {
             data.slice(isShowLatestCandle ? 2 : 1).forEach((item) => {
                 if (notTransactionDataTime === undefined && !item.isShowData) {
@@ -471,8 +472,6 @@ export default function Chart(props: propsIF) {
                 if (notTransactionDataTime !== undefined && item.isShowData) {
                     transationDataTime = item.time * 1000;
                 }
-
-                // notTransactionDataTime !== data[data.length-1].time*1000
                 if (notTransactionDataTime && transationDataTime) {
                     const newRange = [
                         transationDataTime,
@@ -920,21 +919,6 @@ export default function Chart(props: propsIF) {
                                 scaleData.xScale.domain([min, maxDom]);
 
                                 element.isAddedPixel = true;
-
-                                const candleCount = getCandleCount(
-                                    visibleCandleData,
-                                    [min, maxDom],
-                                    period,
-                                    isCondensedModeEnabled,
-                                );
-
-                                if (
-                                    resetDomain === undefined &&
-                                    isShowLatestCandle &&
-                                    candleCount === 100
-                                ) {
-                                    setResetDomain(scaleData.xScale.domain());
-                                }
                             }
                         }
                     });
@@ -2527,27 +2511,19 @@ export default function Chart(props: propsIF) {
                 (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
 
             setPrevLastCandleTime(snappedTime / 1000);
-            if (!isCondensedModeEnabled || resetDomain === undefined) {
-                if (scaleData) {
-                    scaleData.xScale.discontinuityProvider(
-                        d3fc.discontinuityRange(...[]),
-                    );
-                }
 
-                const updatedArray = timeGaps.map((obj: timeGapsValue) => ({
-                    ...obj,
-                    isAddedPixel: false,
-                }));
-
-                setTimeGaps(updatedArray);
-
-                scaleData?.xScale.domain([
-                    centerX - diff * xAxisBuffer,
-                    centerX + diff * (1 - xAxisBuffer),
-                ]);
-            } else {
-                resetDomain && scaleData.xScale.domain(resetDomain);
+            if (scaleData) {
+                scaleData.xScale.discontinuityProvider(
+                    d3fc.discontinuityRange(...[]),
+                );
             }
+
+            timeGaps.forEach((obj) => (obj.isAddedPixel = false));
+
+            scaleData?.xScale.domain([
+                centerX - diff * xAxisBuffer,
+                centerX + diff * (1 - xAxisBuffer),
+            ]);
         }
     }
 
