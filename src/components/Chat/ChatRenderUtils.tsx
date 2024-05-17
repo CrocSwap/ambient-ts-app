@@ -251,10 +251,15 @@ export const getAvatarComponent = (
     resp: UserAvatarDataIF,
     size = 50,
     showThumb = false,
+    showCompressed = false,
 ) => {
     return getAvatar(
         walletID,
-        showThumb ? resp.avatarThumbnail : resp.avatarImage,
+        showThumb
+            ? resp.avatarThumbnail
+            : showCompressed
+            ? resp.avatarCompressed
+            : resp.avatarImage,
         size,
         false,
     );

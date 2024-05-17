@@ -253,6 +253,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 userAddress ? userAddress : '',
                 selectedNft ? selectedNft.cachedUrl : '',
                 selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
+                selectedNft ? selectedNft.thumbnailUrl : '',
             );
         }
     }
