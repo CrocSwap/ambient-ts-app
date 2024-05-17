@@ -48,7 +48,6 @@ const metadata = {
 const ethersConfig = defaultConfig({
     metadata,
     defaultChainId: 1,
-    enableCoinbase: true,
     // enableEmail: true,
 });
 
@@ -62,6 +61,8 @@ const modal = createWeb3Modal({
         534351: scrollLogo,
         534352: scrollLogo,
     },
+    termsConditionsUrl: '/terms',
+    privacyPolicyUrl: '/privacy',
     enableAnalytics: false,
     themeVariables: {
         '--w3m-color-mix': 'var(--dark2)',
