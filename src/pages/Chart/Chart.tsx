@@ -3811,6 +3811,18 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        const visibilitychange = function () {
+            render();
+        };
+
+        document.addEventListener('visibilitychange', visibilitychange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', visibilitychange);
+        };
+    }, []);
+
+    useEffect(() => {
         const canvas = d3
             .select(d3CanvasCrIndicator.current)
             .select('canvas')
