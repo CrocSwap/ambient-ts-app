@@ -75,6 +75,7 @@ modal.subscribeEvents((event) => {
     );
     if (
         event.data.event === 'MODAL_CLOSE' &&
+        event.data.properties.connected === true &&
         !networkIds.includes(modal.getState().selectedNetworkId)
     ) {
         modal.disconnect();
