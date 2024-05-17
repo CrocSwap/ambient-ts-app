@@ -50,7 +50,7 @@ const ethersConfig = defaultConfig({
     defaultChainId: 1,
 });
 
-createWeb3Modal({
+const modal = createWeb3Modal({
     ethersConfig,
     chains: Object.values(supportedNetworks).map((network) => network.chain),
     projectId: WALLETCONNECT_PROJECT_ID as string,
@@ -67,6 +67,18 @@ createWeb3Modal({
         '--w3m-font-family': 'var(--font-family)',
         '--w3m-accent': 'var(--accent1)',
     },
+});
+
+modal.subscribeEvents((event) => {
+    const networkIds = Object.values(supportedNetworks).map(
+        (network) => network.chain.chainId,
+    );
+    if (
+        event.data.event === 'MODAL_CLOSE' &&
+        !networkIds.includes(modal.getState().selectedNetworkId)
+    ) {
+        modal.disconnect();
+    }
 });
 
 const root = ReactDOM.createRoot(
