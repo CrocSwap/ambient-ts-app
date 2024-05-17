@@ -15,7 +15,7 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
@@ -69,27 +69,19 @@ export default function PortfolioBanner(props: propsIF) {
 
     const userLink = ensName ?? userAddress;
 
-    if (!addressOfAccountDisplayed) return null;
-
     // determine size of banner to properly make width of background
     const BANNER_ID = 'portfolio_banner_elem';
-    const [pWidth, pHeight] = useMemo<[number, number]>(() => {
+    const noisyLines = useMemo<JSX.Element | null>(() => {
+        if (!addressOfAccountDisplayed) return null;
         const parentElem: HTMLElement | null =
             document.getElementById(BANNER_ID);
         const width: number = parentElem ? parentElem.offsetWidth : 1825;
         const height: number = parentElem ? parentElem.offsetHeight : 200;
-        return [width, height];
-    }, []);
-
-    return (
-        <PortfolioBannerRectangleContainer
-            id={BANNER_ID}
-            style={{ position: 'relative' }}
-        >
+        return (
             <NoisyLines
                 numLines={10}
-                width={pWidth || 1}
-                height={pHeight || 1}
+                width={width}
+                height={height}
                 opacityStart={0.01}
                 opacityMid={1}
                 opacityEnd={0.0}
@@ -106,6 +98,16 @@ export default function PortfolioBanner(props: propsIF) {
                 seed={addressOfAccountDisplayed}
                 animationDuration={3000}
             />
+        );
+    }, [addressOfAccountDisplayed]);
+
+    if (!addressOfAccountDisplayed) return null;
+    return (
+        <PortfolioBannerRectangleContainer
+            id={BANNER_ID}
+            style={{ position: 'relative' }}
+        >
+            {noisyLines}
             <FlexContainer
                 justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
                 alignItems='baseline'
