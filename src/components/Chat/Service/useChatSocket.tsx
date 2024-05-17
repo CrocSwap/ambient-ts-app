@@ -78,19 +78,23 @@ const useChatSocket = (
 
     messagesRef.current = messages;
 
-    let queryParams: ChatWsQueryParams = {
-        roomId: room,
-        // transport: 'polling'
-    };
-    if (address != undefined) {
-        queryParams = { ...queryParams, address: address };
-    }
-    if (ensName != undefined && ensName.length > 0) {
-        queryParams = { ...queryParams, ensName: ensName };
-    }
+    const getWsQueryParams = () => {
+        let queryParams: ChatWsQueryParams = {
+            roomId: room,
+        };
+        if (address != undefined) {
+            queryParams = { ...queryParams, address: address };
+        }
+        if (ensName != undefined && ensName.length > 0) {
+            queryParams = { ...queryParams, ensName: ensName };
+        }
 
-    domDebug('queryParams', queryParams);
-    domDebug('address', address);
+        return queryParams;
+    };
+
+    const [wsQueryParams, setWsQueryParams] = useState<ChatWsQueryParams>(
+        getWsQueryParams(),
+    );
 
     const { updateUserAvatarData } = useContext(UserDataContext);
 
@@ -101,7 +105,7 @@ const useChatSocket = (
         getWebSocket,
     } = useSocketIO(url, {
         // fromSocketIO: true,
-        queryParams: { ...queryParams },
+        queryParams: { ...wsQueryParams },
         shouldReconnect: () => true,
         onOpen: () => {
             domDebug('connected', getTimeForLog(new Date()));
@@ -116,6 +120,10 @@ const useChatSocket = (
             getWebSocket()?.close();
         }
     }, [isChatOpen]);
+
+    useEffect(() => {
+        setWsQueryParams(getWsQueryParams());
+    }, [address, ensName]);
 
     useEffect(() => {
         switch (socketLastMessage.type) {
