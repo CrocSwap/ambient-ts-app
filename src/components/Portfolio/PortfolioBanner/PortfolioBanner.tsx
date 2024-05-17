@@ -98,7 +98,12 @@ export default function PortfolioBanner(props: propsIF) {
                 justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
                 alignItems='baseline'
                 gap={16}
-                style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 1 }} // Positioned above the NoisyLines component
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    left: 20,
+                    zIndex: 10,
+                }} // Positioned above the NoisyLines component
             >
                 <PortfolioBannerAccount
                     ensName={ensName}
@@ -135,7 +140,12 @@ export default function PortfolioBanner(props: propsIF) {
 
             <PortfolioBannerLevelContainer
                 isAccountPage
-                style={{ position: 'absolute', bottom: 0, right: 0, zIndex: 1 }} // Positioned above the NoisyLines component
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    right: 20,
+                    zIndex: 10,
+                }} // Positioned above the NoisyLines component
             >
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}

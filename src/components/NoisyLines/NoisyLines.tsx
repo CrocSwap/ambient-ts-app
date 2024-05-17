@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
 

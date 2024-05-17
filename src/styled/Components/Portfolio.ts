@@ -181,6 +181,8 @@ export const PortfolioBannerRectangleContainer = styled.div`
     display: flex;
     overflow: hidden;
 
+    background-color: var(--dark1);
+
     @media only screen and (min-width: 1200px) {
         flex-shrink: 0;
     }
@@ -216,6 +218,7 @@ export const PortfolioContainer = styled(FlexContainer)`
         overflow-y: hidden;
         max-height: calc(100vh - 7.5rem);
     }
+    background-color: 'red';
 `;
 
 export const PortfolioTabsContainer = styled.div<{
@@ -238,7 +241,6 @@ export const PortfolioTabsContainer = styled.div<{
             !props.fullLayoutContainer &&
             `
             grid-template-columns: auto 380px;
-            margin-left: 4px;
             gap: 1rem;
         `}
 
@@ -266,7 +268,6 @@ export const PortfolioTabsContainer = styled.div<{
                         width: 100%;
         flex: 1;
         grid-template-columns: auto auto;
-        margin-left: 4px;
         gap: 1rem;
                 width: 100%;
         display: grid;
