@@ -106,7 +106,7 @@ export default function PortfolioBanner(props: propsIF) {
                 animationDuration={3000}
             />
         );
-    }, [addressOfAccountDisplayed]);
+    }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
 
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
