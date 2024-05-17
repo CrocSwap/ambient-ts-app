@@ -153,7 +153,7 @@ export const PortfolioBannerMainContainer = styled(motion.main)`
     width: 380.16px;
 
     /* blur/card */
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(2px);
 
     @media only screen and (max-width: 800px) {
         padding-top: 20px;
