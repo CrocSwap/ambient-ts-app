@@ -101,7 +101,6 @@ export default function PortfolioBanner(props: propsIF) {
         );
     }, [addressOfAccountDisplayed]);
 
-    if (!addressOfAccountDisplayed) return null;
     return (
         <PortfolioBannerRectangleContainer
             id={BANNER_ID}
