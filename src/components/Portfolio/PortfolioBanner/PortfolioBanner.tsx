@@ -68,6 +68,7 @@ export default function PortfolioBanner(props: propsIF) {
             : null;
 
     const userLink = ensName ?? userAddress;
+    console.log(addressOfAccountDisplayed);
 
     // determine size of banner to properly make width of background
     // DOM id for parent element (needed to know SVG dimensions)
@@ -108,6 +109,8 @@ export default function PortfolioBanner(props: propsIF) {
         );
     }, [addressOfAccountDisplayed]);
 
+    // early return is needed if the user is logged out
+    if (!addressOfAccountDisplayed) return null;
     return (
         <PortfolioBannerRectangleContainer
             id={BANNER_ID}
