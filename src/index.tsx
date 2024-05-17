@@ -78,10 +78,15 @@ modal.subscribeEvents((event) => {
     );
     if (
         event.data.event === 'MODAL_CLOSE' &&
-        event.data.properties.connected === true &&
-        !networkIds.includes(modal.getState().selectedNetworkId)
+        event.data.properties.connected === true
     ) {
-        modal.disconnect();
+        if (networkIds.includes(modal.getState().selectedNetworkId)) {
+            // prevents the 'unknown account #0' bug
+            window.location.reload();
+        } else {
+            // prevents user's wallet from remaining connected to an unsupported network
+            modal.disconnect();
+        }
     }
 });
 
