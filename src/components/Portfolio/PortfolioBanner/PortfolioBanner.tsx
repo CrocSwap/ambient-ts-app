@@ -15,7 +15,7 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import { useContext } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
@@ -71,11 +71,22 @@ export default function PortfolioBanner(props: propsIF) {
 
     if (!addressOfAccountDisplayed) return null;
 
+    // determine size of banner to properly make width of background
+    const BANNER_ID = 'portfolio_banner_elem';
+    const parentWidth = useMemo<number>(() => {
+        const parentElem: HTMLElement | null =
+            document.getElementById(BANNER_ID);
+        return parentElem ? parentElem.offsetWidth : 1825;
+    }, []);
+
     return (
-        <PortfolioBannerRectangleContainer style={{ position: 'relative' }}>
+        <PortfolioBannerRectangleContainer
+            id={BANNER_ID}
+            style={{ position: 'relative' }}
+        >
             <NoisyLines
                 numLines={10}
-                width={1825}
+                width={parentWidth}
                 height={136}
                 opacityStart={0.01}
                 opacityMid={1}

@@ -4,7 +4,7 @@ import alea from 'alea';
 
 interface INoisyLinesProps {
     numLines: 10;
-    width: 1825;
+    width: number;
     height: 136;
     opacityStart: 0.01;
     opacityMid: 1;
