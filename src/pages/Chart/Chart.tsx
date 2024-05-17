@@ -460,6 +460,7 @@ export default function Chart(props: propsIF) {
      * @param data
      */
     const calculateDiscontinuityRange = async (data: CandleDataChart[]) => {
+        // timeGaps each element in the data array represents a time interval and consists of two dates: [candleDate, shiftDate].
         const localTimeGaps: { range: number[]; isAddedPixel: boolean }[] =
             structuredClone(timeGaps);
         let notTransactionDataTime: undefined | number = undefined;
@@ -893,6 +894,8 @@ export default function Chart(props: propsIF) {
                     lastDate = lastDateArray[0].range[1];
                 }
 
+                // To maintain the bandwidth of the candles, the domain is updated by the amount of shift.
+                // If new data comes from the left, the scale is shifted to the right for a smaller scale, and vice versa.
                 timeGaps
                     .filter((i) => !i.isAddedPixel)
                     .forEach((element: timeGapsValue) => {
@@ -901,6 +904,7 @@ export default function Chart(props: propsIF) {
                                 scaleData.xScale(element.range[0]) -
                                 scaleData.xScale(element.range[1]);
 
+                            // shift to right
                             let min = scaleData.xScale.invert(pix);
                             let maxDom = scaleData.xScale.domain()[1];
 
@@ -912,6 +916,7 @@ export default function Chart(props: propsIF) {
                             if (check) {
                                 if (lastDate && lastDate < element.range[1]) {
                                     min = scaleData.xScale.domain()[0];
+                                    // shift to left
                                     maxDom = scaleData.xScale.invert(
                                         scaleData.xScale.range()[1] - pix,
                                     );
