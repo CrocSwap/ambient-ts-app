@@ -70,13 +70,20 @@ export default function PortfolioBanner(props: propsIF) {
     const userLink = ensName ?? userAddress;
 
     // determine size of banner to properly make width of background
+    // DOM id for parent element (needed to know SVG dimensions)
     const BANNER_ID = 'portfolio_banner_elem';
+    // JSX DOM element to show noisy lines as an SVG, runs when the DOM
+    // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
+        // early return if address is not available (first render)
         if (!addressOfAccountDisplayed) return null;
+        // locate rendered parent element in DOM by element ID
         const parentElem: HTMLElement | null =
             document.getElementById(BANNER_ID);
+        // dimensions of parent element with backups
         const width: number = parentElem ? parentElem.offsetWidth : 1825;
         const height: number = parentElem ? parentElem.offsetHeight : 200;
+        // render SVG image for DOM using derived dimensions
         return (
             <NoisyLines
                 numLines={10}
