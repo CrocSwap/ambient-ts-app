@@ -30,7 +30,7 @@ import {
     fetchBlockNumber,
     fetchUserXpData,
 } from '../ambient-utils/api';
-import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
+import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastMainnet';
 import { AppStateContext } from './AppStateContext';
 
 interface ChainDataContextIF {
