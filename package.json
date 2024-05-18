@@ -14,7 +14,7 @@
         "@mui/material": "^5.8.2",
         "@types/react-color": "^3.0.7",
         "@vitejs/plugin-react": "^4.2.1",
-        "@web3modal/ethers5": "^4.1.11",
+        "@web3modal/ethers5": "4.1.11",
         "alea": "^1.0.1",
         "babel-plugin-styled-components": "^2.1.4",
         "d3": "^7.4.4",
