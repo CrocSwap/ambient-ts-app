@@ -1,4 +1,4 @@
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, bigNumToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
@@ -132,6 +132,22 @@ export async function expandPoolStats(
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
         DEFAULT_DECIMALS;
 
+    const baseTotalSupplyBigNum = (
+        await cachedTokenDetails(provider, base, chainId)
+    )?.totalSupply;
+
+    const quoteTotalSupplyBigNum = (
+        await cachedTokenDetails(provider, quote, chainId)
+    )?.totalSupply;
+
+    const baseTotalSupplyNum = baseTotalSupplyBigNum
+        ? bigNumToFloat(baseTotalSupplyBigNum)
+        : undefined;
+
+    const quoteTotalSupplyNum = quoteTotalSupplyBigNum
+        ? bigNumToFloat(quoteTotalSupplyBigNum)
+        : undefined;
+
     const getSpotPrice = async () => {
         const spotPrice = await cachedQuerySpotPrice(
             crocEnv,
@@ -163,6 +179,8 @@ export async function expandPoolStats(
         payload,
         baseDecimals,
         quoteDecimals,
+        baseTotalSupplyNum,
+        quoteTotalSupplyNum,
         basePrice,
         quotePrice,
     );
@@ -172,6 +190,8 @@ function decoratePoolStats(
     payload: PoolStatsServerIF,
     baseDecimals: number,
     quoteDecimals: number,
+    baseTotalSupplyNum: number | undefined,
+    quoteTotalSupplyNum: number | undefined,
     basePrice: number,
     quotePrice: number,
 ): PoolStatsIF {
@@ -183,6 +203,13 @@ function decoratePoolStats(
         payload.quoteVolume / Math.pow(10, quoteDecimals);
     stats.baseFeeDecimal = payload.baseFees / Math.pow(10, baseDecimals);
     stats.quoteFeeDecimal = payload.quoteFees / Math.pow(10, quoteDecimals);
+
+    stats.baseFdvUsd = baseTotalSupplyNum
+        ? (baseTotalSupplyNum / Math.pow(10, baseDecimals)) * basePrice
+        : undefined;
+    stats.quoteFdvUsd = quoteTotalSupplyNum
+        ? (quoteTotalSupplyNum / Math.pow(10, quoteDecimals)) * quotePrice
+        : undefined;
 
     stats.baseTvlUsd = stats.baseTvlDecimal * basePrice;
     stats.quoteTvlUsd = stats.quoteTvlDecimal * quotePrice;
@@ -230,6 +257,8 @@ type PoolStatsIF = PoolStatsServerIF & {
     tvlTotalUsd: number;
     volumeTotalUsd: number;
     feesTotalUsd: number;
+    baseFdvUsd?: number;
+    quoteFdvUsd?: number;
 };
 
 const get24hChange = async (
