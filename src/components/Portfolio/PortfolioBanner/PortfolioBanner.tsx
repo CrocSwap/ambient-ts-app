@@ -10,12 +10,12 @@ import {
     PortfolioBannerLevelContainer,
     PortfolioBannerRectangleContainer,
 } from '../../../styled/Components/Portfolio';
-import accountImage from '../../../assets/images/backgrounds/account_image.svg';
+import NoisyLines from '../../NoisyLines/NoisyLines';
 import {
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
@@ -47,12 +47,15 @@ export default function PortfolioBanner(props: propsIF) {
 
     const ensNameAvailable = ensName !== '';
 
-    const jazziconsSeed = resolvedAddress
+    const addressOfAccountDisplayed = resolvedAddress
         ? resolvedAddress.toLowerCase()
         : userAddress?.toLowerCase() ?? '';
 
     const myJazzicon = (
-        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
+        <Jazzicon
+            diameter={50}
+            seed={jsNumberForAddress(addressOfAccountDisplayed)}
+        />
     );
 
     const truncatedAccountAddress = connectedAccountActive
@@ -66,14 +69,63 @@ export default function PortfolioBanner(props: propsIF) {
 
     const userLink = ensName ?? userAddress;
 
+    // determine size of banner to properly make width of background
+    // DOM id for parent element (needed to know SVG dimensions)
+    const BANNER_ID = 'portfolio_banner_elem';
+    // JSX DOM element to show noisy lines as an SVG, runs when the DOM
+    // ... gets a new address for programmatic generation
+    const noisyLines = useMemo<JSX.Element | null>(() => {
+        // early return if address is not available (first render)
+        if (!addressOfAccountDisplayed) return null;
+        // locate rendered parent element in DOM by element ID
+        const parentElem: HTMLElement | null =
+            document.getElementById(BANNER_ID);
+        // dimensions of parent element with backups
+        const width: number = parentElem ? parentElem.offsetWidth : 1825;
+        const height: number = parentElem ? parentElem.offsetHeight : 200;
+        // render SVG image for DOM using derived dimensions
+        return (
+            <NoisyLines
+                numLines={10}
+                width={width}
+                height={height}
+                opacityStart={0.01}
+                opacityMid={1}
+                opacityEnd={0.0}
+                opacityMidPosition={0.8}
+                amplitudeStart={160}
+                amplitudeMid={150}
+                amplitudeEnd={0.01}
+                amplitudeMidPosition={0.95}
+                noiseScale={0.008}
+                noiseStart={0.01}
+                noiseMid={0.9}
+                noiseEnd={1}
+                noiseMidPosition={0.8}
+                seed={addressOfAccountDisplayed}
+                animationDuration={3000}
+            />
+        );
+    }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
+
+    // early return is needed if the user is logged out
+    if (!addressOfAccountDisplayed) return null;
     return (
         <PortfolioBannerRectangleContainer
-            style={{ backgroundImage: `url(${accountImage})` }}
+            id={BANNER_ID}
+            style={{ position: 'relative' }}
         >
+            {noisyLines}
             <FlexContainer
                 justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
                 alignItems='baseline'
                 gap={16}
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    left: 20,
+                    zIndex: 10,
+                }} // Positioned above the NoisyLines component
             >
                 <PortfolioBannerAccount
                     ensName={ensName}
@@ -108,7 +160,15 @@ export default function PortfolioBanner(props: propsIF) {
                 </DefaultTooltip>
             </FlexContainer>
 
-            <PortfolioBannerLevelContainer isAccountPage>
+            <PortfolioBannerLevelContainer
+                isAccountPage
+                style={{
+                    position: 'absolute',
+                    bottom: 20,
+                    right: 20,
+                    zIndex: 10,
+                }} // Positioned above the NoisyLines component
+            >
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}

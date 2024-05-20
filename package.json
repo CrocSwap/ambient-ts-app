@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.5.1",
+    "version": "2.5.4",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -14,7 +14,8 @@
         "@mui/material": "^5.8.2",
         "@types/react-color": "^3.0.7",
         "@vitejs/plugin-react": "^4.2.1",
-        "@web3modal/ethers5": "^4.1.11",
+        "@web3modal/ethers5": "4.1.11",
+        "alea": "^1.0.1",
         "babel-plugin-styled-components": "^2.1.4",
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
@@ -41,6 +42,7 @@
         "react-router-dom": "^6.3.0",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.2.0",
+        "simplex-noise": "^4.0.1",
         "socket.io-client": "^4.5.1",
         "styled-components": "6.0.3",
         "vite": "^5.2.11",
