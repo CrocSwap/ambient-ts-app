@@ -96,12 +96,13 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
 
     useEffect(() => {
         getID().then((result) => {
-            setId(result._id);
-            setName(result.ensName);
+            setId(result.userData._id);
+            setName(result.userData.ensName);
         });
     }, []);
 
     async function updateUser() {
+        console.log('update user called');
         const response = await fetch(host + '/chat/api/auth/updateUser', {
             method: 'PUT',
             headers: {

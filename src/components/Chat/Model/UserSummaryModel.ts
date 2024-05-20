@@ -5,6 +5,9 @@ export interface UserSummaryModel {
     status: boolean;
     totalMessages: number;
     deletedMessages: number;
+    avatarImage: string;
+    avatarThumbnail: string;
+    avatarCompressed: string;
 }
 
 const hasEnsName = (user: UserSummaryModel) => {

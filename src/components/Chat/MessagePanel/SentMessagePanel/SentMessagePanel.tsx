@@ -7,7 +7,6 @@ import {
     useState,
 } from 'react';
 import { AiOutlineCheck } from 'react-icons/ai';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     DefaultTooltip,
@@ -17,9 +16,11 @@ import { Message } from '../../Model/MessageModel';
 import { User, getUserLabelForReactions } from '../../Model/UserModel';
 import useChatApi from '../../Service/ChatApi';
 import PositionBox from '../PositionBox/PositionBox';
-import styles from './SentMessagePanel.module.css';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
+import { ChatVerificationTypes } from '../../ChatEnums';
+import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
+import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
@@ -29,8 +30,7 @@ import {
 } from '../../ChatUtils';
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import { LikeDislikePayload, MentFoundParam } from '../../ChatIFs';
-import { ChatVerificationTypes } from '../../ChatEnums';
+import styles from './SentMessagePanel.module.css';
 
 interface SentMessageProps {
     message: Message;
@@ -52,7 +52,6 @@ interface SentMessageProps {
     mentionIndex?: number;
     updateLikeDislike: (messageId: string, like: LikeDislikePayload) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    socketRef: any;
     userMap?: Map<string, User>;
     verifyWallet: (
         verificationType: number,
@@ -90,6 +89,8 @@ interface SentMessageProps {
     scrollToMessage: (messageId: string, flashAnimation?: boolean) => void;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     setVerifyOldMessagesStartDate: Dispatch<SetStateAction<Date>>;
+    isFocusMentions: boolean;
+    isMobile: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -434,7 +435,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         word.slice(1) === props.ensName ||
                                         word.slice(1) ===
                                             props.connectedAccountActive
-                                            ? '#7371FC'
+                                            ? 'var(--accent1)'
                                             : 'white',
                                 }}
                             >
@@ -489,7 +490,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         word.slice(1) === props.ensName ||
                                         word.slice(1) ===
                                             props.connectedAccountActive
-                                            ? '#7371FC'
+                                            ? 'var(--accent1)'
                                             : 'white',
                                 }}
                             >
@@ -528,8 +529,8 @@ function SentMessagePanel(props: SentMessageProps) {
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
         if (
-            (isLinkInCrocodileLabsLinks(word) ||
-                isLinkInCrocodileLabsLinksForInput(word)) &&
+            isLinkInCrocodileLabsLinks(word) &&
+            isLinkInCrocodileLabsLinksForInput(word) &&
             isValidUrl(word)
         ) {
             ret = (
@@ -549,19 +550,24 @@ function SentMessagePanel(props: SentMessageProps) {
                 props.message.mentionedWalletID
             ) {
                 mentFound.val = true;
+
                 ret = (
-                    <span
-                        onMouseEnter={(e) => {
-                            props.mentionHoverListener(
-                                e.currentTarget.getBoundingClientRect().top,
-                                props.message.mentionedWalletID,
-                            );
-                        }}
-                        onMouseLeave={props.mentionMouseLeftListener}
-                        className={styles.mentioned_name_token}
-                    >
-                        {word}
-                    </span>
+                    <>
+                        <span> {word.slice(0, word.lastIndexOf('@'))} </span>
+                        <span
+                            onClick={(e) => {
+                                props.mentionHoverListener(
+                                    e.currentTarget.getBoundingClientRect()
+                                        .top - (props.isMobile ? 40 : 0),
+                                    props.message.mentionedWalletID,
+                                );
+                            }}
+                            // onMouseLeave={props.mentionMouseLeftListener}
+                            className={styles.mentioned_name_token}
+                        >
+                            {word.slice(word.lastIndexOf('@'), word.length)}
+                        </span>
+                    </>
                 );
             } else {
                 ret = <span> {word} </span>;
@@ -609,15 +615,6 @@ function SentMessagePanel(props: SentMessageProps) {
         );
     }
 
-    const jazziconsSeed = props.message.walletID.toLowerCase();
-
-    const myJazzicon = (
-        <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
-
-    // function blockUser(userId: string) {
-
-    // }
     function getReplyMessageInfo(_id: string) {
         /* eslint-disable @typescript-eslint/no-explicit-any */
         getRepliedMessageInfo(_id).then((result: any) => {
@@ -769,6 +766,7 @@ function SentMessagePanel(props: SentMessageProps) {
             ${hasSeparator ? styles.has_separator : ''}
             ${
                 props.message.mentionedWalletID === props.address &&
+                props.isFocusMentions &&
                 props.address
                     ? styles.reader_mentioned
                     : ''
@@ -790,6 +788,9 @@ function SentMessagePanel(props: SentMessageProps) {
             onMouseEnter={() => {
                 // setIsMoreButtonPressed(false);
                 setTimestampForChildRefresh(new Date().getTime());
+            }}
+            onClick={() => {
+                props.mentionMouseLeftListener();
             }}
         >
             {!props.message.isDeleted || props.isModerator ? (
@@ -917,6 +918,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 true,
                                             );
                                         }}
+                                        userMap={props.userMap}
                                     />
                                 </div>
                             ) : (
@@ -939,10 +941,22 @@ function SentMessagePanel(props: SentMessageProps) {
                             >
                                 {showAvatar && (
                                     <div
+                                        // onMouseLeave={props.mentionMouseLeftListener}
+                                        // onMouseEnter={(e) => {
+                                        //     props.mentionHoverListener(
+                                        //         e.currentTarget.getBoundingClientRect().top,
+                                        //         props.message.walletID,
+                                        //     );
+                                        // }}
                                         className={styles.avatar_jazzicons}
                                         onClick={goToProfilePage}
                                     >
-                                        {myJazzicon}
+                                        {/* {myJazzicon} */}
+                                        {getAvatarForChat(
+                                            props.userMap?.get(
+                                                props.message.sender,
+                                            ),
+                                        )}
                                     </div>
                                 )}
                                 {!showAvatar && (
@@ -953,7 +967,12 @@ function SentMessagePanel(props: SentMessageProps) {
                                         }}
                                     >
                                         <div className={styles.nft_container}>
-                                            {myJazzicon}
+                                            {/* {myJazzicon} */}
+                                            {getAvatarForChat(
+                                                props.userMap?.get(
+                                                    props.message.sender,
+                                                ),
+                                            )}
                                         </div>
                                     </div>
                                 )}

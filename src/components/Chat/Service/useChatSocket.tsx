@@ -1,14 +1,11 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-import { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
-import {
-    CHAT_BACKEND_URL,
-    CHAT_BACKEND_WSS_URL,
-} from '../../../ambient-utils/constants';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 
 import {
+    encodeSocketIOMessage,
     getLS,
     getUnverifiedMsgList,
     getUserVerifyToken,
@@ -31,13 +28,23 @@ import {
     verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
-import { Message } from '../Model/MessageModel';
-import { User } from '../Model/UserModel';
-import { LikeDislikePayload } from '../ChatIFs';
+import { useSocketIO } from 'react-use-websocket';
 import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from '../ChatConstants/ChatConstants';
+import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
+import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
+import { Message } from '../Model/MessageModel';
+import { User } from '../Model/UserModel';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+
+type ChatSocketListener = {
+    msg: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    listener: (payload: any) => void;
+    componentId: string;
+};
 
 const useChatSocket = (
     room: string,
@@ -53,12 +60,9 @@ const useChatSocket = (
     freezePanel?: () => void,
     activatePanel?: () => void,
 ) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
-    const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
     const [notifications, setNotifications] = useState<Map<string, number>>();
     const [isVerified, setIsVerified] = useState<boolean>(false);
@@ -67,10 +71,98 @@ const useChatSocket = (
     );
     const [userVrfToken, setUserVrfToken] = useState<string>('');
 
+    const roomRef = useRef<string>(room);
+
     const messagesRef = useRef<Message[]>([]);
+    const [listeners, setListeners] = useState<ChatSocketListener[]>([]);
+
     messagesRef.current = messages;
 
+    const getWsQueryParams = () => {
+        let queryParams: ChatWsQueryParams = {
+            roomId: room,
+        };
+        if (address != undefined) {
+            queryParams = { ...queryParams, address: address };
+        }
+        if (ensName != undefined && ensName.length > 0) {
+            queryParams = { ...queryParams, ensName: ensName };
+        }
+
+        return queryParams;
+    };
+
+    const [wsQueryParams, setWsQueryParams] = useState<ChatWsQueryParams>(
+        getWsQueryParams(),
+    );
+
+    const { updateUserAvatarData } = useContext(UserDataContext);
+
+    const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
+    const {
+        lastMessage: socketLastMessage,
+        sendMessage: socketSendMessage,
+        getWebSocket,
+    } = useSocketIO(url, {
+        // fromSocketIO: true,
+        queryParams: { ...wsQueryParams },
+        shouldReconnect: () => true,
+        onOpen: () => {
+            domDebug('connected', getTimeForLog(new Date()));
+        },
+        onClose: () => {
+            domDebug('disconnected', getTimeForLog(new Date()));
+        },
+    });
+
+    useEffect(() => {
+        if (isChatOpen) {
+            getWebSocket()?.close();
+        }
+    }, [isChatOpen]);
+
+    useEffect(() => {
+        setWsQueryParams(getWsQueryParams());
+    }, [address, ensName]);
+
+    useEffect(() => {
+        switch (socketLastMessage.type) {
+            case 'msg-recieve-2':
+                newMsgListener(socketLastMessage.payload);
+                break;
+            case 'message-deleted-listener':
+                deletedMsgListener(socketLastMessage.payload);
+                break;
+            case 'message-updated-listener':
+                updatedMsgListener(socketLastMessage.payload);
+                break;
+            case 'set-avatar-listener':
+                userListLightUpdate(socketLastMessage.payload);
+                handlePossibleAvatarChange(socketLastMessage.payload);
+                if (listeners.some((e) => e.msg === socketLastMessage.type)) {
+                    const willBeCalled = listeners.filter(
+                        (e) => e.msg === socketLastMessage.type,
+                    );
+                    willBeCalled.map((e) => {
+                        e.listener(socketLastMessage.payload);
+                    });
+                }
+                break;
+            case 'noti':
+                notiListener(socketLastMessage.payload);
+                break;
+        }
+    }, [socketLastMessage]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function sendToSocket(msgType: string, payload: any) {
+        const msg = encodeSocketIOMessage(msgType, payload);
+        socketSendMessage(msg, true);
+    }
+
     async function getMsgWithRest(roomInfo: string) {
+        if (roomInfo == undefined || roomInfo == '') return;
+
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
@@ -79,7 +171,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages(data.reverse());
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
         return data.reverse();
     }
@@ -93,7 +184,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages(data.reverse());
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
     }
 
@@ -106,7 +196,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages((prevMessages) => [...data, ...prevMessages]);
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
         return data;
     }
@@ -121,7 +210,6 @@ const useChatSocket = (
         const data = await response.json();
         setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
         setLastMessage(data);
-        setLastMessageText(data.message);
         setMessageUser(data.sender);
 
         return data.reverse();
@@ -296,6 +384,7 @@ const useChatSocket = (
     }
 
     useEffect(() => {
+        if (!isChatOpen) return;
         async function checkVerified() {
             const data = await isUserVerified();
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
@@ -306,18 +395,7 @@ const useChatSocket = (
 
         checkVerified();
 
-        if (!areSubscriptionsEnabled || !isChatOpen) return;
-
-        if (address !== undefined && address != 'undefined') {
-            socketRef.current = io(CHAT_BACKEND_WSS_URL, {
-                path: '/chat/api/subscribe/',
-                query: { roomId: room, address, ensName },
-            });
-        }
-
-        if (isChatOpen) {
-            getMsg();
-        }
+        // if (!areSubscriptionsEnabled || !isChatOpen) return;
 
         async function getRest() {
             if (freezePanel) freezePanel();
@@ -327,9 +405,10 @@ const useChatSocket = (
                     : await getMsgWithRest(room);
             setMessages(data.reverse());
             if (data.length > 0) {
-                setLastMessage(data[data.length - 1]);
-                setLastMessageText(data[data.length - 1].text);
-                setMessageUser(data[data.length - 1].sender);
+                if (data[data.length - 1]) {
+                    setLastMessage(data[data.length - 1]);
+                    setMessageUser(data[data.length - 1].sender);
+                }
             }
 
             const userListData = await getUserListWithRest();
@@ -343,80 +422,17 @@ const useChatSocket = (
         }
 
         getRest();
-
-        if (socketRef && socketRef.current) {
-            // eslint-disable-next-line
-            socketRef.current.on('msg-recieve-2', (data: any) => {
-                if (
-                    data &&
-                    data.sender &&
-                    data.sender === currentUserID &&
-                    !data.isVerified
-                ) {
-                    let nonVrfMessages = getLS(
-                        LS_USER_NON_VERIFIED_MESSAGES,
-                        address,
-                    );
-                    const newMsgToken = ', ' + data._id;
-                    nonVrfMessages = nonVrfMessages
-                        ? (nonVrfMessages += newMsgToken)
-                        : data._id + '';
-                    setLS(
-                        LS_USER_NON_VERIFIED_MESSAGES,
-                        nonVrfMessages,
-                        address,
-                    );
-                }
-                setMessages([...messagesRef.current, data]);
-                if (messagesRef.current[messagesRef.current.length - 1]) {
-                    setLastMessage(data);
-                    setLastMessageText(data.message);
-                    setMessageUser(data.sender);
-                }
-            });
-
-            socketRef.current.on('noti', (data: any) => {
-                if (notifications) {
-                    const checkVal = notifications.get(data.roomInfo);
-                    if (checkVal != undefined) {
-                        setNotifications(
-                            notifications.set(data.roomInfo, checkVal + 1),
-                        );
-                    } else {
-                        setNotifications(notifications.set(data.roomInfo, 1));
-                    }
-                } else {
-                    const notificationsMap = new Map<string, number>();
-                    notificationsMap.set(data.roomInfo, 1);
-                    setNotifications(notificationsMap);
-                }
-            });
-        }
-
-        return () => {
-            if (socketRef && socketRef.current) {
-                socketRef.current.disconnect();
-            }
-        };
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
+
     useEffect(() => {
-        if (socketRef.current) {
-            socketRef.current.on('message-deleted-listener', (data: any) => {
-                updateMessages(data);
-            });
-            socketRef.current.on('message-updated-listener', (data: any) => {
-                updateMessages(data);
-            });
-        }
+        if (roomRef.current == room) return;
+        sendToSocket('join-room', { roomInfo: room, oldRoom: roomRef.current });
+        roomRef.current = room;
+    }, [room]);
+
+    useEffect(() => {
         updateUserCache();
     }, [messages]);
-
-    async function getMsg() {
-        if (!socketRef.current) return;
-        await socketRef.current.emit('msg-recieve', {
-            room: room,
-        });
-    }
 
     async function deleteMsgFromList(msgId: string) {
         const payload = {
@@ -437,7 +453,7 @@ const useChatSocket = (
         data.message.deletedMessageText = 'This message has deleted';
         if (data) {
             const msg = data.message;
-            socketRef.current.emit('message-deleted', { ...data.message });
+            sendToSocket('message-deleted', { ...data.message });
             const newMessageList = messages.map((e) => {
                 if (e._id == msg._id) {
                     return msg;
@@ -463,7 +479,7 @@ const useChatSocket = (
         repliedMessage?: string | undefined,
         repliedMessageRoomInfo?: string | undefined,
     ) {
-        socketRef.current.emit('send-msg', {
+        const payload = {
             from: currentUser,
             message: msg,
             roomInfo: room,
@@ -475,7 +491,9 @@ const useChatSocket = (
             repliedMessage: repliedMessage,
             repliedMessageRoomInfo: repliedMessageRoomInfo,
             senderToken: userVrfToken,
-        });
+        };
+
+        sendToSocket('send-msg', payload);
     }
 
     async function addReaction(
@@ -495,7 +513,7 @@ const useChatSocket = (
             body: JSON.stringify(payload),
         });
         const data = await response.json();
-        socketRef.current.emit('message-updated', { ...data.data.message });
+        sendToSocket('message-updated', { ...data.data.message });
 
         return data;
     }
@@ -536,17 +554,124 @@ const useChatSocket = (
         setMessages([...newMessageList]);
     };
 
+    async function updateUserWithAvatarImage(
+        userId: string,
+        walletID: string,
+        avatarImage: string,
+        avatarThumbnail?: string,
+        avatarCompressed?: string,
+    ) {
+        sendToSocket('set-avatar', {
+            userId,
+            walletID,
+            avatarImage,
+            avatarThumbnail,
+            avatarCompressed,
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function userListLightUpdate(data: any) {
+        const newUsersList: User[] = [];
+
+        let refreshMessages = false;
+        users.map((e) => {
+            if (e._id == data.userId) {
+                newUsersList.push({ ...e, avatarImage: data.avatarImage });
+                refreshMessages = true;
+            } else {
+                newUsersList.push({ ...e });
+            }
+        });
+
+        if (!refreshMessages) return;
+
+        setUsers(newUsersList);
+
+        const usmp = new Map<string, User>();
+        newUsersList.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setMessages([...messagesRef.current]);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function handlePossibleAvatarChange(data: any) {
+        if (data.walletID) {
+            updateUserAvatarData(data.walletID, {
+                avatarImage: data.avatarImage,
+                avatarThumbnail: data.avatarThumbnail,
+                avatarCompressed: data.avatarCompressed,
+            });
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newMsgListener = (data: any) => {
+        if (data.roomInfo !== room && room != 'Admins') return;
+        if (
+            data &&
+            data.sender &&
+            data.sender === currentUserID &&
+            !data.isVerified
+        ) {
+            let nonVrfMessages = getLS(LS_USER_NON_VERIFIED_MESSAGES, address);
+            const newMsgToken = ', ' + data._id;
+            nonVrfMessages = nonVrfMessages
+                ? (nonVrfMessages += newMsgToken)
+                : data._id + '';
+            setLS(LS_USER_NON_VERIFIED_MESSAGES, nonVrfMessages, address);
+        }
+        setMessages([...messagesRef.current, data]);
+        if (messagesRef.current[messagesRef.current.length - 1]) {
+            setLastMessage(data);
+            setMessageUser(data.sender);
+        }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const deletedMsgListener = (data: any) => {
+        updateMessages(data);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updatedMsgListener = (data: any) => {
+        updateMessages(data);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const notiListener = (data: any) => {
+        if (notifications) {
+            const checkVal = notifications.get(data.roomInfo);
+            if (checkVal != undefined) {
+                setNotifications(
+                    notifications.set(data.roomInfo, checkVal + 1),
+                );
+            } else {
+                setNotifications(notifications.set(data.roomInfo, 1));
+            }
+        } else {
+            const notificationsMap = new Map<string, number>();
+            notificationsMap.set(data.roomInfo, 1);
+            setNotifications(notificationsMap);
+        }
+    };
+
+    const addListener = (listener: ChatSocketListener) => {
+        if (!listeners.some((e) => e.componentId === listener.componentId)) {
+            setListeners([...listeners, listener]);
+        }
+    };
+
     return {
         messages,
-        getMsg,
         sendMsg,
         lastMessage,
         messageUser,
-        lastMessageText,
         users,
         notifications,
         updateLikeDislike,
-        socketRef,
         isVerified,
         verifyUser,
         userMap,
@@ -561,6 +686,8 @@ const useChatSocket = (
         getUserSummaryDetails,
         updateUnverifiedMessages,
         getMentionsWithRest,
+        updateUserWithAvatarImage,
+        addListener,
     };
 };
 

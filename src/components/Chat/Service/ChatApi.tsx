@@ -1,6 +1,18 @@
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import {
+    // getUserAvatarEndpoint,
+    // getUserAvatarImageByAccountEndpoint,
+    getUserVerifyToken,
+    // updateUserWithAvatarImageEndpoint,
+} from '../ChatUtils';
+import {
+    getTopRoomsEndpoint,
+    getUserAvatarEndpoint,
+    getUserAvatarImageByAccountEndpoint,
+    updateUserWithAvatarImageEndpoint,
+} from '../ChatConstants/ChatEndpoints';
 
 const host = CHAT_BACKEND_URL;
 
@@ -21,6 +33,19 @@ const useChatApi = () => {
     }
 
     async function getID() {
+        if (userAddress) {
+            const response = await fetch(
+                host + '/chat/api/auth/getUserByAccount/' + userAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
+    async function getIDByUserAddress(userAddress: string) {
         if (userAddress) {
             const response = await fetch(
                 host + '/chat/api/auth/getUserByAccount/' + userAddress,
@@ -84,6 +109,8 @@ const useChatApi = () => {
         ensName: string,
         userCurrentPool: string,
     ) {
+        if (!_id) return;
+
         const response = await fetch(host + '/chat/api/auth/updateUser', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -143,6 +170,65 @@ const useChatApi = () => {
 
         return data;
     }
+
+    async function getUserAvatarImageAndID(userAddress: string) {
+        if (userAddress) {
+            const response = await fetch(
+                CHAT_BACKEND_URL +
+                    getUserAvatarImageByAccountEndpoint +
+                    '/' +
+                    userAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
+    async function updateUserWithAvatarImage(
+        walletID: `0x${string}`,
+        userAvatarImage: string,
+    ) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + updateUserWithAvatarImageEndpoint,
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: walletID,
+                    avatarImage: userAvatarImage,
+                    verifyToken: getUserVerifyToken(walletID),
+                }),
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
+
+    async function getUserAvatar(walletID: string) {
+        if (walletID && walletID.length > 0) {
+            const response = await fetch(
+                CHAT_BACKEND_URL + getUserAvatarEndpoint + '/' + walletID,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+        return '';
+    }
+
+    async function getTopRooms() {
+        const response = await fetch(CHAT_BACKEND_URL + getTopRoomsEndpoint, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        return data;
+    }
+
     return {
         getStatus,
         getID,
@@ -154,6 +240,11 @@ const useChatApi = () => {
         saveUser,
         deleteMessage,
         getRepliedMessageInfo,
+        getUserAvatarImageAndID,
+        updateUserWithAvatarImage,
+        getUserAvatar,
+        getIDByUserAddress,
+        getTopRooms,
     };
 };
 export default useChatApi;

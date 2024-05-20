@@ -1,8 +1,15 @@
+import { PoolIF } from '../../ambient-utils/types';
 import {
+    AVATAR_TYPES_SET,
     CROCODILE_LABS_LINKS,
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
 } from './ChatConstants/ChatConstants';
+import {
+    ChatRoomIF,
+    ChatWsDecodedMessage,
+    GetTopPoolsResponse,
+} from './ChatIFs';
 import { Message } from './Model/MessageModel';
 
 export const getLS = (key: string, personalize?: string) => {
@@ -80,7 +87,7 @@ export const isLink = (url: string) => {
     return urlPattern.test(url);
 };
 
-const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
+const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac|finance)\b.*$/;
 
 export const filterMessage = (message: string) => {
     return blockPattern.test(message);
@@ -94,25 +101,19 @@ export const formatURL = (url: string) => {
 };
 
 export const isValidUrl = (urlString: string) => {
-    // Correct the format if it starts with "https:" followed directly by a domain name
-    let formattedUrlString = urlString;
+    let formattedUrlString = urlString.toLowerCase();
     if (
         formattedUrlString.startsWith('https:') &&
         !formattedUrlString.startsWith('https://')
     ) {
         formattedUrlString = formattedUrlString.replace('https:', 'https://');
     }
-
-    // Check for obviously incorrect protocols or malformed URLs
     if (
         formattedUrlString.includes(':') &&
         !formattedUrlString.match(/^https?:\/\/.*/)
     ) {
         return false;
     }
-
-    // Prepend 'https://' to strings that don't start with 'http://' or 'https://'
-    // This is to handle cases like 'twitter.com' where the protocol is missing
     if (
         !formattedUrlString.startsWith('http://') &&
         !formattedUrlString.startsWith('https://')
@@ -121,38 +122,57 @@ export const isValidUrl = (urlString: string) => {
     }
 
     try {
-        // Attempt to parse the URL
-
-        // Further validation can be added here if necessary
         return true;
     } catch (e) {
-        // Parsing failed, so it's not a valid URL
         return false;
     }
 };
 
-export const isLinkInCrocodileLabsLinks = (word: string) => {
-    return CROCODILE_LABS_LINKS.some((link: string) => {
-        const linkUrl = new URL(link);
-        const linkDomain = linkUrl.hostname.replace(/^www\./, ''); // Remove 'www.' prefix if present
-        const wordDomain = word
-            .replace(/^https?:\/\/(www\.)?/, '')
-            .split('/')[0]; // Remove scheme and 'www.', then get the domain part
-        return linkDomain === wordDomain;
-    });
-};
+export function isLinkInCrocodileLabsLinks(input: string) {
+    let hostname = input.toLowerCase();
 
-export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
-    return CROCODILE_LABS_LINKS.some((link: string) => {
+    if (input.includes('://')) {
         try {
-            const url = new URL(link);
-            const domain = url.hostname;
-            return word.toLowerCase().includes(domain);
+            const inputUrl = new URL(input);
+            hostname = inputUrl.hostname;
         } catch (error) {
-            console.error('Invalid URL:', link);
             return false;
         }
-    });
+    }
+
+    const hostnameParts = hostname.split(/[.,:?#]+/).filter(Boolean);
+
+    for (const link of CROCODILE_LABS_LINKS) {
+        const domain = new URL(link).hostname.toLowerCase();
+        const domainParts = domain.split(/[.,:?#]+/).filter(Boolean);
+
+        if (domainParts.every((part, index) => hostnameParts[index] === part)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
+    try {
+        const normalizedWord = word.startsWith('http')
+            ? word
+            : `https://${word}`;
+        normalizedWord.toLowerCase();
+        const wordUrl = new URL(normalizedWord);
+        const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase();
+
+        return CROCODILE_LABS_LINKS.some((link) => {
+            const linkUrl = new URL(link);
+            const linkDomain = linkUrl.hostname
+                .replace(/^www\./, '')
+                .toLowerCase();
+            return wordDomain === linkDomain;
+        });
+    } catch (error) {
+        return false;
+    }
 };
 
 export const isMessageIdStoredInLS = (address: string, messageId: string) => {
@@ -170,4 +190,99 @@ export const isMessageIdStoredInLS = (address: string, messageId: string) => {
             return false;
         }
     }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const encodeSocketIOMessage = (msgType: string, payload: any) => {
+    return `42["${msgType}",${JSON.stringify(payload)}]`;
+};
+
+export const decodeSocketIOMessage = (msg: string) => {
+    const ret: ChatWsDecodedMessage = {};
+
+    if (msg.length > 2 && msg.indexOf('42[') == 0) {
+        msg = msg.substring(3);
+        if (msg.length > 0) {
+            const parsed = JSON.parse(msg);
+            if (parsed.length > 1) {
+                ret.msgType = parsed[0];
+                ret.payload = parsed[1];
+            }
+        }
+    }
+
+    return ret;
+};
+
+export const getDefaultRooms = (isModerator: boolean) => {
+    const ret: ChatRoomIF[] = [
+        {
+            name: 'Global',
+            shownName: 'Global 🌍',
+        },
+    ];
+
+    if (isModerator) {
+        ret.push({
+            name: 'Admins',
+            shownName: 'Admins 👑',
+        });
+    }
+
+    return ret;
+};
+
+export const createRoomIF = (
+    resp: GetTopPoolsResponse,
+    popularityScore?: number,
+) => {
+    let ret: ChatRoomIF;
+    if (resp.roomInfo.indexOf('/') >= 0) {
+        ret = {
+            name: resp.roomInfo,
+            base: resp.roomInfo.split('/')[0].trim(),
+            quote: resp.roomInfo.split('/')[1].trim(),
+            popularity: popularityScore,
+        };
+    } else {
+        ret = {
+            name: resp.roomInfo,
+            popularity: popularityScore,
+        };
+    }
+
+    try {
+        if (popularityScore && popularityScore > 0) {
+            let append = '';
+            for (let i = 0; i < popularityScore; i++) {
+                append += '🔥';
+            }
+
+            ret.shownName = `${ret.name} ${append}`;
+        }
+    } catch {
+        console.error('Error creating roomIF');
+    }
+
+    return ret;
+};
+
+export const getRoomNameFromPool = (pool: PoolIF) => {
+    return `${pool.base.symbol} / ${pool.quote.symbol}`;
+};
+
+export const getRoomObjFromBaseQuote = (base: string, quote: string) => {
+    return {
+        name: `${base} / ${quote}`,
+        base: base,
+        quote: quote,
+    };
+};
+
+export const isAutoGeneratedAvatar = (avatarImage?: string) => {
+    return (
+        avatarImage &&
+        avatarImage.length > 0 &&
+        AVATAR_TYPES_SET.has(avatarImage)
+    );
 };

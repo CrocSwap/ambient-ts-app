@@ -17,6 +17,7 @@ import PAC from './PAC.png';
 import PXETH from './PXETH.png';
 import AXLUSDC from './AXLUSDC.png';
 import ETHX from './ETHX.svg';
+import SOL from './SOL.svg';
 import JUICE from './JUICE.svg';
 import EZETH from './EZETH.png';
 import GLORY from './GLORY.png';
@@ -59,6 +60,7 @@ export {
     PXETH,
     AXLUSDC,
     ETHX,
+    SOL,
     JUICE,
     EZETH,
     GLORY,

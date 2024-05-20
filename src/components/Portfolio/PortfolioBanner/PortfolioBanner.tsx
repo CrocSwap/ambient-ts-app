@@ -81,6 +81,7 @@ export default function PortfolioBanner(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     truncatedAccountAddress={truncatedAccountAddress}
                     jazziconsToDisplay={jazziconsToDisplay}
+                    connectedAccountActive={connectedAccountActive}
                 />
                 <DefaultTooltip
                     interactive

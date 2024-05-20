@@ -20,4 +20,5 @@ export interface Message {
     deletedMessageText: string;
     reactions: ReactionModel;
     isVerified?: boolean;
+    avatarImage: string;
 }

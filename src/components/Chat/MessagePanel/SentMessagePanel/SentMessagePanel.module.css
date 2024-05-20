@@ -13,6 +13,7 @@
 .avatar_jazzicons {
     display: flex;
     margin-top: .5rem;
+    cursor: pointer;
 }
 
 .avatar_jazzicons canvas {
@@ -275,7 +276,7 @@
     width: 100%;
     height: auto;
     min-height: 53%;
-    padding: 0px 4px 8px;
+    padding: 4px 0px;
     box-sizing: border-box;
     flex: none;
     order: 4;
@@ -681,7 +682,6 @@
     /* right: -14rem; */
     /* transform: translateX(-50%) translateY(-1.6rem);  */
     opacity: 0;
-    background: #12171f;
     /* border: 1px solid var(--accent1); */
     /* border: 1px solid rgba(255,255,255,.2); */
     /* box-shadow: 0px 0px 4px var(--accent1); */
@@ -778,12 +778,12 @@
 }
 
 .user_reacted{
-    background: #5f5eff;
-    box-shadow: 0px 0px 17px 3px #4a47ff86;
+    background: var(--accent1);
+    box-shadow: 0px 0px 17px 3px color-mix(in srgb, var(--accent1) 50%, transparent);
 }
 
 .user_reaction_label{
-    color: #817eff;
+    color: var(--accent1);
     font-weight: bold;
 }
 
@@ -804,6 +804,7 @@
 
 .reader_mentioned{
       box-shadow: 0px 0px 2px var(--accent1);
+      background: color-mix(in srgb, var(--accent1) 15%, transparent);
     /* background: #7371fc26; */
 }
 .reader_mentioned:hover{
@@ -856,7 +857,7 @@
 }
 
 .link_token{
-    color: #7371FC;
+    color: var(--accent1);
     text-decoration: underline;
     cursor: pointer;
 }
@@ -864,7 +865,16 @@
 .mentioned_name_token{
     font-weight: bold;
     cursor: pointer;
-    color: #7371FC;
+    color: var(--accent1);
+    padding: .15rem .2rem;
+    transition: all .2s ease-in-out;
+}
+
+.mentioned_name_token:hover{
+    background: rgba(255,255,255, .1);
+    box-shadow: 0 0 10px 0 color-mix(in srgb, var(--accent1) 20%,  transparent);
+    color:color-mix(in srgb, var(--accent1) 50%, white);
+    border-radius: .4rem;
 }
 
 .vrf_msg_dbg{

@@ -1,18 +1,20 @@
 import { motion } from 'framer-motion';
 import { Dispatch, SetStateAction } from 'react';
-import { GrClose } from 'react-icons/gr';
-import styles from './ReplyMessage.module.css';
-import { Message } from '../../Model/MessageModel';
-import { formatMessageTime, getShownName } from '../../ChatUtils';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineCheck } from 'react-icons/ai';
+import { GrClose } from 'react-icons/gr';
+import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { getAvatarForChat } from '../../ChatRenderUtils';
+import { formatMessageTime, getShownName } from '../../ChatUtils';
+import { Message } from '../../Model/MessageModel';
+import { User } from '../../Model/UserModel';
+import styles from './ReplyMessage.module.css';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
     currentUserId?: string;
     messageObj?: Message;
     repliedMessageBoxClickListener?: () => void;
+    userMap?: Map<string, User>;
 }
 
 export default function ReplyMessage(props: propsIF) {
@@ -26,15 +28,19 @@ export default function ReplyMessage(props: propsIF) {
         return '';
     }
 
-    const replyJazzIcon = (
-        <Jazzicon
-            svgStyles={{ marginBottom: '8px' }}
-            diameter={10}
-            seed={jsNumberForAddress(
-                props.messageObj?.walletID ? props.messageObj.walletID : '',
-            )}
-        />
+    const replyJazzIcon = getAvatarForChat(
+        props.userMap?.get(
+            props.messageObj?.sender ? props.messageObj.sender : '',
+        ),
+        10,
     );
+    // <Jazzicon
+    //     svgStyles={{ marginBottom: '8px' }}
+    //     diameter={10}
+    //     seed={jsNumberForAddress(
+    //         props.messageObj?.walletID ? props.messageObj.walletID : '',
+    //     )}
+    // />
 
     const renderMsgContent = (shorten: boolean) => {
         if (props.messageObj?.isDeleted) {

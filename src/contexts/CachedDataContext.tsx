@@ -22,6 +22,7 @@ import {
     memoizeGetLiquidityFee,
     LiquidityFeeFn,
 } from '../ambient-utils/dataLayer';
+import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
 interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;
@@ -33,6 +34,7 @@ interface CachedDataIF {
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
     cachedFetchBlockTime: FetchBlockTimeFn;
+    cachedFetchNFT: NFTQueryFn;
 }
 
 export const CachedDataContext = createContext<CachedDataIF>(
@@ -53,6 +55,7 @@ export const CachedDataContextProvider = (props: {
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
         cachedFetchBlockTime: memoizeFetchBlockTime(),
+        cachedFetchNFT: memoizeFetchNFT(),
     };
 
     return (

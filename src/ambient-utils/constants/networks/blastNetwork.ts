@@ -4,8 +4,8 @@ import {
     blastUSDB,
     blastEzETH,
     blastWrsETH,
-    blastYES,
-    blastJUICE,
+    blastORBIT,
+    blastUSDPLUS,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -21,27 +21,9 @@ export const BLAST_RPC_URL =
 const chain = {
     chainId: 81457,
     name: 'Blast',
-    network: 'blast',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: [BLAST_RPC_URL],
-        },
-        public: {
-            http: [BLAST_RPC_URL],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Blastscan',
-            url: 'https://blastscan.io',
-        },
-    },
-    testnet: false,
+    currency: 'ETH',
+    rpcUrl: 'https://rpc.blast.io/',
+    explorerUrl: 'https://blastscan.io',
 };
 
 export const blast: NetworkIF = {
@@ -54,10 +36,10 @@ export const blast: NetworkIF = {
     defaultPair: [blastETH, blastUSDB],
     topPools: [
         new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastEzETH, blastETH, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastJUICE, blastUSDB, lookupChain('0x13e31').poolIndex),
         new TopPool(blastWrsETH, blastETH, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastETH, blastYES, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastEzETH, blastETH, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastUSDPLUS, blastUSDB, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastETH, blastORBIT, lookupChain('0x13e31').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

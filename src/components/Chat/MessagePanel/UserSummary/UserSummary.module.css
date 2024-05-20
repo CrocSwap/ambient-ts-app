@@ -10,8 +10,10 @@
     top: 0;
     font-size: .82rem;
     transform: translateY(0%);
-    background: #242f3f;
-    backdrop-filter: blur(5px);
+    background: color-mix(in srgb, var(--dark1) 40%, transparent);
+    background: color-mix(in srgb, var(--accent1) 15%, rgba(0,0,0, .4));
+    /* background: rgba(0,0,0, .6); */
+    backdrop-filter: blur(10px);
     box-shadow: 0 5px 10px 0 rgba(0,0,0, .2);
     z-index: 99;
     border-radius: .4rem;
@@ -43,6 +45,7 @@
 
 .summary_header{
     padding-left: 1rem;
+    cursor: pointer;
     /* border-bottom: 1px solid rgba(0,0,0, .4); */
 }
 

@@ -62,7 +62,7 @@ export interface ContainerProps {
     boxShadow?: BoxShadows;
 
     // Flex Props
-    flexDirection?: 'row' | 'column';
+    flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     grow?: boolean;
 
     // Grid Props
