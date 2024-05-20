@@ -72,8 +72,8 @@ export function decorateForLiquidityArea(
     const d3BidColor = chartThemeColors.darkStrokeColor?.copy();
     const d3AskColor = chartThemeColors.lightStrokeColor?.copy();
 
-    if (d3BidColor) d3BidColor.opacity = 0.7;
-    if (d3AskColor) d3AskColor.opacity = 0.7;
+    if (d3BidColor) d3BidColor.opacity = 0.3;
+    if (d3AskColor) d3AskColor.opacity = 0.3;
 
     series.decorate(
         (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {

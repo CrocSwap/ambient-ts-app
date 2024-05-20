@@ -64,6 +64,7 @@ import {
     checkShowLatestCandle,
     crosshair,
     fillLiqAdvanced,
+    roundToNearestPreset,
     findSnapTime,
     formatTimeDifference,
     getCandleCount,
@@ -1966,16 +1967,11 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
 
-                                    rangeWidthPercentage = Math.floor(
+                                    rangeWidthPercentage = roundToNearestPreset(
                                         Math.abs(
                                             pinnedTick - currentPoolPriceTick,
                                         ) / 100,
                                     );
-
-                                    rangeWidthPercentage =
-                                        rangeWidthPercentage < 1
-                                            ? 1
-                                            : rangeWidthPercentage;
 
                                     const offset = rangeWidthPercentage * 100;
 
@@ -2004,16 +2000,12 @@ export default function Chart(props: propsIF) {
                                             lookupChain(chainId).gridSize,
                                         );
 
-                                    rangeWidthPercentage = Math.floor(
+                                    rangeWidthPercentage = roundToNearestPreset(
                                         Math.abs(
                                             currentPoolPriceTick - pinnedTick,
                                         ) / 100,
                                     );
 
-                                    rangeWidthPercentage =
-                                        rangeWidthPercentage < 1
-                                            ? 1
-                                            : rangeWidthPercentage;
                                     const offset = rangeWidthPercentage * 100;
 
                                     const lowTick =
@@ -2186,15 +2178,7 @@ export default function Chart(props: propsIF) {
                                 location.pathname.includes('reposition')) &&
                             rangeWidthPercentage
                         ) {
-                            setSimpleRangeWidth(
-                                Math.floor(
-                                    rangeWidthPercentage < 1
-                                        ? 1
-                                        : rangeWidthPercentage > 100
-                                        ? 100
-                                        : rangeWidthPercentage,
-                                ),
-                            );
+                            setSimpleRangeWidth(rangeWidthPercentage);
                         }
 
                         onBlurRange(
@@ -2701,12 +2685,9 @@ export default function Chart(props: propsIF) {
                             lookupChain(chainId).gridSize,
                         );
 
-                        rangeWidthPercentage = Math.floor(
+                        rangeWidthPercentage = roundToNearestPreset(
                             Math.abs(tickValue - currentPoolPriceTick) / 100,
                         );
-
-                        rangeWidthPercentage =
-                            rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     } else {
                         tickValue = getPinnedTickFromDisplayPrice(
                             isDenomBase,
@@ -2717,12 +2698,9 @@ export default function Chart(props: propsIF) {
                             lookupChain(chainId).gridSize,
                         );
 
-                        rangeWidthPercentage = Math.floor(
+                        rangeWidthPercentage = roundToNearestPreset(
                             Math.abs(currentPoolPriceTick - tickValue) / 100,
                         );
-
-                        rangeWidthPercentage =
-                            rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     }
                 }
 
@@ -2753,15 +2731,7 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                setSimpleRangeWidth(
-                    Math.floor(
-                        rangeWidthPercentage < 1
-                            ? 1
-                            : rangeWidthPercentage > 100
-                            ? 100
-                            : rangeWidthPercentage,
-                    ),
-                );
+                setSimpleRangeWidth(rangeWidthPercentage);
             } else {
                 const value =
                     scaleData?.yScale.invert(event.offsetY) < 0
@@ -4036,6 +4006,18 @@ export default function Chart(props: propsIF) {
         isDragActive,
         isMagnetActiveLocal,
     ]);
+
+    useEffect(() => {
+        const visibilitychange = function () {
+            render();
+        };
+
+        document.addEventListener('visibilitychange', visibilitychange);
+
+        return () => {
+            document.removeEventListener('visibilitychange', visibilitychange);
+        };
+    }, []);
 
     useEffect(() => {
         const canvas = d3
