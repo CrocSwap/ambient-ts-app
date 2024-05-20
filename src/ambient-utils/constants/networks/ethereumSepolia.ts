@@ -14,27 +14,9 @@ const PROVIDER_KEY =
 const chain = {
     chainId: 11155111,
     name: 'Sepolia',
-    network: 'sepolia',
-    nativeCurrency: {
-        name: 'Sepolia Ether',
-        symbol: 'SEP',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: ['https://sepolia.infura.io/v3/' + PROVIDER_KEY],
-        },
-        public: {
-            http: ['https://sepolia.infura.io/v3/' + PROVIDER_KEY],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Etherscan',
-            url: 'https://sepolia.etherscan.io',
-        },
-    },
-    testnet: true,
+    currency: 'ETH',
+    rpcUrl: 'https://rpc.sepolia.org',
+    explorerUrl: 'https://sepolia.etherscan.io',
 };
 
 export const ethereumSepolia: NetworkIF = {

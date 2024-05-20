@@ -38,11 +38,18 @@ export const fetchContractDetails = async (
     const contract = new Contract(address, ERC20_ABI, provider);
 
     let decimals,
+        totalSupply,
         symbol,
         name = undefined;
 
     try {
         decimals = await contract.decimals();
+    } catch (error) {
+        console.warn({ error });
+    }
+
+    try {
+        totalSupply = await contract.totalSupply();
     } catch (error) {
         console.warn({ error });
     }
@@ -74,6 +81,7 @@ export const fetchContractDetails = async (
         address: address,
         chainId: parseInt(_chainId),
         decimals: decimals,
+        totalSupply: totalSupply,
         symbol: symbol,
         name: name,
         fromList: provenance,
