@@ -14,7 +14,8 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 
 export default function TableInfo() {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
-    const { poolData } = useContext(PoolContext);
+    const { poolData, baseTokenFdvDisplay, quoteTokenFdvDisplay } =
+        useContext(PoolContext);
     const { liquidityFee } = useContext(GraphDataContext);
 
     const {
@@ -96,6 +97,18 @@ export default function TableInfo() {
                                     '...'
                                 }%`}
                             />
+                            {baseTokenFdvDisplay && (
+                                <DetailedBox
+                                    label={`${baseToken.symbol} FDV`}
+                                    value={baseTokenFdvDisplay}
+                                />
+                            )}
+                            {quoteTokenFdvDisplay && (
+                                <DetailedBox
+                                    label={`${quoteToken.symbol} FDV`}
+                                    value={quoteTokenFdvDisplay}
+                                />
+                            )}
                         </GridContainer>
                         {/* second 4 row items go here */}
                         <GridContainer numCols={4} gap={8}></GridContainer>
