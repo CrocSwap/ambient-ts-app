@@ -7,6 +7,7 @@ import TableInfoTabs from './TableInfoTabs';
 
 // TODO: DO NOT DELETE THIS FILE
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CompletedTableInfo() {
     const detailedData = [
         { label: 'Market Cap:', value: '$69m' },
