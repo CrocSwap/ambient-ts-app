@@ -38,6 +38,7 @@ import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
 import ESE from './ESE.jpg';
+import RSETH from './RSETH.webp';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -81,4 +82,5 @@ export {
     PANDA,
     YIELD,
     ESE,
+    RSETH,
 };
