@@ -26,7 +26,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-
+    // eslint-disable-next-lin
     const [, copy] = useCopyToClipboard();
     const {
         snackbar: { open: openSnackbar },
@@ -37,15 +37,23 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     const copyChartToClipboard = async () => {
+        const excludeSelectors = ['#points-banner-container'];
         if (canvasRef.current && chartCanvasRef.current) {
             const blob = isChartFullScreen
-                ? await printDomToImage(chartCanvasRef.current, '#171d27')
+                ? await printDomToImage(
+                      chartCanvasRef.current,
+                      '#171d27',
+                      undefined,
+                      undefined,
+                      excludeSelectors,
+                  )
                 : await printDomToImage(
                       canvasRef.current,
                       '#171d27',
                       undefined,
                       // height, trade charts header + chart height
                       50 + chartHeights.current,
+                      excludeSelectors,
                   );
             if (blob) {
                 copy(blob);
