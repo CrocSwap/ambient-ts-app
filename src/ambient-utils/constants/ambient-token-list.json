@@ -131,6 +131,14 @@
             "logoURI": "https://miablastsoff.com/images/logo.png"
         },
         {
+            "address": "0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "BIG",
+            "symbol": "BIG",
+            "logoURI": ""
+        },
+        {
             "address": "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
             "chainId": 81457,
             "decimals": 18,
