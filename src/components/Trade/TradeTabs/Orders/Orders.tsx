@@ -354,7 +354,7 @@ function Orders(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? 'auto' : '16px auto'}
+                margin={isSmallScreen ? '40px auto' : '16px auto'}
                 background='dark1'
                 flexDirection={isSmallScreen ? 'column' : 'row'}
             >

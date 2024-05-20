@@ -552,3 +552,18 @@ export function checkShowLatestCandle(
     }
     return false;
 }
+
+export function roundToNearestPreset(closest: number) {
+    if (closest < 1) {
+        if (closest < 0.1) {
+            return 0.1;
+        }
+        return Number(closest.toFixed(2));
+    }
+
+    if (closest > 100) {
+        return 100;
+    }
+
+    return Math.floor(closest);
+}
