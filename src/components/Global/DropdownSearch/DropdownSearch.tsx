@@ -202,11 +202,6 @@ const DropdownSearch = () => {
         <FlexContainer flexDirection='row' gap={8} justifyContent='flex-start'>
             {optionButtons.map((option) => (
                 <motion.button
-                    whileHover={{
-                        scale: 1.2,
-                        transition: { duration: 1 },
-                    }}
-                    whileTap={{ scale: 0.9 }}
                     key={option.id}
                     onClick={() => handleClick(option)}
                     className={`${styles.option_button} ${
