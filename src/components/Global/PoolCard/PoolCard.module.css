@@ -99,7 +99,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-fill-color: transparent;
 }
 .vol {
     font-weight: 300;
@@ -138,8 +137,7 @@
 
     letter-spacing: -0.02em;
     color: var(--text1);
-    font-family: sans-serif;
-    /* font-family: var(--mono); */
+    font-family: var(--font-logo);
 }
 
 .full_width {
