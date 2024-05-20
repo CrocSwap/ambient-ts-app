@@ -137,7 +137,7 @@
 
     letter-spacing: -0.02em;
     color: var(--text1);
-    font-family: var(--font-logo);
+    font-family: var(--font-family);
 }
 
 .full_width {
