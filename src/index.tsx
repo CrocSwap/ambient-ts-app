@@ -17,6 +17,22 @@ import {
 import scrollLogo from './assets/images/networks/scroll.png';
 import blastLogo from './assets/images/networks/blast_logo.png';
 
+/* Perform a single forcible reload when the page first loads. Without this, there
+ * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
+ * cost of higher load times, especially when pre-loading isn't happening. See:
+ * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042
+ *
+ * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
+const doReload =
+    JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
+    navigator.userAgent.includes('Chrome');
+if (doReload) {
+    localStorage.setItem('ambiAppReloadTrigger', 'false');
+    location.reload();
+} else {
+    localStorage.setItem('ambiAppReloadTrigger', 'true');
+}
+
 const metadata = {
     name: 'Ambient Finance',
     description:
@@ -32,9 +48,10 @@ const metadata = {
 const ethersConfig = defaultConfig({
     metadata,
     defaultChainId: 1,
+    // enableEmail: true,
 });
 
-createWeb3Modal({
+const modal = createWeb3Modal({
     ethersConfig,
     chains: Object.values(supportedNetworks).map((network) => network.chain),
     projectId: WALLETCONNECT_PROJECT_ID as string,
@@ -44,7 +61,33 @@ createWeb3Modal({
         534351: scrollLogo,
         534352: scrollLogo,
     },
+    termsConditionsUrl: '/terms',
+    privacyPolicyUrl: '/privacy',
     enableAnalytics: false,
+    themeVariables: {
+        '--w3m-color-mix': 'var(--dark2)',
+        '--w3m-color-mix-strength': 40,
+        '--w3m-font-family': 'var(--font-family)',
+        '--w3m-accent': 'var(--accent1)',
+    },
+});
+
+modal.subscribeEvents((event) => {
+    const networkIds = Object.values(supportedNetworks).map(
+        (network) => network.chain.chainId,
+    );
+    if (
+        event.data.event === 'MODAL_CLOSE' &&
+        event.data.properties.connected === true
+    ) {
+        if (networkIds.includes(modal.getState().selectedNetworkId)) {
+            // prevents the 'unknown account #0' bug
+            window.location.reload();
+        } else {
+            // prevents user's wallet from remaining connected to an unsupported network
+            modal.disconnect();
+        }
+    }
 });
 
 const root = ReactDOM.createRoot(
