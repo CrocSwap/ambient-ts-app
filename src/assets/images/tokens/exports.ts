@@ -17,6 +17,7 @@ import PAC from './PAC.png';
 import PXETH from './PXETH.png';
 import AXLUSDC from './AXLUSDC.png';
 import ETHX from './ETHX.svg';
+import SOL from './SOL.svg';
 import JUICE from './JUICE.svg';
 import EZETH from './EZETH.png';
 import GLORY from './GLORY.png';
@@ -37,6 +38,7 @@ import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
 import ESE from './ESE.jpg';
+import RSETH from './RSETH.webp';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -59,6 +61,7 @@ export {
     PXETH,
     AXLUSDC,
     ETHX,
+    SOL,
     JUICE,
     EZETH,
     GLORY,
@@ -79,4 +82,5 @@ export {
     PANDA,
     YIELD,
     ESE,
+    RSETH,
 };

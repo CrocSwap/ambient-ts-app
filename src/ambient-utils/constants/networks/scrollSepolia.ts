@@ -13,27 +13,9 @@ import { bigNumToFloat } from '@crocswap-libs/sdk';
 const chain = {
     chainId: 534351,
     name: 'Scroll Sepolia',
-    network: 'scroll-sepolia',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18,
-    },
-    rpcUrls: {
-        default: {
-            http: ['https://sepolia-rpc.scroll.io/'],
-        },
-        public: {
-            http: ['https://sepolia-rpc.scroll.io/'],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: 'Scrollscan',
-            url: 'https://sepolia.scrollscan.dev',
-        },
-    },
-    testnet: true,
+    currency: 'ETH',
+    rpcUrl: 'https://sepolia-rpc.scroll.io/',
+    explorerUrl: 'https://sepolia.scrollscan.dev',
 };
 
 export const scrollSepolia: NetworkIF = {
