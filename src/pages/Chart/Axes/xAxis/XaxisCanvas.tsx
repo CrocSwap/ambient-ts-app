@@ -243,7 +243,7 @@ function XAxisCanvas(props: xAxisIF) {
                     });
                 }
 
-                const filteredData = filterClosePoints(data, 30, xScale);
+                const filteredData = filterClosePoints(data, 35, xScale);
 
                 filteredData.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {

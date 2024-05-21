@@ -900,7 +900,7 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const minTime = unparsedCandleData[0].time * 1000;
                 if (
-                    candles.length < 100 &&
+                    candles.length < 20 &&
                     !timeOfEndCandle &&
                     fetchCountForEnoughData < maxRequestCountForCondensed
                 ) {
