@@ -12,7 +12,7 @@ export const HeaderButtons = styled.button<{ mobileHide?: boolean }>`
     background: transparent;
     cursor: pointer;
     gap: 8px;
-    padding: 6px;
+    padding: 4px;
 
     &:hover {
         background-color: var(--dark3);
