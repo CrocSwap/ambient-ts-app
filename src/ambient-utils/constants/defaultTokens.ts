@@ -74,6 +74,16 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
+export const blastBIG: TokenIF = {
+    address: '0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'BIG',
+    symbol: 'BIG',
+    logoURI: '',
+};
+
 export const blastJUICE: TokenIF = {
     address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
     chainId: 81457,
@@ -613,6 +623,7 @@ export const defaultTokens: TokenIF[] = [
     blastUSDB,
     blastUSDPLUS,
     blastMIA,
+    blastBIG,
     blastMIM,
     blastORBIT,
     blastBAG,
