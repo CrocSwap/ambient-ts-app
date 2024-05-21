@@ -1,0 +1,16 @@
+
+.reposition_content {
+    padding: 0 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+
+.advanced_info_container {
+    padding: 0 16px;
+}
+.advanced_toggle_container{
+    height: 33px;
+}

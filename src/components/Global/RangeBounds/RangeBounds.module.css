@@ -1,5 +1,8 @@
 .advanced_info_container {
     padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 .info_container {
     margin-top: 8px;
@@ -17,4 +20,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.divider {
+    width: 100%;
+    background: var(--dark3);
+    height: 1px;
+    margin: 0.5rem auto;
+   
 }

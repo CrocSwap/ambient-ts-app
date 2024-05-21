@@ -1,0 +1,25 @@
+.row_item, .row_item_header{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    height: 20px;
+    align-items: center;
+    color: var(--text1);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.row_item_header{
+    text-align: end;
+}
+.row_item span:first-of-type{
+    text-align: start;
+}
+.row_item span:nth-of-type(2), .row_item span:nth-of-type(3){
+    text-align: end;
+}
+
+.divider{
+    height: 1px;
+background: var(--dark3);
+margin: 3px 0;
+}

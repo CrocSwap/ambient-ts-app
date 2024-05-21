@@ -257,8 +257,8 @@ export default function InitPool() {
     // eslint-disable-next-line
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
         useState(false);
-    const [minPrice, setMinPrice] = useState(10);
-    const [maxPrice, setMaxPrice] = useState(100);
+    const [minRangePrice, setMinPrice] = useState(10);
+    const [maxRangePrice, setMaxPrice] = useState(100);
 
     const [isLoading, setIsLoading] = useState(false);
     const [isEditEnabled, setIsEditEnabled] = useState(false);
@@ -298,8 +298,8 @@ export default function InitPool() {
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMaxValue = maxPrice;
-            const targetMinValue = minPrice;
+            const targetMaxValue = maxRangePrice;
+            const targetMinValue = minRangePrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
@@ -379,8 +379,8 @@ export default function InitPool() {
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMinValue = minPrice;
-            const targetMaxValue = maxPrice;
+            const targetMinValue = minRangePrice;
+            const targetMaxValue = maxRangePrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
@@ -1252,10 +1252,10 @@ export default function InitPool() {
         rangeLowTick: defaultLowTick,
         rangeHighTick: defaultHighTick,
         disable: false,
-        maxPrice: maxPrice,
-        minPrice: minPrice,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
+        maxRangePrice: maxRangePrice,
+        minRangePrice: minRangePrice,
+        setMaxRangePrice: setMaxPrice,
+        setMinRangePrice: setMinPrice,
     };
 
     function goToNewUrlParams(

@@ -33,6 +33,7 @@ interface PropsIF {
     tutorialSteps: any;
     isSwapPage?: boolean;
     inputOptions?: ReactNode;
+    isEditPanel?: boolean;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
@@ -49,6 +50,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         approveButton,
         warnings,
         tutorialSteps,
+        isEditPanel,
     } = props;
 
     const {
@@ -120,7 +122,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 noPadding={smallScreen && !isSwapPage}
             >
                 {header}
-                {isSwapPage || (
+                {isSwapPage || isEditPanel || (
                     <TradeLinks
                         chainId={chainId}
                         tokenA={tokenA}

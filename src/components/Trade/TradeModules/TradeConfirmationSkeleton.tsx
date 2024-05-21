@@ -42,6 +42,7 @@ interface propsIF {
     extraNotes?: React.ReactNode;
     priceImpactWarning?: JSX.Element | undefined;
     isAllowed?: boolean;
+    isEditPanel?: boolean;
     percentDiffUsdValue?: number | undefined;
 }
 
@@ -65,6 +66,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         extraNotes,
         priceImpactWarning,
         isAllowed,
+        isEditPanel,
         percentDiffUsdValue,
     } = props;
 
@@ -154,7 +156,9 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
 
     return (
         <Modal
-            title={`${type === 'Range' ? 'Pool' : type} Confirmation`}
+            title={`${
+                type === 'Range' ? (isEditPanel ? 'Edit Pool' : 'Pool') : type
+            } Confirmation`}
             onClose={onClose}
         >
             <ModalContainer

@@ -2,7 +2,6 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import settingsIcon from '../../../../assets/images/icons/settings.svg';
-import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/TransactionSettingsModal';
@@ -15,15 +14,18 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
 import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { MdArrowBackIosNew } from 'react-icons/md';
 
 interface propsIF {
     positionHash: string;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     resetTxHash: () => void;
+    editPanel?: boolean;
 }
 
 function RepositionHeader(props: propsIF) {
-    const { setRangeWidthPercentage, positionHash, resetTxHash } = props;
+    const { setRangeWidthPercentage, positionHash, resetTxHash, editPanel } =
+        props;
 
     const {
         setSimpleRangeWidth,
@@ -52,15 +54,7 @@ function RepositionHeader(props: propsIF) {
                 fontSize='header1'
                 color='text2'
             >
-                <img
-                    className={styles.settings_icon}
-                    src={settingsIcon}
-                    alt='settings'
-                    onClick={openModal}
-                />
-                <p className={styles.title}> Reposition: {positionHash}</p>
-                <VscClose
-                    className={styles.close_icon}
+                <MdArrowBackIosNew
                     onClick={() => {
                         setAdvancedMode(false);
                         setRangeWidthPercentage(defaultRangeWidthForActivePool);
@@ -69,11 +63,24 @@ function RepositionHeader(props: propsIF) {
                         resetTxHash();
                         setCurrentRangeInReposition('');
                     }}
+                    className={styles.close_icon}
+                    size={12}
+                />
+
+                <p className={styles.title}>
+                    {' '}
+                    {editPanel ? 'Edit' : 'Reposition'}: {positionHash}
+                </p>
+                <img
+                    className={styles.settings_icon}
+                    src={settingsIcon}
+                    alt='settings'
+                    onClick={openModal}
                 />
             </TradeModuleHeaderContainer>
             {isOpen && (
                 <TransactionSettingsModal
-                    module='Reposition'
+                    module={editPanel ? 'Pool' : 'Reposition'}
                     slippage={repoSlippage}
                     bypassConfirm={bypassConfirmRepo}
                     onClose={closeModal}

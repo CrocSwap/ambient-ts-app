@@ -52,7 +52,15 @@ import {
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
-function Range() {
+interface RangePropsIF {
+    isEditPanel?: boolean;
+    prepopulatedBaseValue?: string;
+    prepopulatedQuoteValue?: string;
+    isReposition?: boolean;
+    position?: PositionIF;
+}
+function Range(props: RangePropsIF) {
+    const { isEditPanel, isReposition, position } = props;
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
@@ -71,16 +79,19 @@ function Range() {
 
         simpleRangeWidth,
         setSimpleRangeWidth,
-        minRangePrice: minPrice,
-        maxRangePrice: maxPrice,
-        setMaxRangePrice: setMaxPrice,
-        setMinRangePrice: setMinPrice,
+        minRangePrice,
+        maxRangePrice,
+        setMaxRangePrice,
+        setMinRangePrice,
         setChartTriggeredBy,
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
         setCurrentRangeInAdd,
         setIsLinesSwitched,
+        pinnedDisplayPrices,
+        setPinnedDisplayPrices,
     } = useContext(RangeContext);
+
     const { tokens } = useContext(TokenContext);
     const {
         tokenAAllowance,
@@ -115,12 +126,41 @@ function Range() {
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
+    // const [tokenAInputQty, setTokenAInputQty] = useState<string>(
+    //     isTokenAPrimary ? primaryQuantity : '',
+    // );
+    // const [tokenBInputQty, setTokenBInputQty] = useState<string>(
+    //     !isTokenAPrimary ? primaryQuantity : '',
+    // );
+
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        isTokenAPrimary ? primaryQuantity : '',
+        position
+            ? position?.positionLiqBaseDecimalCorrected.toString()
+            : isTokenAPrimary
+            ? primaryQuantity
+            : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !isTokenAPrimary ? primaryQuantity : '',
+        position
+            ? position?.positionLiqQuoteDecimalCorrected.toString()
+            : !isTokenAPrimary
+            ? primaryQuantity
+            : '',
     );
+
+    const [positionCount, setPositionCount] = useState(0);
+
+    useEffect(() => {
+        if (position) {
+            setTokenAInputQty(
+                position?.positionLiqBaseDecimalCorrected.toString(),
+            );
+            setTokenBInputQty(
+                position?.positionLiqQuoteDecimalCorrected.toString(),
+            );
+        }
+        setPositionCount(positionCount + 1);
+    }, [position]);
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);
@@ -144,21 +184,21 @@ function Range() {
         useState(false);
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
         useState(false);
-    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
-        | {
-              pinnedMinPriceDisplay: string;
-              pinnedMaxPriceDisplay: string;
-              pinnedMinPriceDisplayTruncated: string;
-              pinnedMaxPriceDisplayTruncated: string;
-              pinnedMinPriceDisplayTruncatedWithCommas: string;
-              pinnedMaxPriceDisplayTruncatedWithCommas: string;
-              pinnedLowTick: number;
-              pinnedHighTick: number;
-              pinnedMinPriceNonDisplay: number;
-              pinnedMaxPriceNonDisplay: number;
-          }
-        | undefined
-    >();
+    // const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+    //     | {
+    //           pinnedMinPriceDisplay: string;
+    //           pinnedMaxPriceDisplay: string;
+    //           pinnedMinPriceDisplayTruncated: string;
+    //           pinnedMaxPriceDisplayTruncated: string;
+    //           pinnedMinPriceDisplayTruncatedWithCommas: string;
+    //           pinnedMaxPriceDisplayTruncatedWithCommas: string;
+    //           pinnedLowTick: number;
+    //           pinnedHighTick: number;
+    //           pinnedMinPriceNonDisplay: number;
+    //           pinnedMaxPriceNonDisplay: number;
+    //       }
+    //     | undefined
+    // >();
 
     // local state values whether tx will use dex balance preferentially over
     // ... wallet funds, this layer of logic matters because the DOM may need
@@ -448,7 +488,6 @@ function Range() {
 
     useEffect(() => {
         setNewRangeTransactionHash('');
-        setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -474,6 +513,16 @@ function Range() {
             setRangeHighBoundNonDisplayPrice(Infinity);
         } else if (advancedMode) {
             setIsAmbient(false);
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            );
+
+            setPinnedDisplayPrices(pinnedDisplayPrices);
         } else {
             setIsAmbient(false);
             if (Math.abs(currentPoolPriceTick) === Infinity) return;
@@ -508,10 +557,10 @@ function Range() {
             setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
-            setMaxPrice(
+            setMaxRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
-            setMinPrice(
+            setMinRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
             );
         }
@@ -523,6 +572,9 @@ function Range() {
         baseToken.address + quoteToken.address,
         baseTokenDecimals,
         quoteTokenDecimals,
+        defaultLowTick,
+        defaultHighTick,
+        gridSize,
     ]);
 
     useEffect(() => {
@@ -615,10 +667,10 @@ function Range() {
                 }
             }
 
-            setMaxPrice(
+            setMaxRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
-            setMinPrice(
+            setMinRangePrice(
                 parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
             );
         }
@@ -637,9 +689,8 @@ function Range() {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
-
-            const targetMinValue = minPrice;
-            const targetMaxValue = maxPrice;
+            const targetMinValue = minRangePrice;
+            const targetMaxValue = maxRangePrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
@@ -661,18 +712,6 @@ function Range() {
             !isDenomBase
                 ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
                 : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
-
-            !isDenomBase
-                ? setMinPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                      ),
-                  )
-                : setMaxPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                      ),
-                  );
 
             if (isLinesSwitched) {
                 isDenomBase
@@ -718,7 +757,13 @@ function Range() {
             setChartTriggeredBy('none');
             setIsLinesSwitched(false);
         }
-    }, [rangeLowBoundFieldBlurred, chartTriggeredBy]);
+    }, [
+        rangeLowBoundFieldBlurred,
+        chartTriggeredBy,
+        minRangePrice,
+        maxRangePrice,
+        isDenomBase,
+    ]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred || chartTriggeredBy === 'high_line') {
@@ -726,8 +771,12 @@ function Range() {
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMaxValue = maxPrice;
-            const targetMinValue = minPrice;
+            const repoMaxPriceDisplay = document.getElementById(
+                ' repo-info-max-price-display',
+            ) as HTMLInputElement;
+
+            const targetMaxValue = maxRangePrice;
+            const targetMinValue = minRangePrice;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
@@ -744,18 +793,6 @@ function Range() {
                   )
                 : setRangeHighBoundNonDisplayPrice(
                       pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-                  );
-
-            isDenomBase
-                ? setMinPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                      ),
-                  )
-                : setMaxPrice(
-                      parseFloat(
-                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                      ),
                   );
 
             isDenomBase
@@ -798,6 +835,11 @@ function Range() {
             if (rangeHighBoundDisplayField) {
                 rangeHighBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+
+                if (repoMaxPriceDisplay) {
+                    repoMaxPriceDisplay.value =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                }
             } else {
                 IS_LOCAL_ENV && console.debug('high bound field not found');
             }
@@ -806,7 +848,13 @@ function Range() {
             setChartTriggeredBy('none');
             setIsLinesSwitched(false);
         }
-    }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
+    }, [
+        rangeHighBoundFieldBlurred,
+        chartTriggeredBy,
+        minRangePrice,
+        maxRangePrice,
+        isDenomBase,
+    ]);
 
     const [
         amountToReduceNativeTokenQtyMainnet,
@@ -1016,10 +1064,10 @@ function Range() {
         rangeLowTick: defaultLowTick,
         rangeHighTick: defaultHighTick,
         disable: isInvalidRange || !isPoolInitialized,
-        maxPrice: maxPrice,
-        minPrice: minPrice,
-        setMaxPrice: setMaxPrice,
-        setMinPrice: setMinPrice,
+        maxRangePrice: maxRangePrice,
+        minRangePrice: minRangePrice,
+        setMaxRangePrice: setMaxRangePrice,
+        setMinRangePrice: setMinRangePrice,
     };
 
     const rangeExtraInfoProps = {
@@ -1038,15 +1086,30 @@ function Range() {
         daysInRange: daysInRange,
     };
 
+    if (isReposition)
+        return (
+            <RangeBounds
+                isRangeBoundsDisabled={!isPoolInitialized}
+                {...rangeWidthProps}
+                {...rangePriceInfoProps}
+                {...minMaxPriceProps}
+                isEditPanel={isEditPanel}
+                isReposition={isReposition}
+            />
+        );
+
     return (
         <TradeModuleSkeleton
+            isEditPanel={isEditPanel}
             chainId={chainId}
             header={
-                <TradeModuleHeader
-                    slippage={mintSlippage}
-                    bypassConfirm={bypassConfirmRange}
-                    settingsTitle='Pool'
-                />
+                isEditPanel ? null : (
+                    <TradeModuleHeader
+                        slippage={mintSlippage}
+                        bypassConfirm={bypassConfirmRange}
+                        settingsTitle='Pool'
+                    />
+                )
             }
             input={
                 <RangeTokenInput
@@ -1072,6 +1135,7 @@ function Range() {
                         tokenB: isTokenBInputDisabled,
                     }}
                     amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                    isEditPanel={isEditPanel}
                 />
             }
             inputOptions={
@@ -1080,9 +1144,12 @@ function Range() {
                     {...rangeWidthProps}
                     {...rangePriceInfoProps}
                     {...minMaxPriceProps}
+                    isEditPanel={isEditPanel}
                 />
             }
-            transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
+            transactionDetails={
+                isEditPanel ? null : <RangeExtraInfo {...rangeExtraInfoProps} />
+            }
             modal={
                 isOpen ? (
                     <ConfirmRangeModal
@@ -1118,6 +1185,7 @@ function Range() {
                         }
                         onClose={handleModalClose}
                         slippageTolerance={slippageTolerancePercentage}
+                        isEditPanel={isEditPanel}
                     />
                 ) : (
                     <></>
@@ -1186,7 +1254,7 @@ function Range() {
                                           ? tokenB.symbol
                                           : ''
                                   }
-                                     `
+                                        `
                         }
                     />
                 ) : undefined

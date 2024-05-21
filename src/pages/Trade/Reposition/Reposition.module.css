@@ -72,3 +72,7 @@
 .button_container {
     margin: auto 2rem;
 }
+
+.advanced_info_container {
+    padding: 0 16px;
+}

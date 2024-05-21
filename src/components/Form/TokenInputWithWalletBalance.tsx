@@ -31,7 +31,7 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     amountToReduceNativeTokenQty: number;
     isInitPage?: boolean | undefined;
-    tokenDecimals?: number;
+    isEditPanel?: boolean;
     percentDiffUsdValue?: number;
 }
 
@@ -58,6 +58,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleRefresh,
         amountToReduceNativeTokenQty,
         isInitPage,
+        isEditPanel,
         usdValue,
         percentDiffUsdValue,
     } = props;
@@ -195,6 +196,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                disableTokenSelector={isEditPanel}
             />
             {handleRefresh && (
                 <RefreshButton

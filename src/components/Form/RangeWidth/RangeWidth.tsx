@@ -23,6 +23,7 @@ interface propsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    customSliderPadding?: string;
 }
 
 // React functional component
@@ -31,6 +32,7 @@ function RangeWidth(props: propsIF) {
         rangeWidthPercentage,
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
+        customSliderPadding,
     } = props;
     const {
         globalPopup: { open: openGlobalPopup },
@@ -164,7 +166,7 @@ function RangeWidth(props: propsIF) {
             </FlexContainer>
             <FlexContainer
                 alignItems='center'
-                padding='0 16px'
+                padding={customSliderPadding ? customSliderPadding : '0 16px'}
                 height='40px'
                 justifyContent='center'
             >

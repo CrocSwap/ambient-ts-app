@@ -46,6 +46,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import EditLiquidity from '../pages/Trade/EditLiquidity/EditLiquidity';
 
 /** ***** React Function *******/
 export default function App() {
@@ -211,6 +212,10 @@ export default function App() {
                                 element={
                                     <Navigate to='/trade/market' replace />
                                 }
+                            />
+                            <Route
+                                path='edit/:params'
+                                element={<EditLiquidity />}
                             />
                         </Route>
                         <Route
