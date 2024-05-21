@@ -255,6 +255,7 @@ function TradeCharts(props: propsIF) {
             </div>
         </div>
     );
+
     const candleTime = chartSettings.candleTime.global;
     const matchingCandleTime = candleTime.defaults.find(
         (item) => item.seconds === candleTime.time,
@@ -330,7 +331,9 @@ function TradeCharts(props: propsIF) {
             <div>
                 <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
-            {resetAndRescaleDisplay}
+            <div className={styles.chart_overlay_container}>
+                {resetAndRescaleDisplay}
+            </div>
         </FlexContainer>
     );
 

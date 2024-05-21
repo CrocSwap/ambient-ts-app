@@ -28,7 +28,7 @@
 
 .active_selected_button:hover,
 .non_active_selected_button:hover {
-    /* background: var(--title-gradient); */
+    background: var(--dark3);
     color: var(--text1);
 }
 
