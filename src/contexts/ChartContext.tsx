@@ -22,8 +22,10 @@ import {
 import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 import {
     drawDataHistory,
+    getCssVariable,
     selectedDrawnData,
 } from '../pages/Chart/ChartUtils/chartUtils';
+import { BrandContext } from './BrandContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -174,6 +176,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         ChartThemeIF | undefined
     >(undefined);
 
+    const { skin } = useContext(BrandContext);
+
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
         const updateDimension = () => {
@@ -318,6 +322,29 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             );
         }
     }, [isMagnetActive]);
+
+    useEffect(() => {
+        const lightFillColor = getCssVariable(skin, '--accent5');
+        const darFillColor = getCssVariable(skin, '--dark2');
+        const selectedDateFillColor = getCssVariable(skin, '--accent2');
+
+        const darkStrokeColor = getCssVariable(skin, '--accent1');
+        const lightStrokeColor = getCssVariable(skin, '--accent5');
+        const selectedDateStrokeColor = getCssVariable(skin, '--accent2');
+
+        const chartThemeColors = {
+            lightFillColor: lightFillColor,
+            darkFillColor: darFillColor,
+            selectedDateFillColor: selectedDateFillColor,
+            // border
+            lightStrokeColor: lightStrokeColor,
+            darkStrokeColor: darkStrokeColor,
+            selectedDateStrokeColor: selectedDateStrokeColor,
+            textColor: '',
+        };
+
+        setChartThemeColors(() => chartThemeColors);
+    }, [skin]);
 
     return (
         <ChartContext.Provider value={chartContext}>
