@@ -958,17 +958,6 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (!isCondensedModeEnabled && scaleData && isShowLatestCandle) {
-            const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
-
-            scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
-            setXScaleDefault();
-            changeScale(false);
-            render();
-        }
-    }, [isCondensedModeEnabled]);
-
-    useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
     }, [JSON.stringify(drawnShapeHistory), isToolbarOpen]);
 
@@ -2555,12 +2544,7 @@ export default function Chart(props: propsIF) {
             setReset(false);
             setShowLatest(false);
         }
-    }, [
-        reset,
-        minTickForLimit,
-        maxTickForLimit,
-        scaleData && scaleData?.xScale.resetDomain,
-    ]);
+    }, [reset, minTickForLimit, maxTickForLimit]);
 
     // when click latest
     useEffect(() => {
