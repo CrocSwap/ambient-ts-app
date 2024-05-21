@@ -170,7 +170,7 @@ export const checkBlacklist = (addr: string) => {
 // };
 
 /* 
-sdn_list=$(curl https://www.treasury.gov/ofac/downloads/sdnlist.txt)
+sdn_list=$(curl -L https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML)
 
 input=( $(echo "$sdn_list" | 
         egrep "0x[A-Fa-f0-9]{40}" | 
