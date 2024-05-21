@@ -219,7 +219,6 @@ export default function Chart(props: propsIF) {
         isMagnetActiveLocal,
         setChartContainerOptions,
         chartThemeColors,
-        setChartThemeColors,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -326,49 +325,22 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        if (d3Container) {
-            const canvas = d3
-                .select(d3Container.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
+        if (chartThemeColors && chartThemeColors.darkStrokeColor !== null) {
+            setLineSellColor((prev) => {
+                if (chartThemeColors.darkStrokeColor)
+                    return chartThemeColors.darkStrokeColor.toString();
 
-            const style = getComputedStyle(canvas);
-            const lightFillColor = style.getPropertyValue('--accent5');
-            const darFillColor = style.getPropertyValue('--dark2');
-            const selectedDateFillColor = style.getPropertyValue('--accent2');
+                return prev;
+            });
 
-            const darkStrokeColor = style.getPropertyValue('--accent1');
-            const lightStrokeColor = style.getPropertyValue('--accent5');
-            const selectedDateStrokeColor = style.getPropertyValue('--accent2');
+            setLineBuyColor((prev) => {
+                if (chartThemeColors.lightFillColor)
+                    return chartThemeColors.lightFillColor.toString();
 
-            const d3LightFillColor = d3.color(lightFillColor);
-            const d3DarkFillColor = d3.color(darFillColor);
-            const d3SelectedDateFillColor = d3.color(selectedDateFillColor);
-
-            const d3DarkStrokeColor = d3.color(darkStrokeColor);
-            const d3LightStrokeColor = d3.color(lightStrokeColor);
-            const d3SelectedDateStrokeColor = d3.color(selectedDateStrokeColor);
-
-            const lineSellColor = style.getPropertyValue('--accent1');
-            const lineBuyColor = style.getPropertyValue('--accent5');
-
-            setLineSellColor(() => lineSellColor.toString());
-            setLineBuyColor(() => lineBuyColor.toString());
-
-            const chartThemeColors = {
-                lightFillColor: d3LightFillColor,
-                darkFillColor: d3DarkFillColor,
-                selectedDateFillColor: d3SelectedDateFillColor,
-                // border
-                lightStrokeColor: d3LightStrokeColor,
-                darkStrokeColor: d3DarkStrokeColor,
-                selectedDateStrokeColor: d3SelectedDateStrokeColor,
-                textColor: '',
-            };
-
-            setChartThemeColors(() => chartThemeColors);
+                return prev;
+            });
         }
-    }, [d3Container]);
+    }, [chartThemeColors]);
 
     const location = useLocation();
 
