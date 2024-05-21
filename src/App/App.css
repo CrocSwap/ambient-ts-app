@@ -61,11 +61,6 @@ button:hover > svg {
     cursor: pointer;
 }
 
-button:focus > svg {
-    color: var(--accent1);
-    cursor: pointer;
-}
-
 /* button,
 svg,
 a {
@@ -137,7 +132,6 @@ p:focus-visible {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-fill-color: transparent;
 
     /* glow/positive */
 
@@ -230,7 +224,6 @@ p:focus-visible {
     transition: all var(--animation-speed) ease;
 }
 
-
 .tutorial_navigation_container {
     position: absolute;
     bottom: 0;
@@ -269,8 +262,6 @@ input[type='number'] {
 }
 
 @media only screen and (min-width: 1280px) {
-   
-
     .content-container {
         overflow-y: auto;
         overflow-x: hidden;
