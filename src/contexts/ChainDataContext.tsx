@@ -318,6 +318,7 @@ export const ChainDataContextProvider = (props: {
                         }
                     } catch (error) {
                         console.error({ error });
+                        setIsfetchNftTriggered(() => false);
                     }
                 }
             })();
