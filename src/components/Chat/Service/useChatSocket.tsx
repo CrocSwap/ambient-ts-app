@@ -539,7 +539,7 @@ const useChatSocket = (
             msgListFromServer.map((msg) => msg._id),
         );
         let newMessageList = messages.map((e) => {
-            if (newVerifiedMsgIds.has(e._id)) {
+            if (e && newVerifiedMsgIds.has(e._id)) {
                 return {
                     ...e,
                     isVerified: true,
@@ -549,7 +549,7 @@ const useChatSocket = (
             }
         });
         newMessageList = newMessageList.filter(
-            (e) => e.isDeleted != true || room == 'Admins',
+            (e) => e && (e.isDeleted != true || room == 'Admins'),
         );
         setMessages([...newMessageList]);
     };
