@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
-import TopPools from '../../components/Global/Analytics/TopPools';
-import DexTokens from '../../components/Global/Analytics/DexTokens';
+import TopPools from '../../components/Global/Explore/TopPools';
+import DexTokens from '../../components/Global/Explore/DexTokens';
 import { ExploreContext } from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
