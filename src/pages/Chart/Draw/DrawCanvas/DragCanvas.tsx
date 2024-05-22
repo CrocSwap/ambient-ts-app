@@ -520,7 +520,12 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementX = event.sourceEvent.movementX;
                             movemementY = event.sourceEvent.movementY;
                         }
-                        setCrossHairDataFunc(offsetX, offsetY);
+                        const nearest = snapForCandle(
+                            offsetX,
+                            visibleCandleData,
+                        );
+
+                        setCrossHairDataFunc(nearest.time, offsetX, offsetY);
                         if (
                             hoveredDrawnShape &&
                             (hoveredDrawnShape.data.type === 'Brush' ||
