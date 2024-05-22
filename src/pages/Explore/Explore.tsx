@@ -12,6 +12,7 @@ import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
+
 interface ExploreIF {
     view: 'pools' | 'tokens';
 }

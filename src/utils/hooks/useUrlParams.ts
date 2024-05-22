@@ -101,7 +101,6 @@ export const useUrlParams = (
             .filter((par) => par.length === 2)
             // add each key-val pair to the param map
             .forEach((par) => paramMap.set(par[0] as validParamsType, par[1]));
-        console.log(paramMap);
         // return Map of all params in the URL
         return paramMap;
     }, [params]);
