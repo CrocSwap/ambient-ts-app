@@ -61,6 +61,7 @@ export default function PointSystemPopup(props: PropsIF) {
     if (
         excludedLocations.includes(currentLocation) ||
         currentLocation.includes('/faq') ||
+        currentLocation.includes('/swap') ||
         !isEnabledLocally ||
         isSmallScreen
     )
