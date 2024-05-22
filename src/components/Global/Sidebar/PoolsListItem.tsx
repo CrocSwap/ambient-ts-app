@@ -78,6 +78,16 @@ export default function PoolsListItem(props: propsIF) {
     // hook to get human-readable values for pool volume and TVL
     const poolData = useFetchPoolStats(pool);
 
+    const {
+        poolPrice,
+        poolTvl,
+        poolVolume24h,
+        poolPriceChangePercent,
+        // isPoolPriceChangePositive,
+        baseLogoUri,
+        quoteLogoUri,
+    } = poolData;
+
     const { pathname } = useLocation();
 
     const navTarget = useMemo<pageNames>(() => {
@@ -129,8 +139,8 @@ export default function PoolsListItem(props: propsIF) {
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
-                                ? poolData.quoteLogoUri
-                                : poolData.baseLogoUri) ?? '...',
+                                ? quoteLogoUri
+                                : baseLogoUri) ?? '...',
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -147,8 +157,8 @@ export default function PoolsListItem(props: propsIF) {
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
-                                ? poolData.baseLogoUri
-                                : poolData.quoteLogoUri) ?? '...',
+                                ? baseLogoUri
+                                : quoteLogoUri) ?? '...',
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -169,7 +179,7 @@ export default function PoolsListItem(props: propsIF) {
         </FlexContainer>
     );
 
-    const temp24hPrice = 'No Change';
+    // const temp24hPrice = 'No Change';
 
     return (
         <MainItemContainer style={{ width: '100%' }}>
@@ -187,14 +197,15 @@ export default function PoolsListItem(props: propsIF) {
             >
                 {[
                     [poolDisplay],
-                    `${poolData.poolPrice ?? '...'}`,
+                    `${poolPrice ?? '...'}`,
+                    `${poolVolume24h ? '$' + poolVolume24h : '...'}`,
+                    `${poolTvl ? '$' + poolTvl : '...'}`,
                     `${
-                        poolData.poolVolume24h
-                            ? '$' + poolData.poolVolume24h
-                            : '...'
+                        poolPrice === undefined ||
+                        poolPriceChangePercent === undefined
+                            ? '…'
+                            : poolPriceChangePercent
                     }`,
-                    `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
-                    `${temp24hPrice ? temp24hPrice : '...'}`,
                 ].map((item, idx) => (
                     <FlexContainer key={idx} padding='4px 0'>
                         {item}

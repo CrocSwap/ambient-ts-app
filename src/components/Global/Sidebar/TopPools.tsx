@@ -34,7 +34,7 @@ export default function TopPools(props: propsIF) {
             gap={8}
         >
             <ItemHeaderContainer color='text2'>
-                {['Pair', 'Price', '24h Vol.', 'TVL', '24h Price', ''].map(
+                {['Pair', 'Price', '24h Vol.', 'TVL', '24h Price Δ', ''].map(
                     (item) => (
                         <FlexContainer key={item}>{item}</FlexContainer>
                     ),
