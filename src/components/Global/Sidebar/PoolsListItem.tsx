@@ -169,6 +169,8 @@ export default function PoolsListItem(props: propsIF) {
         </FlexContainer>
     );
 
+    const temp24hPrice = 'No Change';
+
     return (
         <MainItemContainer style={{ width: '100%' }}>
             <ItemContainer
@@ -192,6 +194,7 @@ export default function PoolsListItem(props: propsIF) {
                             : '...'
                     }`,
                     `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
+                    `${temp24hPrice ? temp24hPrice : '...'}`,
                 ].map((item, idx) => (
                     <FlexContainer key={idx} padding='4px 0'>
                         {item}

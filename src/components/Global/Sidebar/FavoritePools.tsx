@@ -42,9 +42,11 @@ export default function FavoritePools(props: propsIF) {
             gap={8}
         >
             <ItemHeaderContainer color='text2'>
-                {['Pair', 'Price', 'Volume', 'TVL', ''].map((item) => (
-                    <FlexContainer key={item}>{item}</FlexContainer>
-                ))}
+                {['Pair', 'Price', 'Volume', 'TVL', '24h Price', ''].map(
+                    (item) => (
+                        <FlexContainer key={item}>{item}</FlexContainer>
+                    ),
+                )}
             </ItemHeaderContainer>
             {isAlreadyFavorited || (
                 <ViewMoreFlex
