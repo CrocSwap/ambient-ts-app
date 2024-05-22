@@ -5,13 +5,11 @@ export const getTopPairedTokenAddress = async (
     address: string,
     cachedFetchTopPairedToken: FetchTopPairedTokenFn,
 ): Promise<string | undefined> => {
-    // Fire off network queries async simultaneous up-front
     const response = await cachedFetchTopPairedToken(address, chainId);
 
-    if (!response) {
-        return undefined;
+    if (response) {
+        return response;
     } else {
-        const topPairedTokenAddress = response;
-        return topPairedTokenAddress;
+        return undefined;
     }
 };
