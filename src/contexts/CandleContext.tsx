@@ -71,8 +71,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
 
-    const [abortController, setAbortController] =
-        useState<AbortController | null>(null);
+    const [abortController] = useState<{
+        abortController: AbortController | null;
+    }>({ abortController: null });
 
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDurationIF | undefined
@@ -118,6 +119,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
+        isAbortedRequest: false,
     });
 
     const [candleScale, setCandleScale] = useState<CandleScaleIF>({
@@ -166,7 +168,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         if (isFirstFetch) {
             const controller = new AbortController();
-            setAbortController(controller);
+            abortController.abortController = controller;
             setIsZoomRequestCanceled({ value: false });
         }
         setIsFirstFetch(true);
@@ -311,7 +313,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             return;
         }
 
-        const signal = abortController?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
+        if (candleDomains?.isAbortedRequest) {
+            const controller = new AbortController();
+            abortController.abortController = controller;
+        }
+
+        const signal = abortController.abortController?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
 
         fetchCandleSeriesHybrid(
             true,
@@ -385,8 +392,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [numDurationsNeeded]);
     useEffect(() => {
-        if (abortController && isZoomRequestCanceled.value) {
-            abortController.abort();
+        if (abortController.abortController && isZoomRequestCanceled.value) {
+            abortController.abortController.abort();
         }
     }, [isZoomRequestCanceled.value]);
 
