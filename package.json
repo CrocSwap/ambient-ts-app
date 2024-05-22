@@ -49,6 +49,9 @@
         "vite-plugin-babel-macros": "^1.0.6",
         "web-vitals": "^2.1.0"
     },
+    "resolutions": {
+        "@coinbase/wallet-sdk": "npm:@coinbase/wallet-sdk@4.0.1"
+    },
     "scripts": {
         "start": "yarn install && vite",
         "start-only": "vite",

@@ -47,7 +47,8 @@ const metadata = {
 
 const ethersConfig = defaultConfig({
     metadata,
-    defaultChainId: 1,
+    defaultChainId: 1, // deprecated by Coinbase SDK but required by web3modal/ethers5
+    rpcUrl: ' ', // deprecated by Coinbase SDK but required by web3modal/ethers5
     // enableEmail: true,
 });
 
