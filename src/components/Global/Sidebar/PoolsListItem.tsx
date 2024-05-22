@@ -17,7 +17,7 @@ import {
     ItemContainer,
     MainItemContainer,
 } from '../../../styled/Components/Sidebar';
-import { FlexContainer } from '../../../styled/Common';
+import { FlexContainer, Text } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -83,7 +83,7 @@ export default function PoolsListItem(props: propsIF) {
         poolTvl,
         poolVolume24h,
         poolPriceChangePercent,
-        // isPoolPriceChangePositive,
+        isPoolPriceChangePositive,
         baseLogoUri,
         quoteLogoUri,
     } = poolData;
@@ -179,7 +179,11 @@ export default function PoolsListItem(props: propsIF) {
         </FlexContainer>
     );
 
-    // const temp24hPrice = 'No Change';
+    const priceChangeDisplay = (
+        <Text color={isPoolPriceChangePositive ? 'positive' : 'negative'}>
+            {poolPriceChangePercent}
+        </Text>
+    );
 
     return (
         <MainItemContainer style={{ width: '100%' }}>
@@ -200,12 +204,11 @@ export default function PoolsListItem(props: propsIF) {
                     `${poolPrice ?? '...'}`,
                     `${poolVolume24h ? '$' + poolVolume24h : '...'}`,
                     `${poolTvl ? '$' + poolTvl : '...'}`,
-                    `${
-                        poolPrice === undefined ||
-                        poolPriceChangePercent === undefined
-                            ? '…'
-                            : poolPriceChangePercent
-                    }`,
+
+                    poolPrice === undefined ||
+                    poolPriceChangePercent === undefined
+                        ? '…'
+                        : priceChangeDisplay,
                 ].map((item, idx) => (
                     <FlexContainer key={idx} padding='4px 0'>
                         {item}
