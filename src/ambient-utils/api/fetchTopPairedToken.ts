@@ -12,7 +12,7 @@ export const fetchTopPairedToken = async (address: string, chainId: string) => {
                 }),
         );
         const result = await response.json();
-        return result?.ens_address;
+        return result?.target;
     } catch (e) {
         console.warn(e);
         return null;
