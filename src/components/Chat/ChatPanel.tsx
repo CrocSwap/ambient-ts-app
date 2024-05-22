@@ -30,6 +30,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { useMediaQuery } from '@material-ui/core';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -63,7 +64,13 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
-    const { userAddress, ensName: ens } = useContext(UserDataContext);
+    const {
+        userAddress,
+        ensName: ens,
+        isUserConnected,
+        resolvedAddressFromContext,
+        setCurrentUserID,
+    } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -203,8 +210,8 @@ function ChatPanel(props: propsIF) {
         isSubscriptionsEnabled,
         isChatOpen,
         activateToastr,
-        userAddress,
-        ens,
+        // userAddress,
+        // ens,
         currentUser,
         freezePanel,
         activatePanel,
@@ -214,8 +221,6 @@ function ChatPanel(props: propsIF) {
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
-    const { isUserConnected, resolvedAddressFromContext, setCurrentUserID } =
-        useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
 
@@ -1137,7 +1142,7 @@ function ChatPanel(props: propsIF) {
 
     const sendMessageListener = () => {
         if (isChatOpen) {
-            scrollToBottom(true, true, isMobile ? 700 : 250);
+            scrollToBottom(true, true, isMobile ? 700 : 400);
         }
     };
 

@@ -28,7 +28,7 @@ import {
     verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
-import { useSocketIO } from 'react-use-websocket';
+import { useSocketIO, ReadyState } from 'react-use-websocket';
 import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
@@ -54,8 +54,8 @@ const useChatSocket = (
         message: string,
         type: 'success' | 'error' | 'warning' | 'info',
     ) => void,
-    address?: string,
-    ensName?: string | null,
+    // address?: string,
+    // ensName?: string,
     currentUserID?: string,
     freezePanel?: () => void,
     activatePanel?: () => void,
@@ -78,52 +78,92 @@ const useChatSocket = (
 
     messagesRef.current = messages;
 
-    const getWsQueryParams = () => {
-        let queryParams: ChatWsQueryParams = {
-            roomId: room,
-        };
-        if (address != undefined) {
-            queryParams = { ...queryParams, address: address };
-        }
-        if (ensName != undefined && ensName.length > 0) {
-            queryParams = { ...queryParams, ensName: ensName };
-        }
+    const { userAddress: address, ensName } = useContext(UserDataContext);
 
-        return queryParams;
-    };
-
-    const [wsQueryParams, setWsQueryParams] = useState<ChatWsQueryParams>(
-        getWsQueryParams(),
-    );
+    if (address) {
+        domDebug('usechatsocket', address?.substring(0, 4) + '|' + ensName);
+    }
 
     const { updateUserAvatarData } = useContext(UserDataContext);
 
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
+
+    // handle query params
+    const qp: ChatWsQueryParams = {
+        roomId: room,
+    };
+    if (address && address.length > 0) {
+        qp.address = address.toString();
+    }
+    if (ensName && ensName.length > 0) {
+        qp.ensName = ensName;
+    }
+
+    // console.log('qp', qp)
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
         getWebSocket,
+        readyState,
     } = useSocketIO(url, {
         // fromSocketIO: true,
-        queryParams: { ...wsQueryParams },
+        // queryParams: { ...wsQueryParams },
+        queryParams: {
+            roomId: qp.roomId,
+            address: qp.address ? qp.address : '',
+            ensName: qp.ensName ? qp.ensName : '',
+        },
         shouldReconnect: () => true,
+        // share: true,
         onOpen: () => {
+            console.log('open connection', address);
+            sendToSocket('handshake-update', {
+                roomId: room,
+                address: address,
+                ensName: ensName,
+            });
             domDebug('connected', getTimeForLog(new Date()));
         },
         onClose: () => {
+            console.log('closing connection', address);
             domDebug('disconnected', getTimeForLog(new Date()));
         },
     });
 
+    const connectionStatus = {
+        [ReadyState.CONNECTING]: 'Connecting',
+        [ReadyState.OPEN]: 'Open',
+        [ReadyState.CLOSING]: 'Closing',
+        [ReadyState.CLOSED]: 'Closed',
+        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
+    }[readyState];
+
+    domDebug('connection status', connectionStatus);
+
     useEffect(() => {
-        if (isChatOpen) {
+        if (!isChatOpen) {
             getWebSocket()?.close();
+        } else {
+            sendToSocket('handshake-update', {
+                roomId: room,
+                address: address,
+                ensName: ensName,
+            });
         }
     }, [isChatOpen]);
 
     useEffect(() => {
-        setWsQueryParams(getWsQueryParams());
-    }, [address, ensName]);
+        // getWebSocket()?.close();
+        sendToSocket('handshake-update', {
+            roomId: room,
+            address: address,
+            ensName: ensName,
+        });
+        console.log(
+            'use chat socket params changed',
+            address + '|' + ensName + '|' + room,
+        );
+    }, [address, ensName, room]);
 
     useEffect(() => {
         switch (socketLastMessage.type) {
