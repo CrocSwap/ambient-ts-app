@@ -76,8 +76,6 @@ const DropdownSearch = () => {
     const isEscapePressed = useKeyPress('Escape');
     useEffect(() => {
         if (isEscapePressed) {
-            console.log('pressed');
-
             setIsPoolDropdownOpen(false);
             searchData.clearInput();
         }
