@@ -125,9 +125,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         () => {
             console.log('show toastr from nft banner comp');
         },
-        userAddress,
-        ensName,
-        currentUserID,
     );
 
     useEffect(() => {

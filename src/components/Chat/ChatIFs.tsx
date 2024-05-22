@@ -11,7 +11,7 @@ export interface ChatWsQueryParams {
     roomId: string;
     transport?: string;
     address?: string;
-    ensName?: string;
+    ensName?: string | null | undefined;
 }
 
 export interface ChatWsDecodedMessage {
