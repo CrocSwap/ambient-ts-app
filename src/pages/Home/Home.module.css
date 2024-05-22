@@ -1,0 +1,41 @@
+.container {
+    position: relative;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  .container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .container {
+    scrollbar-width: none;
+  }
+  
+  .container {
+    -ms-overflow-style: none;
+  }
+  
+
+  .dots{
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    opacity: 1;
+    transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translate3d(0, -50%, 0);
+    right: 17px;
+    display: flex;
+    flex-direction: column;
+    gap:8px;
+  }
+
+  .dots span{
+    cursor: pointer;
+    background-color: var(--text3);;
+
+  }

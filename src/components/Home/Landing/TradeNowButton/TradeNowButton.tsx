@@ -1,9 +1,5 @@
 import React, { useContext } from 'react';
-import { FlexContainer } from '../../../../styled/Common';
-import {
-    StyledLink,
-    TradeNowButtonText,
-} from '../../../../styled/Components/Home';
+import { StyledLink } from '../../../../styled/Components/Home';
 import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,

@@ -14,6 +14,7 @@
 
 .hero_container{
     display: flex;
+    background: radial-gradient(43.75% 50% at 0% 50%, rgba(115, 113, 252, 0.20) 0%, rgba(115, 113, 252, 0.00) 100%);
 
     /* padding: 26px 36px; */
     height: 100%;
@@ -251,12 +252,12 @@ line-height: var(--480-p-lh);
 }
 @media (min-width: 820px) {
     .sub_container h2, .hero_container h2{
-        font-size: var(--desktop-h2-fs);
-        line-height: var(--desktop-h2-lh);
+        /* font-size: var(--desktop-h2-fs); */
+        line-height: normal;
         }
             .sub_container p, .hero_container p{
-        font-size: var(--desktop-p-fs);
-        line-height: var(--desktop-p-lh);
+        /* font-size: var(--desktop-p-fs); */
+        line-height: normal;
         }
 
         .link_card_container{
@@ -275,7 +276,12 @@ line-height: var(--480-p-lh);
         }
 }
 
-
+@media (max-height: 900px) {
+    .hero_container{
+        gap: 1.5rem;
+    }
+    }
+    
 
 
 @media (min-width: 1080px) {
@@ -297,6 +303,9 @@ line-height: var(--480-p-lh);
     gap: 128px;
 }
 
+.smaller_gap{
+    gap: 75px;
+}
 .sub_container h2{
     font-size: 54px;  
 }
@@ -375,15 +384,10 @@ flex-wrap: wrap;
 
 
 
+
 @media (min-width: 1600px) {
 
     /* links */
-    .sub_container{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
 
 
     .hero_container, .sub_container{
@@ -412,7 +416,7 @@ flex-wrap: wrap;
 
     /* investors */
     .investors_container img{
-        width:469.29px !important;
+        width:500.29px !important;
     }
 
 

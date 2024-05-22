@@ -1,112 +1,170 @@
-import Hero from '../../components/Home/Landing/Hero';
-import LandingSections from '../../components/Home/Landing/LandingSections';
-import Stats from '../../components/Home/Stats/AmbientStats';
-import TopPools from '../../components/Home/TopPools/TopPools';
-import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
-import { Link, useSearchParams } from 'react-router-dom';
-import { useSwitchNetwork } from '@web3modal/ethers5/react';
-import { supportedNetworks } from '../../ambient-utils/constants';
-import { useContext, useEffect } from 'react';
-import { lookupChainId } from '../../ambient-utils/dataLayer';
-import { UserDataContext } from '../../contexts/UserDataContext';
-import { Text } from '../../styled/Common';
-import styled from 'styled-components';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
-import { BrandContext } from '../../contexts/BrandContext';
+import React, { useEffect, useRef, useState } from 'react';
+import styles from './Home.module.css';
+import img from '../../assets/images/backgrounds/background.png';
+import { motion, AnimatePresence } from 'framer-motion';
+import Landing1 from '../../components/Home/Landing/Landing1';
+import Landing2 from '../../components/Home/Landing/Landing2';
+import Landing3 from '../../components/Home/Landing/Landing3';
+import Landing4 from '../../components/Home/Landing/Landing4';
+import Landing5 from '../../components/Home/Landing/Landing5';
+import Landing6 from '../../components/Home/Landing/Landing6';
+import Section from '../../components/Home/Section/Section';
 
-export default function Home() {
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
-    // hook from web3modal to switch connected wallet in extension
-    const { switchNetwork } = useSwitchNetwork();
-    // hook from web3modal indicating if user is connected
-    const { isUserConnected } = useContext(UserDataContext);
-    const { chainData, chooseNetwork } = useContext(TradeDataContext);
-    // hook to consume and alter search params on the index page
-    const [searchParams, setSearchParams] = useSearchParams();
-    // logic to consume chain param data from the URL
-    // runs once when the app initializes, again when web3modal finishes initializing
+interface sectionsIF {
+    ref: React.RefObject<HTMLDivElement>;
+    page: JSX.Element;
+    goToSectionRef: React.RefObject<HTMLDivElement>;
+}
+
+const Home: React.FC = () => {
+    const section1 = useRef<HTMLDivElement>(null);
+    const section2 = useRef<HTMLDivElement>(null);
+    const section3 = useRef<HTMLDivElement>(null);
+    const section4 = useRef<HTMLDivElement>(null);
+    const section5 = useRef<HTMLDivElement>(null);
+    const section6 = useRef<HTMLDivElement>(null);
+
+    const sections = [
+        {
+            ref: section1,
+            page: <Landing1 />,
+            goToSectionRef: section2,
+        },
+        {
+            ref: section2,
+            page: <Landing2 />,
+            goToSectionRef: section3,
+        },
+        {
+            ref: section3,
+            page: <Landing3 />,
+            goToSectionRef: section4,
+        },
+        {
+            ref: section4,
+            page: <Landing4 />,
+            goToSectionRef: section5,
+        },
+        {
+            ref: section5,
+            page: <Landing5 />,
+            goToSectionRef: section6,
+        },
+        {
+            ref: section6,
+            page: <Landing6 />,
+            goToSectionRef: section1,
+        },
+    ];
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const scrollTo = (section: React.RefObject<HTMLDivElement>) => {
+        if (section && section.current) {
+            section.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    const handleDotClick = (index: number) => {
+        setActiveIndex(index);
+        scrollTo(sections[index].ref);
+    };
     useEffect(() => {
-        // search for param in URL by key 'chain' or 'network'
-        const chainParam: string | null =
-            searchParams.get('chain') ?? searchParams.get('network');
-        // logic to execute if a param is found (if not, do nothing)
-        if (chainParam) {
-            // get a canonical 0x hex string chain ID from URL param
-            const targetChain: string =
-                lookupChainId(chainParam, 'string') ?? chainParam;
-            // check if chain is supported and not the current chain in the app
-            // yes → trigger machinery to switch the current network
-            // no → no action except to clear the param from the URL
-            if (
-                supportedNetworks[targetChain] &&
-                targetChain !== chainData.chainId
-            ) {
-                // use web3modal if wallet is connected, otherwise use in-app toggle
-                if (switchNetwork) {
-                    switchNetwork(parseInt(targetChain));
-                } else if (!isUserConnected) {
-                    chooseNetwork(supportedNetworks[targetChain]);
-                }
-            } else {
-                setSearchParams('');
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const section = sections.find(
+                            (section) =>
+                                (section.ref as React.RefObject<HTMLDivElement>)
+                                    .current === entry.target,
+                        );
+                        if (section) {
+                            const index = sections.indexOf(section);
+                            setActiveIndex(index);
+                            console.log({ index });
+                        }
+                    }
+                });
+            },
+            { threshold: 0.5 },
+        );
+
+        sections.forEach((section) => {
+            if (section.ref.current) {
+                observer.observe(section.ref.current);
             }
-        }
-    }, [switchNetwork]);
+        });
 
-    const { showPoints, showDexStats } = useContext(BrandContext);
-
-    const PointSystemContainer = styled.section`
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: auto;
-        width: auto;
-        background: var(--dark2);
-        border-radius: 4px;
-        gap: 1rem;
-
-        @media (min-width: 720px) {
-            height: 127px;
-            width: 842px;
-        }
-    `;
-
-    if (showMobileVersion) return <MobileLandingSections />;
+        return () => {
+            observer.disconnect();
+        };
+    }, [sections]);
 
     return (
-        <section data-testid={'home'}>
-            {!showMobileVersion && (
-                <div style={{ width: '100%', height: '480px' }}>
-                    <Hero />
-                </div>
-            )}
-            {showPoints && (
-                <PointSystemContainer>
-                    <Text fontSize='header1'>Points system now live!</Text>
-
-                    <Link
-                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
-                    >
-                        <Text
-                            fontSize='header2'
-                            color='accent1'
-                            style={{ textDecoration: 'underline' }}
-                        >
-                            {isUserConnected
-                                ? ' View your current XP here'
-                                : 'View XP leaderboard'}
-                        </Text>
-                    </Link>
-                </PointSystemContainer>
-            )}
-            <div>
-                <TopPools />
-                {showDexStats && <Stats />}
+        <div>
+            <div className={`container ${styles.container}`}>
+                <DotAnimation
+                    activeIndex={activeIndex}
+                    sections={sections}
+                    onClick={handleDotClick}
+                />
+                {sections.map(({ ref, page, goToSectionRef }, index) => (
+                    <div ref={ref} key={index}>
+                        <Section
+                            image={img}
+                            page={page}
+                            goToSectionRef={goToSectionRef}
+                            scrollTo={() => scrollTo(goToSectionRef)}
+                        />
+                    </div>
+                ))}{' '}
             </div>
-            <LandingSections />
-        </section>
+        </div>
     );
-}
+};
+
+const DotAnimation: React.FC<{
+    activeIndex: number;
+    sections: sectionsIF[];
+    onClick: (index: number) => void;
+}> = ({ activeIndex, sections, onClick }) => {
+    const dotVariants = {
+        //   hidden: { opacity: 0, width: '0px', height: '0px' },
+        visible: {
+            opacity: 0.6,
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+        },
+        exit: { opacity: 0, width: '0px', height: '0px' },
+        active: {
+            opacity: 1,
+            width: '20px',
+            height: '40px',
+            borderRadius: '40%',
+            transition: { duration: 0.5 },
+        }, // Morph animation for active dot
+    };
+
+    return (
+        <div className={styles.dots}>
+            <AnimatePresence initial={false}>
+                {sections.map((_, index) => (
+                    <motion.span
+                        key={index}
+                        className={`${styles.dot} ${
+                            index === activeIndex ? styles.activeDot : ''
+                        }`}
+                        initial='hidden'
+                        animate={index === activeIndex ? 'active' : 'visible'}
+                        exit='exit'
+                        variants={dotVariants}
+                        onClick={() => onClick(index)}
+                    />
+                ))}
+            </AnimatePresence>
+        </div>
+    );
+};
+export default Home;

@@ -1,7 +1,6 @@
 import { FaDiscord, FaGithub, FaTwitter } from 'react-icons/fa';
 import { FaMedium } from 'react-icons/fa6';
 
-import { FlexContainer } from '../../../styled/Common';
 import styles from './LandingStyles.module.css';
 import LinkCard from './LinkCard';
 import { IoDocumentTextSharp } from 'react-icons/io5';

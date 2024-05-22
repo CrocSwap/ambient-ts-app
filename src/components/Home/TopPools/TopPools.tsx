@@ -18,15 +18,22 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPools(props: TopPoolsPropsIF) {
     const { topPools } = useContext(CrocEnvContext);
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
-    const show4TopPools = useMediaQuery('(max-width: 1500px)');
-    const show3TopPools = useMediaQuery('(min-height: 700px)');
+    const show1Pool = useMediaQuery('(max-height: 800px)');
+    const showMobileVersion = useMediaQuery('(max-width: 900px)');
+    const show4TopPools = useMediaQuery('(min-width: 1400px)');
+    const show3TopPools = useMediaQuery('(min-width: 980px)');
+    const showAllTopPools = useMediaQuery('(min-width: 1920px)');
+
     const poolData = showMobileVersion
-        ? show3TopPools
-            ? topPools.slice(0, 3)
+        ? show1Pool
+            ? topPools.slice(0, 1)
+            : showAllTopPools
+            ? topPools
             : topPools.slice(0, 2)
         : show4TopPools
         ? topPools.slice(0, 4)
+        : show3TopPools
+        ? topPools.slice(0, 3)
         : topPools;
 
     return (

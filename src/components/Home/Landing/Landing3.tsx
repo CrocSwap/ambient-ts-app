@@ -1,6 +1,5 @@
 import { FlexContainer } from '../../../styled/Common';
 import styles from './LandingStyles.module.css';
-import liquidityImage from '../../../assets/images/home/liquidity.svg';
 import liquidityVideo from '../../../assets/images/home/liquidity.mp4';
 
 export default function Landing3() {

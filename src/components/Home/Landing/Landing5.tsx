@@ -1,4 +1,3 @@
-import { FlexContainer } from '../../../styled/Common';
 import styles from './LandingStyles.module.css';
 import blockTower from '../../../assets/images/investors/blocktower.svg';
 import janeStreet from '../../../assets/images/investors/janeStreet.svg';
@@ -6,13 +5,13 @@ import circle from '../../../assets/images/investors/circle.svg';
 import tensai from '../../../assets/images/investors/tensai.svg';
 import naval from '../../../assets/images/investors/naval.svg';
 import susa from '../../../assets/images/investors/susa.svg';
-import quantStamp from '../../../assets/images/investors/quantStamp.svg';
+import quantStamp from '../../../assets/images/investors/quantstamp.svg';
 import hypotenuse from '../../../assets/images/investors/hypotenuse.svg';
 import julianKoh from '../../../assets/images/investors/julianKoh.svg';
 import donSun from '../../../assets/images/investors/donSun.svg';
 import lllvvuu from '../../../assets/images/investors/lllvvuu.svg';
 import dogetoshi from '../../../assets/images/investors/dogetoshi.svg';
-import positiveSum from '../../../assets/images/investors/positiveSum.svg';
+import positiveSum from '../../../assets/images/investors/positivesum.svg';
 import motivate from '../../../assets/images/investors/motivate.svg';
 import yunt from '../../../assets/images/investors/yunt.svg';
 import afkbyte from '../../../assets/images/investors/afkbyte.svg';
@@ -40,7 +39,7 @@ export default function Landing5() {
     ];
 
     return (
-        <div className={styles.sub_container}>
+        <div className={`${styles.sub_container} ${styles.smaller_gap}`}>
             <h2>Backed by the best</h2>
             <div className={styles.investors_container}>
                 {investorsData.map((data, idx) => (
