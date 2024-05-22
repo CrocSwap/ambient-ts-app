@@ -12,9 +12,6 @@ import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getTopPairedTokenAddress } from '../../ambient-utils/dataLayer/functions/getTopPairedTokenAddress';
-
 interface ExploreIF {
     view: 'pools' | 'tokens';
 }
@@ -35,19 +32,6 @@ export default function Explore(props: ExploreIF) {
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
     } = useContext(ChainDataContext);
-
-    const { cachedFetchTopPairedToken } = useContext(CachedDataContext);
-
-    useEffect(() => {
-        (async () => {
-            const result = await getTopPairedTokenAddress(
-                '0x13e31',
-                '0x76d6556758365e63e48a0dfafd19c8dba15f97ee',
-                cachedFetchTopPairedToken,
-            );
-            console.log(result);
-        })();
-    }, []);
 
     const getLimitedPools = async (): Promise<void> => {
         if (crocEnv && poolList.length) {

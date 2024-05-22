@@ -8,6 +8,9 @@ import { TokenIF } from '../../ambient-utils/types';
 // import { getDefaultPairForChain } from '../../ambient-utils/constants';
 import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { ZERO_ADDRESS } from '../../ambient-utils/constants';
+import { getTopPairedTokenAddress } from '../../ambient-utils/dataLayer/functions/getTopPairedTokenAddress';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
@@ -43,10 +46,12 @@ export const useUrlParams = (
 ): urlParamsMethodsIF => {
     const { params } = useParams();
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
+    const { cachedFetchTopPairedToken } = useContext(CachedDataContext);
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     // generate an array of required params in the URL based on route
     const requiredParams = useMemo<validParamsType[]>(() => {
@@ -55,15 +60,12 @@ export const useUrlParams = (
         // global params for all parameterized pathways
         const globalParams: validParamsType[] = ['chain', 'tokenA', 'tokenB'];
         // swap params (does not need to include global params)
-        const swapParams: validParamsType[] = ['token'];
         // output variable
         let paramsForPage: validParamsType[];
         // logic router for required URL params for each parameterized route
         // all parameterized pathways MUST have mandatory params defined here
         switch (pageName) {
             case 'swap':
-                paramsForPage = globalParams.concat(swapParams);
-                break;
             case 'market':
             case 'limit':
             case 'pool':
@@ -114,6 +116,35 @@ export const useUrlParams = (
         const areParamsMissing: boolean = requiredParams.some(
             (param: validParamsType) => !paramKeys.includes(param),
         );
+        const containsTokenParam: boolean =
+            paramKeys.includes('token') &&
+            !paramKeys.includes('tokenA') &&
+            !paramKeys.includes('tokenB');
+
+        if (containsTokenParam) {
+            Promise.resolve(
+                getTopPairedTokenAddress(
+                    urlParamMap.get('chain') || '',
+                    urlParamMap.get('token') || ZERO_ADDRESS,
+                    cachedFetchTopPairedToken,
+                ),
+            )
+                .then((result) => {
+                    linkGenSwap.redirect({
+                        chain: urlParamMap.get('chain') || '',
+                        tokenA: result || ZERO_ADDRESS,
+                        tokenB: urlParamMap.get('token') || '',
+                    });
+                })
+                .catch((err) => console.error(err));
+        }
+
+        containsTokenParam &&
+            linkGenSwap.redirect({
+                chain: urlParamMap.get('chain') || '',
+                tokenA: ZERO_ADDRESS,
+                tokenB: urlParamMap.get('token') || '',
+            });
         // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
         // array of parameter tuples from URL
