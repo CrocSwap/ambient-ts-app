@@ -69,6 +69,18 @@ const Home: React.FC = () => {
         setActiveIndex(index);
         scrollTo(sections[index].ref);
     };
+    // TODO: UNCOMMENT THIS TO ACTIVATE AUTO SCROLL
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         const nextIndex = activeIndex === sections.length - 1 ? 0 : activeIndex + 1;
+    //         setActiveIndex(nextIndex);
+    //         scrollTo(sections[nextIndex].ref);
+    //     }, 3000);
+
+    //     return () => {
+    //         clearInterval(interval);
+    //     };
+    // }, [activeIndex, sections]);
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
