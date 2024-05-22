@@ -36,24 +36,7 @@ export default function TradeNowButton(props: propsIF) {
             aria-label='Go to trade page button'
             inNav={inNav}
         >
-            <FlexContainer
-                fullHeight
-                fullWidth
-                justifyContent='center'
-                alignItems='center'
-                rounded
-                background='dark2'
-            >
-                <TradeNowButtonText
-                    fontWeight='300'
-                    font='font-logo'
-                    fontSize='header2'
-                    color='accent1'
-                    inNav={inNav}
-                >
-                    Trade Now
-                </TradeNowButtonText>
-            </FlexContainer>
+            Trade Now
         </StyledLink>
     );
 }
