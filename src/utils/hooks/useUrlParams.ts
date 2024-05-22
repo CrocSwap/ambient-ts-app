@@ -15,7 +15,13 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 // array of all valid params in the app (global, anywhere)
 // must be listed in desired sequence in URL string
-const validParams = ['chain', 'tokenA', 'tokenB', 'limitTick'] as const;
+const validParams = [
+    'chain',
+    'tokenA',
+    'tokenB',
+    'token',
+    'limitTick',
+] as const;
 
 // type generated as a union of all string literals in `validParams`
 export type validParamsType = typeof validParams[number];
@@ -48,12 +54,16 @@ export const useUrlParams = (
         const pageName: pageNames = linkGenCurrent.currentPage;
         // global params for all parameterized pathways
         const globalParams: validParamsType[] = ['chain', 'tokenA', 'tokenB'];
+        // swap params (does not need to include global params)
+        const swapParams: validParamsType[] = ['token'];
         // output variable
         let paramsForPage: validParamsType[];
         // logic router for required URL params for each parameterized route
         // all parameterized pathways MUST have mandatory params defined here
         switch (pageName) {
             case 'swap':
+                paramsForPage = globalParams.concat(swapParams);
+                break;
             case 'market':
             case 'limit':
             case 'pool':
@@ -89,6 +99,7 @@ export const useUrlParams = (
             .filter((par) => par.length === 2)
             // add each key-val pair to the param map
             .forEach((par) => paramMap.set(par[0] as validParamsType, par[1]));
+        console.log(paramMap);
         // return Map of all params in the URL
         return paramMap;
     }, [params]);
