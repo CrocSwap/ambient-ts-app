@@ -59,7 +59,6 @@ export const useUrlParams = (
         const pageName: pageNames = linkGenCurrent.currentPage;
         // global params for all parameterized pathways
         const globalParams: validParamsType[] = ['chain', 'tokenA', 'tokenB'];
-        // swap params (does not need to include global params)
         // output variable
         let paramsForPage: validParamsType[];
         // logic router for required URL params for each parameterized route
