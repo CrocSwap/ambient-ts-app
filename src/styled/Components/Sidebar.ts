@@ -55,7 +55,7 @@ export const ContentContainer = styled(FlexContainer)`
 `;
 
 export const SearchContainer = styled(FlexContainer)`
-    background-color: var(--dark2);
+    background-color: var(--dark3);
     border-radius: var(--border-radius);
 `;
 
