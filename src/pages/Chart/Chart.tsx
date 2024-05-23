@@ -121,6 +121,8 @@ import {
     pinTickToTickLower,
     pinTickToTickUpper,
 } from '../../ambient-utils/dataLayer/functions/pinTick';
+import ChartSettings from './ChartSettings/ChartSettings';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -274,6 +276,13 @@ export default function Chart(props: propsIF) {
     const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
 
+    const [contextmenu, setContextmenu] = useState(false);
+
+    const [contextMenuPlacement, setContextMenuPlacement] = useState<{
+        top: number;
+        left: number;
+    }>();
+
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -413,6 +422,12 @@ export default function Chart(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
+
+    const clickOutsideChartHandler = () => {
+        setContextmenu(false);
+    };
+
+    useOnClickOutside(d3CanvasMain, clickOutsideChartHandler);
 
     const isShowLatestCandle = useMemo(() => {
         return checkShowLatestCandle(period, scaleData?.xScale);
@@ -4243,6 +4258,8 @@ export default function Chart(props: propsIF) {
                 const offsetX = event.offsetX;
                 const offsetY = event.offsetY;
 
+                setContextmenu(false);
+
                 let isOrderHistorySelected = undefined;
                 if (showSwap) {
                     isOrderHistorySelected = orderHistoryHoverStatus(
@@ -4305,6 +4322,20 @@ export default function Chart(props: propsIF) {
                 'click',
                 (event: PointerEvent) => {
                     onClickCanvas(event);
+                },
+            );
+
+            d3.select(d3CanvasMain.current).on(
+                'contextmenu',
+                (event: PointerEvent) => {
+                    event.preventDefault();
+
+                    setContextMenuPlacement({
+                        top: event.clientY,
+                        left: event.clientX,
+                    });
+
+                    setContextmenu(true);
                 },
             );
 
@@ -5907,6 +5938,13 @@ export default function Chart(props: propsIF) {
                         setHoverOHTooltip={setHoverOHTooltip}
                     />
                 )}
+
+            {contextmenu && contextMenuPlacement && (
+                <ChartSettings
+                    contextMenuPlacement={contextMenuPlacement}
+                    setContextmenu={setContextmenu}
+                />
+            )}
         </div>
     );
 }
