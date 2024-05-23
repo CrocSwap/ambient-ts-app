@@ -180,7 +180,15 @@ export default function PoolsListItem(props: propsIF) {
     );
 
     const priceChangeDisplay = (
-        <Text color={isPoolPriceChangePositive ? 'positive' : 'negative'}>
+        <Text
+            color={
+                poolPriceChangePercent?.toLowerCase().includes('change')
+                    ? 'white'
+                    : isPoolPriceChangePositive
+                    ? 'positive'
+                    : 'negative'
+            }
+        >
             {poolPriceChangePercent}
         </Text>
     );
