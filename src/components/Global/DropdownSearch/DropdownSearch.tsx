@@ -132,6 +132,8 @@ const DropdownSearch = () => {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
+                        // unfocus the input
+                        e.currentTarget.blur();
                     }
                 }}
                 spellCheck='false'
