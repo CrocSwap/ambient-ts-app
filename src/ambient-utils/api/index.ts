@@ -1,4 +1,5 @@
 export * from './fetchAddress';
+export * from './fetchTopPairedToken';
 export * from './fetchAprEst';
 export * from './fetchBatch';
 export * from './fetchBlockTime';
