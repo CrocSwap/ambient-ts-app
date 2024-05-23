@@ -55,7 +55,7 @@ export const ContentContainer = styled(FlexContainer)`
 `;
 
 export const SearchContainer = styled(FlexContainer)`
-    background-color: var(--dark2);
+    background-color: var(--dark3);
     border-radius: var(--border-radius);
 `;
 
@@ -124,7 +124,7 @@ export const ItemContainer = styled.div`
     border-radius: var(--border-radius);
     cursor: pointer;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     align-items: center;
 
     &:hover {
@@ -139,7 +139,7 @@ export const ItemHeaderContainer = styled.div`
     border-radius: var(--border-radius);
     cursor: pointer;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 30px;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 30px;
     color: var(--text2, #8b98a5);
 `;
 

@@ -25,6 +25,10 @@ export const ANALYTICS_URL =
     import.meta.env.VITE_ANALYTICS_URL ||
     'https://ambindexer.net/analytics/run?';
 
+export const PAIR_LOOKUP_URL =
+    import.meta.env.VITE_PAIR_LOOKUP_URL ||
+    'https://croc-smart.liquidity.tools/pair-lookup?';
+
 export const HISTORICAL_CANDLES_URL =
     import.meta.env.VITE_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
