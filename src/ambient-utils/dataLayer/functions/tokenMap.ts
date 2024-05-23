@@ -1,12 +1,7 @@
 import { TokenIF } from '../../types';
 import {
     ZERO_ADDRESS,
-    goerliDAI,
-    goerliUSDC,
-    goerliUSDT,
-    mainnetDAI,
     mainnetUSDC,
-    mainnetUSDT,
     sepoliaUSDC,
     scrollSepoliaUSDC,
 } from '../../constants';
@@ -34,13 +29,9 @@ function addToMap(testnet: TokenIF, mainnet: TokenIF) {
     TOKEN_MAP.set(testnet.address.toLowerCase(), mainnet.address.toLowerCase());
 }
 
-addToMap(goerliDAI, mainnetDAI);
-addToMap(goerliUSDC, mainnetUSDC);
-addToMap(goerliUSDT, mainnetUSDT);
 addToMap(sepoliaUSDC, mainnetUSDC);
 addToMap(scrollSepoliaUSDC, mainnetUSDC);
 
 NATIVE_TOKEN_MAP.set('0x82750', '0x5300000000000000000000000000000000000004'); // showing Bridged Wrapped Ether (Scroll) on scroll
 NATIVE_TOKEN_MAP.set('0x8274f', '0x5300000000000000000000000000000000000004'); // showing Bridged Wrapped Ether (Scroll) on scroll sepolia
 NATIVE_TOKEN_MAP.set('0x1', '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'); // showing WETH mainnet addr on mainnet
-NATIVE_TOKEN_MAP.set('0x5', '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'); // showing WETH mainnet addr on goerli

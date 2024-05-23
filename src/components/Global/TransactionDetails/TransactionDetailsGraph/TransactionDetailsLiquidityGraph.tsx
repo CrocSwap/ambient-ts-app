@@ -27,6 +27,7 @@ import {
     getBidPriceValue,
 } from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
 import { createLiquidityLineSeries } from '../../../../pages/Chart/Liquidity/LiquiditySeries/LineSeries';
+import { ChartThemeIF } from '../../../../contexts/ChartContext';
 interface TransactionDetailsLiquidityGraphIF {
     tx: TransactionIF;
     isDenomBase: boolean;
@@ -38,6 +39,7 @@ interface TransactionDetailsLiquidityGraphIF {
     svgWidth: number;
     lastCandleData: CandleDataIF | undefined;
     setIsDataLoading: Dispatch<React.SetStateAction<boolean>>;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 type liquidityChartData = {
@@ -74,6 +76,7 @@ export default function TransactionDetailsLiquidityGraph(
         svgWidth,
         lastCandleData,
         setIsDataLoading,
+        chartThemeColors,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -293,6 +296,7 @@ export default function TransactionDetailsLiquidityGraph(
                 isDenomBase,
                 d3.curveBasis,
                 'curve',
+                chartThemeColors,
             );
 
             setLiqAskSeries(() => d3CanvasLiqAskChart);
@@ -305,6 +309,7 @@ export default function TransactionDetailsLiquidityGraph(
                 isDenomBase,
                 d3.curveBasis,
                 'curve',
+                chartThemeColors,
             );
             setLiqBidSeries(() => d3CanvasLiqBidChart);
 
@@ -316,6 +321,7 @@ export default function TransactionDetailsLiquidityGraph(
                 isDenomBase,
                 d3.curveBasis,
                 'curve',
+                chartThemeColors,
             );
             setLineAskSeries(() => d3CanvasLiqChartAskLine);
 
@@ -327,6 +333,7 @@ export default function TransactionDetailsLiquidityGraph(
                 isDenomBase,
                 d3.curveBasis,
                 'curve',
+                chartThemeColors,
             );
             setLineBidSeries(() => d3CanvasLiqChartBidLine);
         }

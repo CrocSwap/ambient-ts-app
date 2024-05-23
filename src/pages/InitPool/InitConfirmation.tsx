@@ -36,6 +36,7 @@ interface InitConfirmationProps {
     isTxCompletedRange: boolean;
     errorCode?: string;
     txErrorMessage?: string;
+    txErrorJSON?: string;
     handleNavigation: () => void;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;

@@ -57,7 +57,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const isUserConnected = useSimulatedIsUserConnected();
 
     const {
-        wagmiModal: { open: openModalWallet },
+        walletModal: { open: openModalWallet },
     } = useContext(AppStateContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
@@ -412,9 +412,11 @@ function Portfolio(props: PortfolioPropsIF) {
             margin='0 auto'
             height='calc(100vh - 8rem)'
             style={{
-                paddingLeft: '8px',
+                padding: ' 0 8px',
             }}
         >
+            <PortfolioBanner {...portfolioBannerProps} />
+
             {connectedAccountActive && mobileDataToggle}
             {contentToRenderOnMobile}
         </FlexContainer>

@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components/macro';
-import { HeaderItem } from '../../components/Global/Analytics/TopPools';
+import { HeaderItem } from '../../components/Global/Explore/TopPools';
 import { FlexContainer } from '../Common';
 
 export const ScrollableContainer = styled.div`
@@ -87,9 +87,9 @@ export const TableBody = styled.tbody`
 export const TableHeadWrapper = styled.thead`
     background: var(--dark1);
     position: sticky;
-    top: 0;
+    top: -1px;
     height: 25px;
-    z-index: 3;
+    z-index: 1;
     &::before,
     &::after {
         content: '';

@@ -22,8 +22,10 @@ import {
 import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 import {
     drawDataHistory,
+    getCssVariable,
     selectedDrawnData,
 } from '../pages/Chart/ChartUtils/chartUtils';
+import { BrandContext } from './BrandContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -89,6 +91,21 @@ interface ChartContextIF {
     setIsChartHeightMinimum: React.Dispatch<SetStateAction<boolean>>;
     isMagnetActiveLocal: boolean;
     setIsMagnetActiveLocal: React.Dispatch<SetStateAction<boolean>>;
+    setChartThemeColors: React.Dispatch<
+        SetStateAction<ChartThemeIF | undefined>
+    >;
+    chartThemeColors: ChartThemeIF | undefined;
+}
+
+export interface ChartThemeIF {
+    lightFillColor: d3.RGBColor | d3.HSLColor | null;
+    darkFillColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
+    // border
+    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    textColor: string;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -155,6 +172,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         default: CHART_DEFAULT_HEIGHT,
     });
 
+    const [chartThemeColors, setChartThemeColors] = useState<
+        ChartThemeIF | undefined
+    >(undefined);
+
+    const { skin } = useContext(BrandContext);
+
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
         const updateDimension = () => {
@@ -200,8 +223,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             : undefined;
 
     const isChartEnabled =
-        !!process.env.REACT_APP_CHART_IS_ENABLED &&
-        process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
+        !!import.meta.env.VITE_CHART_IS_ENABLED &&
+        import.meta.env.VITE_CHART_IS_ENABLED.toLowerCase() === 'false'
             ? false
             : true;
 
@@ -260,6 +283,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsMagnetActiveLocal,
         numCandlesFetched,
         setNumCandlesFetched,
+        chartThemeColors,
+        setChartThemeColors,
     };
 
     useEffect(() => {
@@ -297,6 +322,29 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             );
         }
     }, [isMagnetActive]);
+
+    useEffect(() => {
+        const lightFillColor = getCssVariable(skin, '--accent5');
+        const darFillColor = getCssVariable(skin, '--dark2');
+        const selectedDateFillColor = getCssVariable(skin, '--accent2');
+
+        const darkStrokeColor = getCssVariable(skin, '--accent1');
+        const lightStrokeColor = getCssVariable(skin, '--accent5');
+        const selectedDateStrokeColor = getCssVariable(skin, '--accent2');
+
+        const chartThemeColors = {
+            lightFillColor: lightFillColor,
+            darkFillColor: darFillColor,
+            selectedDateFillColor: selectedDateFillColor,
+            // border
+            lightStrokeColor: lightStrokeColor,
+            darkStrokeColor: darkStrokeColor,
+            selectedDateStrokeColor: selectedDateStrokeColor,
+            textColor: '',
+        };
+
+        setChartThemeColors(() => chartThemeColors);
+    }, [skin]);
 
     return (
         <ChartContext.Provider value={chartContext}>

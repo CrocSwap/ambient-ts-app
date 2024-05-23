@@ -224,6 +224,7 @@ function RangesRow(props: propsIF) {
         isPositionInRange,
         baseTokenAddress,
         quoteTokenAddress,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {
@@ -282,7 +283,6 @@ function RangesRow(props: propsIF) {
                 <div data-label='menu'>
                     <RangesMenu
                         {...rangeMenuProps}
-                        isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
                         isAccountView={isAccountView}
                         openDetailsModal={openDetailsModal}

@@ -23,6 +23,7 @@ import { useMediaQuery } from '@material-ui/core';
 import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -50,14 +51,15 @@ export default function TransactionDetailsGraph(
     const oneHourMiliseconds = 60 * 60 * 1000;
     const oneWeekMiliseconds = oneHourMiliseconds * 24 * 7;
     const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+        import.meta.env.VITE_CACHE_SERVER_IS_ENABLED !== undefined
+            ? import.meta.env.VITE_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
     const { isDenomBase } = useContext(TradeDataContext);
+    const { chartThemeColors } = useContext(ChartContext);
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -274,7 +276,15 @@ export default function TransactionDetailsGraph(
     }, [fetchEnabled, timeFirstMintMemo, tx.changeType]);
 
     useEffect(() => {
-        if (scaleData !== undefined) {
+        if (scaleData !== undefined && chartThemeColors) {
+            const d3LineColor = chartThemeColors.darkStrokeColor?.copy();
+            const d3RangeTriangleColor =
+                chartThemeColors.darkStrokeColor?.copy();
+            const d3BandColor = chartThemeColors.darkStrokeColor?.copy();
+
+            if (d3RangeTriangleColor) d3RangeTriangleColor.opacity = 0.8;
+            if (d3BandColor) d3BandColor.opacity = 0.075;
+
             const lineSeries = d3fc
                 .seriesSvgLine()
                 .xScale(scaleData?.xScale)
@@ -290,7 +300,12 @@ export default function TransactionDetailsGraph(
                         : d.priceCloseExclMEVDecimalCorrected,
                 )
                 .decorate((selection: any) => {
-                    selection.enter().style('stroke', '#7371FC');
+                    selection
+                        .enter()
+                        .style(
+                            'stroke',
+                            d3LineColor ? d3LineColor.toString() : '#7371FC',
+                        );
                 });
 
             setLineSeries(() => {
@@ -306,6 +321,14 @@ export default function TransactionDetailsGraph(
 
             priceLine.decorate((selection: any) => {
                 selection.enter().attr('class', 'priceLine');
+                selection
+                    .enter()
+                    .attr(
+                        'stroke',
+                        d3RangeTriangleColor
+                            ? d3RangeTriangleColor.toString()
+                            : 'rgba(97, 71, 247, 0.8)',
+                    );
             });
 
             setPriceLine(() => {
@@ -410,8 +433,18 @@ export default function TransactionDetailsGraph(
                                     (index % 2 ? 270 : 90) +
                                     ')',
                             )
-                            .style('stroke', 'rgba(97, 71, 247, 0.8)')
-                            .style('fill', 'rgba(97, 71, 247, 0.8)');
+                            .style(
+                                'stroke',
+                                d3RangeTriangleColor
+                                    ? d3RangeTriangleColor.toString()
+                                    : 'rgba(97, 71, 247, 0.8)',
+                            )
+                            .style(
+                                'fill',
+                                d3RangeTriangleColor
+                                    ? d3RangeTriangleColor.toString()
+                                    : 'rgba(97, 71, 247, 0.8)',
+                            );
                     });
                 });
 
@@ -480,7 +513,12 @@ export default function TransactionDetailsGraph(
                             'transform',
                             'translateX(' + scaleData.xScale(time) + 'px )',
                         );
-                    selection.select('path').attr('fill', '#7371FC1A');
+                    selection
+                        .select('path')
+                        .attr(
+                            'fill',
+                            d3BandColor ? d3BandColor.toString() : '#7371FC1A',
+                        );
                 });
 
             setHorizontalBand(() => {
@@ -492,6 +530,7 @@ export default function TransactionDetailsGraph(
         isDenomBase,
         isAccountView,
         !isBaseTokenMoneynessGreaterOrEqual,
+        chartThemeColors,
     ]);
 
     function findMinMaxTime(data: any[]) {
@@ -1360,7 +1399,10 @@ export default function TransactionDetailsGraph(
                                 isSmallRange = diff < 70 && diff > 30;
                                 if (diff > 10) {
                                     verticalLineData.push({
-                                        name: ' Updated',
+                                        name:
+                                            tx.positionLiq === 0
+                                                ? ' Remove Liq.'
+                                                : ' Update Liq.',
                                         value: tx.latestUpdateTime * 1000,
                                     });
                                 }
@@ -1489,6 +1531,7 @@ export default function TransactionDetailsGraph(
                                     graphData ? graphData[0] : undefined
                                 }
                                 setIsDataLoading={setIsDataLoading}
+                                chartThemeColors={chartThemeColors}
                             />
                         )}
                         <d3fc-svg

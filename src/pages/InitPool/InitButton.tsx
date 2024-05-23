@@ -38,7 +38,7 @@ interface PropsIF {
 }
 export default function InitButton(props: PropsIF) {
     const {
-        wagmiModal: { open: openWagmiModalWallet },
+        walletModal: { open: openWalletModalWallet },
     } = useContext(AppStateContext);
     const { approve, isApprovalPending } = useApprove();
 
@@ -70,6 +70,7 @@ export default function InitButton(props: PropsIF) {
     const tokenAApprovalButton = (
         <Button
             idForDOM='approve_token_A_button'
+            style={{ textTransform: 'none' }}
             title={
                 !isApprovalPending
                     ? `Approve ${tokenA.symbol}`
@@ -86,6 +87,7 @@ export default function InitButton(props: PropsIF) {
     const tokenBApprovalButton = (
         <Button
             idForDOM='approve_token_b_for_init_page'
+            style={{ textTransform: 'none' }}
             title={
                 !isApprovalPending
                     ? `Approve ${tokenB.symbol}`
@@ -110,6 +112,7 @@ export default function InitButton(props: PropsIF) {
         return (
             <Button
                 idForDOM='confirm_new_pool_button'
+                style={{ textTransform: 'none' }}
                 title={title}
                 disabled={disabled}
                 action={() => setActiveContent('confirmation')}
@@ -220,7 +223,7 @@ export default function InitButton(props: PropsIF) {
             <Button
                 idForDOM='connect_wallet_init_page_button'
                 title='Connect Wallet'
-                action={openWagmiModalWallet}
+                action={openWalletModalWallet}
                 flat={true}
             />
         );

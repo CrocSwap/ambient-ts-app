@@ -58,6 +58,7 @@ interface propsIF {
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
     tx: TransactionIF;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 // * This file contains constants used in the rendering of transaction rows in the transaction table.
@@ -106,9 +107,10 @@ export const txRowConstants = (props: propsIF) => {
         truncatedDisplayPrice,
         handleWalletClick,
         handleWalletCopy,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
     const { tokens } = useContext(TokenContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
@@ -315,7 +317,9 @@ export const txRowConstants = (props: propsIF) => {
                 <RowItem hover>
                     <Link to={tradeLinkPath}>
                         <span style={{ textTransform: 'none' }}>
-                            {tx.baseSymbol} / {tx.quoteSymbol}
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${tx.quoteSymbol} / ${tx.baseSymbol}`
+                                : `${tx.baseSymbol} / ${tx.quoteSymbol}`}
                         </span>
                         <FiExternalLink
                             size={10}
@@ -542,36 +546,36 @@ export const txRowConstants = (props: propsIF) => {
         >
             <p>
                 <span>
-                    {truncatedLowDisplayPrice && !isUsdConversionEnabled
+                    {truncatedLowDisplayPrice && !isTradeDollarizationEnabled
                         ? priceCharacter
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? ''
                         : '…'}
                 </span>
                 <span>
                     {isAccountView
-                        ? isUsdConversionEnabled
+                        ? isTradeDollarizationEnabled
                             ? formattedLowUsdPrice
                             : truncatedLowDisplayPriceDenomByMoneyness
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? formattedLowUsdPrice
                         : truncatedLowDisplayPrice}
                 </span>
             </p>
             <p>
                 <span>
-                    {truncatedHighDisplayPrice && !isUsdConversionEnabled
+                    {truncatedHighDisplayPrice && !isTradeDollarizationEnabled
                         ? priceCharacter
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? ''
                         : '…'}
                 </span>
                 <span>
                     {isAccountView
-                        ? isUsdConversionEnabled
+                        ? isTradeDollarizationEnabled
                             ? formattedHighUsdPrice
                             : truncatedHighDisplayPriceDenomByMoneyness
-                        : isUsdConversionEnabled
+                        : isTradeDollarizationEnabled
                         ? formattedHighUsdPrice
                         : truncatedHighDisplayPrice}
                 </span>
@@ -600,22 +604,22 @@ export const txRowConstants = (props: propsIF) => {
                     <span>
                         {(
                             isAccountView
-                                ? !isUsdConversionEnabled &&
+                                ? !isTradeDollarizationEnabled &&
                                   truncatedDisplayPriceDenomByMoneyness
-                                : !isUsdConversionEnabled &&
+                                : !isTradeDollarizationEnabled &&
                                   truncatedDisplayPrice
                         )
                             ? priceCharacter
-                            : isUsdConversionEnabled
+                            : isTradeDollarizationEnabled
                             ? ''
                             : '…'}
                     </span>
                     <span>
                         {isAccountView
-                            ? isUsdConversionEnabled
+                            ? isTradeDollarizationEnabled
                                 ? formattedUsdPrice
                                 : truncatedDisplayPriceDenomByMoneyness
-                            : isUsdConversionEnabled
+                            : isTradeDollarizationEnabled
                             ? formattedUsdPrice
                             : truncatedDisplayPrice}
                     </span>

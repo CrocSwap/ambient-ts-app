@@ -5,7 +5,7 @@ import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useSwitchNetwork } from 'wagmi';
+import { useSwitchNetwork } from '@web3modal/ethers5/react';
 import { supportedNetworks } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
@@ -13,18 +13,19 @@ import { UserDataContext } from '../../contexts/UserDataContext';
 import { Text } from '../../styled/Common';
 import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { BrandContext } from '../../contexts/BrandContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
-    // hook from wagmi to switch connected wallet in extension
+    // hook from web3modal to switch connected wallet in extension
     const { switchNetwork } = useSwitchNetwork();
-    // hook from wagmi indicating if user is connected
+    // hook from web3modal indicating if user is connected
     const { isUserConnected } = useContext(UserDataContext);
     const { chainData, chooseNetwork } = useContext(TradeDataContext);
     // hook to consume and alter search params on the index page
     const [searchParams, setSearchParams] = useSearchParams();
     // logic to consume chain param data from the URL
-    // runs once when the app initializes, again when wagmi finishes initializing
+    // runs once when the app initializes, again when web3modal finishes initializing
     useEffect(() => {
         // search for param in URL by key 'chain' or 'network'
         const chainParam: string | null =
@@ -41,7 +42,7 @@ export default function Home() {
                 supportedNetworks[targetChain] &&
                 targetChain !== chainData.chainId
             ) {
-                // use wagmi if wallet is connected, otherwise use in-app toggle
+                // use web3modal if wallet is connected, otherwise use in-app toggle
                 if (switchNetwork) {
                     switchNetwork(parseInt(targetChain));
                 } else if (!isUserConnected) {
@@ -52,6 +53,8 @@ export default function Home() {
             }
         }
     }, [switchNetwork]);
+
+    const { showPoints, showDexStats } = useContext(BrandContext);
 
     const PointSystemContainer = styled.section`
         margin: 0 auto;
@@ -80,24 +83,28 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            <PointSystemContainer>
-                <Text fontSize='header1'>Points system now live!</Text>
+            {showPoints && (
+                <PointSystemContainer>
+                    <Text fontSize='header1'>Points system now live!</Text>
 
-                <Link to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}>
-                    <Text
-                        fontSize='header2'
-                        color='accent1'
-                        style={{ textDecoration: 'underline' }}
+                    <Link
+                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
                     >
-                        {isUserConnected
-                            ? ' View your current XP here'
-                            : 'View XP leaderboard'}
-                    </Text>
-                </Link>
-            </PointSystemContainer>
+                        <Text
+                            fontSize='header2'
+                            color='accent1'
+                            style={{ textDecoration: 'underline' }}
+                        >
+                            {isUserConnected
+                                ? ' View your current XP here'
+                                : 'View XP leaderboard'}
+                        </Text>
+                    </Link>
+                </PointSystemContainer>
+            )}
             <div>
                 <TopPools />
-                <Stats />
+                {showDexStats && <Stats />}
             </div>
             <LandingSections />
         </section>

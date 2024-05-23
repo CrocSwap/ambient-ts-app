@@ -53,7 +53,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const {
         tutorial: { isActive: isTutorialActive },
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const {
         chainData: { blockExplorer },
@@ -208,7 +208,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     ) : (
                         <Button
                             idForDOM='connect_wallet_button_in_trade_configurator'
-                            action={openWagmiModal}
+                            action={openWalletModal}
                             title='Connect Wallet'
                             flat
                         />

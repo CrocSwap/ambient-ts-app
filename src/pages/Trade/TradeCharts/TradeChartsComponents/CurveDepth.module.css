@@ -5,9 +5,7 @@
     gap: 4px;
 }
 
-.curve_depth_container:not(:last-child) {
-    border-right: var(--grey-light-border);
-}
+
 
 .active_selected_button,
 .non_active_selected_button {
@@ -30,7 +28,7 @@
 
 .active_selected_button:hover,
 .non_active_selected_button:hover {
-    /* background: var(--title-gradient); */
+    background: var(--dark3);
     color: var(--text1);
 }
 

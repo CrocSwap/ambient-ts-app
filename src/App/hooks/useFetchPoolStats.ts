@@ -18,12 +18,14 @@ import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
     } = useContext(AppStateContext);
+    const { contextMatchesParams } = useContext(TradeTokenContext);
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
@@ -158,6 +160,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [quoteTvlUsd, setQuoteTvlUsd] = useState<number | undefined>();
     const [baseTvlUsd, setBaseTvlUsd] = useState<number | undefined>();
 
+    const [baseFdvUsd, setBaseFdvUsd] = useState<number | undefined>();
+    const [quoteFdvUsd, setQuoteFdvUsd] = useState<number | undefined>();
+
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
         string | undefined
     >();
@@ -181,6 +186,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         // setPoolApy(undefined);
         setQuoteTvlDecimal(undefined);
         setBaseTvlDecimal(undefined);
+        setBaseFdvUsd(undefined);
+        setQuoteFdvUsd(undefined);
         setQuoteTvlUsd(undefined);
         setBaseTvlUsd(undefined);
         setPoolPriceChangePercent(undefined);
@@ -199,7 +206,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
+        if (crocEnv && contextMatchesParams && poolPriceDisplayNum) {
             const fetchTokenPrice = async () => {
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
@@ -207,7 +214,6 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 const quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
-
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
                 } else if (poolPriceDisplayNum && quoteTokenPrice) {
@@ -236,8 +242,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv !== undefined,
+        crocEnv === undefined,
         poolPriceDisplayNum,
+        contextMatchesParams,
     ]);
 
     const fetchPoolStats = async () => {
@@ -315,6 +322,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
             setQuoteTvlDecimal(expandedPoolStatsNow.quoteTvlDecimal);
             setBaseTvlDecimal(expandedPoolStatsNow.baseTvlDecimal);
             setQuoteTvlUsd(expandedPoolStatsNow.quoteTvlUsd);
+            setBaseFdvUsd(expandedPoolStatsNow.baseFdvUsd);
+            setQuoteFdvUsd(expandedPoolStatsNow.quoteFdvUsd);
             setBaseTvlUsd(expandedPoolStatsNow.baseTvlUsd);
 
             if (tvlResult) {
@@ -454,6 +463,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         poolLink,
         shouldInvertDisplay,
         quoteTvlUsd,
+        baseFdvUsd,
+        quoteFdvUsd,
         baseTvlUsd,
         quoteTvlDecimal,
         baseTvlDecimal,

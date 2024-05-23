@@ -132,7 +132,6 @@ p:focus-visible {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-fill-color: transparent;
 
     /* glow/positive */
 
@@ -225,11 +224,6 @@ p:focus-visible {
     transition: all var(--animation-speed) ease;
 }
 
-.hide_sidebar {
-    display: grid;
-    grid-template-columns: 100%;
-}
-
 .tutorial_navigation_container {
     position: absolute;
     bottom: 0;
@@ -249,11 +243,11 @@ input[type='number'] {
 }
 
 @media only screen and (max-width: 600px) {
-    .app_blur{
+    .app_blur {
         width: 100vw;
         height: 100vh;
         backdrop-filter: blur(10px);
-       
+
         position: fixed;
         top: 56px;
         bottom: 64px;
@@ -268,20 +262,6 @@ input[type='number'] {
 }
 
 @media only screen and (min-width: 1280px) {
-    .sidebar_content_layout {
-        transition: var(--transition);
-        display: grid;
-        grid-template-columns: 296px auto;
-        overflow-y: hidden;
-    }
-    .sidebar_content_layout_close {
-        transition: var(--transition);
-
-        display: grid;
-        grid-template-columns: 32px auto;
-        overflow-y: hidden;
-    }
-
     .content-container {
         overflow-y: auto;
         overflow-x: hidden;
@@ -290,8 +270,6 @@ input[type='number'] {
         background: var(--dark1);
     }
     .content-container-trade {
-        overflow: hidden;
-
         background: var(--dark1);
     }
 }

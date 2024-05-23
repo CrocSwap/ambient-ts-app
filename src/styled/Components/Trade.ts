@@ -125,7 +125,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
 
         @media (min-width: 1200px) {
             background: var(--dark2);
-            padding: 8px 8px 3px 8px;
+           
         }
 
         @media ((min-width: 801px) and (max-width:1200px)) {

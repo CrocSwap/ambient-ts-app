@@ -51,6 +51,9 @@ export interface PositionIF {
     bidTickInvPriceDecimalCorrected: number;
     askTickPriceDecimalCorrected: number;
     askTickInvPriceDecimalCorrected: number;
+    baseUsdPrice: number | undefined;
+    quoteUsdPrice: number | undefined;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
     source: string;
     lastMintTx: string;
     firstMintTx: string;

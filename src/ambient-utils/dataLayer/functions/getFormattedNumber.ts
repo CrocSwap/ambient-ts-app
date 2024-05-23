@@ -69,7 +69,7 @@ export function getFormattedNumber({
             });
         } else if (value <= 10) {
             // prevent scientific notation for inputs
-            valueString = Number(value?.toPrecision(3)).toString();
+            valueString = Number(value?.toPrecision(4)).toString();
         } else {
             valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: minFracDigits,

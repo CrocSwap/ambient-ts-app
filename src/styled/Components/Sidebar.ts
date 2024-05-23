@@ -55,7 +55,7 @@ export const ContentContainer = styled(FlexContainer)`
 `;
 
 export const SearchContainer = styled(FlexContainer)`
-    background-color: var(--dark2);
+    background-color: var(--dark3);
     border-radius: var(--border-radius);
 `;
 
@@ -103,17 +103,44 @@ export const ItemsContainer = styled.div`
     }
 `;
 
-export const ItemContainer = styled(GridContainer)`
-    max-height: 25px;
+export const MainItemContainer = styled.div`
     overflow: hidden;
     white-space: nowrap;
     border-radius: var(--border-radius);
     cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    align-items: center;
 
     &:hover {
         transition: var(--transition);
         background: var(--dark2);
     }
+`;
+export const ItemContainer = styled.div`
+    // max-height: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+
+    &:hover {
+        transition: var(--transition);
+        background: var(--dark2);
+    }
+`;
+export const ItemHeaderContainer = styled.div`
+    max-height: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 30px;
+    color: var(--text2, #8b98a5);
 `;
 
 export const RangeItemContainer = styled(ItemContainer)`
@@ -201,10 +228,10 @@ export const ResultsContainer = styled(FlexContainer)`
 
 export const Results = styled(GridContainer)`
     cursor: pointer;
+    height: 24px;
 
     &:hover {
         transition: var(--transition);
-        background: var(--dark1);
-        cursor: pointer;
+        background: var(--dark2);
     }
 `;

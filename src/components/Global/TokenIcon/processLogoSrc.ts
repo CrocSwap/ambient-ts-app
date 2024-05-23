@@ -15,8 +15,9 @@ export default function processLogoSrc(args: argsIF): string {
     const uri: string | undefined = args.token?.logoURI ?? args.sourceURI;
     // early return if no URI was received in args
 
-    const localLogoLookupSymbol =
+    let localLogoLookupSymbol =
         args.token?.symbol.toUpperCase() ?? args.symbol?.toUpperCase();
+    if (localLogoLookupSymbol === 'USD+') localLogoLookupSymbol = 'USDPLUS';
     // return a filepath (if local) or a URI string (if remote)
     return (
         localLogos[localLogoLookupSymbol as keyof typeof localLogos] ??

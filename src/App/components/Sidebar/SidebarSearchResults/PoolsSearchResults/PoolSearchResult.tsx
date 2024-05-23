@@ -4,6 +4,8 @@ import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Results } from '../../../../../styled/Components/Sidebar';
 import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { useContext } from 'react';
 
 interface propsIF {
     pool: PoolIF;
@@ -15,8 +17,17 @@ interface propsIF {
 
 export default function PoolSearchResult(props: propsIF) {
     const { pool, handleClick } = props;
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const poolData = useFetchPoolStats(pool);
+
+    function handleClickFunction() {
+        handleClick(pool.base.address, pool.quote.address);
+        if (isPoolDropdownOpen) {
+            setIsPoolDropdownOpen(false);
+        }
+    }
 
     return (
         <Results
@@ -26,7 +37,7 @@ export default function PoolSearchResult(props: propsIF) {
             fontSize='body'
             color='text2'
             padding='4px'
-            onClick={() => handleClick(pool.base.address, pool.quote.address)}
+            onClick={handleClickFunction}
         >
             <p>
                 {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}

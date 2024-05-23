@@ -354,7 +354,7 @@ function Orders(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? 'auto' : '16px auto'}
+                margin={isSmallScreen ? '40px auto' : '16px auto'}
                 background='dark1'
                 flexDirection={isSmallScreen ? 'column' : 'row'}
             >
@@ -435,7 +435,17 @@ function Orders(props: propsIF) {
         <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef} id='current_row_scroll'>
+            <ul
+                ref={listRef}
+                id='current_row_scroll'
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { height: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 380px)' }
+                        : undefined
+                }
+            >
                 {!isAccountView &&
                     relevantTransactionsByType.length > 0 &&
                     relevantTransactionsByType.reverse().map((tx, idx) => (
@@ -488,7 +498,10 @@ function Orders(props: propsIF) {
     }, [isTradeTableExpanded]);
 
     return (
-        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
+        <FlexContainer
+            flexDirection='column'
+            style={{ height: isSmallScreen ? '95%' : '100%' }}
+        >
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

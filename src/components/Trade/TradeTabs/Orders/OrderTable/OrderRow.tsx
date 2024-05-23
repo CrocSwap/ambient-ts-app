@@ -209,6 +209,7 @@ function OrderRow(props: propsIF) {
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
         fillPercentage,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {

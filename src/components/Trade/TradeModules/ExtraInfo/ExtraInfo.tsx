@@ -1,4 +1,4 @@
-import { MouseEvent, useContext, useState } from 'react';
+import { MouseEvent, useContext, useEffect, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { FlexContainer } from '../../../../styled/Common';
@@ -19,14 +19,29 @@ interface PropsIF {
     conversionRate: string;
     gasPrice: string | undefined;
     showDropdown: boolean;
+    showWarning?: boolean;
+    priceImpactExceedsThreshold?: boolean;
 }
 
 export const ExtraInfo = (props: PropsIF) => {
-    const { extraInfo, showDropdown, conversionRate, gasPrice } = props;
+    const {
+        extraInfo,
+        showDropdown,
+        conversionRate,
+        gasPrice,
+        showWarning,
+        priceImpactExceedsThreshold,
+    } = props;
 
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (showWarning) {
+            setShowExtraInfo(true);
+        }
+    }, [showWarning]);
 
     const arrowToRender = showDropdown ? (
         showExtraInfo ? (
@@ -87,6 +102,14 @@ export const ExtraInfo = (props: PropsIF) => {
                             padding='4px 0'
                             tabIndex={0}
                             aria-label={`${item.title} is ${item.data}`}
+                            style={
+                                item.title === 'Price Impact' &&
+                                priceImpactExceedsThreshold
+                                    ? {
+                                          color: 'var(--other-red)',
+                                      }
+                                    : undefined
+                            }
                         >
                             <FlexContainer gap={4}>
                                 <div>{item.title}</div>

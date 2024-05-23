@@ -4,7 +4,7 @@ import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
-    isEthPairWithStakedEth,
+    isETHPair,
     isStableToken,
     isWbtcToken,
     uriToHttp,
@@ -50,10 +50,7 @@ export default function PoolCard(props: propsIF) {
         ? isWbtcToken(pool.quote.address)
         : isWbtcToken(pool.base.address);
 
-    const isEthStakedEthPair = isEthPairWithStakedEth(
-        pool.base.address,
-        pool.quote.address,
-    );
+    const isEthStakedEthPair = isETHPair(pool.base.address, pool.quote.address);
 
     const usdPrice =
         poolPriceDisplay && basePrice && quotePrice

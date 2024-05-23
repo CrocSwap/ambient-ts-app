@@ -7,7 +7,7 @@ import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
 import { FlexContainer } from '../../../styled/Common';
 import {
-    HeaderGrid,
+    ItemHeaderContainer,
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
@@ -27,14 +27,19 @@ export default function TopPools(props: propsIF) {
     const linkGenExplore = useLinkGen('explore');
 
     return (
-        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
-            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
-                {['Pool', '24h Vol.', 'TVL'].map((item) => (
-                    <FlexContainer key={item} justifyContent='center'>
-                        {item}
-                    </FlexContainer>
-                ))}
-            </HeaderGrid>
+        <FlexContainer
+            flexDirection='column'
+            fontSize='body'
+            fullHeight
+            gap={8}
+        >
+            <ItemHeaderContainer color='text2'>
+                {['Pair', 'Price', '24h Vol.', 'TVL', '24h Price Δ', ''].map(
+                    (item) => (
+                        <FlexContainer key={item}>{item}</FlexContainer>
+                    ),
+                )}
+            </ItemHeaderContainer>
             <ItemsContainer>
                 {topPools.map((pool, idx) => (
                     <PoolsListItem

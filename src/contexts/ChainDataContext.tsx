@@ -97,9 +97,9 @@ export const ChainDataContextProvider = (props: {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =
             chainData.nodeUrl.toLowerCase().includes('infura') &&
-            process.env.REACT_APP_INFURA_KEY
+            import.meta.env.VITE_INFURA_KEY
                 ? chainData.nodeUrl.slice(0, -32) +
-                  process.env.REACT_APP_INFURA_KEY
+                  import.meta.env.VITE_INFURA_KEY
                 : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
                 ? BLAST_RPC_URL
                 : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
@@ -132,8 +132,8 @@ export const ChainDataContextProvider = (props: {
 
     const wsUrl =
         chainData.wsUrl?.toLowerCase().includes('infura') &&
-        process.env.REACT_APP_INFURA_KEY
-            ? chainData.wsUrl.slice(0, -32) + process.env.REACT_APP_INFURA_KEY
+        import.meta.env.VITE_INFURA_KEY
+            ? chainData.wsUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
             : chainData.wsUrl;
 
     const { sendMessage: sendBlockHeaderSub, lastMessage: lastNewHeadMessage } =

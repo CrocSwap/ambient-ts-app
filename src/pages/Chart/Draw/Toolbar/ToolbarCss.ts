@@ -94,13 +94,17 @@ const IconActiveContainer = styled.div`
 `;
 
 // ? img
-const IconFillContainer = styled.div<{ isActive: boolean }>`
-    ${({ isActive }) => {
+const IconFillContainer = styled.div<{ isActive: boolean; fill: string }>`
+    ${({ isActive, fill }) => {
         if (isActive) {
-            return `
-        background-color: rgba(115, 113, 252, 0.7);
+            return (
+                `
+        background-color:` +
+                fill +
+                `;
         max-width : 23px;
-    `;
+    `
+            );
         }
     }}
 

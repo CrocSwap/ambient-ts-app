@@ -227,7 +227,7 @@ function Ranges(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? 'auto' : '16px auto'}
+                margin={isSmallScreen ? '40px auto' : '16px auto'}
                 background='dark1'
                 flexDirection={isSmallScreen ? 'column' : 'row'}
             >
@@ -717,7 +717,17 @@ function Ranges(props: propsIF) {
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef} id='current_row_scroll'>
+            <ul
+                ref={listRef}
+                id='current_row_scroll'
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { height: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 380px)' }
+                        : undefined
+                }
+            >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&
                     pendingPositionsToDisplayPlaceholder
@@ -778,7 +788,10 @@ function Ranges(props: propsIF) {
     );
 
     return (
-        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
+        <FlexContainer
+            flexDirection='column'
+            style={{ height: isSmallScreen ? '95%' : '100%' }}
+        >
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

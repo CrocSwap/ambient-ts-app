@@ -109,8 +109,13 @@ function TradeCandleStickChart(props: propsIF) {
         undefined,
     );
 
-    const { tokenA, tokenB, isDenomBase, poolPriceNonDisplay } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        isDenomBase,
+        poolPriceNonDisplay,
+        currentPoolPriceTick,
+    } = useContext(TradeDataContext);
 
     const { liquidityData: unparsedLiquidityData } =
         useContext(GraphDataContext);
@@ -138,11 +143,6 @@ function TradeCandleStickChart(props: propsIF) {
     const tokenBDecimals = _tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined
-            ? 0
-            : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 

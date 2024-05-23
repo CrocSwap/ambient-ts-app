@@ -18,7 +18,7 @@ import {
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
 import * as d3 from 'd3';
-import { ChartContext } from '../../../../contexts/ChartContext';
+import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { TbLayoutGridAdd } from 'react-icons/tb';
 import { SketchPicker } from 'react-color';
@@ -28,16 +28,11 @@ import { IoMdColorFilter } from 'react-icons/io';
 import { CgColorBucket } from 'react-icons/cg';
 import { BsGear } from 'react-icons/bs';
 import FloatingToolbarSettings from './FloatingToolbarSettings';
-import {
-    defaultDpRangeDrawnShapeEditAttributes,
-    defaultFibonacciDrawnShapeEditAttributes,
-    defaultLineDrawnShapeEditAttributes,
-    defaultRectDrawnShapeEditAttributes,
-} from '../../ChartUtils/drawConstants';
 import lineOptionSvg from '../../../../assets/images/icons/draw/lineOptions/line.svg';
 import dashOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dash.svg';
 import dottedOptionSvg from '../../../../assets/images/icons/draw/lineOptions/dotted.svg';
 import { LineWidthOptions } from './FloatingToolbarSettingsCss';
+import { useDrawSettings } from '../../../../App/hooks/useDrawSettings';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,6 +54,7 @@ interface FloatingToolbarProps {
         updatedData: drawDataHistory | undefined,
     ) => void;
     drawnShapeHistory: drawDataHistory[];
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 function FloatingToolbar(props: FloatingToolbarProps) {
@@ -72,7 +68,10 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         setIsShapeEdited,
         addDrawActionStack,
         drawnShapeHistory,
+        chartThemeColors,
     } = props;
+
+    const drawSettings = useDrawSettings(chartThemeColors);
 
     const floatingDivRef = useRef<HTMLDivElement>(null);
     const floatingMenuDivRef = useRef<HTMLDivElement>(null);
@@ -733,19 +732,19 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 if (
                     !checkIsDefault(
                         item[changedItemIndex],
-                        defaultLineDrawnShapeEditAttributes,
+                        drawSettings['defaultBrush'],
                     )
                 ) {
                     item[changedItemIndex] = {
                         ...item[changedItemIndex],
                         line: structuredClone(
-                            defaultLineDrawnShapeEditAttributes.line,
+                            drawSettings['defaultBrush'].line,
                         ),
                         border: structuredClone(
-                            defaultLineDrawnShapeEditAttributes.border,
+                            drawSettings['defaultBrush'].border,
                         ),
                         background: structuredClone(
-                            defaultLineDrawnShapeEditAttributes.background,
+                            drawSettings['defaultBrush'].background,
                         ),
                     };
 
@@ -757,19 +756,17 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 if (
                     !checkIsDefault(
                         item[changedItemIndex],
-                        defaultRectDrawnShapeEditAttributes,
+                        drawSettings['defaultRect'],
                     )
                 ) {
                     item[changedItemIndex] = {
                         ...item[changedItemIndex],
-                        line: structuredClone(
-                            defaultRectDrawnShapeEditAttributes.line,
-                        ),
+                        line: structuredClone(drawSettings['defaultRect'].line),
                         border: structuredClone(
-                            defaultRectDrawnShapeEditAttributes.border,
+                            drawSettings['defaultRect'].border,
                         ),
                         background: structuredClone(
-                            defaultRectDrawnShapeEditAttributes.background,
+                            drawSettings['defaultRect'].background,
                         ),
                     };
 
@@ -781,19 +778,19 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 if (
                     !checkIsDefault(
                         item[changedItemIndex],
-                        defaultDpRangeDrawnShapeEditAttributes,
+                        drawSettings['defaultDPRange'],
                     )
                 ) {
                     item[changedItemIndex] = {
                         ...item[changedItemIndex],
                         line: structuredClone(
-                            defaultDpRangeDrawnShapeEditAttributes.line,
+                            drawSettings['defaultDPRange'].line,
                         ),
                         border: structuredClone(
-                            defaultDpRangeDrawnShapeEditAttributes.border,
+                            drawSettings['defaultDPRange'].border,
                         ),
                         background: structuredClone(
-                            defaultDpRangeDrawnShapeEditAttributes.background,
+                            drawSettings['defaultDPRange'].background,
                         ),
                     };
 
@@ -805,37 +802,39 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 if (
                     !checkIsDefault(
                         item[changedItemIndex],
-                        defaultFibonacciDrawnShapeEditAttributes,
+                        drawSettings['defaultFibRetracement'],
                     )
                 ) {
                     item[changedItemIndex] = {
                         ...item[changedItemIndex],
                         line: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.line,
+                            drawSettings['defaultFibRetracement'].line,
                         ),
                         border: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.border,
+                            drawSettings['defaultFibRetracement'].border,
                         ),
                         background: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.background,
+                            drawSettings['defaultFibRetracement'].background,
                         ),
                         extraData: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.extraData,
+                            drawSettings['defaultFibRetracement'].extraData,
                         ),
                         extendLeft: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.extendLeft,
+                            drawSettings['defaultFibRetracement'].extendLeft,
                         ),
                         extendRight: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.extendRight,
+                            drawSettings['defaultFibRetracement'].extendRight,
                         ),
                         labelPlacement: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.labelPlacement,
+                            drawSettings['defaultFibRetracement']
+                                .labelPlacement,
                         ),
                         labelAlignment: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.labelAlignment,
+                            drawSettings['defaultFibRetracement']
+                                .labelAlignment,
                         ),
                         reverse: structuredClone(
-                            defaultFibonacciDrawnShapeEditAttributes.reverse,
+                            drawSettings['defaultFibRetracement'].reverse,
                         ),
                     };
 

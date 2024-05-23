@@ -14,6 +14,7 @@ import {
     initialDisplayCandleCountForMobile,
 } from './chartConstants';
 import { getBidPriceValue } from '../Liquidity/LiquiditySeries/AreaSeries';
+import { skins } from '../../../App/hooks/useSkin';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -552,3 +553,30 @@ export function checkShowLatestCandle(
     }
     return false;
 }
+
+export function roundToNearestPreset(closest: number) {
+    if (closest < 1) {
+        if (closest < 0.1) {
+            return 0.1;
+        }
+        return Number(closest.toFixed(2));
+    }
+
+    if (closest > 100) {
+        return 100;
+    }
+
+    return Math.floor(closest);
+}
+
+export const getCssVariable = (skin: skins, variableName: string) => {
+    const themeElement = document.querySelector(
+        '[data-theme="' + skin + '"]',
+    ) as Element;
+
+    const value = getComputedStyle(themeElement)
+        .getPropertyValue(variableName)
+        .trim();
+
+    return d3.color(value);
+};

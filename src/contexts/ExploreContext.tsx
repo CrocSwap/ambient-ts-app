@@ -37,8 +37,8 @@ export interface ExploreContextIF {
         reset: () => void;
     };
     tokens: useTokenStatsIF;
-    arePricesDollarized: boolean;
-    setArePricesDollarized: Dispatch<SetStateAction<boolean>>;
+    isExploreDollarizationEnabled: boolean;
+    setIsExploreDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -78,7 +78,21 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const [limitedPools, setLimitedPools] = useState<Array<PoolDataIF>>([]);
     const [extraPools, setExtraPools] = useState<Array<PoolDataIF>>([]);
-    const [arePricesDollarized, setArePricesDollarized] = useState(false);
+    const [isExploreDollarizationEnabled, setIsExploreDollarizationEnabled] =
+        useState(
+            localStorage.getItem('isExploreDollarizationEnabled') === 'true',
+        );
+
+    useEffect(() => {
+        const savedDollarizationPreference =
+            localStorage.getItem('isExploreDollarizationEnabled') === 'true';
+        if (isExploreDollarizationEnabled !== savedDollarizationPreference) {
+            localStorage.setItem(
+                'isExploreDollarizationEnabled',
+                isExploreDollarizationEnabled.toString(),
+            );
+        }
+    }, [isExploreDollarizationEnabled]);
 
     const allPools = useMemo(
         () => limitedPools.concat(extraPools),
@@ -412,8 +426,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             },
         },
         tokens: dexTokens,
-        arePricesDollarized,
-        setArePricesDollarized,
+        isExploreDollarizationEnabled,
+        setIsExploreDollarizationEnabled,
     };
 
     return (

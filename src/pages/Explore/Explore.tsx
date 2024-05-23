@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
-import TopPools from '../../components/Global/Analytics/TopPools';
-import DexTokens from '../../components/Global/Analytics/DexTokens';
+import TopPools from '../../components/Global/Explore/TopPools';
+import DexTokens from '../../components/Global/Explore/DexTokens';
 import { ExploreContext } from '../../contexts/ExploreContext';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -20,8 +20,12 @@ interface ExploreIF {
 export default function Explore(props: ExploreIF) {
     const { view } = props;
     // full expanded data set
-    const { pools, tokens, arePricesDollarized, setArePricesDollarized } =
-        useContext(ExploreContext);
+    const {
+        pools,
+        tokens,
+        isExploreDollarizationEnabled,
+        setIsExploreDollarizationEnabled,
+    } = useContext(ExploreContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { poolList } = useContext(PoolContext);
     const {
@@ -149,12 +153,14 @@ export default function Explore(props: ExploreIF) {
                             <Refresh>
                                 <RefreshButton
                                     onClick={() =>
-                                        setArePricesDollarized((prev) => !prev)
+                                        setIsExploreDollarizationEnabled(
+                                            (prev) => !prev,
+                                        )
                                     }
                                 >
                                     <DollarizationIcon
-                                        arePricesDollarized={
-                                            arePricesDollarized
+                                        isExploreDollarizationEnabled={
+                                            isExploreDollarizationEnabled
                                         }
                                     />
                                 </RefreshButton>
@@ -183,7 +189,9 @@ export default function Explore(props: ExploreIF) {
                 <TopPools
                     allPools={pools.all}
                     goToMarket={goToMarket}
-                    arePricesDollarized={arePricesDollarized}
+                    isExploreDollarizationEnabled={
+                        isExploreDollarizationEnabled
+                    }
                 />
             )}
             {view === 'tokens' && (
@@ -199,7 +207,12 @@ export default function Explore(props: ExploreIF) {
 
 const Section = styled.section`
     background: var(--dark2);
-    height: calc(100vh - 170px);
+    @media (max-width: 500px) {
+        height: calc(100svh - 70px);
+    }
+    @media (min-width: 500px) {
+        height: calc(100svh - 82px);
+    }
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -268,10 +281,10 @@ const RefreshIcon = styled(FiRefreshCw)`
 `;
 
 const DollarizationIcon = styled(AiOutlineDollarCircle)<{
-    arePricesDollarized?: boolean;
+    isExploreDollarizationEnabled?: boolean;
 }>`
     font-size: var(--header2-size);
     cursor: pointer;
-    color: ${({ arePricesDollarized }) =>
-        arePricesDollarized && 'var(--accent1)'};
+    color: ${({ isExploreDollarizationEnabled }) =>
+        isExploreDollarizationEnabled && 'var(--accent1)'};
 `;

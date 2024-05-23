@@ -8,9 +8,15 @@ export const HeaderButtons = styled.button<{ mobileHide?: boolean }>`
     align-items: center;
     outline: none;
     border: none;
+    border-radius: 5px;
     background: transparent;
     cursor: pointer;
-    gap: 4px;
+    gap: 8px;
+    padding: 4px;
+
+    &:hover {
+        background-color: var(--dark3);
+    }
 
     &:focus-visible {
         box-shadow: var(--glow-light-box-shadow);

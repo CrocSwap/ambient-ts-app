@@ -34,31 +34,14 @@ export const fetchTokenPrice = async (
         const response = await fetchBatch<'price'>(body);
 
         if ('error' in response) throw new Error(response.error);
-
+        if (response.value.usdPrice === Infinity) {
+            throw new Error('USD value returned as Infinity');
+        }
         return response.value;
     } catch (error) {
         const defaultPair = supportedNetworks[chain]?.defaultPair;
         if (!defaultPair) return;
-        // if token is Dai on Scroll, return 0.999
         if (
-            chain === '0x82750' &&
-            dispToken.toLowerCase() ===
-                '0xca77eb3fefe3725dc33bccb54edefc3d9f764f97'
-        ) {
-            return {
-                usdPrice: 0.9995309916951084,
-                usdPriceFormatted: 1,
-            };
-        }
-        // if token is USDC, return 0.999
-        else if (
-            dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()
-        ) {
-            return {
-                usdPrice: 0.9995309916951084,
-                usdPriceFormatted: 1,
-            };
-        } else if (
             // if token is ETH, return current value of ETH-USDC pool
             dispToken.toLowerCase() === defaultPair[0].address.toLowerCase()
         ) {
@@ -70,18 +53,27 @@ export const fetchTokenPrice = async (
                 chain,
                 _lastTime,
             );
-            const twoThousandDollarEthNonDisplay = 500000000;
-            const displayPrice: number =
-                1 /
-                toDisplayPrice(
-                    spotPrice ?? twoThousandDollarEthNonDisplay,
-                    defaultPair[0].decimals,
-                    defaultPair[1].decimals,
-                );
+
+            const displayPrice: number = spotPrice
+                ? 1 /
+                  toDisplayPrice(
+                      spotPrice,
+                      defaultPair[0].decimals,
+                      defaultPair[1].decimals,
+                  )
+                : 3500;
             const usdPriceFormatted = truncateDecimals(displayPrice, 2);
             return {
                 usdPrice: displayPrice,
                 usdPriceFormatted: usdPriceFormatted,
+            };
+        } else if (
+            // if token is USDC/USDB, return $1
+            dispToken.toLowerCase() === defaultPair[1].address.toLowerCase()
+        ) {
+            return {
+                usdPrice: 1,
+                usdPriceFormatted: 1,
             };
         }
         return undefined;

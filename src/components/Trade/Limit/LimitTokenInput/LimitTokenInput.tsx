@@ -27,6 +27,9 @@ interface propsIF {
     handleLimitButtonMessage: (val: number) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
+    usdValueTokenA: number | undefined;
+    usdValueTokenB: number | undefined;
+    percentDiffUsdValue: number | undefined;
 }
 
 function LimitTokenInput(props: propsIF) {
@@ -39,6 +42,9 @@ function LimitTokenInput(props: propsIF) {
         handleLimitButtonMessage,
         toggleDexSelection,
         amountToReduceNativeTokenQty,
+        usdValueTokenA,
+        usdValueTokenB,
+        percentDiffUsdValue,
     } = props;
 
     const {
@@ -148,7 +154,8 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        setTokenBInputQty(truncatedTokenBQty);
+        // prevent momentary display of 'Infinity' for limit price on initial load
+        limitTickDisplayPrice && setTokenBInputQty(truncatedTokenBQty);
     };
 
     const handleTokenBChangeEvent = (value?: string) => {
@@ -191,7 +198,7 @@ function LimitTokenInput(props: propsIF) {
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 
-        setTokenAInputQty(truncatedTokenAQty);
+        limitTickDisplayPrice && setTokenAInputQty(truncatedTokenAQty);
     };
 
     return (
@@ -214,6 +221,7 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
+                usdValue={usdValueTokenA}
             />
             <FlexContainer
                 fullWidth
@@ -243,6 +251,8 @@ function LimitTokenInput(props: propsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
                 amountToReduceNativeTokenQty={0} // value not used for buy token
+                usdValue={usdValueTokenB}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
         </FlexContainer>
     );

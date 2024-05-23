@@ -14,6 +14,7 @@ import { getFormattedNumber } from './getFormattedNumber';
 import { Provider } from '@ethersproject/providers';
 import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
+import { getMoneynessRankByAddr } from './getMoneynessRank';
 
 export const getPositionData = async (
     position: PositionServerIF,
@@ -141,6 +142,17 @@ export const getPositionData = async (
 
     const lowerPriceNonDisplay = tickToPrice(position.bidTick);
     const upperPriceNonDisplay = tickToPrice(position.askTick);
+
+    const basePrice = await basePricePromise;
+    const quotePrice = await quotePricePromise;
+
+    newPosition.isBaseTokenMoneynessGreaterOrEqual =
+        getMoneynessRankByAddr(baseTokenAddress) -
+            getMoneynessRankByAddr(quoteTokenAddress) >=
+        0;
+
+    newPosition.baseUsdPrice = basePrice?.usdPrice;
+    newPosition.quoteUsdPrice = quotePrice?.usdPrice;
 
     const posHash = getPositionHash(undefined, {
         isPositionTypeAmbient: position.positionType === 'ambient',
@@ -278,8 +290,6 @@ export const getPositionData = async (
         zeroDisplay: '0',
     });
 
-    const basePrice = await basePricePromise;
-    const quotePrice = await quotePricePromise;
     const poolPrice = toDisplayPrice(
         await poolPriceNonDisplay,
         baseTokenDecimals,

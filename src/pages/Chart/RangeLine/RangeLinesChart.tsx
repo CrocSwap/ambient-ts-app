@@ -113,7 +113,17 @@ export default function RangeLinesChart(props: propsIF) {
                 .fromValue((d: any) => d[0])
                 .toValue((d: any) => d[1])
                 .decorate((context: any) => {
-                    context.fillStyle = '#7371FC1A';
+                    const style = getComputedStyle(context.canvas);
+
+                    const fillColor = style.getPropertyValue('--accent1');
+
+                    const d3AreaFillColor = d3.color(fillColor);
+
+                    if (d3AreaFillColor) d3AreaFillColor.opacity = 0.075;
+
+                    context.fillStyle = d3AreaFillColor
+                        ? d3AreaFillColor
+                        : '#7371FC1A';
                 });
 
             const triangleRange = createTriangle(

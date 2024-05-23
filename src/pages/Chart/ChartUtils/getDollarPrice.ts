@@ -1,8 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolIF } from '../../../ambient-utils/types';
-import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
@@ -12,18 +9,9 @@ interface DollarPrice {
 }
 
 const useDollarPrice = (): ((price: number) => DollarPrice) => {
-    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
-    const { chainData } = useContext(CrocEnvContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isDenomBase } = useContext(TradeDataContext);
+    const { isTradeDollarizationEnabled, poolData } = useContext(PoolContext);
 
-    const poolArg: PoolIF = {
-        base: baseToken,
-        quote: quoteToken,
-        chainId: chainData.chainId,
-        poolIdx: chainData.poolIndex,
-    };
-
-    const poolData = useFetchPoolStats(poolArg, true);
     const { basePrice, quotePrice } = poolData;
 
     const [cachedFunction, setCachedFunction] = useState<
@@ -39,7 +27,7 @@ const useDollarPrice = (): ((price: number) => DollarPrice) => {
 
     useEffect(() => {
         const getDollarPrice = (price: number): DollarPrice => {
-            if (basePrice && quotePrice && isUsdConversionEnabled) {
+            if (basePrice && quotePrice && isTradeDollarizationEnabled) {
                 const dollarPrice = isDenomBase
                     ? price * quotePrice
                     : price * basePrice;
@@ -63,7 +51,7 @@ const useDollarPrice = (): ((price: number) => DollarPrice) => {
         };
 
         setCachedFunction(() => getDollarPrice);
-    }, [basePrice, quotePrice, isUsdConversionEnabled, isDenomBase]);
+    }, [basePrice, quotePrice, isTradeDollarizationEnabled, isDenomBase]);
 
     const memoizedFunction = useCallback(cachedFunction, [cachedFunction]);
 

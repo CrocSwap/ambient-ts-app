@@ -109,6 +109,15 @@ export default function Points(props: propsIF) {
                     <ViewMoreButton>View Details</ViewMoreButton>
                 </FlexContainer>
             </Link>
+            <Link to={'/faq'}>
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='8px'
+                >
+                    <ViewMoreButton>View FAQ</ViewMoreButton>
+                </FlexContainer>
+            </Link>
         </div>
     );
 }

@@ -32,6 +32,7 @@ interface propsIF {
     showConfirmation: boolean;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     resetConfirmation: () => void;
     isAdd: boolean;
     tokenAQty: string;
@@ -53,6 +54,7 @@ function ConfirmRangeModal(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         showConfirmation,
         resetConfirmation,
         isAdd,
@@ -201,6 +203,7 @@ function ConfirmRangeModal(props: propsIF) {
             transactionHash={newRangeTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             showConfirmation={showConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             statusText={

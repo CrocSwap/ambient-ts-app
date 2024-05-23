@@ -128,7 +128,7 @@ function YAxisCanvas(props: yAxisIF) {
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
     const { advancedMode } = useContext(RangeContext);
-    const { isUsdConversionEnabled } = useContext(PoolContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const location = useLocation();
 
@@ -349,9 +349,9 @@ function YAxisCanvas(props: yAxisIF) {
                 ? formatPoolPriceAxis
                 : formatAmountChartData;
 
-            const splitText = '0.0';
-
             yScaleTicks.forEach((d: number) => {
+                const splitText = d > 0 ? '0.0' : '-0.0';
+
                 const digit = d.toString().split('.')[1]?.length;
 
                 const value = getDollarPrice(d).formattedValue.replace(',', '');
@@ -363,7 +363,7 @@ function YAxisCanvas(props: yAxisIF) {
                 if (isScientific) {
                     const textScientificArray = String(value).split(splitText);
                     const textScientific = textScientificArray[1].slice(1, 4);
-                    const startText = isUsdConversionEnabled
+                    const startText = isTradeDollarizationEnabled
                         ? '$' + splitText
                         : splitText;
                     const textHeight =
@@ -393,7 +393,7 @@ function YAxisCanvas(props: yAxisIF) {
                     );
                 } else {
                     context.beginPath();
-                    const text = isUsdConversionEnabled
+                    const text = isTradeDollarizationEnabled
                         ? value
                         : formatTicks(d, digit ? digit : 2);
                     context.fillText(text, X, yScale(d));
@@ -413,7 +413,7 @@ function YAxisCanvas(props: yAxisIF) {
                     undefined,
                     yAxisCanvasWidth,
                     tickSubString,
-                    isUsdConversionEnabled,
+                    isTradeDollarizationEnabled,
                 );
             }
             if (location.pathname.includes('/limit')) {
@@ -435,20 +435,20 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         tickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                 } else {
                     createRectLabel(
                         context,
                         isSameLocation ? sameLocationData : yScale(limit),
                         X,
-                        '#7772FE',
-                        'white',
+                        'rgba(235, 235, 255)',
+                        'black',
                         tick,
                         undefined,
                         yAxisCanvasWidth,
                         tickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                 }
                 addYaxisLabel(
@@ -487,7 +487,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         lowTickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                     addYaxisLabel(
                         isSameLocationMin ? sameLocationDataMin : yScale(low),
@@ -506,7 +506,7 @@ function YAxisCanvas(props: yAxisIF) {
                         undefined,
                         yAxisCanvasWidth,
                         highTickSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                     addYaxisLabel(
                         isSameLocationMax ? sameLocationDataMax : yScale(high),
@@ -538,7 +538,17 @@ function YAxisCanvas(props: yAxisIF) {
                     const rectHeight =
                         yScale(secondPointInDenom) - yScale(firstPointInDenom);
 
-                    context.fillStyle = 'rgba(115, 113, 252, 0.075)';
+                    const style = getComputedStyle(canvas);
+                    const darkFillColor = style.getPropertyValue('--accent1');
+
+                    const d3LightFillColor = d3.color(darkFillColor);
+
+                    if (d3LightFillColor) d3LightFillColor.opacity = 0.075;
+
+                    context.fillStyle = d3LightFillColor
+                        ? d3LightFillColor.toString()
+                        : 'rgba(115, 113, 252, 0.075)';
+
                     context.fillRect(
                         0,
                         yScale(firstPointInDenom),
@@ -550,13 +560,15 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         yScale(shapeDataWithDenom),
                         X,
-                        'rgba(115, 113, 252, 1)',
+                        darkFillColor
+                            ? darkFillColor
+                            : 'rgba(115, 113, 252, 1)',
                         'white',
                         shapePoint,
                         undefined,
                         yAxisCanvasWidth,
                         shapePointSubString,
-                        isUsdConversionEnabled,
+                        isTradeDollarizationEnabled,
                     );
                 });
             }
@@ -576,7 +588,7 @@ function YAxisCanvas(props: yAxisIF) {
                     undefined,
                     yAxisCanvasWidth,
                     crSubString,
-                    isUsdConversionEnabled,
+                    isTradeDollarizationEnabled,
                 );
             }
 

@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-interface LevelLineProps {
+interface propsIF {
     percentage: number;
     width?: string;
     height?: string;
 }
 
-const Container = styled.div<LevelLineProps>`
+const Container = styled.div<propsIF>`
     width: ${(props) => (props.width ? props.width : '100%')};
     height: ${(props) => (props.height ? props.height : '6px')};
     flex-shrink: 0;
@@ -24,7 +24,7 @@ const FilledArea = styled.div<{ percentage: number }>`
     top: 0;
     left: 0;
 `;
-export default function LevelLine(props: LevelLineProps) {
+export default function LevelLine(props: propsIF) {
     const { percentage, width, height } = props;
 
     return (

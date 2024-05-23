@@ -14,12 +14,15 @@ export const blacklist = [
     '0x12d66f87a04a9e220743712ce6d9bb1b5616b8fc',
     '0x1356c899d8c9467c7f71c195612f8a395abf2f0a',
     '0x169ad27a470d064dede56a2d3ff727986b15d52b',
+    '0x175d44451403edf28469df03a9280c1197adb92c',
     '0x178169b423a011fff22b9e3f3abea13414ddd0f1',
     '0x179f48c78f57a3a78f0608cc9197b8972921d1d2',
     '0x1967d8af5bd86a497fb3dd7899a020e47560daaf',
     '0x19aa5fe80d33a56d56c78e82ea5e50e5d80b4dff',
+    '0x19f8f2b0915daa12a3f5c9cf01df9e24d53794f7',
     '0x1da5821544e25c636c1417ba96ade4cf6d2f9b5a',
     '0x1e34a77868e19a6647b1f2f47b51ed72dede95dd',
+    '0x21b8d56bda776bbe68655a16895afd96f5534fed',
     '0x22aaa7720ddd5388a3c0a3333430953c68f1849b',
     '0x23173fe8b96a4ad8d2e17fb83ea5dcccdca1ae52',
     '0x23773e65ed146a459791799d01336db287f25334',
@@ -138,9 +141,11 @@ export const blacklist = [
     '0xdf231d99ff8b6c6cbf4e9b9a945cbacef9339178',
     '0xdf3a408c53e5078af6e8fb2a85088d46ee09a61b',
     '0xe7aa314c77f4233c18c6cc84384a9247c0cf367b',
+    '0xe950dc316b836e4eefb8308bf32bf7c72a1358ff',
     '0xed6e0a7e4ac94d976eebfb82ccf777a3c6bad921',
     '0xedc5d01286f99a066559f60a585406f3878a033e',
     '0xefe301d259f525ca1ba74a7977b80d5b060b3cca',
+    '0xf3701f445b6bdafedbca97d1e477357839e4120d',
     '0xf4b067dd14e95bab89be928c07cb22e3c94e0daa',
     '0xf60dd140cff0706bae9cd734ac3ae76ad9ebc32a',
     '0xf67721a2d8f736e75a49fdd7fad2e31d8676542a',
@@ -165,7 +170,7 @@ export const checkBlacklist = (addr: string) => {
 // };
 
 /* 
-sdn_list=$(curl https://www.treasury.gov/ofac/downloads/sdnlist.txt)
+sdn_list=$(curl -L https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML)
 
 input=( $(echo "$sdn_list" | 
         egrep "0x[A-Fa-f0-9]{40}" | 

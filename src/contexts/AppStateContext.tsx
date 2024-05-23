@@ -4,7 +4,6 @@ import {
     globalPopupMethodsIF,
     useGlobalPopup,
 } from '../App/components/GlobalPopup/useGlobalPopup';
-import { skinMethodsIF, useSkin } from '../App/hooks/useSkin';
 import useChatApi from '../components/Chat/Service/ChatApi';
 import { useModal } from '../components/Global/Modal/useModal';
 import {
@@ -16,11 +15,14 @@ import {
     CACHE_UPDATE_FREQ_IN_MS,
     DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
     DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+    VIEW_ONLY,
 } from '../ambient-utils/constants';
 import {
     getCtaDismissalsFromLocalStorage,
     saveCtaDismissalToLocalStorage,
 } from '../App/functions/localStorage';
+import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
+import { useWeb3Modal } from '@web3modal/ethers5/react';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
@@ -28,15 +30,9 @@ interface AppStateContextIF {
         isActive: boolean;
         setIsActive: (val: boolean) => void;
     };
-
     globalPopup: globalPopupMethodsIF;
     snackbar: snackbarMethodsIF;
     tutorial: { isActive: boolean; setIsActive: (val: boolean) => void };
-    skin: skinMethodsIF;
-    theme: {
-        selected: 'dark' | 'light';
-        setSelected: (val: 'dark' | 'light') => void;
-    };
     chat: {
         isOpen: boolean;
         setIsOpen: (val: boolean) => void;
@@ -45,7 +41,7 @@ interface AppStateContextIF {
     };
     server: { isEnabled: boolean; isUserOnline: boolean };
     subscriptions: { isEnabled: boolean };
-    wagmiModal: {
+    walletModal: {
         isOpen: boolean;
         open: () => void;
         close: () => void;
@@ -64,7 +60,6 @@ export const AppStateContext = createContext<AppStateContextIF>(
 export const AppStateContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     const [isAppHeaderDropdown, setIsAppHeaderDropdown] = useState(false);
     const [isTutorialMode, setIsTutorialMode] = useState(false);
@@ -78,15 +73,15 @@ export const AppStateContextProvider = (props: {
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
-        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
-            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
+        import.meta.env.VITE_CACHE_SERVER_IS_ENABLED !== undefined
+            ? import.meta.env.VITE_CACHE_SERVER_IS_ENABLED.toLowerCase() ===
               'true'
             : true;
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off subscriptions to the cache and chat servers
     const areSubscriptionsEnabled =
-        process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED !== undefined
-            ? process.env.REACT_APP_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
+        import.meta.env.VITE_SUBSCRIPTIONS_ARE_ENABLED !== undefined
+            ? import.meta.env.VITE_SUBSCRIPTIONS_ARE_ENABLED.toLowerCase() ===
               'true'
             : true;
 
@@ -94,13 +89,9 @@ export const AppStateContextProvider = (props: {
     // I.e. updated if and only if their conrents need to be updated.
     const snackbar = useSnackbar();
     const globalPopup = useGlobalPopup();
-    const skin = useSkin('purple_dark');
 
-    const [
-        isWagmiModalOpenWallet,
-        openWagmiModalWallet,
-        closeWagmiModalWallet,
-    ] = useModal();
+    const [isGateWalletModalOpen, openGateWalletModal, closeGateWalletModal] =
+        useModal();
 
     const pointsModalDismissalDuration =
         DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES || 1440;
@@ -144,6 +135,9 @@ export const AppStateContextProvider = (props: {
         saveCtaDismissalToLocalStorage({ ctaId: 'top_points_banner_cta' });
     };
 
+    const [_, hasAgreedTerms] = useTermsAgreed();
+    const { open: openW3Modal } = useWeb3Modal();
+
     const appStateContext = useMemo(
         () => ({
             appOverlay: {
@@ -160,8 +154,6 @@ export const AppStateContextProvider = (props: {
                 isActive: isTutorialMode,
                 setIsActive: setIsTutorialMode,
             },
-            skin,
-            theme: { selected: theme, setSelected: setTheme },
             chat: {
                 isOpen: isChatOpen,
                 setIsOpen: setIsChatOpen,
@@ -171,10 +163,13 @@ export const AppStateContextProvider = (props: {
             server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
             isUserIdle,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
-            wagmiModal: {
-                isOpen: isWagmiModalOpenWallet,
-                open: openWagmiModalWallet,
-                close: closeWagmiModalWallet,
+            walletModal: {
+                isOpen: isGateWalletModalOpen,
+                open: () => {
+                    if (!hasAgreedTerms || VIEW_ONLY) openGateWalletModal();
+                    else openW3Modal();
+                },
+                close: closeGateWalletModal,
             },
             showPointSystemPopup,
             dismissPointSystemPopup,
@@ -186,7 +181,6 @@ export const AppStateContextProvider = (props: {
             // directly references in above appState object
             snackbar,
             globalPopup,
-            skin,
             isChatOpen,
             isChatEnabled,
             isServerEnabled,
@@ -195,10 +189,9 @@ export const AppStateContextProvider = (props: {
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
-            theme,
-            isWagmiModalOpenWallet,
-            openWagmiModalWallet,
-            closeWagmiModalWallet,
+            isGateWalletModalOpen,
+            openGateWalletModal,
+            closeGateWalletModal,
             isAppHeaderDropdown,
             setIsAppHeaderDropdown,
             showPointSystemPopup,
@@ -217,10 +210,8 @@ export const AppStateContextProvider = (props: {
     };
 
     useIdleTimer({
-        //    onPrompt,
         onIdle,
         onActive,
-        //    onAction,
         timeout: 1000 * 60 * 1, // set user to idle after 1 minute
         promptTimeout: 0,
         events: [

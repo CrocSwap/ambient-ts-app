@@ -106,7 +106,7 @@ export default function Deposit(props: propsIF) {
         .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
         .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
 
-    const amountToReduceNativeTokenQtyScroll = BigNumber.from(
+    const amountToReduceNativeTokenQtyL2 = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
     )
         .mul(BigNumber.from(NUM_WEI_IN_GWEI))
@@ -114,7 +114,7 @@ export default function Deposit(props: propsIF) {
         .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
-        ? amountToReduceNativeTokenQtyScroll
+        ? amountToReduceNativeTokenQtyL2
         : amountToReduceNativeTokenQtyMainnet;
 
     const tokenWalletBalanceAdjustedNonDisplayString =
@@ -432,6 +432,7 @@ export default function Deposit(props: propsIF) {
             <Button
                 idForDOM='deposit_tokens_button'
                 title={buttonMessage}
+                style={{ textTransform: 'none' }}
                 action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();
                 }}

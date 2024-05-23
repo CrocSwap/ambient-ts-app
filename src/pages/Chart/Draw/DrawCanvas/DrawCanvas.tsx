@@ -35,11 +35,7 @@ import {
 } from './BandArea';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import {
-    defaultShapeAttributes,
-    drawnShapeDefaultDash,
-    fibDefaultLevels,
-} from '../../ChartUtils/drawConstants';
+import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
@@ -304,7 +300,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         const tempLineData: lineData[] = [];
         const localDrawSettings = drawSettings
             ? drawSettings[activeDrawingType]
-            : defaultShapeAttributes;
+            : drawSettings['defaultShapeAttributes'];
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cancelDrawEvent = (event: any) => {
@@ -840,7 +836,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                         ).toFixed(2);
 
                         const infoLabelHeight = 66;
-                        const infoLabelWidth = 180;
+                        const infoLabelWidth = 195;
 
                         const infoLabelXAxisData =
                             Math.min(lineData[0].x, lineData[1].x) +
@@ -969,7 +965,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         const localDrawSettings = drawSettings
             ? drawSettings[activeDrawingType]
-            : defaultShapeAttributes;
+            : drawSettings['defaultShapeAttributes'];
         if (
             scaleData &&
             lineData.length > 1 &&
@@ -1077,7 +1073,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     lineData[0].lineColor.toString();
                                 context.lineWidth = 1.5;
                                 context.beginPath();
-                                context.setLineDash(drawnShapeDefaultDash);
+                                context.setLineDash(
+                                    drawSettings['drawnShapeDefaultDash'],
+                                );
                                 context.closePath();
                             },
                         );

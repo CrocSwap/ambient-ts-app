@@ -35,12 +35,12 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
-            "name": "Dai Stablecoin",
-            "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "name": "Swell Staked Ether",
+            "address": "0xf951e335afb289353dc249e82926178eac7ded78",
             "chainId": 1,
             "decimals": 18,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
-            "symbol": "DAI"
+            "logoURI": "https://etherscan.io/token/images/swellnetwork_32.png",
+            "symbol": "swETH"
         },
         {
             "name": "Maker",
@@ -99,6 +99,14 @@
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
+            "name": "USD+",
+            "address": "0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd",
+            "symbol": "USD+",
+            "decimals": 18,
+            "chainId": 81457,
+            "logoURI": ""
+        },
+        {
             "address": "0x42E12D42b3d6C4A74a88A61063856756Ea2DB357",
             "chainId": 81457,
             "decimals": 18,
@@ -107,12 +115,28 @@
             "logoURI": "https://blastscan.io/token/images/orbit_32.png"
         },
         {
+            "address": "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "Wrapped Kelp DAO Restaked ETH",
+            "symbol": "wrsETH",
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
+        },
+        {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
             "chainId": 81457,
             "decimals": 18,
             "name": "Mia",
             "symbol": "MIA",
             "logoURI": "https://miablastsoff.com/images/logo.png"
+        },
+        {
+            "address": "0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "BIG",
+            "symbol": "BIG",
+            "logoURI": ""
         },
         {
             "address": "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
@@ -177,6 +201,15 @@
             "logoURI": ""
         },
         {
+            "address": "0x491e6DE43b55c8EAE702EDC263E32339da42f58c",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "eesee",
+            "symbol": "ESE",
+            "logoURI": ""
+        },
+        {
             "address": "0x73c369f61c90f03eb0dd172e95c90208a28dc5bc",
             "chainId": 81457,
             "decimals": 18,
@@ -190,18 +223,18 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "JUICE",
+            "name": "Juice",
             "symbol": "JUICE",
             "logoURI": ""
         },
         {
-            "address": "0xd582879453337bd149ae53ec2092b0af5281d1d7",
+            "address": "0x2416092f143378750bb29b79eD961ab195CcEea5",
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Sekai Glory",
-            "symbol": "GLORY",
-            "logoURI": "https://blastscan.io/token/images/sekaiglory_32.png"
+            "name": "Renzo Restaked ETH",
+            "symbol": "ezETH",
+            "logoURI": "https://etherscan.io/token/images/ezETHv2_32.png"
         },
         {
             "address": "0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F",
@@ -226,30 +259,6 @@
             "decimals": 18,
             "chainId": 168587773,
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
-        },
-        {
-            "name": "Native Ether",
-            "address": "0x0000000000000000000000000000000000000000",
-            "symbol": "ETH",
-            "decimals": 18,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
-        },
-        {
-            "name": "USDCoin",
-            "address": "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C",
-            "symbol": "USDC",
-            "decimals": 6,
-            "chainId": 5,
-            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
-        },
-        {
-            "name": "Wrapped BTC",
-            "address": "0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05",
-            "symbol": "WBTC",
-            "decimals": 8,
-            "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
             "name": "Native Ether",
@@ -308,6 +317,30 @@
             "logoURI": ""
         },
         {
+            "name": "Universal ETH",
+            "address": "0x15eefe5b297136b8712291b632404b66a8ef4d25",
+            "symbol": "uniETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471"
+        },
+        {
+            "name": "StakeStone Ether",
+            "address": "0x80137510979822322193FC997d400D5A6C747bf7",
+            "symbol": "STONE",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
+            "name": "Wrapped Kelp DAO Restaked ETH",
+            "address": "0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f",
+            "symbol": "wrsETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
+        },
+        {
             "name": "Axelar Wrapped USDC",
             "address": "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
             "symbol": "axlUSDC",
@@ -316,12 +349,28 @@
             "logoURI": ""
         },
         {
+            "name": "Wrapped SOL",
+            "address": "0xcdf95e1f720caade4b1dc83abfe15400d2a458ad",
+            "symbol": "SOL",
+            "decimals": 9,
+            "chainId": 534352,
+            "logoURI": "https://cryptologos.cc/logos/solana-sol-logo.png"
+        },
+        {
             "name": "Skydrome",
             "address": "0x95a52ec1d60e74cd3eb002fe54a2c74b185a4c16",
             "symbol": "SKY",
             "decimals": 18,
             "chainId": 534352,
             "logoURI": "https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670"
+        },
+        {
+            "name": "SCRIBES",
+            "address": "0x122aD65A36ab6Dc12261C977e5e63a54ED1bA9E6",
+            "symbol": "SCRIBES",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
         },
         {
             "name": "Native Ether",

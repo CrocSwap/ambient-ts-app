@@ -36,3 +36,4 @@ export * from './truncateDecimals';
 export * from './uriToHttp';
 export * from './validateAddress';
 export * from './validateChain';
+export * from './translateTokenSymbol';

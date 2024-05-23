@@ -20,10 +20,10 @@ const RangeSlider: React.FC<CustomInputProps> = ({
     ariaLabelledBy = '',
     ariaLabel = '',
     id = '',
+    defaultValue = 10,
     min = 1,
     max = 100,
     step = 1,
-    defaultValue = 0,
     onChange,
     percentageInput = false,
 }) => {

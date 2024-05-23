@@ -65,6 +65,8 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
+    faq: '/faq',
+    faqPoints: '/faq/points',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
@@ -125,6 +127,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'account';
         } else if (pathname.startsWith(BASE_URL_PATHS.privacy)) {
             pageName = 'privacy';
+        } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {
+            pageName = 'faqPoints';
         } else {
             pageName = 'home';
         }

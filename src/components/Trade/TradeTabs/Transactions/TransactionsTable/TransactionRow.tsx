@@ -55,6 +55,7 @@ function TransactionRow(props: propsIF) {
         priceCharacter,
         isBuy,
         elapsedTimeString,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
@@ -171,6 +172,7 @@ function TransactionRow(props: propsIF) {
         truncatedDisplayPrice,
         handleWalletClick,
         handleWalletCopy,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 
     const {

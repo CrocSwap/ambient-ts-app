@@ -19,6 +19,7 @@ export function useSendInit(
     setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
     setTxErrorCode: React.Dispatch<React.SetStateAction<string>>,
     setTxErrorMessage: React.Dispatch<React.SetStateAction<string>>,
+    setTxErrorJSON: React.Dispatch<React.SetStateAction<string>>,
     resetConfirmation: () => void, // Include resetConfirmation as an argument
 ) {
     const { crocEnv } = useContext(CrocEnvContext);
@@ -95,6 +96,7 @@ export function useSendInit(
                 console.error({ error });
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(parseErrorMessage(error));
+                setTxErrorJSON(JSON.stringify(error));
             } finally {
                 setIsInitPending(false);
             }

@@ -8,7 +8,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 
 // Interface for React functional components
-interface DropdownMenuPropsIF {
+interface propsIF {
     title: string;
     children: ReactNode;
     marginTop?: string;
@@ -16,10 +16,20 @@ interface DropdownMenuPropsIF {
     logo?: string;
     left?: string;
     right?: string;
+    expandable: boolean;
 }
 
-export default function DropdownMenu2(props: DropdownMenuPropsIF) {
-    const { title, children, marginTop, titleWidth, logo, left, right } = props;
+export default function DropdownMenu2(props: propsIF) {
+    const {
+        title,
+        children,
+        marginTop,
+        titleWidth,
+        logo,
+        left,
+        right,
+        expandable,
+    } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
@@ -32,12 +42,12 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
         }
     }, [isEscapePressed]);
 
-    const toggleMenu = () => {
+    function toggleMenu(): void {
         setIsMenuOpen(!isMenuOpen);
         if (!isMenuOpen) {
             appHeaderDropdown.setIsActive(true);
         } else appHeaderDropdown.setIsActive(false);
-    };
+    }
     const clickOutsideHandler = () => {
         setIsMenuOpen(false);
     };
@@ -73,7 +83,7 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                 gap={4}
                 justifyContent='center'
                 fullWidth
-                onClick={toggleMenu}
+                onClick={() => expandable && toggleMenu()}
                 style={{
                     minWidth: !desktopScreen
                         ? ''
@@ -84,7 +94,11 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
             >
                 <MenuItem gap={4}>
                     {desktopScreen && (
-                        <Icon justifyContent='center' alignItems='center'>
+                        <Icon
+                            justifyContent='center'
+                            alignItems='center'
+                            expandable={expandable}
+                        >
                             <img
                                 src={logo}
                                 alt={title}
@@ -116,7 +130,11 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         />
                     )}
                 </MenuItem>
-                <FaAngleDown style={{ marginLeft: '4px', marginTop: '2px' }} />
+                {expandable && (
+                    <FaAngleDown
+                        style={{ marginLeft: '4px', marginTop: '2px' }}
+                    />
+                )}
             </Menu>
             {isMenuOpen && dropdownMenuContent}
         </div>

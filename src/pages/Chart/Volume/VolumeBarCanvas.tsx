@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -11,11 +12,18 @@ interface propsIF {
     denomInBase: boolean;
     volumeData: Array<CandleDataIF>;
     showVolume: boolean;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 export default function VolumeBarCanvas(props: propsIF) {
-    const { scaleData, selectedDate, denomInBase, volumeData, showVolume } =
-        props;
+    const {
+        scaleData,
+        selectedDate,
+        denomInBase,
+        volumeData,
+        showVolume,
+        chartThemeColors,
+    } = props;
 
     const d3CanvasBar = useRef<HTMLCanvasElement | null>(null);
 
@@ -38,9 +46,17 @@ export default function VolumeBarCanvas(props: propsIF) {
     }, [scaleData?.xScale, scaleData?.volumeScale]);
 
     useEffect(() => {
-        if (barSeries) {
+        if (barSeries && chartThemeColors) {
             barSeries.decorate(
                 (context: CanvasRenderingContext2D, d: CandleDataIF) => {
+                    const d3DarkStrokeColor =
+                        chartThemeColors.darkStrokeColor?.copy();
+                    const d3LightStrokeColor =
+                        chartThemeColors.lightStrokeColor?.copy();
+
+                    if (d3DarkStrokeColor) d3DarkStrokeColor.opacity = 0.5;
+                    if (d3LightStrokeColor) d3LightStrokeColor.opacity = 0.5;
+
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected;
@@ -56,8 +72,12 @@ export default function VolumeBarCanvas(props: propsIF) {
                               selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? 'rgba(205,193,255, 0.5)'
-                            : 'rgba(115,113,252, 0.5)';
+                            ? d3LightStrokeColor
+                                ? d3LightStrokeColor.toString()
+                                : 'rgba(115,113,252, 0.5)'
+                            : d3DarkStrokeColor
+                            ? d3DarkStrokeColor.toString()
+                            : 'rgba(205,193,255, 0.5)';
 
                     context.strokeStyle =
                         d.volumeUSD === null || d.volumeUSD === 0
@@ -66,12 +86,16 @@ export default function VolumeBarCanvas(props: propsIF) {
                               selectedDate === d.time * 1000
                             ? '#E480FF'
                             : close > open
-                            ? 'rgba(205,193,255, 0.5)'
-                            : 'rgba(115,113,252, 0.5)';
+                            ? d3LightStrokeColor
+                                ? d3LightStrokeColor.toString()
+                                : 'rgba(115,113,252, 0.5)'
+                            : d3DarkStrokeColor
+                            ? d3DarkStrokeColor.toString()
+                            : 'rgba(205,193,255, 0.5)';
                 },
             );
         }
-    }, [barSeries, selectedDate]);
+    }, [barSeries, selectedDate, chartThemeColors]);
 
     useEffect(() => {
         if (showVolume) {

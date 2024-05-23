@@ -12,8 +12,8 @@ export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 // NOTE: we use 'main' for staging (testnet) and 'production' for mainnet app. All other names are treated as 'local'
 export type AppEnvironment = 'local' | 'testnet' | 'production';
 export const BRANCH_NAME =
-    process.env.REACT_APP_BRANCH_NAME !== undefined
-        ? process.env.REACT_APP_BRANCH_NAME.toLowerCase()
+    import.meta.env.VITE_BRANCH_NAME !== undefined
+        ? import.meta.env.VITE_BRANCH_NAME.toLowerCase()
         : 'local';
 
 export const APP_ENVIRONMENT: AppEnvironment =
@@ -22,47 +22,50 @@ export const APP_ENVIRONMENT: AppEnvironment =
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
-    process.env.REACT_APP_ANALYTICS_URL ||
+    import.meta.env.VITE_ANALYTICS_URL ||
     'https://ambindexer.net/analytics/run?';
 
+export const PAIR_LOOKUP_URL =
+    import.meta.env.VITE_PAIR_LOOKUP_URL ||
+    'https://croc-smart.liquidity.tools/pair-lookup?';
+
 export const HISTORICAL_CANDLES_URL =
-    process.env.REACT_APP_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
+    import.meta.env.VITE_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
 export const CHAT_BACKEND_URL =
-    process.env.REACT_APP_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
+    import.meta.env.VITE_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
 
 export const CHAT_BACKEND_WSS_URL =
-    process.env.REACT_APP_CHAT_WSS_URL ||
-    CHAT_BACKEND_URL.replace('http', 'ws');
+    import.meta.env.VITE_CHAT_WSS_URL || CHAT_BACKEND_URL.replace('http', 'ws');
 
 export const CHAT_ENABLED =
-    process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
-        ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+    import.meta.env.VITE_CHAT_IS_ENABLED !== undefined
+        ? import.meta.env.VITE_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const VIEW_ONLY =
+    import.meta.env.VITE_VIEW_ONLY !== undefined
+        ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
+        : false;
+
 export const BLOCK_POLLING_RPC_URL =
-    process.env.REACT_APP_BLOCK_POLLING_RPC_URL !== undefined
-        ? process.env.REACT_APP_BLOCK_POLLING_RPC_URL
+    import.meta.env.VITE_BLOCK_POLLING_RPC_URL !== undefined
+        ? import.meta.env.VITE_BLOCK_POLLING_RPC_URL
         : '';
 
 export const BLAST_RPC_URL =
-    process.env.REACT_APP_BLAST_RPC_URL !== undefined
-        ? process.env.REACT_APP_BLAST_RPC_URL
+    import.meta.env.VITE_BLAST_RPC_URL !== undefined
+        ? import.meta.env.VITE_BLAST_RPC_URL
         : 'https://rpc.blast.io/';
 
 export const SCROLL_RPC_URL =
-    process.env.REACT_APP_SCROLL_RPC_URL !== undefined
-        ? process.env.REACT_APP_SCROLL_RPC_URL
+    import.meta.env.VITE_SCROLL_RPC_URL !== undefined
+        ? import.meta.env.VITE_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
 
-export const INCLUDE_CANTO_LINK =
-    process.env.REACT_APP_INCLUDE_CANTO_LINK !== undefined
-        ? process.env.REACT_APP_INCLUDE_CANTO_LINK.toLowerCase() === 'true'
-        : false;
-
 export const DISABLE_INIT_SETTINGS =
-    process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
-        ? process.env.REACT_APP_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
+    import.meta.env.VITE_DISABLE_INIT_SETTINGS !== undefined
+        ? import.meta.env.VITE_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
         : false;
 
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
@@ -92,41 +95,41 @@ export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
 export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';
 
 // BatchRequestManager config
-export const BATCH_ENS_CACHE_EXPIRY = process.env.BATCH_ENS_CACHE_EXPIRY
-    ? parseFloat(process.env.BATCH_ENS_CACHE_EXPIRY)
+export const BATCH_ENS_CACHE_EXPIRY = import.meta.env.BATCH_ENS_CACHE_EXPIRY
+    ? parseFloat(import.meta.env.BATCH_ENS_CACHE_EXPIRY)
     : 1 * 60 * 60 * 1000;
 
-export const BATCH_SIZE = process.env.REACT_APP_BATCH_BATCH_SIZE
-    ? parseFloat(process.env.REACT_APP_BATCH_BATCH_SIZE)
+export const BATCH_SIZE = import.meta.env.VITE_BATCH_BATCH_SIZE
+    ? parseFloat(import.meta.env.VITE_BATCH_BATCH_SIZE)
     : 50;
 
-export const BATCH_SIZE_DELAY = process.env.REACT_APP_BATCH_SIZE_DELAY
-    ? parseFloat(process.env.REACT_APP_BATCH_SIZE_DELAY)
+export const BATCH_SIZE_DELAY = import.meta.env.VITE_BATCH_SIZE_DELAY
+    ? parseFloat(import.meta.env.VITE_BATCH_SIZE_DELAY)
     : 1000;
 
 // Fetch with timeout config
-export const REQUEST_TIMEOUT_DELAY = process.env.REACT_APP_REQUEST_TIMEOUT_DELAY
-    ? parseFloat(process.env.REACT_APP_REQUEST_TIMEOUT_DELAY)
+export const REQUEST_TIMEOUT_DELAY = import.meta.env.VITE_REQUEST_TIMEOUT_DELAY
+    ? parseFloat(import.meta.env.VITE_REQUEST_TIMEOUT_DELAY)
     : 3000;
 
-export const NETWORK_ACCESS = process.env.NETWORK_ACCESS || 'disabled';
+export const NETWORK_ACCESS = import.meta.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
-export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES = process.env
-    .REACT_APP_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
+export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
+    .VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
     ? parseFloat(
-          process.env.REACT_APP_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+          import.meta.env.VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
       )
     : undefined;
 
-export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = process.env
-    .REACT_APP_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
+export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
+    .VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
     ? parseFloat(
-          process.env.REACT_APP_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+          import.meta.env.VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
       )
     : undefined;
 
-export const WALLETCONNECT_PROJECT_ID = process.env
-    .REACT_APP_WALLETCONNECT_PROJECT_ID
-    ? process.env.REACT_APP_WALLETCONNECT_PROJECT_ID
-    : undefined;
+export const WALLETCONNECT_PROJECT_ID = import.meta.env
+    .VITE_WALLETCONNECT_PROJECT_ID
+    ? import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
+    : '37e833557d495d07825c0c6815ac9d93';

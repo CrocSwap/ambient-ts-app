@@ -21,7 +21,7 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
-import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
+// import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools';
@@ -49,11 +49,9 @@ import {
     TransactionsIcon,
 } from '../../../styled/Components/Sidebar';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 function Sidebar() {
-    const { sidebar, toggleMobileModeVisibility, hideOnMobile } =
-        useContext(SidebarContext);
+    const { sidebar, hideOnMobile } = useContext(SidebarContext);
 
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
@@ -96,7 +94,6 @@ function Sidebar() {
     // id for search input HTML elem in the DOM
     // defined in a const because we reference this multiple places
     const searchInputElementId = 'sidebar_search_input';
-    const smallScreen: boolean = useMediaQuery('(max-width: 500px)');
 
     const searchContainer: JSX.Element = (
         <SearchContainer
@@ -177,8 +174,6 @@ function Sidebar() {
         setOpenAllDefault(!openAllDefault);
     };
 
-    // TODO: why are we using an `<input>` as a clickable to close the sidebar?
-
     const searchContainerDisplay: JSX.Element = (
         <FlexContainer
             flexDirection='row'
@@ -239,20 +234,32 @@ function Sidebar() {
                                     : 'Open Sidebar'
                             }
                         >
-                            <input
-                                id='close_sidebar_button'
-                                type='image'
-                                src={closeSidebarImage}
-                                alt='close sidebar'
-                                onClick={() => {
-                                    sidebar.close(true);
-                                    if (smallScreen) {
-                                        toggleMobileModeVisibility();
-                                    }
-                                }}
-                                disabled={isLocked}
-                                style={{ opacity: isLocked ? 0.5 : 1 }}
-                            />
+                            <svg
+                                width='23'
+                                height='24'
+                                viewBox='0 0 23 24'
+                                fill='none'
+                                xmlns='http://www.w3.org/2000/svg'
+                            >
+                                <path
+                                    d='M17.3333 4.5H5.66667C4.74619 4.5 4 5.24619 4 6.16667V17.8333C4 18.7538 4.74619 19.5 5.66667 19.5H17.3333C18.2538 19.5 19 18.7538 19 17.8333V6.16667C19 5.24619 18.2538 4.5 17.3333 4.5Z'
+                                    style={{ stroke: 'var(--accent1)' }}
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                />
+                                <path
+                                    d='M9 4.5V19.5'
+                                    style={{ stroke: 'var(--accent1)' }}
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                />
+                                <path
+                                    d='M15 14.5L12 12L15 9.5'
+                                    style={{ stroke: 'var(--accent1)' }}
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                />
+                            </svg>
                         </DefaultTooltip>
                     </FlexContainer>
                 </>

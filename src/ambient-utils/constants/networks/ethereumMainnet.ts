@@ -1,11 +1,12 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { mainnet as wagmiChain } from 'wagmi/chains';
 import {
     mainnetETH,
     mainnetUSDC,
     mainnetWBTC,
-    mainnetUSDT,
     mainnetSYN,
+    mainnetMKR,
+    mainnetDAI,
+    mainnetLUSD,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -14,24 +15,32 @@ import { Provider } from '@ethersproject/providers';
 import { bigNumToFloat } from '@crocswap-libs/sdk';
 
 const PROVIDER_KEY =
-    process.env.NODE_ENV === 'test'
-        ? process.env.PROVIDER_KEY
-        : process.env.REACT_APP_INFURA_KEY;
+    import.meta.env.NODE_ENV === 'test'
+        ? import.meta.env.PROVIDER_KEY
+        : import.meta.env.VITE_INFURA_KEY;
+
+const chain = {
+    chainId: 1,
+    name: 'Ethereum',
+    currency: 'ETH',
+    rpcUrl: 'https://eth.llamarpc.com',
+    explorerUrl: 'https://etherscan.io',
+};
 
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
     graphCacheUrl: GCGO_ETHEREUM_URL,
     evmRpcUrl: 'https://mainnet.infura.io/v3/' + PROVIDER_KEY,
-    wagmiChain,
+    chain: chain,
     shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [mainnetETH, mainnetUSDC],
     topPools: [
-        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetDAI, mainnetLUSD, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetSYN, mainnetETH, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetUSDT, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetMKR, mainnetETH, lookupChain('0x1').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
