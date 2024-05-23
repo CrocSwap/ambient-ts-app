@@ -18,12 +18,14 @@ import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
     } = useContext(AppStateContext);
+    const { contextMatchesParams } = useContext(TradeTokenContext);
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
@@ -204,7 +206,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
+        if (crocEnv && contextMatchesParams) {
             const fetchTokenPrice = async () => {
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
@@ -212,7 +214,6 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 const quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
-
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
                 } else if (poolPriceDisplayNum && quoteTokenPrice) {
@@ -241,8 +242,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv !== undefined,
+        crocEnv === undefined,
         poolPriceDisplayNum,
+        contextMatchesParams,
     ]);
 
     const fetchPoolStats = async () => {
