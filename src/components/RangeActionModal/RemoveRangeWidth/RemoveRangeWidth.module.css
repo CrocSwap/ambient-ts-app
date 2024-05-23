@@ -50,7 +50,7 @@
 }
 
 .percentage_amount {
-    font-family: 'Lexend Deca';
+    /* font-family: 'Lexend Deca'; */
     font-style: normal;
     font-weight: 300;
     font-size: var(--header2-size);
