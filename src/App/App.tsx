@@ -65,7 +65,7 @@ export default function App() {
         dismissPointSystemPopup,
     } = useContext(AppStateContext);
     const { defaultUrlParams } = useContext(CrocEnvContext);
-    const { skin, showPoints } = useContext(BrandContext);
+    const { platformName, skin, showPoints } = useContext(BrandContext);
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
@@ -145,186 +145,218 @@ export default function App() {
                     onClick={() => appHeaderDropdown.setIsActive(false)}
                 />
                 <section className={`${swapBodyStyle}`}>
-                    {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
-                        sidebarRender} */}
-                    <Routes>
-                        <Route index element={<Home />} />
-                        <Route
-                            path='accessibility'
-                            element={<Accessibility />}
-                        />
-                        <Route path='trade' element={<Trade />}>
+                    {platformName !== 'futa' && (
+                        <Routes>
+                            <Route index element={<Home />} />
                             <Route
-                                path=''
-                                element={
-                                    <Navigate to='/trade/market' replace />
-                                }
+                                path='accessibility'
+                                element={<Accessibility />}
                             />
+                            <Route path='trade' element={<Trade />}>
+                                <Route
+                                    path=''
+                                    element={
+                                        <Navigate to='/trade/market' replace />
+                                    }
+                                />
+                                <Route
+                                    path='market'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.market}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='market/:params'
+                                    element={
+                                        <TradeSwap isOnTradeRoute={true} />
+                                    }
+                                />
+                                <Route
+                                    path='limit'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.limit}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='limit/:params'
+                                    element={<Limit />}
+                                />
+                                <Route
+                                    path='pool'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.pool}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='pool/:params'
+                                    element={<Range />}
+                                />
+                                <Route
+                                    path='reposition'
+                                    element={
+                                        <Navigate
+                                            to={defaultUrlParams.pool}
+                                            replace
+                                        />
+                                    }
+                                />
+                                <Route
+                                    path='reposition/:params'
+                                    element={<Reposition />}
+                                />
+                                <Route
+                                    path='edit/'
+                                    element={
+                                        <Navigate to='/trade/market' replace />
+                                    }
+                                />
+                            </Route>
                             <Route
-                                path='market'
+                                path='chat'
                                 element={
-                                    <Navigate
-                                        to={defaultUrlParams.market}
-                                        replace
+                                    <ChatPanel
+                                        isFullScreen={true}
+                                        appPage={true}
                                     />
                                 }
                             />
                             <Route
-                                path='market/:params'
-                                element={<TradeSwap isOnTradeRoute={true} />}
-                            />
-                            <Route
-                                path='limit'
+                                path='chat/:params'
                                 element={
-                                    <Navigate
-                                        to={defaultUrlParams.limit}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route path='limit/:params' element={<Limit />} />
-                            <Route
-                                path='pool'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.pool}
-                                        replace
-                                    />
-                                }
-                            />
-                            <Route path='pool/:params' element={<Range />} />
-                            <Route
-                                path='reposition'
-                                element={
-                                    <Navigate
-                                        to={defaultUrlParams.pool}
-                                        replace
+                                    <ChatPanel
+                                        isFullScreen={true}
+                                        appPage={true}
                                     />
                                 }
                             />
                             <Route
-                                path='reposition/:params'
-                                element={<Reposition />}
+                                path='initpool/:params'
+                                element={<InitPool />}
+                            />
+                            <Route path='account' element={<Portfolio />} />
+                            <Route
+                                path='xp-leaderboard'
+                                element={<Portfolio isLevelsPage isRanksPage />}
                             />
                             <Route
-                                path='edit/'
-                                element={
-                                    <Navigate to='/trade/market' replace />
-                                }
+                                path='account/xp'
+                                element={<Portfolio isLevelsPage />}
                             />
-                        </Route>
-                        <Route
-                            path='chat'
-                            element={
-                                <ChatPanel isFullScreen={true} appPage={true} />
-                            }
-                        />
-                        <Route
-                            path='chat/:params'
-                            element={
-                                <ChatPanel isFullScreen={true} appPage={true} />
-                            }
-                        />
-                        <Route path='initpool/:params' element={<InitPool />} />
-                        <Route path='account' element={<Portfolio />} />
-                        <Route
-                            path='xp-leaderboard'
-                            element={<Portfolio isLevelsPage isRanksPage />}
-                        />
-                        <Route
-                            path='account/xp'
-                            element={<Portfolio isLevelsPage />}
-                        />
-                        <Route
-                            path='account/points'
-                            element={<Portfolio isPointsTab />}
-                        />
-                        <Route
-                            path='account/:address/points'
-                            element={<Portfolio isPointsTab />}
-                        />
+                            <Route
+                                path='account/points'
+                                element={<Portfolio isPointsTab />}
+                            />
+                            <Route
+                                path='account/:address/points'
+                                element={<Portfolio isPointsTab />}
+                            />
 
-                        <Route
-                            path='/:address/points'
-                            element={<Portfolio isPointsTab />}
-                        />
-                        <Route
-                            path='account/:address/xp/history'
-                            element={
-                                <Portfolio isLevelsPage isViewMoreActive />
-                            }
-                        />
-                        <Route
-                            path='account/xp/history'
-                            element={
-                                <Portfolio isLevelsPage isViewMoreActive />
-                            }
-                        />
-                        <Route
-                            path='account/:address'
-                            element={<Portfolio />}
-                        />
-                        <Route
-                            path='account/:address/xp'
-                            element={<Portfolio isLevelsPage />}
-                        />
-                        <Route
-                            path='swap'
-                            element={
-                                <Navigate replace to={defaultUrlParams.swap} />
-                            }
-                        />
-                        {/* refactor EXPLORE as a nested route */}
-                        <Route
-                            path='explore'
-                            element={<Navigate to='/explore/pools' replace />}
-                        />
-                        <Route
-                            path='explore/pools'
-                            element={<Explore view='pools' />}
-                        />
-                        <Route
-                            path='explore/tokens'
-                            element={<Explore view='tokens' />}
-                        />
-                        <Route path='swap/:params' element={<Swap />} />
-                        <Route path='terms' element={<TermsOfService />} />
-                        <Route path='privacy' element={<PrivacyPolicy />} />
-                        <Route
-                            path='faq'
-                            element={<Navigate to='/faq/points' replace />}
-                        />
-                        <Route path='faq/points' element={<FAQPoints />} />
-                        <Route
-                            path='faq/points/:params'
-                            element={<FAQPoints />}
-                        />
-                        {IS_LOCAL_ENV && (
-                            <Route path='testpage' element={<TestPage />} />
-                        )}
-                        {IS_LOCAL_ENV && (
                             <Route
-                                path='template/form'
-                                element={<ExampleForm />}
+                                path='/:address/points'
+                                element={<Portfolio isPointsTab />}
                             />
-                        )}
-                        <Route path='/:address' element={<Portfolio />} />
-                        <Route
-                            path='/:address/xp'
-                            element={<Portfolio isLevelsPage />}
-                        />
-                        <Route
-                            path='/:address/xp/history'
-                            element={
-                                <Portfolio isLevelsPage isViewMoreActive />
-                            }
-                        />
-                        <Route path='/404' element={<NotFound />} />
-                        <Route
-                            path='*'
-                            element={<Navigate to='/404' replace />}
-                        />
-                    </Routes>
+                            <Route
+                                path='account/:address/xp/history'
+                                element={
+                                    <Portfolio isLevelsPage isViewMoreActive />
+                                }
+                            />
+                            <Route
+                                path='account/xp/history'
+                                element={
+                                    <Portfolio isLevelsPage isViewMoreActive />
+                                }
+                            />
+                            <Route
+                                path='account/:address'
+                                element={<Portfolio />}
+                            />
+                            <Route
+                                path='account/:address/xp'
+                                element={<Portfolio isLevelsPage />}
+                            />
+                            <Route
+                                path='swap'
+                                element={
+                                    <Navigate
+                                        replace
+                                        to={defaultUrlParams.swap}
+                                    />
+                                }
+                            />
+                            {/* refactor EXPLORE as a nested route */}
+                            <Route
+                                path='explore'
+                                element={
+                                    <Navigate to='/explore/pools' replace />
+                                }
+                            />
+                            <Route
+                                path='explore/pools'
+                                element={<Explore view='pools' />}
+                            />
+                            <Route
+                                path='explore/tokens'
+                                element={<Explore view='tokens' />}
+                            />
+                            <Route path='swap/:params' element={<Swap />} />
+                            <Route path='terms' element={<TermsOfService />} />
+                            <Route path='privacy' element={<PrivacyPolicy />} />
+                            <Route
+                                path='faq'
+                                element={<Navigate to='/faq/points' replace />}
+                            />
+                            <Route path='faq/points' element={<FAQPoints />} />
+                            <Route
+                                path='faq/points/:params'
+                                element={<FAQPoints />}
+                            />
+                            {IS_LOCAL_ENV && (
+                                <Route path='testpage' element={<TestPage />} />
+                            )}
+                            {IS_LOCAL_ENV && (
+                                <Route
+                                    path='template/form'
+                                    element={<ExampleForm />}
+                                />
+                            )}
+                            <Route path='/:address' element={<Portfolio />} />
+                            <Route
+                                path='/:address/xp'
+                                element={<Portfolio isLevelsPage />}
+                            />
+                            <Route
+                                path='/:address/xp/history'
+                                element={
+                                    <Portfolio isLevelsPage isViewMoreActive />
+                                }
+                            />
+                            <Route path='/404' element={<NotFound />} />
+                            <Route
+                                path='*'
+                                element={<Navigate to='/404' replace />}
+                            />
+                        </Routes>
+                    )}
+                    {platformName === 'futa' && (
+                        <Routes>
+                            <Route
+                                index
+                                element={<Navigate to='/v1' replace />}
+                            />
+                            <Route path='/v1' element={<TestPage />} />
+                            <Route path='/v1/auctions' element={<TestPage />} />
+                        </Routes>
+                    )}
                 </section>
             </FlexContainer>
             <div data-theme={skin} className='footer_container'>
