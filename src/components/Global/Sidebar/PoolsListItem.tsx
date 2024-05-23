@@ -17,7 +17,7 @@ import {
     ItemContainer,
     MainItemContainer,
 } from '../../../styled/Components/Sidebar';
-import { FlexContainer } from '../../../styled/Common';
+import { FlexContainer, Text } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -78,6 +78,16 @@ export default function PoolsListItem(props: propsIF) {
     // hook to get human-readable values for pool volume and TVL
     const poolData = useFetchPoolStats(pool);
 
+    const {
+        poolPrice,
+        poolTvl,
+        poolVolume24h,
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
+        baseLogoUri,
+        quoteLogoUri,
+    } = poolData;
+
     const { pathname } = useLocation();
 
     const navTarget = useMemo<pageNames>(() => {
@@ -129,8 +139,8 @@ export default function PoolsListItem(props: propsIF) {
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
-                                ? poolData.quoteLogoUri
-                                : poolData.baseLogoUri) ?? '...',
+                                ? quoteLogoUri
+                                : baseLogoUri) ?? '...',
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -147,8 +157,8 @@ export default function PoolsListItem(props: propsIF) {
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
-                                ? poolData.baseLogoUri
-                                : poolData.quoteLogoUri) ?? '...',
+                                ? baseLogoUri
+                                : quoteLogoUri) ?? '...',
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -169,6 +179,12 @@ export default function PoolsListItem(props: propsIF) {
         </FlexContainer>
     );
 
+    const priceChangeDisplay = (
+        <Text color={isPoolPriceChangePositive ? 'positive' : 'negative'}>
+            {poolPriceChangePercent}
+        </Text>
+    );
+
     return (
         <MainItemContainer style={{ width: '100%' }}>
             <ItemContainer
@@ -185,13 +201,14 @@ export default function PoolsListItem(props: propsIF) {
             >
                 {[
                     [poolDisplay],
-                    `${poolData.poolPrice ?? '...'}`,
-                    `${
-                        poolData.poolVolume24h
-                            ? '$' + poolData.poolVolume24h
-                            : '...'
-                    }`,
-                    `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
+                    `${poolPrice ?? '...'}`,
+                    `${poolVolume24h ? '$' + poolVolume24h : '...'}`,
+                    `${poolTvl ? '$' + poolTvl : '...'}`,
+
+                    poolPrice === undefined ||
+                    poolPriceChangePercent === undefined
+                        ? '…'
+                        : priceChangeDisplay,
                 ].map((item, idx) => (
                     <FlexContainer key={idx} padding='4px 0'>
                         {item}
