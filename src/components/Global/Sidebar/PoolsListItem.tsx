@@ -89,6 +89,7 @@ export default function PoolsListItem(props: propsIF) {
     } = poolData;
 
     const { pathname } = useLocation();
+    console.log({ poolPriceChangePercent });
 
     const navTarget = useMemo<pageNames>(() => {
         let output: pageNames;
@@ -180,7 +181,15 @@ export default function PoolsListItem(props: propsIF) {
     );
 
     const priceChangeDisplay = (
-        <Text color={isPoolPriceChangePositive ? 'positive' : 'negative'}>
+        <Text
+            color={
+                poolPriceChangePercent?.toLowerCase().includes('change')
+                    ? 'white'
+                    : isPoolPriceChangePositive
+                    ? 'positive'
+                    : 'negative'
+            }
+        >
             {poolPriceChangePercent}
         </Text>
     );
