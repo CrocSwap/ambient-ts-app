@@ -8,6 +8,9 @@ import { TokenIF } from '../../ambient-utils/types';
 // import { getDefaultPairForChain } from '../../ambient-utils/constants';
 import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { ZERO_ADDRESS } from '../../ambient-utils/constants';
+import { getTopPairedTokenAddress } from '../../ambient-utils/dataLayer/functions/getTopPairedTokenAddress';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
 
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
@@ -15,7 +18,13 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 // array of all valid params in the app (global, anywhere)
 // must be listed in desired sequence in URL string
-const validParams = ['chain', 'tokenA', 'tokenB', 'limitTick'] as const;
+const validParams = [
+    'chain',
+    'tokenA',
+    'tokenB',
+    'token',
+    'limitTick',
+] as const;
 
 // type generated as a union of all string literals in `validParams`
 export type validParamsType = typeof validParams[number];
@@ -37,10 +46,12 @@ export const useUrlParams = (
 ): urlParamsMethodsIF => {
     const { params } = useParams();
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);
+    const { cachedFetchTopPairedToken } = useContext(CachedDataContext);
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     // generate an array of required params in the URL based on route
     const requiredParams = useMemo<validParamsType[]>(() => {
@@ -103,6 +114,35 @@ export const useUrlParams = (
         const areParamsMissing: boolean = requiredParams.some(
             (param: validParamsType) => !paramKeys.includes(param),
         );
+        const containsTokenParam: boolean =
+            paramKeys.includes('token') &&
+            !paramKeys.includes('tokenA') &&
+            !paramKeys.includes('tokenB');
+
+        if (containsTokenParam) {
+            Promise.resolve(
+                getTopPairedTokenAddress(
+                    urlParamMap.get('chain') || '',
+                    urlParamMap.get('token') || ZERO_ADDRESS,
+                    cachedFetchTopPairedToken,
+                ),
+            )
+                .then((result) => {
+                    linkGenSwap.redirect({
+                        chain: urlParamMap.get('chain') || '',
+                        tokenA: result || ZERO_ADDRESS,
+                        tokenB: urlParamMap.get('token') || '',
+                    });
+                })
+                .catch((err) => console.error(err));
+        }
+
+        containsTokenParam &&
+            linkGenSwap.redirect({
+                chain: urlParamMap.get('chain') || '',
+                tokenA: ZERO_ADDRESS,
+                tokenB: urlParamMap.get('token') || '',
+            });
         // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
         // array of parameter tuples from URL

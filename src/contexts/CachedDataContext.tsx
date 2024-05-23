@@ -2,6 +2,8 @@ import React, { createContext } from 'react';
 import {
     FetchAddrFn,
     memoizeFetchEnsAddress,
+    memoizeFetchTopPairedToken,
+    FetchTopPairedTokenFn,
     FetchContractDetailsFn,
     memoizeFetchContractDetails,
     TokenBalancesQueryFn,
@@ -32,6 +34,7 @@ interface CachedDataIF {
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
+    cachedFetchTopPairedToken: FetchTopPairedTokenFn;
     cachedFetchBlockTime: FetchBlockTimeFn;
 }
 
@@ -52,6 +55,7 @@ export const CachedDataContextProvider = (props: {
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
+        cachedFetchTopPairedToken: memoizeFetchTopPairedToken(),
         cachedFetchBlockTime: memoizeFetchBlockTime(),
     };
 
