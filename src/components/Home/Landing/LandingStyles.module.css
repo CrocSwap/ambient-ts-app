@@ -11,12 +11,11 @@
 
     /*  */
 
-    --base-h2-font-size: 72px;
-    --base-p-font-size: 36px;
-    --mockup-width: 1920px;
+    --base-vertical-padding: 64px;
+    --base-horizontal-padding: 124px;
     --mockup-height: 1024px;
-    --h2-max-font-size: 100px; /* Adjust as needed */
-    --p-max-font-size: 50px;  /* Adjust as needed */
+    --min-vertical-padding: 32px; /* Minimum vertical padding */
+    --max-vertical-padding: 128px; /* Maximum vertical padding */
 
 }
 
@@ -302,7 +301,7 @@
         display: grid;
         grid-template-columns: 0.85fr 1.15fr;
         gap: 83px;
-        align-items: center;
+        /* align-items: center; */
     }
 
     .sub_container {
@@ -370,6 +369,7 @@
     .hero_container,
     .sub_container {
         padding: 64px 214px;
+        
     }
 
     .sub_container h2 {
@@ -380,6 +380,5 @@
         font-size: 100px;
     }
 }
-
 
 

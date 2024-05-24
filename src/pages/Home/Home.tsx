@@ -10,6 +10,7 @@ import Landing5 from '../../components/Home/Landing/Landing5';
 import Landing6 from '../../components/Home/Landing/Landing6';
 import Section from '../../components/Home/Section/Section';
 import { FaPause, FaPlay } from 'react-icons/fa';
+import Landing7 from '../../components/Home/Landing/Landing7';
 
 interface sectionsIF {
     ref: React.RefObject<HTMLDivElement>;
@@ -24,6 +25,7 @@ const Home: React.FC = () => {
     const section4 = useRef<HTMLDivElement>(null);
     const section5 = useRef<HTMLDivElement>(null);
     const section6 = useRef<HTMLDivElement>(null);
+    const section7 = useRef<HTMLDivElement>(null);
 
     const sections = [
         {
@@ -45,6 +47,11 @@ const Home: React.FC = () => {
             ref: section4,
             page: <Landing4 />,
             goToSectionRef: section5,
+        },
+        {
+            ref: section7,
+            page: <Landing7 />,
+            goToSectionRef: section6,
         },
         {
             ref: section5,
