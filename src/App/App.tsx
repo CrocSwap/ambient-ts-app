@@ -353,9 +353,12 @@ export default function App() {
                         <Routes>
                             <Route
                                 index
-                                element={<Navigate to='/v1' replace />}
+                                element={<Navigate to='/v1/auctions' replace />}
                             />
-                            <Route path='/v1' element={<TestPage />} />
+                            <Route
+                                path='/v1'
+                                element={<Navigate to='/v1/auctions' replace />}
+                            />
                             <Route path='/v1/auctions' element={<Auctions />} />
                             <Route
                                 path='/v1/auctions/new'
