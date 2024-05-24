@@ -32,12 +32,12 @@ export default function Landing1() {
                     <h2> {totalTvlString ?? '...'}</h2>
                 </div>
                 <div className={styles.hero_stats}>
-                    <p>Total Fees</p>
-                    <h2>{totalFeesString ?? '...'}</h2>
-                </div>
-                <div className={styles.hero_stats}>
                     <p>Total Volume</p>
                     <h2>{totalVolumeString ?? '...'}</h2>
+                </div>
+                <div className={styles.hero_stats}>
+                    <p>Total Fees</p>
+                    <h2>{totalFeesString ?? '...'}</h2>
                 </div>
             </div>
             <FlexContainer justifyContent='center'>
