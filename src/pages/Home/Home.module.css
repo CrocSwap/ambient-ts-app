@@ -40,6 +40,12 @@
 
   }
 
+  @media (max-height: 715px) {
+.container{
+  height: auto;
+}
+  }
+
   @media (max-width: 500px) {
 
     .container{
@@ -49,3 +55,4 @@
       scroll-snap-type: y mandatory;
     }
   }
+

@@ -9,13 +9,9 @@
     --desktop-p-lh: normal;
 
 
-    /*  */
+  
 
-    --base-vertical-padding: 64px;
-    --base-horizontal-padding: 124px;
-    --mockup-height: 1024px;
-    --min-vertical-padding: 32px; /* Minimum vertical padding */
-    --max-vertical-padding: 128px; /* Maximum vertical padding */
+ 
 
 }
 
@@ -381,4 +377,12 @@
     }
 }
 
+
+
+@media (max-height: 715px) {
+.hero_container{
+    gap: 2rem;
+}
+
+}
 
