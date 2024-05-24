@@ -335,9 +335,7 @@
         gap: 0;
     }
 
-    .hero_container h2 {
-        font-size: 75px;
-    }
+   
 
     .hero_container,
     .sub_container {
@@ -370,6 +368,13 @@
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
+
+}
+
+@media (min-width: 1380px) {
+    .hero_container h2 {
+        font-size: 75px;
+    }
 
 }
 
