@@ -47,6 +47,7 @@ import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import Auctions from './futa/Auctions';
+import Create from './futa/Create';
 
 /** ***** React Function *******/
 export default function App() {
@@ -356,6 +357,10 @@ export default function App() {
                             />
                             <Route path='/v1' element={<TestPage />} />
                             <Route path='/v1/auctions' element={<Auctions />} />
+                            <Route
+                                path='/v1/auctions/new'
+                                element={<Create />}
+                            />
                         </Routes>
                     )}
                 </section>
