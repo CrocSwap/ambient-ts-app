@@ -114,16 +114,21 @@ export const useUrlParams = (
         const areParamsMissing: boolean = requiredParams.some(
             (param: validParamsType) => !paramKeys.includes(param),
         );
-        const containsTokenParam: boolean =
-            paramKeys.includes('token') &&
-            !paramKeys.includes('tokenA') &&
-            !paramKeys.includes('tokenB');
+        const containsSingleTokenParam: boolean =
+            (paramKeys.includes('token') &&
+                !paramKeys.includes('tokenA') &&
+                !paramKeys.includes('tokenB')) ||
+            (!paramKeys.includes('token') &&
+                !paramKeys.includes('tokenA') &&
+                paramKeys.includes('tokenB'));
 
-        if (containsTokenParam) {
+        if (containsSingleTokenParam) {
+            const singleToken =
+                urlParamMap.get('token') || urlParamMap.get('tokenB');
             Promise.resolve(
                 getTopPairedTokenAddress(
                     urlParamMap.get('chain') || '',
-                    urlParamMap.get('token') || ZERO_ADDRESS,
+                    singleToken || ZERO_ADDRESS,
                     cachedFetchTopPairedToken,
                 ),
             )
@@ -131,13 +136,13 @@ export const useUrlParams = (
                     linkGenSwap.redirect({
                         chain: urlParamMap.get('chain') || '',
                         tokenA: result || ZERO_ADDRESS,
-                        tokenB: urlParamMap.get('token') || '',
+                        tokenB: singleToken || '',
                     });
                 })
                 .catch((err) => console.error(err));
         }
 
-        containsTokenParam &&
+        containsSingleTokenParam &&
             linkGenSwap.redirect({
                 chain: urlParamMap.get('chain') || '',
                 tokenA: ZERO_ADDRESS,
