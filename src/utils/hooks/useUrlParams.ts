@@ -146,7 +146,8 @@ export const useUrlParams = (
             linkGenSwap.redirect({
                 chain: urlParamMap.get('chain') || '',
                 tokenA: ZERO_ADDRESS,
-                tokenB: urlParamMap.get('token') || '',
+                tokenB:
+                    urlParamMap.get('token') || urlParamMap.get('tokenB') || '',
             });
         // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
