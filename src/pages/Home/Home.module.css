@@ -46,13 +46,19 @@
 }
   }
 
-  @media (max-width: 500px) {
+
+
+  @media (max-width: 600px) {
 
     .container{
 
       
       overscroll-behavior-y: contain;
       scroll-snap-type: y mandatory;
+    }
+
+    .dots{
+      display: none;
     }
   }
 
