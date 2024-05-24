@@ -46,6 +46,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import Auctions from './futa/Auctions';
 
 /** ***** React Function *******/
 export default function App() {
@@ -354,7 +355,7 @@ export default function App() {
                                 element={<Navigate to='/v1' replace />}
                             />
                             <Route path='/v1' element={<TestPage />} />
-                            <Route path='/v1/auctions' element={<TestPage />} />
+                            <Route path='/v1/auctions' element={<Auctions />} />
                         </Routes>
                     )}
                 </section>
