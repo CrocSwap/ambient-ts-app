@@ -1075,6 +1075,7 @@ export default function Chart(props: propsIF) {
         if (scaleData) {
             const domain = scaleData?.xScale.domain();
             const showCandleCount = getCandleCount(
+                scaleData.xScale,
                 visibleCandleData,
                 domain,
                 period,
@@ -3382,6 +3383,7 @@ export default function Chart(props: propsIF) {
                                             );
                                             const showCandleCount =
                                                 getCandleCount(
+                                                    scaleData.xScale,
                                                     visibleCandleData,
                                                     [min, max],
                                                     period,
@@ -5355,6 +5357,8 @@ export default function Chart(props: propsIF) {
                     y: scaleData?.yScale.invert(offsetY),
                 },
             ]);
+
+            return crTime;
         }
     };
 
@@ -5958,6 +5962,7 @@ export default function Chart(props: propsIF) {
                                 lastCandleData={lastCandleData}
                                 firstCandleData={firstCandleData}
                                 setIsDragActive={setIsDragActive}
+                                period={period}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />

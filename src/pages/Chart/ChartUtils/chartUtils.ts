@@ -562,6 +562,8 @@ export function checkShowLatestCandle(
 }
 
 export function getCandleCount(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    xScale: any,
     data: CandleDataChart[],
     domain: number[],
     period: number,
@@ -578,25 +580,28 @@ export function getCandleCount(
     let dataLenght = filtered.length;
 
     if (filtered && dataLenght && isCondensedMode) {
+        const diffMaxPixel = xScale(filtered[0].time * 1000) - xScale(max);
+        const diffMinPixel =
+            xScale(filtered[filtered.length - 1].time) - xScale(min);
+
         const maxGap = Math.floor(
             (max - filtered[0].time * 1000) / (period * 1000),
         );
         const minGap = Math.floor(
             (filtered[filtered.length - 1].time * 1000 - min) / (period * 1000),
         );
-        if (maxGap > 0) {
+        if (maxGap > 0 && diffMaxPixel) {
             dataLenght = dataLenght + maxGap;
         }
-        if (minGap > 0) {
+        if (minGap > 0 && diffMinPixel) {
             dataLenght = dataLenght + minGap;
         }
     } else {
-        dataLenght = Math.floor((max - min) / (period * 1000));
+        dataLenght = Math.floor((max - min) / (period * 1000)) + 1;
     }
 
     return dataLenght;
 }
-
 export function roundToNearestPreset(closest: number) {
     if (closest < 1) {
         if (closest < 0.1) {

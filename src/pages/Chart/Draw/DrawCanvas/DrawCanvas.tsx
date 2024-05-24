@@ -270,24 +270,28 @@ function DrawCanvas(props: DrawCanvasProps) {
         }
 
         let valueX = nearest.time * 1000;
-        const valueXLocation = scaleData.xScale(nearest.time * 1000);
-        const sensitiveDistance =
-            scaleData.xScale(nearest.time * 1000 + nearest.period * 1000) -
-            scaleData.xScale(nearest.time * 1000);
         const snappedTime = findSnapTime(
             scaleData?.xScale.invert(offsetX),
             nearest.period,
         );
+        const checkVisibleCandle = visibleCandleData.length === 0;
+        const lastDateLocation = checkVisibleCandle
+            ? 0
+            : scaleData.xScale(visibleCandleData[0].time * 1000);
+        const firstDateLocation = checkVisibleCandle
+            ? 0
+            : scaleData.xScale(
+                  visibleCandleData[visibleCandleData.length - 1].time * 1000,
+              );
         if (
-            Math.abs(valueXLocation - offsetX) > sensitiveDistance &&
-            nearest === visibleCandleData[0]
+            offsetX > lastDateLocation ||
+            offsetX < firstDateLocation ||
+            checkVisibleCandle
         ) {
             valueX = snappedTime;
             valueY = scaleData?.yScale.invert(offsetY);
-        }
-
-        if (scaleData.xScale.invert(offsetX) < valueX) {
-            valueX = scaleData.xScale.invert(offsetX);
+        } else {
+            valueX = nearest.time * 1000;
         }
 
         return { valueX: valueX, valueY: valueY, nearest: nearest };
@@ -932,6 +936,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             const min = Math.min(lineData[0].x, lineData[1].x);
                             const max = Math.max(lineData[0].x, lineData[1].x);
                             const showCandleCount = getCandleCount(
+                                scaleData.xScale,
                                 visibleCandleData,
                                 [min, max],
                                 period,
