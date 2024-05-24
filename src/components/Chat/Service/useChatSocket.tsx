@@ -99,7 +99,6 @@ const useChatSocket = (
         qp.ensName = ensName;
     }
 
-    // console.log('qp', qp)
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
@@ -116,7 +115,6 @@ const useChatSocket = (
         shouldReconnect: () => true,
         // share: true,
         onOpen: () => {
-            console.log('open connection', address);
             sendToSocket('handshake-update', {
                 roomId: room,
                 address: address,
@@ -125,7 +123,6 @@ const useChatSocket = (
             domDebug('connected', getTimeForLog(new Date()));
         },
         onClose: () => {
-            console.log('closing connection', address);
             domDebug('disconnected', getTimeForLog(new Date()));
         },
     });
@@ -138,6 +135,7 @@ const useChatSocket = (
         [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
     }[readyState];
 
+    const isWsConnected = readyState == ReadyState.OPEN;
     domDebug('connection status', connectionStatus);
 
     useEffect(() => {
@@ -159,10 +157,6 @@ const useChatSocket = (
             address: address,
             ensName: ensName,
         });
-        console.log(
-            'use chat socket params changed',
-            address + '|' + ensName + '|' + room,
-        );
     }, [address, ensName, room]);
 
     useEffect(() => {
@@ -728,6 +722,7 @@ const useChatSocket = (
         getMentionsWithRest,
         updateUserWithAvatarImage,
         addListener,
+        isWsConnected,
     };
 };
 

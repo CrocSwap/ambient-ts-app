@@ -204,6 +204,7 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        isWsConnected,
         // saveUserWithAvatarImage,
     } = useChatSocket(
         room,
@@ -832,16 +833,14 @@ function ChatPanel(props: propsIF) {
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
                         isVerified ? styles.verified : ''
-                    } `}
+                    } ${!isWsConnected ? styles.not_connected : ''}`}
                     onClick={(e) => verifyWallet(0, new Date(), e)}
                 >
                     {isModerator && isVerified && userAddress && (
                         <AiOutlineUser
-                            className={
-                                styles.verify_button_icon +
-                                ' ' +
+                            className={`${styles.verify_button_icon} ${
                                 styles.verify_button_mod_icon
-                            }
+                            } ${!isWsConnected ? styles.not_connected : ''}`}
                             color='var(--other-green)'
                             size={14}
                         ></AiOutlineUser>
@@ -849,7 +848,9 @@ function ChatPanel(props: propsIF) {
                     {isVerified && userAddress ? (
                         <>
                             <AiOutlineCheck
-                                className={styles.verify_button_icon}
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
                                 color='var(--other-green)'
                                 size={10}
                             />
@@ -857,7 +858,9 @@ function ChatPanel(props: propsIF) {
                     ) : (
                         <>
                             <AiOutlineClose
-                                className={styles.verify_button_icon}
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
                                 size={10}
                             />
                             <span> Not Verified</span>

@@ -302,6 +302,15 @@
     color: var(--positive);
 }
 
+.not_connected{
+    color: var(--text3) !important;
+    border-color: var(--text3) !important;
+    box-shadow: 0px 0px 28px rgb(255 255 255 / 32%);
+}
+.not_connected svg{
+    color: var(--text2);
+}
+
 
 .verify_button_icon{
     margin: 0 .2rem; 
