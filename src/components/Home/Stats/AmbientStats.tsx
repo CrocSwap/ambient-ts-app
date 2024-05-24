@@ -131,20 +131,23 @@ export default function Stats() {
                     setTotalTvlString(
                         getFormattedNumber({
                             value: tvlTotalUsd,
-                            prefix: '$',
+                            prefix: '>$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
-                            prefix: '$',
+                            prefix: '>$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
-                            prefix: '$',
+                            prefix: '>$',
+                            mantissa: 1,
                         }),
                     );
                 }
