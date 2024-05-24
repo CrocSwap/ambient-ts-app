@@ -22,16 +22,16 @@ import blastLogo from './assets/images/networks/blast_logo.png';
  * cost of higher load times, especially when pre-loading isn't happening. See:
  * https://community.metamask.io/t/google-chrome-page-preload-causes-weirdness-with-metamask/24042
  *
- * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
-const doReload =
-    JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
-    navigator.userAgent.includes('Chrome');
-if (doReload) {
-    localStorage.setItem('ambiAppReloadTrigger', 'false');
-    location.reload();
-} else {
-    localStorage.setItem('ambiAppReloadTrigger', 'true');
-}
+//  * Still happening as of May 2024 using Metamask v11.15.4 on Chrome 124. */
+// const doReload =
+//     JSON.parse(localStorage.getItem('ambiAppReloadTrigger') || 'true') &&
+//     navigator.userAgent.includes('Chrome');
+// if (doReload) {
+//     localStorage.setItem('ambiAppReloadTrigger', 'false');
+//     location.reload();
+// } else {
+//     localStorage.setItem('ambiAppReloadTrigger', 'true');
+// }
 
 const metadata = {
     name: 'Ambient Finance',
