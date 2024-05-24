@@ -193,7 +193,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 candleData &&
                 candleData.candles &&
                 candleTimeLocal &&
-                isCandleDataNull
+                !isCandleDataNull
             ) {
                 const nowTime = Math.floor(Date.now() / 1000);
 
