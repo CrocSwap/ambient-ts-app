@@ -1,9 +1,13 @@
+import useFetchAmbientStats from '../../../App/hooks/useFetchAmbientStats';
 import { FlexContainer } from '../../../styled/Common';
 import TopPools from '../TopPools/TopPools';
 import AnimatedGradientPaths from './AnimatedGradientPaths';
 import styles from './LandingStyles.module.css';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 export default function Landing1() {
+    const { totalTvlString, totalVolumeString, totalFeesString } =
+        useFetchAmbientStats();
+
     return (
         <div className={styles.hero_container}>
             <div className={styles.animated_paths}>
@@ -25,15 +29,15 @@ export default function Landing1() {
             <div className={styles.hero_stats_container}>
                 <div className={styles.hero_stats}>
                     <p>Total TVL</p>
-                    <h2> 30m</h2>
+                    <h2> {totalTvlString ?? '...'}</h2>
                 </div>
                 <div className={styles.hero_stats}>
                     <p>Total Fees</p>
-                    <h2>600m</h2>
+                    <h2>{totalFeesString ?? '...'}</h2>
                 </div>
                 <div className={styles.hero_stats}>
                     <p>Total Volume</p>
-                    <h2>350k</h2>
+                    <h2>{totalVolumeString ?? '...'}</h2>
                 </div>
             </div>
             <FlexContainer justifyContent='center'>
