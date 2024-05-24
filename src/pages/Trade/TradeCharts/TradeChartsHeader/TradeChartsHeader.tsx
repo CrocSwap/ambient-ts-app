@@ -75,7 +75,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         id='trade_Condensed_Mode_button'
                         aria-label='Toggle condensed mode button'
                         style={{
-                            color: isCondensedModeEnabled
+                            color: !isCondensedModeEnabled
                                 ? 'var(--accent1)'
                                 : undefined,
                         }}
