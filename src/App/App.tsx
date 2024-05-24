@@ -352,21 +352,29 @@ export default function App() {
                     )}
                     {platformName === 'futa' && (
                         <Routes>
+                            <Route index element={<TestPage />} />
                             <Route
-                                index
-                                element={<Navigate to='/v1/auctions' replace />}
+                                path='futa'
+                                element={
+                                    <Navigate to='futa/v1/auctions' replace />
+                                }
                             />
                             <Route
-                                path='/v1'
-                                element={<Navigate to='/v1/auctions' replace />}
+                                path='futa/v1'
+                                element={
+                                    <Navigate to='futa/v1/auctions' replace />
+                                }
                             />
-                            <Route path='/v1/auctions' element={<Auctions />} />
                             <Route
-                                path='/v1/auctions/:auctionHex'
+                                path='futa/v1/auctions'
+                                element={<Auctions />}
+                            />
+                            <Route
+                                path='futa/v1/auctions/:ticker'
                                 element={<AuctionDetail />}
                             />
                             <Route
-                                path='/v1/auctions/new'
+                                path='futa/v1/auctions/new'
                                 element={<Create />}
                             />
                         </Routes>
