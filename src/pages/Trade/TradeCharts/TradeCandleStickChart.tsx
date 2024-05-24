@@ -115,7 +115,7 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isFetchingEnoughData, setIsFetchingEnoughData] = useState(true);
 
-    const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(0);
+    const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(1);
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
@@ -708,6 +708,10 @@ function TradeCandleStickChart(props: propsIF) {
                 prevFirsCandle &&
                 firtCandleTimeState
             ) {
+                const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
+                scaleData.xScale.discontinuityProvider(
+                    newDiscontinuityProvider,
+                );
                 const isShowLatestCandle = candleScale?.isShowLatestCandle;
                 // If the last candle is displayed, chart scale according to default values when switch timeframe
                 if (isShowLatestCandle) {
@@ -821,7 +825,7 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [period, diffHashSig(unparsedCandleData)]);
 
-    const resetXScale = (xScale: d3.ScaleLinear<number, number, never>) => {
+    const resetXScale = (xScale: any) => {
         if (!period) return;
         const localInitialDisplayCandleCount =
             getInitialDisplayCandleCount(mobileView);
@@ -891,8 +895,8 @@ function TradeCandleStickChart(props: propsIF) {
             if (
                 unparsedCandleData &&
                 unparsedCandleData.length > 0 &&
-                unparsedCandleData[0].period === period &&
-                period
+                period &&
+                unparsedCandleData[0].period === period
             ) {
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
@@ -900,7 +904,7 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const minTime = unparsedCandleData[0].time * 1000;
                 if (
-                    candles.length < 20 &&
+                    candles.length < 100 &&
                     !timeOfEndCandle &&
                     fetchCountForEnoughData < maxRequestCountForCondensed
                 ) {
@@ -935,9 +939,14 @@ function TradeCandleStickChart(props: propsIF) {
                     if (
                         fetchCountForEnoughData ===
                             maxRequestCountForCondensed &&
-                        period !== 86400
+                        period !== 86400 &&
+                        candles.length < 20
                     ) {
-                        chartSettings.candleTime.global.changeTime(86400);
+                        // TODO: Temporary workaround - Call chartSettings.candleTime.global.changeTime(86400) after 1 second delay.
+                        // This solution should be replaced with a more permanent approach in the future.
+                        setTimeout(() => {
+                            chartSettings.candleTime.global.changeTime(86400);
+                        }, 1000);
                     } else {
                         setIsFetchingEnoughData(false);
                     }
@@ -946,13 +955,8 @@ function TradeCandleStickChart(props: propsIF) {
         } else {
             setIsFetchingEnoughData(false);
         }
-    }, [
-        diffHashSigChart(unparsedCandleData),
-        period,
-        prevPeriod === period,
-        isCondensedModeEnabled,
-        fetchCountForEnoughData,
-    ]);
+        diffHashSigChart(unparsedCandleData);
+    }, [unparsedCandleData, period === undefined, isCondensedModeEnabled]);
 
     return (
         <>

@@ -60,6 +60,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         chartSettings,
         isEnabled: isChartEnabled,
+        isCandleDataNull,
         setIsCandleDataNull,
         setNumCandlesFetched,
     } = useContext(ChartContext);
@@ -188,7 +189,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            if (candleData && candleData.candles && candleTimeLocal) {
+            if (
+                candleData &&
+                candleData.candles &&
+                candleTimeLocal &&
+                isCandleDataNull
+            ) {
                 const nowTime = Math.floor(Date.now() / 1000);
 
                 fetchCandlesByNumDurations(200, nowTime);
@@ -316,6 +322,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (candleDomains?.isAbortedRequest) {
             const controller = new AbortController();
             abortController.abortController = controller;
+            isZoomRequestCanceled.value = false;
         }
 
         const signal = abortController.abortController?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
@@ -390,7 +397,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             minTimeMemo &&
                 fetchCandlesByNumDurations(numDurationsNeeded, minTimeMemo);
         }
-    }, [numDurationsNeeded]);
+    }, [numDurationsNeeded, minTimeMemo]);
     useEffect(() => {
         if (abortController.abortController && isZoomRequestCanceled.value) {
             abortController.abortController.abort();

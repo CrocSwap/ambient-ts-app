@@ -917,23 +917,7 @@ export default function Chart(props: propsIF) {
                 scaleData.xScale.discontinuityProvider(
                     newDiscontinuityProvider,
                 );
-
                 setVisibleDateForCandle(scaleData.xScale.domain()[1]);
-
-                const domMin = scaleData?.xScale.domain()[0];
-
-                const firstCandle =
-                    unparsedCandleData[unparsedCandleData.length - 1];
-                if (domMin < firstCandle.time * 1000) {
-                    const candleDomain = {
-                        lastCandleDate: firstCandle.time * 1000,
-                        domainBoundry:
-                            firstCandle.time * 1000 - period * 1000 * 200,
-                        isAbortedRequest: false,
-                    };
-                    setCandleDomains(candleDomain);
-                }
-
                 changeScale(false);
                 render();
             }
