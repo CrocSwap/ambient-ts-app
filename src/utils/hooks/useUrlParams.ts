@@ -142,13 +142,6 @@ export const useUrlParams = (
                 .catch((err) => console.error(err));
         }
 
-        containsSingleTokenParam &&
-            linkGenSwap.redirect({
-                chain: urlParamMap.get('chain') || '',
-                tokenA: ZERO_ADDRESS,
-                tokenB:
-                    urlParamMap.get('token') || urlParamMap.get('tokenB') || '',
-            });
         // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
         // array of parameter tuples from URL
