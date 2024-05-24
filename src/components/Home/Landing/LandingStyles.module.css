@@ -32,7 +32,7 @@
     gap: 3rem;
     flex-shrink: 0;
     margin: 0 auto;
-    background: radial-gradient(43.75% 50% at 0% 50%, rgba(115, 113, 252, 0.20) 0%, rgba(115, 113, 252, 0.00) 100%);
+    /* background: radial-gradient(43.75% 50% at 0% 50%, rgba(115, 113, 252, 0.20) 0%, rgba(115, 113, 252, 0.00) 100%); */
     height: 100%;
 }
 

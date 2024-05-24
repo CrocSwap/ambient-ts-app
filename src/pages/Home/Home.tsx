@@ -32,6 +32,8 @@ const Home: React.FC = () => {
             ref: section1,
             page: <Landing1 />,
             goToSectionRef: section2,
+            customBackground:
+                'radial-gradient(43.75% 50% at 0% 50%, rgba(115, 113, 252, 0.20) 0%, rgba(115, 113, 252, 0.00) 100%)',
         },
         {
             ref: section2,
@@ -136,16 +138,22 @@ const Home: React.FC = () => {
                     activateAutoScroll={activateAutoScroll}
                     setActivateAutoScroll={setActivateAutoScroll}
                 />
-                {sections.map(({ ref, page, goToSectionRef }, index) => (
-                    <div ref={ref} key={index}>
-                        <Section
-                            image={img}
-                            page={page}
-                            goToSectionRef={goToSectionRef}
-                            scrollTo={() => scrollTo(goToSectionRef)}
-                        />
-                    </div>
-                ))}{' '}
+                {sections.map(
+                    (
+                        { ref, page, goToSectionRef, customBackground },
+                        index,
+                    ) => (
+                        <div ref={ref} key={index}>
+                            <Section
+                                image={img}
+                                page={page}
+                                goToSectionRef={goToSectionRef}
+                                scrollTo={() => scrollTo(goToSectionRef)}
+                                customBackground={customBackground}
+                            />
+                        </div>
+                    ),
+                )}{' '}
             </div>
         </div>
     );

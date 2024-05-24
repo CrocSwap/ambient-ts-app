@@ -5,11 +5,13 @@ interface SectionProps {
     page: React.ReactNode | JSX.Element;
     scrollTo: (ref: React.RefObject<HTMLDivElement>) => void;
     goToSectionRef: React.RefObject<HTMLDivElement>;
+    customBackground?: string;
 }
 
-export default function Section({ image, page }: SectionProps) {
+export default function Section({ page, customBackground }: SectionProps) {
     const pageRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLDivElement>(null);
+    console.log({ customBackground });
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -40,7 +42,7 @@ export default function Section({ image, page }: SectionProps) {
         <div
             className={styles.section}
             ref={sectionRef}
-            style={{ background: image }}
+            style={{ background: customBackground ? customBackground : '' }}
         >
             {page}
         </div>
