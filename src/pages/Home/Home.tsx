@@ -9,6 +9,7 @@ import Landing4 from '../../components/Home/Landing/Landing4';
 import Landing5 from '../../components/Home/Landing/Landing5';
 import Landing6 from '../../components/Home/Landing/Landing6';
 import Section from '../../components/Home/Section/Section';
+import { FaPause, FaPlay } from 'react-icons/fa';
 
 interface sectionsIF {
     ref: React.RefObject<HTMLDivElement>;
@@ -70,17 +71,22 @@ const Home: React.FC = () => {
         scrollTo(sections[index].ref);
     };
     // TODO: UNCOMMENT THIS TO ACTIVATE AUTO SCROLL
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         const nextIndex = activeIndex === sections.length - 1 ? 0 : activeIndex + 1;
-    //         setActiveIndex(nextIndex);
-    //         scrollTo(sections[nextIndex].ref);
-    //     }, 3000);
+    // this is just a temporary value to activate the automatic scroll for development purposes
+    const [activateAutoScroll, setActivateAutoScroll] = useState(false);
 
-    //     return () => {
-    //         clearInterval(interval);
-    //     };
-    // }, [activeIndex, sections]);
+    useEffect(() => {
+        if (!activateAutoScroll) return;
+        const interval = setInterval(() => {
+            const nextIndex =
+                activeIndex === sections.length - 1 ? 0 : activeIndex + 1;
+            setActiveIndex(nextIndex);
+            scrollTo(sections[nextIndex].ref);
+        }, 5000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, [activeIndex, sections]);
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -120,6 +126,8 @@ const Home: React.FC = () => {
                     activeIndex={activeIndex}
                     sections={sections}
                     onClick={handleDotClick}
+                    activateAutoScroll={activateAutoScroll}
+                    setActivateAutoScroll={setActivateAutoScroll}
                 />
                 {sections.map(({ ref, page, goToSectionRef }, index) => (
                     <div ref={ref} key={index}>
@@ -140,7 +148,15 @@ const DotAnimation: React.FC<{
     activeIndex: number;
     sections: sectionsIF[];
     onClick: (index: number) => void;
-}> = ({ activeIndex, sections, onClick }) => {
+    activateAutoScroll: boolean;
+    setActivateAutoScroll: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({
+    activeIndex,
+    sections,
+    onClick,
+    activateAutoScroll,
+    setActivateAutoScroll,
+}) => {
     const dotVariants = {
         //   hidden: { opacity: 0, width: '0px', height: '0px' },
         visible: {
@@ -162,6 +178,20 @@ const DotAnimation: React.FC<{
     return (
         <div className={styles.dots}>
             <AnimatePresence initial={false}>
+                {activateAutoScroll ? (
+                    <FaPause
+                        color='var(--text3)'
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setActivateAutoScroll(false)}
+                    />
+                ) : (
+                    <FaPlay
+                        color='var(--text3)'
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setActivateAutoScroll(true)}
+                    />
+                )}
+
                 {sections.map((_, index) => (
                     <motion.span
                         key={index}

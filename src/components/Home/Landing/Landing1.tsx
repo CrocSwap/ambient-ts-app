@@ -1,10 +1,14 @@
 import { FlexContainer } from '../../../styled/Common';
 import TopPools from '../TopPools/TopPools';
+import AnimatedGradientPaths from './AnimatedGradientPaths';
 import styles from './LandingStyles.module.css';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 export default function Landing1() {
     return (
         <div className={styles.hero_container}>
+            <div className={styles.animated_paths}>
+                <AnimatedGradientPaths />
+            </div>
             <div className={styles.hero_heading}>
                 <h2>
                     Zero-to-<span>One</span>{' '}

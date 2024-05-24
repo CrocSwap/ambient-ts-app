@@ -1,22 +1,3 @@
-// import { useContext } from 'react';
-// import { BrandContext } from '../../contexts/BrandContext';
-
-export default function TestPage() {
-    // const { skin } = useContext(BrandContext);
-
-    return (
-        <div>
-            {/* <button onClick={() => skin.changeTo('purple_dark')}>
-                Purple Dark
-            </button>
-            <button onClick={() => skin.changeTo('orange_dark')}>
-                Orange Dark
-            </button> */}
-            <AnimatedGradientPaths />
-        </div>
-    );
-}
-
 import React from 'react';
 
 interface AnimatedGradientPathsProps {
@@ -30,26 +11,22 @@ interface AnimatedGradientPathsProps {
 }
 
 const AnimatedGradientPaths: React.FC<AnimatedGradientPathsProps> = ({
-    color1 = '#1E1E24', // First color
-    color2 = '#7371FC', // Second color
-    color3 = '#CDC1FF', // Third color
-    beamLength = 6, // Beam length parameter
+    color1 = '#1E1E24',
+    color2 = '#7371FC',
+    color3 = '#CDC1FF',
+    beamLength = 6,
     skew = 0.8,
-    duration = '10s', // Default duration
-    strokeWidth = '1', // Default stroke width
+    duration = '10s',
+    strokeWidth = '1',
 }) => {
     const gradientId1 = `gradient1-${Math.random().toString(36).substr(2, 9)}`;
     const gradientId2 = `gradient2-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Constructing the colors array using color1, color2, and color3
     const colors = [color1, color2, color3, color1];
 
-    // Dynamically set stopOffsets1 based on beamLength
     const stopOffsets1 = [0, beamLength * skew, beamLength, beamLength].map(
         (offset) => `${offset}%`,
     );
-
-    // Set stopOffsets2 with its values calculated based on beamLength
     const stopOffsets2 = [
         100 - beamLength,
         100 - beamLength * (1 - skew),
@@ -133,14 +110,12 @@ const AnimatedGradientPaths: React.FC<AnimatedGradientPathsProps> = ({
                     />
                 </linearGradient>
             </defs>
-            {/* New Path 1 */}
             <path
                 d='M1 861.974C20.2138 857.484 39.0498 852.821 57.525 847.996C337.25 774.937 534.242 664.553 707.577 549.859C756.156 517.715 802.871 485.237 849.024 453.149C967.567 370.733 1082.41 290.892 1215.63 225.89C1397.68 137.056 1614.06 75.9527 1921 74'
                 stroke={`url(#${gradientId1})`}
                 strokeWidth={strokeWidth}
                 fill='none'
             />
-            {/* New Path 2 */}
             <path
                 d='M1 949.832C204.025 917.266 397.943 867.942 584.27 813.465C700.861 779.377 814.477 743.273 925.495 707.993C932.237 705.851 938.97 703.711 945.693 701.575C1063.12 664.272 1177.65 628.091 1289.72 596.43C1508.39 534.652 1717.72 490.073 1921 487.939'
                 stroke={`url(#${gradientId2})`}
@@ -150,3 +125,5 @@ const AnimatedGradientPaths: React.FC<AnimatedGradientPathsProps> = ({
         </svg>
     );
 };
+
+export default AnimatedGradientPaths;
