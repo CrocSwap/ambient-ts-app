@@ -1,0 +1,4 @@
+.auctions_main > header {
+    display: flex;
+    flex-direction: row;
+}
