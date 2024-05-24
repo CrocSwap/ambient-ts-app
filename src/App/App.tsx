@@ -48,6 +48,7 @@ import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 import Auctions from './futa/Auctions';
 import Create from './futa/Create';
+import AuctionDetail from './futa/AuctionDetail';
 
 /** ***** React Function *******/
 export default function App() {
@@ -360,6 +361,10 @@ export default function App() {
                                 element={<Navigate to='/v1/auctions' replace />}
                             />
                             <Route path='/v1/auctions' element={<Auctions />} />
+                            <Route
+                                path='/v1/auctions/:auctionHex'
+                                element={<AuctionDetail />}
+                            />
                             <Route
                                 path='/v1/auctions/new'
                                 element={<Create />}
