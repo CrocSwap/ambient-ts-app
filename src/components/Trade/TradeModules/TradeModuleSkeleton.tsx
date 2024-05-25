@@ -18,6 +18,7 @@ import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface PropsIF {
     chainId: string;
@@ -143,6 +144,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     padding='0 32px'
                 >
                     {transactionDetails}
+                    <SmolRefuelLink />
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
