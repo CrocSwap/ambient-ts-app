@@ -3,7 +3,12 @@ import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+import {
+    RiArrowDownDoubleLine,
+    RiArrowDownSLine,
+    RiArrowUpDoubleLine,
+    RiArrowUpSLine,
+} from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
 import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -693,11 +698,7 @@ function ChatPanel(props: propsIF) {
             setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
         } else {
-            if (
-                e.target.scrollTop === 0 &&
-                e.target.clientHeight !== e.target.scrollHeight &&
-                messages.length >= 20
-            ) {
+            if (e.target.scrollTop === 0) {
                 setShowPreviousMessagesButton(true);
             } else {
                 setShowPreviousMessagesButton(false);
@@ -1109,7 +1110,7 @@ function ChatPanel(props: propsIF) {
                     </span>
                 ) : (
                     <span>
-                        <RiArrowDownSLine
+                        <RiArrowDownDoubleLine
                             role='button'
                             size={27}
                             color='var(--accent1)'
@@ -1190,6 +1191,7 @@ function ChatPanel(props: propsIF) {
                             onClick={() => {
                                 handleMentionSkipper(-1);
                             }}
+                            title='Previous Mention'
                         >
                             <IoIosArrowUp size={22} />
                         </div>
@@ -1200,6 +1202,7 @@ function ChatPanel(props: propsIF) {
                             onClick={() => {
                                 handleMentionSkipper(1);
                             }}
+                            title='Next Mention'
                         >
                             <IoIosArrowDown size={22} />
                         </div>
@@ -1210,6 +1213,7 @@ function ChatPanel(props: propsIF) {
                             onClick={() => {
                                 handleMentionSkipper(2);
                             }}
+                            title='Last Mention'
                         >
                             <IoIosArrowDown size={22} />
                             Last Mention
@@ -1235,7 +1239,7 @@ function ChatPanel(props: propsIF) {
         return (
             <div className={styles.scroll_up}>
                 {showPreviousMessagesButton ? (
-                    <RiArrowUpSLine
+                    <RiArrowUpDoubleLine
                         role='button'
                         size={27}
                         color='var(--accent1)'
