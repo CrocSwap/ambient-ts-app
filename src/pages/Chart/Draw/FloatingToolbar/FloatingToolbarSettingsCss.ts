@@ -256,11 +256,13 @@ const DropDownListContainer = styled.div`
     }
 `;
 
-const DropDownList = styled.ul`
+const DropDownList = styled.ul<{
+    width: number;
+}>`
     padding: 0;
     margin: 0;
 
-    width: 75px;
+    width: ${({ width }) => width + 'px'};
 
     background: var(--dark3);
 
@@ -352,7 +354,11 @@ const LabelSettingsContainer = styled.div`
     grid-template-columns: 1fr 1fr 0.5fr;
 `;
 
-const LabelSettingsArrow = styled.span<{ isActive: boolean }>`
+const LabelSettingsArrow = styled.span<{
+    isActive: boolean;
+    width: number;
+    height: number;
+}>`
     ${({ isActive }) => {
         if (isActive) {
             return `
@@ -368,8 +374,10 @@ const LabelSettingsArrow = styled.span<{ isActive: boolean }>`
     }}
 
     display: inline-block;
-    width: 5px;
-    height: 6px;
+
+    width: ${({ width }) => width + 'px'};
+    height: ${({ height }) => height + 'px'};
+
     border-top: 1px solid #dbdbdb;
     border-right: 1px solid #dbdbdb;
     transition: all 600ms;

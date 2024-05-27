@@ -427,7 +427,7 @@ export default function Chart(props: propsIF) {
         setContextmenu(false);
     };
 
-    useOnClickOutside(d3CanvasMain, clickOutsideChartHandler);
+    useOnClickOutside(d3Container, clickOutsideChartHandler);
 
     const isShowLatestCandle = useMemo(() => {
         return checkShowLatestCandle(period, scaleData?.xScale);
@@ -4328,14 +4328,21 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'contextmenu',
                 (event: PointerEvent) => {
-                    event.preventDefault();
+                    if (!event.shiftKey && mainCanvasBoundingClientRect) {
+                        event.preventDefault();
 
-                    setContextMenuPlacement({
-                        top: event.clientY,
-                        left: event.clientX,
-                    });
+                        const offsetY =
+                            event.offsetY - mainCanvasBoundingClientRect?.top;
 
-                    setContextmenu(true);
+                        setContextMenuPlacement({
+                            top: offsetY,
+                            left: event.clientX,
+                        });
+
+                        setContextmenu(true);
+                    } else {
+                        setContextmenu(false);
+                    }
                 },
             );
 
@@ -5939,10 +5946,12 @@ export default function Chart(props: propsIF) {
                     />
                 )}
 
-            {contextmenu && contextMenuPlacement && (
+            {contextmenu && contextMenuPlacement && chartThemeColors && (
                 <ChartSettings
                     contextMenuPlacement={contextMenuPlacement}
                     setContextmenu={setContextmenu}
+                    chartItemStates={props.chartItemStates}
+                    chartThemeColors={chartThemeColors}
                 />
             )}
         </div>

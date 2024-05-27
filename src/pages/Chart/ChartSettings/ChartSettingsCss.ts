@@ -4,25 +4,26 @@ const ChartSettingsContainer = styled.div<{
     top: number;
     left: number;
 }>`
-    position: absolute;
-
-    transform: translateY(-50%);
+    position: fixed;
 
     top: ${({ top }) => top + 'px'};
     left: ${({ left }) => left + 'px'};
+
+    transform: translateY(50%);
+
+    overflow: visible;
+
+    z-index: 999999;
 `;
 
 const ContextMenu = styled.div`
     width: 284px;
-    height: 327px;
 
     padding: 8px 16px 8px 16px;
 
     gap: 16px;
 
-    border-radius: 4px 0px 0px 0px;
-
-    border: 1px 0px 0px 0px;
+    border-radius: 4px;
 
     background: var(--dark1);
 
@@ -57,6 +58,17 @@ const ContextMenuHeaderText = styled.div`
     color: #ffffff;
 `;
 
+const ContextMenuContextText = styled.div`
+    font-family: Lexend Deca;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 15px;
+    letter-spacing: -0.02em;
+    text-align: left;
+
+    color: var(--text1);
+`;
+
 const CloseButton = styled.div`
     width: 16px;
 
@@ -67,13 +79,164 @@ const CloseButton = styled.div`
     }
 `;
 
-const CheckListContainer = styled.div``;
+const CheckListContainer = styled.div`
+    gap: 16px;
 
-const SelectionContainer = styled.div``;
+    padding-top: 16px;
+`;
 
-const ColorPickerContainer = styled.div``;
+const CheckList = styled.div`
+    display: flex;
 
-const ContextMenuFooter = styled.div``;
+    flex-direction: row;
+
+    align-items: center;
+
+    gap: 16px;
+
+    height: 25px;
+`;
+
+const SelectionContainer = styled.div`
+    gap: 16px;
+
+    padding-top: 16px;
+`;
+
+const ColorPickerContainer = styled.div`
+    padding-top: 16px;
+`;
+
+const ColorList = styled.div`
+    height: 25px;
+
+    display: grid;
+
+    grid-template-columns: 50% 50%;
+`;
+
+const ColorOptions = styled.div`
+    gap: 16px;
+
+    display: flex;
+
+    flex-direction: row;
+`;
+
+const OptionColor = styled.div<{
+    backgroundColor: string;
+}>`
+    width: 16px;
+    height: 16px;
+    gap: 0px;
+
+    border-radius: 2px;
+
+    border: 1px solid var(--text3);
+
+    background: ${({ backgroundColor }) => backgroundColor};
+
+    &:hover {
+        cursor: pointer;
+    }
+`;
+
+const ContextMenuFooter = styled.div`
+    padding-top: 16px;
+
+    display: grid;
+
+    grid-template-columns: 50% 50%;
+`;
+
+const ActionButtonContainer = styled.div`
+    display: grid;
+
+    grid-template-columns: 60% 40%;
+`;
+
+const FooterButtons = styled.div<{
+    backgroundColor: string;
+    hoverColor: string;
+    textColor: string;
+    hoverTextColor: string;
+}>`
+    padding: 5px 8px 5px 8px;
+    gap: 10px;
+    border-radius: 50px;
+
+    border: 1px solid var(--accent1);
+
+    background: ${({ backgroundColor }) => backgroundColor};
+
+    cursor: pointer;
+
+    color: ${({ textColor }) => textColor};
+
+    &:hover {
+        background: ${({ hoverColor }) => hoverColor};
+        color: ${({ hoverTextColor }) => hoverTextColor};
+    }
+`;
+
+const FooterContextText = styled.div`
+    font-family: Lexend Deca;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 15px;
+    letter-spacing: -0.02em;
+    text-align: center;
+`;
+
+const Icon = styled.svg`
+    fill: none;
+    stroke: var(--accent1);
+    stroke-width: 2px;
+`;
+
+const StyledCheckbox = styled.div<{
+    checked: boolean | undefined;
+}>`
+    justify-content: center;
+    align-items: center;
+    display: flex;
+
+    width: 16px;
+    height: 16px;
+    background: var(--dark1);
+
+    border-radius: 2px;
+
+    border: 1px solid
+        ${({ checked }) => (checked ? 'var(--accent1)' : 'var(--text3)')};
+
+    ${Icon} {
+        opacity: ${({ checked }) => (checked ? 1 : 0)};
+    }
+
+    cursor: pointer;
+
+    &:hover {
+        filter: brightness(1.2);
+    }
+`;
+
+const StyledSelectbox = styled.div`
+    width: 90px;
+    height: 23px;
+
+    cursor: pointer;
+
+    padding: 4px;
+
+    border-radius: 4px;
+
+    border: 1px solid var(--text3);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
 
 export {
     ChartSettingsContainer,
@@ -85,4 +248,15 @@ export {
     ContextMenuFooter,
     ContextMenuHeaderText,
     CloseButton,
+    CheckList,
+    OptionColor,
+    ColorList,
+    ColorOptions,
+    ContextMenuContextText,
+    ActionButtonContainer,
+    FooterButtons,
+    FooterContextText,
+    StyledCheckbox,
+    Icon,
+    StyledSelectbox,
 };
