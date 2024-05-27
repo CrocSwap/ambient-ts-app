@@ -41,6 +41,7 @@ const AnimatedGradientPaths: React.FC<AnimatedGradientPathsProps> = ({
             viewBox='0 0 1921 1024'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
+            style={{ pointerEvents: 'none' }}
         >
             <defs>
                 <linearGradient

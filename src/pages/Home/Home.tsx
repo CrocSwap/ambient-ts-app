@@ -228,11 +228,14 @@ const DotAnimation: React.FC<{
                         onClick={() => setActivateAutoScroll(true)}
                     />
                 )} */}
-                <GoChevronUp
-                    size={25}
-                    onClick={handleUpClick}
-                    color='var(--text3)'
-                />
+                {
+                    <GoChevronUp
+                        size={25}
+                        onClick={handleUpClick}
+                        color='var(--text3)'
+                        style={{ display: activeIndex === 0 ? 'none' : 'flex' }}
+                    />
+                }
 
                 {sections.map((_, index) => (
                     <motion.span
@@ -251,6 +254,12 @@ const DotAnimation: React.FC<{
                     size={25}
                     onClick={handleDownClick}
                     color='var(--text3)'
+                    style={{
+                        display:
+                            activeIndex === sections.length - 1
+                                ? 'none'
+                                : 'flex',
+                    }}
                 />
             </AnimatePresence>
         </div>
