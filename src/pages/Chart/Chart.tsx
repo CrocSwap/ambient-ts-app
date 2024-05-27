@@ -164,6 +164,8 @@ interface propsIF {
     updateURL: (changes: updatesIF) => void;
     userTransactionData: Array<TransactionIF> | undefined;
     setPrevCandleCount: React.Dispatch<React.SetStateAction<number>>;
+    isFetchingEnoughData: boolean;
+    setIsFetchingEnoughData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -191,6 +193,8 @@ export default function Chart(props: propsIF) {
         updateURL,
         userTransactionData,
         setPrevCandleCount,
+        isFetchingEnoughData,
+        setIsFetchingEnoughData,
     } = props;
 
     const {
@@ -702,6 +706,7 @@ export default function Chart(props: propsIF) {
 
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
+    const [isAddedPixelFirstTime, setIsAddedPixelFirstTime] = useState(false);
     const isScientific = poolPriceNonDisplay
         ? poolPriceNonDisplay.toString().includes('e')
         : false;
@@ -917,6 +922,8 @@ export default function Chart(props: propsIF) {
                 scaleData.xScale.discontinuityProvider(
                     newDiscontinuityProvider,
                 );
+
+                setIsAddedPixelFirstTime(true);
                 setVisibleDateForCandle(scaleData.xScale.domain()[1]);
                 changeScale(false);
                 render();
@@ -927,6 +934,30 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData, 'x'),
         isCondensedModeEnabled,
     ]);
+
+    useEffect(() => {
+        if (isFetchingEnoughData && isAddedPixelFirstTime) {
+            const xmin = scaleData?.xScale.domain()[0];
+            const xmax = scaleData?.xScale.domain()[1];
+
+            const filtered = visibleCandleData.filter(
+                (data: CandleDataIF) =>
+                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
+            );
+
+            if (filtered.length > 0) {
+                const minData = filtered[filtered.length - 1].time * 1000;
+
+                if (minData - xmin < period * 1000) {
+                    setXScaleDefault().then(() => {
+                        setIsFetchingEnoughData(false);
+                    });
+                } else {
+                    setIsFetchingEnoughData(false);
+                }
+            }
+        }
+    }, [isAddedPixelFirstTime]);
 
     useEffect(() => {
         updateDrawnShapeHistoryonLocalStorage();
@@ -2447,7 +2478,7 @@ export default function Chart(props: propsIF) {
         isDenomBase,
     ]);
 
-    function setXScaleDefault() {
+    async function setXScaleDefault() {
         if (scaleData) {
             const localInitialDisplayCandleCount =
                 getInitialDisplayCandleCount(mobileView);
@@ -2877,7 +2908,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, [handleDocumentEvent]);
+    }, [handleDocumentEvent, isFetchingEnoughData]);
 
     useEffect(() => {
         const canvas = d3

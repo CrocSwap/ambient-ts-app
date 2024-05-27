@@ -946,14 +946,17 @@ function TradeCandleStickChart(props: propsIF) {
                         setTimeout(() => {
                             chartSettings.candleTime.global.changeTime(86400);
                         }, 1000);
-                    } else {
-                        setIsFetchingEnoughData(false);
                     }
+                    // else {
+                    //     setIsFetchingEnoughData(false);
+                    // }
                 }
             }
-        } else {
-            setIsFetchingEnoughData(false);
         }
+
+        // else {
+        //     setIsFetchingEnoughData(false);
+        // }
         diffHashSigChart(unparsedCandleData);
     }, [
         unparsedCandleData,
@@ -962,16 +965,22 @@ function TradeCandleStickChart(props: propsIF) {
         isDenomBase,
     ]);
 
+    const isOpenChart =
+        !isLoading &&
+        candleData !== undefined &&
+        isPoolInitialized !== undefined &&
+        prevPeriod === period &&
+        period === candleData?.duration &&
+        !isFetchingCandle;
+
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {!isLoading &&
-                candleData !== undefined &&
-                isPoolInitialized !== undefined &&
-                prevPeriod === period &&
-                period === candleData?.duration &&
-                !isFetchingCandle &&
-                !isFetchingEnoughData ? (
+                {(!isOpenChart || isFetchingEnoughData) && (
+                    <Spinner size={100} bg='var(--dark2)' centered />
+                )}
+
+                {isOpenChart && (
                     <Chart
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}
@@ -1004,9 +1013,9 @@ function TradeCandleStickChart(props: propsIF) {
                         updateURL={updateURL}
                         userTransactionData={userTransactionData}
                         setPrevCandleCount={setPrevCandleCount}
+                        isFetchingEnoughData={isFetchingEnoughData}
+                        setIsFetchingEnoughData={setIsFetchingEnoughData}
                     />
-                ) : (
-                    <Spinner size={100} bg='var(--dark2)' centered />
                 )}
             </div>
         </>
