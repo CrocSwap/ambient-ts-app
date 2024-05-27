@@ -9,8 +9,9 @@ import Landing4 from '../../components/Home/Landing/Landing4';
 import Landing5 from '../../components/Home/Landing/Landing5';
 import Landing6 from '../../components/Home/Landing/Landing6';
 import Section from '../../components/Home/Section/Section';
-import { FaPause, FaPlay } from 'react-icons/fa';
+// import { FaPause, FaPlay } from 'react-icons/fa';
 import Landing7 from '../../components/Home/Landing/Landing7';
+import { GoChevronDown, GoChevronUp } from 'react-icons/go';
 
 interface sectionsIF {
     ref: React.RefObject<HTMLDivElement>;
@@ -79,6 +80,20 @@ const Home: React.FC = () => {
         setActiveIndex(index);
         scrollTo(sections[index].ref);
     };
+
+    const handleUpClick = () => {
+        const prevIndex =
+            activeIndex === 0 ? sections.length - 1 : activeIndex - 1;
+        setActiveIndex(prevIndex);
+        scrollTo(sections[prevIndex].ref);
+    };
+
+    const handleDownClick = () => {
+        const nextIndex =
+            activeIndex === sections.length - 1 ? 0 : activeIndex + 1;
+        setActiveIndex(nextIndex);
+        scrollTo(sections[nextIndex].ref);
+    };
     // TODO: UNCOMMENT THIS TO ACTIVATE AUTO SCROLL
     // this is just a temporary value to activate the automatic scroll for development purposes
     const [activateAutoScroll, setActivateAutoScroll] = useState(false);
@@ -137,6 +152,8 @@ const Home: React.FC = () => {
                     onClick={handleDotClick}
                     activateAutoScroll={activateAutoScroll}
                     setActivateAutoScroll={setActivateAutoScroll}
+                    handleUpClick={handleUpClick}
+                    handleDownClick={handleDownClick}
                 />
                 {sections.map(
                     (
@@ -165,12 +182,16 @@ const DotAnimation: React.FC<{
     onClick: (index: number) => void;
     activateAutoScroll: boolean;
     setActivateAutoScroll: React.Dispatch<React.SetStateAction<boolean>>;
+    handleUpClick: () => void;
+    handleDownClick: () => void;
 }> = ({
     activeIndex,
     sections,
     onClick,
-    activateAutoScroll,
-    setActivateAutoScroll,
+    // activateAutoScroll,
+    // setActivateAutoScroll,
+    handleUpClick,
+    handleDownClick,
 }) => {
     const dotVariants = {
         //   hidden: { opacity: 0, width: '0px', height: '0px' },
@@ -193,19 +214,25 @@ const DotAnimation: React.FC<{
     return (
         <div className={styles.dots}>
             <AnimatePresence initial={false}>
-                {activateAutoScroll ? (
+                {/* { activateAutoScroll ? (
                     <FaPause
                         color='var(--text3)'
                         style={{ cursor: 'pointer' }}
                         onClick={() => setActivateAutoScroll(false)}
                     />
+                    
                 ) : (
                     <FaPlay
                         color='var(--text3)'
                         style={{ cursor: 'pointer' }}
                         onClick={() => setActivateAutoScroll(true)}
                     />
-                )}
+                )} */}
+                <GoChevronUp
+                    size={25}
+                    onClick={handleUpClick}
+                    color='var(--text3)'
+                />
 
                 {sections.map((_, index) => (
                     <motion.span
@@ -220,6 +247,11 @@ const DotAnimation: React.FC<{
                         onClick={() => onClick(index)}
                     />
                 ))}
+                <GoChevronDown
+                    size={25}
+                    onClick={handleDownClick}
+                    color='var(--text3)'
+                />
             </AnimatePresence>
         </div>
     );
