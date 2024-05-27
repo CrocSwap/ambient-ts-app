@@ -80,13 +80,13 @@ export default function Landing6() {
             linkLabel: 'whitepaper',
             icon: <IoDocumentTextSharp />,
         },
-        {
-            label: 'Brand Kit',
-            text: 'Download our brand kit',
-            link: '#',
-            linkLabel: 'Brand Kit',
-            icon: <IoDocumentTextSharp />,
-        },
+        // {
+        //     label: 'Brand Kit',
+        //     text: 'Download our brand kit',
+        //     link: '#',
+        //     linkLabel: 'Brand Kit',
+        //     icon: <IoDocumentTextSharp />,
+        // },
     ];
     return (
         <div className={styles.sub_container}>
