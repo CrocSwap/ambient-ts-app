@@ -13,6 +13,7 @@ import { fetchEnsAddress } from '../ambient-utils/api';
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
+    walletChain: number | undefined;
     disconnectUser: () => void;
 
     ensName: string | null | undefined;
@@ -44,8 +45,11 @@ export const UserDataContextProvider = (props: {
     const [secondaryEnsFromContext, setSecondaryEnsInContext] =
         React.useState<string>('');
 
-    const { address: userAddress, isConnected: isUserConnected } =
-        useWeb3ModalAccount();
+    const {
+        address: userAddress,
+        isConnected: isUserConnected,
+        chainId: walletChain,
+    } = useWeb3ModalAccount();
     const { disconnect: disconnectUser } = useDisconnect();
     const isBlacklisted = userAddress ? checkBlacklist(userAddress) : false;
     if (isBlacklisted) disconnectUser();
@@ -70,6 +74,7 @@ export const UserDataContextProvider = (props: {
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
+        walletChain,
         disconnectUser,
         ensName,
         resolvedAddressFromContext,

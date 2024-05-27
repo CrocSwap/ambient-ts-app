@@ -30,7 +30,7 @@
     display: flex;
     flex-direction: column;
 
-    font-family: 'Lexend Deca';
+    /* font-family: 'Lexend Deca'; */
     font-style: normal;
     font-weight: 300;
     font-size: var(--header2-size);
@@ -49,14 +49,14 @@
 }
 .header {
     color: var(--accent1);
-    font-family: 'Lexend Exa';
+    /* font-family: 'Lexend Exa'; */
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;
 }
 
 .sub_header {
-    font-family: 'Lexend Deca';
+    /* font-family: 'Lexend Deca'; */
     font-weight: 300;
     font-size: var(--header2-size);
     line-height: 30px;
@@ -68,7 +68,7 @@
 .question {
     display: flex;
     flex-direction: row;
-    font-family: 'Lexend Deca';
+    /* font-family: 'Lexend Deca'; */
     font-weight: 300;
     font-size: var(--header1-size);
     line-height: 30px;
@@ -87,7 +87,7 @@
 }
 
 .answer {
-    font-family: 'Lexend Deca';
+    /* font-family: 'Lexend Deca'; */
     font-weight: 300;
     font-size: var(--header2-size);
     line-height: 30px;
