@@ -170,11 +170,10 @@ function TradeCandleStickChart(props: propsIF) {
     }, [userTransactionsByPool]);
 
     useEffect(() => {
-        setIsFetchingEnoughData(true);
         setSelectedDrawnShape(undefined);
-
+        setIsFetchingEnoughData(true);
         setFetchCountForEnoughData(0);
-    }, [period, tokenPair]);
+    }, [period, baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         if (isFetchingEnoughData && scaleData) {
@@ -956,7 +955,12 @@ function TradeCandleStickChart(props: propsIF) {
             setIsFetchingEnoughData(false);
         }
         diffHashSigChart(unparsedCandleData);
-    }, [unparsedCandleData, period === undefined, isCondensedModeEnabled]);
+    }, [
+        unparsedCandleData,
+        period === undefined,
+        isCondensedModeEnabled,
+        isDenomBase,
+    ]);
 
     return (
         <>
