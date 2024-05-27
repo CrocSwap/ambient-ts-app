@@ -489,7 +489,7 @@ const useChatSocket = (
             const msg = data.message;
             sendToSocket('message-deleted', { ...data.message });
             const newMessageList = messages.map((e) => {
-                if (e._id == msg._id) {
+                if (e && e._id == msg._id) {
                     return msg;
                 } else {
                     return e;
@@ -555,14 +555,14 @@ const useChatSocket = (
     // update messages list with new message from server
     const updateMessages = (message: any) => {
         let newMessageList = messages.map((e) => {
-            if (e._id == message._id) {
+            if (e && e._id == message._id) {
                 return message;
             } else {
                 return e;
             }
         });
         newMessageList = newMessageList.filter(
-            (e) => e.isDeleted != true || room == 'Admins',
+            (e) => (e && e.isDeleted != true) || room == 'Admins',
         );
         setMessages([...newMessageList]);
     };

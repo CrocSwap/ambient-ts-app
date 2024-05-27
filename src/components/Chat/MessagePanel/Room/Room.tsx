@@ -20,7 +20,9 @@ import {
 import {
     createRoomIF,
     getDefaultRooms,
+    getRoomNameFromBaseQuote,
     getRoomNameFromPool,
+    getRoomObjFromBaseQuote,
 } from '../../ChatUtils';
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
@@ -134,6 +136,27 @@ export default function Room(props: propsIF) {
                 });
             }
         });
+
+        if (
+            !isCurrentPool &&
+            !newRoomList.some(
+                (e) =>
+                    e.name ==
+                    getRoomNameFromBaseQuote(
+                        baseToken.symbol,
+                        quoteToken.symbol,
+                    ),
+            )
+        ) {
+            const currentPoolRoomObj = getRoomObjFromBaseQuote(
+                baseToken.symbol,
+                quoteToken.symbol,
+            );
+            currentPoolRoomObj.shownName =
+                getRoomNameFromBaseQuote(baseToken.symbol, quoteToken.symbol) +
+                ' 📈';
+            newRoomList.push(currentPoolRoomObj);
+        }
 
         setRoomList(newRoomList);
     };
