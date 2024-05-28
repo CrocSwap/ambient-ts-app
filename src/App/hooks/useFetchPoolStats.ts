@@ -204,7 +204,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
+        if (crocEnv && poolPriceDisplayNum) {
             const fetchTokenPrice = async () => {
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
@@ -212,7 +212,6 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 const quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
-
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
                 } else if (poolPriceDisplayNum && quoteTokenPrice) {
@@ -241,7 +240,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv !== undefined,
+        crocEnv === undefined,
         poolPriceDisplayNum,
     ]);
 
