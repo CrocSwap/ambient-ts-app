@@ -200,10 +200,13 @@
     border: 1px solid var(--dark3, #1E1E24);
 }
 
+
 .link_card_link_container {
     display: flex;
     align-items: flex-start;
     gap: 10px;
+    cursor: pointer;
+
 }
 
 .link_card_link_container a {
@@ -394,6 +397,14 @@
 }
 
 @media (min-width: 1380px) {
+    .link_card_link_container {
+     
+        border: 1px solid var(--accent, #7371FC);
+        padding: 5px 8px;
+        border-radius: 50px;
+        cursor: pointer;
+    
+    }
     .hero_container h2 {
         font-size: 75px;
     }
