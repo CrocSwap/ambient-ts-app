@@ -900,10 +900,13 @@ function TradeCandleStickChart(props: propsIF) {
                 period &&
                 unparsedCandleData[0].period === period
             ) {
+                const maxDom = scaleData
+                    ? scaleData?.xScale.domain()[1]
+                    : unparsedCandleData[unparsedCandleData.length - 1].time *
+                      1000;
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
-                ).filter((i) => i.isShowData);
-
+                ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
                 const minTime = unparsedCandleData[0].time * 1000;
                 if (
                     candles.length < 100 &&
