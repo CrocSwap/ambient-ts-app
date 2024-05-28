@@ -1,4 +1,5 @@
 import { MouseEvent, useContext, useRef, useState } from 'react';
+import * as d3 from 'd3';
 import {
     ActionButtonContainer,
     ChartSettingsContainer,
@@ -39,10 +40,20 @@ interface ContextMenuIF {
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     chartItemStates: chartItemStates;
     chartThemeColors: ChartThemeIF;
+    setChartThemeColors: React.Dispatch<
+        React.SetStateAction<ChartThemeIF | undefined>
+    >;
+    render: () => void;
 }
 
 export default function ChartSettings(props: ContextMenuIF) {
-    const { contextMenuPlacement, setContextmenu, chartThemeColors } = props;
+    const {
+        contextMenuPlacement,
+        setContextmenu,
+        chartThemeColors,
+        // setChartThemeColors,
+        render,
+    } = props;
 
     const {
         showFeeRate,
@@ -59,13 +70,20 @@ export default function ChartSettings(props: ContextMenuIF) {
         useContext(PoolContext);
 
     const handleCandleColorPicker = (
-        type: string,
-        direction: string,
-        index: number,
+        replaceSelector: d3.RGBColor | d3.HSLColor | null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        newColor: any,
     ) => {
-        console.log(type, direction);
-        setSelectedColor('red');
-        setSelectedColorIndex(index);
+        const replaceColor = d3.color(newColor.hex);
+        if (replaceSelector && replaceColor) {
+            replaceSelector = replaceColor;
+
+            chartThemeColors.lightFillColor = replaceColor;
+
+            // setChartThemeColors(() => chartThemeColors);
+
+            render();
+        }
     };
 
     const handleApplyDefaults = () => {
@@ -85,12 +103,18 @@ export default function ChartSettings(props: ContextMenuIF) {
         setPriceInOption(option);
     };
 
-    const [selectedColor, setSelectedColor] = useState<string>('');
-    const [selectedColorIndex, setSelectedColorIndex] = useState<
-        number | undefined
+    const [selectedColorObj, setSelectedColorObj] = useState<
+        | {
+              selectedColor: string | undefined;
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              replaceSelector: any;
+              index: number | undefined;
+          }
+        | undefined
     >(undefined);
 
     const [isSelecboxActive, setIsSelecboxActive] = useState(false);
+
     const [priceInOption, setPriceInOption] = useState<string>(
         !isTradeDollarizationEnabled ? 'Token' : 'Dolar',
     );
@@ -131,22 +155,22 @@ export default function ChartSettings(props: ContextMenuIF) {
             selection: 'Candle Body',
             actionHandler: 'body',
             action: handleCandleColorPicker,
-            upColor: chartThemeColors.lightFillColor?.toString(),
-            downColor: chartThemeColors.darkFillColor?.toString(),
+            upColor: chartThemeColors.lightFillColor,
+            downColor: chartThemeColors.darkFillColor,
         },
         {
             selection: 'Candle Borders',
             actionHandler: 'border',
             action: handleCandleColorPicker,
-            upColor: chartThemeColors.lightStrokeColor?.toString(),
-            downColor: chartThemeColors.darkStrokeColor?.toString(),
+            upColor: chartThemeColors.lightStrokeColor,
+            downColor: chartThemeColors.darkStrokeColor,
         },
         {
             selection: 'Candle Wicks',
             actionHandler: 'wick',
             action: handleCandleColorPicker,
-            upColor: chartThemeColors.lightStrokeColor?.toString(),
-            downColor: chartThemeColors.darkStrokeColor?.toString(),
+            upColor: chartThemeColors.lightStrokeColor,
+            downColor: chartThemeColors.darkStrokeColor,
         },
     ];
 
@@ -156,7 +180,7 @@ export default function ChartSettings(props: ContextMenuIF) {
             top={contextMenuPlacement.top}
             left={contextMenuPlacement.left}
             onClick={() => {
-                setSelectedColorIndex(undefined);
+                setSelectedColorObj(undefined);
                 setIsSelecboxActive(false);
             }}
         >
@@ -266,61 +290,71 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 <OptionColor
                                     backgroundColor={
                                         item.upColor
-                                            ? item.upColor
+                                            ? item.upColor.toString()
                                             : 'transparent'
                                     }
                                     onClick={(
                                         event: MouseEvent<HTMLElement>,
                                     ) => {
                                         event.stopPropagation();
-                                        item.action(
-                                            item.actionHandler,
-                                            'up',
-                                            index,
-                                        );
+                                        setSelectedColorObj({
+                                            selectedColor:
+                                                item.upColor?.toString(),
+                                            replaceSelector: item.upColor,
+                                            index: index,
+                                        });
                                     }}
                                 ></OptionColor>
 
                                 <OptionColor
                                     backgroundColor={
                                         item.downColor
-                                            ? item.downColor
+                                            ? item.downColor.toString()
                                             : 'transparent'
                                     }
                                     onClick={(
                                         event: MouseEvent<HTMLElement>,
                                     ) => {
                                         event.stopPropagation();
-                                        item.action(
-                                            item.actionHandler,
-                                            'down',
-                                            index,
-                                        );
+                                        setSelectedColorObj({
+                                            selectedColor:
+                                                item.downColor?.toString(),
+                                            replaceSelector: item.downColor,
+                                            index: index,
+                                        });
                                     }}
                                 ></OptionColor>
 
-                                {selectedColorIndex === index && (
-                                    <ColorPickerTab
-                                        style={{
-                                            position: 'fixed',
-                                            zIndex: 199,
-                                            paddingTop: '15px',
-                                            left:
-                                                28 -
-                                                (selectedColorIndex % 2) * 10 +
-                                                '%',
-                                        }}
-                                    >
-                                        <SketchPicker
-                                            color={selectedColor}
-                                            width={'170px'}
-                                            onChange={(color, event) => {
-                                                event.stopPropagation();
-                                                console.log(color, event);
+                                {selectedColorObj &&
+                                    selectedColorObj.index === index && (
+                                        <ColorPickerTab
+                                            style={{
+                                                position: 'fixed',
+                                                zIndex: 199,
+                                                paddingTop: '15px',
+                                                left:
+                                                    28 -
+                                                    (selectedColorObj.index %
+                                                        2) *
+                                                        10 +
+                                                    '%',
                                             }}
-                                        />
-                                    </ColorPickerTab>
-                                )}
+                                        >
+                                            <SketchPicker
+                                                color={
+                                                    selectedColorObj.selectedColor
+                                                }
+                                                width={'170px'}
+                                                onChange={(color, event) => {
+                                                    event.stopPropagation();
+                                                    item.action(
+                                                        selectedColorObj.replaceSelector,
+                                                        color,
+                                                    );
+                                                }}
+                                            />
+                                        </ColorPickerTab>
+                                    )}
                             </ColorOptions>
                         </ColorList>
                     ))}

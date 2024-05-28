@@ -117,6 +117,8 @@ const LabelStyleContainer = styled.div`
 const ColorPickerTab = styled.div`
     display: flex;
 
+    cursor: pointer;
+
     align-items: center;
 
     margin: 4px;

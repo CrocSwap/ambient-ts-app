@@ -216,6 +216,7 @@ export default function Chart(props: propsIF) {
         isMagnetActiveLocal,
         setChartContainerOptions,
         chartThemeColors,
+        setChartThemeColors,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -5952,6 +5953,8 @@ export default function Chart(props: propsIF) {
                     setContextmenu={setContextmenu}
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
+                    setChartThemeColors={setChartThemeColors}
+                    render={render}
                 />
             )}
         </div>
