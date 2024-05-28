@@ -14,7 +14,7 @@ import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { TradeDataContext } from './TradeDataContext';
-import { isWethToken } from '../ambient-utils/dataLayer';
+import { getFormattedNumber, isWethToken } from '../ambient-utils/dataLayer';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -36,6 +36,9 @@ interface PoolContextIF {
     setIsTradeDollarizationEnabled: React.Dispatch<
         React.SetStateAction<boolean>
     >;
+    fdvOfDenomTokenDisplay: string | undefined;
+    baseTokenFdvDisplay: string | undefined;
+    quoteTokenFdvDisplay: string | undefined;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -138,7 +141,21 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         basePrice,
         quotePrice,
         isPoolInitialized,
+        baseFdvUsd,
+        quoteFdvUsd,
     } = poolData;
+
+    const baseTokenFdvDisplay = baseFdvUsd
+        ? getFormattedNumber({ value: baseFdvUsd, prefix: '$' })
+        : undefined;
+
+    const quoteTokenFdvDisplay = quoteFdvUsd
+        ? getFormattedNumber({ value: quoteFdvUsd, prefix: '$' })
+        : undefined;
+
+    const fdvOfDenomTokenDisplay = isDenomBase
+        ? baseTokenFdvDisplay
+        : quoteTokenFdvDisplay;
 
     const usdPrice = poolPriceDisplay
         ? isDenomBase
@@ -201,6 +218,9 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolPriceChangePercent,
         ambientApy,
         dailyVol,
+        fdvOfDenomTokenDisplay,
+        baseTokenFdvDisplay,
+        quoteTokenFdvDisplay,
         poolData,
         usdPrice,
         usdPriceInverse,

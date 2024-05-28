@@ -37,7 +37,7 @@ const sideScroll = (
 export default function PoolData(props: PoolDataIF) {
     // eslint-disable-next-line
     const contentWrapper = React.useRef<any>(null);
-    const { poolData } = useContext(PoolContext);
+    const { poolData, fdvOfDenomTokenDisplay } = useContext(PoolContext);
     const { liquidityFee } = useContext(GraphDataContext);
 
     const { poolTvl, poolFeesTotal, poolVolume24h } = poolData;
@@ -115,10 +115,16 @@ export default function PoolData(props: PoolDataIF) {
             value: poolFeesTotal ? `$${poolFeesTotal?.toString()}` : '...',
         },
 
-        // { label: 'FDV', value: '...' },
         // { label: 'Pool Created', value: '...' },
         // { label: 'Token Taxes', value: '...' },
     ];
+
+    if (fdvOfDenomTokenDisplay) {
+        pairItemData.push({
+            label: 'FDV',
+            value: fdvOfDenomTokenDisplay,
+        });
+    }
 
     const trial = (
         <FlexContainer flexDirection='row'>

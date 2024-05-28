@@ -158,6 +158,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [quoteTvlUsd, setQuoteTvlUsd] = useState<number | undefined>();
     const [baseTvlUsd, setBaseTvlUsd] = useState<number | undefined>();
 
+    const [baseFdvUsd, setBaseFdvUsd] = useState<number | undefined>();
+    const [quoteFdvUsd, setQuoteFdvUsd] = useState<number | undefined>();
+
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
         string | undefined
     >();
@@ -181,6 +184,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         // setPoolApy(undefined);
         setQuoteTvlDecimal(undefined);
         setBaseTvlDecimal(undefined);
+        setBaseFdvUsd(undefined);
+        setQuoteFdvUsd(undefined);
         setQuoteTvlUsd(undefined);
         setBaseTvlUsd(undefined);
         setPoolPriceChangePercent(undefined);
@@ -315,6 +320,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
             setQuoteTvlDecimal(expandedPoolStatsNow.quoteTvlDecimal);
             setBaseTvlDecimal(expandedPoolStatsNow.baseTvlDecimal);
             setQuoteTvlUsd(expandedPoolStatsNow.quoteTvlUsd);
+            setBaseFdvUsd(expandedPoolStatsNow.baseFdvUsd);
+            setQuoteFdvUsd(expandedPoolStatsNow.quoteFdvUsd);
             setBaseTvlUsd(expandedPoolStatsNow.baseTvlUsd);
 
             if (tvlResult) {
@@ -454,6 +461,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         poolLink,
         shouldInvertDisplay,
         quoteTvlUsd,
+        baseFdvUsd,
+        quoteFdvUsd,
         baseTvlUsd,
         quoteTvlDecimal,
         baseTvlDecimal,

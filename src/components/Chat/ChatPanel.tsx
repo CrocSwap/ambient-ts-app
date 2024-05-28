@@ -3,7 +3,12 @@ import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+import {
+    RiArrowDownDoubleLine,
+    RiArrowDownSLine,
+    RiArrowUpDoubleLine,
+    RiArrowUpSLine,
+} from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
 import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -30,6 +35,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { useMediaQuery } from '@material-ui/core';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -63,7 +69,13 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
-    const { userAddress, ensName: ens } = useContext(UserDataContext);
+    const {
+        userAddress,
+        ensName: ens,
+        isUserConnected,
+        resolvedAddressFromContext,
+        setCurrentUserID,
+    } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -197,14 +209,15 @@ function ChatPanel(props: propsIF) {
         fetchForNotConnectedUser,
         getUserSummaryDetails,
         updateUnverifiedMessages,
+        isWsConnected,
         // saveUserWithAvatarImage,
     } = useChatSocket(
         room,
         isSubscriptionsEnabled,
         isChatOpen,
         activateToastr,
-        userAddress,
-        ens,
+        // userAddress,
+        // ens,
         currentUser,
         freezePanel,
         activatePanel,
@@ -214,8 +227,6 @@ function ChatPanel(props: propsIF) {
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
-    const { isUserConnected, resolvedAddressFromContext, setCurrentUserID } =
-        useContext(UserDataContext);
 
     const defaultEnsName = 'defaultValue';
 
@@ -687,11 +698,7 @@ function ChatPanel(props: propsIF) {
             setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
         } else {
-            if (
-                e.target.scrollTop === 0 &&
-                e.target.clientHeight !== e.target.scrollHeight &&
-                messages.length >= 20
-            ) {
+            if (e.target.scrollTop === 0) {
                 setShowPreviousMessagesButton(true);
             } else {
                 setShowPreviousMessagesButton(false);
@@ -827,16 +834,14 @@ function ChatPanel(props: propsIF) {
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
                         isVerified ? styles.verified : ''
-                    } `}
+                    } ${!isWsConnected ? styles.not_connected : ''}`}
                     onClick={(e) => verifyWallet(0, new Date(), e)}
                 >
                     {isModerator && isVerified && userAddress && (
                         <AiOutlineUser
-                            className={
-                                styles.verify_button_icon +
-                                ' ' +
+                            className={`${styles.verify_button_icon} ${
                                 styles.verify_button_mod_icon
-                            }
+                            } ${!isWsConnected ? styles.not_connected : ''}`}
                             color='var(--other-green)'
                             size={14}
                         ></AiOutlineUser>
@@ -844,7 +849,9 @@ function ChatPanel(props: propsIF) {
                     {isVerified && userAddress ? (
                         <>
                             <AiOutlineCheck
-                                className={styles.verify_button_icon}
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
                                 color='var(--other-green)'
                                 size={10}
                             />
@@ -852,7 +859,9 @@ function ChatPanel(props: propsIF) {
                     ) : (
                         <>
                             <AiOutlineClose
-                                className={styles.verify_button_icon}
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
                                 size={10}
                             />
                             <span> Not Verified</span>
@@ -1101,7 +1110,7 @@ function ChatPanel(props: propsIF) {
                     </span>
                 ) : (
                     <span>
-                        <RiArrowDownSLine
+                        <RiArrowDownDoubleLine
                             role='button'
                             size={27}
                             color='var(--accent1)'
@@ -1137,7 +1146,7 @@ function ChatPanel(props: propsIF) {
 
     const sendMessageListener = () => {
         if (isChatOpen) {
-            scrollToBottom(true, true, 700);
+            scrollToBottom(true, true, isMobile ? 700 : 400);
         }
     };
 
@@ -1182,6 +1191,7 @@ function ChatPanel(props: propsIF) {
                             onClick={() => {
                                 handleMentionSkipper(-1);
                             }}
+                            title='Previous Mention'
                         >
                             <IoIosArrowUp size={22} />
                         </div>
@@ -1192,6 +1202,7 @@ function ChatPanel(props: propsIF) {
                             onClick={() => {
                                 handleMentionSkipper(1);
                             }}
+                            title='Next Mention'
                         >
                             <IoIosArrowDown size={22} />
                         </div>
@@ -1202,6 +1213,7 @@ function ChatPanel(props: propsIF) {
                             onClick={() => {
                                 handleMentionSkipper(2);
                             }}
+                            title='Last Mention'
                         >
                             <IoIosArrowDown size={22} />
                             Last Mention
@@ -1227,7 +1239,7 @@ function ChatPanel(props: propsIF) {
         return (
             <div className={styles.scroll_up}>
                 {showPreviousMessagesButton ? (
-                    <RiArrowUpSLine
+                    <RiArrowUpDoubleLine
                         role='button'
                         size={27}
                         color='var(--accent1)'

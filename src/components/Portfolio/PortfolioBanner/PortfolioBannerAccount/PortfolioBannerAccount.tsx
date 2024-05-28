@@ -17,7 +17,6 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import NFTBannerAccount from './NFTBannerAccount';
-import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -74,8 +73,6 @@ export default function PortfolioBannerAccount(
     const [_, copy] = useCopyToClipboard();
 
     const { getUserAvatar } = useChatApi();
-
-    domDebug('resolved address', resolvedAddress);
 
     const fetchAvatar = async () => {
         if (resolvedAddress || userAddress) {
