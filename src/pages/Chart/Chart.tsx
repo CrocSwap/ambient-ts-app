@@ -952,7 +952,7 @@ export default function Chart(props: propsIF) {
                 const minData =
                     visibleCandleData[visibleCandleData.length - 1].time * 1000;
                 if (xmin < minData && isCondensedModeEnabled) {
-                    setXScaleDefault().then(() => {
+                    resetFunc().then(() => {
                         setIsCompletedFetchData(false);
                     });
                 } else {
@@ -2481,7 +2481,7 @@ export default function Chart(props: propsIF) {
         isDenomBase,
     ]);
 
-    async function setXScaleDefault() {
+    function setXScaleDefault() {
         if (scaleData) {
             const localInitialDisplayCandleCount =
                 getInitialDisplayCandleCount(mobileView);
@@ -2508,8 +2508,6 @@ export default function Chart(props: propsIF) {
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
             ]);
-
-            render();
         }
     }
 
@@ -2532,7 +2530,7 @@ export default function Chart(props: propsIF) {
             setCandleDomains(candleDomain);
         }
     }
-    function resetFunc() {
+    async function resetFunc() {
         if (scaleData) {
             setBandwidth(defaultCandleBandwith);
             setXScaleDefault();
