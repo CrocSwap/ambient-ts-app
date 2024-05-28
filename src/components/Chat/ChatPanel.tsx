@@ -1025,6 +1025,9 @@ function ChatPanel(props: propsIF) {
                 }}
                 verticalPosition={userSummaryVerticalPosition}
                 isCurrentUser={currentUser == selectedUserSummary?._id}
+                showExtendedSummary={
+                    isModerator || currentUser == selectedUserSummary?._id
+                }
             />
         </div>
     );
