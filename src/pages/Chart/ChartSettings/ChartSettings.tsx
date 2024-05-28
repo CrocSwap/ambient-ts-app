@@ -46,6 +46,13 @@ interface ContextMenuIF {
     render: () => void;
 }
 
+interface ColorObjIF {
+    selectedColor: string | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    replaceSelector: string;
+    index: number | undefined;
+}
+
 export default function ChartSettings(props: ContextMenuIF) {
     const {
         contextMenuPlacement,
@@ -70,17 +77,25 @@ export default function ChartSettings(props: ContextMenuIF) {
         useContext(PoolContext);
 
     const handleCandleColorPicker = (
-        replaceSelector: d3.RGBColor | d3.HSLColor | null,
+        replaceSelector: string,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         newColor: any,
     ) => {
         const replaceColor = d3.color(newColor.hex);
         if (replaceSelector && replaceColor) {
-            replaceSelector = replaceColor;
+            chartThemeColors[replaceSelector] = replaceColor;
 
-            chartThemeColors.lightFillColor = replaceColor;
+            setSelectedColorObj((prev: ColorObjIF | undefined) => {
+                if (prev) {
+                    const colorRep = {
+                        selectedColor: replaceColor.toString(),
+                        replaceSelector: prev.replaceSelector,
+                        index: prev.index,
+                    } as ColorObjIF;
 
-            // setChartThemeColors(() => chartThemeColors);
+                    return colorRep;
+                }
+            });
 
             render();
         }
@@ -104,13 +119,7 @@ export default function ChartSettings(props: ContextMenuIF) {
     };
 
     const [selectedColorObj, setSelectedColorObj] = useState<
-        | {
-              selectedColor: string | undefined;
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              replaceSelector: any;
-              index: number | undefined;
-          }
-        | undefined
+        ColorObjIF | undefined
     >(undefined);
 
     const [isSelecboxActive, setIsSelecboxActive] = useState(false);
@@ -155,22 +164,22 @@ export default function ChartSettings(props: ContextMenuIF) {
             selection: 'Candle Body',
             actionHandler: 'body',
             action: handleCandleColorPicker,
-            upColor: chartThemeColors.lightFillColor,
-            downColor: chartThemeColors.darkFillColor,
+            upColor: 'lightFillColor',
+            downColor: 'darkFillColor',
         },
         {
             selection: 'Candle Borders',
             actionHandler: 'border',
             action: handleCandleColorPicker,
-            upColor: chartThemeColors.lightStrokeColor,
-            downColor: chartThemeColors.darkStrokeColor,
+            upColor: 'lightStrokeColor',
+            downColor: 'darkStrokeColor',
         },
         {
             selection: 'Candle Wicks',
             actionHandler: 'wick',
             action: handleCandleColorPicker,
-            upColor: chartThemeColors.lightStrokeColor,
-            downColor: chartThemeColors.darkStrokeColor,
+            upColor: 'lightStrokeColor',
+            downColor: 'darkStrokeColor',
         },
     ];
 
@@ -288,18 +297,18 @@ export default function ChartSettings(props: ContextMenuIF) {
 
                             <ColorOptions>
                                 <OptionColor
-                                    backgroundColor={
+                                    backgroundColor={chartThemeColors[
                                         item.upColor
-                                            ? item.upColor.toString()
-                                            : 'transparent'
-                                    }
+                                    ]?.toString()}
                                     onClick={(
                                         event: MouseEvent<HTMLElement>,
                                     ) => {
                                         event.stopPropagation();
                                         setSelectedColorObj({
                                             selectedColor:
-                                                item.upColor?.toString(),
+                                                chartThemeColors[
+                                                    item.upColor
+                                                ]?.toString(),
                                             replaceSelector: item.upColor,
                                             index: index,
                                         });
@@ -307,18 +316,18 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 ></OptionColor>
 
                                 <OptionColor
-                                    backgroundColor={
+                                    backgroundColor={chartThemeColors[
                                         item.downColor
-                                            ? item.downColor.toString()
-                                            : 'transparent'
-                                    }
+                                    ]?.toString()}
                                     onClick={(
                                         event: MouseEvent<HTMLElement>,
                                     ) => {
                                         event.stopPropagation();
                                         setSelectedColorObj({
                                             selectedColor:
-                                                item.downColor?.toString(),
+                                                chartThemeColors[
+                                                    item.downColor
+                                                ]?.toString(),
                                             replaceSelector: item.downColor,
                                             index: index,
                                         });
@@ -339,6 +348,9 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                         10 +
                                                     '%',
                                             }}
+                                            onClick={(
+                                                event: MouseEvent<HTMLElement>,
+                                            ) => event.stopPropagation()}
                                         >
                                             <SketchPicker
                                                 color={

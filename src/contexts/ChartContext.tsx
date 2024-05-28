@@ -106,6 +106,7 @@ export interface ChartThemeIF {
     darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
     textColor: string;
+    [key: string]: d3.RGBColor | d3.HSLColor | string | null;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);

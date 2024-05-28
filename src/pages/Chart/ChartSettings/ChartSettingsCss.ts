@@ -124,7 +124,7 @@ const ColorOptions = styled.div`
 `;
 
 const OptionColor = styled.div<{
-    backgroundColor: string;
+    backgroundColor: string | undefined;
 }>`
     width: 16px;
     height: 16px;
@@ -134,7 +134,8 @@ const OptionColor = styled.div<{
 
     border: 1px solid var(--text3);
 
-    background: ${({ backgroundColor }) => backgroundColor};
+    background: ${({ backgroundColor }) =>
+        backgroundColor !== null ? backgroundColor : 'transparent'};
 
     &:hover {
         cursor: pointer;
