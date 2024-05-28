@@ -1,6 +1,6 @@
 import { FlexContainer } from '../../../styled/Common';
 import styles from './LandingStyles.module.css';
-import liquidityVideo from '../../../assets/images/home/liquidity.mp4';
+import CombinedLiquidity from './AnimatedSvgs/ CombinedLiquidity';
 
 export default function Landing3() {
     return (
@@ -28,10 +28,12 @@ export default function Landing3() {
 
                     <p>in the same liquidity pool.</p>
                 </FlexContainer>
-                <FlexContainer justifyContent='flex-end' alignItems='flex-end'>
-                    <video muted={true} autoPlay={true} loop={true}>
-                        <source src={liquidityVideo} type='video/mp4' />
-                    </video>
+                <FlexContainer
+                    justifyContent='flex-end'
+                    alignItems='flex-end'
+                    style={{ position: 'relative' }}
+                >
+                    <CombinedLiquidity />
                 </FlexContainer>
             </div>
         </div>

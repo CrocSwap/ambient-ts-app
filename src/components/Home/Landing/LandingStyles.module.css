@@ -63,9 +63,10 @@
 
 /* Media and Typography */
 .sub_container img,
-.sub_container video {
+.sub_container video{
     max-width: 100%;
     margin-top: 2rem;
+    object-fit: contain;
 }
 
 .investors_container img {
@@ -448,3 +449,22 @@
 
 }
 
+
+
+.ice{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+ 
+}
+
+.ice_left{
+    width: 50%;
+    display: flex;
+}
+
+.ice_right{
+    width: 50%;
+    display: flex;
+}
