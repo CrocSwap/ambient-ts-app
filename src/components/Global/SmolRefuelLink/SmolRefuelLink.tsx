@@ -1,4 +1,3 @@
-// import smolRefuelLogo from '../../../assets/images/icons/smolrefuel.png';
 import { SMOLREFUEL_LINK } from '../../../ambient-utils/constants';
 import { FlexContainer } from '../../../styled/Common';
 
@@ -16,11 +15,9 @@ export default function SmolRefuelLink() {
                 alignItems='center'
                 justifyContent='center'
                 onClick={() => window.open(SMOLREFUEL_LINK)}
-                // gap={2}
                 style={{ textDecoration: 'underline', cursor: 'pointer' }}
             >
                 <span>SmolRefuel</span>
-                {/* <img src={smolRefuelLogo} height={16} width={16} /> */}
             </FlexContainer>
         </FlexContainer>
     );
