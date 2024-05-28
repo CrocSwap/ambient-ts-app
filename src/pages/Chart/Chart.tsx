@@ -166,6 +166,8 @@ interface propsIF {
     setPrevCandleCount: React.Dispatch<React.SetStateAction<number>>;
     isFetchingEnoughData: boolean;
     setIsFetchingEnoughData: React.Dispatch<React.SetStateAction<boolean>>;
+    isCompletedFetchData: boolean;
+    setIsCompletedFetchData: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -194,7 +196,8 @@ export default function Chart(props: propsIF) {
         userTransactionData,
         setPrevCandleCount,
         isFetchingEnoughData,
-        setIsFetchingEnoughData,
+        isCompletedFetchData,
+        setIsCompletedFetchData,
     } = props;
 
     const {
@@ -561,13 +564,14 @@ export default function Chart(props: propsIF) {
             }
         }
 
-        calculateDiscontinuityRange(data);
+        !isFetchingEnoughData && calculateDiscontinuityRange(data);
         return data;
     }, [
         diffHashSigChart(unparsedData.candles),
         poolPriceWithoutDenom,
         isShowLatestCandle,
         isCondensedModeEnabled,
+        isFetchingEnoughData,
     ]);
 
     const calculateVisibleCandles = (
@@ -722,7 +726,12 @@ export default function Chart(props: propsIF) {
     }, [d3Container === null]);
 
     useEffect(() => {
-        setCandleDomains(localCandleDomains);
+        if (
+            localCandleDomains.domainBoundry &&
+            localCandleDomains.lastCandleDate
+        ) {
+            setCandleDomains(localCandleDomains);
+        }
     }, [debouncedGetNewCandleDataRight]);
 
     // calculates time croc icon will be found
@@ -908,7 +917,7 @@ export default function Chart(props: propsIF) {
                     });
             }
         })().then(() => {
-            if (scaleData) {
+            if (scaleData && !isFetchingEnoughData) {
                 const data = isCondensedModeEnabled
                     ? timeGaps
                           .filter((element) => element.isAddedPixel)
@@ -933,27 +942,21 @@ export default function Chart(props: propsIF) {
         diffHashSig(timeGaps),
         diffHashSigScaleData(scaleData, 'x'),
         isCondensedModeEnabled,
+        isFetchingEnoughData,
     ]);
 
     useEffect(() => {
-        if (isFetchingEnoughData && isAddedPixelFirstTime) {
+        if (isAddedPixelFirstTime) {
             const xmin = scaleData?.xScale.domain()[0];
-            const xmax = scaleData?.xScale.domain()[1];
-
-            const filtered = visibleCandleData.filter(
-                (data: CandleDataIF) =>
-                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-            );
-
-            if (filtered.length > 0) {
-                const minData = filtered[filtered.length - 1].time * 1000;
-
-                if (minData - xmin < period * 1000) {
+            if (visibleCandleData.length > 0) {
+                const minData =
+                    visibleCandleData[visibleCandleData.length - 1].time * 1000;
+                if (xmin < minData && isCondensedModeEnabled) {
                     setXScaleDefault().then(() => {
-                        setIsFetchingEnoughData(false);
+                        setIsCompletedFetchData(false);
                     });
                 } else {
-                    setIsFetchingEnoughData(false);
+                    setIsCompletedFetchData(false);
                 }
             }
         }
@@ -2505,6 +2508,8 @@ export default function Chart(props: propsIF) {
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
             ]);
+
+            render();
         }
     }
 
@@ -5815,6 +5820,14 @@ export default function Chart(props: propsIF) {
             className='main_layout_chart'
             data-testid={'chart'}
             id={'chartContainer'}
+            style={{
+                gridColumn: 1,
+                gridRow: 1,
+                visibility:
+                    isFetchingEnoughData || isCompletedFetchData
+                        ? 'hidden'
+                        : 'visible',
+            }}
         >
             <d3fc-group id='d3fc_group' auto-resize>
                 <div

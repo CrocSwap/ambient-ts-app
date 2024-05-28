@@ -115,6 +115,8 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [isFetchingEnoughData, setIsFetchingEnoughData] = useState(true);
 
+    const [isCompletedFetchData, setIsCompletedFetchData] = useState(true);
+
     const [fetchCountForEnoughData, setFetchCountForEnoughData] = useState(1);
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
@@ -172,6 +174,7 @@ function TradeCandleStickChart(props: propsIF) {
     useEffect(() => {
         setSelectedDrawnShape(undefined);
         setIsFetchingEnoughData(true);
+        setIsCompletedFetchData(true);
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
 
@@ -946,17 +949,14 @@ function TradeCandleStickChart(props: propsIF) {
                         setTimeout(() => {
                             chartSettings.candleTime.global.changeTime(86400);
                         }, 1000);
+                    } else {
+                        setIsFetchingEnoughData(false);
                     }
-                    // else {
-                    //     setIsFetchingEnoughData(false);
-                    // }
                 }
             }
+        } else {
+            setIsFetchingEnoughData(false);
         }
-
-        // else {
-        //     setIsFetchingEnoughData(false);
-        // }
         diffHashSigChart(unparsedCandleData);
     }, [
         unparsedCandleData,
@@ -975,11 +975,21 @@ function TradeCandleStickChart(props: propsIF) {
 
     return (
         <>
-            <div style={{ height: '100%', width: '100%' }}>
-                {(!isOpenChart || isFetchingEnoughData) && (
-                    <Spinner size={100} bg='var(--dark2)' centered />
-                )}
-
+            <div
+                style={{
+                    height: '100%',
+                    width: '100%',
+                    display: 'grid',
+                    gridTemplateRows: '1',
+                }}
+            >
+                <div style={{ gridColumn: 1, gridRow: 1 }}>
+                    {(!isOpenChart ||
+                        isFetchingEnoughData ||
+                        isCompletedFetchData) && (
+                        <Spinner size={100} bg='var(--dark2)' centered />
+                    )}
+                </div>
                 {isOpenChart && (
                     <Chart
                         isTokenABase={isTokenABase}
@@ -1015,6 +1025,8 @@ function TradeCandleStickChart(props: propsIF) {
                         setPrevCandleCount={setPrevCandleCount}
                         isFetchingEnoughData={isFetchingEnoughData}
                         setIsFetchingEnoughData={setIsFetchingEnoughData}
+                        isCompletedFetchData={isCompletedFetchData}
+                        setIsCompletedFetchData={setIsCompletedFetchData}
                     />
                 )}
             </div>
