@@ -131,6 +131,14 @@
             "logoURI": "https://miablastsoff.com/images/logo.png"
         },
         {
+            "address": "0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "BIG",
+            "symbol": "BIG",
+            "logoURI": ""
+        },
+        {
             "address": "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
             "chainId": 81457,
             "decimals": 18,
@@ -358,7 +366,7 @@
         },
         {
             "name": "SCRIBES",
-            "address": "0x122aD65A36ab6Dc12261C977e5e63a54ED1bA9E6",
+            "address": "0x750351a9F75F98f2c2E91D4eDb3BeB14e719557E",
             "symbol": "SCRIBES",
             "decimals": 18,
             "chainId": 534352,

@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components/macro';
-import { HeaderItem } from '../../components/Global/Analytics/TopPools';
+import { HeaderItem } from '../../components/Global/Explore/TopPools';
 import { FlexContainer } from '../Common';
 
 export const ScrollableContainer = styled.div`
