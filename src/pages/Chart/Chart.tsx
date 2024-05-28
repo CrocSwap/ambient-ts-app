@@ -951,8 +951,13 @@ export default function Chart(props: propsIF) {
             if (visibleCandleData.length > 0) {
                 const minData =
                     visibleCandleData[visibleCandleData.length - 1].time * 1000;
-                if (xmin < minData && isCondensedModeEnabled) {
-                    resetFunc().then(() => {
+                const diffPixel =
+                    scaleData?.xScale(minData) - scaleData?.xScale(xmin);
+                const percentPixel =
+                    (scaleData?.xScale.range()[1] - diffPixel) /
+                    scaleData?.xScale.range()[1];
+                if (percentPixel < 0.75 && isCondensedModeEnabled) {
+                    resetFunc(true).then(() => {
                         setIsCompletedFetchData(false);
                     });
                 } else {
@@ -2511,8 +2516,8 @@ export default function Chart(props: propsIF) {
         }
     }
 
-    function fetchCandleForResetOrLatest() {
-        if (reset && scaleData) {
+    function fetchCandleForResetOrLatest(isReset = false) {
+        if ((reset || isReset) && scaleData) {
             const nowDate = Date.now();
             const lastCandleDataTime =
                 lastCandleData?.time * 1000 - period * 1000;
@@ -2526,15 +2531,14 @@ export default function Chart(props: propsIF) {
                         : lastCandleDataTime,
                 isAbortedRequest: false,
             };
-
             setCandleDomains(candleDomain);
         }
     }
-    async function resetFunc() {
+    async function resetFunc(isReset = false) {
         if (scaleData) {
             setBandwidth(defaultCandleBandwith);
             setXScaleDefault();
-            fetchCandleForResetOrLatest();
+            fetchCandleForResetOrLatest(isReset);
             setIsChangeScaleChart(false);
             changeScale(false);
         }
