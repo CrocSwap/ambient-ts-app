@@ -33,8 +33,6 @@ const Home: React.FC = () => {
             ref: section1,
             page: <Landing1 />,
             goToSectionRef: section2,
-            customBackground:
-                'radial-gradient(43.75% 50% at 0% 50%, rgba(115, 113, 252, 0.20) 0%, rgba(115, 113, 252, 0.00) 100%)',
         },
         {
             ref: section2,
@@ -155,22 +153,16 @@ const Home: React.FC = () => {
                     handleUpClick={handleUpClick}
                     handleDownClick={handleDownClick}
                 />
-                {sections.map(
-                    (
-                        { ref, page, goToSectionRef, customBackground },
-                        index,
-                    ) => (
-                        <div ref={ref} key={index}>
-                            <Section
-                                image={img}
-                                page={page}
-                                goToSectionRef={goToSectionRef}
-                                scrollTo={() => scrollTo(goToSectionRef)}
-                                customBackground={customBackground}
-                            />
-                        </div>
-                    ),
-                )}{' '}
+                {sections.map(({ ref, page, goToSectionRef }, index) => (
+                    <div ref={ref} key={index}>
+                        <Section
+                            image={img}
+                            page={page}
+                            goToSectionRef={goToSectionRef}
+                            scrollTo={() => scrollTo(goToSectionRef)}
+                        />
+                    </div>
+                ))}{' '}
             </div>
         </div>
     );
@@ -196,7 +188,7 @@ const DotAnimation: React.FC<{
     const dotVariants = {
         //   hidden: { opacity: 0, width: '0px', height: '0px' },
         visible: {
-            opacity: 0.6,
+            opacity: 1,
             width: '20px',
             height: '20px',
             borderRadius: '50%',

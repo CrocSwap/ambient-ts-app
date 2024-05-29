@@ -23,7 +23,9 @@
     margin-left: auto !important;
     margin-right: auto !important;
     padding: 0 12px;
+    overflow-x: hidden;
 }
+
 
 .hero_container {
     display: flex;
@@ -36,13 +38,11 @@
     height: 100%;
 }
 
-.hero_container{
-    position: relative;
-}
+
 .animated_paths{
     position: absolute;
-    top: -150px;
-    left: 0;
+    top: -680px;
+    left: -500px;
     width: 100%;
     height: 100%;
     z-index: 0; /* Ensure it is behind other content */
@@ -54,7 +54,6 @@
 .sub_container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     justify-content: center;
     gap: 2rem;
     flex-shrink: 0;
@@ -398,14 +397,7 @@
 }
 
 @media (min-width: 1380px) {
-    .link_card_link_container {
-     
-        border: 1px solid var(--accent, #7371FC);
-        padding: 5px 8px;
-        border-radius: 50px;
-        cursor: pointer;
-    
-    }
+  
     .hero_container h2 {
         font-size: 75px;
     }
@@ -438,6 +430,10 @@
     .hero_container h2 {
         font-size: 100px;
     }
+
+
+
+   
 }
 
 
@@ -451,20 +447,3 @@
 
 
 
-.ice{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
- 
-}
-
-.ice_left{
-    width: 50%;
-    display: flex;
-}
-
-.ice_right{
-    width: 50%;
-    display: flex;
-}

@@ -28,11 +28,7 @@ export default function Landing3() {
 
                     <p>in the same liquidity pool.</p>
                 </FlexContainer>
-                <FlexContainer
-                    justifyContent='flex-end'
-                    alignItems='flex-end'
-                    style={{ position: 'relative' }}
-                >
+                <FlexContainer justifyContent='flex-end' alignItems='flex-end'>
                     <CombinedLiquidity />
                 </FlexContainer>
             </div>

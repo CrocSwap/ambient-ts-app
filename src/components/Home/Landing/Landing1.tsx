@@ -10,9 +10,6 @@ export default function Landing1() {
 
     return (
         <div className={styles.hero_container}>
-            <div className={styles.animated_paths}>
-                <AnimatedGradientPaths />
-            </div>
             <div className={styles.hero_heading}>
                 <h2>
                     Zero-to-<span>One</span>{' '}
@@ -43,7 +40,12 @@ export default function Landing1() {
             <FlexContainer justifyContent='center'>
                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
             </FlexContainer>
-            <TopPools />
+            <div style={{ position: 'relative' }}>
+                <div className={styles.animated_paths}>
+                    <AnimatedGradientPaths />
+                </div>
+                <TopPools />
+            </div>
         </div>
     );
 }
