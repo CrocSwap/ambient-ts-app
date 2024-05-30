@@ -236,7 +236,7 @@ backdrop-filter: blur(2.5px);
 
 }
 
-.link_card_link_container a {
+.link_card_link_container .link_text {
     color: var(--accent, #7371FC);
     text-align: center;
     font-size: var(--body-size);
