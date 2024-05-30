@@ -91,7 +91,7 @@ export default function Landing6() {
         {
             label: 'Whitepaper',
             text: 'Read our influential whitepaper here',
-            link: 'https://www.crocswap.com/whitepaper',
+            link: 'https://crocswap-whitepaper.netlify.app/',
             linkLabel: 'whitepaper',
             icon: <IoDocumentTextSharp />,
         },
