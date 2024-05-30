@@ -38,5 +38,6 @@
 }
 
 .submit_btn {
-    background: cyan;
+    border-radius: 4px;
+    background: var(--accent3);
 }

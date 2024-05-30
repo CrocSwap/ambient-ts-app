@@ -64,7 +64,7 @@ export default function Create() {
     return (
         <section className={styles.create}>
             <h2 className={styles.go_back}>{'<'}</h2>
-            <form className={styles.create_form}>
+            <div className={styles.create_form}>
                 <div className={styles.form_left}></div>
                 <div className={styles.form_right}>
                     {inputs.map((inp: CreateFieldPropsIF) => (
@@ -72,12 +72,12 @@ export default function Create() {
                     ))}
                     <button
                         className={styles.submit_btn}
-                        onClick={() => console.log(token.current)}
+                        onClick={() => console.log('hello!')}
                     >
                         Create Token
                     </button>
                 </div>
-            </form>
+            </div>
         </section>
     );
 }

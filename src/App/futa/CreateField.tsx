@@ -18,7 +18,7 @@ export default function CreateField(props: CreateFieldPropsIF) {
         <div className={styles.form_item}>
             <div className={styles.form_item_top}>
                 <label>{label}</label>
-                <div>{charLimit - length}</div>
+                <div className={styles.counter}>{charLimit - length}</div>
             </div>
             <textarea
                 id={inputId}
@@ -28,6 +28,7 @@ export default function CreateField(props: CreateFieldPropsIF) {
                 }}
                 maxLength={charLimit}
                 rows={rows}
+                spellCheck={false}
             />
         </div>
     );
