@@ -16,7 +16,6 @@ import * as d3fc from 'd3fc';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSig,
-    diffHashSigChart,
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
@@ -970,7 +969,6 @@ function TradeCandleStickChart(props: propsIF) {
         } else {
             setIsFetchingEnoughData(false);
         }
-        diffHashSigChart(unparsedCandleData);
     }, [
         unparsedCandleData,
         period === undefined,

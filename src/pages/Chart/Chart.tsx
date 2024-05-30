@@ -2556,8 +2556,6 @@ export default function Chart(props: propsIF) {
                     }
                 }
                 if (maxTime && unparsedData) {
-                    console.log({ maxTime });
-
                     const localCandles = unparsedData.candles.filter(
                         (i) =>
                             maxTime === undefined || i.time * 1000 >= maxTime,
