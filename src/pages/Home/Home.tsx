@@ -75,7 +75,6 @@ const Home: React.FC = () => {
     };
 
     const handleDotClick = (index: number) => {
-        setActiveIndex(index);
         scrollTo(sections[index].ref);
     };
 
@@ -122,7 +121,6 @@ const Home: React.FC = () => {
                         if (section) {
                             const index = sections.indexOf(section);
                             setActiveIndex(index);
-                            console.log({ index });
                         }
                     }
                 });
