@@ -45,4 +45,9 @@
 .submit_btn {
     border-radius: 4px;
     background: var(--accent3);
+    border: none;
+}
+
+.submit_btn:hover {
+    cursor: pointer;
 }
