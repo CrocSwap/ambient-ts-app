@@ -16,18 +16,23 @@
 .create_form {
     display: flex;
     flex-direction: row;
-
-    outline: 8px sold green;
+    gap: 24px;
 }
 
 .form_left,.form_right {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .form_left {
-    width: 200px;
+    width: 160px;
     /* outline: 2px solid red; */
+}
+
+.description {
+    color: var(--text3);
+    font-size: 12px;
 }
 
 .form_right {

@@ -65,7 +65,19 @@ export default function Create() {
         <section className={styles.create}>
             <h2 className={styles.go_back}>{'<'}</h2>
             <div className={styles.create_form}>
-                <div className={styles.form_left}></div>
+                <div className={styles.form_left}>
+                    <div className={styles.description}>
+                        Some text here describing how launching a token works
+                        and what things will happen.
+                    </div>
+                    <CreateField
+                        inputId='token_image_input'
+                        label='Token Image'
+                        charLimit={800}
+                        updateRef={() => null}
+                        rows={6}
+                    />
+                </div>
                 <div className={styles.form_right}>
                     {inputs.map((inp: CreateFieldPropsIF) => (
                         <CreateField key={JSON.stringify(inp)} {...inp} />
