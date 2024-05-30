@@ -373,10 +373,7 @@ export default function App() {
                                 path='futa/v1/auctions/:ticker'
                                 element={<AuctionDetail />}
                             />
-                            <Route
-                                path='futa/v1/auctions/new'
-                                element={<Create />}
-                            />
+                            <Route path='futa/v1/new' element={<Create />} />
                         </Routes>
                     )}
                 </section>

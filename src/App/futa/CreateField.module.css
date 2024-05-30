@@ -1,0 +1,18 @@
+.form_item {
+    display: flex;
+    flex-direction: column;
+}
+
+.form_item textarea {
+    resize: none;
+}
+
+.form_item_top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.form_item_input {
+
+}

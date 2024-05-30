@@ -1,4 +1,31 @@
 .create {
     display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    outline: 3px solid yellow;
+}
+
+.create_form {
+    display: flex;
     flex-direction: row;
+
+    outline: 2px sold green;
+}
+
+.form_left,.form_right {
+    display: flex;
+    flex-direction: column;
+}
+
+.form_left {
+    width: 200px;
+    outline: 2px solid red;
+}
+
+.form_right {
+    width: 400px;
+    outline: 2px solid aqua;
 }
