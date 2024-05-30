@@ -11,7 +11,7 @@
     width: 70vw;
 }
 
-.on_back {
+.on_back > *:hover {
     cursor: pointer;
 }
 
