@@ -1,7 +1,7 @@
 import useFetchAmbientStats from '../../../App/hooks/useFetchAmbientStats';
 import { FlexContainer } from '../../../styled/Common';
 import TopPools from '../TopPools/TopPools';
-import AnimatedGradientPaths from './AnimatedGradientPaths';
+// import AnimatedGradientPaths from './AnimatedGradientPaths';
 import styles from './LandingStyles.module.css';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 export default function Landing1() {
@@ -40,10 +40,13 @@ export default function Landing1() {
             <FlexContainer justifyContent='center'>
                 <TradeNowButton fieldId='trade_now_btn_in_hero' />
             </FlexContainer>
-            <div style={{ position: 'relative' }}>
+            {/* <div style={{ position: 'relative' }}>
                 <div className={styles.animated_paths}>
                     <AnimatedGradientPaths />
                 </div>
+                <TopPools />
+            </div> */}
+            <div>
                 <TopPools />
             </div>
         </div>

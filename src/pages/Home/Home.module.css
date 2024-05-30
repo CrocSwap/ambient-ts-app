@@ -68,11 +68,11 @@
   }
 
 
-  @media (min-width: 1600px) {
+  /* @media (min-width: 1600px) {
     .container {
 
       overscroll-behavior-y: contain;
       scroll-snap-type: y mandatory;
 
     }
-  }
+  } */
