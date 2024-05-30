@@ -259,10 +259,17 @@
 }
 
 @media (min-width: 740px) {
+
+    .hero_container,
+    .sub_container {
+        padding: 48px 90px;
+    }
     .link_card_container {
         padding: 1rem;
         height: 150px;
     }
+
+
 }
 
 @media (min-width: 820px) {
@@ -302,7 +309,16 @@
     }
 }
 
+
+
 @media (min-width: 1080px) {
+
+    .sub_container_grid {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 83px;
+        /* align-items: center; */
+    }
     .investors_container {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
@@ -320,12 +336,6 @@
         width: 100%;
     }
 
-    .sub_container_grid {
-        display: grid;
-        grid-template-columns: 0.85fr 1.15fr;
-        gap: 83px;
-        /* align-items: center; */
-    }
 
     .sub_container {
         gap: 128px;

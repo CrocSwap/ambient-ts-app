@@ -2,15 +2,23 @@ import { useMediaQuery } from '@material-ui/core';
 import React from 'react';
 
 function InfinitelyExpandable() {
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+    const mediumScreen = useMediaQuery('(min-width: 600px)');
 
-    const scaleSize = smallScreen ? 0.3 : 0.6;
+    const desktopScreen = useMediaQuery('(min-width: 1080px)');
+
+    const transformOriginState = mediumScreen ? 'top left' : '';
+
+    // const mediumScreen = useMediaQuery('(min-width: 600px)') && useMediaQuery('(max-width: 900px)');
+
+    const scaleSize = desktopScreen ? 0.6 : mediumScreen ? 0.5 : 0.3;
+    const marginTop = desktopScreen ? '0px' : '8rem';
 
     return (
         <div
             style={{
                 transform: `scale(${scaleSize})`,
-                transformOrigin: 'top left',
+                transformOrigin: transformOriginState,
+                marginTop: marginTop,
             }}
         >
             <style>

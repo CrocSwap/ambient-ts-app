@@ -2,6 +2,9 @@ import React from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 function AutoCompounding() {
     const smallScreen = useMediaQuery('(max-width: 500px)');
+    const desktopScreen = useMediaQuery('(min-width: 1080px)');
+
+    const marginTop = desktopScreen ? '0px' : '8rem';
 
     const scaleSize = smallScreen ? 0.3 : 0.45;
     // Define the starting and ending positions of each dot
@@ -84,6 +87,7 @@ function AutoCompounding() {
                 width: '100%',
                 position: 'relative',
                 transform: `scale(${scaleSize})`,
+                marginTop: marginTop,
             }}
         >
             <div

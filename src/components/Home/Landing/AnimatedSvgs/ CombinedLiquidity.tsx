@@ -3,6 +3,9 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 function CombinedLiquidity() {
     // CSS for the clipPath
     const smallScreen = useMediaQuery('(max-width: 500px)');
+    const mediumScreen = useMediaQuery('(max-width: 1080px)');
+
+    const transformOriginState = mediumScreen ? 'top left' : '';
 
     const scaleSize = smallScreen ? 0.3 : 0.45;
     const clipPath =
@@ -11,7 +14,7 @@ function CombinedLiquidity() {
         <div
             style={{
                 transform: `scale(${scaleSize})`,
-                transformOrigin: 'top left',
+                transformOrigin: transformOriginState,
                 display: 'flex',
                 width: '100%',
                 height: '100%',
