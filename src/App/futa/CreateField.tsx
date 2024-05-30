@@ -20,16 +20,21 @@ export default function CreateField(props: CreateFieldPropsIF) {
                 <label>{label}</label>
                 <div className={styles.counter}>{charLimit - length}</div>
             </div>
-            <textarea
-                id={inputId}
-                onChange={(e) => {
-                    updateRef(e.target.value);
-                    setLength(e.target.value.length);
-                }}
-                maxLength={charLimit}
-                rows={rows}
-                spellCheck={false}
-            />
+            {rows === 1 ? (
+                <input type='text' className={styles.text_input} />
+            ) : (
+                <textarea
+                    id={inputId}
+                    className={styles.text_input}
+                    onChange={(e) => {
+                        updateRef(e.target.value);
+                        setLength(e.target.value.length);
+                    }}
+                    maxLength={charLimit}
+                    rows={rows}
+                    spellCheck={false}
+                />
+            )}
         </div>
     );
 }

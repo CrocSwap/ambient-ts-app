@@ -98,10 +98,6 @@ footer {
     margin-top: auto;
 }
 
-.swap-body {
-    height: calc(100vh - (var(--footer-height) + 2rem));
-}
-
 h3:focus-visible,
 h2:focus-visible,
 h1:focus-visible,
@@ -252,12 +248,6 @@ input[type='number'] {
         top: 56px;
         bottom: 64px;
         z-index: 2;
-    }
-    .swap-body {
-        /* max-height: 86.5vh; */
-        overflow-y: hidden;
-
-        max-height: calc(100vh - 7.5rem);
     }
 }
 
