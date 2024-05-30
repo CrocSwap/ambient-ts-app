@@ -958,7 +958,16 @@ export default function Chart(props: propsIF) {
                 const percentPixel =
                     (scaleData?.xScale.range()[1] - diffPixel) /
                     scaleData?.xScale.range()[1];
-                if (percentPixel < 0.75 && isCondensedModeEnabled) {
+
+                const isIncludeTimeOfEndCanlde = timeOfEndCandle
+                    ? timeOfEndCandle < scaleData?.xScale.domain()[1] &&
+                      timeOfEndCandle > scaleData?.xScale.domain()[0]
+                    : false;
+                if (
+                    percentPixel < 0.75 &&
+                    isCondensedModeEnabled &&
+                    !isIncludeTimeOfEndCanlde
+                ) {
                     resetFunc(true).then(() => {
                         setIsCompletedFetchData(false);
                         setIsAddedPixelFirstTime(false);
@@ -2525,7 +2534,6 @@ export default function Chart(props: propsIF) {
             const lastCandleDataTime =
                 lastCandleData?.time * 1000 - period * 1000;
             const minDomain = Math.floor(scaleData?.xScale.domain()[0]);
-
             const candleDomain = {
                 lastCandleDate: nowDate,
                 domainBoundry:
@@ -2548,6 +2556,8 @@ export default function Chart(props: propsIF) {
                     }
                 }
                 if (maxTime && unparsedData) {
+                    console.log({ maxTime });
+
                     const localCandles = unparsedData.candles.filter(
                         (i) =>
                             maxTime === undefined || i.time * 1000 >= maxTime,
