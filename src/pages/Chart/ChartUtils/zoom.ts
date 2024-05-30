@@ -214,6 +214,7 @@ export class Zoom {
                 lastCandleDate: lastDomainDate,
                 domainBoundry: lastCandleTime,
                 isAbortedRequest: false,
+                isResetRequest: false,
             };
 
             this.setCandleDomains(candleDomain);
@@ -231,6 +232,7 @@ export class Zoom {
                 lastCandleDate: firstCandleTime,
                 domainBoundry: newLastCandle,
                 isAbortedRequest: false,
+                isResetRequest: false,
             };
 
             this.setCandleDomains(candleDomain);
@@ -301,6 +303,7 @@ export class Zoom {
             lastCandleDate: Math.floor(lastDomainDate),
             domainBoundry: Math.floor(firstDomainDate),
             isAbortedRequest: false,
+            isResetRequest: false,
         };
 
         this.setCandleDomains(candleDomain);
