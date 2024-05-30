@@ -70,9 +70,14 @@ export default function Create() {
                     {inputs.map((inp: CreateFieldPropsIF) => (
                         <CreateField key={JSON.stringify(inp)} {...inp} />
                     ))}
+                    <button
+                        className={styles.submit_btn}
+                        onClick={() => console.log(token.current)}
+                    >
+                        Create Token
+                    </button>
                 </div>
             </form>
-            <button onClick={() => console.log(token.current)}>Check</button>
         </section>
     );
 }

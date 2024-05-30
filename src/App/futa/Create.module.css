@@ -6,7 +6,7 @@
     /* width: 100%; */
     height: 100%;
 
-    outline: 3px solid yellow;
+    /* outline: 3px solid yellow; */
 }
 
 .go_back {
@@ -17,7 +17,7 @@
     display: flex;
     flex-direction: row;
 
-    outline: 2px sold green;
+    outline: 8px sold green;
 }
 
 .form_left,.form_right {
@@ -27,10 +27,16 @@
 
 .form_left {
     width: 200px;
-    outline: 2px solid red;
+    /* outline: 2px solid red; */
 }
 
 .form_right {
     width: 400px;
-    outline: 2px solid aqua;
+    gap: 8px;
+
+    /* outline: 2px solid aqua; */
+}
+
+.submit_btn {
+    background: cyan;
 }
