@@ -63,7 +63,7 @@ export default function Create() {
 
     return (
         <section className={styles.create}>
-            <h2>{'<'}</h2>
+            <h2 className={styles.go_back}>{'<'}</h2>
             <form className={styles.create_form}>
                 <div className={styles.form_left}></div>
                 <div className={styles.form_right}>

@@ -1,11 +1,16 @@
 .create {
     display: flex;
     flex-direction: column;
+    align-items: center;
 
-    width: 100%;
+    /* width: 100%; */
     height: 100%;
 
     outline: 3px solid yellow;
+}
+
+.go_back {
+    outline: 2px solid salmon;
 }
 
 .create_form {
