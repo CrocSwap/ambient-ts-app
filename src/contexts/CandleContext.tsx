@@ -121,6 +121,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         lastCandleDate: undefined,
         domainBoundry: undefined,
         isAbortedRequest: false,
+        isResetRequest: false,
     });
 
     const [candleScale, setCandleScale] = useState<CandleScaleIF>({
@@ -343,42 +344,47 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData && !isZoomRequestCanceled.value) {
-                    const newCandles: CandleDataIF[] = [];
-                    if (incrCandles.candles.length === 0) {
-                        candleData.candles.sort(
-                            (a: CandleDataIF, b: CandleDataIF) =>
-                                b.time - a.time,
-                        );
-                        setTimeOfEndCandle(
-                            candleData.candles[candleData.candles.length - 1]
-                                .time * 1000,
-                        );
-                    }
-
-                    for (
-                        let index = 0;
-                        index < incrCandles.candles.length;
-                        index++
-                    ) {
-                        const messageCandle = incrCandles.candles[index];
-                        const indexOfExistingCandle =
-                            candleData.candles.findIndex(
-                                (savedCandle) =>
-                                    savedCandle.time === messageCandle.time,
+                    if (candleDomains.isResetRequest) {
+                        setCandleData(incrCandles);
+                    } else {
+                        const newCandles: CandleDataIF[] = [];
+                        if (incrCandles.candles.length === 0) {
+                            candleData.candles.sort(
+                                (a: CandleDataIF, b: CandleDataIF) =>
+                                    b.time - a.time,
                             );
-
-                        if (indexOfExistingCandle === -1) {
-                            newCandles.push(messageCandle);
-                        } else {
-                            candleData.candles[indexOfExistingCandle] =
-                                messageCandle;
+                            setTimeOfEndCandle(
+                                candleData.candles[
+                                    candleData.candles.length - 1
+                                ].time * 1000,
+                            );
                         }
-                    }
 
-                    const newSeries = Object.assign({}, candleData, {
-                        candles: candleData.candles.concat(newCandles),
-                    });
-                    setCandleData(newSeries);
+                        for (
+                            let index = 0;
+                            index < incrCandles.candles.length;
+                            index++
+                        ) {
+                            const messageCandle = incrCandles.candles[index];
+                            const indexOfExistingCandle =
+                                candleData.candles.findIndex(
+                                    (savedCandle) =>
+                                        savedCandle.time === messageCandle.time,
+                                );
+
+                            if (indexOfExistingCandle === -1) {
+                                newCandles.push(messageCandle);
+                            } else {
+                                candleData.candles[indexOfExistingCandle] =
+                                    messageCandle;
+                            }
+                        }
+
+                        const newSeries = Object.assign({}, candleData, {
+                            candles: candleData.candles.concat(newCandles),
+                        });
+                        setCandleData(newSeries);
+                    }
                 }
             })
             .catch((e) => {

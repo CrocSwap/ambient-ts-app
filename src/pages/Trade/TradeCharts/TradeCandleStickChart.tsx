@@ -82,6 +82,7 @@ function TradeCandleStickChart(props: propsIF) {
         candleScale,
         timeOfEndCandle,
         isCondensedModeEnabled,
+        candleDomains,
         setCandleDomains,
     } = useContext(CandleContext);
     const { chartSettings, isChangeScaleChart, setSelectedDrawnShape } =
@@ -177,6 +178,14 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCompletedFetchData(true);
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
+
+    useEffect(() => {
+        if (candleDomains.isResetRequest) {
+            setIsFetchingEnoughData(true);
+            setIsCompletedFetchData(true);
+            setFetchCountForEnoughData(0);
+        }
+    }, [candleDomains.isResetRequest]);
 
     useEffect(() => {
         if (isFetchingEnoughData && scaleData) {
@@ -918,6 +927,7 @@ function TradeCandleStickChart(props: propsIF) {
                         lastCandleDate: minTime,
                         domainBoundry: minTime - 200 * period * 1000,
                         isAbortedRequest: true,
+                        isResetRequest: false,
                     };
 
                     setFetchCountForEnoughData(fetchCountForEnoughData + 1);

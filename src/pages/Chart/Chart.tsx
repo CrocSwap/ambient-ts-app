@@ -234,6 +234,7 @@ export default function Chart(props: propsIF) {
         setCandleScale,
         timeOfEndCandle,
         isCondensedModeEnabled,
+        setCandleData,
     } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
@@ -251,6 +252,7 @@ export default function Chart(props: propsIF) {
             lastCandleDate: undefined,
             domainBoundry: undefined,
             isAbortedRequest: false,
+            isResetRequest: false,
         });
 
     const {
@@ -959,6 +961,7 @@ export default function Chart(props: propsIF) {
                 if (percentPixel < 0.75 && isCondensedModeEnabled) {
                     resetFunc(true).then(() => {
                         setIsCompletedFetchData(false);
+                        setIsAddedPixelFirstTime(false);
                     });
                 } else {
                     setIsCompletedFetchData(false);
@@ -2530,7 +2533,32 @@ export default function Chart(props: propsIF) {
                         ? minDomain
                         : lastCandleDataTime,
                 isAbortedRequest: false,
+                isResetRequest: isReset,
             };
+
+            if (!isReset) {
+                let maxTime: number | undefined = undefined;
+                for (let i = 0; i < unparsedCandleData.length - 1; i++) {
+                    if (
+                        unparsedCandleData[i].time -
+                            unparsedCandleData[i + 1].time >
+                        period
+                    ) {
+                        maxTime = unparsedCandleData[i].time * 1000;
+                    }
+                }
+                if (maxTime && unparsedData) {
+                    const localCandles = unparsedData.candles.filter(
+                        (i) =>
+                            maxTime === undefined || i.time * 1000 >= maxTime,
+                    );
+                    const localCandleData = {
+                        ...unparsedData,
+                        candles: localCandles,
+                    };
+                    setCandleData(localCandleData);
+                }
+            }
             setCandleDomains(candleDomain);
         }
     }
