@@ -1,7 +1,5 @@
 import { FlexContainer } from '../../../styled/Common';
 import styles from './LandingStyles.module.css';
-// import orderImage from '../../../assets/images/home/orders.png';
-// import expandVideo from '../../../assets/images/home/expandable.mp4';
 import InfinitelyExpandable from './AnimatedSvgs/InfinitelyExpandable';
 export default function Landing4() {
     function getScreenHeight(): number {
@@ -22,9 +20,6 @@ export default function Landing4() {
                     nesciunt accusamus aliquid!
                 </p>
                 <FlexContainer>
-                    {/* <video muted={true} autoPlay={true} loop={true}>
-                        <source src={expandVideo} type='video/mp4' />
-                    </video> */}
                     <InfinitelyExpandable />
                 </FlexContainer>
             </div>
