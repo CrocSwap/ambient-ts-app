@@ -84,7 +84,7 @@ export default function Create() {
                     ))}
                     <button
                         className={styles.submit_btn}
-                        onClick={() => console.log('hello!')}
+                        onClick={() => console.log(token.current)}
                     >
                         Create Token
                     </button>
