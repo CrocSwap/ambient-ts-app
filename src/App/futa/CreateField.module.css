@@ -28,6 +28,7 @@
 
 .text_input {
     padding: 2px 6px;
+    width: 100%;
     border-radius: 4px;
     letter-spacing: 1px;
     resize: none;

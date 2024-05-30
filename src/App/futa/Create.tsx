@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import styles from './Create.module.css';
 import CreateField, { CreateFieldPropsIF } from './CreateField';
+import { FaAngleLeft } from 'react-icons/fa6';
 
 export default function Create() {
     const token = useRef({
@@ -62,32 +63,36 @@ export default function Create() {
     ];
 
     return (
-        <section className={styles.create}>
-            <h2 className={styles.go_back}>{'<'}</h2>
-            <div className={styles.create_form}>
-                <div className={styles.form_left}>
-                    <div className={styles.description}>
-                        Some text here describing how launching a token works
-                        and what things will happen.
-                    </div>
-                    <CreateField
-                        inputId='token_image_input'
-                        label='Token Image'
-                        charLimit={800}
-                        updateRef={() => null}
-                        rows={6}
-                    />
+        <section className={styles.create_token}>
+            <div className={styles.style_wrapper}>
+                <div className={styles.on_back}>
+                    <FaAngleLeft size={60} />
                 </div>
-                <div className={styles.form_right}>
-                    {inputs.map((inp: CreateFieldPropsIF) => (
-                        <CreateField key={JSON.stringify(inp)} {...inp} />
-                    ))}
-                    <button
-                        className={styles.submit_btn}
-                        onClick={() => console.log(token.current)}
-                    >
-                        Create Token
-                    </button>
+                <div className={styles.create_form}>
+                    <div className={styles.form_left}>
+                        <div className={styles.description}>
+                            Some text here describing how launching a token
+                            works and what things will happen.
+                        </div>
+                        <CreateField
+                            inputId='token_image_input'
+                            label='Token Image'
+                            charLimit={800}
+                            updateRef={() => null}
+                            rows={6}
+                        />
+                    </div>
+                    <div className={styles.form_right}>
+                        {inputs.map((inp: CreateFieldPropsIF) => (
+                            <CreateField key={JSON.stringify(inp)} {...inp} />
+                        ))}
+                        <button
+                            className={styles.submit_btn}
+                            onClick={() => console.log(token.current)}
+                        >
+                            Create Token
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>

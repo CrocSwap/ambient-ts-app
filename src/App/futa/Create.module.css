@@ -1,4 +1,4 @@
-.create {
+.create_token {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,13 +6,19 @@
     height: calc(100vh - 56px);
 }
 
-.go_back {
-    outline: 2px solid salmon;
+.style_wrapper {
+    max-width: 680px;
+    width: 70vw;
+}
+
+.on_back {
+    cursor: pointer;
 }
 
 .create_form {
     display: flex;
     flex-direction: row;
+    justify-content: flex-end;
     gap: 24px;
 }
 
@@ -23,6 +29,7 @@
 }
 
 .form_left {
+    align-items: flex-end;
     width: 160px;
     /* outline: 2px solid red; */
 }
