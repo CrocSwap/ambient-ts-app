@@ -20,7 +20,12 @@ export default function LinkCard(props: PropsIF) {
     // )
 
     return (
-        <div className={styles.link_card_container}>
+        <a
+            className={styles.link_card_container}
+            href={link}
+            rel='noreferrer'
+            target='_blank'
+        >
             <FlexContainer
                 flexDirection='row'
                 alignItems='center'
@@ -32,10 +37,8 @@ export default function LinkCard(props: PropsIF) {
             </FlexContainer>
             {showDesktopVersion && <p>{text}</p>}
             <div className={styles.link_card_link_container}>
-                <a href={link} rel='noreferrer' target='_blank'>
-                    {linkLabel}
-                </a>
+                <p className={styles.link_text}>{linkLabel}</p>
             </div>
-        </div>
+        </a>
     );
 }
