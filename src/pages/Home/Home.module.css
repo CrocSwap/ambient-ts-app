@@ -45,6 +45,15 @@
   }
 
 
+  .show_arrow{
+opacity: 1;
+  }
+
+  .disable_arrow{
+    opacity: 0;
+    pointer-events: none;
+  }
+
   @media (max-height: 715px) {
 .container{
   height: auto;

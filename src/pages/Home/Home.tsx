@@ -205,6 +205,14 @@ const DotAnimation: React.FC<{
 
     return (
         <div className={styles.dots}>
+            <GoChevronUp
+                size={25}
+                onClick={handleUpClick}
+                color='var(--text3)'
+                className={
+                    activeIndex !== 0 ? styles.show_arrow : styles.disable_arrow
+                }
+            />
             <AnimatePresence initial={false}>
                 {/* { activateAutoScroll ? (
                     <FaPause
@@ -220,14 +228,6 @@ const DotAnimation: React.FC<{
                         onClick={() => setActivateAutoScroll(true)}
                     />
                 )} */}
-                {
-                    <GoChevronUp
-                        size={25}
-                        onClick={handleUpClick}
-                        color='var(--text3)'
-                        style={{ display: activeIndex === 0 ? 'none' : 'flex' }}
-                    />
-                }
 
                 {sections.map((_, index) => (
                     <motion.span
@@ -242,18 +242,17 @@ const DotAnimation: React.FC<{
                         onClick={() => onClick(index)}
                     />
                 ))}
-                <GoChevronDown
-                    size={25}
-                    onClick={handleDownClick}
-                    color='var(--text3)'
-                    style={{
-                        display:
-                            activeIndex === sections.length - 1
-                                ? 'none'
-                                : 'flex',
-                    }}
-                />
             </AnimatePresence>
+            <GoChevronDown
+                size={25}
+                onClick={handleDownClick}
+                color='var(--text3)'
+                className={
+                    activeIndex !== sections.length - 1
+                        ? styles.show_arrow
+                        : styles.disable_arrow
+                }
+            />
         </div>
     );
 };
