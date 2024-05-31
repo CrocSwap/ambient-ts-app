@@ -768,7 +768,8 @@ function ChatPanel(props: propsIF) {
             activateToastr('Please connect your wallet first.', 'warning');
 
         const message =
-            'Your wallet will be verified for chat. Please sign it for verification.';
+            'Welcome to Ambient Finance \n\nClick to sign in and accept the OpenSea Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
+            userAddress;
         let verifyDate = new Date();
 
         if (verificationType === ChatVerificationTypes.VerifyWallet) {
@@ -787,7 +788,14 @@ function ChatPanel(props: propsIF) {
             window.ethereum
                 .request({
                     method: 'personal_sign',
-                    params: [message, userAddress, ''],
+                    params: [
+                        message.substring(
+                            0,
+                            message.indexOf('Wallet address:'),
+                        ),
+                        userAddress,
+                        '',
+                    ],
                 })
                 // eslint-disable-next-line
                 .then((signedMessage: any) => {
