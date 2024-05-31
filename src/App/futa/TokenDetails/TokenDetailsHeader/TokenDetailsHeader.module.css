@@ -1,0 +1,29 @@
+.container{
+    
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    background-color: red;
+
+}
+
+
+.back_arrow{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+}
+
+.img_container img{
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.link_container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
