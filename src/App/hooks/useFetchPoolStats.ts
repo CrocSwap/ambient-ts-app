@@ -216,6 +216,11 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                         ?.usdPrice || 0.0;
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (
+                    isETHorStakedEthToken(baseAddr) &&
+                    ethMainnetUsdPrice
+                ) {
+                    setBasePrice(ethMainnetUsdPrice);
                 } else if (poolPriceDisplayNum && quoteTokenPrice) {
                     // calculation of estimated base price below may be backwards;
                     // having a hard time finding an example of base missing a price
