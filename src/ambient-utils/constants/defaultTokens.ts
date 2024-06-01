@@ -499,6 +499,15 @@ export const scrollPxETH: TokenIF = {
     logoURI: '',
 };
 
+export const scrollPufETH: TokenIF = {
+    name: 'PufferVault',
+    address: '0xc4d46E8402F476F269c379677C99F18E22Ea030e',
+    symbol: 'PufETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
 export const scrollWrappedETH: TokenIF = {
     name: 'Wrapped Ether',
     address: '0x5300000000000000000000000000000000000004',
@@ -650,6 +659,8 @@ export const defaultTokens: TokenIF[] = [
     scrollAxlUSDC,
     scrollWBTC,
     scrollRocketPoolETH,
+    scrollPxETH,
+    scrollPufETH,
     scrollWrappedETH,
     scrollWstETH,
     scrollWrsETH,

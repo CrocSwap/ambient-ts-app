@@ -424,8 +424,14 @@ function Range() {
         parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verify(tokenA.address);
-    const needConfirmTokenB = !tokens.verify(tokenB.address);
+
+    const needConfirmTokenA = useMemo(() => {
+        return !tokens.verify(tokenA.address);
+    }, [tokenA.address, tokens]);
+    const needConfirmTokenB = useMemo(() => {
+        return !tokens.verify(tokenB.address);
+    }, [tokenB.address, tokens]);
+
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
