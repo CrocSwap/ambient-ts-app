@@ -9,6 +9,7 @@ import {
     getMoneynessRank,
     getFormattedNumber,
     expandPoolStats,
+    isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
 // import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -37,6 +38,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         activeNetwork,
         provider,
         chainData: { chainId },
+        ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
@@ -225,6 +227,11 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (
+                    isETHorStakedEthToken(quoteAddr) &&
+                    ethMainnetUsdPrice
+                ) {
+                    setQuotePrice(ethMainnetUsdPrice);
                 } else if (poolPriceDisplayNum && baseTokenPrice) {
                     const estimatedQuotePrice =
                         baseTokenPrice * poolPriceDisplayNum;
