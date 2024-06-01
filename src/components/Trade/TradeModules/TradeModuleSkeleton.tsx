@@ -69,8 +69,12 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verify(tokenA.address);
-    const needConfirmTokenB = !tokens.verify(tokenB.address);
+    const needConfirmTokenA = useMemo(() => {
+        return !tokens.verify(tokenA.address);
+    }, [tokenA.address, tokens]);
+    const needConfirmTokenB = useMemo(() => {
+        return !tokens.verify(tokenB.address);
+    }, [tokenB.address, tokens]);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
