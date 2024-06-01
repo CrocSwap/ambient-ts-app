@@ -30,6 +30,7 @@ import {
     scrollDAI,
     scrollPxETH,
     scrollRocketPoolETH,
+    scrollPufETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -105,6 +106,7 @@ export const STAKED_ETH_TOKENS = [
     scrollSTONE.address,
     scrollUniETH.address,
     scrollPxETH.address,
+    scrollPufETH.address,
     scrollRocketPoolETH.address,
     blastWrsETH.address,
     blastEzETH.address,
