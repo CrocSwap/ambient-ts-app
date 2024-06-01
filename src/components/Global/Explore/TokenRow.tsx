@@ -32,21 +32,23 @@ export default function TokenRow(props: propsIF) {
 
     const mobileScrenView: boolean = useMediaQuery('(max-width: 640px)');
 
+    const handleClick = (
+        event:
+            | React.MouseEvent<HTMLTableRowElement>
+            | React.MouseEvent<HTMLButtonElement>,
+    ) => {
+        // due to gatekeeping in parent, at least one of these pools
+        // ... will be a defined value passed through props
+        if (samplePool) {
+            goToMarket(samplePool.base.address, samplePool.quote.address);
+        } else if (backupPool) {
+            goToMarket(backupPool.base, backupPool.quote);
+        }
+        event.stopPropagation();
+    };
+
     return (
-        <TableRow
-            onClick={() => {
-                // due to gatekeeping in parent, at least one of these pools
-                // ... will be a defined value passed through props
-                if (samplePool) {
-                    goToMarket(
-                        samplePool.base.address,
-                        samplePool.quote.address,
-                    );
-                } else if (backupPool) {
-                    goToMarket(backupPool.base, backupPool.quote);
-                }
-            }}
-        >
+        <TableRow onClick={handleClick}>
             <TableCell>
                 <FlexContainer
                     alignItems='center'
@@ -96,7 +98,7 @@ export default function TokenRow(props: propsIF) {
                     alignItems='center'
                     justifyContent='flex-end'
                 >
-                    <TradeButton>Trade</TradeButton>
+                    <TradeButton onClick={handleClick}>Trade</TradeButton>
                 </FlexContainer>
             </TableCell>
         </TableRow>
