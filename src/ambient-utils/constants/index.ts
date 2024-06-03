@@ -78,7 +78,8 @@ export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
 export const CORPORATE_LINK = 'https://www.crocswap.com/';
-export const SMOLREFUEL_LINK = 'https://smolrefuel.com/?partner=YOUR_ADDRESS'; // REPLACE WITH YOUR OWN ADDRESS
+export const SMOLREFUEL_LINK =
+    'https://smolrefuel.com/?partner=0x2c60Cf0b9C78Cb51de0F9d532fe92CEd6bD353f9'; // croclabs.eth
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;
 
