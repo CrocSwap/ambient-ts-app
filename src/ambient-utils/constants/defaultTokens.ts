@@ -146,7 +146,7 @@ export const blastBAJA: TokenIF = {
 };
 
 export const blastESE: TokenIF = {
-    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    address: '0x491e6DE43b55c8EAE702EDC263E32339da42f58c',
     chainId: 81457,
     decimals: 18,
     fromList: '/ambient-token-list.json',
