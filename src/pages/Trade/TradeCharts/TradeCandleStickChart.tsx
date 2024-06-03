@@ -123,6 +123,13 @@ function TradeCandleStickChart(props: propsIF) {
     );
     const [prevCandleCount, setPrevCandleCount] = useState<number>(0);
 
+    const [chartResetStatus, setChartResetStatus] = useState<{
+        isResetChart: boolean;
+        resetDomain: undefined | number[];
+    }>({
+        isResetChart: false,
+        resetDomain: undefined,
+    });
     const {
         tokenA,
         tokenB,
@@ -175,6 +182,10 @@ function TradeCandleStickChart(props: propsIF) {
         setSelectedDrawnShape(undefined);
         setIsFetchingEnoughData(true);
         setIsCompletedFetchData(true);
+        setChartResetStatus({
+            isResetChart: false,
+            resetDomain: undefined,
+        });
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
 
@@ -908,14 +919,29 @@ function TradeCandleStickChart(props: propsIF) {
                 period &&
                 unparsedCandleData[0].period === period
             ) {
-                const maxDom = scaleData
-                    ? scaleData?.xScale.domain()[1]
-                    : unparsedCandleData[unparsedCandleData.length - 1].time *
-                      1000;
+                const lastCandleDate = unparsedCandleData?.reduce(function (
+                    prev,
+                    current,
+                ) {
+                    return prev.time > current.time ? prev : current;
+                }).time;
+
+                const firstCandleDate = unparsedCandleData?.reduce(function (
+                    prev,
+                    current,
+                ) {
+                    return prev.time < current.time ? prev : current;
+                }).time;
+
+                const maxDom =
+                    scaleData !== undefined
+                        ? scaleData?.xScale.domain()[1]
+                        : lastCandleDate * 1000;
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
                 ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
-                const minTime = unparsedCandleData[0].time * 1000;
+                const minTime = firstCandleDate * 1000;
+
                 if (
                     candles.length < 100 &&
                     !timeOfEndCandle &&
@@ -962,11 +988,13 @@ function TradeCandleStickChart(props: propsIF) {
                             chartSettings.candleTime.global.changeTime(86400);
                         }, 1000);
                     } else {
+                        setFetchCountForEnoughData(maxRequestCountForCondensed);
                         setIsFetchingEnoughData(false);
                     }
                 }
             }
         } else {
+            setFetchCountForEnoughData(maxRequestCountForCondensed);
             setIsFetchingEnoughData(false);
         }
     }, [
@@ -982,7 +1010,8 @@ function TradeCandleStickChart(props: propsIF) {
         isPoolInitialized !== undefined &&
         prevPeriod === period &&
         period === candleData?.duration &&
-        !isFetchingCandle;
+        !isFetchingCandle &&
+        !isFetchingEnoughData;
 
     return (
         <>
@@ -1038,6 +1067,8 @@ function TradeCandleStickChart(props: propsIF) {
                         setIsFetchingEnoughData={setIsFetchingEnoughData}
                         isCompletedFetchData={isCompletedFetchData}
                         setIsCompletedFetchData={setIsCompletedFetchData}
+                        setChartResetStatus={setChartResetStatus}
+                        chartResetStatus={chartResetStatus}
                     />
                 )}
             </div>
