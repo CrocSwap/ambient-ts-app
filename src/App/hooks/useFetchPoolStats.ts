@@ -254,6 +254,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         chainId,
         crocEnv === undefined,
         poolPriceDisplayNum,
+        ethMainnetUsdPrice === undefined,
     ]);
 
     const fetchPoolStats = async () => {
