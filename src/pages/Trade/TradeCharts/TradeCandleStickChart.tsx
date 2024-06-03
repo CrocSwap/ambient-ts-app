@@ -988,11 +988,13 @@ function TradeCandleStickChart(props: propsIF) {
                             chartSettings.candleTime.global.changeTime(86400);
                         }, 1000);
                     } else {
+                        setFetchCountForEnoughData(maxRequestCountForCondensed);
                         setIsFetchingEnoughData(false);
                     }
                 }
             }
         } else {
+            setFetchCountForEnoughData(maxRequestCountForCondensed);
             setIsFetchingEnoughData(false);
         }
     }, [
