@@ -45,6 +45,7 @@ import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     type: RangeModalAction;
@@ -789,6 +790,11 @@ function RangeActionModal(props: propsIF) {
             <div className={styles.remove_range_container}>
                 <div className={styles.main_content}>
                     {mainModalContent}
+                    {!showSettings && (
+                        <span style={{ marginRight: '20px' }}>
+                            <SmolRefuelLink />
+                        </span>
+                    )}
                     {buttonToDisplay}
                 </div>
             </div>
