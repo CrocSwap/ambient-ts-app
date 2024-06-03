@@ -1,3 +1,4 @@
+import { trimString } from '../../ambient-utils/dataLayer';
 import styles from './AuctionCard.module.css';
 import { auctionDataIF } from './Auctions';
 
@@ -13,12 +14,14 @@ export default function AuctionCard(props: propsIF) {
         <div className={styles.auction_card}>
             <div className={styles.auction_image_box}>
                 <div>{'(IMAGE HERE)'}</div>
-                <p>{'by 0xZZZ...ZZZ'}</p>
+                <p className={styles.auction_maker}>
+                    {trimString(auction.author, 6, 4, '...')}
+                </p>
             </div>
             <div className={styles.auction_info}>
                 <div className={styles.info_header}>
                     <h4>{auction.ticker}</h4>
-                    <h5>{auction.auctionPrice}</h5>
+                    <h5>{auction.marketCap}</h5>
                 </div>
                 <div className={styles.info_sub_header}>
                     <h5>{auction.name}</h5>

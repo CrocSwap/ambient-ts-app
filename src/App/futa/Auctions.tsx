@@ -6,7 +6,7 @@ export interface auctionDataIF {
     name: string;
     ticker: string;
     desc: string;
-    auctionPrice: number;
+    marketCap: number;
     comments: string[];
 }
 
@@ -17,7 +17,7 @@ export default function Auctions() {
             name: 'Doge 2.0',
             ticker: 'Doge2',
             desc: 'Doge 2.0 is the next evolution of the original Dogecoin, promising even more memes and fun, with a focus on community-driven projects and charity donations.',
-            auctionPrice: 123500,
+            marketCap: 123500,
             comments: ['Hi', 'Hi yourself'],
         },
         {
@@ -25,7 +25,7 @@ export default function Auctions() {
             name: 'CatZilla',
             ticker: 'CATZ',
             desc: 'CatZilla is the ultimate meme coin for cat lovers, featuring hilarious cat memes and NFTs, aiming to take down Dogecoin in the meme war',
-            auctionPrice: 7890,
+            marketCap: 7890,
             comments: ['Doge sucks', 'CATZ forever', 'Hello world'],
         },
     ];

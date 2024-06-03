@@ -1,7 +1,6 @@
 .auction_card {
     display: flex;
     flex-direction: row;
-    width: 340px;
     height: 120px;
     outline: 3px solid green;
 }
@@ -11,8 +10,12 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    /* flex-grow: 1; */
-    width: 100px;
+    width: 110px;
+}
+
+.auction_maker {
+    font-size: 10px;
+    color: var(--text3);
 }
 
 .auction_info {
@@ -20,8 +23,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    /* flex-grow: 4; */
-    width: 240px;
+    width: 250px;
     outline: 1px solid orange;
 }
 
