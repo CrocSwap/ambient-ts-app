@@ -1,6 +1,11 @@
+.fullPage{
+    width: 100vw;
+    height: calc(100vh - 56px);
+}
+
 .container{
     width: 100%;
-    height: calc(100vh - 56px);
+    height: 100%;
     margin-top: 56px;
     padding: 0 8px;
     width: 100%;
@@ -9,5 +14,103 @@
     grid-template-rows: 1fr 3fr;
    
     gap: 8px;
+    position: relative;
+
+    max-width: 800px;
 }
 
+
+.content{
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bottom{
+    border-top: 1px solid var(--dark3, #1E1E24);
+background: var(--dark1, #06060C);
+min-height: 300px;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+width: 100%;
+padding: 8px 16px 16px 16px;
+flex-direction: column;
+align-items: flex-start;
+gap: 5px;
+}
+
+.bidActionButtons{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+.bidActionButtons button{
+    display: flex;
+    padding: 2px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+
+    border-radius: 8px;
+    background: var(--accent, #0CCDFF);
+    
+color: var(--dark1, #06060C);
+text-align: center;
+font-family: "Roboto Mono";
+font-size: 24px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+letter-spacing: -0.48px;
+outline: none;
+border: none;
+}
+
+
+.bidActionButtons{
+    position: absolute;
+    bottom: 10px;
+ left: 0;
+ padding: 0 22px;
+
+}
+@media only screen and (max-device-width: 370px)  {
+.bidActionButtons button{
+    font-size: 18px;
+    height: 32px;
+}
+}
+@media only screen and (min-device-width: 768px)  {
+
+    .fullPage{
+        background: radial-gradient(43.75% 50% at 0% 50%, rgba(12, 205, 255, 0.20) 0%, rgba(12, 205, 255, 0.00) 100%);
+        padding: 2rem;
+    }
+.container{
+    margin-left: auto;
+    margin-right: auto;
+    
+    overflow: scroll;
+    padding: 2rem;
+    grid-template-rows: 150px auto;
+
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+
+    
+
+}
+
+
+
+
+}

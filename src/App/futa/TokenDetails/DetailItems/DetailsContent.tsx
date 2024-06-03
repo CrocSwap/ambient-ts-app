@@ -4,8 +4,11 @@ import { FiClock } from 'react-icons/fi';
 import { CiCircleCheck } from 'react-icons/ci';
 import { TfiArrowCircleUp } from 'react-icons/tfi';
 import ProgressBar from '../ProgressBar/ProgressBar';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export default function DetailsContent() {
+    const smallHeight = useMediaQuery('(max-height: 800px)');
+
     const token = 'Bitcoin';
     const subName = 'HarryPotterObamaSonic10Inu';
     const subDetails =
@@ -46,9 +49,30 @@ export default function DetailsContent() {
             </div>
         </div>
     );
+
+    const img =
+        'https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp';
+
+    const compactTokenDisplay = (
+        <div className={styles.compactTokenComponent}>
+            <div className={styles.imgContainer}>
+                <div className={styles.compactImg}>
+                    <img src={img} alt='' />
+                </div>
+                <p className={styles.subName}>
+                    {/* {trimString(subName, 10, 3, '…')} */}
+                    {/* {subName} */}
+                </p>
+            </div>
+        </div>
+    );
     return (
         <div className={styles.container}>
-            <h3 className={styles.token}>{token}</h3>
+            {smallHeight ? (
+                compactTokenDisplay
+            ) : (
+                <h3 className={styles.token}>{token}</h3>
+            )}
             <p className={styles.subName}>{subName}</p>
             <p className={styles.subDetails}>{subDetails}</p>
             <section className={styles.rowsContainer}>

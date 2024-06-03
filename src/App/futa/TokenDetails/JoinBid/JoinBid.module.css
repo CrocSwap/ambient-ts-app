@@ -1,0 +1,53 @@
+.container{
+    width: 100%;
+    font-family: "Roboto Mono";
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+padding: 8px;
+}
+.container header{
+    width: 100%;
+    height: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-text1, #F0F0F8);
+text-align: center;
+font-size: 24px;
+
+letter-spacing: -0.48px;
+}
+
+.joinBidContainer,.fdvContainer, .bidSizeContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.joinBidContainer{
+    padding-top: 16px;
+}
+.label{
+    color: var(--text2, #8B98A5);
+font-size: 12px;
+
+}
+
+.fdvContainer input{
+    outline: none;
+    border: none;
+
+    background: var(--dark2, #12121A);
+    display: flex;
+    width: 100%;
+height: 35px;
+padding: 0px 16px;
+align-items: center;
+gap: 16px;
+align-self: stretch;
+color: var(--text1, #F0F0F8);
+font-size: 18px;
+letter-spacing: -0.36px;
+}

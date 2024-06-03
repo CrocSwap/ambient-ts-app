@@ -5,6 +5,9 @@
     gap: 8px;
     padding: 8px;
     border-radius: 8px;
+   
+   
+
 }
 
 .headerLabel, .bidRowContainer p, .removeAllButton{
@@ -18,6 +21,7 @@
 .headerLabel{
     color: var(--text2, #8B98A5);
 }
+
 .container{
     position: relative;
     background: var(--dark2, #12121A); 
@@ -25,6 +29,7 @@
     width: 100%;
     display: inline-block;
 }
+
 .containerClose{
     border-radius: 8px;
 
@@ -33,10 +38,7 @@
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
 }
-
-
-
-.bidHistoryContainer{
+.distributionContainer{
     position: absolute;
     width: 100%;
     bottom: 99%; 
@@ -49,43 +51,47 @@
      border-top-right-radius: 8px;
 }
 
-.bidHistoryContent{
-    padding: 8px 24px ;
+.distributionContent{
+    padding: 8px ;
     display: flex;
     flex-direction: column;
     gap: 8px;
     height: 150px;
     overflow: scroll;
 }
-.bidRowContainer{
+.distributionItemContainer{
     display: grid;
-    grid-template-columns: 25px 2fr 0.5fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
 
 }
 
 
-.bidRowContainer p{
+
+.distributionItemContainer p{
     color: var(--text1, #F0F0F8);
+    font-family: "Roboto Mono";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.24px;
 }
 
-.bidRowContainer p:first-of-type{
+.distributionItemContainer p:first-of-type{
     text-align: start;
 }
-.bidRowContainer p:last-of-type{
+.distributionItemContainer p:last-of-type{
     text-align: end;
 }
-.removeAllButton{
+.detailText{
     margin-top: 8px;
-    width: 100%;
-display: flex;
-padding: 8px;
-justify-content: center;
-align-items: center;
-gap: 8px;
-border-radius: 16px;
-border: 1px solid var(--accent, #0CCDFF);
-background: var(--dark2, #12121A);
-color: var(--accent, #0CCDFF);
-text-align: center;
+    color: var(--text2, #8B98A5);
+    text-align: center;
+    font-family: "Roboto Mono";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+ 
 }

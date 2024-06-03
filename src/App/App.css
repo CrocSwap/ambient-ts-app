@@ -23,7 +23,7 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-track {
-    background: transparent; /* opacity: 0; should do the thing either */
+    background: transparent; 
 }
 body::-webkit-scrollbar-thumb {
     background: linear-gradient(
