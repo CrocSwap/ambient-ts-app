@@ -1,4 +1,32 @@
 .auction_card {
     display: flex;
     flex-direction: row;
+    width: 340px;
+    height: 120px;
+    outline: 3px solid green;
+}
+
+.auction_image_box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    /* flex-grow: 1; */
+    width: 100px;
+}
+
+.auction_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    /* flex-grow: 4; */
+    width: 240px;
+    outline: 1px solid orange;
+}
+
+.info_header, .info_sub_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }

@@ -2,8 +2,9 @@ import AuctionCard from './AuctionCard';
 import styles from './Auctions.module.css';
 
 export interface auctionDataIF {
+    author: string;
     name: string;
-    symbol: string;
+    ticker: string;
     desc: string;
     auctionPrice: number;
     comments: string[];
@@ -12,15 +13,17 @@ export interface auctionDataIF {
 export default function Auctions() {
     const auctionData: auctionDataIF[] = [
         {
+            author: '0x10D1F681C0A27F35BF29F297613742E44F00C4F379',
             name: 'Doge 2.0',
-            symbol: 'Doge2',
+            ticker: 'Doge2',
             desc: 'Doge 2.0 is the next evolution of the original Dogecoin, promising even more memes and fun, with a focus on community-driven projects and charity donations.',
             auctionPrice: 123500,
             comments: ['Hi', 'Hi yourself'],
         },
         {
+            author: '6CE898EFE14D97B52F98DE3BE887028F7531E28ADB',
             name: 'CatZilla',
-            symbol: 'CATZ',
+            ticker: 'CATZ',
             desc: 'CatZilla is the ultimate meme coin for cat lovers, featuring hilarious cat memes and NFTs, aiming to take down Dogecoin in the meme war',
             auctionPrice: 7890,
             comments: ['Doge sucks', 'CATZ forever', 'Hello world'],

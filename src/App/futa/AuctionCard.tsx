@@ -11,10 +11,21 @@ export default function AuctionCard(props: propsIF) {
     return (
         // this will later be a <Link /> element
         <div className={styles.auction_card}>
-            <div className={styles.auction_image}>
-                <h3>{auction.name}</h3>
+            <div className={styles.auction_image_box}>
+                <div>{'(IMAGE HERE)'}</div>
+                <p>{'by 0xZZZ...ZZZ'}</p>
             </div>
-            <div className={styles.auction_info}></div>
+            <div className={styles.auction_info}>
+                <div className={styles.info_header}>
+                    <h4>{auction.ticker}</h4>
+                    <h5>{auction.auctionPrice}</h5>
+                </div>
+                <div className={styles.info_sub_header}>
+                    <h5>{auction.name}</h5>
+                    <h5>{auction.comments.length}</h5>
+                </div>
+                <p className={styles.description}>{auction.desc}</p>
+            </div>
         </div>
     );
 }
