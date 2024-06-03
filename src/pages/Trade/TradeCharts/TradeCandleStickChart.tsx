@@ -988,8 +988,12 @@ function TradeCandleStickChart(props: propsIF) {
                             chartSettings.candleTime.global.changeTime(86400);
                         }, 1000);
                     } else {
-                        setFetchCountForEnoughData(maxRequestCountForCondensed);
-                        setIsFetchingEnoughData(false);
+                        if (!candleDomains.isResetRequest) {
+                            setFetchCountForEnoughData(
+                                maxRequestCountForCondensed,
+                            );
+                            setIsFetchingEnoughData(false);
+                        }
                     }
                 }
             }
@@ -1024,9 +1028,7 @@ function TradeCandleStickChart(props: propsIF) {
                 }}
             >
                 <div style={{ gridColumn: 1, gridRow: 1 }}>
-                    {(!isOpenChart ||
-                        isFetchingEnoughData ||
-                        isCompletedFetchData) && (
+                    {(!isOpenChart || isCompletedFetchData) && (
                         <Spinner size={100} bg='var(--dark2)' centered />
                     )}
                 </div>
