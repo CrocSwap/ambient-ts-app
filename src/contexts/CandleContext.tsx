@@ -93,6 +93,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
 
+    const [isFetchingCandle, setIsFetchingCandle] = useState(false);
+    const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
+        lastCandleDate: undefined,
+        domainBoundry: undefined,
+        isAbortedRequest: false,
+        isResetRequest: false,
+    });
+
     useEffect(() => {
         // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
         if (
@@ -115,14 +123,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 setNumCandlesFetched(candleData?.candles.length || 0);
         }
     }, [candleData?.candles.length]);
-
-    const [isFetchingCandle, setIsFetchingCandle] = useState(false);
-    const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-        isAbortedRequest: false,
-        isResetRequest: false,
-    });
 
     const [candleScale, setCandleScale] = useState<CandleScaleIF>({
         lastCandleDate: undefined,
@@ -320,6 +320,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             return;
         }
 
+        if (candleDomains.isResetRequest) {
+            if (abortController.abortController) {
+                abortController.abortController.abort();
+            }
+        }
         if (candleDomains?.isAbortedRequest) {
             const controller = new AbortController();
             abortController.abortController = controller;
