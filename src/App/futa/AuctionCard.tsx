@@ -1,3 +1,4 @@
+import { BsChatLeftText } from 'react-icons/bs';
 import { trimString } from '../../ambient-utils/dataLayer';
 import styles from './AuctionCard.module.css';
 import { auctionDataIF } from './Auctions';
@@ -25,7 +26,10 @@ export default function AuctionCard(props: propsIF) {
                 </div>
                 <div className={styles.info_sub_header}>
                     <h5>{auction.name}</h5>
-                    <h5>{auction.comments.length}</h5>
+                    <h5 className={styles.comments}>
+                        <BsChatLeftText />
+                        {auction.comments.length}
+                    </h5>
                 </div>
                 <p className={styles.description}>{auction.desc}</p>
             </div>

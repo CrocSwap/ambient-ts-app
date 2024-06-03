@@ -23,7 +23,7 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    width: 250px;
+    width: 290px;
     outline: 1px solid orange;
 }
 
@@ -31,4 +31,16 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.comments {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.description {
+    font-size: 10px;
+    color: var(--text3);
 }
