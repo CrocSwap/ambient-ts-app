@@ -13,28 +13,46 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { BigNumber } from 'ethers';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+
 export default function TokenDetails() {
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { soloToken: selectedToken } = useContext(TradeDataContext);
+    console.log({ selectedToken }, 'token details');
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >();
-    const [inputValue, setInputValue] = useState('');
-    const [tokenModalOpen, setTokenModalOpen] = useState(false);
+    const [_, setTokenModalOpen] = useState(false);
 
     const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
         useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
 
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [recheckTokenBalances, setRecheckTokenBalances] =
         useState<boolean>(false);
+    const tokenWalletBalanceDisplay = tokenWalletBalance
+        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+        : undefined;
+
+    const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
+        ? parseFloat(tokenWalletBalanceDisplay)
+        : undefined;
+
+    const tokenWalletBalanceTruncated = getFormattedNumber({
+        value: tokenWalletBalanceDisplayNum,
+    });
+
     const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
     const [bottomSheetContent, setBottomSheetContent] =
         useState<null | ReactElement>(null);
@@ -65,6 +83,7 @@ export default function TokenDetails() {
         setTokenWalletBalance('');
         setTokenDexBalance('');
     }, [selectedToken.address, userAddress]);
+
     useEffect(() => {
         if (crocEnv && selectedToken.address && userAddress) {
             crocEnv
@@ -107,12 +126,14 @@ export default function TokenDetails() {
         setBottomSheetContent(null);
     };
     const joinBidProps = {
-        selectedToken: selectedToken,
         setQty: setBidQtyNonDisplay,
-        setTokenModalOpen: setTokenModalOpen,
-        inputValue: inputValue,
-        setInputValue: setInputValue,
+        bidQtyNonDisplay,
+        setTokenModalOpen,
         handleClose: handleCloseBottomSheet,
+        tokenWalletBalance,
+        tokenWalletBalanceTruncated,
+
+        setBidQtyNonDisplay,
     };
 
     const handleJoinButton = () => {

@@ -11,6 +11,7 @@ interface propsIF {
     setInputValue: Dispatch<SetStateAction<string>>;
     setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
     customBorderRadius?: string;
+    customBottomContent?: React.ReactNode;
 }
 
 export function CurrencySelector(props: propsIF) {
@@ -22,6 +23,7 @@ export function CurrencySelector(props: propsIF) {
         setInputValue,
         setTokenModalOpen,
         customBorderRadius,
+        customBottomContent,
     } = props;
 
     const handleOnChange = (input: string) => {
@@ -35,7 +37,6 @@ export function CurrencySelector(props: propsIF) {
                   ).toString(),
         );
     };
-
     return (
         <TokenInputQuantity
             label='Select Token'
@@ -47,6 +48,7 @@ export function CurrencySelector(props: propsIF) {
             setTokenModalOpen={setTokenModalOpen}
             fieldId='exchangeBalance'
             customBorderRadius={customBorderRadius}
+            customBottomContent={customBottomContent}
         />
     );
 }

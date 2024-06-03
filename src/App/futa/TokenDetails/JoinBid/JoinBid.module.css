@@ -19,7 +19,7 @@ font-size: 24px;
 letter-spacing: -0.48px;
 }
 
-.joinBidContainer,.fdvContainer, .bidSizeContainer{
+.joinBidContainer,.fdvContainer, .bidSizeContainer, .currencySelectorContainer{
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -50,4 +50,32 @@ align-self: stretch;
 color: var(--text1, #F0F0F8);
 font-size: 18px;
 letter-spacing: -0.36px;
+}
+
+.userQtyDisplay{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.maxButtonContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px
+}
+.maxButtonContainer p{
+color: var(--text1, #F0F0F8);
+font-size: 12px;
+
+}
+
+.maxButtonContainer button{
+    outline: none;
+    border: none;
+    background: transparent;
+    color: var(--accent1, #0CCDFF);
+    font-size: 12px;
+
 }

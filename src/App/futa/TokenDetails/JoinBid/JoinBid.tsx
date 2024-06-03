@@ -1,31 +1,118 @@
 import { MdClose } from 'react-icons/md';
 import styles from './JoinBid.module.css';
-import { useContext } from 'react';
 import { CurrencySelector } from '../../../../components/Form/CurrencySelector';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
+
+import { useContext, useState } from 'react';
+import { BigNumber } from 'ethers';
+import {
+    DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
+    DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
+    DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
+    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
+    GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
+    NUM_GWEI_IN_ETH,
+    NUM_WEI_IN_GWEI,
+    ZERO_ADDRESS,
+} from '../../../../ambient-utils/constants';
+import useDebounce from '../../../hooks/useDebounce';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { TokenIF } from '../../../../ambient-utils/types';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface Props {
     handleClose: () => void;
-    selectedToken: TokenIF;
+    // handleBalanceClick: () => void;
     setQty: React.Dispatch<React.SetStateAction<string | undefined>>;
     setTokenModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    inputValue: string;
-    setInputValue: React.Dispatch<React.SetStateAction<string>>;
+    // inputValue: string;
+    // setInputValue: React.Dispatch<React.SetStateAction<string>>;
+    tokenWalletBalance: string;
+    tokenWalletBalanceTruncated: string;
+    bidQtyNonDisplay: string | undefined;
+    setBidQtyNonDisplay: React.Dispatch<
+        React.SetStateAction<string | undefined>
+    >;
+    // isTokenWalletBalanceGreaterThanZero: boolean,
+    // tokenWalletBalanceAdjustedNonDisplayString: string
 }
 export default function JoinBid(props: Props) {
+    const [inputValue, setInputValue] = useState('');
+    const { soloToken: selectedToken } = useContext(TradeDataContext);
+
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
     const {
         handleClose,
-        selectedToken,
         setQty,
         setTokenModalOpen,
-        inputValue,
-        setInputValue,
-    } = props;
 
+        tokenWalletBalance,
+        tokenWalletBalanceTruncated,
+        setBidQtyNonDisplay,
+    } = props;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const selectedTokenAddress = selectedToken.address;
+    const selectedTokenDecimals = selectedToken.decimals;
+    const [l1GasFeeLimitInGwei] = useState<number>(
+        isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
+    );
+    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
+    const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
+        Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
+    )
+        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
+        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
+
+    const amountToReduceNativeTokenQtyL2 = BigNumber.from(
+        Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
+    )
+        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
+        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
+        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
+
+    const amountToReduceNativeTokenQty = isActiveNetworkL2
+        ? amountToReduceNativeTokenQtyL2
+        : amountToReduceNativeTokenQtyMainnet;
+    const isTokenWalletBalanceGreaterThanZero =
+        parseFloat(tokenWalletBalance) > 0;
+    const tokenWalletBalanceAdjustedNonDisplayString =
+        isTokenEth && !!tokenWalletBalance
+            ? BigNumber.from(tokenWalletBalance)
+
+                  .sub(amountToReduceNativeTokenQty)
+                  .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
+                  .toString()
+            : tokenWalletBalance;
+
+    const adjustedTokenWalletBalanceDisplay = useDebounce(
+        tokenWalletBalanceAdjustedNonDisplayString
+            ? toDisplayQty(
+                  tokenWalletBalanceAdjustedNonDisplayString,
+                  selectedTokenDecimals,
+              )
+            : undefined,
+        500,
+    );
+    const handleBalanceClick = () => {
+        if (isTokenWalletBalanceGreaterThanZero) {
+            setBidQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
+
+            if (adjustedTokenWalletBalanceDisplay)
+                setInputValue(adjustedTokenWalletBalanceDisplay);
+        }
+    };
+
+    const userQtyDisplay = (
+        <div className={styles.userQtyDisplay}>
+            <p> {'...'}</p>
+            {tokenWalletBalance !== '0' && (
+                <div className={styles.maxButtonContainer}>
+                    <p>{tokenWalletBalanceTruncated}</p>
+                    <button onClick={handleBalanceClick}>Max</button>
+                </div>
+            )}
+        </div>
+    );
     return (
         <div className={styles.container}>
             <header>
@@ -41,14 +128,18 @@ export default function JoinBid(props: Props) {
                 </div>
                 <div className={styles.bidSizeContainer}>
                     <p className={styles.label}>Bid size</p>
-                    <CurrencySelector
-                        selectedToken={selectedToken}
-                        setQty={setQty}
-                        setTokenModalOpen={setTokenModalOpen}
-                        inputValue={inputValue}
-                        setInputValue={setInputValue}
-                        customBorderRadius='0px'
-                    />
+                    <div className={styles.currencySelectorContainer}>
+                        <CurrencySelector
+                            selectedToken={selectedToken}
+                            setQty={setQty}
+                            setTokenModalOpen={setTokenModalOpen}
+                            inputValue={inputValue}
+                            setInputValue={setInputValue}
+                            customBottomContent={userQtyDisplay}
+                            customBorderRadius='0px'
+                        />
+                    </div>
+                    <div className={styles.networkFeeContainer}></div>
                 </div>
             </div>
         </div>

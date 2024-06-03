@@ -60,11 +60,8 @@ gap: 5px;
     
 color: var(--dark1, #06060C);
 text-align: center;
-font-family: "Roboto Mono";
 font-size: 24px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
+cursor: pointer;
 letter-spacing: -0.48px;
 outline: none;
 border: none;

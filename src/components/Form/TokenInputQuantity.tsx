@@ -47,6 +47,7 @@ interface propsIF {
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     onInitPage?: boolean;
     customBorderRadius?: string;
+    customBottomContent?: React.ReactNode;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -65,6 +66,7 @@ function TokenInputQuantity(props: propsIF) {
         reverseTokens,
         setTokenModalOpen = () => null,
         customBorderRadius,
+        customBottomContent,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -252,7 +254,7 @@ function TokenInputQuantity(props: propsIF) {
                     <RiArrowDownSLine size={27} />
                 </TokenSelectButton>
             </TokenQuantityContainer>
-
+            {customBottomContent && customBottomContent}
             {includeWallet && includeWallet}
             {isTokenSelectOpen && modalOrNoModal}
         </FlexContainer>
