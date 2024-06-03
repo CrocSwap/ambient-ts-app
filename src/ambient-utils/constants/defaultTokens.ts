@@ -487,7 +487,7 @@ export const scrollRocketPoolETH: TokenIF = {
     symbol: 'rETH',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://scroll-tech.github.io/token-list/data/rETH/logo.svg',
 };
 
 export const scrollPxETH: TokenIF = {
@@ -502,10 +502,10 @@ export const scrollPxETH: TokenIF = {
 export const scrollPufETH: TokenIF = {
     name: 'PufferVault',
     address: '0xc4d46E8402F476F269c379677C99F18E22Ea030e',
-    symbol: 'PufETH',
+    symbol: 'pufETH',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI: 'https://scroll-tech.github.io/token-list/data/PufETH/logo.svg',
 };
 
 export const scrollWrappedETH: TokenIF = {
