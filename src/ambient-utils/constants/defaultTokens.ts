@@ -4,7 +4,6 @@ export const mainnetETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 1,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     name: 'Ether',
@@ -15,7 +14,6 @@ export const mainnetUSDC: TokenIF = {
     address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
     chainId: 1,
     decimals: 6,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
     name: 'USDCoin',
@@ -26,7 +24,6 @@ export const blastETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     name: 'Ether',
@@ -37,7 +34,6 @@ export const blastUSDB: TokenIF = {
     address: '0x4300000000000000000000000000000000000003',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
     name: 'USDB',
@@ -48,7 +44,6 @@ export const blastUSDPLUS: TokenIF = {
     address: '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI: '',
     name: 'USD+',
     symbol: 'USD+',
@@ -58,7 +53,6 @@ export const blastORBIT: TokenIF = {
     address: '0x42E12D42b3d6C4A74a88A61063856756Ea2DB357',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Orbit Protocol',
     symbol: 'ORBIT',
     logoURI: 'https://blastscan.io/token/images/orbit_32.png',
@@ -68,7 +62,6 @@ export const blastMIA: TokenIF = {
     address: '0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Mia',
     symbol: 'MIA',
     logoURI: 'https://miablastsoff.com/images/logo.png',
@@ -78,7 +71,6 @@ export const blastBIG: TokenIF = {
     address: '0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'BIG',
     symbol: 'BIG',
     logoURI: '',
@@ -88,7 +80,6 @@ export const blastJUICE: TokenIF = {
     address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Juice',
     symbol: 'JUICE',
     logoURI: 'https://miablastsoff.com/images/logo.png',
@@ -98,7 +89,6 @@ export const blastMIM: TokenIF = {
     address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Magic Internet Money',
     symbol: 'MIM',
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/162.png',
@@ -108,7 +98,6 @@ export const blastBAG: TokenIF = {
     address: '0xb9dfCd4CF589bB8090569cb52FaC1b88Dbe4981F',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Bag',
     symbol: 'BAG',
     logoURI: 'https://assets.coingecko.com/coins/images/35417/thumb/bag-cg.png',
@@ -118,7 +107,6 @@ export const blastBEPE: TokenIF = {
     address: '0xB582Dc28968c725D2868130752aFa0c13EbF9b1a',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Blast Pepe',
     symbol: 'BEPE',
     logoURI:
@@ -129,7 +117,6 @@ export const blastALIEN: TokenIF = {
     address: '0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Alien',
     symbol: 'ALIEN',
     logoURI: '',
@@ -139,7 +126,6 @@ export const blastBAJA: TokenIF = {
     address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Baja',
     symbol: 'BAJA',
     logoURI: '',
@@ -149,7 +135,6 @@ export const blastESE: TokenIF = {
     address: '0x491e6DE43b55c8EAE702EDC263E32339da42f58c',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'eesee',
     symbol: 'ESE',
     logoURI: '',
@@ -159,7 +144,6 @@ export const blastYES: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'Yes',
     symbol: 'YES',
     logoURI: '',
@@ -169,7 +153,6 @@ export const blastPACM: TokenIF = {
     address: '0x0B4d0ee29857c3961b380d4ec138EA5814E346b9',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'P@cman Blastoff',
     symbol: '$PACM',
     logoURI: 'https://www.pacman.meme/images/tokens/pacman.svg',
@@ -179,7 +162,6 @@ export const blastWETH: TokenIF = {
     address: '0x4300000000000000000000000000000000000004',
     chainId: 81457,
     decimals: 18,
-    fromList: '',
     name: 'Wrapped Ether',
     symbol: 'wETH',
     logoURI: '',
@@ -207,7 +189,6 @@ export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
     decimals: 18,
-    fromList: '',
     name: 'PUMP',
     symbol: 'PUMP',
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png',
@@ -217,7 +198,6 @@ export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     name: 'OpenLeverage',
     symbol: 'OLE',
     logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
@@ -227,7 +207,6 @@ export const blastSepoliaETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 168587773,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
     name: 'Ether',
@@ -238,7 +217,6 @@ export const blastSepoliaUSDB: TokenIF = {
     address: '0x4200000000000000000000000000000000000022',
     chainId: 168587773,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
     name: 'USDB',
@@ -249,7 +227,6 @@ export const mainnetWBTC: TokenIF = {
     address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
     chainId: 1,
     decimals: 8,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
     name: 'Wrapped BTC',
@@ -260,7 +237,6 @@ export const mainnetPEPE: TokenIF = {
     address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
     chainId: 1,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725',
     name: 'Pepe',
@@ -271,7 +247,6 @@ export const mainnetSWETH: TokenIF = {
     address: '0xf951e335afb289353dc249e82926178eac7ded78',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
     name: 'Swell Staked Ether',
     symbol: 'swETH',
@@ -281,7 +256,6 @@ export const mainnetLIDO: TokenIF = {
     address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
     name: 'Lido DAO Token',
     symbol: 'LDO',
@@ -291,7 +265,6 @@ export const mainnetLUSD: TokenIF = {
     address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: 'https://etherscan.io/token/images/liquitylusd_32.png',
     name: 'Liquity USD',
     symbol: 'LUSD',
@@ -301,7 +274,6 @@ export const mainnetMKR: TokenIF = {
     address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
     name: 'Maker',
     symbol: 'MKR',
@@ -311,7 +283,6 @@ export const mainnetSYN: TokenIF = {
     address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
     chainId: 1,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
     name: 'Synapse',
@@ -322,7 +293,6 @@ export const mainnetDAI: TokenIF = {
     address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     chainId: 1,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
     name: 'Dai Stablecoin',
@@ -333,7 +303,6 @@ export const mainnetRPL: TokenIF = {
     address: '0xd33526068d116ce69f19a9ee46f0bd304f21a51f',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
     name: 'Rocket Pool',
     symbol: 'RPL',
@@ -343,7 +312,6 @@ export const mainnetWstETH: TokenIF = {
     address: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: '',
     name: 'Wrapped liquid staked Ether 2.0',
     symbol: 'wstETH',
@@ -353,7 +321,6 @@ export const mainnetMATIC: TokenIF = {
     address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
     chainId: 1,
     decimals: 18,
-    fromList: '',
     logoURI: '',
     name: 'Matic Token',
     symbol: 'MATIC',
@@ -363,7 +330,6 @@ export const mainnetFRAX: TokenIF = {
     address: '0x853d955acef822db058eb8505911ed77f175b99e',
     chainId: 1,
     decimals: 18,
-    fromList: '/ambient-token-list.json',
     logoURI: 'https://etherscan.io/token/images/fraxfinanceeth2_32.png',
     name: 'Frax',
     symbol: 'FRAX',
@@ -373,7 +339,6 @@ export const mainnetUSDT: TokenIF = {
     address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
     chainId: 1,
     decimals: 6,
-    fromList: 'https://tokens.coingecko.com/uniswap/all.json',
     logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
     name: 'Tether',
     symbol: 'USDT',
@@ -387,7 +352,6 @@ export const sepoliaETH: TokenIF = {
     chainId: 11155111,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    fromList: '/ambient-token-list.json',
 };
 
 export const sepoliaUSDC: TokenIF = {
@@ -398,7 +362,6 @@ export const sepoliaUSDC: TokenIF = {
     chainId: 11155111,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-    fromList: '/ambient-token-list.json',
 };
 
 export const sepoliaWBTC: TokenIF = {
@@ -409,7 +372,6 @@ export const sepoliaWBTC: TokenIF = {
     chainId: 11155111,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    fromList: '/ambient-token-list.json',
 };
 
 export const scrollSepoliaWBTC: TokenIF = {
@@ -420,7 +382,6 @@ export const scrollSepoliaWBTC: TokenIF = {
     chainId: 534351,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    fromList: '/ambient-token-list.json',
 };
 
 export const scrollETH: TokenIF = {
