@@ -203,7 +203,17 @@ export const useTokens = (
     // fn to verify a token is on a known list or user-acknowledged
     const verifyToken = useCallback(
         (addr: string): boolean => {
-            return tokenMap.has(addr.toLowerCase());
+            for (const token of defaultTokens) {
+                if (token.address.toLowerCase() === addr.toLowerCase()) {
+                    return true;
+                }
+            }
+            for (const token of tokenMap.values()) {
+                if (token.address.toLowerCase() === addr.toLowerCase()) {
+                    return true;
+                }
+            }
+            return false;
         },
         [chainId, tokenMap],
     );

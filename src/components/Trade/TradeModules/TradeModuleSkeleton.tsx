@@ -18,6 +18,7 @@ import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface PropsIF {
     chainId: string;
@@ -68,8 +69,12 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verify(tokenA.address);
-    const needConfirmTokenB = !tokens.verify(tokenB.address);
+    const needConfirmTokenA = useMemo(() => {
+        return !tokens.verify(tokenA.address);
+    }, [tokenA.address, tokens]);
+    const needConfirmTokenB = useMemo(() => {
+        return !tokens.verify(tokenB.address);
+    }, [tokenB.address, tokens]);
 
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
@@ -143,6 +148,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     padding='0 32px'
                 >
                     {transactionDetails}
+                    <SmolRefuelLink />
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
