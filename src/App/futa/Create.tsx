@@ -80,6 +80,7 @@ export default function Create() {
                             charLimit={800}
                             updateRef={() => null}
                             rows={6}
+                            box
                         />
                     </div>
                     <div className={styles.form_right}>

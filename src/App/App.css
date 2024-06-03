@@ -61,12 +61,6 @@ button:hover > svg {
     cursor: pointer;
 }
 
-/* button,
-svg,
-a {
-    transition: var(--transition);
-} */
-
 a {
     color: unset;
     text-decoration: none;

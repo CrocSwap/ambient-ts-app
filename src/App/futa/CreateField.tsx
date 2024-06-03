@@ -7,16 +7,21 @@ export interface CreateFieldPropsIF {
     charLimit: number;
     updateRef: (val: string) => void;
     rows: number;
+    box?: boolean;
 }
 
 export default function CreateField(props: CreateFieldPropsIF) {
-    const { inputId, label, charLimit, updateRef, rows } = props;
+    const { inputId, label, charLimit, updateRef, rows, box } = props;
 
     const [length, setLength] = useState<number>(0);
 
     function handleChange(input: string): void {
         updateRef(input);
         setLength(input.length);
+    }
+
+    function handleClick(): void {
+        console.log('handled click!');
     }
 
     return (
@@ -34,11 +39,15 @@ export default function CreateField(props: CreateFieldPropsIF) {
             ) : (
                 <textarea
                     id={inputId}
-                    className={styles.text_input}
+                    className={
+                        styles[box ? 'text_input_disabled' : 'text_input']
+                    }
                     onChange={(e) => handleChange(e.target.value)}
+                    onClick={() => box && handleClick()}
                     maxLength={charLimit}
                     rows={rows}
                     spellCheck={false}
+                    disabled={!!box}
                 />
             )}
         </div>
