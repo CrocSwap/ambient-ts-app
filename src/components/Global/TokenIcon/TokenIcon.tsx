@@ -82,7 +82,7 @@ function TokenIcon(props: propsIF) {
     // this fixes a bug when the app sometimes gets an empty string for URI src
     // sometimes this happens post-load for still undetermined reasons
     useEffect(() => {
-        setFetchError(false);
+        if (src) setFetchError(false);
     }, [src]);
 
     // fn to get a character to use in the `<NoTokenIcon />` element
