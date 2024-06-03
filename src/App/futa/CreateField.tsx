@@ -4,7 +4,7 @@ import styles from './CreateField.module.css';
 export interface CreateFieldPropsIF {
     inputId: string;
     label: string;
-    charLimit: number;
+    charLimit?: number;
     updateRef: (val: string) => void;
     rows: number;
     box?: boolean;
@@ -28,7 +28,9 @@ export default function CreateField(props: CreateFieldPropsIF) {
         <div className={styles.form_item}>
             <div className={styles.form_item_top}>
                 <label>{label}</label>
-                <div className={styles.counter}>{charLimit - length}</div>
+                <div className={styles.counter}>
+                    {charLimit ? charLimit - length : ''}
+                </div>
             </div>
             {rows === 1 ? (
                 <input

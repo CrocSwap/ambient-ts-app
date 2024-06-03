@@ -42,21 +42,18 @@ export default function Create() {
         {
             inputId: 'twitter_url_input',
             label: 'Twitter Link',
-            charLimit: 0,
             updateRef: (s: string) => takeInput('twitter', s),
             rows: 1,
         },
         {
             inputId: 'telegram_url_input',
             label: 'Telegram Link',
-            charLimit: 0,
             updateRef: (s: string) => takeInput('telegram', s),
             rows: 1,
         },
         {
             inputId: 'website_url_input',
             label: 'Website Link',
-            charLimit: 0,
             updateRef: (s: string) => takeInput('website', s),
             rows: 1,
         },
@@ -77,7 +74,6 @@ export default function Create() {
                         <CreateField
                             inputId='token_image_input'
                             label='Token Image'
-                            charLimit={800}
                             updateRef={() => null}
                             rows={6}
                             box
