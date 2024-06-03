@@ -77,7 +77,6 @@ export const useTokens = (
             .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
-            .concat(defaultTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
             .forEach((t) => {
                 // list URI of this iteration of the token
