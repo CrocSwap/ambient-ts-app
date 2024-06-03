@@ -172,7 +172,7 @@ export const blastPACM: TokenIF = {
     fromList: '/ambient-token-list.json',
     name: 'P@cman Blastoff',
     symbol: '$PACM',
-    logoURI: '',
+    logoURI: 'https://www.pacman.meme/images/tokens/pacman.svg',
 };
 
 export const blastWETH: TokenIF = {
@@ -210,7 +210,7 @@ export const blastPUMP: TokenIF = {
     fromList: '',
     name: 'PUMP',
     symbol: 'PUMP',
-    logoURI: '',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png',
 };
 
 export const blastSSS: TokenIF = {
