@@ -429,6 +429,22 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/wstETH/logo.svg"
         },
         {
+            "name": "PufferVault",
+            "address": "0xc4d46E8402F476F269c379677C99F18E22Ea030e",
+            "symbol": "pufETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/PufETH/logo.svg"
+        },
+        {
+            "name": "Rocket Pool ETH",
+            "address": "0x53878B874283351D26d206FA512aEcE1Bef6C0dD",
+            "symbol": "rETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/rETH/logo.svg"
+        },
+        {
             "name": "Dai Stablecoin",
             "address": "0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97",
             "chainId": 534352,
