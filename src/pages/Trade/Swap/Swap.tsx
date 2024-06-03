@@ -688,7 +688,8 @@ function Swap(props: propsIF) {
                 <div>{getPriceImpactString(priceImpactNumMemo)}%</div>
             </WarningContainer>
         ) : undefined;
-    const showWarning =
+
+    const showPriceImpactWarning =
         (priceImpactNumMemo || 0) > 10 &&
         isTokenAWalletBalanceSufficient &&
         !isLiquidityInsufficient &&
@@ -709,16 +710,28 @@ function Swap(props: propsIF) {
               100
             : 0;
 
+    const showUsdDiffWarning =
+        (percentDiffUsdValue || 0) < -10 &&
+        isTokenAWalletBalanceSufficient &&
+        !isLiquidityInsufficient &&
+        !(isButtonDisabled && swapButtonErrorMessage === 'Enter an Amount');
+
+    const showWarning = showPriceImpactWarning || showUsdDiffWarning;
+
     const buttonTitle = areBothAckd
         ? bypassConfirmSwap.isEnabled
             ? swapAllowed
                 ? showWarning
-                    ? 'I understand the price impact of this swap. Submit anyway!'
+                    ? showPriceImpactWarning
+                        ? 'I understand the price impact of this swap. Submit anyway!'
+                        : 'I understand the loss of value. Submit anyway!'
                     : 'Submit Swap'
                 : swapButtonErrorMessage
             : swapAllowed
             ? showWarning
-                ? 'I understand the price impact of this swap. Confirm anyway!'
+                ? showPriceImpactWarning
+                    ? 'I understand the price impact of this swap. Confirm anyway!'
+                    : 'I understand the loss of value. Confirm anyway!'
                 : 'Confirm'
             : swapButtonErrorMessage
         : 'Acknowledge';
