@@ -50,6 +50,7 @@ import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import SmolRefuelLink from '../../../components/Global/SmolRefuelLink/SmolRefuelLink';
 
 function Reposition() {
     // current URL parameter string
@@ -858,6 +859,9 @@ function Reposition() {
                         valueLossExceedsThreshold={valueLossExceedsThreshold}
                         isCurrentPositionEmpty={isCurrentPositionEmpty}
                     />
+                    <span style={{ marginRight: '25px', marginBottom: '5px' }}>
+                        <SmolRefuelLink />
+                    </span>
                     <div className={styles.button_container}>
                         {bypassConfirmRepo.isEnabled && showConfirmation ? (
                             <SubmitTransaction
