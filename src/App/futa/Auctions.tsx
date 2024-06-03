@@ -28,8 +28,8 @@ export default function Auctions() {
     ];
 
     return (
-        <section className={styles.auctions_main}>
-            Auctions
+        <section className={styles.auctions_body}>
+            <h2>Auctions</h2>
             <header className={styles.auction_header}>
                 <div>Search Dropdown</div>
                 <button>Desc</button>
@@ -37,7 +37,7 @@ export default function Auctions() {
                 <input type='text' placeholder='Search...' />
                 <button>Create Token</button>
             </header>
-            <div>
+            <div className={styles.auctions_main}>
                 {auctionData.map((auc: auctionDataIF) => (
                     <AuctionCard key={JSON.stringify(auc)} auction={auc} />
                 ))}

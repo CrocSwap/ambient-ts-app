@@ -1,4 +1,12 @@
-.auctions_main > header {
+.auctions_body > header {
     display: flex;
     flex-direction: row;
+}
+
+.auctions_main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
 }
