@@ -30,6 +30,7 @@ import {
 } from '../../ambient-utils/constants/';
 import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -531,6 +532,7 @@ export default function LimitActionModal(props: propsIF) {
                 />
                 <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />
+                    {!showSettings && <SmolRefuelLink />}
                     {showConfirmation ? (
                         <SubmitTransaction
                             type={type === 'Remove' ? 'Remove' : 'Claim'}
