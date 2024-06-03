@@ -18,6 +18,7 @@ import useDebounce from '../../../hooks/useDebounce';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import TooltipComponent from '../../../../components/Global/TooltipComponent/TooltipComponent';
 
 interface Props {
     handleClose: () => void;
@@ -139,7 +140,27 @@ export default function JoinBid(props: Props) {
                             customBorderRadius='0px'
                         />
                     </div>
-                    <div className={styles.networkFeeContainer}></div>
+
+                    <div className={styles.networkFeeContainer}>
+                        <div className={styles.networkFeeRow}>
+                            <div className={styles.alignCenter}>
+                                <p>Network Fee</p>
+                                <TooltipComponent
+                                    title={
+                                        'Estimated network fee (i.e. gas cost) to join bid'
+                                    }
+                                />
+                            </div>
+
+                            <p>value</p>
+                        </div>
+                    </div>
+                    <button
+                        className={styles.actionButton}
+                        onClick={handleClose}
+                    >
+                        Join Bid
+                    </button>
                 </div>
             </div>
         </div>

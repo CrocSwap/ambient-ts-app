@@ -13,9 +13,9 @@ export default function BottomSheet(props: BottomSheetProps) {
             {isOpen && (
                 <motion.div
                     className={styles.bottom}
-                    initial={{ bottom: '-300px' }}
-                    animate={{ bottom: '0px' }}
-                    exit={{ bottom: '-300px' }}
+                    initial={{ bottom: '-300px', height: 0 }}
+                    animate={{ bottom: '0px', height: 'auto' }}
+                    exit={{ bottom: '-300px', height: 0 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
                     {children}
