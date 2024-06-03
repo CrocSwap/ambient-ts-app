@@ -99,6 +99,20 @@ export const useTokens = (
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
+    const defaultTokenMap = useMemo<Map<string, TokenIF>>(() => {
+        const retMap = new Map<string, TokenIF>();
+        defaultTokens
+            .filter((t) => chainNumToString(t.chainId) === chainId)
+            .forEach((t) => {
+                const deepToken: TokenIF = deepCopyToken(
+                    t,
+                    tokenListURIs.ambient,
+                );
+                retMap.set(deepToken.address.toLowerCase(), deepToken);
+            });
+        return retMap;
+    }, [defaultTokens, chainId]);
+
     const tokenUniv: TokenIF[] = useMemo(() => {
         if (tokenMap.size) {
             const newArray = [...tokenMap.values()];
@@ -246,7 +260,9 @@ export const useTokens = (
     );
 
     const getTokenByAddress = useCallback(
-        (addr: string): TokenIF | undefined => tokenMap.get(addr.toLowerCase()),
+        (addr: string): TokenIF | undefined =>
+            defaultTokenMap.get(addr.toLowerCase()) ||
+            tokenMap.get(addr.toLowerCase()),
         [chainId, tokenUniv],
     );
 
