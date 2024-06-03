@@ -45,6 +45,7 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -429,6 +430,7 @@ export default function Deposit(props: propsIF) {
                     </FlexContainer>
                 }
             </FlexContainer>
+            <SmolRefuelLink />
             <Button
                 idForDOM='deposit_tokens_button'
                 title={buttonMessage}
