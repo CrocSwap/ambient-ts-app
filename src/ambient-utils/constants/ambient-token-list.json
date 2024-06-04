@@ -123,6 +123,14 @@
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
         },
         {
+            "chainId": 81457,
+            "address": "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+            "name": "Wrapped eETH",
+            "symbol": "weETH",
+            "decimals": 18,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/weETH/logo.svg"
+        },
+        {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
             "chainId": 81457,
             "decimals": 18,
