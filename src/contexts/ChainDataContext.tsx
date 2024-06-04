@@ -38,6 +38,7 @@ import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork'
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import { Network, Alchemy } from 'alchemy-sdk';
+import { fetchNFT } from '../ambient-utils/api/fetchNft';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -246,7 +247,11 @@ export const ChainDataContextProvider = (props: {
                     alchemyClient
                 ) {
                     try {
-                        const NFTResponse = await cachedFetchNFT(
+                        const fetchFunction = isfetchNftTriggered
+                            ? fetchNFT
+                            : cachedFetchNFT;
+
+                        const NFTResponse = await fetchFunction(
                             nftTestWalletAddress !== ''
                                 ? nftTestWalletAddress
                                 : userAddress,

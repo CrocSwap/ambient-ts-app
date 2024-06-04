@@ -1,7 +1,14 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any  */
 
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 
 import {
@@ -59,6 +66,9 @@ const useChatSocket = (
     currentUserID?: string,
     freezePanel?: () => void,
     activatePanel?: () => void,
+    setMessageForNotificationBubble?: Dispatch<
+        SetStateAction<Message | undefined>
+    >,
 ) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
@@ -677,6 +687,9 @@ const useChatSocket = (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const notiListener = (data: any) => {
+        if (data && setMessageForNotificationBubble) {
+            setMessageForNotificationBubble(data);
+        }
         if (notifications) {
             const checkVal = notifications.get(data.roomInfo);
             if (checkVal != undefined) {

@@ -15,6 +15,7 @@ interface propsIF {
     mouseLeaveListener: any;
     mouseEnterListener: any;
     isCurrentUser?: boolean;
+    showExtendedSummary?: boolean;
 }
 
 export default function UserSummary(props: propsIF) {
@@ -67,14 +68,18 @@ export default function UserSummary(props: propsIF) {
                                 {props.user.totalMessages}
                             </div>
                         </div>
-                        <div className={styles.stat_node}>
-                            <div className={styles.stat_label}>
-                                Deleted Messages
-                            </div>
-                            <div className={styles.stat_value}>
-                                {props.user.deletedMessages}
-                            </div>
-                        </div>
+                        {props.showExtendedSummary && (
+                            <>
+                                <div className={styles.stat_node}>
+                                    <div className={styles.stat_label}>
+                                        Deleted Messages
+                                    </div>
+                                    <div className={styles.stat_value}>
+                                        {props.user.deletedMessages}
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </>
             )}

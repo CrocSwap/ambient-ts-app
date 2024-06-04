@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@material-ui/core';
 import Picker, { IEmojiData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
@@ -7,7 +8,6 @@ import {
     RiArrowDownDoubleLine,
     RiArrowDownSLine,
     RiArrowUpDoubleLine,
-    RiArrowUpSLine,
 } from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
 import { PoolIF } from '../../ambient-utils/types';
@@ -21,6 +21,7 @@ import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel
 import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
 import { ChatVerificationTypes } from './ChatEnums';
 import { ChatGoToChatParamsIF } from './ChatIFs';
+import ChatNotificationBubble from './ChatNotification/ChatNotificationBubble';
 import styles from './ChatPanel.module.css';
 import ChatToaster from './ChatToaster/ChatToaster';
 import { setLS } from './ChatUtils';
@@ -34,8 +35,6 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
-import { useMediaQuery } from '@material-ui/core';
-import { domDebug } from './DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -189,6 +188,9 @@ function ChatPanel(props: propsIF) {
 
     const isMobile = useMediaQuery('(max-width: 800px)');
 
+    const [messageForNotificationBubble, setMessageForNotificationBubble] =
+        useState<Message | undefined>(undefined);
+
     const {
         messages,
         lastMessage,
@@ -221,6 +223,7 @@ function ChatPanel(props: propsIF) {
         currentUser,
         freezePanel,
         activatePanel,
+        setMessageForNotificationBubble,
     );
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -768,7 +771,8 @@ function ChatPanel(props: propsIF) {
             activateToastr('Please connect your wallet first.', 'warning');
 
         const message =
-            'Your wallet will be verified for chat. Please sign it for verification.';
+            'Welcome to Ambient Finance \n\nClick to sign in and accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
+            userAddress;
         let verifyDate = new Date();
 
         if (verificationType === ChatVerificationTypes.VerifyWallet) {
@@ -787,7 +791,14 @@ function ChatPanel(props: propsIF) {
             window.ethereum
                 .request({
                     method: 'personal_sign',
-                    params: [message, userAddress, ''],
+                    params: [
+                        message.substring(
+                            0,
+                            message.indexOf('Wallet address:'),
+                        ),
+                        userAddress,
+                        '',
+                    ],
                 })
                 // eslint-disable-next-line
                 .then((signedMessage: any) => {
@@ -1025,6 +1036,9 @@ function ChatPanel(props: propsIF) {
                 }}
                 verticalPosition={userSummaryVerticalPosition}
                 isCurrentUser={currentUser == selectedUserSummary?._id}
+                showExtendedSummary={
+                    isModerator || currentUser == selectedUserSummary?._id
+                }
             />
         </div>
     );
@@ -1312,6 +1326,12 @@ function ChatPanel(props: propsIF) {
                     setGoToChartParams={setGoToChartParams}
                     setUserCurrentPool={setUserCurrentPool}
                     rndMentSkipper={mentSkipperComponent}
+                    messageForNotificationBubble={messageForNotificationBubble}
+                    setMessageForNotificationBubble={
+                        setMessageForNotificationBubble
+                    }
+                    setSelectedMessageForReply={setSelectedMessageForReply}
+                    setIsReplyButtonPressed={setIsReplyButtonPressed}
                 />
             </>
         );
@@ -1324,6 +1344,16 @@ function ChatPanel(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
+            <ChatNotificationBubble
+                message={messageForNotificationBubble}
+                setRoom={setRoom}
+                setSelectedMessageForReply={setSelectedMessageForReply}
+                setIsReplyButtonPressed={setIsReplyButtonPressed}
+                setMessageForNotificationBubble={
+                    setMessageForNotificationBubble
+                }
+            />
+
             <div
                 className={styles.modal_body}
                 style={{ height: contentHeight, width: '100%' }}
