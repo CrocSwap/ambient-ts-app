@@ -190,11 +190,11 @@
     --dark2: #12121a;
     --dark3: #1e1e24;
     --dark4: #0e0e14;
-    --accent1: #f2883a;
-    --accent2: #ffae4d;
+    --accent1: #0CCDFF;
+    --accent2: #0CCDFF;
     --accent3: #5ffff2;
     --accent4: #71b5fc;
-    --accent5: #fee0b5;
+    --accent5: #b5e2fe;
 
     --positive: #15be6f;
     --negative: #f6385b;
@@ -230,21 +230,7 @@
         var(--accent5) 49.48%,
         var(--accent1) 100%
     );
-    --primary-gradient: linear-gradient(
-        to right top,
-        #f2883a,
-        #ffae4d,
-        #ffca7d,
-        #ffdca1,
-        #fee0b5,
-        #fee0b5,
-        #fee0b5,
-        #fee0b5,
-        #ffdca1,
-        #ffca7d,
-        #ffae4d,
-        #f2883a
-    );
+    --primary-gradient: linear-gradient(90deg, hsla(192, 100%, 52%, 1) 0%, hsla(211, 76%, 64%, 1) 100%);
     --chart-gradient: linear-gradient(to right, #87421e, #b26533);
     --dark-gradient: linear-gradient(
         90deg,
