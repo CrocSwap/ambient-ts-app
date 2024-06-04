@@ -80,7 +80,7 @@ export const blastJUICE: TokenIF = {
     address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
     chainId: 81457,
     decimals: 18,
-    name: 'Juice',
+    name: 'Juice Finance',
     symbol: 'JUICE',
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
@@ -144,7 +144,7 @@ export const blastYES: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
     decimals: 18,
-    name: 'Yes',
+    name: 'YES Money',
     symbol: 'YES',
     logoURI: '',
 };
@@ -189,7 +189,7 @@ export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
     decimals: 18,
-    name: 'PUMP',
+    name: 'Pump',
     symbol: 'PUMP',
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png',
 };

@@ -160,7 +160,7 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Yes",
+            "name": "YES Money",
             "symbol": "YES",
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png"
         },
@@ -169,7 +169,7 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "PUMP",
+            "name": "Pump",
             "symbol": "PUMP",
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png"
         },
@@ -181,6 +181,14 @@
             "name": "P@cman Blastoff",
             "symbol": "$PACM",
             "logoURI": "https://www.pacman.meme/images/tokens/pacman.svg"
+        },
+        {
+            "chainId": 81457,
+            "address": "0x5ffd9ebd27f2fcab044c0f0a26a45cb62fa29c06",
+            "name": "PacMoon",
+            "symbol": "PAC",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/36459/thumb/pacmoon.png?1711501114"
         },
         {
             "address": "0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD",
@@ -223,7 +231,7 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Juice",
+            "name": "Juice Finance",
             "symbol": "JUICE",
             "logoURI": ""
         },
