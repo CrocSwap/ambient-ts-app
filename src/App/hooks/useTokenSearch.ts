@@ -161,7 +161,8 @@ export const useTokenSearch = (
                 chainId,
                 withWalletTokens,
             );
-            // combine the Ambient and Uniswap token lists
+            // combine the token lists
+            // console.log({ tknsNoWrappedNative });
             return tknsNoWrappedNative;
         }
 

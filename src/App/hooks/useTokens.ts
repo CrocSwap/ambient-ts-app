@@ -74,7 +74,7 @@ export const useTokens = (
         const retMap = new Map<string, TokenIF>();
         tokenLists
             // Reverse add, so higher priority lists overwrite lower priority
-            .reverse()
+            // .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
