@@ -19,7 +19,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDC",
             "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "symbol": "USDC",
             "decimals": 6,
@@ -277,7 +277,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDC",
             "address": "0xc944b73fba33a773a4a07340333a3184a70af1ae",
             "symbol": "USDC",
             "decimals": 6,
@@ -389,7 +389,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDC",
             "address": "0x60bBA138A74C5e7326885De5090700626950d509",
             "symbol": "USDC",
             "decimals": 6,
