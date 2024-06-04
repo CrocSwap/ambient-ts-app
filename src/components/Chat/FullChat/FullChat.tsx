@@ -35,6 +35,8 @@ import { ChatGoToChatParamsIF } from '../ChatIFs';
 import ChatToaster from '../ChatToaster/ChatToaster';
 import Room from '../MessagePanel/Room/Room';
 import styles from './FullChat.module.css';
+import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
+import { Message } from '../Model/MessageModel';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -94,6 +96,12 @@ interface FullChatPropsIF {
     >;
     setUserCurrentPool: any;
     rndMentSkipper?: () => JSX.Element;
+    messageForNotificationBubble?: Message;
+    setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    setMessageForNotificationBubble: Dispatch<
+        SetStateAction<Message | undefined>
+    >;
 }
 
 interface ChannelDisplayPropsIF {
@@ -858,6 +866,16 @@ function FullChat(props: FullChatPropsIF) {
 
                 {chatContainer}
             </section>
+
+            <ChatNotificationBubble
+                message={props.messageForNotificationBubble}
+                setRoom={props.setRoom}
+                setSelectedMessageForReply={props.setSelectedMessageForReply}
+                setIsReplyButtonPressed={props.setIsReplyButtonPressed}
+                setMessageForNotificationBubble={
+                    props.setMessageForNotificationBubble
+                }
+            />
 
             <ChatToaster
                 isActive={props.toastrActive}

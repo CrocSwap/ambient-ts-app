@@ -1326,6 +1326,12 @@ function ChatPanel(props: propsIF) {
                     setGoToChartParams={setGoToChartParams}
                     setUserCurrentPool={setUserCurrentPool}
                     rndMentSkipper={mentSkipperComponent}
+                    messageForNotificationBubble={messageForNotificationBubble}
+                    setMessageForNotificationBubble={
+                        setMessageForNotificationBubble
+                    }
+                    setSelectedMessageForReply={setSelectedMessageForReply}
+                    setIsReplyButtonPressed={setIsReplyButtonPressed}
                 />
             </>
         );

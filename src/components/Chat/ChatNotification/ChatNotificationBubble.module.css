@@ -103,3 +103,28 @@
     box-shadow: 0px 0px 10px var(--accent1);
     border-color: color-mix(in srgb, var(--accent1) 66%, white);
 }
+
+
+@media only screen and (max-width: 600px){
+    .bubble_wrapper{
+        width: 96%;
+        left:  2%;
+    }
+
+    .bubble_wrapper.active{
+        padding: 2rem 1rem;
+    }
+
+    .buttons_section{
+
+        width: 96%;
+        margin-top: .8rem;
+        
+    }
+
+    .btn_wrapper{
+        padding: .5rem 1rem;
+        margin-left: .5rem;
+    }
+
+}
