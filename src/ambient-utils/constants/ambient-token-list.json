@@ -285,7 +285,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "Bridged USD Coin",
             "address": "0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B",
             "symbol": "USDC",
             "decimals": 6,
@@ -301,7 +301,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "Bridged USD Coin",
             "address": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
             "symbol": "USDC",
             "decimals": 6,
@@ -405,7 +405,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/USDT/logo.svg"
         },
         {
-            "name": "Wrapped BTC",
+            "name": "Bridged Wrapped Bitcoin",
             "chainId": 534352,
             "address": "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
             "symbol": "WBTC",
@@ -413,7 +413,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Wrapped BTC",
+            "name": "Bridged Wrapped Bitcoin",
             "chainId": 534351,
             "address": "0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594",
             "symbol": "WBTC",

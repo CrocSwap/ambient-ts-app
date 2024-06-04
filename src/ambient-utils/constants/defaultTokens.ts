@@ -487,7 +487,7 @@ export const scrollDODO: TokenIF = {
 };
 
 export const scrollUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'Bridged USD Coin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
     symbol: 'USDC',
     decimals: 6,
@@ -535,7 +535,7 @@ export const scrollUSDT: TokenIF = {
 export const scrollWBTC: TokenIF = {
     chainId: 534352,
     address: '0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1',
-    name: 'Wrapped BTC',
+    name: 'Bridged Wrapped Bitcoin',
     symbol: 'WBTC',
     decimals: 8,
     logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
