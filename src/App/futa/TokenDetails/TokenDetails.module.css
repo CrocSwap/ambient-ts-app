@@ -56,7 +56,10 @@ gap: 5px;
     flex: 1 0 0;
 
     border-radius: 8px;
+    border: 0.5px solid var(--accent, #0CCDFF);
+
     background: var(--accent, #0CCDFF);
+    border: 0.5px solid var(--accent, #0CCDFF);
     
 color: var(--dark1, #06060C);
 text-align: center;
@@ -67,6 +70,13 @@ outline: none;
 border: none;
 }
 
+.bidActionButtons button:hover{
+    
+        background: transparent;
+        border: 0.5px solid var(--accent, #0CCDFF);
+        color: var(--accent, #0CCDFF)
+  
+}
 
 .bidActionButtons{
     position: absolute;
@@ -97,10 +107,17 @@ border: none;
 
     padding: 20px;
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+    0px 0px 3px 3px rgba(165, 165, 165, 0.04), 
+    -9px 9px 0px -0.5px rgba(0, 0, 0, 0.04), 
+    -18px 18px 18px -1.5px rgba(0, 0, 0, 0.08), 
+    -37px 37px 37px -3px rgba(0, 0, 0, 0.16), 
+    -75px 75px 75px -6px rgba(0, 0, 0, 0.24), 
+    -150px 150px 150px -12px rgba(0, 0, 0, 0.48);
+
 
 
     

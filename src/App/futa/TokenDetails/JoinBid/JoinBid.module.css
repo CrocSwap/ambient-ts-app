@@ -109,6 +109,7 @@ font-size: 12px;
 
 }
 .actionButton{
+    cursor: pointer;
     margin: 0 16px;
     display: flex;
     height: 34px;
@@ -123,4 +124,12 @@ background: var(--accent, #0CCDFF);
 outline: none;
 border: none;
 font-size: 24px;
+transition: all var(--animation-speed) ease-in-out;
+}
+
+.actionButton:hover{
+    background: transparent;
+    border: 0.5px solid var(--accent, #0CCDFF);
+    color: var(--accent, #0CCDFF)
+
 }

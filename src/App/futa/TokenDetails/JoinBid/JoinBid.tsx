@@ -22,19 +22,15 @@ import TooltipComponent from '../../../../components/Global/TooltipComponent/Too
 
 interface Props {
     handleClose: () => void;
-    // handleBalanceClick: () => void;
     setQty: React.Dispatch<React.SetStateAction<string | undefined>>;
     setTokenModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    // inputValue: string;
-    // setInputValue: React.Dispatch<React.SetStateAction<string>>;
+
     tokenWalletBalance: string;
     tokenWalletBalanceTruncated: string;
     bidQtyNonDisplay: string | undefined;
     setBidQtyNonDisplay: React.Dispatch<
         React.SetStateAction<string | undefined>
     >;
-    // isTokenWalletBalanceGreaterThanZero: boolean,
-    // tokenWalletBalanceAdjustedNonDisplayString: string
 }
 export default function JoinBid(props: Props) {
     const [inputValue, setInputValue] = useState('');
@@ -105,7 +101,7 @@ export default function JoinBid(props: Props) {
 
     const userQtyDisplay = (
         <div className={styles.userQtyDisplay}>
-            <p> {'...'}</p>
+            <p style={{ color: 'var(--text2)' }}> {'...'}</p>
             {tokenWalletBalance !== '0' && (
                 <div className={styles.maxButtonContainer}>
                     <p>{tokenWalletBalanceTruncated}</p>

@@ -125,7 +125,7 @@ export default function TokenDetails() {
         setIsBottomSheetOpen(false);
         setBottomSheetContent(null);
     };
-    const joinBidProps = {
+    const bidProps = {
         setQty: setBidQtyNonDisplay,
         bidQtyNonDisplay,
         setTokenModalOpen,
@@ -138,14 +138,12 @@ export default function TokenDetails() {
 
     const handleJoinButton = () => {
         setIsBottomSheetOpen(true);
-        setBottomSheetContent(<JoinBid {...joinBidProps} />);
+        setBottomSheetContent(<JoinBid {...bidProps} />);
     };
 
     const handleCustomButton = () => {
         setIsBottomSheetOpen(true);
-        setBottomSheetContent(
-            <CustomBid handleClose={handleCloseBottomSheet} />,
-        );
+        setBottomSheetContent(<CustomBid {...bidProps} />);
     };
 
     const bidActionButtons = (
