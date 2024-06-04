@@ -21,7 +21,7 @@ export const useAppChain = (): {
     chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
-    const { chainId: chainNetwork } = useWeb3ModalAccount();
+    const { chainId: walletChainId } = useWeb3ModalAccount();
     const { switchNetwork } = useSwitchNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -31,6 +31,7 @@ export const useAppChain = (): {
     const [searchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
+    const [ignoreFirst, setIgnoreFirst] = useState<boolean>(true);
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
@@ -63,8 +64,8 @@ export const useAppChain = (): {
     // returns `null` if no wallet or if network fails validation
     function getChainFromWallet(): string | null {
         let output: string | null = null;
-        if (chainNetwork) {
-            const chainAsString: string = chainNumToString(chainNetwork);
+        if (walletChainId) {
+            const chainAsString: string = chainNumToString(walletChainId);
             const isValid: boolean = validateChainId(chainAsString);
             if (isValid) output = chainAsString;
         }
@@ -80,18 +81,9 @@ export const useAppChain = (): {
     // memoized and validated chain ID from the connected wallet
     const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
-    // trigger chain switch in wallet when chain in URL changes
-    useEffect(() => {
-        if (chainInURLValidated && switchNetwork) {
-            if (activeNetwork.chainId !== chainInURLValidated) {
-                switchNetwork(parseInt(chainInURLValidated));
-            }
-        }
-    }, [switchNetwork === undefined]);
-
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
-        if (chainNetwork) {
+        if (walletChainId) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
             // if a wallet is connected, evaluate action to take
@@ -146,9 +138,18 @@ export const useAppChain = (): {
                                     `chain=${incomingChainFromWallet}`,
                                 );
                             } else if (pathname.includes('chain')) {
-                                linkGenCurrent.navigate(
-                                    `chain=${incomingChainFromWallet}`,
-                                );
+                                if (!ignoreFirst) {
+                                    linkGenCurrent.navigate(
+                                        `chain=${incomingChainFromWallet}`,
+                                    );
+                                } else {
+                                    setIgnoreFirst(false);
+                                    if (chainInURLValidated)
+                                        switchNetwork(
+                                            parseInt(chainInURLValidated),
+                                        );
+                                    return;
+                                }
                             } else if (
                                 isPathUserAddress ||
                                 isPathUserXpOrLeaderboard ||
@@ -167,6 +168,8 @@ export const useAppChain = (): {
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
                             window.location.reload();
+                        } else {
+                            setIgnoreFirst(false);
                         }
                         // update state with new validated wallet network
                         chainInWalletValidated.current =
@@ -178,7 +181,7 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork, chainInWalletValidated.current]);
+    }, [walletChainId, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
 

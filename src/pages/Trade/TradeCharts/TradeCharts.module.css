@@ -49,6 +49,12 @@
     padding: 1px 8px;
     position: relative;
 }
+.active_selected_button:hover,
+.non_active_selected_button:hover {
+    background-color: var(--dark3);
+}
+
+
 .settings_container button:focus-visible {
     box-shadow: var(--glow-light-box-shadow);
 }
