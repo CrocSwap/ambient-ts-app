@@ -917,7 +917,8 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData &&
                 unparsedCandleData.length > 0 &&
                 period &&
-                unparsedCandleData[0].period === period
+                unparsedCandleData[0].period === period &&
+                isFetchingEnoughData
             ) {
                 const lastCandleDate = unparsedCandleData?.reduce(function (
                     prev,
