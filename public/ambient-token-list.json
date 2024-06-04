@@ -341,6 +341,14 @@
             "logoURI": ""
         },
         {
+            "name": "Tranchess DAO Token",
+            "address": "0x9735fb1126b521a913697a541f768376011bccf9",
+            "symbol": "CHESS",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scrollscan.com/token/images/tranchess_32.png"
+        },
+        {
             "name": "Wrapped Kelp DAO Restaked ETH",
             "address": "0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f",
             "symbol": "wrsETH",
@@ -405,7 +413,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Bridged Tether",
+            "name": "Bridged Tether USD",
             "chainId": 534352,
             "address": "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
             "symbol": "USDT",
