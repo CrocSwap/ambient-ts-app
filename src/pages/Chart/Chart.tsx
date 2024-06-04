@@ -968,15 +968,24 @@ export default function Chart(props: propsIF) {
         if (discontinuityProvider) {
             if (!chartResetStatus.isResetChart) {
                 const xmin = scaleData?.xScale.domain()[0];
+                const xmax = scaleData?.xScale.domain()[1];
+
                 if (visibleCandleData.length > 0) {
-                    const minData =
-                        visibleCandleData[visibleCandleData.length - 1].time *
-                        1000;
+                    const data = visibleCandleData.filter(
+                        (i) => i.time * 1000 <= xmax && i.time * 1000 >= xmin,
+                    );
+                    const width = scaleData?.xScale.range()[1];
+
+                    const minDate = data[data.length - 1].time * 1000;
+                    const maxDate = data[0].time * 1000;
+
                     const diffPixel =
-                        scaleData?.xScale(minData) - scaleData?.xScale(xmin);
-                    const percentPixel =
-                        (scaleData?.xScale.range()[1] - diffPixel) /
-                        scaleData?.xScale.range()[1];
+                        (isShowLatestCandle
+                            ? width
+                            : scaleData?.xScale(maxDate)) -
+                        scaleData?.xScale(minDate);
+
+                    const percentPixel = diffPixel / width;
 
                     const isIncludeTimeOfEndCanlde = timeOfEndCandle
                         ? timeOfEndCandle < scaleData?.xScale.domain()[1] &&
@@ -2984,14 +2993,16 @@ export default function Chart(props: propsIF) {
             const canvasDiv = d3.select(d3Container.current) as any;
             const resizeObserver = new ResizeObserver(() => {
                 const chartRect = canvasDiv.node().getBoundingClientRect();
-                setChartContainerOptions(chartRect);
+                if (chartRect.height !== 0) {
+                    setChartContainerOptions(chartRect);
+                }
             });
 
             resizeObserver.observe(canvasDiv.node());
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, [handleDocumentEvent]);
+    }, [handleDocumentEvent, isCompletedFetchData]);
 
     useEffect(() => {
         const canvas = d3
