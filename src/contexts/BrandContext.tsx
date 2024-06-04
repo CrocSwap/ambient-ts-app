@@ -24,6 +24,7 @@ type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 interface BrandContextIF {
     skin: skins;
     fontSet: fontSets;
+    colorAndFont: string;
     platformName: string;
     networks: chainIds[];
     headerImage: string;
@@ -105,6 +106,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const brandData: BrandContextIF = {
         skin: getSkin(),
         fontSet: brandAssets.fontSet,
+        colorAndFont: getSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
         networks: Object.keys(brandAssets.networks) as chainIds[],
         headerImage: brandAssets.headerImage,

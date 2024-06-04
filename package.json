@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.5.6",
+    "version": "2.5.19",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -23,7 +23,7 @@
         "ethers": "5.7.2",
         "framer-motion": "4.1.17",
         "i18next": "^21.8.16",
-        "i18next-browser-languagedetector": "^6.1.4",
+        "i18next-browser-languagedetector": "^8.0.0",
         "intro.js": "^7.0.0",
         "intro.js-react": "^1.0.0",
         "modern-screenshot": "^4.4.25",

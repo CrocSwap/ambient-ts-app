@@ -9,6 +9,7 @@ import {
     getMoneynessRank,
     getFormattedNumber,
     expandPoolStats,
+    isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
 // import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -37,6 +38,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         activeNetwork,
         provider,
         chainData: { chainId },
+        ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
@@ -204,7 +206,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [quotePrice, setQuotePrice] = useState<number | undefined>();
 
     useEffect(() => {
-        if (crocEnv) {
+        if (crocEnv && poolPriceDisplayNum) {
             const fetchTokenPrice = async () => {
                 const baseTokenPrice =
                     (await cachedFetchTokenPrice(baseAddr, chainId, crocEnv))
@@ -212,9 +214,13 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 const quoteTokenPrice =
                     (await cachedFetchTokenPrice(quoteAddr, chainId, crocEnv))
                         ?.usdPrice || 0.0;
-
                 if (baseTokenPrice) {
                     setBasePrice(baseTokenPrice);
+                } else if (
+                    isETHorStakedEthToken(baseAddr) &&
+                    ethMainnetUsdPrice
+                ) {
+                    setBasePrice(ethMainnetUsdPrice);
                 } else if (poolPriceDisplayNum && quoteTokenPrice) {
                     // calculation of estimated base price below may be backwards;
                     // having a hard time finding an example of base missing a price
@@ -226,6 +232,11 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 }
                 if (quoteTokenPrice) {
                     setQuotePrice(quoteTokenPrice);
+                } else if (
+                    isETHorStakedEthToken(quoteAddr) &&
+                    ethMainnetUsdPrice
+                ) {
+                    setQuotePrice(ethMainnetUsdPrice);
                 } else if (poolPriceDisplayNum && baseTokenPrice) {
                     const estimatedQuotePrice =
                         baseTokenPrice * poolPriceDisplayNum;
@@ -241,8 +252,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         baseAddr,
         quoteAddr,
         chainId,
-        crocEnv !== undefined,
+        crocEnv === undefined,
         poolPriceDisplayNum,
+        ethMainnetUsdPrice === undefined,
     ]);
 
     const fetchPoolStats = async () => {

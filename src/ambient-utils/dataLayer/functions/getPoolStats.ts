@@ -1,9 +1,15 @@
 import { CrocEnv, bigNumToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
-import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../../constants';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+    ethereumMainnet,
+    mainnetETH,
+} from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { TokenIF } from '../../types';
 import { PoolQueryFn } from './querySpotPrice';
+import { isETHorStakedEthToken } from '..';
 
 const getLiquidityFee = async (
     base: string,
@@ -148,6 +154,15 @@ export async function expandPoolStats(
         ? bigNumToFloat(quoteTotalSupplyBigNum)
         : undefined;
 
+    const getEthPrice = async () => {
+        const mainnetEthPrice = await cachedFetchTokenPrice(
+            mainnetETH.address,
+            ethereumMainnet.chainId,
+            crocEnv,
+        );
+        return mainnetEthPrice?.usdPrice;
+    };
+
     const getSpotPrice = async () => {
         const spotPrice = await cachedQuerySpotPrice(
             crocEnv,
@@ -166,11 +181,15 @@ export async function expandPoolStats(
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
+        : isETHorStakedEthToken(base)
+        ? (await getEthPrice()) || 0.0
         : quoteUsdPrice
         ? quoteUsdPrice / (await getSpotPrice())
         : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
+        : isETHorStakedEthToken(quote)
+        ? (await getEthPrice()) || 0.0
         : baseUsdPrice
         ? baseUsdPrice * (await getSpotPrice())
         : 0.0;

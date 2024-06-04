@@ -133,18 +133,21 @@ export default function Stats() {
                             value: tvlTotalUsd,
                             prefix: '$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                 }
@@ -178,18 +181,21 @@ export default function Stats() {
                             value: tvlTotalUsd,
                             prefix: '$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                 }
@@ -222,18 +228,21 @@ export default function Stats() {
                             value: tvlTotalUsd,
                             prefix: '$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                 }

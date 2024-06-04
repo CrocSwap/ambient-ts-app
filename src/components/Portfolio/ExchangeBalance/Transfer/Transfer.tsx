@@ -41,6 +41,7 @@ import {
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -377,6 +378,7 @@ export default function Transfer(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
+            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button
