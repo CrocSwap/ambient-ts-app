@@ -16,7 +16,7 @@ export const mainnetUSDC: TokenIF = {
     decimals: 6,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-    name: 'USDCoin',
+    name: 'USDC',
     symbol: 'USDC',
 };
 
@@ -80,7 +80,7 @@ export const blastJUICE: TokenIF = {
     address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
     chainId: 81457,
     decimals: 18,
-    name: 'Juice',
+    name: 'Juice Finance',
     symbol: 'JUICE',
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
@@ -144,7 +144,7 @@ export const blastYES: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
     decimals: 18,
-    name: 'Yes',
+    name: 'YES Money',
     symbol: 'YES',
     logoURI: '',
 };
@@ -189,7 +189,7 @@ export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
     decimals: 18,
-    name: 'PUMP',
+    name: 'Pump',
     symbol: 'PUMP',
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png',
 };
@@ -229,7 +229,7 @@ export const mainnetWBTC: TokenIF = {
     decimals: 8,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    name: 'Wrapped BTC',
+    name: 'Wrapped Bitcoin',
     symbol: 'WBTC',
 };
 
@@ -248,7 +248,7 @@ export const mainnetSWETH: TokenIF = {
     chainId: 1,
     decimals: 18,
     logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
-    name: 'Swell Staked Ether',
+    name: 'Swell Ethereum',
     symbol: 'swETH',
 };
 
@@ -257,7 +257,7 @@ export const mainnetLIDO: TokenIF = {
     chainId: 1,
     decimals: 18,
     logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
-    name: 'Lido DAO Token',
+    name: 'Lido DAO',
     symbol: 'LDO',
 };
 
@@ -355,7 +355,7 @@ export const sepoliaETH: TokenIF = {
 };
 
 export const sepoliaUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0x60bBA138A74C5e7326885De5090700626950d509',
     symbol: 'USDC',
     decimals: 6,
@@ -395,7 +395,7 @@ export const scrollETH: TokenIF = {
 };
 
 export const scrollWstETH: TokenIF = {
-    name: 'Wrapped liquid staked Ether 2.0',
+    name: 'Bridged Wrapped Lido Staked Ether',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
     decimals: 18,
@@ -487,7 +487,7 @@ export const scrollDODO: TokenIF = {
 };
 
 export const scrollUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'Bridged USD Coin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
     symbol: 'USDC',
     decimals: 6,
@@ -497,7 +497,7 @@ export const scrollUSDC: TokenIF = {
 };
 
 export const scrollAxlUSDC: TokenIF = {
-    name: 'Axelar Wrapped USDC',
+    name: 'Bridged Axelar Wrapped USD Coin',
     address: '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
     symbol: 'axlUSDC',
     decimals: 6,
@@ -526,7 +526,7 @@ export const scrollKNC: TokenIF = {
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
     address: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df',
-    name: 'Tether',
+    name: 'Bridged Tether',
     symbol: 'USDT',
     decimals: 6,
     logoURI: 'https://scroll-tech.github.io/token-list/data/USDT/logo.svg',
@@ -535,7 +535,7 @@ export const scrollUSDT: TokenIF = {
 export const scrollWBTC: TokenIF = {
     chainId: 534352,
     address: '0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1',
-    name: 'Wrapped BTC',
+    name: 'Bridged Wrapped Bitcoin',
     symbol: 'WBTC',
     decimals: 8,
     logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
@@ -552,7 +552,7 @@ export const scrollSepoliaETH: TokenIF = {
 };
 
 export const scrollSepoliaUSDC: TokenIF = {
-    name: 'USDCoin',
+    name: 'USDC',
     address: '0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B',
     symbol: 'USDC',
     decimals: 6,
