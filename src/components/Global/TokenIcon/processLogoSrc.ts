@@ -18,6 +18,8 @@ export default function processLogoSrc(args: argsIF): string {
     let localLogoLookupSymbol =
         args.token?.symbol.toUpperCase() ?? args.symbol?.toUpperCase();
     if (localLogoLookupSymbol === 'USD+') localLogoLookupSymbol = 'USDPLUS';
+    if (localLogoLookupSymbol === 'PUNKETH-20')
+        localLogoLookupSymbol = 'PUNKETH20';
     // return a filepath (if local) or a URI string (if remote)
     return (
         localLogos[localLogoLookupSymbol as keyof typeof localLogos] ??
