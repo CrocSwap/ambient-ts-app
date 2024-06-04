@@ -341,7 +341,7 @@
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
         },
         {
-            "name": "Axelar Wrapped USDC",
+            "name": "Bridged Axelar Wrapped USD Coin",
             "address": "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
             "symbol": "axlUSDC",
             "decimals": 6,
@@ -397,7 +397,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Tether",
+            "name": "Bridged Tether",
             "chainId": 534352,
             "address": "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
             "symbol": "USDT",
@@ -421,7 +421,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Wrapped liquid staked Ether 2.0",
+            "name": "Bridged Wrapped Lido Staked Ether",
             "address": "0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32",
             "symbol": "wstETH",
             "decimals": 18,

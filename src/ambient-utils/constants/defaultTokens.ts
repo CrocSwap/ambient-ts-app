@@ -395,7 +395,7 @@ export const scrollETH: TokenIF = {
 };
 
 export const scrollWstETH: TokenIF = {
-    name: 'Wrapped liquid staked Ether 2.0',
+    name: 'Bridged Wrapped Lido Staked Ether',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
     decimals: 18,
@@ -497,7 +497,7 @@ export const scrollUSDC: TokenIF = {
 };
 
 export const scrollAxlUSDC: TokenIF = {
-    name: 'Axelar Wrapped USDC',
+    name: 'Bridged Axelar Wrapped USD Coin',
     address: '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
     symbol: 'axlUSDC',
     decimals: 6,
@@ -526,7 +526,7 @@ export const scrollKNC: TokenIF = {
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
     address: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df',
-    name: 'Tether',
+    name: 'Bridged Tether',
     symbol: 'USDT',
     decimals: 6,
     logoURI: 'https://scroll-tech.github.io/token-list/data/USDT/logo.svg',
