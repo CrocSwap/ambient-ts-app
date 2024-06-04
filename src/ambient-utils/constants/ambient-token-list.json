@@ -27,7 +27,7 @@
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
-            "name": "Wrapped BTC",
+            "name": "Wrapped Bitcoin",
             "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
             "symbol": "WBTC",
             "decimals": 8,
@@ -35,7 +35,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
-            "name": "Swell Staked Ether",
+            "name": "Swell Ethereum",
             "address": "0xf951e335afb289353dc249e82926178eac7ded78",
             "chainId": 1,
             "decimals": 18,
@@ -67,7 +67,7 @@
             "symbol": "RPL"
         },
         {
-            "name": "Lido DAO Token",
+            "name": "Lido DAO",
             "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
             "chainId": 1,
             "decimals": 18,
@@ -75,7 +75,7 @@
             "symbol": "LDO"
         },
         {
-            "name": "Tether USD",
+            "name": "Tether",
             "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "chainId": 1,
             "decimals": 6,

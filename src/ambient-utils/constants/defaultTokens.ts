@@ -229,7 +229,7 @@ export const mainnetWBTC: TokenIF = {
     decimals: 8,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    name: 'Wrapped BTC',
+    name: 'Wrapped Bitcoin',
     symbol: 'WBTC',
 };
 
@@ -248,7 +248,7 @@ export const mainnetSWETH: TokenIF = {
     chainId: 1,
     decimals: 18,
     logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
-    name: 'Swell Staked Ether',
+    name: 'Swell Ethereum',
     symbol: 'swETH',
 };
 
@@ -257,7 +257,7 @@ export const mainnetLIDO: TokenIF = {
     chainId: 1,
     decimals: 18,
     logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
-    name: 'Lido DAO Token',
+    name: 'Lido DAO',
     symbol: 'LDO',
 };
 
