@@ -27,7 +27,7 @@ const validParams = [
 ] as const;
 
 // type generated as a union of all string literals in `validParams`
-export type validParamsType = typeof validParams[number];
+export type validParamsType = (typeof validParams)[number];
 
 export interface updatesIF {
     update?: Array<[validParamsType, string | number]>;
@@ -125,16 +125,19 @@ export const useUrlParams = (
         if (containsSingleTokenParam) {
             const singleToken =
                 urlParamMap.get('token') || urlParamMap.get('tokenB');
+
+            const chainToUse = urlParamMap.get('chain') || dfltChainId;
+
             Promise.resolve(
                 getTopPairedTokenAddress(
-                    urlParamMap.get('chain') || '',
+                    chainToUse,
                     singleToken || ZERO_ADDRESS,
                     cachedFetchTopPairedToken,
                 ),
             )
                 .then((result) => {
                     linkGenSwap.redirect({
-                        chain: urlParamMap.get('chain') || '',
+                        chain: chainToUse,
                         tokenA: result || ZERO_ADDRESS,
                         tokenB: singleToken || '',
                     });

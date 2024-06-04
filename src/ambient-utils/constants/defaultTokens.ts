@@ -526,7 +526,7 @@ export const scrollKNC: TokenIF = {
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
     address: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df',
-    name: 'Bridged Tether',
+    name: 'Bridged Tether USD',
     symbol: 'USDT',
     decimals: 6,
     logoURI: 'https://scroll-tech.github.io/token-list/data/USDT/logo.svg',
