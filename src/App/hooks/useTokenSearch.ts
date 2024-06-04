@@ -97,6 +97,7 @@ export const useTokenSearch = (
             const patchLists = (
                 listA: TokenIF[],
                 listB: TokenIF[],
+                listC?: TokenIF[],
             ): TokenIF[] => {
                 const addressesListA = listA.map((tkn: TokenIF) =>
                     tkn.address.toLowerCase(),
@@ -105,7 +106,22 @@ export const useTokenSearch = (
                     (tkn: TokenIF) =>
                         !addressesListA.includes(tkn.address.toLowerCase()),
                 );
-                return listA.concat(dedupedListB);
+                const combinedAandB = listA.concat(dedupedListB);
+                const addressesListAandB = combinedAandB.map((tkn: TokenIF) =>
+                    tkn.address.toLowerCase(),
+                );
+                const dedupedListC: TokenIF[] | undefined = listC
+                    ? listC.filter(
+                          (tkn: TokenIF) =>
+                              !addressesListAandB.includes(
+                                  tkn.address.toLowerCase(),
+                              ),
+                      )
+                    : undefined;
+
+                return dedupedListC
+                    ? combinedAandB.concat(dedupedListC)
+                    : combinedAandB;
             };
             // array of ambient and uniswap tokens, no dupes
             const baseTokenList: TokenIF[] =
@@ -117,7 +133,17 @@ export const useTokenSearch = (
                     : chainId === '0x82750'
                     ? patchLists(
                           tokens.getTokensFromList(tokenListURIs.ambient),
-                          tokens.getTokensFromList(tokenListURIs.scroll),
+                          tokens.getTokensFromList(tokenListURIs.scrollTech),
+                          tokens.getTokensFromList(
+                              tokenListURIs.scrollCoingecko,
+                          ),
+                      )
+                    : chainId === '0x13e31'
+                    ? patchLists(
+                          tokens.getTokensFromList(tokenListURIs.ambient),
+                          tokens.getTokensFromList(
+                              tokenListURIs.blastCoingecko,
+                          ),
                       )
                     : tokens.getTokensFromList(tokenListURIs.ambient);
 
