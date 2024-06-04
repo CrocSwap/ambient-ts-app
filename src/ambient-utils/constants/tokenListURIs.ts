@@ -7,8 +7,8 @@ export const tokenListURIs = {
     scrollCoingecko: 'https://tokens.coingecko.com/scroll/all.json',
     scrollTech:
         'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
-    coingecko: 'https://tokens.coingecko.com/uniswap/all.json',
-    uniswap: 'https://tokens.uniswap.org/',
+    ethereumCoingecko: 'https://tokens.coingecko.com/ethereum/all.json',
+    uniswap: 'https://tokens.uniswap.org',
     ambient: '/ambient-token-list.json',
 };
 
