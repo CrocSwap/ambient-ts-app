@@ -19,7 +19,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDC",
             "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
             "symbol": "USDC",
             "decimals": 6,
@@ -27,7 +27,7 @@
             "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
-            "name": "Wrapped BTC",
+            "name": "Wrapped Bitcoin",
             "address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
             "symbol": "WBTC",
             "decimals": 8,
@@ -35,7 +35,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         },
         {
-            "name": "Swell Staked Ether",
+            "name": "Swell Ethereum",
             "address": "0xf951e335afb289353dc249e82926178eac7ded78",
             "chainId": 1,
             "decimals": 18,
@@ -67,7 +67,7 @@
             "symbol": "RPL"
         },
         {
-            "name": "Lido DAO Token",
+            "name": "Lido DAO",
             "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
             "chainId": 1,
             "decimals": 18,
@@ -75,7 +75,7 @@
             "symbol": "LDO"
         },
         {
-            "name": "Tether USD",
+            "name": "Tether",
             "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
             "chainId": 1,
             "decimals": 6,
@@ -160,7 +160,7 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Yes",
+            "name": "YES Money",
             "symbol": "YES",
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png"
         },
@@ -169,7 +169,7 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "PUMP",
+            "name": "Pump",
             "symbol": "PUMP",
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png"
         },
@@ -181,6 +181,14 @@
             "name": "P@cman Blastoff",
             "symbol": "$PACM",
             "logoURI": "https://www.pacman.meme/images/tokens/pacman.svg"
+        },
+        {
+            "chainId": 81457,
+            "address": "0x5ffd9ebd27f2fcab044c0f0a26a45cb62fa29c06",
+            "name": "PacMoon",
+            "symbol": "PAC",
+            "decimals": 18,
+            "logoURI": "https://assets.coingecko.com/coins/images/36459/thumb/pacmoon.png?1711501114"
         },
         {
             "address": "0xCa84812E477eE5a96a92328689D8Ce2589aB6FfD",
@@ -223,7 +231,7 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "Juice",
+            "name": "Juice Finance",
             "symbol": "JUICE",
             "logoURI": ""
         },
@@ -269,7 +277,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDC",
             "address": "0xc944b73fba33a773a4a07340333a3184a70af1ae",
             "symbol": "USDC",
             "decimals": 6,
@@ -285,7 +293,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "Bridged USD Coin",
             "address": "0x4D65fB724CEd0CFC6ABFD03231C9CDC2C36A587B",
             "symbol": "USDC",
             "decimals": 6,
@@ -301,7 +309,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "Bridged USD Coin",
             "address": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
             "symbol": "USDC",
             "decimals": 6,
@@ -341,7 +349,7 @@
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png"
         },
         {
-            "name": "Axelar Wrapped USDC",
+            "name": "Bridged Axelar Wrapped USD Coin",
             "address": "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
             "symbol": "axlUSDC",
             "decimals": 6,
@@ -381,7 +389,7 @@
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
         },
         {
-            "name": "USDCoin",
+            "name": "USDC",
             "address": "0x60bBA138A74C5e7326885De5090700626950d509",
             "symbol": "USDC",
             "decimals": 6,
@@ -397,7 +405,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Tether",
+            "name": "Bridged Tether",
             "chainId": 534352,
             "address": "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df",
             "symbol": "USDT",
@@ -405,7 +413,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/USDT/logo.svg"
         },
         {
-            "name": "Wrapped BTC",
+            "name": "Bridged Wrapped Bitcoin",
             "chainId": 534352,
             "address": "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
             "symbol": "WBTC",
@@ -413,7 +421,7 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Wrapped BTC",
+            "name": "Bridged Wrapped Bitcoin",
             "chainId": 534351,
             "address": "0xb3B942b6d4a4858838aAb8f94DdaEdd479CD1594",
             "symbol": "WBTC",
@@ -421,12 +429,28 @@
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
         },
         {
-            "name": "Wrapped liquid staked Ether 2.0",
+            "name": "Bridged Wrapped Lido Staked Ether",
             "address": "0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32",
             "symbol": "wstETH",
             "decimals": 18,
             "chainId": 534352,
             "logoURI": "https://scroll-tech.github.io/token-list/data/wstETH/logo.svg"
+        },
+        {
+            "name": "PufferVault",
+            "address": "0xc4d46E8402F476F269c379677C99F18E22Ea030e",
+            "symbol": "pufETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/PufETH/logo.svg"
+        },
+        {
+            "name": "Rocket Pool ETH",
+            "address": "0x53878B874283351D26d206FA512aEcE1Bef6C0dD",
+            "symbol": "rETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/rETH/logo.svg"
         },
         {
             "name": "Dai Stablecoin",

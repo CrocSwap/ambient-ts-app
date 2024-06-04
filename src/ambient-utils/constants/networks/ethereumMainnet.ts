@@ -3,11 +3,9 @@ import {
     mainnetETH,
     mainnetUSDC,
     mainnetWBTC,
-    mainnetDAI,
-    mainnetLUSD,
     mainnetRPL,
     mainnetLIDO,
-    mainnetSWETH,
+    mainnetSYN,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -38,10 +36,10 @@ export const ethereumMainnet: NetworkIF = {
     defaultPair: [mainnetETH, mainnetUSDC],
     topPools: [
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetDAI, mainnetLUSD, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetRPL, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetSYN, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetLIDO, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetSWETH, lookupChain('0x1').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
