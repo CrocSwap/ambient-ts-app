@@ -981,7 +981,7 @@ function TradeCandleStickChart(props: propsIF) {
                         fetchCountForEnoughData ===
                             maxRequestCountForCondensed &&
                         period !== 86400 &&
-                        candles.length < 20
+                        candles.length < 100
                     ) {
                         // TODO: Temporary workaround - Call chartSettings.candleTime.global.changeTime(86400) after 1 second delay.
                         // This solution should be replaced with a more permanent approach in the future.
