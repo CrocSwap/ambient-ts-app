@@ -1009,6 +1009,22 @@ function TradeCandleStickChart(props: propsIF) {
         isDenomBase,
     ]);
 
+    useEffect(() => {
+        if (unparsedCandleData && unparsedCandleData.length > 0) {
+            const candles = filterCandleWithTransaction(
+                unparsedCandleData,
+            ).filter((i) => i.isShowData);
+
+            if (
+                isCondensedModeEnabled &&
+                !isFetchingEnoughData &&
+                candles.length < 20
+            ) {
+                chartSettings.candleTime.global.changeTime(86400);
+            }
+        }
+    }, [isCondensedModeEnabled]);
+
     const isOpenChart =
         !isLoading &&
         candleData !== undefined &&
