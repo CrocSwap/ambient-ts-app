@@ -305,9 +305,13 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const numDurationsNeeded = useMemo(() => {
         if (candleTimeLocal === undefined) return;
         if (!minTimeMemo || !domainBoundaryInSeconds) return;
-        const numDurations = Math.floor(
+        const numDurationsForVisibleArea = Math.floor(
             (minTimeMemo - domainBoundaryInSeconds) / candleTimeLocal + 1,
         );
+
+        const numDurations = isCondensedModeEnabled
+            ? 3 * numDurationsForVisibleArea
+            : 2 * numDurationsForVisibleArea;
 
         return numDurations > 2999 ? 2999 : numDurations;
     }, [minTimeMemo, domainBoundaryInSeconds]);
@@ -323,6 +327,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         if (candleDomains.isResetRequest) {
             if (abortController.abortController) {
                 abortController.abortController.abort();
+                setCandleDomains((prev) => {
+                    return prev ? { ...prev, isResetRequest: false } : prev;
+                });
             }
         }
         if (candleDomains?.isAbortedRequest) {

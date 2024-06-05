@@ -951,7 +951,7 @@ function TradeCandleStickChart(props: propsIF) {
                     setIsFetchingEnoughData(true);
                     const dom = {
                         lastCandleDate: minTime,
-                        domainBoundry: minTime - 200 * period * 1000,
+                        domainBoundry: minTime - 2999 * period * 1000,
                         isAbortedRequest: true,
                         isResetRequest: false,
                     };
