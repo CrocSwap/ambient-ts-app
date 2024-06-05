@@ -18,7 +18,7 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import {
     removeWrappedNative,
-    isWethToken,
+    isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { IoIosArrowBack } from 'react-icons/io';
@@ -282,7 +282,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 )}
             </div>
             <div style={{ padding: '1rem' }}>
-                {isWethToken(validatedInput) && (
+                {isWrappedNativeToken(validatedInput) && (
                     <WarningBox
                         title=''
                         details={WETH_WARNING}
@@ -310,7 +310,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     />
                 )}
             </div>
-            {isWethToken(validatedInput) &&
+            {isWrappedNativeToken(validatedInput) &&
                 [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                     (token: TokenIF) => (
                         <TokenSelect
