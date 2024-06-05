@@ -29,6 +29,12 @@ export const PAIR_LOOKUP_URL =
     import.meta.env.VITE_PAIR_LOOKUP_URL ||
     'https://croc-smart.liquidity.tools/pair-lookup?';
 
+export const WRAPPED_NATIVE_TOKENS = [
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH on mainnet
+    '0x5300000000000000000000000000000000000004', // WETH on scroll
+    '0x4300000000000000000000000000000000000004', // WETH on blast
+];
+
 export const HISTORICAL_CANDLES_URL =
     import.meta.env.VITE_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 

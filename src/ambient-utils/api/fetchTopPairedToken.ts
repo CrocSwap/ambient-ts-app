@@ -1,14 +1,21 @@
 /* eslint-disable camelcase */
-import { PAIR_LOOKUP_URL } from '../constants';
+import {
+    PAIR_LOOKUP_URL,
+    WRAPPED_NATIVE_TOKENS,
+    ZERO_ADDRESS,
+} from '../constants';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 
 export const fetchTopPairedToken = async (address: string, chainId: string) => {
+    const isWrappedNativeToken = WRAPPED_NATIVE_TOKENS.includes(
+        address.toLowerCase(),
+    );
     try {
         const response = await fetch(
             PAIR_LOOKUP_URL +
                 new URLSearchParams({
                     chain: chainId,
-                    token: address,
+                    token: isWrappedNativeToken ? ZERO_ADDRESS : address,
                 }),
         );
         const result = await response.json();
