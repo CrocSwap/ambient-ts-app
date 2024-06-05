@@ -6,7 +6,11 @@ import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
 // import { getDefaultPairForChain } from '../../ambient-utils/constants';
-import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
+import {
+    remapTokenIfWrappedNative,
+    validateAddress,
+    validateChain,
+} from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { getTopPairedTokenAddress } from '../../ambient-utils/dataLayer/functions/getTopPairedTokenAddress';
@@ -123,18 +127,22 @@ export const useUrlParams = (
                 paramKeys.includes('tokenB'));
 
         if (containsSingleTokenParam) {
-            const singleToken =
-                urlParamMap.get('token') || urlParamMap.get('tokenB');
+            const singleToken = remapTokenIfWrappedNative(
+                urlParamMap.get('token') || urlParamMap.get('tokenB') || '',
+            );
+
+            const chainToUse = urlParamMap.get('chain') || dfltChainId;
+
             Promise.resolve(
                 getTopPairedTokenAddress(
-                    urlParamMap.get('chain') || '',
+                    chainToUse,
                     singleToken || ZERO_ADDRESS,
                     cachedFetchTopPairedToken,
                 ),
             )
                 .then((result) => {
                     linkGenSwap.redirect({
-                        chain: urlParamMap.get('chain') || '',
+                        chain: chainToUse,
                         tokenA: result || ZERO_ADDRESS,
                         tokenB: singleToken || '',
                     });
