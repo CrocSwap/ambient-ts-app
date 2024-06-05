@@ -10,6 +10,7 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
+    brand,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
@@ -67,8 +68,9 @@ const modal = createWeb3Modal({
     themeVariables: {
         '--w3m-color-mix': 'var(--dark2)',
         '--w3m-color-mix-strength': 40,
-        '--w3m-font-family': 'var(--font-family)',
-        '--w3m-accent': 'var(--accent1)',
+        '--w3m-font-family':
+            brand === 'futa' ? 'var(--roboto)' : 'var(--font-family)',
+        '--w3m-accent': brand === 'futa' ? '#0CCDFF' : 'var(--accent1)',
     },
 });
 
