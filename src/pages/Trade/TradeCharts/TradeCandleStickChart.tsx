@@ -951,7 +951,7 @@ function TradeCandleStickChart(props: propsIF) {
                     setIsFetchingEnoughData(true);
                     const dom = {
                         lastCandleDate: minTime,
-                        domainBoundry: minTime - 200 * period * 1000,
+                        domainBoundry: minTime - 2999 * period * 1000,
                         isAbortedRequest: true,
                         isResetRequest: false,
                     };
@@ -1008,6 +1008,22 @@ function TradeCandleStickChart(props: propsIF) {
         isCondensedModeEnabled,
         isDenomBase,
     ]);
+
+    useEffect(() => {
+        if (unparsedCandleData && unparsedCandleData.length > 0) {
+            const candles = filterCandleWithTransaction(
+                unparsedCandleData,
+            ).filter((i) => i.isShowData);
+
+            if (
+                isCondensedModeEnabled &&
+                !isFetchingEnoughData &&
+                candles.length < 20
+            ) {
+                chartSettings.candleTime.global.changeTime(86400);
+            }
+        }
+    }, [isCondensedModeEnabled]);
 
     const isOpenChart =
         !isLoading &&

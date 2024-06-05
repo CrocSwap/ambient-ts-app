@@ -969,11 +969,10 @@ export default function Chart(props: propsIF) {
             if (!chartResetStatus.isResetChart) {
                 const xmin = scaleData?.xScale.domain()[0];
                 const xmax = scaleData?.xScale.domain()[1];
-
-                if (visibleCandleData.length > 0) {
-                    const data = visibleCandleData.filter(
-                        (i) => i.time * 1000 <= xmax && i.time * 1000 >= xmin,
-                    );
+                const data = visibleCandleData.filter(
+                    (i) => i.time * 1000 <= xmax && i.time * 1000 >= xmin,
+                );
+                if (data.length > 0) {
                     const width = scaleData?.xScale.range()[1];
 
                     const minDate = data[data.length - 1].time * 1000;
