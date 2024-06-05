@@ -28,7 +28,14 @@ export default function ChatNotificationBubble(props: propsIF) {
             {props.message && (
                 <>
                     <div className={styles.notification_title}>
-                        {getShownName(props.message)} has mentioned you in{' '}
+                        <span className={styles.bold}>
+                            {getShownName(props.message)}
+                        </span>{' '}
+                        has{' '}
+                        {props.message?.repliedMessage
+                            ? 'replied'
+                            : 'mentioned'}{' '}
+                        you in{' '}
                         <span className={styles.room_name}>
                             {props.message.roomInfo}
                         </span>
