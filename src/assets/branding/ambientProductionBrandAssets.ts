@@ -2,6 +2,7 @@ import { brandIF } from './types';
 import large from '../images/logos/large.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
+// import baseLogo from '../../assets/images/logos/base_logo.svg';
 
 export const ambientProductionBrandAssets: brandIF = {
     networks: {
@@ -28,6 +29,15 @@ export const ambientProductionBrandAssets: brandIF = {
                 { content: blastLogo, processAs: 'image' },
             ],
         },
+        // base mainnet
+        // '0x2105': {
+        //     color: 'purple_dark',
+        //     hero: [
+        //         { content: 'ambient', processAs: 'text' },
+        //         { content: '×', processAs: 'separator' },
+        //         { content: baseLogo, processAs: 'image' },
+        //     ],
+        // },
     },
     platformName: 'ambient',
     fontSet: 'ambient',
