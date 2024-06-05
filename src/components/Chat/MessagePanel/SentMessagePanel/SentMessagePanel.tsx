@@ -905,9 +905,6 @@ function SentMessagePanel(props: SentMessageProps) {
                             {props.message.repliedMessage ? (
                                 <div className={styles.replied_box}>
                                     <ReplyMessage
-                                        setIsReplyButtonPressed={
-                                            props.setIsReplyButtonPressed
-                                        }
                                         isReplyButtonPressed={false}
                                         currentUserId={props.currentUser}
                                         messageObj={repliedMesssage}
