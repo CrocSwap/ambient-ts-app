@@ -68,6 +68,13 @@ export function isWrappedNativeToken(addr: string): boolean {
     return WRAPPED_NATIVE_TOKENS.includes(addr.toLowerCase());
 }
 
+export function remapTokenIfWrappedNative(addr: string): string {
+    if (isWrappedNativeToken(addr)) {
+        return ZERO_ADDRESS;
+    }
+    return addr;
+}
+
 // No need to specify chain ID because token address is unique even across chains
 export const STABLE_USD_TOKENS = [
     mainnetDAI.address,
