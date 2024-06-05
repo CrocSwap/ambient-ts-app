@@ -9,11 +9,11 @@ import { Message } from '../../Model/MessageModel';
 import { User } from '../../Model/UserModel';
 import styles from './ReplyMessage.module.css';
 interface propsIF {
-    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
     currentUserId?: string;
     messageObj?: Message;
     repliedMessageBoxClickListener?: () => void;
+    replyBoxCloseListener?: () => void;
     userMap?: Map<string, User>;
 }
 
@@ -114,7 +114,7 @@ export default function ReplyMessage(props: propsIF) {
                         size={16}
                         color='white'
                         style={{ cursor: 'pointer', color: 'white' }}
-                        onClick={() => props.setIsReplyButtonPressed(false)}
+                        onClick={() => props.replyBoxCloseListener?.()}
                     />
                 </div>
                 <div className={styles.message}>{renderMsgContent(false)}</div>

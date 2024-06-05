@@ -422,6 +422,13 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }
 
+    const replyBoxCloseListener = () => {
+        props.setIsReplyButtonPressed(false);
+        props.setSelectedMessageForReply(undefined);
+        setMessage('');
+        inputRef.current?.focus();
+    };
+
     useEffect(() => {
         document.body.addEventListener('keydown', openEmojiPanel);
         document.body.addEventListener('keydown', closeEmojiPanel);
@@ -542,9 +549,7 @@ export default function MessageInput(props: MessageInputProps) {
                     <>
                         {props.isReplyButtonPressed ? (
                             <ReplyMessage
-                                setIsReplyButtonPressed={
-                                    props.setIsReplyButtonPressed
-                                }
+                                replyBoxCloseListener={replyBoxCloseListener}
                                 isReplyButtonPressed={
                                     props.isReplyButtonPressed
                                 }
