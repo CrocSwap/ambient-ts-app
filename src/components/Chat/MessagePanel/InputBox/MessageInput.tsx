@@ -89,6 +89,23 @@ export default function MessageInput(props: MessageInputProps) {
 
     const isRoomAdmins = roomId === 'Admins';
 
+    useEffect(() => {
+        if (props.selectedMessageForReply) {
+            if (
+                props.userMap &&
+                props.userMap.get(props.selectedMessageForReply.sender) !==
+                    undefined
+            ) {
+                const selectedMentUser = props.userMap.get(
+                    props.selectedMessageForReply.sender,
+                ) as User;
+                const userLabel = getUserLabel(selectedMentUser);
+                setMentUser(selectedMentUser);
+                setMessage(`@${userLabel} `);
+            }
+        }
+    }, [props.selectedMessageForReply]);
+
     const handleEmojiClick = (
         event: React.MouseEvent,
         emojiObject: IEmojiData,
@@ -326,6 +343,9 @@ export default function MessageInput(props: MessageInputProps) {
                     ],
                 );
             }
+        } else if (mentPanelActive && e.key === 'Tab') {
+            e.preventDefault();
+            userPickerForMention(possibleMentUser as User);
         } else if (
             e.key !== 'Backspace' &&
             e.key !== 'ArrowRight' &&
@@ -460,11 +480,12 @@ export default function MessageInput(props: MessageInputProps) {
         props.setShowPopUp(false);
         // if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
         if (e.target.value.indexOf('@') !== -1) {
-            if (possibleMentUser === null) {
-                setMentPanelActive(true);
-            }
             const filteredUsers = filterUsers(e.target.value.split('@')[1]);
             setFilteredUsers(filteredUsers);
+            if (possibleMentUser === null) {
+                setMentPanelActive(true);
+                setPossibleMentUser(filteredUsers[0] ?? null);
+            }
             if (filteredUsers.length < 1) {
                 setPossibleMentUser(null);
                 setMentPanelActive(false);

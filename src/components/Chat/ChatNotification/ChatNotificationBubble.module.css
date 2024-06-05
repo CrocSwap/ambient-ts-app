@@ -104,6 +104,10 @@
     border-color: color-mix(in srgb, var(--accent1) 66%, white);
 }
 
+.bold{
+    font-weight: bold;
+}
+
 
 @media only screen and (max-width: 600px){
     .bubble_wrapper{
