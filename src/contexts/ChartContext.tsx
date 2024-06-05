@@ -13,18 +13,18 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
-import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartConstants';
+import { LS_KEY_CHART_ANNOTATIONS } from '../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     actionKeyIF,
     actionStackIF,
     useUndoRedo,
-} from '../pages/Chart/ChartUtils/useUndoRedo';
+} from '../pages/platformAmbient/Chart/ChartUtils/useUndoRedo';
 import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 import {
     drawDataHistory,
     getCssVariable,
     selectedDrawnData,
-} from '../pages/Chart/ChartUtils/chartUtils';
+} from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { BrandContext } from './BrandContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;

@@ -12,7 +12,7 @@ import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import { trimString } from '../../ambient-utils/dataLayer';
-import NotFound from '../../pages/NotFound/NotFound';
+import NotFound from '../../pages/common/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
