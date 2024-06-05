@@ -131,21 +131,28 @@ export const useTokenSearch = (
                           tokens.getTokensFromList(tokenListURIs.uniswap),
                       )
                     : chainId === '0x82750'
-                    ? patchLists(
-                          tokens.getTokensFromList(tokenListURIs.ambient),
-                          tokens.getTokensFromList(tokenListURIs.scrollTech),
-                          tokens.getTokensFromList(
-                              tokenListURIs.scrollCoingecko,
-                          ),
-                      )
-                    : chainId === '0x13e31'
-                    ? patchLists(
-                          tokens.getTokensFromList(tokenListURIs.ambient),
-                          tokens.getTokensFromList(
-                              tokenListURIs.blastCoingecko,
-                          ),
-                      )
-                    : tokens.getTokensFromList(tokenListURIs.ambient);
+                      ? patchLists(
+                            tokens.getTokensFromList(tokenListURIs.ambient),
+                            tokens.getTokensFromList(tokenListURIs.scrollTech),
+                            tokens.getTokensFromList(
+                                tokenListURIs.scrollCoingecko,
+                            ),
+                        )
+                      : chainId === '0x13e31'
+                        ? patchLists(
+                              tokens.getTokensFromList(tokenListURIs.ambient),
+                              tokens.getTokensFromList(
+                                  tokenListURIs.blastCoingecko,
+                              ),
+                          )
+                        : chainId === '0x2105'
+                          ? patchLists(
+                                tokens.getTokensFromList(tokenListURIs.ambient),
+                                tokens.getTokensFromList(
+                                    tokenListURIs.baseCoingecko,
+                                ),
+                            )
+                          : tokens.getTokensFromList(tokenListURIs.ambient);
 
             // ERC-20 tokens from connected wallet subject to universe verification
             const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
