@@ -69,8 +69,8 @@ export function decorateForLiquidityArea(
     threshold: number,
     chartThemeColors: ChartThemeIF,
 ) {
-    const d3BidColor = chartThemeColors.darkStrokeColor?.copy();
-    const d3AskColor = chartThemeColors.lightStrokeColor?.copy();
+    const d3BidColor = chartThemeColors.liqBidColor?.copy();
+    const d3AskColor = chartThemeColors.liqAskColor?.copy();
 
     if (d3BidColor) d3BidColor.opacity = 0.3;
     if (d3AskColor) d3AskColor.opacity = 0.3;

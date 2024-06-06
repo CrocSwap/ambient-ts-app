@@ -32,8 +32,8 @@ export function decorateForLiquidityLine(
     threshold: number,
     chartThemeColors: ChartThemeIF,
 ) {
-    const d3BidColor = chartThemeColors.darkStrokeColor;
-    const d3AskColor = chartThemeColors.lightStrokeColor;
+    const d3BidColor = chartThemeColors.liqBidColor;
+    const d3AskColor = chartThemeColors.liqAskColor;
 
     series.decorate(
         (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {

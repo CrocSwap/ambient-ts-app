@@ -23,8 +23,11 @@ import {
     StyledSelectbox,
 } from './ChartSettingsCss';
 import { VscClose } from 'react-icons/vsc';
-import { chartItemStates } from '../ChartUtils/chartUtils';
-import { ChartThemeIF } from '../../../contexts/ChartContext';
+import { chartItemStates, getCssVariable } from '../ChartUtils/chartUtils';
+import {
+    ChartThemeIF,
+    LocalChartSettingsIF,
+} from '../../../contexts/ChartContext';
 import {
     ColorPickerTab,
     DropDownList,
@@ -34,6 +37,8 @@ import {
 } from '../Draw/FloatingToolbar/FloatingToolbarSettingsCss';
 import { SketchPicker } from 'react-color';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { BrandContext } from '../../../contexts/BrandContext';
+import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
 
 interface ContextMenuIF {
     contextMenuPlacement: { top: number; left: number };
@@ -42,6 +47,11 @@ interface ContextMenuIF {
     chartThemeColors: ChartThemeIF;
     setChartThemeColors: React.Dispatch<
         React.SetStateAction<ChartThemeIF | undefined>
+    >;
+    defaultChartSettings: LocalChartSettingsIF;
+    localChartSettings: LocalChartSettingsIF | undefined;
+    setLocalChartSettings: React.Dispatch<
+        React.SetStateAction<LocalChartSettingsIF | undefined>
     >;
     render: () => void;
 }
@@ -59,6 +69,8 @@ export default function ChartSettings(props: ContextMenuIF) {
         setContextmenu,
         chartThemeColors,
         // setChartThemeColors,
+        defaultChartSettings,
+        setLocalChartSettings,
         render,
     } = props;
 
@@ -75,6 +87,8 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
+
+    const { skin } = useContext(BrandContext);
 
     const handleCandleColorPicker = (
         replaceSelector: string,
@@ -101,16 +115,125 @@ export default function ChartSettings(props: ContextMenuIF) {
         }
     };
 
-    const handleApplyDefaults = () => {
-        console.log('handleApplyDefaults');
+    const handleApplyDefaults = (
+        chartSettings: LocalChartSettingsIF,
+        isDefault = true,
+    ) => {
+        setShowVolume(chartSettings.showVolume);
+        setShowTvl(chartSettings.showTvl);
+        setShowFeeRate(chartSettings.showFeeRate);
+
+        setIsTradeDollarizationEnabled(
+            chartSettings.isTradeDollarizationEnabled,
+        );
+
+        const lightFillColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.lightFillColor)
+            : d3.color(chartSettings.chartColors.lightFillColor);
+
+        const darkFillColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.darkFillColor)
+            : d3.color(chartSettings.chartColors.darkFillColor);
+
+        const selectedDateFillColor = isDefault
+            ? getCssVariable(
+                  skin,
+                  chartSettings.chartColors.selectedDateFillColor,
+              )
+            : d3.color(chartSettings.chartColors.selectedDateFillColor);
+
+        const darkStrokeColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.darkStrokeColor)
+            : d3.color(chartSettings.chartColors.darkStrokeColor);
+
+        const lightStrokeColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.lightStrokeColor)
+            : d3.color(chartSettings.chartColors.lightStrokeColor);
+
+        const liqAskColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.liqAskColor)
+            : d3.color(chartSettings.chartColors.liqAskColor);
+
+        const liqBidColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.liqBidColor)
+            : d3.color(chartSettings.chartColors.liqBidColor);
+
+        const selectedDateStrokeColor = isDefault
+            ? getCssVariable(
+                  skin,
+                  chartSettings.chartColors.selectedDateStrokeColor,
+              )
+            : d3.color(chartSettings.chartColors.selectedDateStrokeColor);
+
+        chartThemeColors.lightFillColor = lightFillColor;
+        chartThemeColors.darkFillColor = darkFillColor;
+        chartThemeColors.selectedDateFillColor = selectedDateFillColor;
+        chartThemeColors.lightStrokeColor = lightStrokeColor;
+        chartThemeColors.darkStrokeColor = darkStrokeColor;
+        chartThemeColors.liqAskColor = liqAskColor;
+        chartThemeColors.liqBidColor = liqBidColor;
+        chartThemeColors.selectedDateStrokeColor = selectedDateStrokeColor;
     };
 
     const handleCancelChanges = () => {
-        console.log('handleCancelChanges');
+        const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(
+            LS_KEY_CHART_CONTEXT_SETTINGS,
+        );
+
+        if (CHART_CONTEXT_SETTINGS_LOCAL_STORAGE) {
+            const parsedContextData = JSON.parse(
+                CHART_CONTEXT_SETTINGS_LOCAL_STORAGE,
+            ) as LocalChartSettingsIF;
+            handleApplyDefaults(parsedContextData, false);
+        } else {
+            handleApplyDefaults(defaultChartSettings);
+        }
     };
 
     const handleSaveChanges = () => {
-        console.log('handleSaveChanges');
+        const localSettings = {
+            chartColors: {
+                lightFillColor: chartThemeColors.lightFillColor
+                    ? chartThemeColors.lightFillColor.toString()
+                    : '--accent5',
+                darkFillColor: chartThemeColors.darkFillColor
+                    ? chartThemeColors.darkFillColor.toString()
+                    : '--dark2',
+                selectedDateFillColor: chartThemeColors.selectedDateFillColor
+                    ? chartThemeColors.selectedDateFillColor.toString()
+                    : '--accent2',
+                lightStrokeColor: chartThemeColors.lightStrokeColor
+                    ? chartThemeColors.lightStrokeColor.toString()
+                    : '--accent5',
+                darkStrokeColor: chartThemeColors.darkStrokeColor
+                    ? chartThemeColors.darkStrokeColor.toString()
+                    : '--accent1',
+                liqAskColor: chartThemeColors.liqAskColor
+                    ? chartThemeColors.liqAskColor.toString()
+                    : '--accent5',
+                liqBidColor: chartThemeColors.liqBidColor
+                    ? chartThemeColors.liqBidColor.toString()
+                    : '--accent1',
+                selectedDateStrokeColor:
+                    chartThemeColors.selectedDateStrokeColor
+                        ? chartThemeColors.selectedDateStrokeColor.toString()
+                        : '--accent2',
+                textColor: chartThemeColors.textColor
+                    ? chartThemeColors.textColor.toString()
+                    : '',
+            },
+            isTradeDollarizationEnabled: isTradeDollarizationEnabled,
+            showVolume: showVolume,
+            showTvl: showTvl,
+            showFeeRate: showFeeRate,
+        };
+
+        setLocalChartSettings(localSettings);
+
+        localStorage.setItem(
+            LS_KEY_CHART_CONTEXT_SETTINGS,
+            JSON.stringify(localSettings),
+        );
     };
 
     const handlePriceInChange = (option: string) => {
@@ -154,7 +277,7 @@ export default function ChartSettings(props: ContextMenuIF) {
     const selectionContent = [
         {
             selection: 'Show prices in',
-            action: setShowVolume,
+            action: handlePriceInChange,
             options: ['Token', 'Dolar'],
         },
     ];
@@ -175,11 +298,11 @@ export default function ChartSettings(props: ContextMenuIF) {
             downColor: 'darkStrokeColor',
         },
         {
-            selection: 'Candle Wicks',
-            actionHandler: 'wick',
+            selection: 'Liquidity Area',
+            actionHandler: 'liq',
             action: handleCandleColorPicker,
-            upColor: 'lightStrokeColor',
-            downColor: 'darkStrokeColor',
+            upColor: 'liqAskColor',
+            downColor: 'liqBidColor',
         },
     ];
 
@@ -271,9 +394,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                             event: MouseEvent<HTMLElement>,
                                                         ) => {
                                                             event.stopPropagation();
-                                                            handlePriceInChange(
-                                                                option,
-                                                            );
+                                                            item.action(option);
                                                         }}
                                                     >
                                                         {option}
@@ -379,7 +500,9 @@ export default function ChartSettings(props: ContextMenuIF) {
                         textColor={'var(--accent1)'}
                         hoverTextColor={'var(--text1)'}
                         style={{ width: '80%' }}
-                        onClick={() => handleApplyDefaults()}
+                        onClick={() =>
+                            handleApplyDefaults(defaultChartSettings)
+                        }
                     >
                         <FooterContextText>Apply defauls</FooterContextText>
                     </FooterButtons>

@@ -1,4 +1,5 @@
 export const LS_KEY_CHART_ANNOTATIONS = 'chart_annotations';
+export const LS_KEY_CHART_CONTEXT_SETTINGS = 'chart_context_settings';
 export const defaultCandleBandwith = 5;
 export const xAxisBuffer = 0.8;
 export const initialDisplayCandleCount = 100;

@@ -217,6 +217,9 @@ export default function Chart(props: propsIF) {
         setChartContainerOptions,
         chartThemeColors,
         setChartThemeColors,
+        defaultChartSettings,
+        localChartSettings,
+        setLocalChartSettings,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -5954,6 +5957,9 @@ export default function Chart(props: propsIF) {
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
                     setChartThemeColors={setChartThemeColors}
+                    defaultChartSettings={defaultChartSettings}
+                    localChartSettings={localChartSettings}
+                    setLocalChartSettings={setLocalChartSettings}
                     render={render}
                 />
             )}

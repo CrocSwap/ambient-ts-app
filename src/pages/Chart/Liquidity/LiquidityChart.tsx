@@ -360,6 +360,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         lineLiqSeries,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
+        chartThemeColors,
     ]);
 
     const clipCanvas = (
