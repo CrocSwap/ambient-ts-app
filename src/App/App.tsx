@@ -25,6 +25,8 @@ import { FlexContainer } from '../styled/Common';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
 
 import { RouteRenderer } from '../routes';
+import Navbar from '../components/Futa/Navbar/Navbar';
+import Footer from '../components/Futa/Footer/Footer';
 
 /** ***** React Function *******/
 export default function App() {
@@ -95,12 +97,26 @@ export default function App() {
         }
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
+    const showChatPanel =
+        currentLocation !== '/' &&
+        currentLocation !== '/404' &&
+        currentLocation !== '/terms' &&
+        currentLocation !== '/privacy' &&
+        currentLocation !== '/faq' &&
+        !currentLocation.includes('/chat') &&
+        isChatEnabled;
+    const ambientFooter = (
+        <div data-theme={skin} className='footer_container'>
+            {showChatPanel && <ChatPanel isFullScreen={false} />}
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
+        </div>
+    );
 
     return (
         <>
             <FlexContainer
                 flexDirection='column'
-                className={containerStyle}
+                className={platformName === 'futa' ? '' : containerStyle}
                 data-theme={skin}
             >
                 {showPoints && showPointSystemPopup && (
@@ -109,25 +125,15 @@ export default function App() {
                     />
                 )}
                 <AppOverlay />
-                <PageHeader />
+                {platformName === 'futa' ? <Navbar /> : <PageHeader />}
+                {/* <PageHeader/> */}
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
                 />
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            <div data-theme={skin} className='footer_container'>
-                {currentLocation !== '/' &&
-                    currentLocation !== '/404' &&
-                    currentLocation !== '/terms' &&
-                    currentLocation !== '/privacy' &&
-                    currentLocation !== '/faq' &&
-                    !currentLocation.includes('/chat') &&
-                    isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && currentLocation !== '/' && (
-                    <SidebarFooter />
-                )}
-            </div>
+            {platformName === 'futa' ? <Footer /> : ambientFooter}
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}

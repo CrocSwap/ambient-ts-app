@@ -1,0 +1,19 @@
+.container{
+    background: var(--dark1, #06060C);
+    display: flex;
+width: 100%;
+height: 64px;
+justify-content: space-between;
+align-items: center;
+position:fixed;
+bottom:0;
+padding: 8px;
+
+}
+
+.footerItem{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
