@@ -9,8 +9,6 @@ const ChartSettingsContainer = styled.div<{
     top: ${({ top }) => top + 'px'};
     left: ${({ left }) => left + 'px'};
 
-    transform: translateY(50%);
-
     overflow: visible;
 
     z-index: 999999;

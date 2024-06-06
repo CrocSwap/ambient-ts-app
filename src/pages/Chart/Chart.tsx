@@ -4332,14 +4332,11 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'contextmenu',
                 (event: PointerEvent) => {
-                    if (!event.shiftKey && mainCanvasBoundingClientRect) {
+                    if (!event.shiftKey) {
                         event.preventDefault();
 
-                        const offsetY =
-                            event.offsetY - mainCanvasBoundingClientRect?.top;
-
                         setContextMenuPlacement({
-                            top: offsetY,
+                            top: event.clientY,
                             left: event.clientX,
                         });
 

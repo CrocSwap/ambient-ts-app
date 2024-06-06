@@ -267,11 +267,11 @@ export default function ChartSettings(props: ContextMenuIF) {
             action: setShowFeeRate,
             selection: 'Show Fee Rate',
         },
-        // {
-        //     checked: showFeeRate,
-        //     action: setShowFeeRate,
-        //     selection: 'Show empty candles',
-        // },
+        {
+            checked: false,
+            action: setShowFeeRate,
+            selection: 'Show empty candles',
+        },
     ];
 
     const selectionContent = [
