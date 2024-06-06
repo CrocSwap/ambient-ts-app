@@ -14,7 +14,10 @@ import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { TradeDataContext } from './TradeDataContext';
-import { getFormattedNumber, isWethToken } from '../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    isWrappedNativeToken,
+} from '../ambient-utils/dataLayer';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -108,8 +111,9 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 const baseAddr: string = p.base.address.toLowerCase();
                 const quoteAddr: string = p.quote.address.toLowerCase();
                 const isMatch: boolean =
-                    (baseAddr === tkn1Addr && !isWethToken(quoteAddr)) ||
-                    (quoteAddr === tkn1Addr && !isWethToken(baseAddr));
+                    (baseAddr === tkn1Addr &&
+                        !isWrappedNativeToken(quoteAddr)) ||
+                    (quoteAddr === tkn1Addr && !isWrappedNativeToken(baseAddr));
                 return isMatch;
             });
         }
