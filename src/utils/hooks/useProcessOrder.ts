@@ -20,7 +20,7 @@ import {
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import moment from 'moment';
-import { getAddress } from 'ethers/lib/utils.js';
+import { getAddress } from 'ethers';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { UserDataContext } from '../../contexts/UserDataContext';

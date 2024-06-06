@@ -6,7 +6,7 @@ import App from './App/App';
 import './i18n/config';
 import { StyleSheetManager } from 'styled-components';
 import isValidProp from '@emotion/is-prop-valid';
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
@@ -48,7 +48,9 @@ const metadata = {
 const ethersConfig = defaultConfig({
     metadata,
     defaultChainId: 1,
-    // enableEmail: true,
+    enableEmail: false,
+    rpcUrl: ' ',
+    coinbasePreference: 'smartWalletOnly',
 });
 
 const modal = createWeb3Modal({

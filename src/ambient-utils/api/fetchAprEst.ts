@@ -1,5 +1,5 @@
 import { capitalConcFactor, CrocEnv } from '@crocswap-libs/sdk';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 
 // Approximately 24 hours in Ethereum. TODO make this generalizable across
 // chains.
@@ -21,13 +21,14 @@ export async function estimateFrom24HrAmbientApr(
 
     const nowGrowth = crocEnv
         .pool(base, quote)
-        .cumAmbientGrowth(lastBlockNumber);
+        .cumAmbientGrowth(Number(lastBlockNumber));
     const prevGrowth = crocEnv
         .pool(base, quote)
-        .cumAmbientGrowth(lookbackBlockNum);
+        .cumAmbientGrowth(Number(lookbackBlockNum));
 
     const periodGrowth = (await nowGrowth) - (await prevGrowth);
-    const timeSecs = Date.now() / 1000 - (await lookbackBlock).timestamp;
+    const timeSecs =
+        Date.now() / 1000 - Number((await lookbackBlock)?.timestamp);
 
     const timeYears = timeSecs / (365 * 24 * 3600);
     return periodGrowth / timeYears;

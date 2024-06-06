@@ -9,9 +9,9 @@ import {
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { GCGO_BLAST_URL } from '../gcgo';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
@@ -43,6 +43,9 @@ export const blast: NetworkIF = {
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+        return (
+            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+            1e-9
+        );
     },
 };

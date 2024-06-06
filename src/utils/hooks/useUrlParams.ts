@@ -46,7 +46,7 @@ interface urlParamsMethodsIF {
 export const useUrlParams = (
     tokens: tokenMethodsIF,
     dfltChainId: string,
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
     const { setTokenA, setTokenB, setLimitTick } = useContext(TradeDataContext);

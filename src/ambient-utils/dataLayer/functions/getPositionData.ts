@@ -1,8 +1,8 @@
 import {
     baseTokenForConcLiq,
-    bigNumToFloat,
+    bigIntToFloat,
     CrocEnv,
-    floatToBigNum,
+    floatToBigInt,
     quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
@@ -11,7 +11,7 @@ import { PositionIF, PositionServerIF, TokenIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
@@ -246,18 +246,18 @@ export const getPositionData = async (
     } else if (position.positionType == 'concentrated') {
         newPosition.positionLiq = position.concLiq;
 
-        newPosition.positionLiqBase = bigNumToFloat(
+        newPosition.positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(position.concLiq),
+                floatToBigInt(position.concLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),
         );
-        newPosition.positionLiqQuote = bigNumToFloat(
+        newPosition.positionLiqQuote = bigIntToFloat(
             quoteTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(position.concLiq),
+                floatToBigInt(position.concLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),

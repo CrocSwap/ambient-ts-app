@@ -32,7 +32,7 @@ import TableRows from '../TableRows';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import {
-    bigNumToFloat,
+    bigIntToFloat,
     baseTokenForConcLiq,
     tickToPrice,
     quoteTokenForConcLiq,
@@ -481,20 +481,20 @@ function Ranges(props: propsIF) {
 
                     if (!pendingPositionUpdate.txDetails)
                         return {} as PositionIF;
-                    const liqBigNum = pendingPositionUpdate.txDetails.isAmbient
+                    const liqBigInt = pendingPositionUpdate.txDetails.isAmbient
                         ? position.seeds
                         : position.liq;
-                    const liqNum = bigNumToFloat(liqBigNum);
+                    const liqNum = bigIntToFloat(liqBigInt);
                     if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
                             liqNum * Math.sqrt(poolPriceNonDisplay);
                         positionLiqQuote =
                             liqNum / Math.sqrt(poolPriceNonDisplay);
                     } else {
-                        positionLiqBase = bigNumToFloat(
+                        positionLiqBase = bigIntToFloat(
                             baseTokenForConcLiq(
                                 poolPriceNonDisplay,
-                                liqBigNum,
+                                liqBigInt,
                                 tickToPrice(
                                     pendingPositionUpdate.txDetails.lowTick ||
                                         0,
@@ -505,10 +505,10 @@ function Ranges(props: propsIF) {
                                 ),
                             ),
                         );
-                        positionLiqQuote = bigNumToFloat(
+                        positionLiqQuote = bigIntToFloat(
                             quoteTokenForConcLiq(
                                 poolPriceNonDisplay,
-                                liqBigNum,
+                                liqBigInt,
                                 tickToPrice(
                                     pendingPositionUpdate.txDetails.lowTick ||
                                         0,
