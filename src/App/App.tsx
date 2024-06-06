@@ -331,7 +331,7 @@ export default function App() {
                             path='v1/auctions/:ticker'
                             element={<AuctionDetail />}
                         />
-                        <Route path='v1/new' element={<Create />} />
+                        <Route path='v1/auctions/new' element={<Create />} />
                     </Routes>
                 )}
             </FlexContainer>
