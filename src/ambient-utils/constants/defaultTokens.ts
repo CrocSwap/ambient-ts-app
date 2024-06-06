@@ -298,6 +298,15 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
+export const blastWEETH: TokenIF = {
+    address: '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A',
+    chainId: 81457,
+    decimals: 18,
+    name: 'Wrapped eETH',
+    symbol: 'weETH',
+    logoURI: 'https://scroll-tech.github.io/token-list/data/weETH/logo.svg',
+};
+
 export const blastWrsETH: TokenIF = {
     name: 'Wrapped Kelp DAO Restaked ETH',
     address: '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd',
@@ -603,6 +612,7 @@ export const defaultTokens: TokenIF[] = [
     blastALIEN,
     blastOLE,
     blastWETH,
+    blastWEETH,
     blastEzETH,
     blastPUMP,
     blastYES,
