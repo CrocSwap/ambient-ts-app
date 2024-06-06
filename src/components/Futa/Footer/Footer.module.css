@@ -29,6 +29,7 @@ padding: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap:14rem
+    gap:14rem;
+    display: none;
 }
 }

@@ -84,6 +84,28 @@
     color: var(--accent1);
 }
 
+.logoContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px
+}
+
+.desktopLinksContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+}
+.desktopLink{
+color: var(--text2, #8B98A5);
+font-size: 20px;
+text-transform: uppercase;
+transition: all var(--animation-speed) ease-in-out;
+}
+.desktopLink:hover{
+color: var(--accent1)
+}
 @media (min-width: 768px) {
     .logoutButton {
         max-width: 300px;

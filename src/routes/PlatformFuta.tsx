@@ -6,6 +6,7 @@ import Swap from '../pages/platformFuta/Swap/Swap';
 import Learn from '../pages/platformFuta/Learn/Learn';
 import Account from '../pages/platformFuta/Account/Account';
 import Create from '../pages/platformFuta/Create/Create';
+import Auctions from '../pages/platformFuta/Auctions/Auctions';
 
 const PlatformFutaRoutes: React.FC = () => {
     const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
@@ -26,6 +27,7 @@ const PlatformFutaRoutes: React.FC = () => {
             <Route path='/learn' element={<Learn />} />
             <Route path='/account' element={<Account />} />
             <Route path='/create' element={<Create />} />
+            <Route path='/auctions' element={<Auctions />} />
             <Route path='/trade' element={<Navigate to='/explore' replace />} />
         </Routes>
     );

@@ -41,9 +41,25 @@ const dropdownVariants = {
     },
 };
 
-const itemVariants = {
+const dropdownItemVariants = {
     hidden: { opacity: 0, y: -20 },
     visible: { opacity: 1, y: 0 },
+};
+
+const linksContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1, // Stagger the appearance of child elements
+            delayChildren: 0.2, // Delay before children start appearing
+        },
+    },
+};
+
+const linkItemVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0 },
 };
 
 export default function Navbar() {
@@ -108,8 +124,40 @@ export default function Navbar() {
         { label: 'legal & privacy', link: '#' },
         { label: 'terms of service', link: '#' },
     ];
+    const navbarLinks = [
+        {
+            label: 'Auctions',
+            link: '/auctions',
+        },
+        {
+            label: 'Account',
+            link: '/account',
+        },
+        {
+            label: 'Create',
+            link: '/create',
+        },
+    ];
 
     // Components
+    const linksDisplay = (
+        <motion.div
+            className={styles.desktopLinksContainer}
+            initial='hidden'
+            animate='visible'
+            variants={linksContainerVariants}
+        >
+            {navbarLinks.map((item, idx) => (
+                <motion.div
+                    key={idx}
+                    className={styles.desktopLink}
+                    variants={linkItemVariants}
+                >
+                    <Link to={item.link}>{item.label}</Link>
+                </motion.div>
+            ))}
+        </motion.div>
+    );
     const connectWagmiButton = (
         <Button
             idForDOM='connect_wallet_button_page_header'
@@ -122,9 +170,12 @@ export default function Navbar() {
 
     return (
         <div className={styles.container}>
-            <Link to='/'>
-                <img src={Logo} alt='futa logo' />
-            </Link>
+            <div className={styles.logoContainer}>
+                <Link to='/'>
+                    <img src={Logo} alt='futa logo' />
+                </Link>
+                {desktopScreen && linksDisplay}
+            </div>
             <div className={styles.rightContainer}>
                 <NetworkSelector
                     switchNetwork={switchNetwork}
@@ -148,7 +199,7 @@ export default function Navbar() {
                             {dropdownData.map((item, idx) => (
                                 <motion.div
                                     key={idx}
-                                    variants={itemVariants}
+                                    variants={dropdownItemVariants}
                                     className={styles.linkContainer}
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
@@ -157,7 +208,7 @@ export default function Navbar() {
                             ))}
                             <motion.p
                                 className={styles.version}
-                                variants={itemVariants}
+                                variants={dropdownItemVariants}
                             >
                                 Version 1.0.0
                             </motion.p>
