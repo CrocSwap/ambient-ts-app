@@ -22,3 +22,13 @@ padding: 8px;
 .footerItem:hover {
     color: var(--accent1)
 }
+
+@media (min-width: 768px) {
+.container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:14rem
+}
+}

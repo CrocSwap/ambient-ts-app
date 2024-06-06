@@ -12,7 +12,7 @@ import {
     useSwitchNetwork,
 } from '@web3modal/ethers5/react';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-// import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -76,9 +76,9 @@ export default function Navbar() {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Handlers
-    // const clickOutsideHandler = () => {
-    //     setIsDropdownOpen(false);
-    // };
+    const clickOutsideHandler = () => {
+        setIsDropdownOpen(false);
+    };
 
     const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
@@ -94,7 +94,7 @@ export default function Navbar() {
     }, []);
 
     // Custom Hooks
-    // useOnClickOutside(dropdownRef, clickOutsideHandler);
+    useOnClickOutside(dropdownRef, clickOutsideHandler);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
     const switchNetwork = isConnected
         ? useSwitchNetwork().switchNetwork
