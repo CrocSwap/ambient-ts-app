@@ -462,12 +462,8 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                 position: 'fixed',
                                                 zIndex: 199,
                                                 paddingTop: '15px',
-                                                left:
-                                                    28 -
-                                                    (selectedColorObj.index %
-                                                        2) *
-                                                        10 +
-                                                    '%',
+                                                transform:
+                                                    'translateX(' + -90 + 'px)',
                                             }}
                                             onClick={(
                                                 event: MouseEvent<HTMLElement>,

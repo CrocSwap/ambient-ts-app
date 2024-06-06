@@ -245,7 +245,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     useEffect(() => {
         renderChart();
-    }, [liquidityScale === undefined, liquidityDepthScale === undefined]);
+    }, [
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
+        diffHashSig(chartThemeColors),
+    ]);
 
     useEffect(() => {
         if (
@@ -313,6 +317,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
+        console.log(chartThemeColors);
+
         if (liqSeries && chartThemeColors) {
             decorateForLiquidityArea(
                 liqSeries,
@@ -350,6 +356,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 chartThemeColors,
             );
         }
+
+        renderCanvasArray([d3CanvasLiq]);
     }, [
         liqMode,
         liquidityData?.liqTransitionPointforCurve,
@@ -923,7 +931,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasLiq]);
-    }, [diffHashSig(liquidityData), ranges, liqMode, location.pathname]);
+    }, [
+        diffHashSig(liquidityData),
+        ranges,
+        liqMode,
+        location.pathname,
+        diffHashSig(chartThemeColors),
+        chartThemeColors,
+    ]);
 
     return (
         <>

@@ -428,12 +428,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 : getCssVariable(skin, '--accent5');
 
         const liqAskColor =
-            contextChartColors && contextChartColors.darkStrokeColor
-                ? d3.color(contextChartColors.darkStrokeColor)
+            contextChartColors && contextChartColors.liqAskColor
+                ? d3.color(contextChartColors.liqAskColor)
                 : getCssVariable(skin, '--accent5');
         const liqBidColor =
-            contextChartColors && contextChartColors.lightStrokeColor
-                ? d3.color(contextChartColors.lightStrokeColor)
+            contextChartColors && contextChartColors.liqBidColor
+                ? d3.color(contextChartColors.liqBidColor)
                 : getCssVariable(skin, '--accent1');
 
         const selectedDateStrokeColor =
