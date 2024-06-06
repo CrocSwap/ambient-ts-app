@@ -8,6 +8,10 @@ export default function Create() {
     const TICKER_INPUT_ID = 'ticker_input';
     const TICKER_MAX_LENGTH = 10;
 
+    // mock data
+    const liquidityText = '0.25 ETH';
+    const networkFeeText = '≈$0.01';
+
     return (
         <section className={styles.create_token}>
             <div className={styles.create_token_top}>
@@ -34,11 +38,11 @@ export default function Create() {
                 <div className={styles.detail_box}>
                     <div>
                         <div>LIQUIDITY</div>
-                        <div>0.25 ETH</div>
+                        <div>{liquidityText}</div>
                     </div>
                     <div>
                         <div>NETWORK FEE</div>
-                        <div>≈$0.01</div>
+                        <div>{networkFeeText}</div>
                     </div>
                 </div>
             </div>
