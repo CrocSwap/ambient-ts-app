@@ -200,7 +200,7 @@ export const blastOLE: TokenIF = {
     decimals: 18,
     name: 'OpenLeverage',
     symbol: 'OLE',
-    logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
+    logoURI: '',
 };
 
 export const blastSepoliaETH: TokenIF = {

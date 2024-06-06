@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1024 1024" style="enable-background:new 0 0 1024 1024;" xml:space="preserve">
+<style type="text/css">
+	.st0{filter:url(#Adobe_OpacityMaskFilter);}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	
+		.st2{mask:url(#mask-2_00000009560982667052312390000011508117898691510190_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-5_00000093170262170171640620000016903727389406007956_);}
+	.st3{filter:url(#Adobe_OpacityMaskFilter_00000157990403947949694850000013531739793316218289_);}
+	
+		.st4{mask:url(#mask-5_00000126287959457592219270000017013294494953536942_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-7_00000147203590688121087180000014333124718740299916_);}
+	.st5{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;fill-opacity:0.4;}
+</style>
+<g id="logo" transform="translate(170.666667, 170.666667)">
+	<g id="group-">
+		<g id="Clip-6">
+		</g>
+		<defs>
+			<filter id="Adobe_OpacityMaskFilter" filterUnits="userSpaceOnUse" x="0" y="2.4" width="594.5" height="586.7">
+				<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+			</filter>
+		</defs>
+		
+			<mask maskUnits="userSpaceOnUse" x="0" y="2.4" width="594.5" height="586.7" id="mask-2_00000009560982667052312390000011508117898691510190_">
+			<g class="st0">
+				<polygon id="path-1_00000115508550445272062490000010229716361669712528_" class="st1" points="419.1,2.4 0,413.3 0,588.9 
+					177.8,589.2 594.5,178.1 594.5,3.1 				"/>
+			</g>
+		</mask>
+		
+			<linearGradient id="Fill-5_00000063614523628252766050000015104519582005348510_" gradientUnits="userSpaceOnUse" x1="-157.7519" y1="841.3093" x2="-158.746" y2="840.2687" gradientTransform="matrix(594.4893 0 0 -586.7468 94337.6406 493664.0312)">
+			<stop  offset="0" style="stop-color:#FF1C7C"/>
+			<stop  offset="1" style="stop-color:#4D7EE9"/>
+		</linearGradient>
+		
+			<polygon id="Fill-5" style="mask:url(#mask-2_00000009560982667052312390000011508117898691510190_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-5_00000063614523628252766050000015104519582005348510_);" points="
+			419.1,2.4 0,413.3 0,588.9 177.8,589.2 594.5,178.1 594.5,3.1 		"/>
+	</g>
+	<g id="group-_00000174577069306765109620000013948330807128117678_" transform="translate(303.124378, 303.261538)">
+		<g id="Clip-8">
+		</g>
+		<defs>
+			
+				<filter id="Adobe_OpacityMaskFilter_00000020359490398638522460000004960836284382360994_" filterUnits="userSpaceOnUse" x="2.8" y="0.7" width="288.6" height="285.4">
+				<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+			</filter>
+		</defs>
+		
+			<mask maskUnits="userSpaceOnUse" x="2.8" y="0.7" width="288.6" height="285.4" id="mask-5_00000126287959457592219270000017013294494953536942_">
+			<g style="filter:url(#Adobe_OpacityMaskFilter_00000020359490398638522460000004960836284382360994_);">
+				<path id="path-4_00000041293298304846682540000005932489565392504970_" class="st1" d="M2.8,285.9c-0.5,0.6,286.4-0.9,286.4-0.9
+					l0,0c0.8,0,1.4-0.6,1.4-1.4l0,0l0,0l0.8-282.9l0,0l0,0C290.5,0.7,2.8,285.9,2.8,285.9"/>
+			</g>
+		</mask>
+		
+			<linearGradient id="Fill-7_00000018942132224413825940000014904826291592901309_" gradientUnits="userSpaceOnUse" x1="-461.3125" y1="537.1678" x2="-461.3585" y2="538.187" gradientTransform="matrix(288.567 0 0 -285.3685 133272.4688 153561.3906)">
+			<stop  offset="0" style="stop-color:#4D7EE9"/>
+			<stop  offset="1" style="stop-color:#FF1C7C"/>
+		</linearGradient>
+		
+			<path id="Fill-7" style="mask:url(#mask-5_00000126287959457592219270000017013294494953536942_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-7_00000018942132224413825940000014904826291592901309_);" d="
+			M2.8,285.9c-0.5,0.6,286.4-0.9,286.4-0.9l0,0c0.8,0,1.4-0.6,1.4-1.4l0,0l0,0l0.8-282.9l0,0l0,0C290.5,0.7,2.8,285.9,2.8,285.9"/>
+	</g>
+	<polygon id="Fill-9" class="st5" points="0,413.3 0,588.9 594.5,3.1 419.1,2.4 	"/>
+</g>
+</svg>
