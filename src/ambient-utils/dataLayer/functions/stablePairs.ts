@@ -64,8 +64,15 @@ export function isWbtcToken(addr: string): boolean {
 }
 
 // @return true if the token is a WETH or wrapped native token asset
-export function isWethToken(addr: string): boolean {
-    return WETH_TOKENS.includes(addr.toLowerCase());
+export function isWrappedNativeToken(addr: string): boolean {
+    return WRAPPED_NATIVE_TOKENS.includes(addr.toLowerCase());
+}
+
+export function remapTokenIfWrappedNative(addr: string): string {
+    if (isWrappedNativeToken(addr)) {
+        return ZERO_ADDRESS;
+    }
+    return addr;
 }
 
 // No need to specify chain ID because token address is unique even across chains
@@ -112,7 +119,7 @@ export const STAKED_ETH_TOKENS = [
     blastEzETH.address,
 ].map((x) => x.toLowerCase());
 
-export const WETH_TOKENS = [
+export const WRAPPED_NATIVE_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
     '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia
