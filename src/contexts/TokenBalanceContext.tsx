@@ -40,28 +40,28 @@ export const TokenBalanceContextProvider = (props: {
         walletBalance?: string | undefined;
         dexBalance?: string | undefined;
     }) => {
-        if (!tokenBalances) return;
-        const newTokenBalances = [...tokenBalances];
-
-        const tokenIndex = newTokenBalances?.findIndex(
-            (token) =>
-                token.address.toLowerCase() ===
-                params.tokenAddress.toLowerCase(),
-        );
-
-        if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
-            const newTokenBalance = newTokenBalances[tokenIndex];
-            if (params.walletBalance) {
-                newTokenBalance.walletBalance = params.walletBalance;
+        setTokenBalances((prev) => {
+            const newTokenBalances = prev ? [...prev] : [];
+            const tokenIndex = newTokenBalances?.findIndex(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    params.tokenAddress.toLowerCase(),
+            );
+            if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
+                const newTokenBalance = newTokenBalances[tokenIndex];
+                if (params.walletBalance) {
+                    newTokenBalance.walletBalance = params.walletBalance;
+                }
+                if (params.dexBalance) {
+                    newTokenBalance.dexBalance = params.dexBalance;
+                }
+                if (params.dexBalance || params.walletBalance) {
+                    newTokenBalances[tokenIndex] = newTokenBalance;
+                    return newTokenBalances;
+                }
             }
-            if (params.dexBalance) {
-                newTokenBalance.dexBalance = params.dexBalance;
-            }
-            if (params.dexBalance || params.walletBalance) {
-                newTokenBalances[tokenIndex] = newTokenBalance;
-                setTokenBalances(newTokenBalances);
-            }
-        }
+            return prev;
+        });
     };
 
     const tokenBalanceContext = {
