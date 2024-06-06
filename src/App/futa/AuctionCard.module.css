@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     height: 120px;
+    gap: 8px;
     outline: 3px solid green;
 }
 
@@ -11,6 +12,7 @@
     justify-content: space-between;
     align-items: center;
     width: 110px;
+    outline: 1px solid yellow;
 }
 
 .auction_maker {
@@ -31,6 +33,11 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.auction_name {
+    font-size: 14px;
+    color: cyan;
 }
 
 .comments {

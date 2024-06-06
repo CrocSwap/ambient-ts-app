@@ -25,7 +25,7 @@ export default function AuctionCard(props: propsIF) {
                     <h5>{auction.marketCap}</h5>
                 </div>
                 <div className={styles.info_sub_header}>
-                    <h5>{auction.name}</h5>
+                    <h5 className={styles.auction_name}>{auction.name}</h5>
                     <h5 className={styles.comments}>
                         <BsChatLeftText />
                         {auction.comments.length}
