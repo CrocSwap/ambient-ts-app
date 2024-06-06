@@ -323,19 +323,15 @@ export default function App() {
                     <Routes>
                         <Route index element={<TestPage />} />
                         <Route
-                            path='futa'
-                            element={<Navigate to='futa/v1/auctions' replace />}
+                            path='v1'
+                            element={<Navigate to='v1/auctions' replace />}
                         />
+                        <Route path='v1/auctions' element={<Auctions />} />
                         <Route
-                            path='futa/v1'
-                            element={<Navigate to='futa/v1/auctions' replace />}
-                        />
-                        <Route path='futa/v1/auctions' element={<Auctions />} />
-                        <Route
-                            path='futa/v1/auctions/:ticker'
+                            path='v1/auctions/:ticker'
                             element={<AuctionDetail />}
                         />
-                        <Route path='futa/v1/new' element={<Create />} />
+                        <Route path='v1/new' element={<Create />} />
                     </Routes>
                 )}
             </FlexContainer>
