@@ -101,10 +101,17 @@ export default function MessageInput(props: MessageInputProps) {
                 ) as User;
                 const userLabel = getUserLabel(selectedMentUser);
                 setMentUser(selectedMentUser);
-                setMessage(`@${userLabel} `);
+                setMessage(`@${userLabel}, `);
+                inputRef.current?.focus();
             }
         }
-    }, [props.selectedMessageForReply]);
+    }, [props.selectedMessageForReply, props.isReplyButtonPressed]);
+
+    useEffect(() => {
+        if (filteredUsers.length > 0) {
+            setPossibleMentUser(filteredUsers[0] as User);
+        }
+    }, [filteredUsers]);
 
     const handleEmojiClick = (
         event: React.MouseEvent,

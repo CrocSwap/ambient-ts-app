@@ -32,7 +32,7 @@ export default function Options(props: propsIF) {
     const showMore = false;
 
     function setReplyMessage() {
-        props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
+        props.setIsReplyButtonPressed(true);
         props.setSelectedMessageForReply(props.message);
     }
 
