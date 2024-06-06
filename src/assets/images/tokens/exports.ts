@@ -27,6 +27,7 @@ import XMON from './XMON.png';
 import MKR from './MKR.png';
 import SWETH from './SWETH.svg';
 import LINK from './LINK.svg';
+import OLE from './OLE.svg';
 import SYN from './SYN.png';
 import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
@@ -73,6 +74,7 @@ export {
     MKR,
     SWETH,
     LINK,
+    OLE,
     SYN,
     LDO,
     BLUR,
