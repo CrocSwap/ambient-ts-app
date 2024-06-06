@@ -1,3 +1,10 @@
 .create_token {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.create_button {
+    border: none;
+    background-color: cyan;
 }

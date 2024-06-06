@@ -58,37 +58,12 @@ export default function Create() {
 
     return (
         <section className={styles.create_token}>
-            {/* <div className={styles.style_wrapper}>
-                <div className={styles.on_back}>
-                    <FaAngleLeft size={60} />
-                </div>
-                <div className={styles.create_form}>
-                    <div className={styles.form_left}>
-                        <div className={styles.description}>
-                            Some text here describing how launching a token
-                            works and what things will happen.
-                        </div>
-                        <CreateField
-                            inputId='token_image_input'
-                            label='Token Image'
-                            updateRef={() => null}
-                            rows={6}
-                            box
-                        />
-                    </div>
-                    <div className={styles.form_right}>
-                        {inputs.map((inp: CreateFieldPropsIF) => (
-                            <CreateField key={JSON.stringify(inp)} {...inp} />
-                        ))}
-                        <button
-                            className={styles.submit_btn}
-                            onClick={() => console.log(token.current)}
-                        >
-                            Create Token
-                        </button>
-                    </div>
-                </div>
-            </div> */}
+            <button
+                className={styles.create_button}
+                onClick={() => console.log('clicked Create Token')}
+            >
+                Create Token
+            </button>
         </section>
     );
 }
