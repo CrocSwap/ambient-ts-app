@@ -1,9 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Create.module.css';
 import { Link } from 'react-router-dom';
 
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
+
+    const [isValidated, setIsValidated] = useState<boolean>(true);
+
+    function handleChange(text: string) {
+        setIsValidated(false);
+        setTicker(text);
+    }
+
+    useEffect(() => {
+        if (isValidated) return;
+        const interval = setInterval(() => setIsValidated(true), 500);
+        return () => clearInterval(interval);
+    }, [isValidated]);
 
     // name for the ticker input field, keeps `<input/>` and `<label/>` sync'd
     const TICKER_INPUT_ID = 'ticker_input';
@@ -35,7 +48,7 @@ export default function Create() {
                         name={TICKER_INPUT_ID}
                         type='text'
                         maxLength={TICKER_MAX_LENGTH}
-                        onChange={(e) => setTicker(e.target.value)}
+                        onChange={(e) => handleChange(e.target.value)}
                         autoComplete='off'
                     />
                 </div>
@@ -51,10 +64,15 @@ export default function Create() {
                 </div>
             </div>
             <button
-                className={styles.create_button}
+                className={
+                    isValidated
+                        ? styles.create_button
+                        : styles.create_button_disabled
+                }
                 onClick={() => console.log('clicked Create Token')}
+                disabled={!isValidated}
             >
-                Create Token
+                {isValidated ? 'Create Token' : 'Validating Ticker...'}
             </button>
         </section>
     );
