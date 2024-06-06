@@ -3,6 +3,7 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 10px;
+    max-width: 600px;
     height: calc(100vh - 136px);
 }
 
