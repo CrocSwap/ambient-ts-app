@@ -52,6 +52,8 @@ text-transform: uppercase;
 text-align: center;
 outline: none;
 border: none;
+transition: all var(--animation-speed) ease-in-out;
+border: 1px solid transparent;
 }
 
 .exploreButton{
@@ -59,10 +61,21 @@ border: none;
     color: var(--dark1, #06060C);
 
 }
+
+.exploreButton:hover{
+    background: transparent;
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
+   
+}
 .learnButton{
     background: var(--accent2, #073749);
     color: var(--accent1, #0CCDFF);
 
+}
+.learnButton:hover{
+    background: transparent;
+    border: 1px solid var(--accent1)
 }
 
 .container h1{

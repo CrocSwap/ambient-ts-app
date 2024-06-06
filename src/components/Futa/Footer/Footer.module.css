@@ -16,4 +16,9 @@ padding: 8px;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out
+}
+
+.footerItem:hover {
+    color: var(--accent1)
 }

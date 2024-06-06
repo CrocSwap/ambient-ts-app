@@ -3,7 +3,7 @@ import React from 'react';
 function Explore() {
     return (
         <div>
-            FUTA Explore
+            <h1>FUTA EXPLORE</h1>
             <p>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi,
                 nobis fugiat! Repellendus porro ipsum accusamus? Nobis aliquam

@@ -6,13 +6,19 @@ import {
     useWeb3ModalAccount,
     useSwitchNetwork,
 } from '@web3modal/ethers5/react';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import Button from '../../Form/Button';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { motion } from 'framer-motion';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 // TODO: UNCOMMENT OUT ANIMATE PRESENCE IF WE WANT THE STAGGER ANIMATION TO ONLY HAPPEN THE FIRST TIME THE USER OPENS THE MENU AND STOP AFTER THAT
 const dropdownVariants = {
     hidden: { height: 0, opacity: 0 },
@@ -41,7 +47,23 @@ export default function Navbar() {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { isConnected } = useWeb3ModalAccount();
-    const { isUserConnected } = useContext(UserDataContext);
+    const { isUserConnected, disconnectUser } = useContext(UserDataContext);
+    const { setCrocEnv } = useContext(CrocEnvContext);
+    const {
+        baseToken: {
+            setBalance: setBaseTokenBalance,
+            setDexBalance: setBaseTokenDexBalance,
+        },
+        quoteToken: {
+            setBalance: setQuoteTokenBalance,
+            setDexBalance: setQuoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
+    const { resetUserGraphData } = useContext(GraphDataContext);
+    const { resetReceiptData } = useContext(ReceiptContext);
+    const { setShowAllData } = useContext(TradeTableContext);
+
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -80,6 +102,18 @@ export default function Navbar() {
             flat
         ></Button>
     );
+    const clickLogout = useCallback(async () => {
+        setCrocEnv(undefined);
+        setBaseTokenBalance('');
+        setQuoteTokenBalance('');
+        setBaseTokenDexBalance('');
+        setQuoteTokenDexBalance('');
+        resetUserGraphData();
+        resetReceiptData();
+        resetTokenBalances();
+        setShowAllData(true);
+        disconnectUser();
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -92,6 +126,7 @@ export default function Navbar() {
                     switchNetwork={switchNetwork}
                     customBR={'50%'}
                 />
+                {!isUserConnected && connectWagmiButton}
                 <div className={styles.moreContainer}>
                     <FiMoreHorizontal
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -123,15 +158,19 @@ export default function Navbar() {
                             </motion.p>
                             <motion.button
                                 className={styles.logoutButton}
-                                variants={itemVariants}
+                                onClick={
+                                    isUserConnected
+                                        ? clickLogout
+                                        : openWalletModal
+                                }
+                                // variants={itemVariants}
                             >
-                                LOG OUT
+                                {isUserConnected ? 'LOG OUT' : 'CONNECT WALLET'}
                             </motion.button>
                         </motion.div>
                     )}
                     {/* </AnimatePresence> */}
                 </div>
-                {!isUserConnected && connectWagmiButton}
             </div>
         </div>
     );
