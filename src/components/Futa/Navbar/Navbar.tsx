@@ -182,7 +182,7 @@ export default function Navbar() {
                     customBR={'50%'}
                 />
                 {!isUserConnected && connectWagmiButton}
-                <div className={styles.moreContainer}>
+                <div className={styles.moreContainer} ref={dropdownRef}>
                     <FiMoreHorizontal
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     />
@@ -194,7 +194,6 @@ export default function Navbar() {
                             animate='visible'
                             exit='exit'
                             variants={dropdownVariants}
-                            ref={dropdownRef}
                         >
                             {dropdownData.map((item, idx) => (
                                 <motion.div
