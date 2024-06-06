@@ -28,6 +28,7 @@ export default function Create() {
                         type='text'
                         maxLength={TICKER_MAX_LENGTH}
                         onChange={(e) => setTicker(e.target.value)}
+                        autoComplete='off'
                     />
                 </div>
                 <div className={styles.detail_box}>
