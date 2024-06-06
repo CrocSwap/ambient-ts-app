@@ -46,6 +46,8 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     onInitPage?: boolean;
+    customBorderRadius?: string;
+    customBottomContent?: React.ReactNode;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -63,6 +65,8 @@ function TokenInputQuantity(props: propsIF) {
         handleTokenInputEvent,
         reverseTokens,
         setTokenModalOpen = () => null,
+        customBorderRadius,
+        customBottomContent,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -199,7 +203,7 @@ function TokenInputQuantity(props: propsIF) {
             id={fieldId}
             style={{
                 background: 'var(--dark2)',
-                borderRadius: '1rem',
+                borderRadius: customBorderRadius ? customBorderRadius : '1rem',
                 gap: '8px',
                 padding: '8px 8px 8px 16px ',
                 minHeight: '81px',
@@ -234,6 +238,11 @@ function TokenInputQuantity(props: propsIF) {
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                     ref={tokenSelectRef}
+                    style={{
+                        borderRadius: customBorderRadius
+                            ? customBorderRadius
+                            : '50px',
+                    }}
                 >
                     <TokenIcon
                         token={token}
@@ -245,7 +254,7 @@ function TokenInputQuantity(props: propsIF) {
                     <RiArrowDownSLine size={27} />
                 </TokenSelectButton>
             </TokenQuantityContainer>
-
+            {customBottomContent && customBottomContent}
             {includeWallet && includeWallet}
             {isTokenSelectOpen && modalOrNoModal}
         </FlexContainer>

@@ -1,0 +1,78 @@
+.create_token {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    height: calc(100vh - 136px);
+}
+
+.create_token_top {
+    display: flex;
+    flex-direction: column;
+}
+
+.create_token_top > * {
+    color: var(--text2);
+}
+
+.nav_path {
+    font-size: 10px;
+}
+
+.create_token_middle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ticker_input_fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ticker_input_fields > label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 6px;
+    border-left: 4px solid var(--text1);
+    background-color: var(--dark4);
+}
+
+.ticker_input_fields > label > h4 {
+    font-size: 16px;
+    color: var(--text1);
+}
+
+.ticker_input_fields > input {
+    padding: 2px 8px;
+    background-color: var(--dark4);
+    border: none;
+    color: var(--text2);
+}
+
+.ticker_input_fields > input:focus {
+    outline: none;
+}
+
+.detail_box {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 8px;
+    border: 1px solid grey;
+    color: var(--text2);
+}
+
+.detail_box > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 10px;
+}
+
+.create_button {
+    border: none;
+    background-color: var(--accent1);
+}

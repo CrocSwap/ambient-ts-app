@@ -31,6 +31,7 @@ import {
     scrollPxETH,
     scrollRocketPoolETH,
     scrollPufETH,
+    blastWEETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -117,6 +118,7 @@ export const STAKED_ETH_TOKENS = [
     scrollRocketPoolETH.address,
     blastWrsETH.address,
     blastEzETH.address,
+    blastWEETH.address,
 ].map((x) => x.toLowerCase());
 
 export const WRAPPED_NATIVE_TOKENS = [

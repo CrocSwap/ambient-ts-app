@@ -27,6 +27,7 @@ import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
     switchNetwork: ((chainId_: number) => void) | undefined;
+    customBR?: string;
 }
 
 export default function NetworkSelector(props: propsIF) {
@@ -275,7 +276,12 @@ export default function NetworkSelector(props: propsIF) {
     );
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div
+            style={{
+                position: 'relative',
+                borderRadius: props.customBR ? props.customBR : '4px',
+            }}
+        >
             <DropdownMenuContainer
                 justifyContent='center'
                 alignItems='center'
@@ -292,10 +298,10 @@ export default function NetworkSelector(props: propsIF) {
                             .includes('scroll')
                             ? scrollLogo
                             : lookupChain(chainId)
-                                  .displayName.toLowerCase()
-                                  .includes('blast')
-                            ? blastLogo
-                            : ETH
+                                    .displayName.toLowerCase()
+                                    .includes('blast')
+                              ? blastLogo
+                              : ETH
                     }
                 >
                     <MenuContent

@@ -223,7 +223,8 @@ export const TokenQuantityInput = styled.input`
     background-color: transparent;
     background-clip: padding-box;
 
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
@@ -254,7 +255,6 @@ export const TokenSelectButton = styled.button`
     outline: none;
     border: 0.5px solid transparent;
     padding: 0 4px;
-    border-radius: 50px;
     height: 40px;
 
     font-size: var(--header2-size);
@@ -506,6 +506,7 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: var(--dark2);
     background-clip: padding-box;
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 `;

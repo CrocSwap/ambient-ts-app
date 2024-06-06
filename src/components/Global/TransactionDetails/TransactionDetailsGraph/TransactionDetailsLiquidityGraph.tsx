@@ -20,13 +20,13 @@ import {
     clipCanvas,
     fillLiqInfinity,
     setCanvasResolution,
-} from '../../../../pages/Chart/ChartUtils/chartUtils';
+} from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import {
     createAreaSeriesLiquidity,
     getAskPriceValue,
     getBidPriceValue,
-} from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
-import { createLiquidityLineSeries } from '../../../../pages/Chart/Liquidity/LiquiditySeries/LineSeries';
+} from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/AreaSeries';
+import { createLiquidityLineSeries } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/LineSeries';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
 interface TransactionDetailsLiquidityGraphIF {
     tx: TransactionIF;

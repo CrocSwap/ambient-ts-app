@@ -183,7 +183,7 @@
     --blur-bg: rgba(239, 178, 115, 0.5);
 
     --text1: #f0f0f8;
-    --text2: #8b98a5;
+    --text2: #8B98A5;
     --text3: #61646f;
 
     --dark1: #06060c;
@@ -194,7 +194,7 @@
     --accent2: #073749;
     --accent3: #5ffff2;
     --accent4: #71b5fc;
-    --accent5: #7BE4FF;
+    --accent5: #b5e2fe;
 
     --positive: #15be6f;
     --negative: #f6385b;
@@ -230,21 +230,7 @@
         var(--accent5) 49.48%,
         var(--accent1) 100%
     );
-    --primary-gradient: linear-gradient(
-        to right top,
-        #f2883a,
-        #ffae4d,
-        #ffca7d,
-        #ffdca1,
-        #fee0b5,
-        #fee0b5,
-        #fee0b5,
-        #fee0b5,
-        #ffdca1,
-        #ffca7d,
-        #ffae4d,
-        #f2883a
-    );
+    --primary-gradient: linear-gradient(90deg, hsla(192, 100%, 52%, 1) 0%, hsla(211, 76%, 64%, 1) 100%);
     --chart-gradient: linear-gradient(to right, #87421e, #b26533);
     --dark-gradient: linear-gradient(
         90deg,

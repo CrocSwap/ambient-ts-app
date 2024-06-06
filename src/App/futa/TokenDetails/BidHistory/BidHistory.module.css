@@ -1,0 +1,91 @@
+.headerContent{
+    display: grid;
+    grid-template-columns: 24px auto 24px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.headerLabel, .bidRowContainer p, .removeAllButton{
+    font-family: "Roboto Mono";
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+    font-size: 14px;
+    letter-spacing: -0.28px;
+}
+.headerLabel{
+    color: var(--text2, #8B98A5);
+}
+.container{
+    position: relative;
+    background: var(--dark2, #12121A); 
+    border: 1px solid var(--dark3, #1E1E24);
+    width: 100%;
+    display: inline-block;
+}
+.containerClose{
+    border-radius: 8px;
+
+}
+.containerOpen{
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+
+
+.bidHistoryContainer{
+    position: absolute;
+    width: 100%;
+    bottom: 99%; 
+    left: 0;
+    right: 0;
+    background-color: var(--dark2, #12121A);
+    z-index: 1;
+      gap: 8px;
+     border-top-left-radius: 8px;
+     border-top-right-radius: 8px;
+}
+
+.bidHistoryContent{
+    padding: 8px 24px ;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 150px;
+    overflow: scroll;
+}
+.bidRowContainer{
+    display: grid;
+    grid-template-columns: 25px 2fr 0.5fr;
+    gap: 8px;
+
+}
+
+
+.bidRowContainer p{
+    color: var(--text1, #F0F0F8);
+}
+
+.bidRowContainer p:first-of-type{
+    text-align: start;
+}
+.bidRowContainer p:last-of-type{
+    text-align: end;
+}
+.removeAllButton{
+    margin-top: 8px;
+    width: 100%;
+display: flex;
+padding: 8px;
+justify-content: center;
+align-items: center;
+gap: 8px;
+border-radius: 16px;
+border: 1px solid var(--accent, #0CCDFF);
+background: var(--dark2, #12121A);
+color: var(--accent, #0CCDFF);
+text-align: center;
+}
