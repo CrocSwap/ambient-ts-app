@@ -77,7 +77,6 @@ export function diffHashSigScaleData(
 }
 
 export function diffHashSigLiquidity(liquidity?: LiquidityDataIF) {
-    console.log('liq', liquidity);
     if (!liquidity) {
         return 'null';
     }

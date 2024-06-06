@@ -195,8 +195,8 @@ function Range() {
             ? getUnicodeCharacter(tokenB.symbol)
             : getUnicodeCharacter(tokenA.symbol)
         : !isTokenABase
-        ? getUnicodeCharacter(tokenB.symbol)
-        : getUnicodeCharacter(tokenA.symbol);
+          ? getUnicodeCharacter(tokenB.symbol)
+          : getUnicodeCharacter(tokenA.symbol);
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
@@ -945,15 +945,6 @@ function Range() {
         setTokenBInputQty('');
         setPrimaryQuantity('');
     };
-
-    console.log(
-        'token a',
-        tokenAInputQty,
-        tokenABalance,
-        tokenADexBalance,
-        tokenAQtyCoveredByWalletBalance,
-        amountToReduceNativeTokenQty,
-    );
     const {
         tokenAllowed: tokenAAllowed,
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
