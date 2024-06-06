@@ -6,7 +6,7 @@ import {
     useWeb3ModalAccount,
     useSwitchNetwork,
 } from '@web3modal/ethers5/react';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import Button from '../../Form/Button';
@@ -19,6 +19,7 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 // TODO: UNCOMMENT OUT ANIMATE PRESENCE IF WE WANT THE STAGGER ANIMATION TO ONLY HAPPEN THE FIRST TIME THE USER OPENS THE MENU AND STOP AFTER THAT
 const dropdownVariants = {
     hidden: { height: 0, opacity: 0 },
@@ -63,6 +64,11 @@ export default function Navbar() {
     const { resetUserGraphData } = useContext(GraphDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
     const { setShowAllData } = useContext(TradeTableContext);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const clickOutsideHandler = () => {
+        setIsDropdownOpen(false);
+    };
+    useOnClickOutside(dropdownRef, clickOutsideHandler);
 
     const {
         walletModal: { open: openWalletModal },
@@ -140,6 +146,7 @@ export default function Navbar() {
                             animate='visible'
                             exit='exit'
                             variants={dropdownVariants}
+                            ref={dropdownRef}
                         >
                             {dropdownData.map((item, idx) => (
                                 <motion.div
