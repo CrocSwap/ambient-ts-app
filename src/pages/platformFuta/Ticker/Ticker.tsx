@@ -18,6 +18,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { CurrencySelector } from '../../../components/Form/CurrencySelector';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
+import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -129,6 +130,20 @@ export default function Ticker() {
         { value: 0.423, text: '$1,694' },
         { value: 0.529, text: '$2,118' },
     ];
+
+    const extraInfoData = [
+        {
+            title: 'PRICE IMPACT',
+            tooltipTitle:
+                'Difference Between Current (Spot) Price and Final Price',
+            data: '5.86%',
+        },
+        {
+            title: 'NETWORK FEE',
+            tooltipTitle: 'Estimated network fee (i.e. gas cost) to join bid',
+            data: '-$0.01',
+        },
+    ];
     const progressValue = 'XX.X';
 
     const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
@@ -164,7 +179,7 @@ export default function Ticker() {
                         <span className={styles.progressBar} key={idx} />
                     ))}
                 </div>
-                <p className={styles.progressValue}>{progressValue}</p>
+                <p className={styles.progressValue}>{progressValue}%</p>
             </div>
         </div>
     );
@@ -226,13 +241,31 @@ export default function Ticker() {
         </div>
     );
 
+    const extraInfoDisplay = (
+        <div className={styles.extraInfoContainer}>
+            {extraInfoData.map((item, idx) => (
+                <div className={styles.extraRow} key={idx}>
+                    <div className={styles.alignCenter}>
+                        <p>{item.title}</p>
+                        <TooltipComponent title={item.tooltipTitle} />
+                    </div>
+                    <p style={{ color: 'var(--text2)' }}>{item.data}</p>
+                </div>
+            ))}
+        </div>
+    );
+
     return (
         <div className={styles.container}>
-            <BreadCrumb />
-            {tickerDisplay}
-            {openedBidDisplay}
-            {maxFdvDisplay}
-            {bidSizeDisplay}
+            <div className={styles.content}>
+                <BreadCrumb />
+                {tickerDisplay}
+                {openedBidDisplay}
+                {maxFdvDisplay}
+                {bidSizeDisplay}
+                {extraInfoDisplay}
+            </div>
+            <button className={styles.bidButton}>BID</button>
         </div>
     );
 }

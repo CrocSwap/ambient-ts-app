@@ -13,6 +13,15 @@ justify-content: space-between;
     line-height: normal;
 }
 
+.content{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+    gap: 8px;
+}
+
 .tickerContainer{
     display: flex;
 flex-direction: column;
@@ -80,7 +89,7 @@ background: var(--accent1, #0CCDFF);
     width: 100%;
     background-color: var(--dark4);
     position: absolute;
-    top: 50px;
+    top: 40px;
     overflow-y: scroll;
     padding: 4px;
 }
@@ -135,4 +144,53 @@ color: var(--text1)
 
 .maxButtonContainer p{
     font-size: 18px;
+}
+
+.extraInfoContainer{
+    display: flex;
+padding: 8px;
+flex-direction: column;
+align-items: center;
+gap: 10px;
+align-self: stretch;
+border: 1px solid var(--dark3, #1E1E24);
+}
+.extraRow{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.alignCenter{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text2);
+}
+
+.bidButton{
+    display: flex;
+padding: 2px 8px;
+justify-content: center;
+align-items: center;
+gap: 10px;
+align-self: stretch;
+background: var(--accent1, #0CCDFF);
+outline: none;
+border: 1px solid var(--accent1);
+cursor: pointer;
+transition: all var(--animation-speed) ease-in-out;
+}
+.bidButton:hover{
+    background: transparent;
+    color: var(--accent1)
+}
+
+@media (min-width: 768px) {
+.bidButton{
+    margin: 0 auto;
+    width: 600px;
+}
 }

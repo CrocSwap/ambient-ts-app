@@ -13,6 +13,7 @@
 .create_token_top {
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .create_token_top > * {
