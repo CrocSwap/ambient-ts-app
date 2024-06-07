@@ -1,21 +1,36 @@
 import { useEffect, useState } from 'react';
 import styles from './Create.module.css';
+import useDebounce from '../../../App/hooks/useDebounce';
 
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
 
+    const [isValidationInProgress, setIsValidationInProgress] =
+        useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
 
     function handleChange(text: string) {
-        setIsValidated(false);
+        setIsValidationInProgress(true);
         setTicker(text);
     }
 
+    const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', 'btc'];
+
+    const checkTickerValidity = async (ticker: string) => {
+        const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
+        // check if the ticker is in the excluded list
+        const isExcluded = excludedTickers.includes(ticker.toLowerCase());
+        return !isExcluded && lengthIsValid;
+    };
+
+    const debouncedTickerInput = useDebounce(ticker, 500);
+
     useEffect(() => {
-        if (isValidated) return;
-        const interval = setInterval(() => setIsValidated(true), 500);
-        return () => clearInterval(interval);
-    }, [isValidated]);
+        checkTickerValidity(debouncedTickerInput).then((isValid) => {
+            setIsValidationInProgress(false);
+            setIsValidated(isValid);
+        });
+    }, [debouncedTickerInput]);
 
     // name for the ticker input field, keeps `<input/>` and `<label/>` sync'd
     const TICKER_INPUT_ID = 'ticker_input';
@@ -68,18 +83,20 @@ export default function Create() {
             </div>
             <button
                 className={
-                    isValidated && ticker !== ''
+                    !isValidationInProgress && isValidated
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
                 onClick={() => console.log('clicked Create Token')}
-                disabled={!isValidated || ticker === ''}
+                disabled={isValidationInProgress || !isValidated}
             >
                 {ticker === ''
-                    ? 'Enter a Name'
-                    : isValidated
-                    ? 'Create Token'
-                    : 'Validating Ticker...'}
+                    ? 'Enter a Token Ticker'
+                    : isValidationInProgress
+                      ? 'Validating Ticker...'
+                      : isValidated
+                        ? 'Create Token'
+                        : `Invalid Ticker: ${ticker}`}
             </button>
         </section>
     );
