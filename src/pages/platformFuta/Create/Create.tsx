@@ -1,9 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './Create.module.css';
 import useDebounce from '../../../App/hooks/useDebounce';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
+
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
 
     const [isValidationInProgress, setIsValidationInProgress] =
         useState<boolean>(false);
@@ -95,22 +103,28 @@ export default function Create() {
             </div>
             <button
                 className={
-                    !isValidationInProgress && isValidated
+                    !isUserConnected || (!isValidationInProgress && isValidated)
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
                 onClick={() =>
-                    console.log(`clicked Create Token for ${ticker}`)
+                    !isUserConnected
+                        ? openWalletModal()
+                        : console.log(`clicked Create Token for ${ticker}`)
                 }
-                disabled={isValidationInProgress || !isValidated}
+                disabled={
+                    isUserConnected && (isValidationInProgress || !isValidated)
+                }
             >
-                {ticker === ''
-                    ? 'Enter a Token Ticker'
-                    : isValidationInProgress
-                      ? 'Validating Ticker...'
-                      : isValidated
-                        ? 'Create Token'
-                        : `Invalid Ticker: ${ticker}`}
+                {!isUserConnected
+                    ? 'Connect Wallet'
+                    : ticker === ''
+                      ? 'Enter a Token Ticker'
+                      : isValidationInProgress
+                        ? 'Validating Ticker...'
+                        : isValidated
+                          ? 'Create Token'
+                          : `Invalid Ticker: ${ticker}`}
             </button>
         </section>
     );
