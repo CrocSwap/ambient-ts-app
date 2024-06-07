@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import styles from './Ticker.module.css';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
@@ -24,9 +24,10 @@ export default function Ticker() {
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >();
+    console.log(bidQtyNonDisplay);
     const [inputValue, setInputValue] = useState('');
 
-    const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
+    const [tokenWalletBalance] = useState<string>('');
     const { soloToken: selectedToken } = useContext(TradeDataContext);
     const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
 

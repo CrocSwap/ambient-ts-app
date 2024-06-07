@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import styles from './Create.module.css';
-import { Link } from 'react-router-dom';
 
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
