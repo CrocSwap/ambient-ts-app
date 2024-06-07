@@ -126,11 +126,11 @@ export default function Ticker() {
         },
     ];
     const maxFdvData = [
-        { value: 0.216, text: '$867' },
-        { value: 0.271, text: '$1,084' },
-        { value: 0.338, text: '$1,355' },
-        { value: 0.423, text: '$1,694' },
-        { value: 0.529, text: '$2,118' },
+        { value: 0.216, text: '867' },
+        { value: 0.271, text: '1,084' },
+        { value: 0.338, text: '1,355' },
+        { value: 0.423, text: '1,694' },
+        { value: 0.529, text: '2,118' },
     ];
 
     const extraInfoData = [
@@ -194,8 +194,8 @@ export default function Ticker() {
                     onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
                     className={styles.maxDropdownButton}
                 >
-                    {selectedMaxValue.text}
-                    <p>({selectedMaxValue.value})</p>
+                    <p>{selectedMaxValue.value}</p>
+                    (${selectedMaxValue.text})
                 </button>
                 {isMaxDropdownOpen && (
                     <div className={styles.maxDropdownContent}>
@@ -205,8 +205,8 @@ export default function Ticker() {
                                 key={idx}
                                 onClick={() => handleSelectItem(item)}
                             >
-                                {item.text}
-                                <p>({item.value})</p>
+                                <p>{item.value}</p>
+                                (${item.text})
                             </div>
                         ))}
                     </div>
