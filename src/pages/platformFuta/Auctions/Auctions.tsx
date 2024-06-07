@@ -11,7 +11,7 @@ export default function Auctions() {
                 inventore aut rem eligendi saepe! Et ad officia quibusdam
                 dolores id natus fugiat alias!
             </p>
-            <Link to='/auctions/foo'>FOO Token</Link>
+            <Link to='/auctions/v1/foo'>FOO Token</Link>
         </div>
     );
 }

@@ -31,7 +31,7 @@ const PlatformFutaRoutes: React.FC = () => {
 
             <Route path='/trade' element={<Navigate to='/explore' replace />} />
             <Route path='/auctions/create' element={<Create />} />
-            <Route path='/auctions/:ticker' element={<Ticker />} />
+            <Route path='/auctions/:version/:ticker' element={<Ticker />} />
         </Routes>
     );
 };
