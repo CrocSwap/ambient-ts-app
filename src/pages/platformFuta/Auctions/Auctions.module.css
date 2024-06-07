@@ -1,0 +1,14 @@
+.container{
+    /* Mono 12 */
+    font-family: "Roboto Mono";
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.navPath{
+    color: var(--text2, #8B98A5);
+    text-transform: uppercase;
+    font-size: 12px;
+
+}
