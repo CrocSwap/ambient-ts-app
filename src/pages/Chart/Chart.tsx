@@ -142,7 +142,7 @@ interface propsIF {
     >;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
-    scaleData: scaleData | undefined;
+    scaleData: scaleData;
     poolPriceNonDisplay: number | undefined;
     selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
@@ -462,7 +462,7 @@ export default function Chart(props: propsIF) {
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
         if (scaleData) {
-            data.slice(isShowLatestCandle ? 2 : 1).forEach((item) => {
+            data.slice(1).forEach((item) => {
                 if (notTransactionDataTime === undefined && !item.isShowData) {
                     notTransactionDataTime = item.time * 1000;
                 }
@@ -514,6 +514,32 @@ export default function Chart(props: propsIF) {
 
             setTimeGaps(localTimeGaps);
         }
+    };
+
+    const calculateVisibleCandles = (
+        scaleData: scaleData | undefined,
+        unparsedCandleData: CandleDataChart[],
+        period: number,
+        numberOfCandlesToDisplay: number,
+    ) => {
+        if (scaleData) {
+            const xmin =
+                scaleData.xScale.domain()[0] -
+                period * 1000 * numberOfCandlesToDisplay;
+            const xmax =
+                scaleData.xScale.domain()[1] +
+                period * 1000 * numberOfCandlesToDisplay;
+
+            const filtered = unparsedCandleData.filter(
+                (data: CandleDataChart) =>
+                    data.time * 1000 >= xmin &&
+                    data.time * 1000 <= xmax &&
+                    (data.isShowData || !isCondensedModeEnabled),
+            );
+
+            return filtered;
+        }
+        return unparsedCandleData;
     };
 
     const unparsedCandleData = useMemo(() => {
@@ -580,60 +606,46 @@ export default function Chart(props: propsIF) {
         }
 
         calculateDiscontinuityRange(data);
-        return data;
+        return calculateVisibleCandles(
+            scaleData,
+            data,
+            period,
+            mobileView ? 300 : 100,
+        ) as CandleDataChart[];
     }, [
         diffHashSigChart(unparsedData.candles),
         poolPriceWithoutDenom,
         isShowLatestCandle,
         isCondensedModeEnabled,
+        diffHashSigScaleData(scaleData, 'x'),
     ]);
-
-    const calculateVisibleCandles = (
-        scaleData: scaleData | undefined,
-        unparsedCandleData: CandleDataChart[],
-        period: number,
-        mobileView: boolean,
-    ) => {
-        const numberOfCandlesToDisplay = mobileView ? 300 : 100;
-
-        if (scaleData) {
-            const xmin =
-                scaleData.xScale.domain()[0] -
-                period * 1000 * numberOfCandlesToDisplay;
-            const xmax =
-                scaleData.xScale.domain()[1] +
-                period * 1000 * numberOfCandlesToDisplay;
-
-            const filtered = unparsedCandleData.filter(
-                (data: CandleDataChart) =>
-                    data.time * 1000 >= xmin &&
-                    data.time * 1000 <= xmax &&
-                    (data.isShowData || !isCondensedModeEnabled),
-            );
-
-            return filtered;
-        }
-        return unparsedCandleData;
-    };
-
     const visibleCandleData = useMemo(() => {
-        return calculateVisibleCandles(
+        const data = calculateVisibleCandles(
             scaleData,
             unparsedCandleData,
             period,
-            mobileView,
+            0,
+        ) as CandleDataChart[];
+
+        const filtered = data.filter(
+            (i) => i.isShowData || !isCondensedModeEnabled,
         );
+
+        return filtered;
     }, [
         diffHashSigScaleData(scaleData),
         unparsedCandleData,
         isCondensedModeEnabled,
     ]);
 
-    const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
+    const lastCandleData = unparsedData.candles?.reduce(function (
+        prev,
+        current,
+    ) {
         return prev.time > current.time ? prev : current;
     });
 
-    const firstCandleData = unparsedCandleData?.reduce(function (
+    const firstCandleData = unparsedData.candles?.reduce(function (
         prev,
         current,
     ) {
@@ -5333,6 +5345,9 @@ export default function Chart(props: propsIF) {
             limitTop > limitBot
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
+
+        console.log(new Date(nearest.time));
+
         if (
             nearest &&
             nearest?.time === lastCandleData?.time &&
@@ -5360,6 +5375,13 @@ export default function Chart(props: propsIF) {
                     mainCanvasBoundingClientRect.left +
                     scaleData?.xScale(lastCandleData?.time * 1000) +
                     bandwidth * 2;
+
+                console.log(
+                    new Date(scaleData.xScale.invert(positionX)),
+                    new Date(lastCandleData?.time * 1000),
+                    new Date(lastCandleData?.time * 1000 + period * 1000),
+                );
+
                 setLastCandleDataCenterX(positionX);
             }
 

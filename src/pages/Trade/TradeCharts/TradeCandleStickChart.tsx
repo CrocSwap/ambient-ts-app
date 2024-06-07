@@ -1030,6 +1030,7 @@ function TradeCandleStickChart(props: propsIF) {
         candleData !== undefined &&
         isPoolInitialized !== undefined &&
         prevPeriod === period &&
+        scaleData &&
         period === candleData?.duration &&
         !isFetchingCandle &&
         !isFetchingEnoughData;
