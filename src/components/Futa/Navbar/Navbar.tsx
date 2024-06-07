@@ -137,6 +137,10 @@ export default function Navbar() {
             label: 'Create',
             link: '/auctions/create',
         },
+        {
+            label: 'Ticker',
+            link: '/auctions/ticker',
+        },
     ];
 
     // Components

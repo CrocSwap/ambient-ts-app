@@ -19,6 +19,8 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { CurrencySelector } from '../../../components/Form/CurrencySelector';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
+import Auctions from '../Auctions/Auctions';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -254,6 +256,25 @@ export default function Ticker() {
             ))}
         </div>
     );
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+
+    const desktopVersion = (
+        <div className={styles.gridContainer}>
+            <Auctions />
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <BreadCrumb />
+                    {tickerDisplay}
+                    {openedBidDisplay}
+                    {maxFdvDisplay}
+                    {bidSizeDisplay}
+                    {extraInfoDisplay}
+                </div>
+                <button className={styles.bidButton}>BID</button>
+            </div>
+        </div>
+    );
+    if (desktopScreen) return desktopVersion;
 
     return (
         <div className={styles.container}>

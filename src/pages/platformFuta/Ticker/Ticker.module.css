@@ -1,3 +1,10 @@
+.gridContainer{
+    display: grid;
+    grid-template-columns: auto 390px;
+    padding: 8px 16px;
+    height: calc(100vh - 56px)
+}
+
 .container{
     height: calc(100svh - 134px);
     padding: 8px 16px;
@@ -156,6 +163,7 @@ align-items: center;
 gap: 10px;
 align-self: stretch;
 border: 1px solid var(--dark3, #1E1E24);
+margin-bottom: 8px;
 }
 .extraRow{
     width: 100%;
@@ -190,9 +198,15 @@ transition: all var(--animation-speed) ease-in-out;
     color: var(--accent1)
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1280px) {
+
+    .container{
+        padding: 0;
+        height: 100%
+    
+    }
 .bidButton{
     margin: 0 auto;
-    width: 600px;
+    width: 100%;
 }
 }
