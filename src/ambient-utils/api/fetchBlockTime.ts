@@ -7,7 +7,7 @@ export async function fetchBlockTime(
 ): Promise<number | undefined> {
     try {
         const block = provider.getBlock(blockNumber);
-        return (await block)?.timestamp;
+        return Number((await block)?.timestamp);
     } catch (error) {
         return undefined;
     }

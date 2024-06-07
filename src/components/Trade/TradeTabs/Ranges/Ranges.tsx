@@ -111,10 +111,10 @@ function Ranges(props: propsIF) {
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                ? userPositionsByPool?.positions
-                : positionsByPool.positions.filter(
-                      (position) => position.positionLiq != 0,
-                  ),
+                  ? userPositionsByPool?.positions
+                  : positionsByPool.positions.filter(
+                        (position) => position.positionLiq != 0,
+                    ),
         [
             showAllData,
             isAccountView,
@@ -129,10 +129,10 @@ function Ranges(props: propsIF) {
             isAccountView && connectedAccountActive
                 ? dataLoadingStatus.isConnectedUserRangeDataLoading
                 : isAccountView
-                ? dataLoadingStatus.isLookupUserRangeDataLoading
-                : !showAllData
-                ? dataLoadingStatus.isConnectedUserPoolRangeDataLoading
-                : dataLoadingStatus.isPoolRangeDataLoading,
+                  ? dataLoadingStatus.isLookupUserRangeDataLoading
+                  : !showAllData
+                    ? dataLoadingStatus.isConnectedUserPoolRangeDataLoading
+                    : dataLoadingStatus.isPoolRangeDataLoading,
         [
             showAllData,
             isAccountView,
@@ -160,12 +160,12 @@ function Ranges(props: propsIF) {
             isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView &&
-                  connectedAccountActive &&
-                  isLargeScreenAccount &&
-                  isSidebarOpen)
-            ? 'medium'
-            : 'large';
+                (isAccountView &&
+                    connectedAccountActive &&
+                    isLargeScreenAccount &&
+                    isSidebarOpen)
+              ? 'medium'
+              : 'large';
 
     useEffect(() => {
         setCurrentPage(1);
@@ -581,8 +581,8 @@ function Ranges(props: propsIF) {
                         askTick: pendingPositionUpdate.txDetails.highTick,
                         isBid: pendingPositionUpdate.txDetails.isBid,
                         user: pendingPositionUpdate.userAddress,
-                        timeFirstMint: position.timestamp, // from on-chain call (not updated for removes?)
-                        latestUpdateTime: position.timestamp, // from on-chain call (not updated for removes?)
+                        timeFirstMint: Number(position.timestamp), // from on-chain call (not updated for removes?)
+                        latestUpdateTime: Number(position.timestamp), // from on-chain call (not updated for removes?)
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPositionUpdate.txDetails.isAmbient
