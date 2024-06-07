@@ -16,11 +16,23 @@ export default function Create() {
 
     const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', 'btc'];
 
+    // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
+    const pattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
+    /* 
+        Example usage of the pattern
+        console.log(isValidString("Hello123")); // true (Latin alphanumeric)
+        console.log(isValidString("Hello😊123")); // true (Latin alphanumeric + Extended Pictographic)
+        console.log(isValidString("こんにちは")); // false (Non-Latin characters)
+        console.log(isValidString("1234😊😊")); // true (Digits + Extended Pictographic)
+        console.log(isValidString("Hello!")); // false (Special character '!')
+    */
+
     const checkTickerValidity = async (ticker: string) => {
         const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
+        const isPatternValid = pattern.test(ticker);
         // check if the ticker is in the excluded list
         const isExcluded = excludedTickers.includes(ticker.toLowerCase());
-        return !isExcluded && lengthIsValid;
+        return !isExcluded && isPatternValid && lengthIsValid;
     };
 
     const debouncedTickerInput = useDebounce(ticker, 500);
@@ -87,7 +99,9 @@ export default function Create() {
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
-                onClick={() => console.log('clicked Create Token')}
+                onClick={() =>
+                    console.log(`clicked Create Token for ${ticker}`)
+                }
                 disabled={isValidationInProgress || !isValidated}
             >
                 {ticker === ''
