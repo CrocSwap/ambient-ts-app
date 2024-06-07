@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './Auctions.module.css';
 export default function Auctions() {
     return (
@@ -39,8 +40,9 @@ export default function Auctions() {
                 praesentium asperiores voluptates amet, esse eaque hic, quia
                 obcaecati, eos ipsa. Omnis debitis impedit odit eaque nam
                 quisquam quos porro sapiente eligendi non, quas quod doloribus
-                modi architecto? Voluptates dolorum quae at ratione quasi?
+                modi architecto? Voluptates dolorum quae at ratione quasi? :
             </p>
+            <Link to='/auctions/foo'>FOO Token</Link>
         </div>
     );
 }
