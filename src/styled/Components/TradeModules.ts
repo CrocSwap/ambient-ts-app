@@ -223,8 +223,7 @@ export const TokenQuantityInput = styled.input`
     background-color: transparent;
     background-clip: padding-box;
 
-    transition:
-        border-color var(--animation-speed) ease-in-out,
+    transition: border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
@@ -242,13 +241,14 @@ export const TokenQuantityContainer = styled.div<AnimationProps>`
     ${Animations};
 `;
 
-export const TokenSelectButton = styled.button`
+export const TokenSelectButton = styled.button<{ justDisplay?: boolean }>`
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    cursor: pointer;
+    cursor: ${(props) => (props.justDisplay ? 'default' : 'pointer')};
+    pointer-events: ${(props) => (props.justDisplay ? 'none' : 'auto')};
     transition: var(--transition);
 
     background: var(--dark1);
@@ -256,6 +256,7 @@ export const TokenSelectButton = styled.button`
     border: 0.5px solid transparent;
     padding: 0 4px;
     height: 40px;
+    padding-right: ${(props) => (props.justDisplay ? '12px' : '')};
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
@@ -263,7 +264,7 @@ export const TokenSelectButton = styled.button`
 
     &:hover {
         border: 0.5px solid var(--accent1);
-        color: var(--accent1);
+        color: var (--accent1);
         box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
         transition: var(--transition);
     }
@@ -506,7 +507,6 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: var(--dark2);
     background-clip: padding-box;
-    transition:
-        border-color var(--animation-speed) ease-in-out,
+    transition: border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 `;

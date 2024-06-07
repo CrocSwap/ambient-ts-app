@@ -22,7 +22,6 @@ export default function TokenDetails() {
     const { setTokenBalance } = useContext(TokenBalanceContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { soloToken: selectedToken } = useContext(TradeDataContext);
-    console.log({ selectedToken }, 'token details');
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >();

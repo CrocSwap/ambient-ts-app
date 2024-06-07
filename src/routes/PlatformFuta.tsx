@@ -27,12 +27,11 @@ const PlatformFutaRoutes: React.FC = () => {
             <Route path='/swap' element={<Swap />} />
             <Route path='/learn' element={<Learn />} />
             <Route path='/account' element={<Account />} />
-            <Route path='/auctions' element={<Auctions />}>
-                <Route path='create' element={<Create />} />
-                <Route path='ticker' element={<Ticker />} />
-            </Route>
+            <Route path='/auctions' element={<Auctions />} />
+
             <Route path='/trade' element={<Navigate to='/explore' replace />} />
             <Route path='/auctions/create' element={<Create />} />
+            <Route path='/auctions/ticker' element={<Ticker />} />
         </Routes>
     );
 };

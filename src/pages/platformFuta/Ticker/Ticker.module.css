@@ -1,0 +1,138 @@
+.container{
+    height: calc(100vh - 134px);
+    padding: 8px 16px;
+
+
+
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+    font-family: "Roboto Mono";
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.tickerContainer{
+    display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.tickerContainer h2{
+    background: var(--dark4);
+    border-left: 4px solid var(--text1);
+    color: var(--text1, #F0F0F8);
+
+font-size: 36px;
+text-transform: uppercase;
+padding-left: 8px;
+
+}
+
+.tickerContainer h3{
+    background: var(--dark4);
+    border-left: 4px solid var(--text1);
+    color: var(--text1, #F0F0F8);
+
+font-size: 20px;
+text-transform: uppercase;
+padding-left: 8px;
+}
+.tickerRow, .maxRow{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+}
+.tickerLabel{
+color: var(--text2, #8B98A5);
+letter-spacing: -0.36px;
+text-transform: uppercase;
+}
+.progressBar{
+    width: 27.9px;
+height: 12px;
+opacity: 0.5;
+background: var(--accent1, #0CCDFF);
+}
+.progressContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.progressContent{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+.progressValue{
+    color: var(--accent1, #0CCDFF);
+
+}
+.maxDropdownContainer{
+    position: relative;
+}
+.maxDropdownContent{
+    height: 138px;
+    width: 100%;
+    background-color: var(--dark4);
+    position: absolute;
+    top: 50px;
+    overflow-y: scroll;
+    padding: 4px;
+}
+
+.maxDropdownButton{
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+    border: none;
+    background: var(--dark4);
+    display: flex;
+    justify-content: space-between;
+    height: 42px;
+    display: flex;
+    align-items: center;
+font-size: 20px;
+text-transform: uppercase;
+padding: 8px;
+color: var(--text1)
+
+
+}
+.maxDropdownButton p{
+    color: var(--text2)
+}
+.maxRow{
+    height: 26px;
+    cursor: pointer;
+    color: var(--text1);
+   
+   
+}
+.maxRow p{
+    color: var(--text2)
+}
+.maxRow:hover{
+    background: var(--accent2);
+    transition: all var(--animation-speed) ease-in-out
+}
+
+.userQtyDisplay{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text2);
+    font-size: 10px;
+}
+
+
+
+
+.maxButtonContainer p{
+    font-size: 18px;
+}

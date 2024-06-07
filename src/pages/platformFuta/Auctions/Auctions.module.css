@@ -1,16 +1,19 @@
 .container{
     /* Mono 12 */
+    height: calc(100vh - 134px);
+
     font-family: "Roboto Mono";
     font-style: normal;
     font-weight: 400;
+    gap: 8px;
     line-height: normal;
 
     display: flex;
 padding: 8px 16px;
+
 flex-direction: column;
-align-items: flex-start;
-gap: 8px;
-align-self: stretch;
+
+
 }
 
 .navPath{

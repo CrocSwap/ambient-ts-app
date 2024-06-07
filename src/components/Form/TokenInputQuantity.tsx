@@ -48,6 +48,7 @@ interface propsIF {
     onInitPage?: boolean;
     customBorderRadius?: string;
     customBottomContent?: React.ReactNode;
+    noModals?: boolean;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -67,6 +68,7 @@ function TokenInputQuantity(props: propsIF) {
         setTokenModalOpen = () => null,
         customBorderRadius,
         customBottomContent,
+        noModals,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -177,7 +179,7 @@ function TokenInputQuantity(props: propsIF) {
 
     const isInit = location.pathname.startsWith('/initpool');
 
-    const modalOrNoModal = isInit ? (
+    const modalOrNoModal = !setTokenModalOpen ? null : isInit ? (
         <SoloTokenSelect
             onClose={closeTokenSelect}
             showSoloSelectTokenButtons={showSoloSelectTokenButtons}
@@ -233,8 +235,9 @@ function TokenInputQuantity(props: propsIF) {
                 )}
 
                 <TokenSelectButton
+                    justDisplay={noModals}
                     id={fieldId ? `${fieldId}_token_selector` : undefined}
-                    onClick={openTokenSelect}
+                    onClick={noModals ? undefined : openTokenSelect}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                     ref={tokenSelectRef}
@@ -251,12 +254,12 @@ function TokenInputQuantity(props: propsIF) {
                         size='2xl'
                     />
                     {tokenSymbol}
-                    <RiArrowDownSLine size={27} />
+                    {!noModals && <RiArrowDownSLine size={27} />}
                 </TokenSelectButton>
             </TokenQuantityContainer>
             {customBottomContent && customBottomContent}
             {includeWallet && includeWallet}
-            {isTokenSelectOpen && modalOrNoModal}
+            {isTokenSelectOpen && !noModals && modalOrNoModal}
         </FlexContainer>
     );
 }
