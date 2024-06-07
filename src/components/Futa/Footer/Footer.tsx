@@ -25,7 +25,7 @@ export default function Footer() {
     const footerItems = [
         {
             label: 'Explore',
-            link: '/explore',
+            link: '/auctions',
             icon: <MdOutlineExplore size={24} color='var(--text1)' />,
         },
         {

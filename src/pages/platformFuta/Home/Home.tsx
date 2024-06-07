@@ -79,7 +79,7 @@ function Home(props: PropsIF) {
                     variants={containerVariants}
                 >
                     <motion.div variants={itemVariants}>
-                        <Link to='/explore' className={styles.exploreButton}>
+                        <Link to='/auctions' className={styles.exploreButton}>
                             Explore
                         </Link>
                     </motion.div>

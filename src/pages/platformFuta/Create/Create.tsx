@@ -21,6 +21,13 @@ export default function Create() {
     const TICKER_INPUT_ID = 'ticker_input';
     const TICKER_MAX_LENGTH = 10;
 
+    useEffect(() => {
+        const input = document.getElementById(
+            TICKER_INPUT_ID,
+        ) as HTMLInputElement;
+        if (input) input.focus();
+    }, []);
+
     // mock data
     const liquidityText = '0.25 ETH';
     const networkFeeText = '≈$0.01';
@@ -41,6 +48,7 @@ export default function Create() {
                     </label>
                     <input
                         name={TICKER_INPUT_ID}
+                        id={TICKER_INPUT_ID}
                         type='text'
                         maxLength={TICKER_MAX_LENGTH}
                         onChange={(e) => handleChange(e.target.value)}
