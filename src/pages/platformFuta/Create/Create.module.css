@@ -7,7 +7,7 @@
     padding: 10px;
     max-width: 600px;
     height: calc(100svh - 136px);
-    overflow-y: hidden;
+   
 }
 
 .create_token_top {
