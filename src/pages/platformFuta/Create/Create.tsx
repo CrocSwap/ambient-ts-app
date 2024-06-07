@@ -29,10 +29,6 @@ export default function Create() {
     return (
         <section className={styles.create_token}>
             <div className={styles.create_token_top}>
-                <div className={styles.nav_path}>
-                    <Link to={'/'}>Home</Link>
-                    {' > Create'}
-                </div>
                 <p>
                     SOME TEXT HERE DESCRIBING HOW LAUNCHING A TOKEN WORKS AND
                     WHAT THINGS WILL HAPPEN
@@ -75,8 +71,8 @@ export default function Create() {
                 {ticker === ''
                     ? 'Enter a Name'
                     : isValidated
-                      ? 'Create Token'
-                      : 'Validating Ticker...'}
+                    ? 'Create Token'
+                    : 'Validating Ticker...'}
             </button>
         </section>
     );
