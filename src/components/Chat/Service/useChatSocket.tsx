@@ -113,7 +113,6 @@ const useChatSocket = (
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
-        getWebSocket,
         readyState,
     } = useSocketIO(isChatOpen ? url : null, {
         queryParams: {
