@@ -109,27 +109,20 @@ const useChatSocket = (
         qp.ensName = ensName;
     }
 
+    domDebug('room', qp.roomId);
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
-        getWebSocket,
         readyState,
-    } = useSocketIO(url, {
-        // fromSocketIO: true,
-        // queryParams: { ...wsQueryParams },
+    } = useSocketIO(isChatOpen ? url : null, {
         queryParams: {
             roomId: qp.roomId,
             address: qp.address ? qp.address : '',
             ensName: qp.ensName ? qp.ensName : '',
         },
-        shouldReconnect: () => true,
-        // share: true,
+        shouldReconnect: () => isChatOpen,
+        share: true,
         onOpen: () => {
-            sendToSocket('handshake-update', {
-                roomId: room,
-                address: address,
-                ensName: ensName,
-            });
             domDebug('connected', getTimeForLog(new Date()));
         },
         onClose: () => {
@@ -149,25 +142,14 @@ const useChatSocket = (
     domDebug('connection status', connectionStatus);
 
     useEffect(() => {
-        if (!isChatOpen) {
-            getWebSocket()?.close();
-        } else {
+        if (isChatOpen) {
             sendToSocket('handshake-update', {
                 roomId: room,
                 address: address,
                 ensName: ensName,
             });
         }
-    }, [isChatOpen]);
-
-    useEffect(() => {
-        // getWebSocket()?.close();
-        sendToSocket('handshake-update', {
-            roomId: room,
-            address: address,
-            ensName: ensName,
-        });
-    }, [address, ensName, room]);
+    }, [address, ensName, room, isChatOpen]);
 
     useEffect(() => {
         switch (socketLastMessage.type) {

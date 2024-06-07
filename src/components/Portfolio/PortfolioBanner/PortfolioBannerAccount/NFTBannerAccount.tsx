@@ -124,7 +124,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     const { updateUserWithAvatarImage, addListener } = useChatSocket(
         '',
         true,
-        false,
+        true,
         () => {
             console.log('show toastr from nft banner comp');
         },
