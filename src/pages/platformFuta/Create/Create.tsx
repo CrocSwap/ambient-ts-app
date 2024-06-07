@@ -1,22 +1,57 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './Create.module.css';
+import useDebounce from '../../../App/hooks/useDebounce';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
 
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
+
+    const [isValidationInProgress, setIsValidationInProgress] =
+        useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
 
     function handleChange(text: string) {
-        setIsValidated(false);
+        setIsValidationInProgress(true);
         setTicker(text);
     }
 
+    const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', 'btc'];
+
+    // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
+    const pattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
+    /* 
+        Example usage of the pattern
+        console.log(isValidString("Hello123")); // true (Latin alphanumeric)
+        console.log(isValidString("Hello😊123")); // true (Latin alphanumeric + Extended Pictographic)
+        console.log(isValidString("こんにちは")); // false (Non-Latin characters)
+        console.log(isValidString("1234😊😊")); // true (Digits + Extended Pictographic)
+        console.log(isValidString("Hello!")); // false (Special character '!')
+    */
+
+    const checkTickerValidity = async (ticker: string) => {
+        const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
+        const isPatternValid = pattern.test(ticker);
+        // check if the ticker is in the excluded list
+        const isExcluded = excludedTickers.includes(ticker.toLowerCase());
+        return !isExcluded && isPatternValid && lengthIsValid;
+    };
+
+    const debouncedTickerInput = useDebounce(ticker, 500);
+
     useEffect(() => {
-        if (isValidated) return;
-        const interval = setInterval(() => setIsValidated(true), 500);
-        return () => clearInterval(interval);
-    }, [isValidated]);
+        checkTickerValidity(debouncedTickerInput).then((isValid) => {
+            setIsValidationInProgress(false);
+            setIsValidated(isValid);
+        });
+    }, [debouncedTickerInput]);
 
     // name for the ticker input field, keeps `<input/>` and `<label/>` sync'd
     const TICKER_INPUT_ID = 'ticker_input';
@@ -70,18 +105,28 @@ export default function Create() {
             </div>
             <button
                 className={
-                    isValidated && ticker !== ''
+                    !isUserConnected || (!isValidationInProgress && isValidated)
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
-                onClick={() => console.log('clicked Create Token')}
-                disabled={!isValidated || ticker === ''}
+                onClick={() =>
+                    !isUserConnected
+                        ? openWalletModal()
+                        : console.log(`clicked Create Token for ${ticker}`)
+                }
+                disabled={
+                    isUserConnected && (isValidationInProgress || !isValidated)
+                }
             >
-                {ticker === ''
-                    ? 'Enter a Name'
+                {!isUserConnected
+                    ? 'Connect Wallet'
+                    : ticker === ''
+                    ? 'Enter a Token Ticker'
+                    : isValidationInProgress
+                    ? 'Validating Ticker...'
                     : isValidated
                     ? 'Create Token'
-                    : 'Validating Ticker...'}
+                    : `Invalid Ticker: ${ticker}`}
             </button>
         </section>
     );
