@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
 
-    const [isValidated, setIsValidated] = useState<boolean>(true);
+    const [isValidated, setIsValidated] = useState<boolean>(false);
 
     function handleChange(text: string) {
         setIsValidated(false);
@@ -65,14 +65,18 @@ export default function Create() {
             </div>
             <button
                 className={
-                    isValidated
+                    isValidated && ticker !== ''
                         ? styles.create_button
                         : styles.create_button_disabled
                 }
                 onClick={() => console.log('clicked Create Token')}
-                disabled={!isValidated}
+                disabled={!isValidated || ticker === ''}
             >
-                {isValidated ? 'Create Token' : 'Validating Ticker...'}
+                {ticker === ''
+                    ? 'Enter a Name'
+                    : isValidated
+                      ? 'Create Token'
+                      : 'Validating Ticker...'}
             </button>
         </section>
     );
