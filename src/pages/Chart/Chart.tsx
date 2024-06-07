@@ -5346,11 +5346,9 @@ export default function Chart(props: propsIF) {
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
 
-        console.log(new Date(nearest.time));
-
         if (
             nearest &&
-            nearest?.time === lastCandleData?.time &&
+            nearest?.time === lastCandleData?.time + period &&
             dateControl &&
             checkYLocation &&
             scaleData
@@ -5373,7 +5371,9 @@ export default function Chart(props: propsIF) {
 
                 const positionX =
                     mainCanvasBoundingClientRect.left +
-                    scaleData?.xScale(lastCandleData?.time * 1000) +
+                    scaleData?.xScale(
+                        lastCandleData?.time * 1000 + period * 1000,
+                    ) +
                     bandwidth * 2;
 
                 console.log(
@@ -5398,7 +5398,7 @@ export default function Chart(props: propsIF) {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
-                nearest.time !== lastCandleData?.time &&
+                nearest.time !== lastCandleData?.time + period &&
                 (checkYLocation || isSelectedVolume),
             nearest: nearest,
         };
