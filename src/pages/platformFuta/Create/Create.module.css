@@ -3,14 +3,11 @@
     flex-direction: column;
     justify-content: space-between;
     align-self: center;
-<<<<<<< HEAD
-=======
     margin: 0 auto;
     padding: 10px;
->>>>>>> 9bbc31a3e79a53ede59e5fa85b0f03016c8a509d
     max-width: 600px;
     height: 100%;
-    /* height: calc(100vh - 136px); */
+    height: calc(100vh - 136px);
 }
 
 .create_token_top {
