@@ -118,6 +118,7 @@ export const useAppChain = (): {
                         const isPathPointsTabOnAccount =
                             pathname.includes('/points');
                         const isPathOnExplore = pathname.includes('/explore');
+                        const isPathOnAuctions = pathname.includes('/auctions');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -154,7 +155,8 @@ export const useAppChain = (): {
                                 isPathUserAddress ||
                                 isPathUserXpOrLeaderboard ||
                                 isPathPointsTabOnAccount ||
-                                isPathOnExplore
+                                isPathOnExplore ||
+                                isPathOnAuctions
                             ) {
                                 if (
                                     activeNetwork.chainId !=
