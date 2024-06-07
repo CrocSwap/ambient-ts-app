@@ -465,8 +465,8 @@ export default function LimitActionModal(props: propsIF) {
                           ? baseTokenAddress
                           : quoteTokenAddress
                       : !isDenomBase
-                      ? baseTokenAddress
-                      : quoteTokenAddress,
+                        ? baseTokenAddress
+                        : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
                       ? baseDisplay
                       : quoteDisplay,
@@ -496,8 +496,8 @@ export default function LimitActionModal(props: propsIF) {
                           ? baseTokenAddress
                           : quoteTokenAddress
                       : !isDenomBase
-                      ? baseTokenAddress
-                      : quoteTokenAddress,
+                        ? baseTokenAddress
+                        : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
                       ? quoteDisplay
                       : baseDisplay,
@@ -552,13 +552,13 @@ export default function LimitActionModal(props: propsIF) {
                         <Button
                             idForDOM='claim_remove_limit_button'
                             title={
-                                !currentLiquidity
+                                currentLiquidity === undefined
                                     ? '...'
                                     : type === 'Remove'
-                                    ? 'Remove Limit Order'
-                                    : 'Claim Limit Order'
+                                      ? 'Remove Limit Order'
+                                      : 'Claim Limit Order'
                             }
-                            disabled={!currentLiquidity}
+                            disabled={currentLiquidity === undefined}
                             action={type === 'Remove' ? removeFn : claimFn}
                             flat={true}
                         />
