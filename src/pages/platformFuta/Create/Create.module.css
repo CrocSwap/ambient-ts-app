@@ -76,11 +76,14 @@
     font-size: 10px;
 }
 
+.create_button {
+    cursor: pointer;
+}
+
 .create_button,
 .create_button_disabled {
     border: none;
     background-color: var(--accent1);
-    cursor: pointer;
 }
 
 .create_button_disabled {
