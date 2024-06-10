@@ -81,6 +81,8 @@ export default function Auctions() {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
+    const [showComplete, setShowComplete] = useState<boolean>(false);
+
     return (
         <div className={styles.auctions_main}>
             <h3>AUCTIONS</h3>
@@ -91,7 +93,7 @@ export default function Auctions() {
                     type='text'
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder='Search...'
+                    placeholder='SEARCH...'
                     spellCheck={false}
                     autoComplete='off'
                 />
@@ -99,7 +101,14 @@ export default function Auctions() {
             </div>
             <div className={styles.sort_buttons}>
                 <div>CREATION TIME</div>
-                <button>SHOW COMPLETE</button>
+                <button
+                    className={
+                        styles[showComplete ? 'button_on' : 'button_off']
+                    }
+                    onClick={() => setShowComplete(!showComplete)}
+                >
+                    SHOW COMPLETE
+                </button>
             </div>
             <div className={styles.auctions_list}>
                 <div className={styles.auction_headers}>
