@@ -217,8 +217,10 @@ export default function Navbar() {
                                 className={styles.version}
                                 variants={dropdownItemVariants}
                             >
-                                Connected address:{' '}
-                                {ensName ? ensName : accountAddress}
+                                {isConnected &&
+                                    `Connected address: ${
+                                        ensName ? ensName : accountAddress
+                                    }`}
                             </motion.p>
                             <motion.p
                                 className={styles.version}
