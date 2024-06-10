@@ -24,7 +24,7 @@ export default function AuctionItem(props: auctionDataIF) {
     }
 
     return (
-        <Link className={styles.auction_item} to={''}>
+        <Link className={styles.auction_item} to={'/auctions/v1/' + ticker}>
             <div className={styles.ticker}>{ticker}</div>
             <div className={styles.market_cap}>{'$' + marketCap}</div>
             <div className={styles[getTimeColor(timeRem)]}>{timeRem}</div>

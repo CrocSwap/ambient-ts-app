@@ -3,7 +3,6 @@
     flex-direction: column;
     padding: 10px;
     gap: 8px;
-    outline: 3px solid yellow;
 }
 
 .auctions_main > h3 {
