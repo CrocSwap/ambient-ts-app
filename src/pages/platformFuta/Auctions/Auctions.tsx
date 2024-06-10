@@ -1,15 +1,15 @@
-import { Link } from 'react-router-dom';
 import styles from './Auctions.module.css';
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2';
+import AuctionItem from './AuctionItem';
 
-interface dataIF {
+export interface auctionDataIF {
     ticker: string;
     marketCap: number;
     timeRem: string;
 }
 
 export default function Auctions() {
-    const data: dataIF[] = [
+    const data: auctionDataIF[] = [
         {
             ticker: 'DOGE',
             marketCap: 67316,
@@ -83,15 +83,9 @@ export default function Auctions() {
                     <h5>REMAINING</h5>
                 </div>
                 <div className={styles.auctions_links}>
-                    {data.map((d: dataIF) => {
-                        return (
-                            <Link key={JSON.stringify(d)} to={''}>
-                                <div>{d.ticker}</div>
-                                <div>{'$' + d.marketCap}</div>
-                                <div>{d.timeRem}</div>
-                            </Link>
-                        );
-                    })}
+                    {data.map((d: auctionDataIF) => (
+                        <AuctionItem key={JSON.stringify(d)} {...d} />
+                    ))}
                 </div>
             </div>
         </div>
