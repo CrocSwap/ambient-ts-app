@@ -131,10 +131,10 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'privacy';
         } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {
             pageName = 'faqPoints';
-        } else if (pathname.endsWith(BASE_URL_PATHS.auctions)) {
-            pageName = 'auctions';
-        } else if (pathname.startsWith(BASE_URL_PATHS.auctionCreate)) {
+        } else if (pathname.endsWith(BASE_URL_PATHS.auctionCreate)) {
             pageName = 'auctionCreate';
+        } else if (pathname.startsWith(BASE_URL_PATHS.auctions)) {
+            pageName = 'auctions';
         } else {
             pageName = 'home';
         }
