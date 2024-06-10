@@ -97,7 +97,10 @@ export default function Auctions() {
                 />
                 <button onClick={() => clearInput()}>×</button>
             </div>
-            <div className={styles.sort_buttons}></div>
+            <div className={styles.sort_buttons}>
+                <div>CREATION TIME</div>
+                <button>SHOW COMPLETE</button>
+            </div>
             <div className={styles.auctions_list}>
                 <div className={styles.auction_headers}>
                     <h5>TICKER</h5>
