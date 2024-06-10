@@ -97,10 +97,11 @@ background: var(--accent1, #0CCDFF);
     width: 100%;
     background-color: var(--dark4);
     position: absolute;
-    top: 40px;
+    top: 0;
     overflow-y: scroll;
     padding: 4px;
     z-index: 2;
+   
 }
 
 .maxDropdownButton{
@@ -117,22 +118,22 @@ background: var(--accent1, #0CCDFF);
 font-size: 20px;
 text-transform: uppercase;
 padding: 8px;
-color: var(--text1)
+color: var(--text2)
 
 
 }
 .maxDropdownButton p{
-    color: var(--text2)
+    color: var(--text1)
 }
 .maxRow{
     height: 26px;
     cursor: pointer;
-    color: var(--text1);
-   
-   
+    color: var(--text2)
+    
+    
 }
 .maxRow p{
-    color: var(--text2)
+    color: var(--text1);
 }
 .maxRow:hover{
     background: var(--accent2);

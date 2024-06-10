@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import styles from './Ticker.module.css';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
@@ -21,6 +21,7 @@ import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import Auctions from '../Auctions/Auctions';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -185,7 +186,10 @@ export default function Ticker() {
             </div>
         </div>
     );
+    const tickerDropdownRef = useRef<HTMLDivElement>(null);
+    const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
 
+    useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
     const maxFdvDisplay = (
         <div className={styles.tickerContainer}>
             <h3>MAX FDV</h3>
@@ -198,7 +202,10 @@ export default function Ticker() {
                     (${selectedMaxValue.text})
                 </button>
                 {isMaxDropdownOpen && (
-                    <div className={styles.maxDropdownContent}>
+                    <div
+                        className={styles.maxDropdownContent}
+                        ref={tickerDropdownRef}
+                    >
                         {maxFdvData.map((item, idx) => (
                             <div
                                 className={styles.maxRow}
