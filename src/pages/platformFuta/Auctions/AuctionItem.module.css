@@ -1,0 +1,34 @@
+.auction_item {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: 'ticker market_cap time_left';
+    align-items: center;
+    padding: 0px 4px;
+    border-left: 4px solid var(--dark4);
+    border-right: 4px solid var(--dark4);
+}
+
+.ticker {
+    grid-area: 'ticker';
+    text-align: left;
+    color: var(--text1);
+}
+
+.market_cap {
+    grid-area: 'market_cap';
+    text-align: right;
+    color: var(--text1);
+}
+
+.time_left, .time_left_low {
+    grid-area: 'time_left';
+    text-align: right;
+}
+
+.time_left {
+    color: var(--text1);
+}
+
+.time_left_low {
+    color: var(--orange);
+}

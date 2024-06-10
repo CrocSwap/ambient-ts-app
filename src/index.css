@@ -185,19 +185,23 @@
     /* colors */
     --blur-bg: rgba(239, 178, 115, 0.5);
 
-    --text1: #f0f0f8;
-    --text2: #8B98A5;
-    --text3: #61646f;
+    --text1: #CEFFFF;
+    --text2: #3D565B;
+    --text3: #283941;
 
-    --dark1: #06060c;
-    --dark2: #12121a;
-    --dark3: #1e1e24;
-    --dark4: #0E0E14;
-    --accent1: #0CCDFF;
-    --accent2: #073749;
+    --dark1: #0B0D10;
+    --dark2: #12121A;
+    --dark3: #1E1E24;
+    --dark4: #171F22;
+    --accent1: #62EBF1;
+    --accent2: #1D282E;
     --accent3: #5ffff2;
     --accent4: #71b5fc;
-    --accent5: #b5e2fe;
+    --accent5: #7BE4FF;
+
+    --orange: #CE8964;
+    --green: #77B28C;
+    --red: #FF0000;
 
     --positive: #15be6f;
     --negative: #f6385b;

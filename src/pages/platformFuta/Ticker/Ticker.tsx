@@ -1,8 +1,7 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './Ticker.module.css';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -11,7 +10,7 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
-    ZERO_ADDRESS,
+    supportedNetworks,
 } from '../../../ambient-utils/constants';
 import { BigNumber } from 'ethers';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -22,37 +21,142 @@ import TooltipComponent from '../../../components/Global/TooltipComponent/Toolti
 import Auctions from '../Auctions/Auctions';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { useParams } from 'react-router-dom';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TokenIF } from '../../../ambient-utils/types';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
+    >('');
+    const {
+        chainData: { chainId },
+        crocEnv,
+    } = useContext(CrocEnvContext);
+    const { isUserConnected } = useContext(UserDataContext);
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
+
+    const { ticker: tickerFromParams } = useParams();
+
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
+        number | undefined
     >();
-    console.log(bidQtyNonDisplay);
+
+    useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(nativeToken.address, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setNativeTokenUsdPrice(price.usdPrice);
+            } else {
+                setNativeTokenUsdPrice(undefined);
+            }
+        });
+    }, [crocEnv, chainId]);
+
+    const getAuctionDetails = async (ticker: string) => {
+        if (ticker.toLowerCase() === 'foo') return { status: 'OPEN' };
+
+        return { status: 'CLOSED' };
+    };
+
+    // setState for auction details
+    const [auctionDetails, setAuctionDetails] = useState<
+        { status: string } | undefined
+    >();
+
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) =>
+            setAuctionDetails(details),
+        );
+    }, [tickerFromParams]);
+
     const [inputValue, setInputValue] = useState('');
 
-    const [tokenWalletBalance] = useState<string>('');
-    const { soloToken: selectedToken } = useContext(TradeDataContext);
-    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+    const [isValidationInProgress, setIsValidationInProgress] =
+        useState<boolean>(false);
+    const [isValidated, setIsValidated] = useState<boolean>(false);
 
-    const selectedTokenDecimals = selectedToken.decimals;
+    const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
-    const tokenWalletBalanceDisplay = tokenWalletBalance
-        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+    const nativeData: TokenIF | undefined =
+        tokenBalances &&
+        tokenBalances.find(
+            (tkn: TokenIF) => tkn.address === nativeToken.address,
+        );
+
+    const nativeTokenWalletBalance = nativeData?.walletBalance;
+
+    const bidDisplayNum = inputValue
+        ? parseFloat(inputValue ?? '0')
         : undefined;
 
-    const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
-        ? parseFloat(tokenWalletBalanceDisplay)
+    const bidUsdValue =
+        nativeTokenUsdPrice !== undefined && bidDisplayNum !== undefined
+            ? nativeTokenUsdPrice * bidDisplayNum
+            : undefined;
+
+    const bidUsdValueTruncated =
+        bidUsdValue !== undefined
+            ? bidUsdValue
+                ? getFormattedNumber({
+                      value: bidUsdValue,
+                      isUSD: true,
+                  })
+                : '$0.00'
+            : undefined;
+
+    const nativeTokenDecimals = nativeToken.decimals;
+
+    const checkBidValidity = async (bidQtyNonDisplay: string) => {
+        const isNonZero = !!bidQtyNonDisplay;
+
+        if (!isNonZero) return false;
+
+        const bidSizeLessThanAdjustedBalance = BigNumber.from(
+            nativeTokenWalletBalanceAdjustedNonDisplayString,
+        ).gt(BigNumber.from(bidQtyNonDisplay));
+
+        return bidSizeLessThanAdjustedBalance;
+    };
+
+    const debouncedBidInput = useDebounce(bidQtyNonDisplay, 500);
+
+    useEffect(() => {
+        checkBidValidity(debouncedBidInput).then((isValid) => {
+            setIsValidationInProgress(false);
+            setIsValidated(isValid);
+        });
+    }, [debouncedBidInput]);
+
+    const nativeTokenWalletBalanceDisplay = nativeTokenWalletBalance
+        ? toDisplayQty(nativeTokenWalletBalance, nativeTokenDecimals)
         : undefined;
 
-    const tokenWalletBalanceTruncated = getFormattedNumber({
-        value: tokenWalletBalanceDisplayNum,
+    const nativeTokenWalletBalanceDisplayNum = nativeTokenWalletBalanceDisplay
+        ? parseFloat(nativeTokenWalletBalanceDisplay)
+        : undefined;
+
+    const nativeTokenWalletBalanceTruncated = getFormattedNumber({
+        value: nativeTokenWalletBalanceDisplayNum,
     });
 
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
-    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
     const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
     )
@@ -70,29 +174,34 @@ export default function Ticker() {
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
         : amountToReduceNativeTokenQtyMainnet;
-    const isTokenWalletBalanceGreaterThanZero =
-        parseFloat(tokenWalletBalance) > 0;
-    const tokenWalletBalanceAdjustedNonDisplayString =
-        isTokenEth && !!tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance)
+
+    const isTokenWalletBalanceGreaterThanZero = nativeTokenWalletBalance
+        ? parseFloat(nativeTokenWalletBalance) > 0
+        : false;
+
+    const nativeTokenWalletBalanceAdjustedNonDisplayString =
+        nativeTokenWalletBalance
+            ? BigNumber.from(nativeTokenWalletBalance)
 
                   .sub(amountToReduceNativeTokenQty)
                   .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
                   .toString()
-            : tokenWalletBalance;
+            : nativeTokenWalletBalance;
 
     const adjustedTokenWalletBalanceDisplay = useDebounce(
-        tokenWalletBalanceAdjustedNonDisplayString
+        nativeTokenWalletBalanceAdjustedNonDisplayString
             ? toDisplayQty(
-                  tokenWalletBalanceAdjustedNonDisplayString,
-                  selectedTokenDecimals,
+                  nativeTokenWalletBalanceAdjustedNonDisplayString,
+                  nativeTokenDecimals,
               )
             : undefined,
         500,
     );
     const handleBalanceClick = () => {
         if (isTokenWalletBalanceGreaterThanZero) {
-            setBidQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
+            setBidQtyNonDisplay(
+                nativeTokenWalletBalanceAdjustedNonDisplayString,
+            );
 
             if (adjustedTokenWalletBalanceDisplay)
                 setInputValue(adjustedTokenWalletBalanceDisplay);
@@ -100,7 +209,11 @@ export default function Ticker() {
     };
 
     const statusData = [
-        { label: 'status', value: 'OPEN', color: 'var(--accent1)' },
+        {
+            label: 'status',
+            value: auctionDetails?.status,
+            color: 'var(--accent1)',
+        },
         {
             label: 'time remaining',
             value: 'XXh:XXm:XXs',
@@ -127,11 +240,11 @@ export default function Ticker() {
         },
     ];
     const maxFdvData = [
-        { value: 0.216, text: '867' },
-        { value: 0.271, text: '1,084' },
-        { value: 0.338, text: '1,355' },
-        { value: 0.423, text: '1,694' },
-        { value: 0.529, text: '2,118' },
+        { value: 0.216 },
+        { value: 0.271 },
+        { value: 0.338 },
+        { value: 0.423 },
+        { value: 0.529 },
     ];
 
     const extraInfoData = [
@@ -150,14 +263,15 @@ export default function Ticker() {
     const progressValue = 'XX.X';
 
     const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
-    const handleSelectItem = (item: { value: number; text: string }) => {
+
+    const handleSelectItem = (item: { value: number }) => {
         setSelectedMaxValue(item);
         setIsMaxDropdownOpen(false);
     };
 
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
-            <h2>TICKER</h2>
+            <h2>{tickerFromParams}</h2>
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>
@@ -189,6 +303,21 @@ export default function Ticker() {
     const tickerDropdownRef = useRef<HTMLDivElement>(null);
     const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
 
+    const fdvUsdValue =
+        nativeTokenUsdPrice !== undefined &&
+        selectedMaxValue.value !== undefined
+            ? nativeTokenUsdPrice * selectedMaxValue.value
+            : undefined;
+
+    const selectedFdvUsdMaxValue =
+        fdvUsdValue !== undefined
+            ? fdvUsdValue
+                ? getFormattedNumber({
+                      value: fdvUsdValue,
+                      isUSD: true,
+                  })
+                : '$0.00'
+            : '...';
     useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
     const maxFdvDisplay = (
         <div className={styles.tickerContainer}>
@@ -198,24 +327,40 @@ export default function Ticker() {
                     onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
                     className={styles.maxDropdownButton}
                 >
-                    <p>{selectedMaxValue.value}</p>
-                    (${selectedMaxValue.text})
+                    <p>{selectedMaxValue.value}</p>({selectedFdvUsdMaxValue})
                 </button>
                 {isMaxDropdownOpen && (
                     <div
                         className={styles.maxDropdownContent}
                         ref={tickerDropdownRef}
                     >
-                        {maxFdvData.map((item, idx) => (
-                            <div
-                                className={styles.maxRow}
-                                key={idx}
-                                onClick={() => handleSelectItem(item)}
-                            >
-                                <p>{item.value}</p>
-                                (${item.text})
-                            </div>
-                        ))}
+                        {maxFdvData.map((item, idx) => {
+                            const fdvUsdValue =
+                                nativeTokenUsdPrice !== undefined &&
+                                item.value !== undefined
+                                    ? nativeTokenUsdPrice * item.value
+                                    : undefined;
+
+                            const fdvUsdValueTruncated =
+                                fdvUsdValue !== undefined
+                                    ? fdvUsdValue
+                                        ? getFormattedNumber({
+                                              value: fdvUsdValue,
+                                              isUSD: true,
+                                          })
+                                        : '$0.00'
+                                    : undefined;
+
+                            return (
+                                <div
+                                    className={styles.maxRow}
+                                    key={idx}
+                                    onClick={() => handleSelectItem(item)}
+                                >
+                                    <p>{item.value}</p>({fdvUsdValueTruncated})
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -224,13 +369,13 @@ export default function Ticker() {
 
     const userQtyDisplay = (
         <div className={styles.userQtyDisplay}>
-            <p style={{ color: 'var(--text2)' }}> {'...'}</p>
-            {tokenWalletBalance !== '0' && (
+            <p style={{ color: 'var(--text2)' }}>{bidUsdValueTruncated}</p>
+            {nativeTokenWalletBalance !== '0' && (
                 <div
                     className={styles.maxButtonContainer}
                     onClick={handleBalanceClick}
                 >
-                    <p>{tokenWalletBalanceTruncated}</p>
+                    <p>{nativeTokenWalletBalanceTruncated}</p>
                 </div>
             )}
         </div>
@@ -239,7 +384,7 @@ export default function Ticker() {
         <div className={styles.tickerContainer}>
             <h3>BID SIZE</h3>
             <CurrencySelector
-                selectedToken={selectedToken}
+                selectedToken={nativeToken}
                 setQty={setBidQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
@@ -265,6 +410,34 @@ export default function Ticker() {
     );
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
+    const bidButton = (
+        <button
+            className={
+                !isUserConnected || (!isValidationInProgress && isValidated)
+                    ? styles.bidButton
+                    : styles.bidButton_disabled
+            }
+            onClick={() =>
+                !isUserConnected
+                    ? openWalletModal()
+                    : console.log(`clicked Bid for display qty: ${inputValue}`)
+            }
+            disabled={
+                isUserConnected && (isValidationInProgress || !isValidated)
+            }
+        >
+            {!isUserConnected
+                ? 'Connect Wallet'
+                : bidQtyNonDisplay === ''
+                  ? 'Enter a Bid Size'
+                  : isValidationInProgress
+                    ? 'Validating Bid...'
+                    : isValidated
+                      ? 'Bid'
+                      : 'Invalid Bid'}
+        </button>
+    );
+
     const desktopVersion = (
         <div className={styles.gridContainer}>
             <Auctions />
@@ -277,7 +450,7 @@ export default function Ticker() {
                     {bidSizeDisplay}
                     {extraInfoDisplay}
                 </div>
-                <button className={styles.bidButton}>BID</button>
+                {bidButton}
             </div>
         </div>
     );
@@ -293,7 +466,7 @@ export default function Ticker() {
                 {bidSizeDisplay}
                 {extraInfoDisplay}
             </div>
-            <button className={styles.bidButton}>BID</button>
+            {bidButton}
         </div>
     );
 }
