@@ -22,6 +22,7 @@ import TooltipComponent from '../../../components/Global/TooltipComponent/Toolti
 import Auctions from '../Auctions/Auctions';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { useParams } from 'react-router-dom';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -29,6 +30,8 @@ export default function Ticker() {
         string | undefined
     >();
     console.log(bidQtyNonDisplay);
+    const { ticker: tickerFromParams } = useParams();
+
     const [inputValue, setInputValue] = useState('');
 
     const [tokenWalletBalance] = useState<string>('');
@@ -157,7 +160,7 @@ export default function Ticker() {
 
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
-            <h2>TICKER</h2>
+            <h2>{tickerFromParams}</h2>
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>

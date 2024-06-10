@@ -12,6 +12,7 @@ export default function Auctions() {
                 dolores id natus fugiat alias!
             </p>
             <Link to='/auctions/v1/foo'>FOO Token</Link>
+            <Link to='/auctions/v1/bar'>BAR Token</Link>
         </div>
     );
 }
