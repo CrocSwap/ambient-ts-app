@@ -240,11 +240,11 @@ export default function Ticker() {
         },
     ];
     const maxFdvData = [
-        { value: 0.216, text: '867' },
-        { value: 0.271, text: '1,084' },
-        { value: 0.338, text: '1,355' },
-        { value: 0.423, text: '1,694' },
-        { value: 0.529, text: '2,118' },
+        { value: 0.216 },
+        { value: 0.271 },
+        { value: 0.338 },
+        { value: 0.423 },
+        { value: 0.529 },
     ];
 
     const extraInfoData = [
@@ -263,7 +263,8 @@ export default function Ticker() {
     const progressValue = 'XX.X';
 
     const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
-    const handleSelectItem = (item: { value: number; text: string }) => {
+
+    const handleSelectItem = (item: { value: number }) => {
         setSelectedMaxValue(item);
         setIsMaxDropdownOpen(false);
     };
@@ -302,6 +303,21 @@ export default function Ticker() {
     const tickerDropdownRef = useRef<HTMLDivElement>(null);
     const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
 
+    const fdvUsdValue =
+        nativeTokenUsdPrice !== undefined &&
+        selectedMaxValue.value !== undefined
+            ? nativeTokenUsdPrice * selectedMaxValue.value
+            : undefined;
+
+    const selectedFdvUsdMaxValue =
+        fdvUsdValue !== undefined
+            ? fdvUsdValue
+                ? getFormattedNumber({
+                      value: fdvUsdValue,
+                      isUSD: true,
+                  })
+                : '$0.00'
+            : '...';
     useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
     const maxFdvDisplay = (
         <div className={styles.tickerContainer}>
@@ -311,24 +327,40 @@ export default function Ticker() {
                     onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
                     className={styles.maxDropdownButton}
                 >
-                    <p>{selectedMaxValue.value}</p>
-                    (${selectedMaxValue.text})
+                    <p>{selectedMaxValue.value}</p>({selectedFdvUsdMaxValue})
                 </button>
                 {isMaxDropdownOpen && (
                     <div
                         className={styles.maxDropdownContent}
                         ref={tickerDropdownRef}
                     >
-                        {maxFdvData.map((item, idx) => (
-                            <div
-                                className={styles.maxRow}
-                                key={idx}
-                                onClick={() => handleSelectItem(item)}
-                            >
-                                <p>{item.value}</p>
-                                (${item.text})
-                            </div>
-                        ))}
+                        {maxFdvData.map((item, idx) => {
+                            const fdvUsdValue =
+                                nativeTokenUsdPrice !== undefined &&
+                                item.value !== undefined
+                                    ? nativeTokenUsdPrice * item.value
+                                    : undefined;
+
+                            const fdvUsdValueTruncated =
+                                fdvUsdValue !== undefined
+                                    ? fdvUsdValue
+                                        ? getFormattedNumber({
+                                              value: fdvUsdValue,
+                                              isUSD: true,
+                                          })
+                                        : '$0.00'
+                                    : undefined;
+
+                            return (
+                                <div
+                                    className={styles.maxRow}
+                                    key={idx}
+                                    onClick={() => handleSelectItem(item)}
+                                >
+                                    <p>{item.value}</p>({fdvUsdValueTruncated})
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
