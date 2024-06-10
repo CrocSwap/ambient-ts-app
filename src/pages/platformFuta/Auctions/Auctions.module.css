@@ -15,18 +15,19 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    height: 30px;
+    padding: 2px;
+    height: 24px;
+    font-size: 12px;
     background-color: var(--dark4);
 }
 
 .search_box > * {
-    min-width: 30px;
+    min-width: 24px;
     color: var(--text1);
 }
 
 .search_box > input {
     flex-grow: 100;
-    z-index: 10;
     background: transparent;
     border: transparent;
     outline: none;
