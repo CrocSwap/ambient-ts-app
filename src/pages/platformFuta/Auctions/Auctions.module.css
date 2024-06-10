@@ -7,6 +7,7 @@
 
 .auctions_main > h3 {
     font-size: 30px;
+    color: var(--text1);
 }
 
 .search_box {
@@ -14,9 +15,30 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    outline: 2px solid orange;
+    height: 30px;
+    background-color: var(--dark4);
+}
+
+.search_box > * {
+    min-width: 30px;
+    color: var(--text1);
 }
 
 .search_box > input {
     flex-grow: 100;
+    z-index: 10;
+    background: transparent;
+    border: transparent;
+    outline: none;
+}
+
+.search_box > input::placeholder {
+    color: var(--text2);
+}
+
+.search_box > button {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 28px;
 }

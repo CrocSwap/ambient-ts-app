@@ -72,8 +72,13 @@ export default function Auctions() {
             <h3>AUCTIONS</h3>
             <div className={styles.search_box}>
                 <HiMiniMagnifyingGlass />
-                <input type='text' />
-                <button>X</button>
+                <input
+                    type='text'
+                    placeholder='Search...'
+                    spellCheck={false}
+                    autoComplete='off'
+                />
+                <button>×</button>
             </div>
             <div className={styles.sort_buttons}></div>
             <div className={styles.auctions_list}>
