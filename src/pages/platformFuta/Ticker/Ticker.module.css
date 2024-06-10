@@ -1,27 +1,25 @@
-.gridContainer{
+.gridContainer {
     display: grid;
     grid-template-columns: auto 390px;
     padding: 8px 16px;
-    height: calc(100vh - 56px)
+    height: calc(100vh - 56px);
 }
 
-.container{
+.container {
     height: calc(100svh - 134px);
     padding: 8px 16px;
 
-
-
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-    font-family: "Roboto Mono";
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: 'Roboto Mono';
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     overflow-y: hidden;
 }
 
-.content{
+.content {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -30,69 +28,68 @@ justify-content: space-between;
     gap: 8px;
 }
 
-.tickerContainer{
+.tickerContainer {
     display: flex;
-flex-direction: column;
-gap: 8px;
+    flex-direction: column;
+    gap: 8px;
 }
-.tickerContainer h2{
+.tickerContainer h2 {
     background: var(--dark4);
     border-left: 4px solid var(--text1);
-    color: var(--text1, #F0F0F8);
+    color: var(--text1, #f0f0f8);
 
-font-size: 36px;
-text-transform: uppercase;
-padding-left: 8px;
-
+    font-size: 36px;
+    text-transform: uppercase;
+    padding-left: 8px;
 }
 
-.tickerContainer h3{
+.tickerContainer h3 {
     background: var(--dark4);
     border-left: 4px solid var(--text1);
-    color: var(--text1, #F0F0F8);
+    color: var(--text1, #f0f0f8);
 
-font-size: 20px;
-text-transform: uppercase;
-padding-left: 8px;
+    font-size: 20px;
+    text-transform: uppercase;
+    padding-left: 8px;
 }
-.tickerRow, .maxRow{
+.tickerRow,
+.maxRow {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
     font-size: 18px;
 }
-.tickerLabel{
-color: var(--text2, #8B98A5);
-letter-spacing: -0.36px;
-text-transform: uppercase;
+.tickerLabel {
+    color: var(--text2, #8b98a5);
+    letter-spacing: -0.36px;
+    text-transform: uppercase;
 }
-.progressBar{
+.progressBar {
     width: 27.9px;
-height: 12px;
-opacity: 0.5;
-background: var(--accent1, #0CCDFF);
+    height: 12px;
+    opacity: 0.5;
+    background: var(--accent1, #0ccdff);
 }
-.progressContainer{
+.progressContainer {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
-.progressContent{
+.progressContent {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 2px;
 }
-.progressValue{
-    color: var(--accent1, #0CCDFF);
-
+.progressValue {
+    color: var(--accent1, #0ccdff);
 }
-.maxDropdownContainer{
+.maxDropdownContainer {
     position: relative;
 }
-.maxDropdownContent{
+.maxDropdownContent {
     height: 138px;
     width: 100%;
     background-color: var(--dark4);
@@ -101,10 +98,9 @@ background: var(--accent1, #0CCDFF);
     overflow-y: scroll;
     padding: 4px;
     z-index: 2;
-   
 }
 
-.maxDropdownButton{
+.maxDropdownButton {
     cursor: pointer;
     width: 100%;
     outline: none;
@@ -115,32 +111,28 @@ background: var(--accent1, #0CCDFF);
     height: 42px;
     display: flex;
     align-items: center;
-font-size: 20px;
-text-transform: uppercase;
-padding: 8px;
-color: var(--text2)
-
-
+    font-size: 20px;
+    text-transform: uppercase;
+    padding: 8px;
+    color: var(--text2);
 }
-.maxDropdownButton p{
-    color: var(--text1)
-}
-.maxRow{
-    height: 26px;
-    cursor: pointer;
-    color: var(--text2)
-    
-    
-}
-.maxRow p{
+.maxDropdownButton p {
     color: var(--text1);
 }
-.maxRow:hover{
+.maxRow {
+    height: 26px;
+    cursor: pointer;
+    color: var(--text2);
+}
+.maxRow p {
+    color: var(--text1);
+}
+.maxRow:hover {
     background: var(--accent2);
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
 
-.userQtyDisplay{
+.userQtyDisplay {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -149,30 +141,27 @@ color: var(--text2)
     font-size: 10px;
 }
 
-
-
-
-.maxButtonContainer p{
+.maxButtonContainer p {
     font-size: 18px;
 }
 
-.extraInfoContainer{
+.extraInfoContainer {
     display: flex;
-padding: 8px;
-flex-direction: column;
-align-items: center;
-gap: 10px;
-align-self: stretch;
-border: 1px solid var(--dark3, #1E1E24);
-margin-bottom: 8px;
+    padding: 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border: 1px solid var(--dark3, #1e1e24);
+    margin-bottom: 8px;
 }
-.extraRow{
+.extraRow {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-.alignCenter{
+.alignCenter {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -181,33 +170,35 @@ margin-bottom: 8px;
     color: var(--text2);
 }
 
-.bidButton{
+.bidButton {
     display: flex;
-padding: 2px 8px;
-justify-content: center;
-align-items: center;
-gap: 10px;
-align-self: stretch;
-background: var(--accent1, #0CCDFF);
-outline: none;
-border: 1px solid var(--accent1);
-cursor: pointer;
-transition: all var(--animation-speed) ease-in-out;
+    padding: 2px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    background: var(--accent1, #0ccdff);
+    outline: none;
+    border: 1px solid var(--accent1);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
 }
-.bidButton:hover{
+.bidButton:hover {
     background: transparent;
-    color: var(--accent1)
+    color: var(--accent1);
+}
+.create_button_disabled {
+    border: none;
+    background-color: var(--accent1);
 }
 
 @media (min-width: 1280px) {
-
-    .container{
+    .container {
         padding: 0;
-        height: 100%
-    
+        height: 100%;
     }
-.bidButton{
-    margin: 0 auto;
-    width: 100%;
-}
+    .bidButton {
+        margin: 0 auto;
+        width: 100%;
+    }
 }

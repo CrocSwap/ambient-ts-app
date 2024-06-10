@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './Ticker.module.css';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
@@ -25,21 +25,30 @@ import { useParams } from 'react-router-dom';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TokenIF } from '../../../ambient-utils/types';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
-    >();
-    console.log(bidQtyNonDisplay);
+    >('');
     const { chainData } = useContext(CrocEnvContext);
+    const { isUserConnected } = useContext(UserDataContext);
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const { ticker: tickerFromParams } = useParams();
 
+    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+
     const [inputValue, setInputValue] = useState('');
 
-    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
-    const { tokenBalances } = useContext(TokenBalanceContext);
+    const [isValidationInProgress, setIsValidationInProgress] =
+        useState<boolean>(false);
+    const [isValidated, setIsValidated] = useState<boolean>(false);
 
     const nativeToken = supportedNetworks[chainData.chainId]?.defaultPair[0];
 
@@ -52,6 +61,33 @@ export default function Ticker() {
     const nativeTokenWalletBalance = nativeData?.walletBalance;
 
     const nativeTokenDecimals = nativeToken.decimals;
+
+    const checkBidValidity = async (bidQtyNonDisplay: string) => {
+        const isNonZero = !!bidQtyNonDisplay;
+
+        if (!isNonZero) return false;
+        // log if bignumber from nativeTokenWalletBalanceAdjustedNonDisplayString is greater than bidQtyNonDisplay
+        console.log(
+            BigNumber.from(nativeTokenWalletBalanceAdjustedNonDisplayString).gt(
+                BigNumber.from(bidQtyNonDisplay),
+            ),
+        );
+
+        const bidSizeLessThanAdjustedBalance = BigNumber.from(
+            nativeTokenWalletBalanceAdjustedNonDisplayString,
+        ).gt(BigNumber.from(bidQtyNonDisplay));
+
+        return bidSizeLessThanAdjustedBalance;
+    };
+
+    const debouncedBidInput = useDebounce(bidQtyNonDisplay, 500);
+
+    useEffect(() => {
+        checkBidValidity(debouncedBidInput).then((isValid) => {
+            setIsValidationInProgress(false);
+            setIsValidated(isValid);
+        });
+    }, [debouncedBidInput]);
 
     const nativeTokenWalletBalanceDisplay = nativeTokenWalletBalance
         ? toDisplayQty(nativeTokenWalletBalance, nativeTokenDecimals)
@@ -285,6 +321,36 @@ export default function Ticker() {
     );
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
+    const bidButton = (
+        <button
+            className={
+                !isUserConnected || (!isValidationInProgress && isValidated)
+                    ? styles.bidButton
+                    : styles.bidButton_disabled
+            }
+            onClick={() =>
+                !isUserConnected
+                    ? openWalletModal()
+                    : console.log(
+                          `clicked Bid for display qty: ${bidSizeDisplay}`,
+                      )
+            }
+            disabled={
+                isUserConnected && (isValidationInProgress || !isValidated)
+            }
+        >
+            {!isUserConnected
+                ? 'Connect Wallet'
+                : bidQtyNonDisplay === ''
+                  ? 'Enter a Bid Size'
+                  : isValidationInProgress
+                    ? 'Validating Bid...'
+                    : isValidated
+                      ? 'Bid'
+                      : 'Invalid Bid'}
+        </button>
+    );
+
     const desktopVersion = (
         <div className={styles.gridContainer}>
             <Auctions />
@@ -297,7 +363,7 @@ export default function Ticker() {
                     {bidSizeDisplay}
                     {extraInfoDisplay}
                 </div>
-                <button className={styles.bidButton}>BID</button>
+                {bidButton}
             </div>
         </div>
     );
@@ -313,7 +379,7 @@ export default function Ticker() {
                 {bidSizeDisplay}
                 {extraInfoDisplay}
             </div>
-            <button className={styles.bidButton}>BID</button>
+            {bidButton}
         </div>
     );
 }
