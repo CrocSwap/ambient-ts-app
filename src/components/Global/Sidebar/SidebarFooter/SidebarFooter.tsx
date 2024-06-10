@@ -1,7 +1,7 @@
 import styles from './SidebarFooter.module.css';
 import { Link, useLocation } from 'react-router-dom';
 import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
-import { RiSwapBoxFill } from 'react-icons/ri';
+import { RiHome4Fill, RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { memo, useContext } from 'react';
@@ -9,7 +9,6 @@ import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { VscLayoutSidebarLeft } from 'react-icons/vsc';
 
 function SidebarFooter() {
     const location = useLocation();
@@ -39,23 +38,13 @@ function SidebarFooter() {
         tokenB: tokenB.address,
     });
 
-    const { hideOnMobile, toggleMobileModeVisibility, sidebar } =
-        useContext(SidebarContext);
-
-    const handleSidebarCloseAndOpen = () => {
-        toggleMobileModeVisibility();
-
-        if (!sidebar.isOpen) {
-            sidebar.open(true);
-        }
-    };
+    const { hideOnMobile } = useContext(SidebarContext);
 
     const linksData = [
         {
-            title: 'Sidebar ',
-            onClick: handleSidebarCloseAndOpen,
-            icon: VscLayoutSidebarLeft,
-            isButton: true,
+            title: 'Home',
+            destination: '/',
+            icon: RiHome4Fill,
         },
         {
             title: 'Swap',
@@ -81,12 +70,7 @@ function SidebarFooter() {
             style={{ paddingLeft: !hideOnMobile ? '1.5rem' : '' }}
         >
             {linksData.map((link) =>
-                link.isButton ? (
-                    <span onClick={link.onClick} key={link.title}>
-                        <link.icon size={18} color='var(--text-highlight)' />
-                        <p>{link.title}</p>
-                    </span>
-                ) : link.destination ? (
+                link.destination ? (
                     <Link to={link.destination} key={link.destination}>
                         <link.icon
                             size={18}

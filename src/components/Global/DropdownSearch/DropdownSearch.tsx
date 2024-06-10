@@ -132,6 +132,8 @@ const DropdownSearch = () => {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
+                        // unfocus the input
+                        e.currentTarget.blur();
                     }
                 }}
                 spellCheck='false'
@@ -202,11 +204,6 @@ const DropdownSearch = () => {
         <FlexContainer flexDirection='row' gap={8} justifyContent='flex-start'>
             {optionButtons.map((option) => (
                 <motion.button
-                    whileHover={{
-                        scale: 1.2,
-                        transition: { duration: 1 },
-                    }}
-                    whileTap={{ scale: 0.9 }}
                     key={option.id}
                     onClick={() => handleClick(option)}
                     className={`${styles.option_button} ${
@@ -241,7 +238,7 @@ const DropdownSearch = () => {
                 <motion.div
                     className={styles.dropdown_content}
                     initial={{ height: 0 }}
-                    animate={{ height: '164px' }}
+                    animate={{ height: '184px' }}
                     exit={{ height: 0 }}
                     transition={{ type: 'spring', stiffness: 200 }}
                 >

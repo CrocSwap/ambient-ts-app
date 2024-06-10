@@ -27,6 +27,7 @@ import XMON from './XMON.png';
 import MKR from './MKR.png';
 import SWETH from './SWETH.svg';
 import LINK from './LINK.svg';
+import OLE from './OLE.svg';
 import SYN from './SYN.png';
 import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
@@ -38,6 +39,8 @@ import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
 import ESE from './ESE.jpg';
+import BIG from './BIG.jpg';
+import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
@@ -71,6 +74,7 @@ export {
     MKR,
     SWETH,
     LINK,
+    OLE,
     SYN,
     LDO,
     BLUR,
@@ -82,5 +86,7 @@ export {
     PANDA,
     YIELD,
     ESE,
+    BIG,
+    PUNKETH20,
     RSETH,
 };

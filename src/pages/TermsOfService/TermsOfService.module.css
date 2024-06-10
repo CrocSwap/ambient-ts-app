@@ -26,33 +26,26 @@
     height: 100%;
     width: 100%;
     padding: 2rem;
-
     display: flex;
     flex-direction: column;
-
-    font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
     font-size: var(--header2-size);
     line-height: 22px;
     letter-spacing: -0.02em;
-
     color: var(--text1);
 }
 
 .header {
-    font-family: 'Lexend Exa';
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;
 }
 
 .sub_header {
-    font-family: 'Lexend Deca';
     font-weight: 300;
     font-size: var(--header1-size);
     line-height: 30px;
-
     margin-top: 2rem !important;
 }
 
@@ -67,4 +60,8 @@
 
 .content ul {
     margin-left: 1rem;
+}
+
+.content * {
+    font-family: 'Lexend Deca';
 }
