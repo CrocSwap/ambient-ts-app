@@ -40,7 +40,7 @@ export default function Auctions() {
         {
             ticker: 'USA',
             marketCap: 11294,
-            timeRem: '05hr',
+            timeRem: '05h',
         },
         {
             ticker: 'BITCOIN',
@@ -111,11 +111,11 @@ export default function Auctions() {
                 </button>
             </div>
             <div className={styles.auctions_list}>
-                <div className={styles.auction_headers}>
-                    <h5>TICKER</h5>
-                    <h5>Market Cap</h5>
-                    <h5>REMAINING</h5>
-                </div>
+                <header>
+                    <h5 className={styles.ticker_header}>TICKER</h5>
+                    <h5 className={styles.market_cap_header}>MARKET CAP</h5>
+                    <h5 className={styles.time_left_header}>REMAINING</h5>
+                </header>
                 <div className={styles.auctions_links}>
                     {data.map((d: auctionDataIF) => (
                         <AuctionItem key={JSON.stringify(d)} {...d} />

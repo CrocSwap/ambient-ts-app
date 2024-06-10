@@ -67,3 +67,38 @@
     border: 1px solid transparent;
     color: var(--text2);
 }
+
+.auctions_list {
+    display: flex;
+    flex-direction: column;
+}
+
+.auctions_list > header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: 'ticker market_cap time_left';
+    padding: 0px 8px;
+}
+
+.auctions_list > header > h5 {
+    font-size: 10px;
+    color: var(--text3);
+}
+
+.auctions_list > header > .ticker_header {
+    text-align: left;
+}
+
+.auctions_list > header > .market_cap_header {
+    text-align: right;
+}
+
+.auctions_list > header > .time_left_header {
+    text-align: right;
+}
+
+.auctions_links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
