@@ -10,6 +10,7 @@ export interface auctionDataIF {
 }
 
 export default function Auctions() {
+    // placeholder data until the platform has live data
     const data: auctionDataIF[] = [
         {
             ticker: 'DOGE',
@@ -68,9 +69,13 @@ export default function Auctions() {
         },
     ];
 
+    // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
 
+    // variable to hold user search input from the DOM
     const [searchInput, setSearchInput] = useState<string>('');
+
+    // fn to clear search input and re-focus the input element
     function clearInput(): void {
         setSearchInput('');
         document.getElementById(INPUT_DOM_ID)?.focus();
