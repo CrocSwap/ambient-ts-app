@@ -1,24 +1,22 @@
-.container{
-    /* Mono 12 */
-    height: calc(100vh - 134px);
-
-    font-family: "Roboto Mono";
-    font-style: normal;
-    font-weight: 400;
-    gap: 8px;
-    line-height: normal;
-
+.auctions_main {
     display: flex;
-padding: 8px 16px;
-
-flex-direction: column;
-
-
+    flex-direction: column;
+    padding: 10px;
+    outline: 3px solid yellow;
 }
 
-.navPath{
-    color: var(--text2, #8B98A5);
-    text-transform: uppercase;
-    font-size: 12px;
+.auctions_main > h3 {
+    font-size: 30px;
+}
 
+.search_box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    outline: 2px solid orange;
+}
+
+.search_box > input {
+    flex-grow: 100;
 }
