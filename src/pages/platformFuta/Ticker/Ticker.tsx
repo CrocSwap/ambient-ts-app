@@ -2,7 +2,6 @@ import { useContext, useRef, useState } from 'react';
 import styles from './Ticker.module.css';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -11,7 +10,7 @@ import {
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
-    ZERO_ADDRESS,
+    supportedNetworks,
 } from '../../../ambient-utils/constants';
 import { BigNumber } from 'ethers';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -23,6 +22,9 @@ import Auctions from '../Auctions/Auctions';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { useParams } from 'react-router-dom';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { TokenIF } from '../../../ambient-utils/types';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -30,32 +32,42 @@ export default function Ticker() {
         string | undefined
     >();
     console.log(bidQtyNonDisplay);
+    const { chainData } = useContext(CrocEnvContext);
+
     const { ticker: tickerFromParams } = useParams();
 
     const [inputValue, setInputValue] = useState('');
 
-    const [tokenWalletBalance] = useState<string>('');
-    const { soloToken: selectedToken } = useContext(TradeDataContext);
     const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
-    const selectedTokenDecimals = selectedToken.decimals;
+    const nativeToken = supportedNetworks[chainData.chainId]?.defaultPair[0];
 
-    const tokenWalletBalanceDisplay = tokenWalletBalance
-        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+    const nativeData: TokenIF | undefined =
+        tokenBalances &&
+        tokenBalances.find(
+            (tkn: TokenIF) => tkn.address === nativeToken.address,
+        );
+
+    const nativeTokenWalletBalance = nativeData?.walletBalance;
+
+    const nativeTokenDecimals = nativeToken.decimals;
+
+    const nativeTokenWalletBalanceDisplay = nativeTokenWalletBalance
+        ? toDisplayQty(nativeTokenWalletBalance, nativeTokenDecimals)
         : undefined;
 
-    const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
-        ? parseFloat(tokenWalletBalanceDisplay)
+    const nativeTokenWalletBalanceDisplayNum = nativeTokenWalletBalanceDisplay
+        ? parseFloat(nativeTokenWalletBalanceDisplay)
         : undefined;
 
-    const tokenWalletBalanceTruncated = getFormattedNumber({
-        value: tokenWalletBalanceDisplayNum,
+    const nativeTokenWalletBalanceTruncated = getFormattedNumber({
+        value: nativeTokenWalletBalanceDisplayNum,
     });
 
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
-    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
     const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
     )
@@ -73,29 +85,34 @@ export default function Ticker() {
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
         : amountToReduceNativeTokenQtyMainnet;
-    const isTokenWalletBalanceGreaterThanZero =
-        parseFloat(tokenWalletBalance) > 0;
-    const tokenWalletBalanceAdjustedNonDisplayString =
-        isTokenEth && !!tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance)
+
+    const isTokenWalletBalanceGreaterThanZero = nativeTokenWalletBalance
+        ? parseFloat(nativeTokenWalletBalance) > 0
+        : false;
+
+    const nativeTokenWalletBalanceAdjustedNonDisplayString =
+        nativeTokenWalletBalance
+            ? BigNumber.from(nativeTokenWalletBalance)
 
                   .sub(amountToReduceNativeTokenQty)
                   .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
                   .toString()
-            : tokenWalletBalance;
+            : nativeTokenWalletBalance;
 
     const adjustedTokenWalletBalanceDisplay = useDebounce(
-        tokenWalletBalanceAdjustedNonDisplayString
+        nativeTokenWalletBalanceAdjustedNonDisplayString
             ? toDisplayQty(
-                  tokenWalletBalanceAdjustedNonDisplayString,
-                  selectedTokenDecimals,
+                  nativeTokenWalletBalanceAdjustedNonDisplayString,
+                  nativeTokenDecimals,
               )
             : undefined,
         500,
     );
     const handleBalanceClick = () => {
         if (isTokenWalletBalanceGreaterThanZero) {
-            setBidQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
+            setBidQtyNonDisplay(
+                nativeTokenWalletBalanceAdjustedNonDisplayString,
+            );
 
             if (adjustedTokenWalletBalanceDisplay)
                 setInputValue(adjustedTokenWalletBalanceDisplay);
@@ -228,12 +245,12 @@ export default function Ticker() {
     const userQtyDisplay = (
         <div className={styles.userQtyDisplay}>
             <p style={{ color: 'var(--text2)' }}> {'...'}</p>
-            {tokenWalletBalance !== '0' && (
+            {nativeTokenWalletBalance !== '0' && (
                 <div
                     className={styles.maxButtonContainer}
                     onClick={handleBalanceClick}
                 >
-                    <p>{tokenWalletBalanceTruncated}</p>
+                    <p>{nativeTokenWalletBalanceTruncated}</p>
                 </div>
             )}
         </div>
@@ -242,7 +259,7 @@ export default function Ticker() {
         <div className={styles.tickerContainer}>
             <h3>BID SIZE</h3>
             <CurrencySelector
-                selectedToken={selectedToken}
+                selectedToken={nativeToken}
                 setQty={setBidQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
