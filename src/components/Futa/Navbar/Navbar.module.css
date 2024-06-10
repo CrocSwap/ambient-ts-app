@@ -110,4 +110,11 @@ color: var(--accent1)
     .logoutButton {
         max-width: 300px;
     }
+
+    .dropdownMenu {
+        width: 300px;
+        left: auto;  
+        right: 16px;   
+       
+    }
 }
