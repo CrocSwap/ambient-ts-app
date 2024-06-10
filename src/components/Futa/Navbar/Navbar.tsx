@@ -21,6 +21,7 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { trimString } from '../../../ambient-utils/dataLayer';
 
 // Animation Variants
 const dropdownVariants = {
@@ -68,7 +69,8 @@ export default function Navbar() {
 
     // Context
     const { isConnected } = useWeb3ModalAccount();
-    const { isUserConnected, disconnectUser } = useContext(UserDataContext);
+    const { isUserConnected, disconnectUser, ensName, userAddress } =
+        useContext(UserDataContext);
     const { setCrocEnv } = useContext(CrocEnvContext);
     const {
         baseToken: {
@@ -95,6 +97,8 @@ export default function Navbar() {
     const clickOutsideHandler = () => {
         setIsDropdownOpen(false);
     };
+    const accountAddress =
+        isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
@@ -209,6 +213,13 @@ export default function Navbar() {
                                     <Link to={item.link}>{item.label}</Link>
                                 </motion.div>
                             ))}
+                            <motion.p
+                                className={styles.version}
+                                variants={dropdownItemVariants}
+                            >
+                                Connected address:{' '}
+                                {ensName ? ensName : accountAddress}
+                            </motion.p>
                             <motion.p
                                 className={styles.version}
                                 variants={dropdownItemVariants}
