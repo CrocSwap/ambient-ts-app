@@ -35,6 +35,7 @@ import { Message } from './Model/MessageModel';
 import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -830,6 +831,8 @@ function ChatPanel(props: propsIF) {
         setSelectedMessageForReply(undefined);
     };
 
+    domDebug('isUserConnected', isUserConnected);
+
     const header = (
         <div
             className={styles.chat_header}
@@ -844,20 +847,25 @@ function ChatPanel(props: propsIF) {
                 <div
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
-                        isVerified ? styles.verified : ''
+                        isVerified && isUserConnected ? styles.verified : ''
                     } ${!isWsConnected ? styles.not_connected : ''}`}
                     onClick={(e) => verifyWallet(0, new Date(), e)}
                 >
-                    {isModerator && isVerified && userAddress && (
-                        <AiOutlineUser
-                            className={`${styles.verify_button_icon} ${
-                                styles.verify_button_mod_icon
-                            } ${!isWsConnected ? styles.not_connected : ''}`}
-                            color='var(--other-green)'
-                            size={14}
-                        ></AiOutlineUser>
-                    )}
-                    {isVerified && userAddress ? (
+                    {isModerator &&
+                        isVerified &&
+                        userAddress &&
+                        isUserConnected && (
+                            <AiOutlineUser
+                                className={`${styles.verify_button_icon} ${
+                                    styles.verify_button_mod_icon
+                                } ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
+                                color='var(--other-green)'
+                                size={14}
+                            ></AiOutlineUser>
+                        )}
+                    {isVerified && userAddress && isUserConnected ? (
                         <>
                             <AiOutlineCheck
                                 className={`${styles.verify_button_icon} ${
@@ -875,7 +883,7 @@ function ChatPanel(props: propsIF) {
                                 }`}
                                 size={10}
                             />
-                            <span> Not Verified</span>
+                            <span> Not Verified </span>
                         </>
                     )}
                 </div>
