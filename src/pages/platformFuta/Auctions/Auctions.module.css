@@ -20,3 +20,9 @@
 .search_box > input {
     flex-grow: 100;
 }
+
+.auctions_links > * {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
