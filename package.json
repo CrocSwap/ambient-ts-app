@@ -45,7 +45,7 @@
         "simplex-noise": "^4.0.1",
         "socket.io-client": "^4.5.1",
         "styled-components": "6.0.3",
-        "vite": "^5.2.11",
+        "vite": "^5.2.13",
         "vite-plugin-babel-macros": "^1.0.6",
         "web-vitals": "^2.1.0"
     },
