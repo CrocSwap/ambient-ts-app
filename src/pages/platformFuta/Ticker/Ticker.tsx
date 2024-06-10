@@ -66,6 +66,24 @@ export default function Ticker() {
         });
     }, [crocEnv, chainId]);
 
+    const getAuctionDetails = async (ticker: string) => {
+        if (ticker.toLowerCase() === 'foo') return { status: 'OPEN' };
+
+        return { status: 'CLOSED' };
+    };
+
+    // setState for auction details
+    const [auctionDetails, setAuctionDetails] = useState<
+        { status: string } | undefined
+    >();
+
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) =>
+            setAuctionDetails(details),
+        );
+    }, [tickerFromParams]);
+
     const [inputValue, setInputValue] = useState('');
 
     const [isValidationInProgress, setIsValidationInProgress] =
@@ -191,7 +209,11 @@ export default function Ticker() {
     };
 
     const statusData = [
-        { label: 'status', value: 'OPEN', color: 'var(--accent1)' },
+        {
+            label: 'status',
+            value: auctionDetails?.status,
+            color: 'var(--accent1)',
+        },
         {
             label: 'time remaining',
             value: 'XXh:XXm:XXs',
@@ -366,9 +388,7 @@ export default function Ticker() {
             onClick={() =>
                 !isUserConnected
                     ? openWalletModal()
-                    : console.log(
-                          `clicked Bid for display qty: ${bidSizeDisplay}`,
-                      )
+                    : console.log(`clicked Bid for display qty: ${inputValue}`)
             }
             disabled={
                 isUserConnected && (isValidationInProgress || !isValidated)
