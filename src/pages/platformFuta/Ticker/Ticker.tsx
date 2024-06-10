@@ -27,13 +27,17 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TokenIF } from '../../../ambient-utils/types';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >('');
-    const { chainData } = useContext(CrocEnvContext);
+    const {
+        chainData: { chainId },
+        crocEnv,
+    } = useContext(CrocEnvContext);
     const { isUserConnected } = useContext(UserDataContext);
     const {
         walletModal: { open: openWalletModal },
@@ -43,6 +47,24 @@ export default function Ticker() {
     const { ticker: tickerFromParams } = useParams();
 
     const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(nativeToken.address, chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setNativeTokenUsdPrice(price.usdPrice);
+            } else {
+                setNativeTokenUsdPrice(undefined);
+            }
+        });
+    }, [crocEnv, chainId]);
 
     const [inputValue, setInputValue] = useState('');
 
@@ -50,7 +72,7 @@ export default function Ticker() {
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
 
-    const nativeToken = supportedNetworks[chainData.chainId]?.defaultPair[0];
+    const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
     const nativeData: TokenIF | undefined =
         tokenBalances &&
@@ -60,18 +82,31 @@ export default function Ticker() {
 
     const nativeTokenWalletBalance = nativeData?.walletBalance;
 
+    const bidDisplayNum = inputValue
+        ? parseFloat(inputValue ?? '0')
+        : undefined;
+
+    const bidUsdValue =
+        nativeTokenUsdPrice !== undefined && bidDisplayNum !== undefined
+            ? nativeTokenUsdPrice * bidDisplayNum
+            : undefined;
+
+    const bidUsdValueTruncated =
+        bidUsdValue !== undefined
+            ? bidUsdValue
+                ? getFormattedNumber({
+                      value: bidUsdValue,
+                      isUSD: true,
+                  })
+                : '$0.00'
+            : undefined;
+
     const nativeTokenDecimals = nativeToken.decimals;
 
     const checkBidValidity = async (bidQtyNonDisplay: string) => {
         const isNonZero = !!bidQtyNonDisplay;
 
         if (!isNonZero) return false;
-        // log if bignumber from nativeTokenWalletBalanceAdjustedNonDisplayString is greater than bidQtyNonDisplay
-        console.log(
-            BigNumber.from(nativeTokenWalletBalanceAdjustedNonDisplayString).gt(
-                BigNumber.from(bidQtyNonDisplay),
-            ),
-        );
 
         const bidSizeLessThanAdjustedBalance = BigNumber.from(
             nativeTokenWalletBalanceAdjustedNonDisplayString,
@@ -280,7 +315,7 @@ export default function Ticker() {
 
     const userQtyDisplay = (
         <div className={styles.userQtyDisplay}>
-            <p style={{ color: 'var(--text2)' }}> {'...'}</p>
+            <p style={{ color: 'var(--text2)' }}>{bidUsdValueTruncated}</p>
             {nativeTokenWalletBalance !== '0' && (
                 <div
                     className={styles.maxButtonContainer}
