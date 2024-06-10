@@ -128,6 +128,9 @@ const useChatSocket = (
         onClose: () => {
             domDebug('disconnected', getTimeForLog(new Date()));
         },
+        onError: () => {
+            domDebug('ERR_error_time', getTimeForLog(new Date()));
+        },
     });
 
     const connectionStatus = {
@@ -305,9 +308,18 @@ const useChatSocket = (
 
     async function isUserVerified() {
         if (address) {
+            const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
             const encodedAddress = encodeURIComponent(address);
+            let encodedToken = '';
+            if (userToken) {
+                encodedToken = encodeURIComponent(userToken);
+            }
             const response = await fetch(
-                CHAT_BACKEND_URL + getUserIsVerified + encodedAddress,
+                CHAT_BACKEND_URL +
+                    getUserIsVerified +
+                    encodedAddress +
+                    '/' +
+                    encodedToken,
                 {
                     method: 'GET',
                 },
@@ -414,10 +426,8 @@ const useChatSocket = (
         if (!isChatOpen) return;
         async function checkVerified() {
             const data = await isUserVerified();
-            const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
-            setUserVrfToken(userToken ? userToken : '');
             if (!data) return;
-            setIsVerified(userToken == data.vrfTkn && data.vrfTkn != null);
+            setIsVerified(data.verified);
         }
 
         checkVerified();
