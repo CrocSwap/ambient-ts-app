@@ -118,15 +118,17 @@ export default function Create() {
                         Token Ticker
                     </h4>
                 </label>
-                <input
-                    name={TICKER_INPUT_ID}
-                    id={TICKER_INPUT_ID}
-                    type='text'
-                    maxLength={TICKER_MAX_LENGTH}
-                    onChange={(e) => handleChange(e.target.value)}
-                    autoComplete='off'
-                    placeholder={(TICKER_MAX_LENGTH - ticker.length).toString()}
-                />
+                <div className={styles.inputContainer}>
+                    <input
+                        name={TICKER_INPUT_ID}
+                        id={TICKER_INPUT_ID}
+                        type='text'
+                        maxLength={TICKER_MAX_LENGTH}
+                        onChange={(e) => handleChange(e.target.value)}
+                        autoComplete='off'
+                    />
+                    <p>{TICKER_MAX_LENGTH - ticker.length}</p>
+                </div>
             </div>
         </div>
     );

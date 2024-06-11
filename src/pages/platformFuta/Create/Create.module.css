@@ -59,15 +59,30 @@
     color: var(--text1);
     text-transform: uppercase;
 }
+.inputContainer{
 
-.ticker_input_fields > input {
     padding: 2px 8px;
     background-color: var(--dark4);
-    border: none;
+height: 40px;
+display: grid;
+grid-template-columns: 1fr 30px;
+align-items: center;
+}
+
+.inputContainer > input {
     color: var(--text1);
-    height: 40px;
-    text-align: end;
+    border: none;
+
+    background-color: transparent;
+    outline: none;
+    border: none;
    
+}
+
+.inputContainer p{
+    color: var(--text2, #3D565B);
+    font-size: 12px;
+
 }
 
 .ticker_input_fields > input:focus {
