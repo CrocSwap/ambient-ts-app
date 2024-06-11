@@ -45,7 +45,6 @@ export default function Ticker() {
     const { tokenBalances } = useContext(TokenBalanceContext);
 
     const { ticker: tickerFromParams } = useParams();
-    console.log({ tickerFromParams });
 
     const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -78,12 +77,29 @@ export default function Ticker() {
         return { status: 'OPEN' };
     };
 
+    const getAllocationByUser = async (ticker: string) => {
+        if (ticker.toLowerCase() === 'not')
+            return { unclaimedAllocation: '100000' };
+        if (ticker.toLowerCase() === 'mog')
+            return { unclaimedAllocation: '168200' };
+
+        return { unclaimedAllocation: '0' };
+    };
+
     // setState for auction details
     const [auctionDetails, setAuctionDetails] = useState<
         { status: string } | undefined
     >();
+    // setState for allocation for user
+    const [allocationForConnectedUser, setAllocationForConnectedUser] =
+        useState<{ unclaimedAllocation: string } | undefined>();
 
-    console.log({ auctionDetails });
+    const formattedUnclaimedAllocationForConnectedUser = parseFloat(
+        allocationForConnectedUser?.unclaimedAllocation ?? '0',
+    ).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
 
     const isAuctionCompleted =
         auctionDetails?.status?.toLowerCase() === 'closed';
@@ -93,13 +109,25 @@ export default function Ticker() {
         Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) =>
             setAuctionDetails(details),
         );
+        Promise.resolve(getAllocationByUser(tickerFromParams)).then((details) =>
+            setAllocationForConnectedUser(details),
+        );
     }, [tickerFromParams]);
 
     const [inputValue, setInputValue] = useState('');
 
     const [isValidationInProgress, setIsValidationInProgress] =
         useState<boolean>(false);
+    const [isPriceImpactQueryInProgress, setIsPriceImpactQueryInProgress] =
+        useState<boolean>(false);
+
     const [isValidated, setIsValidated] = useState<boolean>(false);
+    const [priceImpact, setPriceImpact] = useState<number | undefined>();
+
+    useEffect(() => {
+        setIsValidationInProgress(true);
+        setIsPriceImpactQueryInProgress(true);
+    }, [inputValue]);
 
     const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
@@ -133,7 +161,8 @@ export default function Ticker() {
     const nativeTokenDecimals = nativeToken.decimals;
 
     const checkBidValidity = async (bidQtyNonDisplay: string) => {
-        const isNonZero = !!bidQtyNonDisplay;
+        const isNonZero =
+            !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
 
         if (!isNonZero) return false;
 
@@ -144,12 +173,27 @@ export default function Ticker() {
         return bidSizeLessThanAdjustedBalance;
     };
 
+    const getPriceImpact = async (bidQtyNonDisplay: string) => {
+        const isNonZero =
+            !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
+
+        if (!isNonZero) return undefined;
+
+        const priceImpact = Math.random() * 0.1;
+
+        return priceImpact;
+    };
+
     const debouncedBidInput = useDebounce(bidQtyNonDisplay, 500);
 
     useEffect(() => {
         checkBidValidity(debouncedBidInput).then((isValid) => {
             setIsValidationInProgress(false);
             setIsValidated(isValid);
+        });
+        getPriceImpact(debouncedBidInput).then((impact) => {
+            setIsPriceImpactQueryInProgress(false);
+            setPriceImpact(impact);
         });
     }, [debouncedBidInput]);
 
@@ -258,6 +302,14 @@ export default function Ticker() {
         { value: 0.529 },
     ];
 
+    const formattedPriceImpact =
+        !priceImpact || isPriceImpactQueryInProgress
+            ? '...'
+            : getFormattedNumber({
+                  value: priceImpact * 100,
+                  isPercentage: true,
+              }) + '%';
+
     const extraInfoData = isAuctionCompleted
         ? [
               {
@@ -272,7 +324,7 @@ export default function Ticker() {
                   title: 'PRICE IMPACT',
                   tooltipTitle:
                       'Difference Between Current (Spot) Price and Final Price',
-                  data: '5.86%',
+                  data: formattedPriceImpact,
               },
               {
                   title: 'NETWORK FEE',
@@ -292,9 +344,7 @@ export default function Ticker() {
 
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
-            <h2 onClick={() => setShowTradeButton(!showTradeButton)}>
-                {tickerFromParams}
-            </h2>
+            <h2>{tickerFromParams}</h2>
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>
@@ -431,24 +481,32 @@ export default function Ticker() {
             ))}
         </div>
     );
-    const [showTradeButton, setShowTradeButton] = useState(false);
+    const showTradeButton =
+        (isAuctionCompleted && !isUserConnected) ||
+        (isUserConnected &&
+            isAuctionCompleted &&
+            (allocationForConnectedUser === undefined ||
+                parseFloat(allocationForConnectedUser?.unclaimedAllocation) ===
+                    0));
+
     const isButtonDisabled =
         !isAuctionCompleted &&
         isUserConnected &&
         (isValidationInProgress || !isValidated);
-    const buttonLabel = !isUserConnected
-        ? 'Connect Wallet'
-        : showTradeButton
+
+    const buttonLabel = showTradeButton
         ? 'Trade'
-        : isAuctionCompleted
-        ? 'Claim'
-        : bidQtyNonDisplay === ''
-        ? 'Enter a Bid Size'
-        : isValidationInProgress
-        ? 'Validating Bid...'
-        : isValidated
-        ? 'Bid'
-        : 'Invalid Bid';
+        : !isUserConnected
+          ? 'Connect Wallet'
+          : isAuctionCompleted
+            ? 'Claim'
+            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+              ? 'Enter a Bid Size'
+              : isValidationInProgress
+                ? 'Validating Bid...'
+                : isValidated
+                  ? 'Bid'
+                  : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -469,7 +527,9 @@ export default function Ticker() {
     const allocationDisplay = (
         <div className={styles.allocationContainer}>
             <h3>ALLOCATION</h3>
-            <div className={styles.allocationDisplay}>15,000,000</div>
+            <div className={styles.allocationDisplay}>
+                {formattedUnclaimedAllocationForConnectedUser}
+            </div>
             {extraInfoDisplay}
         </div>
     );
@@ -484,7 +544,8 @@ export default function Ticker() {
                     {!isAuctionCompleted && openedBidDisplay}
                     {!isAuctionCompleted && maxFdvDisplay}
                     {!isAuctionCompleted && bidSizeDisplay}
-                    {!showTradeButton &&
+                    {isUserConnected &&
+                        !showTradeButton &&
                         isAuctionCompleted &&
                         allocationDisplay}
                     {!isAuctionCompleted && extraInfoDisplay}
@@ -505,7 +566,10 @@ export default function Ticker() {
                 {!isAuctionCompleted && openedBidDisplay}
                 {!isAuctionCompleted && maxFdvDisplay}
                 {!isAuctionCompleted && bidSizeDisplay}
-                {!showTradeButton && isAuctionCompleted && allocationDisplay}
+                {isUserConnected &&
+                    !showTradeButton &&
+                    isAuctionCompleted &&
+                    allocationDisplay}
                 {!isAuctionCompleted && extraInfoDisplay}
             </div>
             {bidButton}
