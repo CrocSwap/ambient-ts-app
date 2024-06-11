@@ -45,6 +45,7 @@ export default function Ticker() {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { ticker: tickerFromParams } = useParams();
 
@@ -79,7 +80,11 @@ export default function Ticker() {
         return { status: 'OPEN' };
     };
 
-    const getAllocationByUser = async (ticker: string) => {
+    const getAllocationByUser = async (
+        ticker: string,
+        userAddress: `0x${string}` | undefined,
+    ) => {
+        if (!userAddress) return { unclaimedAllocation: '0' };
         if (ticker.toLowerCase() === 'not')
             return { unclaimedAllocation: '100000' };
         if (ticker.toLowerCase() === 'mog')
@@ -115,10 +120,14 @@ export default function Ticker() {
         Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) =>
             setAuctionDetails(details),
         );
-        Promise.resolve(getAllocationByUser(tickerFromParams)).then((details) =>
-            setAllocationForConnectedUser(details),
-        );
     }, [tickerFromParams]);
+
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(
+            getAllocationByUser(tickerFromParams, userAddress),
+        ).then((details) => setAllocationForConnectedUser(details));
+    }, [tickerFromParams, userAddress]);
 
     const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
 
