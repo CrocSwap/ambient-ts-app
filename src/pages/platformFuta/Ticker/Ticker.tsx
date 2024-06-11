@@ -201,11 +201,17 @@ export default function Ticker() {
 
         if (!isNonZero) return false;
 
-        const bidSizeLessThanAdjustedBalance = BigNumber.from(
-            nativeTokenWalletBalanceAdjustedNonDisplayString,
-        ).gt(BigNumber.from(bidQtyNonDisplay));
+        if (!isUserConnected) {
+            return true;
+        } else {
+            if (!nativeTokenWalletBalanceAdjustedNonDisplayString) return false;
 
-        return bidSizeLessThanAdjustedBalance;
+            const bidSizeLessThanAdjustedBalance = BigNumber.from(
+                nativeTokenWalletBalanceAdjustedNonDisplayString,
+            ).gt(BigNumber.from(bidQtyNonDisplay));
+
+            return bidSizeLessThanAdjustedBalance;
+        }
     };
 
     const getPriceImpact = async (bidQtyNonDisplay: string) => {
@@ -220,17 +226,6 @@ export default function Ticker() {
     };
 
     const debouncedBidInput = useDebounce(bidQtyNonDisplay, 500);
-
-    useEffect(() => {
-        checkBidValidity(debouncedBidInput).then((isValid) => {
-            setIsValidationInProgress(false);
-            setIsValidated(isValid);
-        });
-        getPriceImpact(debouncedBidInput).then((impact) => {
-            setIsPriceImpactQueryInProgress(false);
-            setPriceImpact(impact);
-        });
-    }, [debouncedBidInput]);
 
     const nativeTokenWalletBalanceDisplay = nativeTokenWalletBalance
         ? toDisplayQty(nativeTokenWalletBalance, nativeTokenDecimals)
@@ -287,6 +282,18 @@ export default function Ticker() {
             : undefined,
         500,
     );
+
+    useEffect(() => {
+        checkBidValidity(debouncedBidInput).then((isValid) => {
+            setIsValidationInProgress(false);
+            setIsValidated(isValid);
+        });
+        getPriceImpact(debouncedBidInput).then((impact) => {
+            setIsPriceImpactQueryInProgress(false);
+            setPriceImpact(impact);
+        });
+    }, [debouncedBidInput, nativeTokenWalletBalanceAdjustedNonDisplayString]);
+
     const handleBalanceClick = () => {
         if (isTokenWalletBalanceGreaterThanZero) {
             setBidQtyNonDisplay(
@@ -538,16 +545,16 @@ export default function Ticker() {
     const buttonLabel = isAllocationAvailableToClaim
         ? 'Claim'
         : showTradeButton
-        ? 'Trade'
-        : !isUserConnected
-        ? 'Connect Wallet'
-        : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-        ? 'Enter a Bid Size'
-        : isValidationInProgress
-        ? 'Validating Bid...'
-        : isValidated
-        ? 'Bid'
-        : 'Invalid Bid';
+          ? 'Trade'
+          : !isUserConnected
+            ? 'Connect Wallet'
+            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+              ? 'Enter a Bid Size'
+              : isValidationInProgress
+                ? 'Validating Bid...'
+                : isValidated
+                  ? 'Bid'
+                  : 'Invalid Bid';
 
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
@@ -562,12 +569,14 @@ export default function Ticker() {
                           `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
                     : showTradeButton
-                    ? console.log(
-                          `clicked Trade for ticker: ${tickerFromParams}`,
-                      )
-                    : !isUserConnected
-                    ? openWalletModal()
-                    : console.log(`clicked Bid for display qty: ${inputValue}`)
+                      ? console.log(
+                            `clicked Trade for ticker: ${tickerFromParams}`,
+                        )
+                      : !isUserConnected
+                        ? openWalletModal()
+                        : console.log(
+                              `clicked Bid for display qty: ${inputValue}`,
+                          )
             }
             disabled={isButtonDisabled}
         >
