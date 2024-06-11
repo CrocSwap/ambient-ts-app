@@ -80,7 +80,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { chainData, activeNetwork, chooseNetwork } =
         useContext(TradeDataContext);
 
-    const { userAddress } = useContext(UserDataContext);
+    const { userAddress, walletChain } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
     let w3provider;
     let signer: ethers.Signer | undefined;
@@ -244,6 +244,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         signer === undefined,
         userAddress,
         activeNetwork.chainId,
+        walletChain,
     ]);
 
     useEffect(() => {

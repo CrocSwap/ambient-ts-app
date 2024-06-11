@@ -42,6 +42,7 @@ import {
     GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -412,6 +413,7 @@ export default function Withdraw(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
+            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button

@@ -51,7 +51,10 @@ export default function PoolRow(props: propsIF) {
 
     return (
         <TableRow
-            onClick={() => goToMarket(pool.base.address, pool.quote.address)}
+            onClick={(event: React.MouseEvent) => {
+                goToMarket(pool.base.address, pool.quote.address);
+                event?.stopPropagation();
+            }}
             // onMouseEnter={() => setIsHovered(true)}
             // onMouseLeave={() => setIsHovered(false)}
         >
@@ -124,7 +127,13 @@ export default function PoolRow(props: propsIF) {
                     alignItems='center'
                     justifyContent='flex-end'
                 >
-                    <TradeButton>Trade</TradeButton>
+                    <TradeButton
+                        onClick={() =>
+                            goToMarket(pool.base.address, pool.quote.address)
+                        }
+                    >
+                        Trade
+                    </TradeButton>
                 </FlexContainer>
             </TableCell>
         </TableRow>
