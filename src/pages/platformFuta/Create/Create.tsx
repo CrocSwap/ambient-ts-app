@@ -11,6 +11,7 @@ export default function Create() {
     const [ticker, setTicker] = useState<string>('');
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const [showDevElement, setShowDevElements] = useState(false);
+    const [showDevElement2, setShowDevElements2] = useState(false);
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -113,7 +114,9 @@ export default function Create() {
         <div className={styles.create_token_middle}>
             <div className={styles.ticker_input_fields}>
                 <label htmlFor={TICKER_INPUT_ID}>
-                    <h4>Token Ticker</h4>
+                    <h4 onClick={() => setShowDevElements2(!showDevElement2)}>
+                        Token Ticker
+                    </h4>
                 </label>
                 <input
                     name={TICKER_INPUT_ID}
@@ -161,7 +164,14 @@ export default function Create() {
 
     return (
         <section className={showDevElement ? styles.mainContainer : ''}>
-            <div className={styles.create_token}>
+            <div
+                className={styles.create_token}
+                style={{
+                    border: showDevElement2
+                        ? '1px solid rgba( 255, 255, 255, 0.1 )'
+                        : '',
+                }}
+            >
                 {createHeader}
 
                 {tokenTicker}
