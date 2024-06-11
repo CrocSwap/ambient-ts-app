@@ -24,7 +24,6 @@ import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
-    isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
 } from '../../ChatUtils';
