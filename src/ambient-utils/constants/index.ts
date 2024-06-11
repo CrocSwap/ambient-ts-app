@@ -28,8 +28,7 @@ export const ANALYTICS_URL =
 export const HISTORICAL_CANDLES_URL =
     import.meta.env.VITE_HISTORICAL_CANDLES_URL || 'https://ambindexer.net';
 
-export const CHAT_BACKEND_URL =
-    import.meta.env.VITE_CHAT_URL || `${HISTORICAL_CANDLES_URL}`;
+export const CHAT_BACKEND_URL = 'http://localhost:5000';
 
 export const CHAT_BACKEND_WSS_URL =
     import.meta.env.VITE_CHAT_WSS_URL || CHAT_BACKEND_URL.replace('http', 'ws');

@@ -16,7 +16,7 @@ import styles from './MessageInput.module.css';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 // import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
+import CircularProgressBarForChat from '../../../Global/OpenOrderStatus/CircularProgressBarForChat';
 import {
     filterMessage,
     formatURL,
@@ -121,25 +121,18 @@ export default function MessageInput(props: MessageInputProps) {
                 emoji +
                 currentMessage.slice(selectionStart);
 
-            if (newMessage.length <= 140) {
-                setMessage(newMessage);
-                setInputLength(newMessage.length);
+            setMessage(newMessage);
+            setInputLength(newMessage.length);
 
-                const newCursorPosition = selectionStart + emoji.length;
+            const newCursorPosition = selectionStart + emoji.length;
 
-                inputRef.current.value = newMessage;
-                inputRef.current.setSelectionRange(
-                    newCursorPosition,
-                    newCursorPosition,
-                );
+            inputRef.current.value = newMessage;
+            inputRef.current.setSelectionRange(
+                newCursorPosition,
+                newCursorPosition,
+            );
 
-                inputRef.current.focus();
-            } else {
-                props.setShowPopUp(true);
-                props.setPopUpText(
-                    'Maximum length exceeded (140 characters limit).',
-                );
-            }
+            inputRef.current.focus();
         }
     };
 
@@ -346,18 +339,6 @@ export default function MessageInput(props: MessageInputProps) {
         } else if (mentPanelActive && e.key === 'Tab') {
             e.preventDefault();
             userPickerForMention(possibleMentUser as User);
-        } else if (
-            e.key !== 'Backspace' &&
-            e.key !== 'ArrowRight' &&
-            e.key !== 'ArrowLeft' &&
-            e.target.value.length >= 140
-        ) {
-            props.setShowPopUp(true);
-            props.setShowPopUp(true);
-            props.setPopUpText(
-                'Maximum length exceeded (140 characters limit).',
-            );
-            e.preventDefault(); // Prevent further input when the limit is reached
         } else if (e.key === 'Delete') {
             setTimeout(() => {
                 setInputLength(e.target.value.length);
@@ -404,7 +385,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function openEmojiPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyC' && e.altKey) {
+        if (e.code === 'KeyX' && e.altKey) {
             setShowEmojiPicker(true);
         }
     }
@@ -590,14 +571,25 @@ export default function MessageInput(props: MessageInputProps) {
                             //     (props.appPage && !props.isMobile) ||
                             //     props.isReplyButtonPressed
                             // }
-                            maxLength={140}
                             ref={inputRef}
                         />
-                        {inputLength >= 100 && (
+                        {inputLength >= 100 && inputLength <= 140 && (
                             <div className={styles.message_input_field}>
-                                <CircularProgressBar
+                                <CircularProgressBarForChat
                                     fillPercentage={inputLength / 1.4}
                                 />
+                            </div>
+                        )}
+                        {inputLength > 140 && (
+                            <div
+                                className={
+                                    styles.message_input_field_limit_exceeded
+                                }
+                            >
+                                <CircularProgressBarForChat
+                                    fillPercentage={inputLength / 1.4}
+                                />
+                                {140 - inputLength}
                             </div>
                         )}
 

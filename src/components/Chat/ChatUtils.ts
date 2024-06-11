@@ -147,6 +147,7 @@ export function isLinkInCrocodileLabsLinks(input: string) {
         const domainParts = domain.split(/[.,:?#]+/).filter(Boolean);
 
         if (domainParts.every((part, index) => hostnameParts[index] === part)) {
+            console.log('isLinkInCrocodileLabsLinks: ', input);
             return true;
         }
     }
@@ -168,6 +169,11 @@ export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
             const linkDomain = linkUrl.hostname
                 .replace(/^www\./, '')
                 .toLowerCase();
+            console.log(
+                'isLinkInCrocodileLabsLinksForInput: ',
+                link,
+                wordDomain === linkDomain,
+            );
             return wordDomain === linkDomain;
         });
     } catch (error) {

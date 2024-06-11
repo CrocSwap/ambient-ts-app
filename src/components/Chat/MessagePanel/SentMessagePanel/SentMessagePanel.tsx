@@ -31,6 +31,7 @@ import {
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import styles from './SentMessagePanel.module.css';
+import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 
 interface SentMessageProps {
     message: Message;
@@ -388,7 +389,6 @@ function SentMessagePanel(props: SentMessageProps) {
                             }
                         >
                             {' ' + returnDomain(word)}
-                            {}
                         </span>
                     ))}
                 </>
@@ -398,6 +398,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 isLinkInCrocodileLabsLinks(url) ||
                 isLinkInCrocodileLabsLinksForInput(url)
             ) {
+                console.log('here3');
                 return (
                     <p
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
@@ -413,126 +414,15 @@ function SentMessagePanel(props: SentMessageProps) {
                     </p>
                 );
             } else {
+                console.log('here4');
                 return url;
-            }
-        }
-    }
-
-    // old chat message renderer function, keeping to comparing new render method, will be gone after code refactoration
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    function mentionedMessage() {
-        const messagesArray = props.message.message.split(' ');
-        if (showAvatar === true) {
-            if (props.message.isMentionMessage === true) {
-                return (
-                    <div className={` ${styles.mention_message_block}`}>
-                        {messagesArray.map((word, index) => (
-                            <span
-                                key={index}
-                                className={` ${styles.mention_message}`}
-                                style={{
-                                    color:
-                                        word.slice(1) === props.ensName ||
-                                        word.slice(1) ===
-                                            props.connectedAccountActive
-                                            ? 'var(--accent1)'
-                                            : 'white',
-                                }}
-                            >
-                                {' ' + detectLinksFromMessage(word)}
-                            </span>
-                        ))}
-                        <div
-                            className={styles.roomInfo_with_mention}
-                            title={props.message.roomInfo}
-                        >
-                            {' '}
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}
-                        </div>
-                    </div>
-                );
-            } else {
-                return (
-                    <div
-                        className={
-                            props.message.isDeleted
-                                ? styles.deletedMessage
-                                : styles.message
-                        }
-                    >
-                        {detectLinksFromMessage(props.message.message)}
-                        <div
-                            className={styles.roomInfo}
-                            title={props.message.roomInfo}
-                        >
-                            {' '}
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}{' '}
-                        </div>
-                    </div>
-                );
-            }
-        } else {
-            if (props.message.isMentionMessage === true) {
-                return (
-                    <div
-                        className={` ${styles.mention_message_block_without_avatar}`}
-                    >
-                        {messagesArray.map((word, index) => (
-                            <span
-                                key={index}
-                                className={` ${styles.mention_message}`}
-                                style={{
-                                    color:
-                                        word.slice(1) === props.ensName ||
-                                        word.slice(1) ===
-                                            props.connectedAccountActive
-                                            ? 'var(--accent1)'
-                                            : 'white',
-                                }}
-                            >
-                                {' ' + detectLinksFromMessage(word)}
-                            </span>
-                        ))}
-                        <div className={styles.roomInfo}>
-                            {' '}
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}
-                        </div>
-                    </div>
-                );
-            } else {
-                return (
-                    <div
-                        className={
-                            props.message.isDeleted
-                                ? styles.deletedMessage_without_avatar
-                                : styles.message_without_avatar
-                        }
-                    >
-                        {detectLinksFromMessage(props.message.message)}
-                        <div className={styles.roomInfo}>
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}
-                        </div>
-                    </div>
-                );
             }
         }
     }
 
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
-        if (
-            isLinkInCrocodileLabsLinks(word) &&
-            isLinkInCrocodileLabsLinksForInput(word) &&
-            isValidUrl(word)
-        ) {
+        if (isLinkInCrocodileLabsLinksForInput(word) && isValidUrl(word)) {
             ret = (
                 <span
                     className={styles.link_token}
