@@ -314,7 +314,6 @@ export default function MessageInput(props: MessageInputProps) {
                     props.setShowPopUp(true);
                     props.setPopUpText('You cannot send this link.');
                 } else {
-                    console.log('zx');
                     handleSendMsg(formatURL(message), roomId);
                     setMessage('');
                     setMentUser(null);

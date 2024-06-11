@@ -31,7 +31,6 @@ import {
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import styles from './SentMessagePanel.module.css';
-import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 
 interface SentMessageProps {
     message: Message;
@@ -398,7 +397,6 @@ function SentMessagePanel(props: SentMessageProps) {
                 isLinkInCrocodileLabsLinks(url) ||
                 isLinkInCrocodileLabsLinksForInput(url)
             ) {
-                console.log('here3');
                 return (
                     <p
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
@@ -414,7 +412,6 @@ function SentMessagePanel(props: SentMessageProps) {
                     </p>
                 );
             } else {
-                console.log('here4');
                 return url;
             }
         }
