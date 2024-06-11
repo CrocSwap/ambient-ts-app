@@ -67,7 +67,8 @@ export default function Ticker() {
     }, [crocEnv, chainId]);
 
     const getAuctionDetails = async (ticker: string) => {
-        if (ticker.toLowerCase() === 'foo') return { status: 'OPEN' };
+        if (ticker.toLowerCase() === 'doge' || ticker.toLowerCase() === 'pepe')
+            return { status: 'OPEN' };
 
         return { status: 'CLOSED' };
     };

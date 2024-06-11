@@ -112,7 +112,7 @@ export default function Create() {
                 onClick={() =>
                     !isUserConnected
                         ? openWalletModal()
-                        : console.log(`clicked Create Token for ${ticker}`)
+                        : console.log(`clicked Create Auction for ${ticker}`)
                 }
                 disabled={
                     isUserConnected && (isValidationInProgress || !isValidated)
@@ -121,12 +121,12 @@ export default function Create() {
                 {!isUserConnected
                     ? 'Connect Wallet'
                     : ticker === ''
-                    ? 'Enter a Token Ticker'
-                    : isValidationInProgress
-                    ? 'Validating Ticker...'
-                    : isValidated
-                    ? 'Create Token'
-                    : `Invalid Ticker: ${ticker}`}
+                      ? 'Enter a Token Ticker'
+                      : isValidationInProgress
+                        ? 'Validating Ticker...'
+                        : isValidated
+                          ? 'Create Auction'
+                          : `Invalid Ticker: ${ticker}`}
             </button>
         </section>
     );
