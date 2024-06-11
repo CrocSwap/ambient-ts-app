@@ -8,7 +8,9 @@ import {
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
+    GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
     NUM_WEI_IN_GWEI,
     supportedNetworks,
 } from '../../../ambient-utils/constants';
@@ -94,6 +96,10 @@ export default function Ticker() {
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
         useState<{ unclaimedAllocation: string } | undefined>();
 
+    const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
     const formattedUnclaimedAllocationForConnectedUser = parseFloat(
         allocationForConnectedUser?.unclaimedAllocation ?? '0',
     ).toLocaleString('en-US', {
@@ -113,6 +119,25 @@ export default function Ticker() {
             setAllocationForConnectedUser(details),
         );
     }, [tickerFromParams]);
+
+    const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
+
+    useEffect(() => {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageGasUnitsForBidTxInGasDrops *
+                NUM_GWEI_IN_WEI *
+                nativeTokenUsdPrice;
+
+            setBidGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
+            );
+        }
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const [inputValue, setInputValue] = useState('');
 
@@ -310,13 +335,15 @@ export default function Ticker() {
                   isPercentage: true,
               }) + '%';
 
+    const networkFee = bidGasPriceinDollars;
+
     const extraInfoData = isAuctionCompleted
         ? [
               {
                   title: 'NETWORK FEE',
                   tooltipTitle:
                       'Estimated network fee (i.e. gas cost) to join bid',
-                  data: '-$0.01',
+                  data: networkFee ? '~' + networkFee : '...',
               },
           ]
         : [
@@ -330,7 +357,7 @@ export default function Ticker() {
                   title: 'NETWORK FEE',
                   tooltipTitle:
                       'Estimated network fee (i.e. gas cost) to join bid',
-                  data: '-$0.01',
+                  data: networkFee ? '~' + networkFee : '...',
               },
           ];
     const progressValue = 'XX.X';
