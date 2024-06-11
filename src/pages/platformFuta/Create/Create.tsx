@@ -125,7 +125,7 @@ export default function Create() {
                     maxLength={TICKER_MAX_LENGTH}
                     onChange={(e) => handleChange(e.target.value)}
                     autoComplete='off'
-                    value={TICKER_MAX_LENGTH - ticker.length}
+                    placeholder={(TICKER_MAX_LENGTH - ticker.length).toString()}
                 />
             </div>
         </div>

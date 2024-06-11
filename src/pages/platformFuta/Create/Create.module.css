@@ -64,9 +64,9 @@
     padding: 2px 8px;
     background-color: var(--dark4);
     border: none;
-    color: var(--text2);
+    color: var(--text1);
     height: 40px;
-    text-align: end;
+   
 }
 
 .ticker_input_fields > input:focus {
