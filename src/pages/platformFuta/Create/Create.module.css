@@ -66,6 +66,7 @@
     border: none;
     color: var(--text1);
     height: 40px;
+    text-align: end;
    
 }
 
