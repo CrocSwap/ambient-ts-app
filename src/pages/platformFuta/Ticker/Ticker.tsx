@@ -431,7 +431,7 @@ export default function Ticker() {
             ))}
         </div>
     );
-    const [showTradeButton, setShowTradeButton] = useState(true);
+    const [showTradeButton, setShowTradeButton] = useState(false);
     const isButtonDisabled =
         !isAuctionCompleted &&
         isUserConnected &&
@@ -484,7 +484,9 @@ export default function Ticker() {
                     {!isAuctionCompleted && openedBidDisplay}
                     {!isAuctionCompleted && maxFdvDisplay}
                     {!isAuctionCompleted && bidSizeDisplay}
-                    {!showTradeButton && allocationDisplay}
+                    {!showTradeButton &&
+                        isAuctionCompleted &&
+                        allocationDisplay}
                     {!isAuctionCompleted && extraInfoDisplay}
                 </div>
                 {bidButton}
@@ -503,7 +505,7 @@ export default function Ticker() {
                 {!isAuctionCompleted && openedBidDisplay}
                 {!isAuctionCompleted && maxFdvDisplay}
                 {!isAuctionCompleted && bidSizeDisplay}
-                {!showTradeButton && allocationDisplay}
+                {!showTradeButton && isAuctionCompleted && allocationDisplay}
                 {!isAuctionCompleted && extraInfoDisplay}
             </div>
             {bidButton}

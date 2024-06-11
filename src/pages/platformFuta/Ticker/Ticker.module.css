@@ -3,6 +3,7 @@
     grid-template-columns: auto 390px;
     padding: 8px 16px;
     height: calc(100vh - 56px);
+    gap: 1rem;
 }
 
 .container {
