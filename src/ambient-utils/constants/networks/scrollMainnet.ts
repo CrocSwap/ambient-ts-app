@@ -4,7 +4,7 @@ import {
     scrollUSDC,
     scrollUSDT,
     scrollWBTC,
-    scrollWrsETH,
+    scrollWstETH,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
@@ -36,9 +36,9 @@ export const scrollMainnet: NetworkIF = {
     topPools: [
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollUSDT, scrollUSDC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollWrsETH, scrollETH, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollWstETH, scrollETH, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
