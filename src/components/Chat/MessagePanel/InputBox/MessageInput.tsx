@@ -137,7 +137,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserConnected || props.room === 'Admins') {
+        if (!isUserConnected) {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
