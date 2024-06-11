@@ -538,11 +538,13 @@ export default function Ticker() {
                   ? 'Bid'
                   : 'Invalid Bid';
 
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+
     const bidButton = (
         <button
             className={`${styles.bidButton} ${
                 isButtonDisabled ? styles.bidButtonDisabled : ''
-            }`}
+            } ${desktopScreen ? styles.bidButtonDesktop : ''}`}
             onClick={() =>
                 isAllocationAvailableToClaim
                     ? console.log(
@@ -573,7 +575,6 @@ export default function Ticker() {
             {extraInfoDisplay}
         </div>
     );
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     const desktopVersion = (
         <div className={styles.gridContainer}>

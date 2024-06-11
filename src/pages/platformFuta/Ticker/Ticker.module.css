@@ -184,16 +184,16 @@
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     color: var(--dark1);
-    font-size: 24px;;
+    font-size: 24px;
     text-transform: uppercase;
 }
 
-.bidButtonDisabled{
+.bidButtonDisabled {
     pointer-events: none;
     background: var(--dark4);
     border: none;
 }
-.bidButton:hover {
+.bidButtonDesktop:hover {
     background: var(--accent2);
     border: 1px solid var(--accent2);
     color: var(--accent1);
@@ -203,33 +203,30 @@
     background-color: var(--accent1);
 }
 
-.flexColumn{
+.flexColumn {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.allocationContainer{
+.allocationContainer {
     display: flex;
     flex-direction: column;
     gap: 8px;
-   
 }
 
-.allocationContainer h3{
-    color: var(--text1, #CEFFFF);
+.allocationContainer h3 {
+    color: var(--text1, #ceffff);
     font-size: 20px;
 }
 
-.allocationDisplay{
-    background: var(--dark4, #171F22);
+.allocationDisplay {
+    background: var(--dark4, #171f22);
     font-size: 20px;
-    color: var(--accent1, #62EBF1);
+    color: var(--accent1, #62ebf1);
     padding: 8px;
     display: flex;
-   align-items: center;
-
-
+    align-items: center;
 }
 @media (min-width: 1280px) {
     .container {
