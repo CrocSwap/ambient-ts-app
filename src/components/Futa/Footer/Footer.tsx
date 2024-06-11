@@ -35,7 +35,7 @@ export default function Footer() {
         },
         {
             label: 'Create',
-            link: '/auctions/create',
+            link: '/create',
             icon: <FiPlusCircle size={24} color='var(--text1)' />,
         },
     ];
