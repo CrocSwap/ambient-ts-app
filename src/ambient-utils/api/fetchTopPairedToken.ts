@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-import { PAIR_LOOKUP_URL } from '../constants';
+import { PAIR_LOOKUP_URL, ZERO_ADDRESS } from '../constants';
+import { isWrappedNativeToken } from '../dataLayer';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
 
 export const fetchTopPairedToken = async (address: string, chainId: string) => {
@@ -8,7 +9,9 @@ export const fetchTopPairedToken = async (address: string, chainId: string) => {
             PAIR_LOOKUP_URL +
                 new URLSearchParams({
                     chain: chainId,
-                    token: address,
+                    token: isWrappedNativeToken(address)
+                        ? ZERO_ADDRESS
+                        : address,
                 }),
         );
         const result = await response.json();
