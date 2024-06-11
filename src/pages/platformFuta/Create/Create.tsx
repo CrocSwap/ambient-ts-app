@@ -4,9 +4,13 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
+import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 export default function Create() {
     const [ticker, setTicker] = useState<string>('');
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const [showDevElement, setShowDevElements] = useState(false);
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -64,45 +68,69 @@ export default function Create() {
         if (input) input.focus();
     }, []);
 
-    // mock data
-    const liquidityText = '0.25 ETH';
-    const networkFeeText = '≈$0.01';
+    const liquidity = '0.25 ETH';
 
-    return (
-        <section className={styles.create_token}>
-            <div className={styles.create_token_top}>
-                <BreadCrumb />
-                <p>
-                    SOME TEXT HERE DESCRIBING HOW LAUNCHING A TOKEN WORKS AND
-                    WHAT THINGS WILL HAPPEN
-                </p>
-            </div>
-            <div className={styles.create_token_middle}>
-                <div className={styles.ticker_input_fields}>
-                    <label htmlFor={TICKER_INPUT_ID}>
-                        <h4>Token Ticker</h4>
-                        <div>{TICKER_MAX_LENGTH - ticker.length}</div>
-                    </label>
-                    <input
-                        name={TICKER_INPUT_ID}
-                        id={TICKER_INPUT_ID}
-                        type='text'
-                        maxLength={TICKER_MAX_LENGTH}
-                        onChange={(e) => handleChange(e.target.value)}
-                        autoComplete='off'
-                    />
-                </div>
-                <div className={styles.detail_box}>
-                    <div>
-                        <div>LIQUIDITY</div>
-                        <div>{liquidityText}</div>
+    const networkFee = 0.01;
+    const extraInfoData = [
+        {
+            title: 'LIQUIDITY',
+            tooltipTitle: 'liquidity',
+            data: liquidity,
+        },
+        {
+            title: 'NETWORK FEE',
+            tooltipTitle: 'Estimated network fee (i.e. gas cost) to join bid',
+            data: networkFee ? '~' + networkFee : '...',
+        },
+    ];
+
+    const createHeader = (
+        <div className={styles.create_token_top}>
+            {!desktopScreen && <BreadCrumb />}
+            <h3 onClick={() => setShowDevElements(!showDevElement)}>CREATE</h3>
+            <p className={styles.description}>
+                Some text here describing how launching a token works and what
+                things will happen.
+            </p>
+        </div>
+    );
+
+    const extraInfoDisplay = (
+        <div className={styles.extraInfoContainer}>
+            {extraInfoData.map((item, idx) => (
+                <div className={styles.extraRow} key={idx}>
+                    <div className={styles.alignCenter}>
+                        <p>{item.title}</p>
+                        <TooltipComponent title={item.tooltipTitle} />
                     </div>
-                    <div>
-                        <div>NETWORK FEE</div>
-                        <div>{networkFeeText}</div>
-                    </div>
+                    <p style={{ color: 'var(--text2)' }}>{item.data}</p>
                 </div>
+            ))}
+        </div>
+    );
+
+    const tokenTicker = (
+        <div className={styles.create_token_middle}>
+            <div className={styles.ticker_input_fields}>
+                <label htmlFor={TICKER_INPUT_ID}>
+                    <h4>Token Ticker</h4>
+                </label>
+                <input
+                    name={TICKER_INPUT_ID}
+                    id={TICKER_INPUT_ID}
+                    type='text'
+                    maxLength={TICKER_MAX_LENGTH}
+                    onChange={(e) => handleChange(e.target.value)}
+                    autoComplete='off'
+                    value={TICKER_MAX_LENGTH - ticker.length}
+                />
             </div>
+        </div>
+    );
+
+    const footerDisplay = (
+        <footer className={styles.footerContainer}>
+            {extraInfoDisplay}
             <button
                 className={
                     !isUserConnected || (!isValidationInProgress && isValidated)
@@ -121,13 +149,24 @@ export default function Create() {
                 {!isUserConnected
                     ? 'Connect Wallet'
                     : ticker === ''
-                      ? 'Enter a Token Ticker'
-                      : isValidationInProgress
-                        ? 'Validating Ticker...'
-                        : isValidated
-                          ? 'Create Auction'
-                          : `Invalid Ticker: ${ticker}`}
+                    ? 'Enter a Token Ticker'
+                    : isValidationInProgress
+                    ? 'Validating Ticker...'
+                    : isValidated
+                    ? 'Create Auction'
+                    : `Invalid Ticker: ${ticker}`}
             </button>
+        </footer>
+    );
+
+    return (
+        <section className={showDevElement ? styles.mainContainer : ''}>
+            <div className={styles.create_token}>
+                {createHeader}
+
+                {tokenTicker}
+                {footerDisplay}
+            </div>
         </section>
     );
 }

@@ -3,6 +3,8 @@ import SearchableTicker from '../../../components/Futa/SearchableTicker/Searchab
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Divider from '../../../components/Futa/Divider/Divider';
+import AuctionLoader from '../../../components/Futa/AuctionLoader/AuctionLoader';
+import { useState } from 'react';
 
 export interface auctionDataIF {
     ticker: string;
@@ -12,6 +14,7 @@ export interface auctionDataIF {
 
 export default function Auctions() {
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const [isLoading, setIsLoading] = useState(true);
 
     const desktopVersion = (
         <div className={styles.desktopContainer}>
@@ -19,7 +22,11 @@ export default function Auctions() {
             <div className={styles.auctions_main}>
                 <Divider count={2} />
                 <h3>AUCTIONS</h3>
-                <SearchableTicker />
+                {isLoading ? (
+                    <AuctionLoader setIsLoading={setIsLoading} />
+                ) : (
+                    <SearchableTicker />
+                )}
             </div>
         </div>
     );
