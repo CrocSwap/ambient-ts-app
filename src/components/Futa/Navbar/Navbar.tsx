@@ -21,7 +21,12 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { trimString } from '../../../ambient-utils/dataLayer';
+import { openInNewTab, trimString } from '../../../ambient-utils/dataLayer';
+import {
+    DISCORD_LINK,
+    DOCS_LINK,
+    TWITTER_LINK,
+} from '../../../ambient-utils/constants';
 
 // Animation Variants
 const dropdownVariants = {
@@ -122,11 +127,11 @@ export default function Navbar() {
 
     // Data
     const dropdownData = [
-        { label: 'docs', link: '/docs' },
-        { label: 'twitter', link: '#' },
-        { label: 'discord', link: '#' },
-        { label: 'legal & privacy', link: '#' },
-        { label: 'terms of service', link: '#' },
+        { label: 'docs', link: DOCS_LINK },
+        { label: 'twitter', link: TWITTER_LINK },
+        { label: 'discord', link: DISCORD_LINK },
+        { label: 'legal & privacy', link: '/privacy' },
+        { label: 'terms of service', link: '/terms' },
     ];
     const navbarLinks = [
         {
@@ -140,10 +145,6 @@ export default function Navbar() {
         {
             label: 'Create',
             link: '/auctions/create',
-        },
-        {
-            label: 'Ticker',
-            link: '/auctions/ticker',
         },
     ];
 
@@ -208,9 +209,15 @@ export default function Navbar() {
                                     key={idx}
                                     variants={dropdownItemVariants}
                                     className={styles.linkContainer}
-                                    onClick={() => setIsDropdownOpen(false)}
+                                    onClick={() => {
+                                        openInNewTab(item.link);
+
+                                        setIsDropdownOpen(false);
+                                    }}
                                 >
-                                    <Link to={item.link}>{item.label}</Link>
+                                    <div style={{ cursor: 'pointer' }}>
+                                        {item.label}
+                                    </div>
                                 </motion.div>
                             ))}
                             <motion.p

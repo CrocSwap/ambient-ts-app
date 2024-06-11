@@ -8,7 +8,9 @@ import {
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
     DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
+    GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     NUM_GWEI_IN_ETH,
+    NUM_GWEI_IN_WEI,
     NUM_WEI_IN_GWEI,
     supportedNetworks,
 } from '../../../ambient-utils/constants';
@@ -44,9 +46,9 @@ export default function Ticker() {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { ticker: tickerFromParams } = useParams();
-    console.log({ tickerFromParams });
 
     const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -79,12 +81,37 @@ export default function Ticker() {
         return { status: 'OPEN' };
     };
 
+    const getAllocationByUser = async (
+        ticker: string,
+        userAddress: `0x${string}` | undefined,
+    ) => {
+        if (!userAddress) return { unclaimedAllocation: '0' };
+        if (ticker.toLowerCase() === 'not')
+            return { unclaimedAllocation: '100000' };
+        if (ticker.toLowerCase() === 'mog')
+            return { unclaimedAllocation: '168200' };
+
+        return { unclaimedAllocation: '0' };
+    };
+
     // setState for auction details
     const [auctionDetails, setAuctionDetails] = useState<
         { status: string } | undefined
     >();
+    // setState for allocation for user
+    const [allocationForConnectedUser, setAllocationForConnectedUser] =
+        useState<{ unclaimedAllocation: string } | undefined>();
 
-    console.log({ auctionDetails });
+    const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const formattedUnclaimedAllocationForConnectedUser = parseFloat(
+        allocationForConnectedUser?.unclaimedAllocation ?? '0',
+    ).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+    });
 
     const isAuctionCompleted =
         auctionDetails?.status?.toLowerCase() === 'closed';
@@ -96,11 +123,46 @@ export default function Ticker() {
         );
     }, [tickerFromParams]);
 
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(
+            getAllocationByUser(tickerFromParams, userAddress),
+        ).then((details) => setAllocationForConnectedUser(details));
+    }, [tickerFromParams, userAddress]);
+
+    const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
+
+    useEffect(() => {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageGasUnitsForBidTxInGasDrops *
+                NUM_GWEI_IN_WEI *
+                nativeTokenUsdPrice;
+
+            setBidGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
+            );
+        }
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
+
     const [inputValue, setInputValue] = useState('');
 
     const [isValidationInProgress, setIsValidationInProgress] =
         useState<boolean>(false);
+    const [isPriceImpactQueryInProgress, setIsPriceImpactQueryInProgress] =
+        useState<boolean>(false);
+
     const [isValidated, setIsValidated] = useState<boolean>(false);
+    const [priceImpact, setPriceImpact] = useState<number | undefined>();
+
+    useEffect(() => {
+        setIsValidationInProgress(true);
+        setIsPriceImpactQueryInProgress(true);
+    }, [inputValue]);
 
     const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
@@ -134,7 +196,8 @@ export default function Ticker() {
     const nativeTokenDecimals = nativeToken.decimals;
 
     const checkBidValidity = async (bidQtyNonDisplay: string) => {
-        const isNonZero = !!bidQtyNonDisplay;
+        const isNonZero =
+            !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
 
         if (!isNonZero) return false;
 
@@ -145,12 +208,27 @@ export default function Ticker() {
         return bidSizeLessThanAdjustedBalance;
     };
 
+    const getPriceImpact = async (bidQtyNonDisplay: string) => {
+        const isNonZero =
+            !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
+
+        if (!isNonZero) return undefined;
+
+        const priceImpact = Math.random() * 0.1;
+
+        return priceImpact;
+    };
+
     const debouncedBidInput = useDebounce(bidQtyNonDisplay, 500);
 
     useEffect(() => {
         checkBidValidity(debouncedBidInput).then((isValid) => {
             setIsValidationInProgress(false);
             setIsValidated(isValid);
+        });
+        getPriceImpact(debouncedBidInput).then((impact) => {
+            setIsPriceImpactQueryInProgress(false);
+            setPriceImpact(impact);
         });
     }, [debouncedBidInput]);
 
@@ -259,13 +337,23 @@ export default function Ticker() {
         { value: 0.529 },
     ];
 
+    const formattedPriceImpact =
+        !priceImpact || isPriceImpactQueryInProgress
+            ? '...'
+            : getFormattedNumber({
+                  value: priceImpact * 100,
+                  isPercentage: true,
+              }) + '%';
+
+    const networkFee = bidGasPriceinDollars;
+
     const extraInfoData = isAuctionCompleted
         ? [
               {
                   title: 'NETWORK FEE',
                   tooltipTitle:
                       'Estimated network fee (i.e. gas cost) to join bid',
-                  data: '-$0.01',
+                  data: networkFee ? '~' + networkFee : '...',
               },
           ]
         : [
@@ -273,13 +361,13 @@ export default function Ticker() {
                   title: 'PRICE IMPACT',
                   tooltipTitle:
                       'Difference Between Current (Spot) Price and Final Price',
-                  data: '5.86%',
+                  data: formattedPriceImpact,
               },
               {
                   title: 'NETWORK FEE',
                   tooltipTitle:
                       'Estimated network fee (i.e. gas cost) to join bid',
-                  data: '-$0.01',
+                  data: networkFee ? '~' + networkFee : '...',
               },
           ];
     const progressValue = 'XX.X';
@@ -294,9 +382,7 @@ export default function Ticker() {
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
             <Divider count={2} />
-            <h2 onClick={() => setShowTradeButton(!showTradeButton)}>
-                {tickerFromParams}
-            </h2>
+            <h2>{tickerFromParams}</h2>
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>
@@ -433,18 +519,29 @@ export default function Ticker() {
             ))}
         </div>
     );
-    const [showTradeButton, setShowTradeButton] = useState(false);
+
+    const isAllocationAvailableToClaim =
+        allocationForConnectedUser?.unclaimedAllocation &&
+        parseFloat(allocationForConnectedUser.unclaimedAllocation) > 0;
+
+    const showTradeButton =
+        (isAuctionCompleted && !isUserConnected) ||
+        (isUserConnected &&
+            isAuctionCompleted &&
+            !isAllocationAvailableToClaim);
+
     const isButtonDisabled =
-        !isAuctionCompleted &&
         isUserConnected &&
+        !isAuctionCompleted &&
         (isValidationInProgress || !isValidated);
-    const buttonLabel = !isUserConnected
-        ? 'Connect Wallet'
+
+    const buttonLabel = isAllocationAvailableToClaim
+        ? 'Claim'
         : showTradeButton
         ? 'Trade'
-        : isAuctionCompleted
-        ? 'Claim'
-        : bidQtyNonDisplay === ''
+        : !isUserConnected
+        ? 'Connect Wallet'
+        : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
         ? 'Enter a Bid Size'
         : isValidationInProgress
         ? 'Validating Bid...'
@@ -452,13 +549,23 @@ export default function Ticker() {
         ? 'Bid'
         : 'Invalid Bid';
 
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+
     const bidButton = (
         <button
             className={`${styles.bidButton} ${
                 isButtonDisabled ? styles.bidButtonDisabled : ''
-            }`}
+            } ${desktopScreen ? styles.bidButtonDesktop : ''}`}
             onClick={() =>
-                !isUserConnected
+                isAllocationAvailableToClaim
+                    ? console.log(
+                          `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
+                      )
+                    : showTradeButton
+                    ? console.log(
+                          `clicked Trade for ticker: ${tickerFromParams}`,
+                      )
+                    : !isUserConnected
                     ? openWalletModal()
                     : console.log(`clicked Bid for display qty: ${inputValue}`)
             }
@@ -471,11 +578,12 @@ export default function Ticker() {
     const allocationDisplay = (
         <div className={styles.allocationContainer}>
             <h3>ALLOCATION</h3>
-            <div className={styles.allocationDisplay}>15,000,000</div>
+            <div className={styles.allocationDisplay}>
+                {formattedUnclaimedAllocationForConnectedUser}
+            </div>
             {extraInfoDisplay}
         </div>
     );
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     const desktopVersion = (
         <div className={styles.gridContainer}>
@@ -486,7 +594,8 @@ export default function Ticker() {
                     {!isAuctionCompleted && openedBidDisplay}
                     {!isAuctionCompleted && maxFdvDisplay}
                     {!isAuctionCompleted && bidSizeDisplay}
-                    {!showTradeButton &&
+                    {isUserConnected &&
+                        !showTradeButton &&
                         isAuctionCompleted &&
                         allocationDisplay}
                     {!isAuctionCompleted && extraInfoDisplay}
@@ -507,7 +616,10 @@ export default function Ticker() {
                 {!isAuctionCompleted && openedBidDisplay}
                 {!isAuctionCompleted && maxFdvDisplay}
                 {!isAuctionCompleted && bidSizeDisplay}
-                {!showTradeButton && isAuctionCompleted && allocationDisplay}
+                {isUserConnected &&
+                    !showTradeButton &&
+                    isAuctionCompleted &&
+                    allocationDisplay}
                 {!isAuctionCompleted && extraInfoDisplay}
             </div>
             {bidButton}
