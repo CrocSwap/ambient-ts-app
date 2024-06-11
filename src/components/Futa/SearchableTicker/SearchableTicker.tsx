@@ -1,9 +1,10 @@
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import TickerItem from './TickerItem';
 import { MdClose } from 'react-icons/md';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 export default function SearchableTicker() {
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
@@ -25,6 +26,13 @@ export default function SearchableTicker() {
     const toggleOrder = () => {
         setCurrentOrder((prevOrder) => (prevOrder === 'ASC' ? 'DSC' : 'ASC'));
     };
+
+    const timeDropdownRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideHandler = () => {
+        setIsTimeDropdownOpen(false);
+    };
+    useOnClickOutside(timeDropdownRef, clickOutsideHandler);
 
     const searchContainer = (
         <div className={styles.searchContainer}>
@@ -145,6 +153,7 @@ export default function SearchableTicker() {
                                 currentOrder === 'ASC' ? 'var(--accent1)' : ''
                             }
                         />
+
                         <IoIosArrowDown
                             size={14}
                             color={
@@ -155,7 +164,7 @@ export default function SearchableTicker() {
                 </div>
 
                 {isTimeDropdownOpen && (
-                    <div className={styles.dropdown}>
+                    <div className={styles.dropdown} ref={timeDropdownRef}>
                         {creationTimeData.map((item, idx) => (
                             <p
                                 className={styles.timeItem}
@@ -208,8 +217,10 @@ export default function SearchableTicker() {
 
     return (
         <div className={styles.container}>
-            {searchContainer}
-            {timeDropdown}
+            <div className={styles.content}>
+                {searchContainer}
+                {timeDropdown}
+            </div>
             {tickerTableDisplay}
         </div>
     );

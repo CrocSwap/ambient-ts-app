@@ -3,6 +3,7 @@ import styles from './Account.module.css';
 
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 export default function Account() {
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
@@ -18,6 +19,25 @@ export default function Account() {
             </div>
         </div>
     );
+
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+
+    const desktopVersion = (
+        <div className={styles.desktopContainer}>
+            <div className={styles.content}>
+                <h2>Account</h2>
+                <SearchableTicker />
+            </div>
+
+            <div className={styles.rightLayout}>
+                {claimAllContainer}
+                <button className={styles.claimButton}>CLAIM ALL</button>
+            </div>
+        </div>
+    );
+
+    if (desktopScreen) return desktopVersion;
+
     return (
         <div className={styles.container}>
             <div className={styles.content}>
