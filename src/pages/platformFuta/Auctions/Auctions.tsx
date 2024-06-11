@@ -4,7 +4,8 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Divider from '../../../components/Futa/Divider/Divider';
 import AuctionLoader from '../../../components/Futa/AuctionLoader/AuctionLoader';
-import { useState } from 'react';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { useContext } from 'react';
 
 export interface auctionDataIF {
     ticker: string;
@@ -13,8 +14,13 @@ export interface auctionDataIF {
 }
 
 export default function Auctions() {
+    const {
+        isLoading,
+        setIsLoading,
+        // auctions,
+    } = useContext(AuctionsContext);
+
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
-    const [isLoading, setIsLoading] = useState(true);
 
     const desktopVersion = (
         <div className={styles.desktopContainer}>
