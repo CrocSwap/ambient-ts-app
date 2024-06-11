@@ -31,16 +31,20 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Divider from '../../../components/Futa/Divider/Divider';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >('');
+    const { crocEnv } = useContext(CrocEnvContext);
+
     const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+        auctions: { chainId: chainId },
+        // auctions,
+    } = useContext(AuctionsContext);
+
     const { isUserConnected } = useContext(UserDataContext);
     const {
         walletModal: { open: openWalletModal },
