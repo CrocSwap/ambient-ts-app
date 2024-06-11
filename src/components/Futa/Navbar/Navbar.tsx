@@ -144,7 +144,7 @@ export default function Navbar() {
         },
         {
             label: 'Create',
-            link: '/auctions/create',
+            link: '/create',
         },
     ];
 
