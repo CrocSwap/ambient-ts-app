@@ -481,25 +481,28 @@ export default function Ticker() {
             ))}
         </div>
     );
+
+    const isAllocationAvailableToClaim =
+        allocationForConnectedUser?.unclaimedAllocation &&
+        parseFloat(allocationForConnectedUser.unclaimedAllocation) > 0;
+
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
         (isUserConnected &&
             isAuctionCompleted &&
-            (allocationForConnectedUser === undefined ||
-                parseFloat(allocationForConnectedUser?.unclaimedAllocation) ===
-                    0));
+            !isAllocationAvailableToClaim);
 
     const isButtonDisabled =
-        !isAuctionCompleted &&
         isUserConnected &&
+        !isAuctionCompleted &&
         (isValidationInProgress || !isValidated);
 
-    const buttonLabel = showTradeButton
-        ? 'Trade'
-        : !isUserConnected
-          ? 'Connect Wallet'
-          : isAuctionCompleted
-            ? 'Claim'
+    const buttonLabel = isAllocationAvailableToClaim
+        ? 'Claim'
+        : showTradeButton
+          ? 'Trade'
+          : !isUserConnected
+            ? 'Connect Wallet'
             : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
               ? 'Enter a Bid Size'
               : isValidationInProgress
@@ -514,15 +517,19 @@ export default function Ticker() {
                 isButtonDisabled ? styles.bidButtonDisabled : ''
             }`}
             onClick={() =>
-                showTradeButton
+                isAllocationAvailableToClaim
                     ? console.log(
-                          `clicked Trade for ticker: ${tickerFromParams}`,
+                          `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
-                    : !isUserConnected
-                      ? openWalletModal()
-                      : console.log(
-                            `clicked Bid for display qty: ${inputValue}`,
+                    : showTradeButton
+                      ? console.log(
+                            `clicked Trade for ticker: ${tickerFromParams}`,
                         )
+                      : !isUserConnected
+                        ? openWalletModal()
+                        : console.log(
+                              `clicked Bid for display qty: ${inputValue}`,
+                          )
             }
             disabled={isButtonDisabled}
         >
