@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { Dispatch, SetStateAction } from 'react';
 import { AiOutlineCheck } from 'react-icons/ai';
 import { GrClose } from 'react-icons/gr';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';

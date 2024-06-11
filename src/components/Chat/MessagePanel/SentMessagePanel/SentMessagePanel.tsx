@@ -334,10 +334,6 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     };
 
-    function handleOpenExplorer(url: string) {
-        window.open(url);
-    }
-
     function handleOpenExplorerAddHttp(url: string) {
         if (!url.includes('https')) {
             window.open(convertToFullUrl(url));
@@ -349,72 +345,6 @@ function SentMessagePanel(props: SentMessageProps) {
     function convertToFullUrl(domain: string): string {
         const protocol = 'https://';
         return protocol + domain;
-    }
-
-    function returnDomain(word: string) {
-        if (isLinkInCrocodileLabsLinks(word)) {
-            const url = new URL(word);
-            return url.hostname + url.pathname;
-        } else {
-            return word;
-        }
-    }
-
-    function detectLinksFromMessage(url: string) {
-        if (url.includes(' ')) {
-            const words: string[] = url.split(' ');
-            return (
-                <>
-                    {words.map((word, index) => (
-                        <span
-                            onClick={() =>
-                                isLinkInCrocodileLabsLinks(word)
-                                    ? handleOpenExplorer(word)
-                                    : isLinkInCrocodileLabsLinksForInput(word)
-                                    ? handleOpenExplorerAddHttp(word)
-                                    : ''
-                            }
-                            key={index}
-                            style={
-                                isLinkInCrocodileLabsLinks(word) ||
-                                isLinkInCrocodileLabsLinksForInput(word)
-                                    ? {
-                                          color: '#ab7de7',
-                                          cursor: 'pointer',
-                                      }
-                                    : props.message.isDeleted
-                                    ? { color: 'red', cursor: 'default' }
-                                    : { color: 'white', cursor: 'default' }
-                            }
-                        >
-                            {' ' + returnDomain(word)}
-                        </span>
-                    ))}
-                </>
-            );
-        } else {
-            if (
-                isLinkInCrocodileLabsLinks(url) ||
-                isLinkInCrocodileLabsLinksForInput(url)
-            ) {
-                return (
-                    <p
-                        style={{ color: '#ab7de7', cursor: 'pointer' }}
-                        onClick={() =>
-                            isLinkInCrocodileLabsLinks(url)
-                                ? handleOpenExplorer(url)
-                                : isLinkInCrocodileLabsLinksForInput(url)
-                                ? handleOpenExplorerAddHttp(url)
-                                : ''
-                        }
-                    >
-                        {returnDomain(url)}
-                    </p>
-                );
-            } else {
-                return url;
-            }
-        }
     }
 
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
@@ -626,8 +556,8 @@ function SentMessagePanel(props: SentMessageProps) {
                     props.isCurrentUser
                         ? 'account'
                         : !hasEns(props.message)
-                        ? props.message.walletID
-                        : props.message.ensName
+                          ? props.message.walletID
+                          : props.message.ensName
                 }`,
             );
         }
@@ -815,11 +745,11 @@ function SentMessagePanel(props: SentMessageProps) {
                                           false
                                             ? styles.sent_message_body
                                             : props.message.mentionedName?.trim() ===
-                                                  props.ensName?.trim() ||
-                                              props.message.mentionedName?.trim() ===
-                                                  props.connectedAccountActive?.trim()
-                                            ? styles.sent_message_body_with_mention
-                                            : styles.sent_message_body
+                                                    props.ensName?.trim() ||
+                                                props.message.mentionedName?.trim() ===
+                                                    props.connectedAccountActive?.trim()
+                                              ? styles.sent_message_body_with_mention
+                                              : styles.sent_message_body
                                         : styles.sent_message_body
                                 }
                             >
@@ -868,14 +798,14 @@ function SentMessagePanel(props: SentMessageProps) {
                                                   ' ' +
                                                   styles.name_default
                                                 : showName &&
-                                                  !props.isCurrentUser
-                                                ? styles.name +
-                                                  ' ' +
-                                                  styles.name_default
-                                                : !showName &&
-                                                  !props.isCurrentUser
-                                                ? ''
-                                                : ''
+                                                    !props.isCurrentUser
+                                                  ? styles.name +
+                                                    ' ' +
+                                                    styles.name_default
+                                                  : !showName &&
+                                                      !props.isCurrentUser
+                                                    ? ''
+                                                    : ''
                                         }
                                     >
                                         <span
