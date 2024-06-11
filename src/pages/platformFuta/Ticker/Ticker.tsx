@@ -514,9 +514,15 @@ export default function Ticker() {
                 isButtonDisabled ? styles.bidButtonDisabled : ''
             }`}
             onClick={() =>
-                !isUserConnected
-                    ? openWalletModal()
-                    : console.log(`clicked Bid for display qty: ${inputValue}`)
+                showTradeButton
+                    ? console.log(
+                          `clicked Trade for ticker: ${tickerFromParams}`,
+                      )
+                    : !isUserConnected
+                      ? openWalletModal()
+                      : console.log(
+                            `clicked Bid for display qty: ${inputValue}`,
+                        )
             }
             disabled={isButtonDisabled}
         >
