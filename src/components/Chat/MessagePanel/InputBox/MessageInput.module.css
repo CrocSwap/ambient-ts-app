@@ -51,6 +51,19 @@
     flex-grow: 1;
 }
 
+.remainingText {
+    position: absolute;
+    top: 50%;
+    left: 77%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80%;
+    text-align: center;
+}
+
 .input_box_not_allowed {
     display: flex;
     flex-direction: column;

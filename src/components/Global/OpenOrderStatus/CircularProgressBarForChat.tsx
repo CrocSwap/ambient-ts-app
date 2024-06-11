@@ -21,7 +21,7 @@ export default function CircularProgressBarForChat(
             leaveDelay={200}
         >
             <svg
-                className={styles.circular_progress}
+                className={fillPercentage < 100 ? styles.circular_progress : ''}
                 width={radius * 2}
                 height={radius * 2}
             >
@@ -33,13 +33,17 @@ export default function CircularProgressBarForChat(
                     strokeWidth={strokeWidth}
                 />
                 <circle
-                    className={styles.circle_fill}
+                    className={
+                        fillPercentage < 100
+                            ? styles.circle_fill
+                            : styles.circle_fully_filled
+                    }
                     cx={radius}
                     cy={radius}
                     r={radius - strokeWidth / 2}
                     strokeWidth={strokeWidth}
                     strokeDasharray={circumference}
-                    strokeDashoffset={offset}
+                    strokeDashoffset={fillPercentage < 100 ? offset : 0}
                 />
             </svg>
         </DefaultTooltip>

@@ -169,11 +169,6 @@ export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
             const linkDomain = linkUrl.hostname
                 .replace(/^www\./, '')
                 .toLowerCase();
-            console.log(
-                'isLinkInCrocodileLabsLinksForInput: ',
-                link,
-                wordDomain === linkDomain,
-            );
             return wordDomain === linkDomain;
         });
     } catch (error) {

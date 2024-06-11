@@ -277,6 +277,15 @@ export default function MessageInput(props: MessageInputProps) {
                 return;
             }
 
+            if (message.length > 140) {
+                props.setShowPopUp(true);
+                props.setPopUpText(
+                    'Maximum length exceeded (140 characters limit).',
+                );
+                e.preventDefault(); // Prevent further input when the limit is reached
+                return;
+            }
+
             if (!mentPanelActive) {
                 const parts = message.split(/\s+/);
 
@@ -298,6 +307,7 @@ export default function MessageInput(props: MessageInputProps) {
                     props.setShowPopUp(true);
                     props.setPopUpText('You cannot send this link.');
                 } else {
+                    console.log('zx');
                     handleSendMsg(formatURL(message), roomId);
                     setMessage('');
                     setMentUser(null);
@@ -305,6 +315,9 @@ export default function MessageInput(props: MessageInputProps) {
                     dontShowEmojiPanel();
                     props.setShowPopUp(false);
                 }
+                /* 
+                 
+               */
             }
             // assign user for ment
             else {
@@ -573,23 +586,20 @@ export default function MessageInput(props: MessageInputProps) {
                             // }
                             ref={inputRef}
                         />
-                        {inputLength >= 100 && inputLength <= 140 && (
-                            <div className={styles.message_input_field}>
-                                <CircularProgressBarForChat
-                                    fillPercentage={inputLength / 1.4}
-                                />
-                            </div>
-                        )}
-                        {inputLength > 140 && (
+                        {inputLength >= 100 && (
                             <div
-                                className={
-                                    styles.message_input_field_limit_exceeded
-                                }
+                                className={styles.message_input_field}
+                                style={{
+                                    fontSize:
+                                        inputLength > 240 ? '10px' : '12px',
+                                }}
                             >
                                 <CircularProgressBarForChat
                                     fillPercentage={inputLength / 1.4}
                                 />
-                                {140 - inputLength}
+                                <div className={styles.remainingText}>
+                                    {140 - inputLength}
+                                </div>
                             </div>
                         )}
 
