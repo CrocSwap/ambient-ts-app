@@ -11,7 +11,7 @@ export default function BreadCrumb() {
                     <Link to='/'>Home</Link>
                 </li>
                 {pathnames.map((value, index) => {
-                    const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+                    const to = `/${pathnames.slice(0, index + 1).join('/v1/')}`;
                     return (
                         <li key={to}>
                             <Link to={to}>
