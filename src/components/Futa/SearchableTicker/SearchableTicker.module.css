@@ -199,4 +199,10 @@ color: var(--text1)
     align-items: center;
 }
 
+.content h2{
+    color: var(--text1, #CEFFFF);
+font-size: 36px;
+text-transform: uppercase;
+}
+
 }

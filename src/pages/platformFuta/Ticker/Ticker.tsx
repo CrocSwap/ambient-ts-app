@@ -45,6 +45,7 @@ export default function Ticker() {
     const { tokenBalances } = useContext(TokenBalanceContext);
 
     const { ticker: tickerFromParams } = useParams();
+    console.log({ tickerFromParams });
 
     const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -67,16 +68,25 @@ export default function Ticker() {
     }, [crocEnv, chainId]);
 
     const getAuctionDetails = async (ticker: string) => {
-        if (ticker.toLowerCase() === 'doge' || ticker.toLowerCase() === 'pepe')
-            return { status: 'OPEN' };
+        if (
+            ticker.toLowerCase() === 'not' ||
+            ticker.toLowerCase() === 'mog' ||
+            ticker.toLowerCase() === 'mew'
+        )
+            return { status: 'CLOSED' };
 
-        return { status: 'CLOSED' };
+        return { status: 'OPEN' };
     };
 
     // setState for auction details
     const [auctionDetails, setAuctionDetails] = useState<
         { status: string } | undefined
     >();
+
+    console.log({ auctionDetails });
+
+    const isAuctionCompleted =
+        auctionDetails?.status?.toLowerCase() === 'closed';
 
     useEffect(() => {
         if (!tickerFromParams) return;
@@ -248,19 +258,29 @@ export default function Ticker() {
         { value: 0.529 },
     ];
 
-    const extraInfoData = [
-        {
-            title: 'PRICE IMPACT',
-            tooltipTitle:
-                'Difference Between Current (Spot) Price and Final Price',
-            data: '5.86%',
-        },
-        {
-            title: 'NETWORK FEE',
-            tooltipTitle: 'Estimated network fee (i.e. gas cost) to join bid',
-            data: '-$0.01',
-        },
-    ];
+    const extraInfoData = isAuctionCompleted
+        ? [
+              {
+                  title: 'NETWORK FEE',
+                  tooltipTitle:
+                      'Estimated network fee (i.e. gas cost) to join bid',
+                  data: '-$0.01',
+              },
+          ]
+        : [
+              {
+                  title: 'PRICE IMPACT',
+                  tooltipTitle:
+                      'Difference Between Current (Spot) Price and Final Price',
+                  data: '5.86%',
+              },
+              {
+                  title: 'NETWORK FEE',
+                  tooltipTitle:
+                      'Estimated network fee (i.e. gas cost) to join bid',
+                  data: '-$0.01',
+              },
+          ];
     const progressValue = 'XX.X';
 
     const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
@@ -272,7 +292,9 @@ export default function Ticker() {
 
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
-            <h2>{tickerFromParams}</h2>
+            <h2 onClick={() => setShowTradeButton(!showTradeButton)}>
+                {tickerFromParams}
+            </h2>
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>
@@ -322,7 +344,7 @@ export default function Ticker() {
     useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
     const maxFdvDisplay = (
         <div className={styles.tickerContainer}>
-            <h3>MAX FDV</h3>
+            <h3>MAX MARKET CAP</h3>
             <div className={styles.maxDropdownContainer}>
                 <button
                     onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
@@ -409,47 +431,61 @@ export default function Ticker() {
             ))}
         </div>
     );
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const [showTradeButton, setShowTradeButton] = useState(true);
+    const isButtonDisabled =
+        !isAuctionCompleted &&
+        isUserConnected &&
+        (isValidationInProgress || !isValidated);
+    const buttonLabel = !isUserConnected
+        ? 'Connect Wallet'
+        : showTradeButton
+        ? 'Trade'
+        : isAuctionCompleted
+        ? 'Claim'
+        : bidQtyNonDisplay === ''
+        ? 'Enter a Bid Size'
+        : isValidationInProgress
+        ? 'Validating Bid...'
+        : isValidated
+        ? 'Bid'
+        : 'Invalid Bid';
 
     const bidButton = (
         <button
-            className={
-                !isUserConnected || (!isValidationInProgress && isValidated)
-                    ? styles.bidButton
-                    : styles.bidButton_disabled
-            }
+            className={`${styles.bidButton} ${
+                isButtonDisabled ? styles.bidButtonDisabled : ''
+            }`}
             onClick={() =>
                 !isUserConnected
                     ? openWalletModal()
                     : console.log(`clicked Bid for display qty: ${inputValue}`)
             }
-            disabled={
-                isUserConnected && (isValidationInProgress || !isValidated)
-            }
+            disabled={isButtonDisabled}
         >
-            {!isUserConnected
-                ? 'Connect Wallet'
-                : bidQtyNonDisplay === ''
-                  ? 'Enter a Bid Size'
-                  : isValidationInProgress
-                    ? 'Validating Bid...'
-                    : isValidated
-                      ? 'Bid'
-                      : 'Invalid Bid'}
+            {buttonLabel}
         </button>
     );
+
+    const allocationDisplay = (
+        <div className={styles.allocationContainer}>
+            <h3>ALLOCATION</h3>
+            <div className={styles.allocationDisplay}>15,000,000</div>
+            {extraInfoDisplay}
+        </div>
+    );
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     const desktopVersion = (
         <div className={styles.gridContainer}>
             <Auctions />
             <div className={styles.container}>
                 <div className={styles.content}>
-                    <BreadCrumb />
                     {tickerDisplay}
-                    {openedBidDisplay}
-                    {maxFdvDisplay}
-                    {bidSizeDisplay}
-                    {extraInfoDisplay}
+                    {!isAuctionCompleted && openedBidDisplay}
+                    {!isAuctionCompleted && maxFdvDisplay}
+                    {!isAuctionCompleted && bidSizeDisplay}
+                    {!showTradeButton && allocationDisplay}
+                    {!isAuctionCompleted && extraInfoDisplay}
                 </div>
                 {bidButton}
             </div>
@@ -460,12 +496,15 @@ export default function Ticker() {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <BreadCrumb />
-                {tickerDisplay}
-                {openedBidDisplay}
-                {maxFdvDisplay}
-                {bidSizeDisplay}
-                {extraInfoDisplay}
+                <div className={styles.flexColumn}>
+                    <BreadCrumb />
+                    {tickerDisplay}
+                </div>
+                {!isAuctionCompleted && openedBidDisplay}
+                {!isAuctionCompleted && maxFdvDisplay}
+                {!isAuctionCompleted && bidSizeDisplay}
+                {!showTradeButton && allocationDisplay}
+                {!isAuctionCompleted && extraInfoDisplay}
             </div>
             {bidButton}
         </div>

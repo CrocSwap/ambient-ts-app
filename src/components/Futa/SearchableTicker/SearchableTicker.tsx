@@ -128,6 +128,18 @@ export default function SearchableTicker() {
         },
     ];
 
+    const [tickerDataToShow, setTickerDataToShow] = useState(tickerData);
+    const handleShowComplete = () => {
+        setShowComplete(!showComplete);
+        if (!showComplete) {
+            setTickerDataToShow(
+                tickerData.filter((item) => item.timeRem === 'COMPLETE'),
+            );
+        } else {
+            setTickerDataToShow(tickerData);
+        }
+    };
+
     const timeDropdown = (
         <section className={styles.timeDropdownContainer}>
             <div className={styles.timeDropdownLeft}>
@@ -182,7 +194,7 @@ export default function SearchableTicker() {
             </div>
             <div className={styles.timeDropdownRight}>
                 <button
-                    onClick={() => setShowComplete(!showComplete)}
+                    onClick={handleShowComplete}
                     className={
                         showComplete ? styles.buttonOn : styles.buttonOff
                     }
@@ -204,7 +216,7 @@ export default function SearchableTicker() {
                 </div>
             </header>
             <div className={styles.tickerTableContent}>
-                {tickerData.map((item) => (
+                {tickerDataToShow.map((item) => (
                     <TickerItem
                         tickerItem={item}
                         key={JSON.stringify(item)}

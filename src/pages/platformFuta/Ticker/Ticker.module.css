@@ -182,9 +182,19 @@
     border: 1px solid var(--accent1);
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
+    color: var(--dark1);
+    font-size: 24px;;
+    text-transform: uppercase;
+}
+
+.bidButtonDisabled{
+    pointer-events: none;
+    background: var(--dark4);
+    border: none;
 }
 .bidButton:hover {
-    background: transparent;
+    background: var(--accent2);
+    border: 1px solid var(--accent2);
     color: var(--accent1);
 }
 .create_button_disabled {
@@ -192,10 +202,39 @@
     background-color: var(--accent1);
 }
 
+.flexColumn{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.allocationContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+   
+}
+
+.allocationContainer h3{
+    color: var(--text1, #CEFFFF);
+    font-size: 20px;
+}
+
+.allocationDisplay{
+    background: var(--dark4, #171F22);
+    font-size: 20px;
+    color: var(--accent1, #62EBF1);
+    padding: 8px;
+    display: flex;
+   align-items: center;
+
+
+}
 @media (min-width: 1280px) {
     .container {
         padding: 0;
         height: 100%;
+        padding-top: 4rem;
     }
     .bidButton {
         margin: 0 auto;
