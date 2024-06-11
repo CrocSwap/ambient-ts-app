@@ -24,7 +24,7 @@ justify-content: space-between;
 
 .content h2{
 color: var(--text1, #CEFFFF);
-font-size: 36px;
+font-size: 24px;
 text-transform: uppercase;
 }
 

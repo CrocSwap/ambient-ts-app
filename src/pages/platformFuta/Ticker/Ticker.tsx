@@ -28,6 +28,7 @@ import { TokenIF } from '../../../ambient-utils/types';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import Divider from '../../../components/Futa/Divider/Divider';
 
 export default function Ticker() {
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -292,6 +293,7 @@ export default function Ticker() {
 
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
+            <Divider count={2} />
             <h2 onClick={() => setShowTradeButton(!showTradeButton)}>
                 {tickerFromParams}
             </h2>

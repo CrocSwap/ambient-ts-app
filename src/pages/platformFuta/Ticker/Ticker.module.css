@@ -235,7 +235,7 @@
     .container {
         padding: 0;
         height: 100%;
-        padding-top: 4rem;
+        padding-top: 12px;
     }
     .bidButton {
         margin: 0 auto;

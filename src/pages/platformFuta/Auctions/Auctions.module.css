@@ -1,11 +1,16 @@
 .auctions_main {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 12px;
     gap: 8px;
 }
 
 .auctions_main > h3 {
-    font-size: 36px;
+    font-size: 24px;
     color: var(--text1);
+}
+
+.desktopContainer{
+    display: grid;
+    grid-template-columns: 335px 1fr;
 }
