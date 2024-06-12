@@ -161,6 +161,11 @@ export default function Navbar() {
                     key={idx}
                     className={styles.desktopLink}
                     variants={linkItemVariants}
+                    style={{
+                        color: location.pathname.includes(item.link)
+                            ? 'var(--accent1)'
+                            : '',
+                    }}
                 >
                     <Link to={item.link}>{item.label}</Link>
                 </motion.div>
