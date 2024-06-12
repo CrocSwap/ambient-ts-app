@@ -231,7 +231,7 @@
 @media (min-width: 1280px) {
     .container {
         padding: 0;
-        height: 100%;
+        height: calc(100% - 25px);
         padding-top: 12px;
     }
     .bidButton {

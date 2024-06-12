@@ -11,6 +11,38 @@
 }
 
 .desktopContainer{
+    height: calc(100vh - 85px);
     display: grid;
-    grid-template-columns: 335px 1fr;
+    }
+    
+    .desktopContainerFull{
+        height: calc(100vh - 85px);
+        display: grid;
+        grid-template-columns: 335px 1fr;
+}
+
+.middleContentFull{
+    height: 100%;
+    display: grid;
+    grid-template-rows: 75% 25% ;
+    gap: 8px;
+}
+
+.middleContent{
+    height: 100%;
+}
+
+
+
+.chart{
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 65% 35%;
+    gap: 8px;
+}
+
+.chartLeft, .chartRight{
+    background: var(--dark2);
+    padding: 0 8px;
 }

@@ -1,11 +1,17 @@
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import TickerItem from './TickerItem';
 import { MdClose } from 'react-icons/md';
-import { useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-export default function SearchableTicker() {
+
+interface PropsIF {
+    showAuctionTitle?: boolean;
+    setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
+}
+export default function SearchableTicker(props: PropsIF) {
+    const { showAuctionTitle, setIsFullLayoutActive } = props;
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
@@ -233,7 +239,25 @@ export default function SearchableTicker() {
 
     return (
         <div className={styles.container}>
-            <div className={styles.content}>
+            <div
+                className={styles.content}
+                style={{
+                    gridTemplateColumns: showAuctionTitle
+                        ? '100px auto 380px'
+                        : 'auto 300px',
+                }}
+            >
+                {showAuctionTitle && (
+                    <h3
+                        onClick={
+                            setIsFullLayoutActive
+                                ? () => setIsFullLayoutActive((prev) => !prev)
+                                : () => null
+                        }
+                    >
+                        AUCTIONS
+                    </h3>
+                )}
                 {searchContainer}
                 {timeDropdown}
             </div>
