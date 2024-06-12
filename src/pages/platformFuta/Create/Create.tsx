@@ -23,17 +23,13 @@ export default function Create() {
 
     const [isValidationInProgress, setIsValidationInProgress] =
         useState<boolean>(false);
+
     const [isValidated, setIsValidated] = useState<boolean>(false);
 
-    function handleChange(text: string) {
-        setIsValidationInProgress(true);
-        checkTickerPattern(text) && setTickerInput(text.toUpperCase());
-    }
-
-    const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', 'btc'];
+    const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', ' '];
 
     // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
-    const pattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
+    const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
     /* 
         Example usage of the pattern
         console.log(isValidString("Hello123")); // true (Latin alphanumeric)
@@ -45,8 +41,7 @@ export default function Create() {
 
     const checkTickerPattern = (ticker: string) => {
         if (ticker.length === 0) return true;
-        const isPatternValid = pattern.test(ticker);
-        return isPatternValid;
+        return validTickerPattern.test(ticker);
     };
 
     const checkTickerValidity = async (ticker: string) => {
@@ -56,6 +51,13 @@ export default function Create() {
         const tickerPatternValid = checkTickerPattern(ticker);
         return !isExcluded && tickerPatternValid && lengthIsValid;
     };
+
+    function handleChange(text: string) {
+        if (checkTickerPattern(text)) {
+            setIsValidationInProgress(true);
+            setTickerInput(text.toUpperCase());
+        }
+    }
 
     const debouncedTickerInput = useDebounce(tickerInput, 500);
 
