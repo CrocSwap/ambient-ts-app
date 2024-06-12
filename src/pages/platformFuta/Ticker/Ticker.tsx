@@ -617,6 +617,16 @@ export default function Ticker() {
             </div>
         </div>
     );
+
+    const QTY_INPUT_ID = 'exchangeBalance_qty';
+    const bidQtyInputField = document.getElementById(
+        QTY_INPUT_ID,
+    ) as HTMLInputElement;
+
+    useEffect(() => {
+        if (bidQtyInputField) bidQtyInputField.focus();
+    }, [bidQtyInputField]);
+
     if (desktopScreen) return desktopVersion;
 
     return (
