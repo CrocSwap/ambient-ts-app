@@ -6,9 +6,9 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 export default function Create() {
-    const [ticker, setTicker] = useState<string>('');
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const [showDevElement, setShowDevElements] = useState(false);
     const [showDevElement2, setShowDevElements2] = useState(false);
@@ -19,13 +19,15 @@ export default function Create() {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
+    const { tickerInput, setTickerInput } = useContext(AuctionsContext);
+
     const [isValidationInProgress, setIsValidationInProgress] =
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
 
     function handleChange(text: string) {
         setIsValidationInProgress(true);
-        setTicker(text);
+        checkTickerPattern(text) && setTickerInput(text.toUpperCase());
     }
 
     const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', 'btc'];
@@ -41,15 +43,21 @@ export default function Create() {
         console.log(isValidString("Hello!")); // false (Special character '!')
     */
 
-    const checkTickerValidity = async (ticker: string) => {
-        const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
+    const checkTickerPattern = (ticker: string) => {
+        if (ticker.length === 0) return true;
         const isPatternValid = pattern.test(ticker);
-        // check if the ticker is in the excluded list
-        const isExcluded = excludedTickers.includes(ticker.toLowerCase());
-        return !isExcluded && isPatternValid && lengthIsValid;
+        return isPatternValid;
     };
 
-    const debouncedTickerInput = useDebounce(ticker, 500);
+    const checkTickerValidity = async (ticker: string) => {
+        // check if the ticker is in the excluded list
+        const isExcluded = excludedTickers.includes(ticker.toLowerCase());
+        const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
+        const tickerPatternValid = checkTickerPattern(ticker);
+        return !isExcluded && tickerPatternValid && lengthIsValid;
+    };
+
+    const debouncedTickerInput = useDebounce(tickerInput, 500);
 
     useEffect(() => {
         checkTickerValidity(debouncedTickerInput).then((isValid) => {
@@ -122,12 +130,13 @@ export default function Create() {
                     <input
                         name={TICKER_INPUT_ID}
                         id={TICKER_INPUT_ID}
+                        value={tickerInput}
                         type='text'
                         maxLength={TICKER_MAX_LENGTH}
                         onChange={(e) => handleChange(e.target.value)}
                         autoComplete='off'
                     />
-                    <p>{TICKER_MAX_LENGTH - ticker.length}</p>
+                    <p>{TICKER_MAX_LENGTH - tickerInput.length}</p>
                 </div>
             </div>
         </div>
@@ -145,7 +154,9 @@ export default function Create() {
                 onClick={() =>
                     !isUserConnected
                         ? openWalletModal()
-                        : console.log(`clicked Create Auction for ${ticker}`)
+                        : console.log(
+                              `clicked Create Auction for ${tickerInput}`,
+                          )
                 }
                 disabled={
                     isUserConnected && (isValidationInProgress || !isValidated)
@@ -153,13 +164,13 @@ export default function Create() {
             >
                 {!isUserConnected
                     ? 'Connect Wallet'
-                    : ticker === ''
-                    ? 'Enter a Token Ticker'
-                    : isValidationInProgress
-                    ? 'Validating Ticker...'
-                    : isValidated
-                    ? 'Create Auction'
-                    : `Invalid Ticker: ${ticker}`}
+                    : tickerInput === ''
+                      ? 'Enter a Token Ticker'
+                      : isValidationInProgress
+                        ? 'Validating Ticker...'
+                        : isValidated
+                          ? 'Create Auction'
+                          : `Invalid Ticker: ${tickerInput}`}
             </button>
         </footer>
     );
