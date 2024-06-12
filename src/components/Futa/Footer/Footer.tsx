@@ -4,6 +4,8 @@ import { RiAccountCircleLine } from 'react-icons/ri';
 import { FiPlusCircle } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import DesktopFooter from './DesktopFooter';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -39,6 +41,10 @@ export default function Footer() {
             icon: <FiPlusCircle size={24} color='var(--text1)' />,
         },
     ];
+
+    const desktopScreen = useMediaQuery('(min-width: 780px)');
+
+    if (desktopScreen) return <DesktopFooter />;
 
     return (
         <motion.footer
