@@ -26,7 +26,18 @@ export default function Create() {
 
     const [isValidated, setIsValidated] = useState<boolean>(false);
 
-    const excludedTickers = ['ambi', 'amb', 'futa', 'nft', 'eth', ' '];
+    const excludedTickers = [
+        'ambi',
+        'amb',
+        'futa',
+        'nft',
+        'eth',
+        'btc',
+        'usdc',
+        'usdt',
+        'dai',
+        'weth',
+    ];
 
     // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
     const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
