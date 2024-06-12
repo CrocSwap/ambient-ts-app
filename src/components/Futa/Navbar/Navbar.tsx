@@ -173,13 +173,13 @@ export default function Navbar() {
         </motion.div>
     );
     const connectWagmiButton = (
-        <Button
-            idForDOM='connect_wallet_button_page_header'
-            title={desktopScreen ? 'Connect Wallet' : 'Connect'}
-            action={openWalletModal}
-            thin
-            flat
-        />
+        <button
+            id='connect_wallet_button_page_header'
+            onClick={openWalletModal}
+            className={styles.connectButton}
+        >
+            {desktopScreen ? 'CONNECT WALLET' : 'CONNECT'}
+        </button>
     );
 
     return (

@@ -112,13 +112,13 @@ export default function SearchableTicker() {
             ticker: 'NOT',
             marketCap: '783,663',
             timeRem: 'COMPLETE',
-            status: 'var(--positive)',
+            status: 'var(--text1)',
         },
         {
             ticker: 'MOG',
             marketCap: '783,663',
             timeRem: 'COMPLETE',
-            status: 'var(--negative)',
+            status: 'var(--text1)',
         },
         {
             ticker: 'MEW',

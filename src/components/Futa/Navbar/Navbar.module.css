@@ -107,6 +107,29 @@
 .desktopLink:hover {
     color: var(--accent1);
 }
+
+.connectButton{
+   
+    height: 28px;
+    outline: none;
+    padding: 2px 8px;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+    background: var(--accent1, #0CCDFF);
+    outline: none;
+    border: 1px solid var(--accent1);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+.connectButton:hover{
+    background: transparent;
+    color: var(--accent1)
+}
 @media (min-width: 768px) {
     .logoutButton {
         max-width: 300px;
