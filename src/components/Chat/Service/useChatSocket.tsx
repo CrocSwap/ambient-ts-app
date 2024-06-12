@@ -45,6 +45,7 @@ import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 type ChatSocketListener = {
     msg: string;
@@ -89,6 +90,7 @@ const useChatSocket = (
     messagesRef.current = messages;
 
     const { userAddress: address, ensName } = useContext(UserDataContext);
+    const { isUserIdle } = useContext(AppStateContext);
 
     if (address) {
         domDebug('usechatsocket', address?.substring(0, 4) + '|' + ensName);
@@ -114,7 +116,7 @@ const useChatSocket = (
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
         readyState,
-    } = useSocketIO(isChatOpen ? url : null, {
+    } = useSocketIO(isChatOpen && !isUserIdle ? url : null, {
         queryParams: {
             roomId: qp.roomId,
             address: qp.address ? qp.address : '',
@@ -152,7 +154,7 @@ const useChatSocket = (
                 ensName: ensName,
             });
         }
-    }, [address, ensName, room, isChatOpen]);
+    }, [address, ensName, room, isChatOpen, isUserIdle]);
 
     useEffect(() => {
         switch (socketLastMessage.type) {

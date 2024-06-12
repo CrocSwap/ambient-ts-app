@@ -16,7 +16,7 @@ import styles from './MessageInput.module.css';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 // import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
-import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
+import CircularProgressBarForChat from '../../../Global/OpenOrderStatus/CircularProgressBarForChat';
 import {
     filterMessage,
     formatURL,
@@ -128,30 +128,23 @@ export default function MessageInput(props: MessageInputProps) {
                 emoji +
                 currentMessage.slice(selectionStart);
 
-            if (newMessage.length <= 140) {
-                setMessage(newMessage);
-                setInputLength(newMessage.length);
+            setMessage(newMessage);
+            setInputLength(newMessage.length);
 
-                const newCursorPosition = selectionStart + emoji.length;
+            const newCursorPosition = selectionStart + emoji.length;
 
-                inputRef.current.value = newMessage;
-                inputRef.current.setSelectionRange(
-                    newCursorPosition,
-                    newCursorPosition,
-                );
+            inputRef.current.value = newMessage;
+            inputRef.current.setSelectionRange(
+                newCursorPosition,
+                newCursorPosition,
+            );
 
-                inputRef.current.focus();
-            } else {
-                props.setShowPopUp(true);
-                props.setPopUpText(
-                    'Maximum length exceeded (140 characters limit).',
-                );
-            }
+            inputRef.current.focus();
         }
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserConnected || props.room === 'Admins') {
+        if (!isUserConnected) {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -291,6 +284,15 @@ export default function MessageInput(props: MessageInputProps) {
                 return;
             }
 
+            if (message.length > 140) {
+                props.setShowPopUp(true);
+                props.setPopUpText(
+                    'Maximum length exceeded (140 characters limit).',
+                );
+                e.preventDefault(); // Prevent further input when the limit is reached
+                return;
+            }
+
             if (!mentPanelActive) {
                 const parts = message.split(/\s+/);
 
@@ -319,6 +321,9 @@ export default function MessageInput(props: MessageInputProps) {
                     dontShowEmojiPanel();
                     props.setShowPopUp(false);
                 }
+                /* 
+                 
+               */
             }
             // assign user for ment
             else {
@@ -353,18 +358,6 @@ export default function MessageInput(props: MessageInputProps) {
         } else if (mentPanelActive && e.key === 'Tab') {
             e.preventDefault();
             userPickerForMention(possibleMentUser as User);
-        } else if (
-            e.key !== 'Backspace' &&
-            e.key !== 'ArrowRight' &&
-            e.key !== 'ArrowLeft' &&
-            e.target.value.length >= 140
-        ) {
-            props.setShowPopUp(true);
-            props.setShowPopUp(true);
-            props.setPopUpText(
-                'Maximum length exceeded (140 characters limit).',
-            );
-            e.preventDefault(); // Prevent further input when the limit is reached
         } else if (e.key === 'Delete') {
             setTimeout(() => {
                 setInputLength(e.target.value.length);
@@ -411,7 +404,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function openEmojiPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyC' && e.altKey) {
+        if (e.code === 'KeyX' && e.altKey) {
             setShowEmojiPicker(true);
         }
     }
@@ -597,14 +590,22 @@ export default function MessageInput(props: MessageInputProps) {
                             //     (props.appPage && !props.isMobile) ||
                             //     props.isReplyButtonPressed
                             // }
-                            maxLength={140}
                             ref={inputRef}
                         />
                         {inputLength >= 100 && (
-                            <div className={styles.message_input_field}>
-                                <CircularProgressBar
+                            <div
+                                className={styles.message_input_field}
+                                style={{
+                                    fontSize:
+                                        inputLength > 240 ? '10px' : '12px',
+                                }}
+                            >
+                                <CircularProgressBarForChat
                                     fillPercentage={inputLength / 1.4}
                                 />
+                                <div className={styles.remainingText}>
+                                    {140 - inputLength}
+                                </div>
                             </div>
                         )}
 

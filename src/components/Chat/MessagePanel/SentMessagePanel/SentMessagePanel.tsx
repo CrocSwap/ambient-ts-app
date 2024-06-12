@@ -24,7 +24,6 @@ import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
-    isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
 } from '../../ChatUtils';
@@ -334,10 +333,6 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     };
 
-    function handleOpenExplorer(url: string) {
-        window.open(url);
-    }
-
     function handleOpenExplorerAddHttp(url: string) {
         if (!url.includes('https')) {
             window.open(convertToFullUrl(url));
@@ -351,188 +346,9 @@ function SentMessagePanel(props: SentMessageProps) {
         return protocol + domain;
     }
 
-    function returnDomain(word: string) {
-        if (isLinkInCrocodileLabsLinks(word)) {
-            const url = new URL(word);
-            return url.hostname + url.pathname;
-        } else {
-            return word;
-        }
-    }
-
-    function detectLinksFromMessage(url: string) {
-        if (url.includes(' ')) {
-            const words: string[] = url.split(' ');
-            return (
-                <>
-                    {words.map((word, index) => (
-                        <span
-                            onClick={() =>
-                                isLinkInCrocodileLabsLinks(word)
-                                    ? handleOpenExplorer(word)
-                                    : isLinkInCrocodileLabsLinksForInput(word)
-                                    ? handleOpenExplorerAddHttp(word)
-                                    : ''
-                            }
-                            key={index}
-                            style={
-                                isLinkInCrocodileLabsLinks(word) ||
-                                isLinkInCrocodileLabsLinksForInput(word)
-                                    ? {
-                                          color: '#ab7de7',
-                                          cursor: 'pointer',
-                                      }
-                                    : props.message.isDeleted
-                                    ? { color: 'red', cursor: 'default' }
-                                    : { color: 'white', cursor: 'default' }
-                            }
-                        >
-                            {' ' + returnDomain(word)}
-                            {}
-                        </span>
-                    ))}
-                </>
-            );
-        } else {
-            if (
-                isLinkInCrocodileLabsLinks(url) ||
-                isLinkInCrocodileLabsLinksForInput(url)
-            ) {
-                return (
-                    <p
-                        style={{ color: '#ab7de7', cursor: 'pointer' }}
-                        onClick={() =>
-                            isLinkInCrocodileLabsLinks(url)
-                                ? handleOpenExplorer(url)
-                                : isLinkInCrocodileLabsLinksForInput(url)
-                                ? handleOpenExplorerAddHttp(url)
-                                : ''
-                        }
-                    >
-                        {returnDomain(url)}
-                    </p>
-                );
-            } else {
-                return url;
-            }
-        }
-    }
-
-    // old chat message renderer function, keeping to comparing new render method, will be gone after code refactoration
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    function mentionedMessage() {
-        const messagesArray = props.message.message.split(' ');
-        if (showAvatar === true) {
-            if (props.message.isMentionMessage === true) {
-                return (
-                    <div className={` ${styles.mention_message_block}`}>
-                        {messagesArray.map((word, index) => (
-                            <span
-                                key={index}
-                                className={` ${styles.mention_message}`}
-                                style={{
-                                    color:
-                                        word.slice(1) === props.ensName ||
-                                        word.slice(1) ===
-                                            props.connectedAccountActive
-                                            ? 'var(--accent1)'
-                                            : 'white',
-                                }}
-                            >
-                                {' ' + detectLinksFromMessage(word)}
-                            </span>
-                        ))}
-                        <div
-                            className={styles.roomInfo_with_mention}
-                            title={props.message.roomInfo}
-                        >
-                            {' '}
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}
-                        </div>
-                    </div>
-                );
-            } else {
-                return (
-                    <div
-                        className={
-                            props.message.isDeleted
-                                ? styles.deletedMessage
-                                : styles.message
-                        }
-                    >
-                        {detectLinksFromMessage(props.message.message)}
-                        <div
-                            className={styles.roomInfo}
-                            title={props.message.roomInfo}
-                        >
-                            {' '}
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}{' '}
-                        </div>
-                    </div>
-                );
-            }
-        } else {
-            if (props.message.isMentionMessage === true) {
-                return (
-                    <div
-                        className={` ${styles.mention_message_block_without_avatar}`}
-                    >
-                        {messagesArray.map((word, index) => (
-                            <span
-                                key={index}
-                                className={` ${styles.mention_message}`}
-                                style={{
-                                    color:
-                                        word.slice(1) === props.ensName ||
-                                        word.slice(1) ===
-                                            props.connectedAccountActive
-                                            ? 'var(--accent1)'
-                                            : 'white',
-                                }}
-                            >
-                                {' ' + detectLinksFromMessage(word)}
-                            </span>
-                        ))}
-                        <div className={styles.roomInfo}>
-                            {' '}
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}
-                        </div>
-                    </div>
-                );
-            } else {
-                return (
-                    <div
-                        className={
-                            props.message.isDeleted
-                                ? styles.deletedMessage_without_avatar
-                                : styles.message_without_avatar
-                        }
-                    >
-                        {detectLinksFromMessage(props.message.message)}
-                        <div className={styles.roomInfo}>
-                            {props.room === 'Admins'
-                                ? props.message.roomInfo
-                                : ''}
-                        </div>
-                    </div>
-                );
-            }
-        }
-    }
-
     function buildMessageToken(word: string, mentFound: MentFoundParam) {
         let ret = <></>;
-        if (
-            isLinkInCrocodileLabsLinks(word) &&
-            isLinkInCrocodileLabsLinksForInput(word) &&
-            isValidUrl(word)
-        ) {
+        if (isLinkInCrocodileLabsLinksForInput(word) && isValidUrl(word)) {
             ret = (
                 <span
                     className={styles.link_token}
@@ -739,8 +555,8 @@ function SentMessagePanel(props: SentMessageProps) {
                     props.isCurrentUser
                         ? 'account'
                         : !hasEns(props.message)
-                        ? props.message.walletID
-                        : props.message.ensName
+                          ? props.message.walletID
+                          : props.message.ensName
                 }`,
             );
         }
@@ -928,11 +744,11 @@ function SentMessagePanel(props: SentMessageProps) {
                                           false
                                             ? styles.sent_message_body
                                             : props.message.mentionedName?.trim() ===
-                                                  props.ensName?.trim() ||
-                                              props.message.mentionedName?.trim() ===
-                                                  props.connectedAccountActive?.trim()
-                                            ? styles.sent_message_body_with_mention
-                                            : styles.sent_message_body
+                                                    props.ensName?.trim() ||
+                                                props.message.mentionedName?.trim() ===
+                                                    props.connectedAccountActive?.trim()
+                                              ? styles.sent_message_body_with_mention
+                                              : styles.sent_message_body
                                         : styles.sent_message_body
                                 }
                             >
@@ -981,14 +797,14 @@ function SentMessagePanel(props: SentMessageProps) {
                                                   ' ' +
                                                   styles.name_default
                                                 : showName &&
-                                                  !props.isCurrentUser
-                                                ? styles.name +
-                                                  ' ' +
-                                                  styles.name_default
-                                                : !showName &&
-                                                  !props.isCurrentUser
-                                                ? ''
-                                                : ''
+                                                    !props.isCurrentUser
+                                                  ? styles.name +
+                                                    ' ' +
+                                                    styles.name_default
+                                                  : !showName &&
+                                                      !props.isCurrentUser
+                                                    ? ''
+                                                    : ''
                                         }
                                     >
                                         <span
