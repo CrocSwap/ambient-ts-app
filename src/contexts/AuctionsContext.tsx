@@ -7,6 +7,8 @@ interface AuctionsContextIF {
     getAuctions(): void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    tickerInput: string;
+    setTickerInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface AuctionsDataIF {
@@ -43,6 +45,7 @@ export const AuctionsContextProvider = (props: {
     });
 
     const [isLoading, setIsLoading] = useState(true);
+    const [tickerInput, setTickerInput] = useState('');
 
     // const [auctionsGlobal, setAuctionsGlobal] =
     //     React.useState<XpLeaderboardDataIF>({
@@ -87,6 +90,8 @@ export const AuctionsContextProvider = (props: {
         getAuctions: getAuctions,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
+        tickerInput: tickerInput,
+        setTickerInput: setTickerInput,
     };
 
     return (

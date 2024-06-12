@@ -617,6 +617,19 @@ export default function Ticker() {
             </div>
         </div>
     );
+
+    const QTY_INPUT_ID = 'exchangeBalance_qty';
+    const bidQtyInputField = document.getElementById(
+        QTY_INPUT_ID,
+    ) as HTMLInputElement;
+
+    useEffect(() => {
+        /* auto-focus the bid qty input field on first load
+           and when the max market cap value changes,
+           but only when the input field is empty */
+        if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
+    }, [bidQtyInputField, selectedMaxValue.value, inputValue]);
+
     if (desktopScreen) return desktopVersion;
 
     return (

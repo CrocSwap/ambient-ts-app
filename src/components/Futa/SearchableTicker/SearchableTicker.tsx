@@ -128,7 +128,9 @@ export default function SearchableTicker() {
         },
     ];
 
-    const [tickerDataToShow, setTickerDataToShow] = useState(tickerData);
+    const [tickerDataToShow, setTickerDataToShow] = useState(
+        tickerData.filter((item) => item.timeRem !== 'COMPLETE'),
+    );
     const handleShowComplete = () => {
         setShowComplete(!showComplete);
         if (!showComplete) {
@@ -136,7 +138,9 @@ export default function SearchableTicker() {
                 tickerData.filter((item) => item.timeRem === 'COMPLETE'),
             );
         } else {
-            setTickerDataToShow(tickerData);
+            setTickerDataToShow(
+                tickerData.filter((item) => item.timeRem !== 'COMPLETE'),
+            );
         }
     };
 
