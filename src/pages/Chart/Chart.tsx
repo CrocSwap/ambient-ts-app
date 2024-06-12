@@ -457,12 +457,20 @@ export default function Chart(props: propsIF) {
      */
     const calculateDiscontinuityRange = async (data: CandleDataChart[]) => {
         // timeGaps each element in the data array represents a time interval and consists of two dates: [candleDate, shiftDate].
+
+        const timesToCheck = data
+            .filter((i) => i.isShowData)
+            .map((item) => item.time * 1000);
+
+        const filterTimeGapsNotInclude = timeGaps.filter(
+            (item) => !timesToCheck.some((time) => time === item.range[1]),
+        );
         const localTimeGaps: { range: number[]; isAddedPixel: boolean }[] =
-            structuredClone(timeGaps);
+            structuredClone(filterTimeGapsNotInclude);
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
         if (scaleData) {
-            data.slice(1).forEach((item) => {
+            data.slice(isShowLatestCandle ? 2 : 1).forEach((item) => {
                 if (notTransactionDataTime === undefined && !item.isShowData) {
                     notTransactionDataTime = item.time * 1000;
                 }

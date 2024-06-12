@@ -21,7 +21,7 @@ interface candlePropsIF {
     selectedDate: number | undefined;
     showLatest: boolean | undefined;
     denomInBase: boolean;
-    data: CandleDataIF[];
+    data: CandleDataChart[];
     period: number;
     lastCandleData: CandleDataIF;
     prevlastCandleTime: number;
@@ -80,14 +80,21 @@ export default function CandleChart(props: candlePropsIF) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
 
+                const count = data.filter(
+                    (i: CandleDataChart) =>
+                        i.time <= lastCandleData.time - period &&
+                        i.time >= prevlastCandleTime,
+                ).length;
+
                 const diff =
                     (lastCandleData.time - prevlastCandleTime) / period;
+                console.log({ count }, { diff });
 
-                setPrevLastCandleTime(lastCandleData.time);
+                setPrevLastCandleTime(lastCandleData.time - period);
 
                 scaleData?.xScale.domain([
-                    domainLeft + diff * period * 1000,
-                    domainRight + diff * period * 1000,
+                    domainLeft + count * period * 1000,
+                    domainRight + count * period * 1000,
                 ]);
             }
         }
