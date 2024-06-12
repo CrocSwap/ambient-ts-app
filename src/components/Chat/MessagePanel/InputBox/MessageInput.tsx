@@ -27,6 +27,7 @@ import {
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
+import { ALLOW_MENTIONS } from '../../ChatConstants/ChatConstants';
 
 interface MessageInputProps {
     currentUser: string;
@@ -350,8 +351,8 @@ export default function MessageInput(props: MessageInputProps) {
                         targetIndex < 0
                             ? filteredUsers.length - 1
                             : targetIndex == filteredUsers.length
-                            ? 0
-                            : targetIndex
+                              ? 0
+                              : targetIndex
                     ],
                 );
             }
@@ -486,7 +487,7 @@ export default function MessageInput(props: MessageInputProps) {
         setMessage(e.target.value);
         props.setShowPopUp(false);
         // if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
-        if (e.target.value.indexOf('@') !== -1) {
+        if (e.target.value.indexOf('@') !== -1 && ALLOW_MENTIONS) {
             const filteredUsers = filterUsers(e.target.value.split('@')[1]);
             setFilteredUsers(filteredUsers);
             if (possibleMentUser === null) {
@@ -695,7 +696,7 @@ export default function MessageInput(props: MessageInputProps) {
                         </div>
                     )}
 
-                    {props.isChatOpen && mentionAutoComplete}
+                    {props.isChatOpen && ALLOW_MENTIONS && mentionAutoComplete}
                 </div>
             )}
         </>

@@ -18,7 +18,11 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
-import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
+import {
+    ALLOW_AUTH,
+    ALLOW_MENTIONS,
+    LS_USER_VERIFY_TOKEN,
+} from './ChatConstants/ChatConstants';
 import { ChatVerificationTypes } from './ChatEnums';
 import { ChatGoToChatParamsIF } from './ChatIFs';
 import ChatNotificationBubble from './ChatNotification/ChatNotificationBubble';
@@ -43,7 +47,9 @@ interface propsIF {
 }
 
 function ChatPanel(props: propsIF) {
-    const [isFocusMentions, setIsFocusMentions] = useState(true);
+    const [isFocusMentions, setIsFocusMentions] = useState(
+        true && ALLOW_MENTIONS,
+    );
     const { isFullScreen } = props;
     const {
         chat: {
@@ -843,7 +849,7 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
 
-            {isChatOpen && (
+            {isChatOpen && ALLOW_AUTH && (
                 <div
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${

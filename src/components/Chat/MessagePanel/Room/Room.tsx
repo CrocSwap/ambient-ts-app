@@ -27,6 +27,7 @@ import {
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
 import Toggle from '../../../Form/Toggle';
+import { ALLOW_MENTIONS } from '../../ChatConstants/ChatConstants';
 
 interface propsIF {
     selectedRoom: string;
@@ -224,12 +225,12 @@ export default function Room(props: propsIF) {
                     tokenA.address.toLowerCase() === base.address.toLowerCase()
                         ? [base.address, quote.address]
                         : tokenA.address.toLowerCase() ===
-                          quote.address.toLowerCase()
-                        ? [quote.address, base.address]
-                        : tokenB.address.toLowerCase() ===
-                          base.address.toLowerCase()
-                        ? [quote.address, base.address]
-                        : [base.address, quote.address];
+                            quote.address.toLowerCase()
+                          ? [quote.address, base.address]
+                          : tokenB.address.toLowerCase() ===
+                              base.address.toLowerCase()
+                            ? [quote.address, base.address]
+                            : [base.address, quote.address];
 
                 if (props.setGoToChartParams) {
                     if (
@@ -396,7 +397,7 @@ export default function Room(props: propsIF) {
                     </div>
 
                     {/* // CHAT_FEATURES_WBO -  Feature : Mentions */}
-                    {props.mentCount > 0 && (
+                    {props.mentCount > 0 && ALLOW_MENTIONS && (
                         <div className={styles.only_mentions_wrapper}>
                             <span
                                 className={`${styles.only_mentions_text} ${

@@ -30,6 +30,7 @@ import {
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import styles from './SentMessagePanel.module.css';
+import { ALLOW_AUTH, ALLOW_REACTIONS } from '../../ChatConstants/ChatConstants';
 
 interface SentMessageProps {
     message: Message;
@@ -817,7 +818,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 getShownName(props.message)}
                                         </span>
                                         {showAvatar &&
-                                            props.message.isVerified && (
+                                            props.message.isVerified &&
+                                            ALLOW_AUTH && (
                                                 <div
                                                     className={
                                                         styles.verified_icon
@@ -831,6 +833,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                             )}
                                         {showAvatar &&
                                             !props.message.isVerified &&
+                                            ALLOW_AUTH &&
                                             props.isCurrentUser && (
                                                 <>
                                                     <DefaultTooltip
@@ -905,6 +908,7 @@ function SentMessagePanel(props: SentMessageProps) {
                             </div>
 
                             {props.message.reactions &&
+                                ALLOW_REACTIONS &&
                                 Object.keys(props.message.reactions).length >
                                     0 && (
                                     <div

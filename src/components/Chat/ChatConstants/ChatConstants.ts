@@ -22,3 +22,14 @@ export const AVATAR_TYPES_SET = new Set([
     AVATAR_TYPES.JAZZ,
     AVATAR_TYPES.BLOCKIE,
 ]);
+
+export const ALLOW_MENTIONS = import.meta.env.VITE_CHAT_DISABLE_MENTIONS
+    ? false
+    : true;
+export const ALLOW_REACTIONS = import.meta.env.VITE_CHAT_DISABLE_REACTIONS
+    ? false
+    : true;
+export const ALLOW_REPLIES = import.meta.env.VITE_CHAT_DISABLE_REPLIES
+    ? false
+    : true;
+export const ALLOW_AUTH = import.meta.env.VITE_CHAT_DISABLE_AUTH ? false : true;
