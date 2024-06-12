@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
 import styles from './Navbar.module.css';
 import Logo from '../../../assets/futa/images/futaLogo.svg';
-import Button from '../../Form/Button';
 import {
     useWeb3ModalAccount,
     useSwitchNetwork,

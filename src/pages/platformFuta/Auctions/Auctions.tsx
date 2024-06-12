@@ -6,6 +6,7 @@ import Divider from '../../../components/Futa/Divider/Divider';
 import AuctionLoader from '../../../components/Futa/AuctionLoader/AuctionLoader';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { useContext, useState } from 'react';
+import Ticker from '../Ticker/Ticker';
 
 export interface auctionDataIF {
     ticker: string;
@@ -15,20 +16,44 @@ export interface auctionDataIF {
 
 export default function Auctions() {
     const {
-        isLoading,
+        // isLoading,
         setIsLoading,
         // auctions,
     } = useContext(AuctionsContext);
 
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const [isFullLayoutActive, setIsFullLayoutActive] = useState(false);
-    const auctionOrLoader = isLoading ? (
+    const customLoading = false;
+
+    const chartContent = (
+        <div className={styles.chart}>
+            <div className={styles.chartLeft}>
+                <h3>CHARTS</h3>
+            </div>
+            <div className={styles.chartRight}>
+                <h3>COMMENTS</h3>
+            </div>
+        </div>
+    );
+    const auctionOrLoader = customLoading ? (
         <AuctionLoader setIsLoading={setIsLoading} />
     ) : (
-        <SearchableTicker
-            showAuctionTitle
-            setIsFullLayoutActive={setIsFullLayoutActive}
-        />
+        <div className={styles.auctionsTickerContainer}>
+            <div
+                className={
+                    isFullLayoutActive
+                        ? styles.middleContentFull
+                        : styles.middleContent
+                }
+            >
+                <SearchableTicker
+                    showAuctionTitle
+                    setIsFullLayoutActive={setIsFullLayoutActive}
+                />
+                {isFullLayoutActive && chartContent}
+            </div>
+            <Ticker />
+        </div>
     );
 
     const desktopVersion = (
@@ -42,27 +67,7 @@ export default function Auctions() {
             {isFullLayoutActive && <ConsoleComponent />}
             <div className={styles.auctions_main}>
                 <Divider count={2} />
-                <section
-                    className={
-                        isFullLayoutActive
-                            ? styles.middleContentFull
-                            : styles.middleContent
-                    }
-                >
-                    <div className={styles.auctionContent}>
-                        {auctionOrLoader}
-                    </div>
-                    {isFullLayoutActive && (
-                        <div className={styles.chart}>
-                            <div className={styles.chartLeft}>
-                                <h3>CHARTS</h3>
-                            </div>
-                            <div className={styles.chartRight}>
-                                <h3>COMMENTS</h3>
-                            </div>
-                        </div>
-                    )}
-                </section>
+                <section style={{ height: '100%' }}>{auctionOrLoader}</section>
             </div>
         </div>
     );

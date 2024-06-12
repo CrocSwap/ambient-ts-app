@@ -34,6 +34,8 @@ import Divider from '../../../components/Futa/Divider/Divider';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 export default function Ticker() {
+    const isAuctionPage = location.pathname.includes('auction');
+
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
@@ -312,31 +314,39 @@ export default function Ticker() {
     const statusData = [
         {
             label: 'status',
-            value: auctionDetails?.status,
+            value: auctionDetails ? auctionDetails?.status : '-',
             color: 'var(--accent1)',
         },
         {
             label: 'time remaining',
-            value: 'XXh:XXm:XXs',
+            value: auctionDetails ? 'XXh:XXm:XXs' : '-',
             color: 'var(--positive)',
         },
-        { label: 'market cap (ETH)', value: 'XXX.XXX', color: 'var(--text1)' },
+        {
+            label: 'market cap (ETH)',
+            value: auctionDetails ? 'XXX.XXX' : '-',
+            color: 'var(--text1)',
+        },
         {
             label: 'market cap ($)',
-            value: '($XXX,XXX,XXX)',
+            value: auctionDetails ? '($XXX,XXX,XXX)' : '-',
             color: 'var(--text1)',
         },
     ];
     const openedBidData = [
-        { label: 'market cap (ETH)', value: 'XXX.XXX', color: 'var(--text1)' },
+        {
+            label: 'market cap (ETH)',
+            value: auctionDetails ? 'XXX.XXX' : '-',
+            color: 'var(--text1)',
+        },
         {
             label: 'market cap ($)',
-            value: '($XXX,XXX,XXX)',
+            value: auctionDetails ? '($XXX,XXX,XXX)' : '-',
             color: 'var(--text1)',
         },
         {
             label: 'bid size',
-            value: 'XXX.XXX / XXX.XXX',
+            value: auctionDetails ? 'XXX.XXX / XXX.XXX' : '-',
             color: 'var(--accent1)',
         },
     ];
@@ -381,7 +391,7 @@ export default function Ticker() {
                   data: networkFee ? '~' + networkFee : '...',
               },
           ];
-    const progressValue = 'XX.X';
+    const progressValue = auctionDetails ? 'XX.X' : '-';
 
     const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
 
@@ -392,8 +402,8 @@ export default function Ticker() {
 
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
-            <Divider count={2} />
-            <h2>{tickerFromParams}</h2>
+            {!isAuctionPage && <Divider count={2} />}
+            {auctionDetails ? <h2>{tickerFromParams}</h2> : '-'}
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>
@@ -418,7 +428,11 @@ export default function Ticker() {
                         <span className={styles.progressBar} key={idx} />
                     ))}
                 </div>
-                <p className={styles.progressValue}>{progressValue}%</p>
+                {auctionDetails ? (
+                    <p className={styles.progressValue}>{progressValue}%</p>
+                ) : (
+                    '-'
+                )}
             </div>
         </div>
     );
@@ -449,7 +463,8 @@ export default function Ticker() {
                     onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
                     className={styles.maxDropdownButton}
                 >
-                    <p>{selectedMaxValue.value}</p>({selectedFdvUsdMaxValue})
+                    <p> {auctionDetails ? selectedMaxValue.value : '-'}</p>
+                    {auctionDetails ? selectedFdvUsdMaxValue : '-'}
                 </button>
                 {isMaxDropdownOpen && (
                     <div
@@ -549,16 +564,16 @@ export default function Ticker() {
     const buttonLabel = isAllocationAvailableToClaim
         ? 'Claim'
         : showTradeButton
-          ? 'Trade'
-          : !isUserConnected
-            ? 'Connect Wallet'
-            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-              ? 'Enter a Bid Size'
-              : isValidationInProgress
-                ? 'Validating Bid...'
-                : isValidated
-                  ? 'Bid'
-                  : 'Invalid Bid';
+        ? 'Trade'
+        : !isUserConnected
+        ? 'Connect Wallet'
+        : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+        ? 'Enter a Bid Size'
+        : isValidationInProgress
+        ? 'Validating Bid...'
+        : isValidated
+        ? 'Bid'
+        : 'Invalid Bid';
 
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
@@ -573,14 +588,12 @@ export default function Ticker() {
                           `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
                     : showTradeButton
-                      ? console.log(
-                            `clicked Trade for ticker: ${tickerFromParams}`,
-                        )
-                      : !isUserConnected
-                        ? openWalletModal()
-                        : console.log(
-                              `clicked Bid for display qty: ${inputValue}`,
-                          )
+                    ? console.log(
+                          `clicked Trade for ticker: ${tickerFromParams}`,
+                      )
+                    : !isUserConnected
+                    ? openWalletModal()
+                    : console.log(`clicked Bid for display qty: ${inputValue}`)
             }
             disabled={isButtonDisabled}
         >
@@ -629,14 +642,13 @@ export default function Ticker() {
            but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxValue.value, inputValue]);
-
-    if (desktopScreen) return desktopVersion;
+    if (desktopScreen && !isAuctionPage) return desktopVersion;
 
     return (
         <div className={styles.container}>
             <div className={styles.content}>
                 <div className={styles.flexColumn}>
-                    <BreadCrumb />
+                    {!isAuctionPage && <BreadCrumb />}
                     {tickerDisplay}
                 </div>
                 {!isAuctionCompleted && openedBidDisplay}
