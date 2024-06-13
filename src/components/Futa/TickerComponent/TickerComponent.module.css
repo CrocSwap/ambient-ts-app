@@ -243,13 +243,20 @@ height: 20px;
 display: flex;
 justify-content: space-between;
 align-items: center;
+transition: all var(--animation-speed) ease-in-out;
+cursor: pointer;
 
 }
+
+.tickerNameContainer button:hover{
+    border: 1px solid var(--dark3)
+}
+
 @media (min-width: 1280px) {
     .container {
         padding: 0;
         padding-top: 12px;
-        border-left: 1px solid var(--dark3);
+        border-left: 1px dashed var(--dark3);
 
     }
 

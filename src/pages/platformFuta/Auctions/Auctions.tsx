@@ -26,7 +26,8 @@ export default function Auctions(props: PropsIF) {
     const consoleAndChartDisplay = (
         <div className={styles.consoleChartComponent}>
             <ConsoleComponent />
-            <Divider vertical count={2} />
+            <span />
+
             <Chart />
         </div>
     );

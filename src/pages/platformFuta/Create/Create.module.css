@@ -114,8 +114,9 @@
 
 .create_button,
 .create_button_disabled {
-    border: none;
+    border: 1px solid var(--accent1);
     background-color: var(--accent1);
+    transition: all var(--animation-speed) ease-in-out
 }
 
 .create_button_disabled {
@@ -124,6 +125,11 @@
     font-size: 24px;
 }
 
+
+.create_button:hover{
+    background-color: transparent;
+    color: var(--accent1)
+}
 .footerContainer {
     width: 100%;
     display: flex;
