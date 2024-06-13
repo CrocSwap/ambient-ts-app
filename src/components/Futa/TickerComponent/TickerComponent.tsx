@@ -32,12 +32,11 @@ import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface PropsIF {
-    hideAuctions?: boolean;
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
 }
 export default function TickerComponent(props: PropsIF) {
-    const { hideAuctions, isAuctionPage, placeholderTicker } = props;
+    const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
