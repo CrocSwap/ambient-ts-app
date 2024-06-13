@@ -2,6 +2,8 @@ import styles from './Footer.module.css';
 export default function DesktopFooter() {
     // const isStatusPositive = true;
 
+    if (location.pathname === '/') return null;
+
     return (
         <div className={styles.desktopContainer}>
             <p className={styles.network}>NETWORK : BASE</p>
