@@ -1,17 +1,19 @@
-import { test, expect, BrowserContext } from 'playwright/test';
-console.log('init wallet test file');
+import {
+    // test, expect,
+    BrowserContext,
+} from 'playwright/test';
 
 import {
-    click,
-    checkAndClick,
+    // click,
+    // checkAndClick,
     initWallet,
-    fill,
-    clickmmask,
-    checkAndClickMMask,
-    fillmmask,
-    prepareBrowser,
-    waiter,
-    checkForWalletConnection,
+    // fill,
+    // clickmmask,
+    // checkAndClickMMask,
+    // fillmmask,
+    // prepareBrowser,
+    // waiter,
+    // checkForWalletConnection,
 } from './helpers/utils';
 
 // test('init wallet', async () => {

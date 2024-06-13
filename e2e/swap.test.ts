@@ -1,5 +1,5 @@
-import { chromium, Page, BrowserContext, Browser } from 'playwright';
-import { test, expect } from 'playwright/test';
+import { Page, BrowserContext } from 'playwright';
+import { test } from 'playwright/test';
 
 import {
     click,
@@ -7,8 +7,6 @@ import {
     fill,
     clickmmask,
     initWallet,
-    checkAndClickMMask,
-    fillmmask,
     prepareBrowser,
     waiter,
     checkForWalletConnection,
