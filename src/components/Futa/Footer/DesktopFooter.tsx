@@ -1,13 +1,13 @@
 import styles from './Footer.module.css';
 export default function DesktopFooter() {
-    const isStatusPositive = true;
+    // const isStatusPositive = true;
 
     return (
         <div className={styles.desktopContainer}>
             <p className={styles.network}>NETWORK : BASE</p>
             <div className={styles.leftContainer}>
                 <p className={styles.price}>ETH PRICE : $4,000.00</p>
-                <div className={styles.status}>
+                {/* <div className={styles.status}>
                     <p>RPC STATUS : </p>
                     <span
                         className={styles.statusDisplay}
@@ -17,7 +17,7 @@ export default function DesktopFooter() {
                                 : 'var(--negative)',
                         }}
                     />
-                </div>
+                </div> */}
                 <p className={styles.blockNumber}>15563300</p>
             </div>
         </div>
