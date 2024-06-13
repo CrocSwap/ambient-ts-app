@@ -88,8 +88,6 @@ export default function CandleChart(props: candlePropsIF) {
 
                 const diff =
                     (lastCandleData.time - prevlastCandleTime) / period;
-                console.log({ count }, { diff });
-
                 setPrevLastCandleTime(lastCandleData.time - period);
 
                 scaleData?.xScale.domain([

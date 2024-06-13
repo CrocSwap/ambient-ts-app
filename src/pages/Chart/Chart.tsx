@@ -5369,12 +5369,6 @@ export default function Chart(props: propsIF) {
                     ) +
                     bandwidth * 2;
 
-                console.log(
-                    new Date(scaleData.xScale.invert(positionX)),
-                    new Date(lastCandleData?.time * 1000),
-                    new Date(lastCandleData?.time * 1000 + period * 1000),
-                );
-
                 setLastCandleDataCenterX(positionX);
             }
 
