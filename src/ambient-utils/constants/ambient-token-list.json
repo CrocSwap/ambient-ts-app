@@ -115,6 +115,14 @@
             "logoURI": "https://blastscan.io/token/images/orbit_32.png"
         },
         {
+            "address": "0xf77dd21c5ce38ac08786BE35Ef1d1DeC1a6a15F3",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "YOLO",
+            "symbol": "YOLO",
+            "logoURI": ""
+        },
+        {
             "address": "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
             "chainId": 81457,
             "decimals": 18,
