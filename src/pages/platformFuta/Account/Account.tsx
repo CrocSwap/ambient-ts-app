@@ -4,6 +4,7 @@ import styles from './Account.module.css';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Divider from '../../../components/Futa/Divider/Divider';
 export default function Account() {
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
@@ -25,11 +26,11 @@ export default function Account() {
     const desktopVersion = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <h2>Account</h2>
-                <SearchableTicker />
+                <SearchableTicker title='account' />
             </div>
 
             <div className={styles.rightLayout}>
+                <Divider count={2} />
                 {claimAllContainer}
                 <button className={styles.claimButton}>CLAIM ALL</button>
             </div>

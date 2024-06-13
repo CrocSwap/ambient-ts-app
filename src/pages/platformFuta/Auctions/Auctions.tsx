@@ -34,7 +34,7 @@ export default function Auctions(props: PropsIF) {
     const auctionsAndChart = (
         <div className={styles.auctionChartContainer}>
             <SearchableTicker
-                showAuctionTitle
+                title='Auctions'
                 setIsFullLayoutActive={setIsFullLayoutActive}
             />
             {consoleAndChartDisplay}
@@ -49,7 +49,7 @@ export default function Auctions(props: PropsIF) {
                 auctionsAndChart
             ) : (
                 <SearchableTicker
-                    showAuctionTitle
+                    title='Auctions'
                     setIsFullLayoutActive={setIsFullLayoutActive}
                 />
             )}

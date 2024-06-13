@@ -5,6 +5,23 @@
     gap: 8px;
 
 }
+
+.header{
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+}
+
+.headerBottom{
+    display: grid;
+    grid-template-columns: 1fr 30%;
+    gap: 8px;
+}
+
+.title{
+    font-size: 24px;
+    text-transform: uppercase;
+}
 .searchContainer {
     width: 100%;
     background-color: var(--dark4);
@@ -191,6 +208,7 @@ color: var(--text1)
     gap: 4px;
   
 }
+
 
 @media (min-width: 1280px) {
 .content{

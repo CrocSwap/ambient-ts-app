@@ -10,11 +10,11 @@ import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 
 interface PropsIF {
-    showAuctionTitle?: boolean;
+    title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
 }
 export default function SearchableTicker(props: PropsIF) {
-    const { showAuctionTitle, setIsFullLayoutActive } = props;
+    const { title, setIsFullLayoutActive } = props;
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
@@ -241,33 +241,34 @@ export default function SearchableTicker(props: PropsIF) {
             </div>
         </div>
     );
+    console.log({ title });
+
+    const header = (
+        <div className={styles.header}>
+            {title && (
+                <h3
+                    className={styles.title}
+                    onClick={
+                        setIsFullLayoutActive
+                            ? () => setIsFullLayoutActive((prev) => !prev)
+                            : () => null
+                    }
+                >
+                    {title}
+                </h3>
+            )}
+            <div className={styles.headerBottom}>
+                {searchContainer}
+                {timeDropdown}
+            </div>
+        </div>
+    );
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
     return (
         <div className={styles.container}>
             <Divider count={2} />
-            <div
-                className={styles.content}
-                style={{
-                    gridTemplateColumns: showAuctionTitle
-                        ? '100px auto 380px'
-                        : 'auto 300px',
-                }}
-            >
-                {showAuctionTitle && (
-                    <h3
-                        onClick={
-                            setIsFullLayoutActive
-                                ? () => setIsFullLayoutActive((prev) => !prev)
-                                : () => null
-                        }
-                    >
-                        AUCTIONS
-                    </h3>
-                )}
-                {searchContainer}
-                {timeDropdown}
-            </div>
+            {header}
             {tickerTableDisplay}
         </div>
     );
