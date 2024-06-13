@@ -80,6 +80,16 @@ background-size: cover; */
 .animatedImg_container img {
     object-fit: contain;
 }
+
+@-webkit-keyframes shine {
+    from {
+        -webkit-mask-position: 200%;
+    }
+
+    to {
+        -webkit-mask-position: -100%;
+    }
+}
 .fetching_text {
     z-index: 9;
     width: 100%;
@@ -89,10 +99,19 @@ background-size: cover; */
     justify-content: center;
     align-items: center;
     position: absolute;
-    font-size: var(--header1-size);
+    font-size: var(--header-size);
     line-height: var(--header1-lh);
     color: var(--text1);
+    -webkit-mask-image: linear-gradient(
+        -75deg,
+        rgba(0, 0, 0, 0.6) 30%,
+        black 50%,
+        rgba(0, 0, 0, 0.6) 70%
+    );
+    -webkit-mask-size: 200%;
+    animation: shine 1.5s infinite;
 }
+
 .animatedImg_container img {
     object-fit: cover;
     max-width: 100%;

@@ -5917,8 +5917,10 @@ export default function Chart(props: propsIF) {
             data-testid={'chart'}
             id={'chartContainer'}
             style={{
-                gridColumn: 1,
-                gridRow: 1,
+                gridColumnStart: 1,
+                gridColumnEnd: 1,
+                gridRowStart: 1,
+                gridRowEnd: 3,
                 visibility: isCompletedFetchData ? 'hidden' : 'visible',
             }}
         >
