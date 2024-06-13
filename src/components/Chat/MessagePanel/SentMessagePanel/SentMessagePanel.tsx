@@ -30,7 +30,11 @@ import {
 import Options from '../Options/Options';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import styles from './SentMessagePanel.module.css';
-import { ALLOW_AUTH, ALLOW_REACTIONS } from '../../ChatConstants/ChatConstants';
+import {
+    ALLOW_AUTH,
+    ALLOW_REACTIONS,
+    ALLOW_REPLIES,
+} from '../../ChatConstants/ChatConstants';
 
 interface SentMessageProps {
     message: Message;
@@ -261,7 +265,7 @@ function SentMessagePanel(props: SentMessageProps) {
     }, [props.previousMessage, props.message]);
 
     useEffect(() => {
-        if (props.message.repliedMessage) {
+        if (props.message.repliedMessage && ALLOW_REPLIES) {
             getReplyMessageInfo(props.message.repliedMessage as string);
         }
         const processed = processReactionsV2();
@@ -575,7 +579,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 flipRead ? styles.flip_read : ''
             } 
             ${
-                props.message.repliedMessage
+                props.message.repliedMessage && ALLOW_REPLIES
                     ? styles.replied_message_container
                     : ' '
             }
@@ -709,7 +713,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         }}
                                     />
                                 ))} */}
-                            {props.message.repliedMessage && (
+                            {props.message.repliedMessage && ALLOW_REPLIES && (
                                 <IoReturnUpForwardSharp
                                     className={
                                         styles.replied_message_arrow +
@@ -719,7 +723,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                 />
                             )}
 
-                            {props.message.repliedMessage ? (
+                            {props.message.repliedMessage && ALLOW_REPLIES ? (
                                 <div className={styles.replied_box}>
                                     <ReplyMessage
                                         isReplyButtonPressed={false}
