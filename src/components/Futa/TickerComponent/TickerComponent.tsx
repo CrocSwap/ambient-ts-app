@@ -31,6 +31,8 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Comments from '../Comments/Comments';
+import { FaEye } from 'react-icons/fa';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
@@ -47,6 +49,8 @@ export default function TickerComponent(props: PropsIF) {
 
     const {
         auctions: { chainId: chainId },
+        showComments,
+        setShowComments,
         // auctions,
     } = useContext(AuctionsContext);
 
@@ -406,13 +410,25 @@ export default function TickerComponent(props: PropsIF) {
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
             {!isAuctionPage && <Divider count={2} />}
-            <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
-            {statusData.map((item, idx) => (
-                <div className={styles.tickerRow} key={idx}>
-                    <p className={styles.tickerLabel}>{item.label}:</p>
-                    <p style={{ color: item.color }}>{item.value}</p>
-                </div>
-            ))}
+            <div className={styles.tickerNameContainer}>
+                <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
+                {!placeholderTicker && (
+                    <button onClick={() => setShowComments(!showComments)}>
+                        COMMENTS{' '}
+                        <FaEye
+                            size={20}
+                            color={showComments ? 'var(--accent1)' : ''}
+                        />
+                    </button>
+                )}
+            </div>
+            {!showComments &&
+                statusData.map((item, idx) => (
+                    <div className={styles.tickerRow} key={idx}>
+                        <p className={styles.tickerLabel}>{item.label}:</p>
+                        <p style={{ color: item.color }}>{item.value}</p>
+                    </div>
+                ))}
         </div>
     );
 
@@ -629,17 +645,23 @@ export default function TickerComponent(props: PropsIF) {
                 <div className={styles.flexColumn}>
                     {!isAuctionPage && <BreadCrumb />}
                     {tickerDisplay}
+                    {showComments && <Comments />}
                 </div>
-                {!isAuctionCompleted && openedBidDisplay}
-                {!isAuctionCompleted && maxFdvDisplay}
-                {!isAuctionCompleted && bidSizeDisplay}
-                {isUserConnected &&
-                    !showTradeButton &&
-                    isAuctionCompleted &&
-                    allocationDisplay}
-                {!isAuctionCompleted && extraInfoDisplay}
+
+                {!showComments && (
+                    <>
+                        {!isAuctionCompleted && openedBidDisplay}
+                        {!isAuctionCompleted && maxFdvDisplay}
+                        {!isAuctionCompleted && bidSizeDisplay}
+                        {isUserConnected &&
+                            !showTradeButton &&
+                            isAuctionCompleted &&
+                            allocationDisplay}
+                        {!isAuctionCompleted && extraInfoDisplay}
+                    </>
+                )}
             </div>
-            {bidButton}
+            {!showComments && bidButton}
         </div>
     );
 }

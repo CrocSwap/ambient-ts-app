@@ -7,6 +7,8 @@ interface AuctionsContextIF {
     getAuctions(): void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    showComments: boolean;
+    setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
     tickerInput: string;
     setTickerInput: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -46,6 +48,7 @@ export const AuctionsContextProvider = (props: {
 
     const [isLoading, setIsLoading] = useState(true);
     const [tickerInput, setTickerInput] = useState('');
+    const [showComments, setShowComments] = useState(false);
 
     // const [auctionsGlobal, setAuctionsGlobal] =
     //     React.useState<XpLeaderboardDataIF>({
@@ -92,6 +95,8 @@ export const AuctionsContextProvider = (props: {
         setIsLoading: setIsLoading,
         tickerInput: tickerInput,
         setTickerInput: setTickerInput,
+        showComments: showComments,
+        setShowComments: setShowComments,
     };
 
     return (
