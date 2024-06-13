@@ -628,3 +628,14 @@ export const getCssVariable = (skin: skins, variableName: string) => {
 
     return d3.color(value);
 };
+
+export const getLast15Minutes = (period: number) => {
+    const currentTime = findSnapTime(Date.now(), period) - period * 1000;
+    const totalTimeMs = 15 * 60 * 1000; // 15 min to ms
+    const candleCount = Math.trunc(totalTimeMs / (period * 1000));
+    const times = [];
+    for (let index = 0; index < candleCount; index++) {
+        times.push(currentTime - period * 1000 * index);
+    }
+    return times;
+};

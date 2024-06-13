@@ -141,7 +141,7 @@ interface propsIF {
     >;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
-    scaleData: scaleData | undefined;
+    scaleData: scaleData;
     poolPriceNonDisplay: number | undefined;
     selectedDate: number | undefined;
     setSelectedDate: React.Dispatch<number | undefined>;
@@ -456,8 +456,16 @@ export default function Chart(props: propsIF) {
      */
     const calculateDiscontinuityRange = async (data: CandleDataChart[]) => {
         // timeGaps each element in the data array represents a time interval and consists of two dates: [candleDate, shiftDate].
+
+        const timesToCheck = data
+            .filter((i) => i.isShowData)
+            .map((item) => item.time * 1000);
+
+        const filterTimeGapsNotInclude = timeGaps.filter(
+            (item) => !timesToCheck.some((time) => time === item.range[1]),
+        );
         const localTimeGaps: { range: number[]; isAddedPixel: boolean }[] =
-            structuredClone(timeGaps);
+            structuredClone(filterTimeGapsNotInclude);
         let notTransactionDataTime: undefined | number = undefined;
         let transationDataTime: undefined | number = undefined;
         if (scaleData) {
@@ -515,10 +523,37 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    const calculateVisibleCandles = (
+        scaleData: scaleData | undefined,
+        unparsedCandleData: CandleDataChart[],
+        period: number,
+        numberOfCandlesToDisplay: number,
+    ) => {
+        if (scaleData) {
+            const xmin =
+                scaleData.xScale.domain()[0] -
+                period * 1000 * numberOfCandlesToDisplay;
+            const xmax =
+                scaleData.xScale.domain()[1] +
+                period * 1000 * numberOfCandlesToDisplay;
+
+            const filtered = unparsedCandleData.filter(
+                (data: CandleDataChart) =>
+                    data.time * 1000 >= xmin &&
+                    data.time * 1000 <= xmax &&
+                    (data.isShowData || !isCondensedModeEnabled),
+            );
+
+            return filtered;
+        }
+        return unparsedCandleData;
+    };
+
     const unparsedCandleData = useMemo(() => {
-        const data = filterCandleWithTransaction(unparsedData.candles).sort(
-            (a, b) => b.time - a.time,
-        );
+        const data = filterCandleWithTransaction(
+            unparsedData.candles,
+            period,
+        ).sort((a, b) => b.time - a.time);
 
         if (
             poolPriceWithoutDenom &&
@@ -579,60 +614,45 @@ export default function Chart(props: propsIF) {
         }
 
         calculateDiscontinuityRange(data);
-        return data;
+        return calculateVisibleCandles(
+            scaleData,
+            data,
+            period,
+            mobileView ? 300 : 100,
+        ) as CandleDataChart[];
     }, [
         diffHashSigChart(unparsedData.candles),
         poolPriceWithoutDenom,
         isShowLatestCandle,
         isCondensedModeEnabled,
+        diffHashSigScaleData(scaleData, 'x'),
     ]);
-
-    const calculateVisibleCandles = (
-        scaleData: scaleData | undefined,
-        unparsedCandleData: CandleDataChart[],
-        period: number,
-        mobileView: boolean,
-    ) => {
-        const numberOfCandlesToDisplay = mobileView ? 300 : 100;
-
-        if (scaleData) {
-            const xmin =
-                scaleData.xScale.domain()[0] -
-                period * 1000 * numberOfCandlesToDisplay;
-            const xmax =
-                scaleData.xScale.domain()[1] +
-                period * 1000 * numberOfCandlesToDisplay;
-
-            const filtered = unparsedCandleData.filter(
-                (data: CandleDataChart) =>
-                    data.time * 1000 >= xmin &&
-                    data.time * 1000 <= xmax &&
-                    (data.isShowData || !isCondensedModeEnabled),
-            );
-
-            return filtered;
-        }
-        return unparsedCandleData;
-    };
-
     const visibleCandleData = useMemo(() => {
-        return calculateVisibleCandles(
+        const data = calculateVisibleCandles(
             scaleData,
             unparsedCandleData,
             period,
-            mobileView,
+            0,
+        ) as CandleDataChart[];
+
+        const filtered = data.filter(
+            (i) => i.isShowData || !isCondensedModeEnabled,
         );
+
+        return filtered;
     }, [
         diffHashSigScaleData(scaleData),
         unparsedCandleData,
         isCondensedModeEnabled,
     ]);
 
-    const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
-        return prev.time > current.time ? prev : current;
-    });
+    const lastCandleData = unparsedData.candles?.reduce(
+        function (prev, current) {
+            return prev.time > current.time ? prev : current;
+        },
+    );
 
-    const firstCandleData = unparsedCandleData?.reduce(
+    const firstCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
             return prev.time < current.time ? prev : current;
         },
@@ -749,23 +769,25 @@ export default function Chart(props: propsIF) {
     const lastCrDate = useMemo(() => {
         const nowDate = new Date();
 
-        const lastCrocDate = Math.max(
-            ...unparsedCandleData
-                .filter((item) => {
-                    return (
-                        item.tvlData.tvl === 0 &&
-                        item.time * 1000 < nowDate.getTime()
-                    );
-                })
-                .map((o) => {
-                    return o.time;
-                }),
-        );
+        const filteredData = unparsedData.candles
+            .filter((item) => {
+                return (
+                    item.tvlData.tvl === 0 &&
+                    item.time * 1000 < nowDate.getTime()
+                );
+            })
+            .map((o) => {
+                return o.time;
+            });
 
-        if (lastCrocDate) {
-            return lastCrocDate * 1000;
+        if (filteredData.length > 0) {
+            const lastCrocDate = Math.max(...filteredData);
+
+            if (lastCrocDate) {
+                return lastCrocDate * 1000;
+            }
         }
-    }, [diffHashSigChart(unparsedCandleData)]);
+    }, [unparsedData.candles?.length]);
 
     const render = useCallback(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -4195,30 +4217,22 @@ export default function Chart(props: propsIF) {
         let minYBoundary = undefined;
         let maxYBoundary = undefined;
         if (scaleData) {
-            const xmin = scaleData?.xScale.domain()[0];
-            const xmax = scaleData?.xScale.domain()[1];
-
-            const filtered = unparsedCandleData.filter(
-                (data: CandleDataIF) =>
-                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-            );
-
             if (
-                filtered !== undefined &&
-                (!isTriggeredByZoom || filtered.length > 10) &&
+                visibleCandleData !== undefined &&
+                (!isTriggeredByZoom || visibleCandleData.length > 10) &&
                 poolPriceWithoutDenom
             ) {
                 const placeHolderPrice = denomInBase
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
-                const filteredMin = d3.min(filtered, (d) =>
+                const filteredMin = d3.min(visibleCandleData, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
                         : d.minPriceExclMEVDecimalCorrected,
                 );
 
-                const filteredMax = d3.max(filtered, (d) =>
+                const filteredMax = d3.max(visibleCandleData, (d) =>
                     denomInBase
                         ? d.invMinPriceExclMEVDecimalCorrected
                         : d.maxPriceExclMEVDecimalCorrected,
@@ -4392,7 +4406,7 @@ export default function Chart(props: propsIF) {
         }
     }, [
         period,
-        diffHashSigChart(unparsedCandleData),
+        diffHashSigChart(visibleCandleData),
         prevPeriod === period,
         candleTimeInSeconds === period,
     ]);
@@ -4633,31 +4647,22 @@ export default function Chart(props: propsIF) {
                         setCrosshairActive('none');
                         setMouseLeaveEvent(event);
                         setChartMousemoveEvent(undefined);
-                        if (unparsedCandleData) {
-                            const lastData = unparsedCandleData.find(
-                                (item: CandleDataIF) =>
-                                    item.time ===
-                                    d3.max(
-                                        unparsedCandleData,
-                                        (data: CandleDataIF) => data.time,
-                                    ),
-                            );
-
+                        if (lastCandleData) {
                             setsubChartValues((prevState: SubChartValue[]) => {
                                 const newData = [...prevState];
 
                                 newData.filter(
                                     (target: SubChartValue) =>
                                         target.name === 'tvl',
-                                )[0].value = lastData
-                                    ? lastData.tvlData.tvl
+                                )[0].value = lastCandleData
+                                    ? lastCandleData.tvlData.tvl
                                     : undefined;
 
                                 newData.filter(
                                     (target: SubChartValue) =>
                                         target.name === 'feeRate',
-                                )[0].value = lastData
-                                    ? lastData.averageLiquidityFee
+                                )[0].value = lastCandleData
+                                    ? lastCandleData.averageLiquidityFee
                                     : undefined;
                                 return newData;
                             });
@@ -4682,7 +4687,7 @@ export default function Chart(props: propsIF) {
         liquidityScale,
         liquidityDepthScale,
         isLineDrag,
-        unparsedCandleData?.length,
+        lastCandleData,
         advancedMode,
         lastCrDate,
         showVolume,
@@ -4690,7 +4695,6 @@ export default function Chart(props: propsIF) {
         timeOfEndCandle,
         isCrDataIndActive,
         bandwidth,
-        diffHashSigChart(unparsedCandleData),
         liquidityData,
         hoveredDrawnShape,
         isSelectedOrderHistory,
@@ -5313,9 +5317,10 @@ export default function Chart(props: propsIF) {
             limitTop > limitBot
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
+
         if (
             nearest &&
-            nearest?.time === lastCandleData?.time &&
+            nearest?.time === lastCandleData?.time + period &&
             dateControl &&
             checkYLocation &&
             scaleData
@@ -5338,8 +5343,11 @@ export default function Chart(props: propsIF) {
 
                 const positionX =
                     mainCanvasBoundingClientRect.left +
-                    scaleData?.xScale(lastCandleData?.time * 1000) +
+                    scaleData?.xScale(
+                        lastCandleData?.time * 1000 + period * 1000,
+                    ) +
                     bandwidth * 2;
+
                 setLastCandleDataCenterX(positionX);
             }
 
@@ -5356,7 +5364,7 @@ export default function Chart(props: propsIF) {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
-                nearest.time !== lastCandleData?.time &&
+                nearest.time !== lastCandleData?.time + period &&
                 (checkYLocation || isSelectedVolume),
             nearest: nearest,
         };
@@ -5557,23 +5565,16 @@ export default function Chart(props: propsIF) {
     };
     useEffect(() => {
         if (scaleData && scaleData?.xScale) {
-            const dom = scaleData?.xScale.domain();
-            const xmin = dom[0];
-
-            const filtered = unparsedCandleData?.filter(
-                (data: CandleDataIF) => data.time * 1000 >= xmin,
-            );
-
-            const minYBoundary = d3.min(filtered, (d) => d.volumeUSD);
-            const maxYBoundary = d3.max(filtered, (d) => d.volumeUSD);
+            const minYBoundary = d3.min(visibleCandleData, (d) => d.volumeUSD);
+            const maxYBoundary = d3.max(visibleCandleData, (d) => d.volumeUSD);
             if (minYBoundary !== undefined && maxYBoundary !== undefined) {
-                const domain = [0, maxYBoundary / 1.05];
+                const domain = [0, maxYBoundary];
                 scaleData?.volumeScale.domain(domain);
             }
         }
     }, [
         diffHashSigScaleData(scaleData, 'x'),
-        diffHashSigChart(unparsedCandleData),
+        diffHashSigChart(visibleCandleData),
         reset,
         latest,
     ]);
@@ -5889,8 +5890,10 @@ export default function Chart(props: propsIF) {
             data-testid={'chart'}
             id={'chartContainer'}
             style={{
-                gridColumn: 1,
-                gridRow: 1,
+                gridColumnStart: 1,
+                gridColumnEnd: 1,
+                gridRowStart: 1,
+                gridRowEnd: 3,
                 visibility: isCompletedFetchData ? 'hidden' : 'visible',
             }}
         >
@@ -6153,7 +6156,7 @@ export default function Chart(props: propsIF) {
                             setIsCrDataIndActive={setIsCrDataIndActive}
                             setXaxisActiveTooltip={setXaxisActiveTooltip}
                             showLatestActive={showLatestActive}
-                            unparsedCandleData={unparsedCandleData}
+                            unparsedCandleData={visibleCandleData}
                             xAxisActiveTooltip={xAxisActiveTooltip}
                             zoomBase={zoomBase}
                             isChartZoom={isChartZoom}

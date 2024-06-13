@@ -7,6 +7,7 @@ import {
     diffHashSigScaleData,
 } from '../../../../ambient-utils/dataLayer';
 import {
+    CandleDataChart,
     crosshair,
     renderCanvasArray,
     scaleData,
@@ -36,7 +37,7 @@ interface xAxisIF {
     setXaxisActiveTooltip: React.Dispatch<React.SetStateAction<string>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     setIsCrDataIndActive: React.Dispatch<React.SetStateAction<boolean>>;
-    unparsedCandleData: CandleDataIF[];
+    unparsedCandleData: CandleDataChart[];
     firstCandleData: CandleDataIF;
     lastCandleData: CandleDataIF;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

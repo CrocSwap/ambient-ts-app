@@ -99,6 +99,29 @@ function TradeCandleStickChart(props: propsIF) {
         [chartSettings.candleTime.global.time, location.pathname],
     );
 
+    const periodToReadableTime = useMemo(() => {
+        if (period) {
+            const readableTime = chartSettings.candleTime.global.defaults.find(
+                (i) => i.seconds === period,
+            )?.readable as string;
+
+            let stringTime = '';
+            if (readableTime.includes('m')) {
+                stringTime = readableTime.slice(0, -1) + ' ' + 'Minute' + ' ';
+            }
+            if (readableTime.includes('h')) {
+                stringTime = readableTime.slice(0, -1) + ' ' + 'Hour' + ' ';
+            }
+            if (readableTime.includes('d')) {
+                stringTime = readableTime.slice(0, -1) + ' ' + 'Day' + ' ';
+            }
+
+            return stringTime;
+        }
+
+        return undefined;
+    }, [period, location.pathname]);
+
     const unparsedCandleData = candleData?.candles;
 
     const [scaleData, setScaleData] = useState<scaleData | undefined>();
@@ -940,6 +963,7 @@ function TradeCandleStickChart(props: propsIF) {
                         : lastCandleDate * 1000;
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
+                    period,
                 ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
                 const minTime = firstCandleDate * 1000;
 
@@ -977,16 +1001,27 @@ function TradeCandleStickChart(props: propsIF) {
                         return dom;
                     });
                 } else {
+                    const timeframes =
+                        chartSettings.candleTime.global.defaults.map(
+                            (i) => i.seconds,
+                        );
+                    const nextTimeframe = timeframes.find(
+                        (frame) => frame > period || frame === 86400,
+                    );
+
                     if (
                         fetchCountForEnoughData ===
                             maxRequestCountForCondensed &&
                         period !== 86400 &&
+                        nextTimeframe &&
                         candles.length < 100
                     ) {
                         // TODO: Temporary workaround - Call chartSettings.candleTime.global.changeTime(86400) after 1 second delay.
                         // This solution should be replaced with a more permanent approach in the future.
                         setTimeout(() => {
-                            chartSettings.candleTime.global.changeTime(86400);
+                            chartSettings.candleTime.global.changeTime(
+                                nextTimeframe,
+                            );
                         }, 1000);
                     } else {
                         if (!candleDomains.isResetRequest) {
@@ -1010,17 +1045,26 @@ function TradeCandleStickChart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (unparsedCandleData && unparsedCandleData.length > 0) {
+        if (unparsedCandleData && unparsedCandleData.length > 0 && period) {
             const candles = filterCandleWithTransaction(
                 unparsedCandleData,
+                period,
             ).filter((i) => i.isShowData);
+
+            const timeframes = chartSettings.candleTime.global.defaults.map(
+                (i) => i.seconds,
+            );
+            const nextTimeframe = timeframes.find(
+                (frame) => frame > period || frame === 86400,
+            );
 
             if (
                 isCondensedModeEnabled &&
                 !isFetchingEnoughData &&
+                nextTimeframe &&
                 candles.length < 20
             ) {
-                chartSettings.candleTime.global.changeTime(86400);
+                chartSettings.candleTime.global.changeTime(nextTimeframe);
             }
         }
     }, [isCondensedModeEnabled]);
@@ -1030,10 +1074,22 @@ function TradeCandleStickChart(props: propsIF) {
         candleData !== undefined &&
         isPoolInitialized !== undefined &&
         prevPeriod === period &&
+        scaleData &&
         period === candleData?.duration &&
         !isFetchingCandle &&
         !isFetchingEnoughData;
 
+    const loadingText = (
+        <div
+            style={{ height: '100%', width: '100%' }}
+            className='animatedImg_container'
+        >
+            <div className='fetching_text'>
+                Loading {periodToReadableTime}
+                Candle Chart...
+            </div>
+        </div>
+    );
     return (
         <>
             <div
@@ -1041,14 +1097,31 @@ function TradeCandleStickChart(props: propsIF) {
                     height: '100%',
                     width: '100%',
                     display: 'grid',
-                    gridTemplateRows: '1',
+                    gridTemplateRows: '1fr 1.5fr',
                 }}
             >
-                <div style={{ gridColumn: 1, gridRow: 1 }}>
-                    {(!isOpenChart || isCompletedFetchData) && (
-                        <Spinner size={100} bg='var(--dark2)' centered />
-                    )}
-                </div>
+                {(!isOpenChart || isCompletedFetchData) && (
+                    <>
+                        <div
+                            style={{
+                                gridColumn: 1,
+                                gridRowStart: 1,
+                                gridRowEnd: 3,
+                            }}
+                        >
+                            <Spinner size={100} bg='var(--dark2)' centered />
+                        </div>
+                        <div
+                            style={{
+                                gridColumn: 1,
+                                gridRowStart: 2,
+                                gridRowEnd: 2,
+                            }}
+                        >
+                            {periodToReadableTime && loadingText}
+                        </div>
+                    </>
+                )}
                 {isOpenChart && (
                     <Chart
                         isTokenABase={isTokenABase}
