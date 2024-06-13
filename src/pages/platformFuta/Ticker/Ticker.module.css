@@ -2,12 +2,12 @@
     display: grid;
     grid-template-columns: auto 390px;
     padding: 8px 16px;
-    height: calc(100vh - 56px);
+    height: calc(100vh - 100px);
     gap: 1rem;
 }
 
 .container {
-    height: calc(100svh - 134px);
+    height: calc(100vh - 100px);
     padding: 8px 16px;
 
     display: flex;
@@ -42,6 +42,7 @@
     font-size: 36px;
     text-transform: uppercase;
     padding-left: 8px;
+    height: 43px;
 }
 
 .tickerContainer h3 {
@@ -231,7 +232,6 @@
 @media (min-width: 1280px) {
     .container {
         padding: 0;
-        height: 100%;
         padding-top: 12px;
     }
     .bidButton {

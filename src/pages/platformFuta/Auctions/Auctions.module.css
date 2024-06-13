@@ -1,7 +1,7 @@
 .auctions_main {
     display: flex;
     flex-direction: column;
-    padding: 12px;
+    padding: 8px 16px;
     gap: 8px;
     height: calc(100vh - 85px);
 }
@@ -33,7 +33,6 @@
 .auctionsTickerContainer{
     height: 100%;
     display: grid;
-    grid-template-columns: 1fr 390px;
     gap: 1rem;
 }
 

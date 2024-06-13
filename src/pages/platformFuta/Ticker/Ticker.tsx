@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './Ticker.module.css';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -33,7 +34,11 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Divider from '../../../components/Futa/Divider/Divider';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
-export default function Ticker() {
+interface PropsIF {
+    hideAuctions?: boolean;
+}
+export default function Ticker(props: PropsIF) {
+    const { hideAuctions } = props;
     const isAuctionPage = location.pathname.includes('auction');
 
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
@@ -403,7 +408,7 @@ export default function Ticker() {
     const tickerDisplay = (
         <div className={styles.tickerContainer}>
             {!isAuctionPage && <Divider count={2} />}
-            {auctionDetails ? <h2>{tickerFromParams}</h2> : '-'}
+            <h2>{auctionDetails ? tickerFromParams : '-'}</h2>
             {statusData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
                     <p className={styles.tickerLabel}>{item.label}:</p>
@@ -613,7 +618,8 @@ export default function Ticker() {
 
     const desktopVersion = (
         <div className={styles.gridContainer}>
-            <Auctions />
+            {<Auctions hideTicker={auctionDetails !== null} />}
+
             <div className={styles.container}>
                 <div className={styles.content}>
                     {tickerDisplay}
@@ -642,7 +648,7 @@ export default function Ticker() {
            but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxValue.value, inputValue]);
-    if (desktopScreen && !isAuctionPage) return desktopVersion;
+    if (desktopScreen && !hideAuctions) return desktopVersion;
 
     return (
         <div className={styles.container}>

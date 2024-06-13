@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import Divider from '../Divider/Divider';
 
 interface PropsIF {
     showAuctionTitle?: boolean;
@@ -239,6 +240,7 @@ export default function SearchableTicker(props: PropsIF) {
 
     return (
         <div className={styles.container}>
+            <Divider count={2} />
             <div
                 className={styles.content}
                 style={{

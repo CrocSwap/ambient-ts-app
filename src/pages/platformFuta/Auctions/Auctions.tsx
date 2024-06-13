@@ -14,7 +14,11 @@ export interface auctionDataIF {
     timeRem: string;
 }
 
-export default function Auctions() {
+interface PropsIF {
+    hideTicker?: boolean;
+}
+export default function Auctions(props: PropsIF) {
+    const { hideTicker } = props;
     const {
         // isLoading,
         setIsLoading,
@@ -38,7 +42,10 @@ export default function Auctions() {
     const auctionOrLoader = customLoading ? (
         <AuctionLoader setIsLoading={setIsLoading} />
     ) : (
-        <div className={styles.auctionsTickerContainer}>
+        <div
+            className={styles.auctionsTickerContainer}
+            style={{ gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px' }}
+        >
             <div
                 className={
                     isFullLayoutActive
@@ -52,7 +59,7 @@ export default function Auctions() {
                 />
                 {isFullLayoutActive && chartContent}
             </div>
-            <Ticker />
+            {!hideTicker && <Ticker hideAuctions />}
         </div>
     );
 
@@ -66,7 +73,6 @@ export default function Auctions() {
         >
             {isFullLayoutActive && <ConsoleComponent />}
             <div className={styles.auctions_main}>
-                <Divider count={2} />
                 <section style={{ height: '100%' }}>{auctionOrLoader}</section>
             </div>
         </div>
