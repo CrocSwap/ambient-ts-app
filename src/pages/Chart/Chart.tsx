@@ -551,9 +551,10 @@ export default function Chart(props: propsIF) {
     };
 
     const unparsedCandleData = useMemo(() => {
-        const data = filterCandleWithTransaction(unparsedData.candles).sort(
-            (a, b) => b.time - a.time,
-        );
+        const data = filterCandleWithTransaction(
+            unparsedData.candles,
+            period,
+        ).sort((a, b) => b.time - a.time);
 
         if (
             poolPriceWithoutDenom &&

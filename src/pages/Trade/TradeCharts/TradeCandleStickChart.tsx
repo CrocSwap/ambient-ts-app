@@ -940,6 +940,7 @@ function TradeCandleStickChart(props: propsIF) {
                         : lastCandleDate * 1000;
                 const candles = filterCandleWithTransaction(
                     unparsedCandleData,
+                    period,
                 ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
                 const minTime = firstCandleDate * 1000;
 
@@ -1010,9 +1011,10 @@ function TradeCandleStickChart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (unparsedCandleData && unparsedCandleData.length > 0) {
+        if (unparsedCandleData && unparsedCandleData.length > 0 && period) {
             const candles = filterCandleWithTransaction(
                 unparsedCandleData,
+                period,
             ).filter((i) => i.isShowData);
 
             if (

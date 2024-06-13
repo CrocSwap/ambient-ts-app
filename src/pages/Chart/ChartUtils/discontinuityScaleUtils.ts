@@ -1,4 +1,5 @@
 import { CandleDataIF } from '../../../ambient-utils/types';
+import { getLast15Minutes } from './chartUtils';
 export interface DiscontinuityProvider {
     distance(start: number, end: number): number;
     offset(location: number | Date, offset: number): number | Date;
@@ -7,7 +8,12 @@ export interface DiscontinuityProvider {
     copy(): DiscontinuityProvider;
 }
 
-export function filterCandleWithTransaction(data: CandleDataIF[]) {
+export function filterCandleWithTransaction(
+    data: CandleDataIF[],
+    period: number,
+) {
+    const lat15Minutes = getLast15Minutes(period);
+
     const filteredByNonTransaction = data
         .sort((a, b) => a.time - b.time)
         .map((item, index, array) => {
@@ -28,6 +34,10 @@ export function filterCandleWithTransaction(data: CandleDataIF[]) {
                 item.volumeUSD !== 0 ||
                 item.tvlData.tvl !== previousTvlData.tvl
             ) {
+                isShowData = true;
+            }
+
+            if (lat15Minutes.some((time) => time === item.time * 1000)) {
                 isShowData = true;
             }
 
