@@ -13,12 +13,9 @@ export interface sortedAuctions {
 
 export function useSortedAuctions(unsorted: auctionDataIF[]) {
     const [sorted, setSorted] = useState<auctionDataIF[]>(unsorted);
-    // const DEFAULT_SORT: sortByIF = { method: 'recent', reverse: false};
-    // const [sortBy, setSortBy] = useState<sortByIF>(DEFAULT_SORT);
 
     const DEFAULT_SORT: auctionSorts = 'recent';
     const sortBy = useRef<auctionSorts>(DEFAULT_SORT);
-    // false && sortBy;
 
     function sortByTicker(d: auctionDataIF[]): auctionDataIF[] {
         return d.sort((a: auctionDataIF, b: auctionDataIF) =>
