@@ -65,7 +65,6 @@ import {
     crosshair,
     fillLiqAdvanced,
     roundToNearestPreset,
-    findSnapTime,
     formatTimeDifference,
     getCandleCount,
     getInitialDisplayCandleCount,
@@ -647,19 +646,17 @@ export default function Chart(props: propsIF) {
         isCondensedModeEnabled,
     ]);
 
-    const lastCandleData = unparsedData.candles?.reduce(function (
-        prev,
-        current,
-    ) {
-        return prev.time > current.time ? prev : current;
-    });
+    const lastCandleData = unparsedData.candles?.reduce(
+        function (prev, current) {
+            return prev.time > current.time ? prev : current;
+        },
+    );
 
-    const firstCandleData = unparsedData.candles?.reduce(function (
-        prev,
-        current,
-    ) {
-        return prev.time < current.time ? prev : current;
-    });
+    const firstCandleData = unparsedData.candles?.reduce(
+        function (prev, current) {
+            return prev.time < current.time ? prev : current;
+        },
+    );
 
     const [visibleDateForCandle, setVisibleDateForCandle] = useState(
         lastCandleData.time * 1000,
@@ -1944,9 +1941,9 @@ export default function Chart(props: propsIF) {
                             event.subject.name !== undefined
                                 ? event.subject.name
                                 : Math.abs(advancedValue - low) <
-                                  Math.abs(advancedValue - high)
-                                ? 'Min'
-                                : 'Max';
+                                    Math.abs(advancedValue - high)
+                                  ? 'Min'
+                                  : 'Max';
                     }
                 })
                 .on('drag', function (event) {
@@ -1997,9 +1994,9 @@ export default function Chart(props: propsIF) {
                                     draggedValue === 0
                                         ? 0
                                         : draggedValue <
-                                          liquidityData?.lowBoundary
-                                        ? draggedValue
-                                        : 0;
+                                            liquidityData?.lowBoundary
+                                          ? draggedValue
+                                          : 0;
 
                                 setRanges((prevState) => {
                                     const newTargets = [...prevState];
@@ -2666,50 +2663,32 @@ export default function Chart(props: propsIF) {
 
     // when click latest
     useEffect(() => {
-        if (
-            scaleData !== undefined &&
-            latest &&
-            unparsedCandleData !== undefined
-        ) {
+        if (scaleData !== undefined && latest) {
             if (rescale) {
                 resetFunc();
             } else {
                 fetchCandleForResetOrLatest();
-                const latestCandleIndex = d3.maxIndex(
-                    unparsedData.candles,
-                    (d) => d.time,
-                );
-                const diff =
-                    scaleData?.xScale.domain()[1] -
-                    scaleData?.xScale.domain()[0];
+                setXScaleDefault();
 
-                const centerX = findSnapTime(Date.now(), period);
+                const targetValue = poolPriceDisplay;
+                const targetPixel = scaleData.yScale.range()[0] / 2;
 
-                const diffY =
-                    scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0];
+                const currentRange = scaleData?.yScale.range();
+                const currentDomain = scaleData?.yScale.domain();
 
-                const high = denomInBase
-                    ? unparsedData.candles[latestCandleIndex]
-                          .invMinPriceExclMEVDecimalCorrected
-                    : unparsedData.candles[latestCandleIndex]
-                          .maxPriceExclMEVDecimalCorrected;
-                const low = denomInBase
-                    ? unparsedData.candles[latestCandleIndex]
-                          .invMaxPriceExclMEVDecimalCorrected
-                    : unparsedData.candles[latestCandleIndex]
-                          .minPriceExclMEVDecimalCorrected;
-
-                const centerY = high - Math.abs(low - high) / 2;
-
-                const domain = [centerY - diffY / 2, centerY + diffY / 2];
+                const newDomainMin =
+                    targetValue -
+                    ((targetPixel - currentRange[1]) /
+                        (currentRange[0] - currentRange[1])) *
+                        (currentDomain[1] - currentDomain[0]);
+                const newDomainMax =
+                    targetValue +
+                    ((currentRange[0] - targetPixel) /
+                        (currentRange[0] - currentRange[1])) *
+                        (currentDomain[1] - currentDomain[0]);
+                const domain = [newDomainMin, newDomainMax];
 
                 setYaxisDomain(domain[0], domain[1]);
-
-                scaleData?.xScale.domain([
-                    centerX - diff * xAxisBuffer,
-                    centerX + diff * (1 - xAxisBuffer),
-                ]);
 
                 render();
             }
@@ -2717,7 +2696,7 @@ export default function Chart(props: propsIF) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [latest, unparsedData.candles, denomInBase, rescale, location.pathname]);
+    }, [latest, denomInBase, poolPriceDisplay, rescale, location.pathname]);
 
     const onClickRange = async (event: PointerEvent) => {
         if (scaleData && liquidityData) {
@@ -3416,20 +3395,20 @@ export default function Chart(props: propsIF) {
                                                                   5),
                                                       )
                                                 : scaleData.yScale(
-                                                      firstPointYAxisData,
-                                                  ) < 5
-                                                ? scaleData.yScale(
-                                                      secondPointYAxisData,
-                                                  ) -
-                                                  (infoLabelHeight + 15)
-                                                : Math.max(
-                                                      scaleData.yScale(
-                                                          secondPointYAxisData,
-                                                      ) -
-                                                          (infoLabelHeight +
-                                                              15),
-                                                      5,
-                                                  );
+                                                        firstPointYAxisData,
+                                                    ) < 5
+                                                  ? scaleData.yScale(
+                                                        secondPointYAxisData,
+                                                    ) -
+                                                    (infoLabelHeight + 15)
+                                                  : Math.max(
+                                                        scaleData.yScale(
+                                                            secondPointYAxisData,
+                                                        ) -
+                                                            (infoLabelHeight +
+                                                                15),
+                                                        5,
+                                                    );
 
                                         const arrowArray =
                                             createArrowPointsOfDPRangeLine(
@@ -3838,9 +3817,9 @@ export default function Chart(props: propsIF) {
                                             item.labelAlignment === 'Top'
                                                 ? 'bottom'
                                                 : item.labelAlignment ===
-                                                  'Bottom'
-                                                ? 'top'
-                                                : (item.labelAlignment.toLowerCase() as CanvasTextBaseline);
+                                                    'Bottom'
+                                                  ? 'top'
+                                                  : (item.labelAlignment.toLowerCase() as CanvasTextBaseline);
 
                                         if (item.labelPlacement === 'Center') {
                                             alignment = 'center';
@@ -3938,8 +3917,8 @@ export default function Chart(props: propsIF) {
                                                 (alignment === 'right'
                                                     ? -10
                                                     : alignment === 'left'
-                                                    ? +10
-                                                    : 0);
+                                                      ? +10
+                                                      : 0);
 
                                             ctx.fillText(
                                                 lineLabel,
@@ -3954,9 +3933,9 @@ export default function Chart(props: propsIF) {
                                                     'bottom'
                                                         ? 5
                                                         : item.labelAlignment.toLowerCase() ===
-                                                          'top'
-                                                        ? -5
-                                                        : 0),
+                                                            'top'
+                                                          ? -5
+                                                          : 0),
                                             );
                                         }
                                     });
