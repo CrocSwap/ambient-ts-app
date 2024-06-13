@@ -978,16 +978,27 @@ function TradeCandleStickChart(props: propsIF) {
                         return dom;
                     });
                 } else {
+                    const timeframes =
+                        chartSettings.candleTime.global.defaults.map(
+                            (i) => i.seconds,
+                        );
+                    const nextTimeframe = timeframes.find(
+                        (frame) => frame > period || frame === 86400,
+                    );
+
                     if (
                         fetchCountForEnoughData ===
                             maxRequestCountForCondensed &&
                         period !== 86400 &&
+                        nextTimeframe &&
                         candles.length < 100
                     ) {
                         // TODO: Temporary workaround - Call chartSettings.candleTime.global.changeTime(86400) after 1 second delay.
                         // This solution should be replaced with a more permanent approach in the future.
                         setTimeout(() => {
-                            chartSettings.candleTime.global.changeTime(86400);
+                            chartSettings.candleTime.global.changeTime(
+                                nextTimeframe,
+                            );
                         }, 1000);
                     } else {
                         if (!candleDomains.isResetRequest) {
@@ -1017,12 +1028,20 @@ function TradeCandleStickChart(props: propsIF) {
                 period,
             ).filter((i) => i.isShowData);
 
+            const timeframes = chartSettings.candleTime.global.defaults.map(
+                (i) => i.seconds,
+            );
+            const nextTimeframe = timeframes.find(
+                (frame) => frame > period || frame === 86400,
+            );
+
             if (
                 isCondensedModeEnabled &&
                 !isFetchingEnoughData &&
+                nextTimeframe &&
                 candles.length < 20
             ) {
-                chartSettings.candleTime.global.changeTime(86400);
+                chartSettings.candleTime.global.changeTime(nextTimeframe);
             }
         }
     }, [isCondensedModeEnabled]);
