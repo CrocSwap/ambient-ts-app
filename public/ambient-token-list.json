@@ -115,6 +115,14 @@
             "logoURI": "https://blastscan.io/token/images/orbit_32.png"
         },
         {
+            "address": "0xf77dd21c5ce38ac08786BE35Ef1d1DeC1a6a15F3",
+            "chainId": 81457,
+            "decimals": 18,
+            "name": "YOLO",
+            "symbol": "YOLO",
+            "logoURI": ""
+        },
+        {
             "address": "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
             "chainId": 81457,
             "decimals": 18,
@@ -168,7 +176,16 @@
             "chainId": 81457,
             "decimals": 18,
             "fromList": "/ambient-token-list.json",
-            "name": "YES Money",
+            "name": "YES Money v1",
+            "symbol": "YESv1",
+            "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png"
+        },
+        {
+            "address": "0x1a49351bdB4BE48C0009b661765D01ed58E8C2d8",
+            "chainId": 81457,
+            "decimals": 18,
+            "fromList": "/ambient-token-list.json",
+            "name": "YES Money v2",
             "symbol": "YES",
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png"
         },
