@@ -2,6 +2,7 @@ import styles from './Auctions.module.css';
 import { HiMiniMagnifyingGlass } from 'react-icons/hi2';
 import AuctionItem from './AuctionItem';
 import { useState } from 'react';
+import { sortedAuctions, useSortedAuctions } from './useSortedAuctions';
 
 export interface auctionDataIF {
     ticker: string;
@@ -69,6 +70,8 @@ export default function Auctions() {
         },
     ];
 
+    const sort: sortedAuctions = useSortedAuctions(data);
+
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
 
@@ -112,12 +115,17 @@ export default function Auctions() {
             </div>
             <div className={styles.auctions_list}>
                 <header>
-                    <h5 className={styles.ticker_header}>TICKER</h5>
+                    <h5
+                        className={styles.ticker_header}
+                        onClick={() => sort.update('ticker')}
+                    >
+                        TICKER
+                    </h5>
                     <h5 className={styles.market_cap_header}>MARKET CAP</h5>
                     <h5 className={styles.time_left_header}>REMAINING</h5>
                 </header>
                 <div className={styles.auctions_links}>
-                    {data.map((d: auctionDataIF) => (
+                    {sort.sorted.map((d: auctionDataIF) => (
                         <AuctionItem key={JSON.stringify(d)} {...d} />
                     ))}
                 </div>
