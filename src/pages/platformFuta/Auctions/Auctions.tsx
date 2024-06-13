@@ -1,12 +1,12 @@
 import styles from './Auctions.module.css';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Divider from '../../../components/Futa/Divider/Divider';
-import AuctionLoader from '../../../components/Futa/AuctionLoader/AuctionLoader';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { useContext, useState } from 'react';
-import Ticker from '../Ticker/Ticker';
+import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
+import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
+import Chart from '../../../components/Futa/Chart/Chart';
 
 export interface auctionDataIF {
     ticker: string;
@@ -16,9 +16,10 @@ export interface auctionDataIF {
 
 interface PropsIF {
     hideTicker?: boolean;
+    placeholderTicker?: boolean;
 }
 export default function Auctions(props: PropsIF) {
-    const { hideTicker } = props;
+    const { hideTicker, placeholderTicker } = props;
     const {
         // isLoading,
         setIsLoading,
@@ -29,57 +30,53 @@ export default function Auctions(props: PropsIF) {
     const [isFullLayoutActive, setIsFullLayoutActive] = useState(false);
     const customLoading = false;
 
-    const chartContent = (
-        <div className={styles.chart}>
-            <div className={styles.chartLeft}>
-                <h3>CHARTS</h3>
-            </div>
-            <div className={styles.chartRight}>
-                <h3>COMMENTS</h3>
-            </div>
+    const consoleAndChartDisplay = (
+        <div className={styles.consoleChartComponent}>
+            <ConsoleComponent />
+            <Divider vertical count={2} />
+            <Chart />
         </div>
     );
-    const auctionOrLoader = customLoading ? (
-        <AuctionLoader setIsLoading={setIsLoading} />
-    ) : (
+
+    const auctionsAndChart = (
+        <div className={styles.auctionChartContainer}>
+            <SearchableTicker
+                showAuctionTitle
+                setIsFullLayoutActive={setIsFullLayoutActive}
+            />
+            {consoleAndChartDisplay}
+        </div>
+    );
+    const auctionAndTicker = (
         <div
             className={styles.auctionsTickerContainer}
             style={{ gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px' }}
         >
-            <div
-                className={
-                    isFullLayoutActive
-                        ? styles.middleContentFull
-                        : styles.middleContent
-                }
-            >
-                <SearchableTicker
+            {/* <SearchableTicker
                     showAuctionTitle
                     setIsFullLayoutActive={setIsFullLayoutActive}
-                />
-                {isFullLayoutActive && chartContent}
+                /> */}
+            {auctionsAndChart}
+            <div className={styles.flexColumn}>
+                <Divider count={2} />
+                {!hideTicker && (
+                    <TickerComponent
+                        isAuctionPage
+                        placeholderTicker={placeholderTicker}
+                    />
+                )}
             </div>
-            {!hideTicker && <Ticker hideAuctions />}
         </div>
     );
 
     const desktopVersion = (
-        <div
-            className={
-                isFullLayoutActive
-                    ? styles.desktopContainerFull
-                    : styles.desktopContainer
-            }
-        >
-            {isFullLayoutActive && <ConsoleComponent />}
-            <div className={styles.auctions_main}>
-                <section style={{ height: '100%' }}>{auctionOrLoader}</section>
-            </div>
-        </div>
+        <div className={styles.desktopContainer}>{auctionAndTicker}</div>
     );
+
     if (desktopScreen) return desktopVersion;
+
     return (
-        <div className={styles.auctions_main}>
+        <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
             <SearchableTicker />
         </div>

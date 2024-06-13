@@ -1,11 +1,13 @@
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import TickerItem from './TickerItem';
 import { MdClose } from 'react-icons/md';
-import { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useRef, useState } from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/Divider';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import AuctionLoader from '../AuctionLoader/AuctionLoader';
 
 interface PropsIF {
     showAuctionTitle?: boolean;
@@ -17,6 +19,8 @@ export default function SearchableTicker(props: PropsIF) {
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
     const [currentOrder, setCurrentOrder] = useState<'ASC' | 'DSC'>('ASC');
+    const customLoading = false;
+    const { setIsLoading } = useContext(AuctionsContext);
 
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
@@ -238,6 +242,7 @@ export default function SearchableTicker(props: PropsIF) {
         </div>
     );
 
+    if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
     return (
         <div className={styles.container}>
             <Divider count={2} />

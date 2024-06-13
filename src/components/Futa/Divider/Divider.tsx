@@ -1,17 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+
 interface DividerProps {
     count: number;
+    vertical?: boolean;
 }
-const Divider: React.FC<DividerProps> = ({ count }) => {
+
+const Divider: React.FC<DividerProps> = ({ count, vertical }) => {
     const dividers = Array.from({ length: count }, (_, index) => (
         <motion.div
             key={index}
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
+            initial={vertical ? { height: 0 } : { width: 0 }}
+            animate={vertical ? { height: '100%' } : { width: '100%' }}
             transition={{ duration: 1, ease: 'easeInOut' }}
             style={{
-                height: '1px',
+                height: vertical ? '100%' : '1px',
+                width: vertical ? '1px' : '100%',
                 backgroundColor: 'var(--dark3)',
             }}
         />
@@ -21,9 +25,10 @@ const Divider: React.FC<DividerProps> = ({ count }) => {
         <div
             style={{
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: vertical ? 'row' : 'column',
                 gap: '2px',
-                width: '100%',
+                width: vertical ? 'auto' : '100%',
+                height: vertical ? '100%' : 'auto',
             }}
         >
             {dividers}
