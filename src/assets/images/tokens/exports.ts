@@ -35,6 +35,7 @@ import WRSETH from './WRSETH.png';
 import UNIETH from './UNIETH.png';
 import STONE from './STONE.png';
 import SCRIBES from './SCRIBES.png';
+import YOLO from './YOLO.png';
 import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
@@ -82,6 +83,7 @@ export {
     UNIETH,
     STONE,
     SCRIBES,
+    YOLO,
     USDPLUS,
     PANDA,
     YIELD,
