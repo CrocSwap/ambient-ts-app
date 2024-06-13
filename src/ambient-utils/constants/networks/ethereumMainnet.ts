@@ -37,8 +37,8 @@ export const ethereumMainnet: NetworkIF = {
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetSYN, lookupChain('0x1').poolIndex),
         new TopPool(mainnetUSDC, mainnetUSDT, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetSYN, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetRPL, lookupChain('0x1').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
