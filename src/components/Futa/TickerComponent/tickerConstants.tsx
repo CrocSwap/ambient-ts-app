@@ -289,8 +289,12 @@ export const tickerConstants = (props: PropsIF) => {
             />
             <div className={styles.maxDropdownContainer}>
                 <button
-                    onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
+                    onClick={() => {
+                        tickerFromParams &&
+                            setIsMaxDropdownOpen(!isMaxDropdownOpen);
+                    }}
                     className={styles.maxDropdownButton}
+                    style={tickerFromParams ? {} : { cursor: 'not-allowed' }}
                 >
                     <p> {!placeholderTicker ? selectedMaxValue.value : '-'}</p>
                     {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
@@ -377,6 +381,7 @@ export const tickerConstants = (props: PropsIF) => {
                 isHeader
             />
             <CurrencySelector
+                disable={!tickerFromParams}
                 selectedToken={nativeToken}
                 setQty={setBidQtyNonDisplay}
                 inputValue={inputValue}
