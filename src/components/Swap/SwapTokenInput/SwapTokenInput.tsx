@@ -122,8 +122,8 @@ function SwapTokenInput(props: propsIF) {
                     ? setIsSellLoading(true)
                     : null
                 : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-                ? setIsBuyLoading(true)
-                : null;
+                  ? setIsBuyLoading(true)
+                  : null;
             if (isTokenAPrimary) {
                 setSellQtyString(primaryQuantity);
             } else {
@@ -233,7 +233,11 @@ function SwapTokenInput(props: propsIF) {
                 return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
             }
         } else {
-            setIsLiquidityInsufficient(true);
+            if (isPoolInitialized) {
+                setIsLiquidityInsufficient(true);
+            } else {
+                setIsLiquidityInsufficient(false);
+            }
             setSwapAllowed(false);
             return undefined;
         }
@@ -360,9 +364,9 @@ function SwapTokenInput(props: propsIF) {
                                 ? setIsSellLoading(true)
                                 : null
                             : buyQtyString !== '' &&
-                              parseFloat(buyQtyString) > 0
-                            ? setIsBuyLoading(true)
-                            : null;
+                                parseFloat(buyQtyString) > 0
+                              ? setIsBuyLoading(true)
+                              : null;
 
                         if (!isTokenAPrimary) {
                             setSellQtyString(primaryQuantity);
