@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { RiScreenshot2Fill } from 'react-icons/ri';
 import PointsHistoryDisplay from './PointsHistoryDisplay/PointsHistoryDisplay';
+import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { ExplanationButton } from '../../Form/Icons/Icons.styles';
 
 interface LevelsCardPropsIF {
     resolvedAddress?: string;
@@ -50,6 +52,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const { userAddress } = useContext(UserDataContext);
     const [_, copy] = useCopyToClipboard();
     const {
+        globalPopup: { open: openGlobalPopup },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -172,9 +175,34 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             <LevelLine percentage={progressPercentage} width='250px' />
 
             <div className={styles.point_display_container}>
-                <Text fontSize='body' color='text2'>
-                    Ambient Points This Week
-                </Text>
+                <FlexContainer
+                    flexDirection='row'
+                    gap={16}
+                    alignItems='center'
+                    justifyContent='center'
+                    style={{ marginLeft: '25px' }}
+                >
+                    <Text fontSize='body' color='text2'>
+                        Ambient Points This Week
+                    </Text>
+                    <ExplanationButton
+                        onClick={() =>
+                            openGlobalPopup(
+                                <div>
+                                    Points are distributed once per week. Earned
+                                    points will not be lost if liquidity
+                                    positions are removed before distribution.
+                                </div>,
+                                'Ambient Points Distribution',
+                                'right',
+                            )
+                        }
+                        aria-label='Open range width explanation popup.'
+                    >
+                        <AiOutlineInfoCircle color='var(--text2)' />
+                    </ExplanationButton>
+                </FlexContainer>
+
                 <Text
                     fontSize={desktopScreen ? 'header1' : 'header2'}
                     color='text1'
@@ -189,9 +217,35 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             </div>
 
             <div className={styles.point_display_container}>
-                <Text fontSize='body' color='text2'>
-                    Total Ambient Points
-                </Text>
+                <FlexContainer
+                    flexDirection='row'
+                    gap={16}
+                    alignItems='center'
+                    justifyContent='center'
+                    style={{ marginLeft: '25px' }}
+                >
+                    <Text fontSize='body' color='text2'>
+                        Total Ambient Points
+                    </Text>
+                    <ExplanationButton
+                        onClick={() =>
+                            openGlobalPopup(
+                                <div>
+                                    Ambient Points are earned by making swaps
+                                    and providing liquidity. The more you swap
+                                    and the more swaps use the liquidity you
+                                    have provided, the more Points you earn.
+                                </div>,
+                                'How to Earn Ambient Points',
+                                'right',
+                            )
+                        }
+                        aria-label='Open range width explanation popup.'
+                    >
+                        <AiOutlineInfoCircle color='var(--text2)' />
+                    </ExplanationButton>
+                </FlexContainer>
+
                 <Text
                     fontSize={desktopScreen ? 'header1' : 'header2'}
                     color='text1'
