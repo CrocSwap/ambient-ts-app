@@ -33,10 +33,45 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
 import { FaEye } from 'react-icons/fa';
+import { FutaTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
 }
+
+interface TooltipTitleProps {
+    itemTitle: string;
+    tooltipTitle: string;
+    isHeader?: boolean;
+}
+
+const TooltipLabel = (props: TooltipTitleProps) => {
+    const { itemTitle, tooltipTitle, isHeader } = props;
+    return (
+        <div className={styles.tooltipLabelContainer}>
+            <p
+                className={styles.tickerLabel}
+                style={{
+                    color: isHeader ? 'var(--text1)' : '',
+                    fontSize: isHeader ? '20px' : '',
+                }}
+            >
+                {itemTitle}
+            </p>
+
+            <TooltipComponent
+                placement='bottom'
+                noBg
+                title={
+                    <div className={styles.tooltipTitleDisplay}>
+                        {tooltipTitle}
+                    </div>
+                }
+            />
+        </div>
+    );
+};
 export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
@@ -323,21 +358,26 @@ export default function TickerComponent(props: PropsIF) {
             label: 'status',
             value: !placeholderTicker ? auctionDetails?.status : '-',
             color: 'var(--accent1)',
+            tooltipLabel: 'The current status of the auction - open or closed ',
         },
         {
             label: 'time remaining',
             value: !placeholderTicker ? 'XXh:XXm:XXs' : '-',
             color: 'var(--positive)',
+            tooltipLabel: 'The time remaining till the auction is closed ',
         },
         {
             label: 'market cap (ETH)',
             value: !placeholderTicker ? 'XXX.XXX' : '-',
             color: 'var(--text1)',
+            tooltipLabel: 'Current filled market cap in eth terms',
         },
         {
             label: 'market cap ($)',
             value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
             color: 'var(--text1)',
+            tooltipLabel:
+                'Current filled market cap in dollars based on the current price of eth',
         },
     ];
     const openedBidData = [
@@ -345,16 +385,20 @@ export default function TickerComponent(props: PropsIF) {
             label: 'market cap (ETH)',
             value: !placeholderTicker ? 'XXX.XXX' : '-',
             color: 'var(--text1)',
+            tooltipLabel: 'Current open bid market cap in ETH terms ',
         },
         {
             label: 'market cap ($)',
             value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
             color: 'var(--text1)',
+            tooltipLabel:
+                'Current open bid market cap in dollar terms based on the current price of ETH ',
         },
         {
             label: 'bid size',
             value: !placeholderTicker ? 'XXX.XXX / XXX.XXX' : '-',
             color: 'var(--accent1)',
+            tooltipLabel: 'Filled and total bid sized of the current open bid',
         },
     ];
     const maxFdvData = [
@@ -425,7 +469,10 @@ export default function TickerComponent(props: PropsIF) {
             {!showComments &&
                 statusData.map((item, idx) => (
                     <div className={styles.tickerRow} key={idx}>
-                        <p className={styles.tickerLabel}>{item.label}:</p>
+                        <TooltipLabel
+                            itemTitle={item.label}
+                            tooltipTitle={item.tooltipLabel}
+                        />
                         <p style={{ color: item.color }}>{item.value}</p>
                     </div>
                 ))}
@@ -433,11 +480,14 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const openedBidDisplay = (
-        <div className={styles.tickerContainer}>
+        <div className={`${styles.tickerContainer} ${styles.openBidContainer}`}>
             <h3>OPEN BID</h3>
             {openedBidData.map((item, idx) => (
                 <div className={styles.tickerRow} key={idx}>
-                    <p className={styles.tickerLabel}>{item.label}:</p>
+                    <TooltipLabel
+                        itemTitle={item.label}
+                        tooltipTitle={item.tooltipLabel}
+                    />
                     <p style={{ color: item.color }}>{item.value}</p>
                 </div>
             ))}
@@ -475,8 +525,14 @@ export default function TickerComponent(props: PropsIF) {
             : '...';
     useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
     const maxFdvDisplay = (
-        <div className={styles.tickerContainer}>
-            <h3>MAX MARKET CAP</h3>
+        <div
+            className={`${styles.tickerContainer} ${styles.maxMarketContainer}`}
+        >
+            <TooltipLabel
+                tooltipTitle='The max market cap you are willing to bid up to'
+                itemTitle='MAX MARKET CAP'
+                isHeader
+            />
             <div className={styles.maxDropdownContainer}>
                 <button
                     onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
@@ -538,7 +594,11 @@ export default function TickerComponent(props: PropsIF) {
     );
     const bidSizeDisplay = (
         <div className={styles.tickerContainer}>
-            <h3>BID SIZE</h3>
+            <TooltipLabel
+                tooltipTitle='The max bid size you are willing to submit'
+                itemTitle='BID SIZE'
+                isHeader
+            />
             <CurrencySelector
                 selectedToken={nativeToken}
                 setQty={setBidQtyNonDisplay}
@@ -651,13 +711,15 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
-                        {!isAuctionCompleted && maxFdvDisplay}
-                        {!isAuctionCompleted && bidSizeDisplay}
-                        {isUserConnected &&
-                            !showTradeButton &&
-                            isAuctionCompleted &&
-                            allocationDisplay}
-                        {!isAuctionCompleted && extraInfoDisplay}
+                        <div className={styles.flexColumn}>
+                            {!isAuctionCompleted && maxFdvDisplay}
+                            {!isAuctionCompleted && bidSizeDisplay}
+                            {isUserConnected &&
+                                !showTradeButton &&
+                                isAuctionCompleted &&
+                                allocationDisplay}
+                            {!isAuctionCompleted && extraInfoDisplay}
+                        </div>
                     </>
                 )}
             </div>
