@@ -6,7 +6,7 @@
     position: relative;
 }
 
-text {
+.main_layout_chart  text {
     fill: var(--text2);
 }
 
@@ -235,7 +235,7 @@ div.tooltip {
     stroke-opacity: 1;
 }
 
-label {
+.main_layout_chart  label {
     color: rgba(204, 204, 204, 0.63);
     padding-left: 7px;
     padding-top: 2px;

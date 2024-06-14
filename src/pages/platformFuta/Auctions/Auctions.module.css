@@ -1,103 +1,51 @@
+ .mobileContainer{
+    padding: 8px 16px;
+}
+
+.desktopContainer{
+    padding: 0px 16px;
+}
+
 .auctions_main {
     display: flex;
     flex-direction: column;
-    padding: 10px;
     gap: 8px;
+    height: calc(100vh - 85px);
 }
 
 .auctions_main > h3 {
-    font-size: 30px;
+    font-size: 24px;
     color: var(--text1);
 }
 
-.search_box {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2px;
-    height: 24px;
-    font-size: 12px;
-    background-color: var(--dark4);
-}
+.desktopContainer{
+    height: calc(100vh - 85px);
 
-.search_box > * {
-    min-width: 24px;
-    color: var(--text1);
-}
+    }
+    
 
-.search_box > input {
-    flex-grow: 100;
-    background: transparent;
-    border: transparent;
-    outline: none;
-}
-
-.search_box > input::placeholder {
-    color: var(--text2);
-}
-
-.search_box > button {
-    border: none;
-    outline: none;
-    background-color: transparent;
-    font-size: 28px;
-}
-
-.sort_buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sort_buttons > button {
-    padding: 0 8px;
-    font-size: 12px;
-    background-color: var(--dark4);
-}
-
-.sort_buttons > .button_on {
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
-}
-
-.sort_buttons > .button_off {
-    border: 1px solid transparent;
-    color: var(--text2);
-}
-
-.auctions_list {
-    display: flex;
-    flex-direction: column;
-}
-
-.auctions_list > header {
+.consoleChartComponent{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-areas: 'ticker market_cap time_left';
-    padding: 0px 8px;
+    grid-template-columns: 30% 5px 1fr;
+    gap: 8px;
+}
+.consoleChartComponent span{
+    border-left: 1px dashed var(--dark3);
+    border-right: 1px dashed var(--dark3);
 }
 
-.auctions_list > header > h5 {
-    font-size: 10px;
-    color: var(--text3);
-}
-
-.auctions_list > header > .ticker_header {
-    text-align: left;
-}
-
-.auctions_list > header > .market_cap_header {
-    text-align: right;
-}
-
-.auctions_list > header > .time_left_header {
-    text-align: right;
-}
-
-.auctions_links {
+.auctionChartContainer{
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    justify-content: space-between;
 }
+
+.auctionsTickerContainer{
+    height: 100%;
+    display: grid;
+    gap: 1rem;
+}
+
+
+
+

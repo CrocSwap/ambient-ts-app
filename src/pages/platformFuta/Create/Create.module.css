@@ -5,7 +5,7 @@
     align-self: center;
     margin: 0 auto;
     padding: 10px;
-    max-width: 600px;
+    max-width: 400px;
     height: calc(100svh - 420px);
 }
 
@@ -14,9 +14,14 @@
     flex-direction: column;
     gap: 8px;
 }
+.create_token_top h3 {
+    font-size: 24px;
+    color: var(--text1);
+}
 
-.create_token_top > * {
-    color: var(--text2);
+.description {
+    color: var(--text2, #3d565b);
+    font-size: 18px;
 }
 
 .nav_path {
@@ -27,6 +32,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    height: 100%;
+    justify-content: center;
 }
 
 .ticker_input_fields {
@@ -40,52 +47,115 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 6px;
-    border-left: 4px solid var(--text1);
-    background-color: var(--dark4);
 }
 
 .ticker_input_fields > label > h4 {
-    font-size: 16px;
+    font-size: 24px;
     color: var(--text1);
+    text-transform: uppercase;
 }
-
-.ticker_input_fields > input {
+.inputContainer {
     padding: 2px 8px;
     background-color: var(--dark4);
+    height: 40px;
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    align-items: center;
+    caret-color: var(--text1);
+}
+
+.inputContainer > input {
+    color: var(--text1);
     border: none;
-    color: var(--text2);
+
+    background-color: transparent;
+    outline: none;
+    border: none;
+}
+
+.inputContainer p {
+    color: var(--text2, #3d565b);
+    font-size: 12px;
 }
 
 .ticker_input_fields > input:focus {
     outline: none;
 }
 
-.detail_box {
+.extraInfoContainer {
     display: flex;
+    padding: 8px;
     flex-direction: column;
-    padding: 4px 8px;
-    border: 1px solid grey;
-    color: var(--text2);
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    border: 1px solid var(--dark3, #1e1e24);
+    margin-bottom: 8px;
 }
-
-.detail_box > div {
+.extraRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.alignCenter {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    font-size: 10px;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text2);
 }
-
 .create_button {
     cursor: pointer;
+    text-transform: uppercase;
+    font-size: 24px;
 }
 
 .create_button,
 .create_button_disabled {
-    border: none;
+    border: 1px solid var(--accent1);
     background-color: var(--accent1);
+    transition: all var(--animation-speed) ease-in-out
 }
 
 .create_button_disabled {
     background-color: var(--text2);
+    text-transform: uppercase;
+    font-size: 24px;
+}
+
+
+.create_button:hover{
+    background-color: transparent;
+    color: var(--accent1)
+}
+.footerContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+@media only screen and (min-width: 1280px) {
+    .mainContainer {
+        transition: all var(--animation-speed) ease-in-out;
+        background: radial-gradient(
+            43.75% 50% at 0% 50%,
+            rgba(12, 205, 255, 0.2) 0%,
+            rgba(12, 205, 255, 0) 100%
+        );
+    }
+    .create_token {
+        margin-top: 5rem;
+        /* height: calc(100svh - 320px); */
+        min-height: 500px;
+        max-height: 600px;
+        border-radius: 15px;
+        background: rgba(6, 6, 13, 0.15);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 10px;
+        /* border: 1px solid rgba( 255, 255, 255, 0.1 ); */
+    }
 }

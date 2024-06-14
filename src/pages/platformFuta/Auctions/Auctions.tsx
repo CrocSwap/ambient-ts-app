@@ -1,8 +1,12 @@
 import styles from './Auctions.module.css';
-import { HiMiniMagnifyingGlass } from 'react-icons/hi2';
-import AuctionItem from './AuctionItem';
+import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import Divider from '../../../components/Futa/Divider/Divider';
 import { useState } from 'react';
 import { sortedAuctions, useSortedAuctions } from './useSortedAuctions';
+import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
+import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
+import Chart from '../../../components/Futa/Chart/Chart';
 
 export interface auctionDataIF {
     ticker: string;
@@ -10,7 +14,13 @@ export interface auctionDataIF {
     timeRem: string;
 }
 
-export default function Auctions() {
+interface propsIF {
+    hideTicker?: boolean;
+    placeholderTicker?: boolean;
+}
+
+export default function Auctions(props: propsIF) {
+    const { hideTicker, placeholderTicker } = props;
     // placeholder data until the platform has live data
     const rawData: auctionDataIF[] = [
         {
@@ -75,61 +85,57 @@ export default function Auctions() {
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
 
-    // variable to hold user search input from the DOM
-    const [searchInput, setSearchInput] = useState<string>('');
+    false && sorted;
+    false && INPUT_DOM_ID;
 
-    // fn to clear search input and re-focus the input element
-    function clearInput(): void {
-        setSearchInput('');
-        document.getElementById(INPUT_DOM_ID)?.focus();
-    }
+    const desktopScreen: boolean = useMediaQuery('(min-width: 1280px)');
+    const [isFullLayoutActive, setIsFullLayoutActive] =
+        useState<boolean>(false);
 
-    const [showComplete, setShowComplete] = useState<boolean>(false);
-
-    return (
-        <div className={styles.auctions_main}>
-            <h3>AUCTIONS</h3>
-            <div className={styles.search_box}>
-                <HiMiniMagnifyingGlass />
-                <input
-                    id={INPUT_DOM_ID}
-                    type='text'
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder='SEARCH...'
-                    spellCheck={false}
-                    autoComplete='off'
-                />
-                <button onClick={() => clearInput()}>×</button>
-            </div>
-            <div className={styles.sort_buttons}>
-                <div>CREATION TIME</div>
-                <button
-                    className={
-                        styles[showComplete ? 'button_on' : 'button_off']
-                    }
-                    onClick={() => setShowComplete(!showComplete)}
+    if (desktopScreen)
+        return (
+            <div className={styles.desktopContainer}>
+                <div
+                    className={styles.auctionsTickerContainer}
+                    style={{
+                        gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
+                    }}
                 >
-                    SHOW COMPLETE
-                </button>
-            </div>
-            <div className={styles.auctions_list}>
-                <header>
-                    <h5
-                        className={styles.ticker_header}
-                        onClick={() => sorted.update('ticker')}
-                    >
-                        TICKER
-                    </h5>
-                    <h5 className={styles.market_cap_header}>MARKET CAP</h5>
-                    <h5 className={styles.time_left_header}>REMAINING</h5>
-                </header>
-                <div className={styles.auctions_links}>
-                    {sorted.data.map((d: auctionDataIF) => (
-                        <AuctionItem key={JSON.stringify(d)} {...d} />
-                    ))}
+                    {isFullLayoutActive ? (
+                        <div className={styles.auctionChartContainer}>
+                            <SearchableTicker
+                                title='Auctions'
+                                setIsFullLayoutActive={setIsFullLayoutActive}
+                            />
+                            <div className={styles.consoleChartComponent}>
+                                <ConsoleComponent />
+                                <span />
+                                <Chart />
+                            </div>
+                        </div>
+                    ) : (
+                        <SearchableTicker
+                            title='Auctions'
+                            setIsFullLayoutActive={setIsFullLayoutActive}
+                        />
+                    )}
+                    <div className={styles.flexColumn}>
+                        <Divider count={2} />
+                        {!hideTicker && (
+                            <TickerComponent
+                                isAuctionPage
+                                placeholderTicker={placeholderTicker}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
+        );
+
+    return (
+        <div className={styles.mobileContainer}>
+            <h3>AUCTIONS</h3>
+            <SearchableTicker />
         </div>
     );
 }

@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
 import styles from './Navbar.module.css';
 import Logo from '../../../assets/futa/images/futaLogo.svg';
-import Button from '../../Form/Button';
 import {
     useWeb3ModalAccount,
     useSwitchNetwork,
@@ -21,7 +20,12 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { trimString } from '../../../ambient-utils/dataLayer';
+import { openInNewTab, trimString } from '../../../ambient-utils/dataLayer';
+import {
+    DISCORD_LINK,
+    DOCS_LINK,
+    TWITTER_LINK,
+} from '../../../ambient-utils/constants';
 
 // Animation Variants
 const dropdownVariants = {
@@ -122,11 +126,11 @@ export default function Navbar() {
 
     // Data
     const dropdownData = [
-        { label: 'docs', link: '/docs' },
-        { label: 'twitter', link: '#' },
-        { label: 'discord', link: '#' },
-        { label: 'legal & privacy', link: '#' },
-        { label: 'terms of service', link: '#' },
+        { label: 'docs', link: DOCS_LINK },
+        { label: 'twitter', link: TWITTER_LINK },
+        { label: 'discord', link: DISCORD_LINK },
+        { label: 'legal & privacy', link: '/privacy' },
+        { label: 'terms of service', link: '/terms' },
     ];
     const navbarLinks = [
         {
@@ -139,11 +143,7 @@ export default function Navbar() {
         },
         {
             label: 'Create',
-            link: '/auctions/create',
-        },
-        {
-            label: 'Ticker',
-            link: '/auctions/ticker',
+            link: '/create',
         },
     ];
 
@@ -160,6 +160,11 @@ export default function Navbar() {
                     key={idx}
                     className={styles.desktopLink}
                     variants={linkItemVariants}
+                    style={{
+                        color: location.pathname.includes(item.link)
+                            ? 'var(--accent1)'
+                            : '',
+                    }}
                 >
                     <Link to={item.link}>{item.label}</Link>
                 </motion.div>
@@ -167,13 +172,13 @@ export default function Navbar() {
         </motion.div>
     );
     const connectWagmiButton = (
-        <Button
-            idForDOM='connect_wallet_button_page_header'
-            title={desktopScreen ? 'Connect Wallet' : 'Connect'}
-            action={openWalletModal}
-            thin
-            flat
-        />
+        <button
+            id='connect_wallet_button_page_header'
+            onClick={openWalletModal}
+            className={styles.connectButton}
+        >
+            {desktopScreen ? 'CONNECT WALLET' : 'CONNECT'}
+        </button>
     );
 
     return (
@@ -208,17 +213,25 @@ export default function Navbar() {
                                     key={idx}
                                     variants={dropdownItemVariants}
                                     className={styles.linkContainer}
-                                    onClick={() => setIsDropdownOpen(false)}
+                                    onClick={() => {
+                                        openInNewTab(item.link);
+
+                                        setIsDropdownOpen(false);
+                                    }}
                                 >
-                                    <Link to={item.link}>{item.label}</Link>
+                                    <div style={{ cursor: 'pointer' }}>
+                                        {item.label}
+                                    </div>
                                 </motion.div>
                             ))}
                             <motion.p
                                 className={styles.version}
                                 variants={dropdownItemVariants}
                             >
-                                Connected address:{' '}
-                                {ensName ? ensName : accountAddress}
+                                {isConnected &&
+                                    `Connected address: ${
+                                        ensName ? ensName : accountAddress
+                                    }`}
                             </motion.p>
                             <motion.p
                                 className={styles.version}

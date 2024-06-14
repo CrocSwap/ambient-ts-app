@@ -8,9 +8,11 @@ import Account from '../pages/platformFuta/Account/Account';
 import Auctions from '../pages/platformFuta/Auctions/Auctions';
 import Create from '../pages/platformFuta/Create/Create';
 import Ticker from '../pages/platformFuta/Ticker/Ticker';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 const PlatformFutaRoutes: React.FC = () => {
     const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     return (
         <Routes>
@@ -27,12 +29,18 @@ const PlatformFutaRoutes: React.FC = () => {
             <Route path='/swap' element={<Swap />} />
             <Route path='/learn' element={<Learn />} />
             <Route path='/account' element={<Account />} />
-            <Route path='/auctions' element={<Auctions />} />
+            <Route path='/auctions' element={<Auctions placeholderTicker />} />
 
             <Route path='/trade' element={<Navigate to='/explore' replace />} />
-            <Route path='/auctions/create' element={<Create />} />
-            <Route path='/auctions/ticker' element={<Ticker />} />
-            <Route path='/auctions/:version/:ticker' element={<Ticker />} />
+            <Route path='/create' element={<Create />} />
+            <Route
+                path='/auctions/ticker'
+                element={desktopScreen ? <Auctions /> : <Ticker />}
+            />
+            <Route
+                path='/auctions/:version/:ticker'
+                element={desktopScreen ? <Auctions /> : <Ticker />}
+            />
         </Routes>
     );
 };

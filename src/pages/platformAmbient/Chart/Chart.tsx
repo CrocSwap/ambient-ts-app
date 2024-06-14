@@ -65,7 +65,6 @@ import {
     crosshair,
     fillLiqAdvanced,
     roundToNearestPreset,
-    findSnapTime,
     formatTimeDifference,
     getInitialDisplayCandleCount,
     getXandYLocationForChart,
@@ -2320,50 +2319,32 @@ export default function Chart(props: propsIF) {
 
     // when click latest
     useEffect(() => {
-        if (
-            scaleData !== undefined &&
-            latest &&
-            unparsedCandleData !== undefined
-        ) {
+        if (scaleData !== undefined && latest) {
             if (rescale) {
                 resetFunc();
             } else {
                 fetchCandleForResetOrLatest();
-                const latestCandleIndex = d3.maxIndex(
-                    unparsedCandleData,
-                    (d) => d.time,
-                );
-                const diff =
-                    scaleData?.xScale.domain()[1] -
-                    scaleData?.xScale.domain()[0];
+                setXScaleDefault();
 
-                const centerX = findSnapTime(Date.now(), period);
+                const targetValue = poolPriceDisplay;
+                const targetPixel = scaleData.yScale.range()[0] / 2;
 
-                const diffY =
-                    scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0];
+                const currentRange = scaleData?.yScale.range();
+                const currentDomain = scaleData?.yScale.domain();
 
-                const high = denomInBase
-                    ? unparsedCandleData[latestCandleIndex]
-                          .invMinPriceExclMEVDecimalCorrected
-                    : unparsedCandleData[latestCandleIndex]
-                          .maxPriceExclMEVDecimalCorrected;
-                const low = denomInBase
-                    ? unparsedCandleData[latestCandleIndex]
-                          .invMaxPriceExclMEVDecimalCorrected
-                    : unparsedCandleData[latestCandleIndex]
-                          .minPriceExclMEVDecimalCorrected;
-
-                const centerY = high - Math.abs(low - high) / 2;
-
-                const domain = [centerY - diffY / 2, centerY + diffY / 2];
+                const newDomainMin =
+                    targetValue -
+                    ((targetPixel - currentRange[1]) /
+                        (currentRange[0] - currentRange[1])) *
+                        (currentDomain[1] - currentDomain[0]);
+                const newDomainMax =
+                    targetValue +
+                    ((currentRange[0] - targetPixel) /
+                        (currentRange[0] - currentRange[1])) *
+                        (currentDomain[1] - currentDomain[0]);
+                const domain = [newDomainMin, newDomainMax];
 
                 setYaxisDomain(domain[0], domain[1]);
-
-                scaleData?.xScale.domain([
-                    centerX - diff * xAxisBuffer,
-                    centerX + diff * (1 - xAxisBuffer),
-                ]);
 
                 render();
             }
@@ -2371,7 +2352,7 @@ export default function Chart(props: propsIF) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [latest, unparsedCandleData, denomInBase, rescale, location.pathname]);
+    }, [latest, denomInBase, poolPriceDisplay, rescale, location.pathname]);
 
     const onClickRange = async (event: PointerEvent) => {
         if (scaleData && liquidityData) {

@@ -29,6 +29,52 @@ grid-template-columns: repeat(3, 1fr);
     color: var(--accent1)
 }
 
+.desktopContainer{
+    width: 100%;
+    position:fixed;
+bottom:0;
+display: flex;
+justify-content: space-between;
+align-items: center;
+    height: 20px;
+    padding:  6px;
+    border-top: 1px solid var(--text3, #3E5859);
+    font-size: 12px;
+    color: var(--text2, #789090);
+
+}
+
+.network{
+    border-right: 1px solid var(--text3, #3E5859);
+}
+.leftContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    border-left: 1px solid var(--text3, #3E5859);
+}
+
+.status{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.status, .blockNumber{
+    border-left: 1px solid var(--text3, #3E5859);
+    padding:  0 8px;
+}
+
+.price, .network{
+    padding: 0 8px;
+}
+
+
+.statusDisplay{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
 @media (min-width: 768px) {
 .container{
     width: 100%;

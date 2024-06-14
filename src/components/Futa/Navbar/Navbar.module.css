@@ -6,7 +6,7 @@
     height: 56px;
     padding: 8px 16px 8px 16px;
     position: relative;
-    font-family: "Roboto Mono";
+    font-family: 'Roboto Mono';
 }
 
 .moreContainer {
@@ -19,7 +19,7 @@
     align-items: center;
     gap: 10px;
     border-radius: 100px;
-    background: var(--dark2, #12121A);
+    background: var(--dark2, #12121a);
 }
 
 .rightContainer {
@@ -40,12 +40,13 @@
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    background: var(--dark1, #0D1117);
+    background: var(--dark1, #0d1117);
     box-shadow: 4px 4px 12px 0px rgba(0, 0, 0, 0.25);
+    cursor: default;
 }
 
 .linkContainer {
-    color: var(--text1, #F0F0F8);
+    color: var(--text1, #f0f0f8);
     font-size: 18px;
     font-weight: 400;
     letter-spacing: -0.36px;
@@ -58,7 +59,7 @@
 }
 
 .version {
-    color: var(--text2, #8B98A5);
+    color: var(--text2, #8b98a5);
     font-size: 12px;
     text-transform: uppercase;
 }
@@ -71,8 +72,8 @@
     align-items: center;
     font-size: 24px;
     text-transform: uppercase;
-    background: var(--accent1, #0CCDFF);
-    color: var(--dark1, #06060C);
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1, #06060c);
     border: 1px solid var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
@@ -84,27 +85,50 @@
     color: var(--accent1);
 }
 
-.logoContainer{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 32px
-}
-
-.desktopLinksContainer{
+.logoContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 32px;
 }
-.desktopLink{
-color: var(--text2, #8B98A5);
-font-size: 20px;
-text-transform: uppercase;
-transition: all var(--animation-speed) ease-in-out;
+
+.desktopLinksContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
 }
-.desktopLink:hover{
-color: var(--accent1)
+.desktopLink {
+    color: var(--text2, #8b98a5);
+    font-size: 20px;
+    text-transform: uppercase;
+    transition: all var(--animation-speed) ease-in-out;
+}
+.desktopLink:hover {
+    color: var(--accent1);
+}
+
+.connectButton{
+   
+    height: 28px;
+    outline: none;
+    padding: 2px 8px;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+    background: var(--accent1, #0CCDFF);
+    outline: none;
+    border: 1px solid var(--accent1);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+.connectButton:hover{
+    background: transparent;
+    color: var(--accent1)
 }
 @media (min-width: 768px) {
     .logoutButton {
@@ -113,8 +137,7 @@ color: var(--accent1)
 
     .dropdownMenu {
         width: 300px;
-        left: auto;  
-        right: 16px;   
-       
+        left: auto;
+        right: 16px;
     }
 }
