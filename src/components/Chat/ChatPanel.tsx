@@ -40,6 +40,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -63,6 +64,8 @@ function ChatPanel(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     if (!isChatEnabled) return <NotFound />;
+
+    const { selectedNetwork } = useContext(CrocEnvContext);
 
     const messageListWrapper = useRef<HTMLDivElement>(null);
     const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
@@ -1206,6 +1209,7 @@ function ChatPanel(props: propsIF) {
             isChatOpen={isChatOpen}
             isMobile={isMobile}
             userMap={userMap}
+            chainId={selectedNetwork.chainId}
         />
     );
 

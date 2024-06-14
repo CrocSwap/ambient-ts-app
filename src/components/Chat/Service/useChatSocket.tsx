@@ -515,6 +515,7 @@ const useChatSocket = (
         walletID: string | null,
         mentionedName: string | null,
         mentionedWalletID: string | null,
+        chainId: string | null,
         repliedMessage?: string | undefined,
         repliedMessageRoomInfo?: string | undefined,
     ) {
@@ -527,6 +528,7 @@ const useChatSocket = (
             mentionedName: mentionedName,
             isMentionMessage: mentionedName ? true : false,
             mentionedWalletID,
+            chainId,
             repliedMessage: repliedMessage,
             repliedMessageRoomInfo: repliedMessageRoomInfo,
             senderToken: userVrfToken,

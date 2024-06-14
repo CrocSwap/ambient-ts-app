@@ -24,6 +24,7 @@ import { getAvatarForChat } from '../../ChatRenderUtils';
 import {
     getShownName,
     hasEns,
+    isChainNameTestnet,
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
 } from '../../ChatUtils';
@@ -34,7 +35,9 @@ import {
     ALLOW_AUTH,
     ALLOW_REACTIONS,
     ALLOW_REPLIES,
+    BASIC_CHAT_MODE,
 } from '../../ChatConstants/ChatConstants';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface SentMessageProps {
     message: Message;
@@ -163,27 +166,27 @@ function SentMessagePanel(props: SentMessageProps) {
             props.message?.createdAt,
         );
 
-        const checkForVerifyDiff = (msg1: Message, msg2: Message) => {
+        // checks verify or chain diff for same user
+        const checkForDiff = (msg1: Message, msg2: Message) => {
             return (
                 msg1.sender === msg2.sender &&
-                msg1.isVerified !== msg2.isVerified
+                (msg1.isVerified !== msg2.isVerified ||
+                    msg1.chainId !== msg2.chainId)
             );
         };
 
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 1 * 60 * 1000) {
                 setShowAvatar(
-                    checkForVerifyDiff(props.previousMessage, props.message),
+                    checkForDiff(props.previousMessage, props.message),
                 );
-                setShowName(
-                    checkForVerifyDiff(props.previousMessage, props.message),
-                );
+                setShowName(checkForDiff(props.previousMessage, props.message));
                 if (
                     nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
                 ) {
                     setHasSeparator(
-                        checkForVerifyDiff(props.nextMessage, props.message),
+                        checkForDiff(props.nextMessage, props.message),
                     );
                 } else {
                     setHasSeparator(true);
@@ -194,12 +197,12 @@ function SentMessagePanel(props: SentMessageProps) {
                     props.message?.sender === props.nextMessage?.sender
                 ) {
                     setShowAvatar(
-                        checkForVerifyDiff(props.nextMessage, props.message),
+                        checkForDiff(props.nextMessage, props.message),
                     );
                     setShowAvatar(true);
                     setShowName(true);
                     setHasSeparator(
-                        checkForVerifyDiff(props.nextMessage, props.message),
+                        checkForDiff(props.nextMessage, props.message),
                     );
                 } else {
                     setShowAvatar(true);
@@ -770,6 +773,19 @@ function SentMessagePanel(props: SentMessageProps) {
                                         onClick={goToProfilePage}
                                     >
                                         {/* {myJazzicon} */}
+                                        {!BASIC_CHAT_MODE &&
+                                            props.message &&
+                                            props.message.chainId && (
+                                                <img
+                                                    className={`${styles.chain_logo} ${isChainNameTestnet(lookupChain(props.message.chainId).displayName) ? styles.testnet : ' '} `}
+                                                    src={
+                                                        lookupChain(
+                                                            props.message
+                                                                .chainId,
+                                                        ).logoUrl
+                                                    }
+                                                ></img>
+                                            )}
                                         {getAvatarForChat(
                                             props.userMap?.get(
                                                 props.message.sender,
@@ -834,6 +850,25 @@ function SentMessagePanel(props: SentMessageProps) {
                                                         size={10}
                                                     />
                                                 </div>
+                                            )}
+                                        {showAvatar &&
+                                            !BASIC_CHAT_MODE &&
+                                            props.message &&
+                                            props.message.chainId && (
+                                                <>
+                                                    <div
+                                                        className={
+                                                            styles.chain_info
+                                                        }
+                                                    >
+                                                        {
+                                                            lookupChain(
+                                                                props.message
+                                                                    .chainId,
+                                                            ).displayName
+                                                        }
+                                                    </div>
+                                                </>
                                             )}
                                         {showAvatar &&
                                             !props.message.isVerified &&

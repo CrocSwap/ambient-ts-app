@@ -43,6 +43,7 @@ interface MessageInputProps {
         walletID: string | null,
         mentionedName: string | null,
         mentionedWalletID: string | null,
+        chainId: string | null,
         replyMessageContent?: string | undefined,
         repliedMessageRoomInfo?: string | undefined,
     ) => void;
@@ -58,6 +59,7 @@ interface MessageInputProps {
     selectedMessageForReply: Message | undefined;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     sendMessageCooldown: number;
+    chainId: string | null;
     sendMessageListener?: () => void;
     isChatOpen?: boolean;
     isMobile?: boolean;
@@ -455,6 +457,7 @@ export default function MessageInput(props: MessageInputProps) {
                     userAddress,
                     mentUser ? userLabelForFilter(mentUser) : null,
                     mentUser ? mentUser.walletID : null,
+                    props.chainId,
                     props.selectedMessageForReply !== undefined
                         ? props.selectedMessageForReply?._id
                         : undefined,
@@ -468,6 +471,7 @@ export default function MessageInput(props: MessageInputProps) {
                     userAddress,
                     mentUser ? userLabelForFilter(mentUser) : null,
                     mentUser ? mentUser.walletID : null,
+                    props.chainId,
                     props.selectedMessageForReply !== undefined
                         ? props.selectedMessageForReply?._id
                         : undefined,

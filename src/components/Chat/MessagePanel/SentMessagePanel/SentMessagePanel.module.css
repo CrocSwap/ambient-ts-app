@@ -14,6 +14,7 @@
     display: flex;
     margin-top: .5rem;
     cursor: pointer;
+    position: relative;
 }
 
 .avatar_jazzicons canvas {
@@ -407,7 +408,12 @@
 
 .replied_message_container{
     /* background: red; */
-    padding-top: 1.2rem;
+    /* padding-top: 1.2rem; */
+    padding-top: 3.2rem;
+}
+
+.replied_message_container.has_day_separator{
+    padding-top: 5.2rem;
 }
 
 
@@ -617,6 +623,39 @@
     cursor: default !important;
 }
 
+
+.chain_logo{
+    display: inline-block;
+    margin-left: .2rem;
+    cursor: default;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    padding: .1rem;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transition: all .2s ease-in-out;
+    transform: translateX(-75%);
+}
+
+.chain_logo.testnet{
+    opacity: .3;
+}
+
+.chain_info{
+    display: inline-block;
+    margin-left: .4rem;
+    cursor: default;
+    color: rgba(255,255,255,.3);
+    font-size: .68rem;
+    opacity: 0;
+    transition: all .2s ease-in-out;
+}
+
+
+
 .update_verify_date_icon{
     
     display: inline-block;
@@ -701,6 +740,10 @@
     display: block; 
     /* right: -10rem; */
     left: 70%;
+    opacity: 1;
+  }
+
+  .msg_bubble_container:hover .chain_info{
     opacity: 1;
   }
 
@@ -913,13 +956,12 @@
 
 
 .has_day_separator .replied_message_arrow.has_avatar{
-    top: 2.3rem;
-
+    top: -2rem;
 }
 
 
 .has_day_separator.thread_top_msg .replied_box{
-    top: 1rem;
+    top: -3rem;
 }
 .has_day_separator.thread_top_msg .msg_bubble_front{
     padding-top: .8rem;
@@ -944,7 +986,7 @@
 
 
 .replied_message_container .sent_message_body{
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
 }
 
 .has_day_separator.thread_top_msg.replied_message_container .sent_message_body{
@@ -955,7 +997,7 @@
     padding-top: 2rem;
 }
 .has_day_separator.thread_top_msg.replied_message_container .day_separator{
-    margin-top: -2rem;
+    margin-top: -6rem;
 }
 
 
