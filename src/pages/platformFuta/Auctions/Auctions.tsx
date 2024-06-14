@@ -12,7 +12,7 @@ export interface auctionDataIF {
 
 export default function Auctions() {
     // placeholder data until the platform has live data
-    const data: auctionDataIF[] = [
+    const rawData: auctionDataIF[] = [
         {
             ticker: 'DOGE',
             marketCap: 67316,
@@ -70,7 +70,7 @@ export default function Auctions() {
         },
     ];
 
-    const sort: sortedAuctions = useSortedAuctions(data);
+    const sorted: sortedAuctions = useSortedAuctions(rawData);
 
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
@@ -117,7 +117,7 @@ export default function Auctions() {
                 <header>
                     <h5
                         className={styles.ticker_header}
-                        onClick={() => sort.update('ticker')}
+                        onClick={() => sorted.update('ticker')}
                     >
                         TICKER
                     </h5>
@@ -125,7 +125,7 @@ export default function Auctions() {
                     <h5 className={styles.time_left_header}>REMAINING</h5>
                 </header>
                 <div className={styles.auctions_links}>
-                    {sort.sorted.map((d: auctionDataIF) => (
+                    {sorted.data.map((d: auctionDataIF) => (
                         <AuctionItem key={JSON.stringify(d)} {...d} />
                     ))}
                 </div>

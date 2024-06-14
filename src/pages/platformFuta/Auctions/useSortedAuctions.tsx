@@ -7,7 +7,7 @@ export interface sortByIF {
     reverse: boolean;
 }
 export interface sortedAuctions {
-    sorted: auctionDataIF[];
+    data: auctionDataIF[];
     update: (sortType: auctionSorts) => void;
 }
 
@@ -43,7 +43,7 @@ export function useSortedAuctions(unsorted: auctionDataIF[]) {
     }
 
     return {
-        sorted,
+        data: sorted,
         update: updateSort,
     };
 }
