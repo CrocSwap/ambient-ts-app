@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './TickerComponent.module.css';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -397,16 +397,16 @@ export default function TickerComponent(props: PropsIF) {
     const buttonLabel = isAllocationAvailableToClaim
         ? 'Claim'
         : showTradeButton
-        ? 'Trade'
-        : !isUserConnected
-        ? 'Connect Wallet'
-        : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-        ? 'Enter a Bid Size'
-        : isValidationInProgress
-        ? 'Validating Bid...'
-        : isValidated
-        ? 'Bid'
-        : 'Invalid Bid';
+          ? 'Trade'
+          : !isUserConnected
+            ? 'Connect Wallet'
+            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+              ? 'Enter a Bid Size'
+              : isValidationInProgress
+                ? 'Validating Bid...'
+                : isValidated
+                  ? 'Bid'
+                  : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -419,12 +419,14 @@ export default function TickerComponent(props: PropsIF) {
                           `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
                     : showTradeButton
-                    ? console.log(
-                          `clicked Trade for ticker: ${tickerFromParams}`,
-                      )
-                    : !isUserConnected
-                    ? openWalletModal()
-                    : console.log(`clicked Bid for display qty: ${inputValue}`)
+                      ? console.log(
+                            `clicked Trade for ticker: ${tickerFromParams}`,
+                        )
+                      : !isUserConnected
+                        ? openWalletModal()
+                        : console.log(
+                              `clicked Bid for display qty: ${inputValue}`,
+                          )
             }
             disabled={isButtonDisabled}
         >
