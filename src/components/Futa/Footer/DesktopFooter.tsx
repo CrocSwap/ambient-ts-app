@@ -1,14 +1,31 @@
+import { useContext } from 'react';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import styles from './Footer.module.css';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 export default function DesktopFooter() {
     // const isStatusPositive = true;
 
+    const { chainData } = useContext(TradeDataContext);
+    const { nativeTokenUsdPrice, lastBlockNumber } =
+        useContext(ChainDataContext);
+
     if (location.pathname === '/') return null;
+
+    const nativeTokenPriceFormatted = getFormattedNumber({
+        value: nativeTokenUsdPrice,
+        isUSD: true,
+    });
 
     return (
         <div className={styles.desktopContainer}>
-            <p className={styles.network}>NETWORK : BASE</p>
+            <p className={styles.network}>
+                NETWORK : {chainData.displayName.toUpperCase()}
+            </p>
             <div className={styles.leftContainer}>
-                <p className={styles.price}>ETH PRICE : $4,000.00</p>
+                <p className={styles.price}>
+                    ETH PRICE : {nativeTokenPriceFormatted}
+                </p>
                 {/* <div className={styles.status}>
                     <p>RPC STATUS : </p>
                     <span
@@ -20,7 +37,7 @@ export default function DesktopFooter() {
                         }}
                     />
                 </div> */}
-                <p className={styles.blockNumber}>15563300</p>
+                <p className={styles.blockNumber}>{lastBlockNumber}</p>
             </div>
         </div>
     );

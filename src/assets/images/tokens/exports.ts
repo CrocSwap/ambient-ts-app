@@ -28,13 +28,14 @@ import MKR from './MKR.png';
 import SWETH from './SWETH.svg';
 import LINK from './LINK.svg';
 import OLE from './OLE.svg';
-import SYN from './SYN.png';
+import SYN from './SYN.svg';
 import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
 import WRSETH from './WRSETH.png';
 import UNIETH from './UNIETH.png';
 import STONE from './STONE.png';
 import SCRIBES from './SCRIBES.png';
+import YOLO from './YOLO.png';
 import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
@@ -82,6 +83,7 @@ export {
     UNIETH,
     STONE,
     SCRIBES,
+    YOLO,
     USDPLUS,
     PANDA,
     YIELD,
