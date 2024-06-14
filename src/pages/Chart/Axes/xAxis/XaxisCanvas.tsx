@@ -219,7 +219,16 @@ function XAxisCanvas(props: xAxisIF) {
                 let data = correctStyleForData(
                     scaleData?.xScale.domain()[0],
                     scaleData?.xScale.domain()[1],
-                    ticks,
+                    timeGaps.length > 0
+                        ? [
+                              ...ticks,
+                              new Date(),
+                              new Date(
+                                  scaleData?.xScale.domain()[1] -
+                                      period * 5 * 1000,
+                              ),
+                          ]
+                        : ticks,
                 );
 
                 if (isDiscontinuityScaleEnabled) {
