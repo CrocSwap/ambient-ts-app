@@ -271,13 +271,22 @@ export const blastESE: TokenIF = {
     logoURI: '',
 };
 
-export const blastYES: TokenIF = {
+export const blastYESv1: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
     decimals: 18,
-    name: 'YES Money',
+    name: 'YES Money v1',
+    symbol: 'YESv1',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png',
+};
+
+export const blastYES: TokenIF = {
+    address: '0x1a49351bdB4BE48C0009b661765D01ed58E8C2d8',
+    chainId: 81457,
+    decimals: 18,
+    name: 'YES Money v2',
     symbol: 'YES',
-    logoURI: '',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png',
 };
 
 export const blastPACM: TokenIF = {
@@ -616,6 +625,7 @@ export const defaultTokens: TokenIF[] = [
     blastEzETH,
     blastPUMP,
     blastYES,
+    blastYESv1,
     blastPACM,
     blastSepoliaETH,
     blastSepoliaUSDB,
