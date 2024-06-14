@@ -1,13 +1,11 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './TickerComponent.module.css';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { useParams } from 'react-router-dom';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -45,7 +43,6 @@ export default function TickerComponent(props: PropsIF) {
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >('');
-    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         auctions: { chainId: chainId },
@@ -63,25 +60,8 @@ export default function TickerComponent(props: PropsIF) {
 
     const { ticker: tickerFromParams } = useParams();
 
-    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
-    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
-        number | undefined
-    >();
-
-    useEffect(() => {
-        if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(nativeToken.address, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                setNativeTokenUsdPrice(price.usdPrice);
-            } else {
-                setNativeTokenUsdPrice(undefined);
-            }
-        });
-    }, [crocEnv, chainId]);
+    const { gasPriceInGwei, isActiveNetworkL2, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
 
     const getAuctionDetails = async (ticker: string) => {
         if (
@@ -583,16 +563,16 @@ export default function TickerComponent(props: PropsIF) {
     const buttonLabel = isAllocationAvailableToClaim
         ? 'Claim'
         : showTradeButton
-        ? 'Trade'
-        : !isUserConnected
-        ? 'Connect Wallet'
-        : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-        ? 'Enter a Bid Size'
-        : isValidationInProgress
-        ? 'Validating Bid...'
-        : isValidated
-        ? 'Bid'
-        : 'Invalid Bid';
+          ? 'Trade'
+          : !isUserConnected
+            ? 'Connect Wallet'
+            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+              ? 'Enter a Bid Size'
+              : isValidationInProgress
+                ? 'Validating Bid...'
+                : isValidated
+                  ? 'Bid'
+                  : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -605,12 +585,14 @@ export default function TickerComponent(props: PropsIF) {
                           `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
                     : showTradeButton
-                    ? console.log(
-                          `clicked Trade for ticker: ${tickerFromParams}`,
-                      )
-                    : !isUserConnected
-                    ? openWalletModal()
-                    : console.log(`clicked Bid for display qty: ${inputValue}`)
+                      ? console.log(
+                            `clicked Trade for ticker: ${tickerFromParams}`,
+                        )
+                      : !isUserConnected
+                        ? openWalletModal()
+                        : console.log(
+                              `clicked Bid for display qty: ${inputValue}`,
+                          )
             }
             disabled={isButtonDisabled}
         >
