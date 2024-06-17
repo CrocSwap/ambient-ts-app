@@ -15,7 +15,10 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/Divider';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
-import { sortedAuctionsIF } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
+import {
+    auctionSorts,
+    sortedAuctionsIF,
+} from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { auctionDataIF } from '../../../pages/platformFuta/mockAuctionData';
 
 interface propsIF {
@@ -81,11 +84,10 @@ export default function SearchableTicker(props: propsIF) {
             />{' '}
         </div>
     );
+
     const creationTimeData = [
-        { label: 'Creation Time', value: 'Creation Time' },
-        { label: 'Market Cap', value: 'Market Cap' },
-        { label: 'Last Bid', value: 'Last Bid' },
-        { label: 'Last Reply', value: 'Last Reply' },
+        { label: 'Creation Time', value: 'Creation Time', slug: 'createdAt' },
+        { label: 'Market Cap', value: 'Market Cap', slug: 'marketCap' },
     ];
 
     const [activeTime, setActiveTime] = useState(creationTimeData[0]);
@@ -206,8 +208,9 @@ export default function SearchableTicker(props: propsIF) {
                                 className={styles.timeItem}
                                 key={idx}
                                 onClick={() => {
-                                    setActiveTime(item),
-                                        setIsTimeDropdownOpen(false);
+                                    setActiveTime(item);
+                                    setIsTimeDropdownOpen(false);
+                                    auctions.update(item.slug as auctionSorts);
                                 }}
                             >
                                 {item.label}

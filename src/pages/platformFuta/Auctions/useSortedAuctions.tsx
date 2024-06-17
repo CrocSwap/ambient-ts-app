@@ -1,7 +1,13 @@
 import { useMemo, useRef, useState } from 'react';
 import { auctionDataIF } from '../mockAuctionData';
 
-export type auctionSorts = 'recent' | 'ticker' | 'marketCap' | 'timeLeft';
+export type auctionSorts =
+    | 'createdAt'
+    | 'recent'
+    | 'ticker'
+    | 'marketCap'
+    | 'timeLeft';
+
 export interface sortDetailsIF {
     sortBy: auctionSorts;
     isReversed: boolean;
@@ -42,6 +48,7 @@ export function useSortedAuctions(unsorted: auctionDataIF[]) {
     function updateSort(sortType: auctionSorts): void {
         const isNewSortType: boolean = sortType !== sortDetails.current.sortBy;
         let newlySortedData: auctionDataIF[];
+        console.log(unsorted);
         if (isNewSortType) {
             sortDetails.current.sortBy = sortType;
             switch (sortType) {
@@ -51,6 +58,7 @@ export function useSortedAuctions(unsorted: auctionDataIF[]) {
                 case 'marketCap':
                     newlySortedData = sortByMarketCap(unsorted);
                     break;
+                case 'createdAt':
                 default:
                     newlySortedData = unsorted;
                     break;
