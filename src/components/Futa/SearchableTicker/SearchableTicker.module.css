@@ -16,16 +16,21 @@
     display: grid;
     grid-template-columns: 1fr 30%;
     gap: 8px;
+    /* display: flex;
+    flex-direction: row;
+    flex-wrap: wrap; */
 }
 
 .title{
     font-size: 24px;
     text-transform: uppercase;
 }
+
 .searchContainer {
-    width: 100%;
-    background-color: var(--dark4);
     display: flex;
+    width: 100%;
+    max-width: 725px;
+    background-color: var(--dark4);
     height: 24px;
     padding: 0px 4px 0px 8px;
     align-items: center;
