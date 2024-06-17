@@ -232,9 +232,15 @@ export default function SearchableTicker(props: propsIF) {
     const tickerTableDisplay = (
         <div className={styles.tickerTableContainer}>
             <header className={styles.tickerHeader}>
-                <p>TICKER</p>
-                <p>MARKET CAP</p>
-                <p>REMAINING</p>
+                <p onClick={() => auctions.update('ticker')}>TICKER</p>
+                <p
+                    onClick={() => {
+                        auctions.update('marketCap');
+                    }}
+                >
+                    MARKET CAP
+                </p>
+                <p onClick={() => auctions.update('timeLeft')}>REMAINING</p>
                 <div className={styles.statusContainer}>
                     <span />
                 </div>
@@ -253,7 +259,6 @@ export default function SearchableTicker(props: propsIF) {
             </div>
         </div>
     );
-    console.log({ title });
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
