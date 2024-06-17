@@ -6,6 +6,7 @@ import {
     SetStateAction,
     useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
 } from 'react';
@@ -47,6 +48,12 @@ export default function SearchableTicker(props: propsIF) {
         setSearchInput('');
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
+
+    const filteredData = useMemo<auctionDataIF[]>(() => {
+        return auctions.data.filter((auc: auctionDataIF) =>
+            auc.ticker.includes(searchInput.toUpperCase()),
+        );
+    }, [searchInput]);
 
     // const toggleOrder = () => {
     //     setCurrentOrder((prevOrder) => (prevOrder === 'ASC' ? 'DSC' : 'ASC'));
@@ -242,7 +249,7 @@ export default function SearchableTicker(props: propsIF) {
                 </div>
             </header>
             <div className={styles.tickerTableContent}>
-                {auctions.data
+                {filteredData
                     .filter((auction: auctionDataIF) =>
                         showComplete ? true : auction.timeRem !== 'COMPLETE',
                     )
