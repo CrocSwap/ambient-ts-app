@@ -64,33 +64,6 @@ export default function SearchableTicker(props: propsIF) {
     };
     useOnClickOutside(timeDropdownRef, clickOutsideHandler);
 
-    const searchContainer = (
-        <div className={styles.searchContainer}>
-            <BiSearch
-                size={20}
-                color='var(--text2)'
-                id='searchable_ticker_input'
-                onClick={() => focusInput()}
-            />
-            <input
-                className={styles.searchInput}
-                type='text'
-                id={INPUT_DOM_ID}
-                value={searchInputRaw}
-                onChange={(e) => setSearchInputRaw(e.target.value)}
-                placeholder='SEARCH...'
-                spellCheck={false}
-                autoComplete='off'
-                tabIndex={1}
-            />
-            <MdClose
-                size={20}
-                color='var(--text2)'
-                onClick={() => clearInput()}
-            />{' '}
-        </div>
-    );
-
     const creationTimeData = [
         { label: 'Creation Time', value: 'Creation Time', slug: 'createdAt' },
         { label: 'Market Cap', value: 'Market Cap', slug: 'marketCap' },
@@ -117,7 +90,30 @@ export default function SearchableTicker(props: propsIF) {
                     </h3>
                 )}
                 <div className={styles.headerBottom}>
-                    {searchContainer}
+                    <div className={styles.searchContainer}>
+                        <BiSearch
+                            size={20}
+                            color='var(--text2)'
+                            id='searchable_ticker_input'
+                            onClick={() => focusInput()}
+                        />
+                        <input
+                            className={styles.searchInput}
+                            type='text'
+                            id={INPUT_DOM_ID}
+                            value={searchInputRaw}
+                            onChange={(e) => setSearchInputRaw(e.target.value)}
+                            placeholder='SEARCH...'
+                            spellCheck={false}
+                            autoComplete='off'
+                            tabIndex={1}
+                        />
+                        <MdClose
+                            size={20}
+                            color='var(--text2)'
+                            onClick={() => clearInput()}
+                        />{' '}
+                    </div>
                     <section className={styles.timeDropdownContainer}>
                         <div className={styles.timeDropdownLeft}>
                             <div className={styles.timeDropdownContent}>
