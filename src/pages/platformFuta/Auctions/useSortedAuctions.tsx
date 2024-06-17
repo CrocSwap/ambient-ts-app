@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { auctionDataIF } from '../mockAuctionData';
 
 export type auctionSorts = 'recent' | 'ticker' | 'marketCap' | 'timeLeft';
@@ -12,6 +12,8 @@ export interface sortByIF {
 }
 export interface sortedAuctionsIF {
     data: auctionDataIF[];
+    active: auctionSorts;
+    isReversed: boolean;
     update: (sortType: auctionSorts) => void;
 }
 
@@ -60,8 +62,12 @@ export function useSortedAuctions(unsorted: auctionDataIF[]) {
         setSorted(newlySortedData);
     }
 
-    return {
-        data: sorted,
-        update: updateSort,
-    };
+    return useMemo<sortedAuctionsIF>(() => {
+        return {
+            data: sorted,
+            active: sortDetails.current.sortBy,
+            isReversed: sortDetails.current.isReversed,
+            update: updateSort,
+        };
+    }, [sorted]);
 }
