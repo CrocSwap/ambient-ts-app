@@ -1,13 +1,11 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './TickerComponent.module.css';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { useParams } from 'react-router-dom';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -25,33 +23,23 @@ import { TokenIF } from '../../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import Divider from '../Divider/Divider';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { CurrencySelector } from '../../Form/CurrencySelector';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
+
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
-import { FaEye } from 'react-icons/fa';
+import { tickerConstants } from './tickerConstants';
+
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
 }
-export default function TickerComponent(props: PropsIF) {
-    const { isAuctionPage, placeholderTicker } = props;
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
-    const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
-    const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
-        string | undefined
-    >('');
-    const { crocEnv } = useContext(CrocEnvContext);
-
+// Contexts
+const useAuctionContexts = () => {
     const {
-        auctions: { chainId: chainId },
+        auctions: { chainId },
         showComments,
         setShowComments,
-        // auctions,
     } = useContext(AuctionsContext);
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -60,64 +48,152 @@ export default function TickerComponent(props: PropsIF) {
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
     const { userAddress } = useContext(UserDataContext);
+    const { gasPriceInGwei, isActiveNetworkL2, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
 
-    const { ticker: tickerFromParams } = useParams();
-
-    const { gasPriceInGwei, isActiveNetworkL2 } = useContext(ChainDataContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
-    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
-        number | undefined
-    >();
-
-    useEffect(() => {
-        if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(nativeToken.address, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                setNativeTokenUsdPrice(price.usdPrice);
-            } else {
-                setNativeTokenUsdPrice(undefined);
-            }
-        });
-    }, [crocEnv, chainId]);
-
-    const getAuctionDetails = async (ticker: string) => {
-        if (
-            ticker.toLowerCase() === 'not' ||
-            ticker.toLowerCase() === 'mog' ||
-            ticker.toLowerCase() === 'mew'
-        )
-            return { status: 'CLOSED' };
-
-        return { status: 'OPEN' };
+    return {
+        chainId,
+        showComments,
+        setShowComments,
+        isUserConnected,
+        openWalletModal,
+        tokenBalances,
+        userAddress,
+        gasPriceInGwei,
+        isActiveNetworkL2,
+        nativeTokenUsdPrice,
     };
+};
 
-    const getAllocationByUser = async (
-        ticker: string,
-        userAddress: `0x${string}` | undefined,
-    ) => {
-        if (!userAddress) return { unclaimedAllocation: '0' };
-        if (ticker.toLowerCase() === 'not')
-            return { unclaimedAllocation: '100000' };
-        if (ticker.toLowerCase() === 'mog')
-            return { unclaimedAllocation: '168200' };
-
-        return { unclaimedAllocation: '0' };
-    };
-
-    // setState for auction details
+// States
+const useAuctionStates = () => {
+    const { isActiveNetworkL2 } = useAuctionContexts();
+    const maxFdvData = [
+        { value: 0.216 },
+        { value: 0.271 },
+        { value: 0.338 },
+        { value: 0.423 },
+        { value: 0.529 },
+    ];
+    const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
+    const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
+        string | undefined
+    >('');
     const [auctionDetails, setAuctionDetails] = useState<
         { status: string } | undefined
     >();
-    // setState for allocation for user
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
         useState<{ unclaimedAllocation: string } | undefined>();
-
     const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
         string | undefined
     >();
+    const [inputValue, setInputValue] = useState('');
+    const [isValidationInProgress, setIsValidationInProgress] =
+        useState<boolean>(false);
+    const [isPriceImpactQueryInProgress, setIsPriceImpactQueryInProgress] =
+        useState<boolean>(false);
+    const [isValidated, setIsValidated] = useState<boolean>(false);
+    const [priceImpact, setPriceImpact] = useState<number | undefined>();
+    const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
+    const [l1GasFeeLimitInGwei] = useState<number>(
+        isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
+    );
+
+    return {
+        isMaxDropdownOpen,
+        setIsMaxDropdownOpen,
+        bidQtyNonDisplay,
+        setBidQtyNonDisplay,
+        auctionDetails,
+        setAuctionDetails,
+        allocationForConnectedUser,
+        setAllocationForConnectedUser,
+        bidGasPriceinDollars,
+        setBidGasPriceinDollars,
+        inputValue,
+        setInputValue,
+        isValidationInProgress,
+        setIsValidationInProgress,
+        isPriceImpactQueryInProgress,
+        setIsPriceImpactQueryInProgress,
+        isValidated,
+        setIsValidated,
+        priceImpact,
+        setPriceImpact,
+        selectedMaxValue,
+        setSelectedMaxValue,
+        l1GasFeeLimitInGwei,
+    };
+};
+
+// Utility functions
+const getAuctionDetails = async (ticker: string) => {
+    if (
+        ticker.toLowerCase() === 'not' ||
+        ticker.toLowerCase() === 'mog' ||
+        ticker.toLowerCase() === 'mew'
+    )
+        return { status: 'CLOSED' };
+
+    return { status: 'OPEN' };
+};
+
+const getAllocationByUser = async (
+    ticker: string,
+    userAddress: `0x${string}` | undefined,
+) => {
+    if (!userAddress) return { unclaimedAllocation: '0' };
+    if (ticker.toLowerCase() === 'not')
+        return { unclaimedAllocation: '100000' };
+    if (ticker.toLowerCase() === 'mog')
+        return { unclaimedAllocation: '168200' };
+
+    return { unclaimedAllocation: '0' };
+};
+
+// Component
+export default function TickerComponent(props: PropsIF) {
+    const { isAuctionPage, placeholderTicker } = props;
+    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const {
+        chainId,
+        showComments,
+        isUserConnected,
+        openWalletModal,
+        tokenBalances,
+        userAddress,
+        gasPriceInGwei,
+        isActiveNetworkL2,
+        nativeTokenUsdPrice,
+    } = useAuctionContexts();
+
+    const {
+        isMaxDropdownOpen,
+        setIsMaxDropdownOpen,
+        bidQtyNonDisplay,
+        setBidQtyNonDisplay,
+        auctionDetails,
+        setAuctionDetails,
+        allocationForConnectedUser,
+        setAllocationForConnectedUser,
+        bidGasPriceinDollars,
+        setBidGasPriceinDollars,
+        inputValue,
+        setInputValue,
+        isValidationInProgress,
+        setIsValidationInProgress,
+        isPriceImpactQueryInProgress,
+        setIsPriceImpactQueryInProgress,
+        isValidated,
+        setIsValidated,
+        priceImpact,
+        setPriceImpact,
+        selectedMaxValue,
+        setSelectedMaxValue,
+        l1GasFeeLimitInGwei,
+    } = useAuctionStates();
+
+    const { ticker: tickerFromParams } = useParams();
 
     const formattedUnclaimedAllocationForConnectedUser = parseFloat(
         allocationForConnectedUser?.unclaimedAllocation ?? '0',
@@ -162,21 +238,6 @@ export default function TickerComponent(props: PropsIF) {
         }
     }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
-    const [inputValue, setInputValue] = useState('');
-
-    const [isValidationInProgress, setIsValidationInProgress] =
-        useState<boolean>(false);
-    const [isPriceImpactQueryInProgress, setIsPriceImpactQueryInProgress] =
-        useState<boolean>(false);
-
-    const [isValidated, setIsValidated] = useState<boolean>(false);
-    const [priceImpact, setPriceImpact] = useState<number | undefined>();
-
-    useEffect(() => {
-        setIsValidationInProgress(true);
-        setIsPriceImpactQueryInProgress(true);
-    }, [inputValue]);
-
     const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
     const nativeData: TokenIF | undefined =
@@ -194,16 +255,6 @@ export default function TickerComponent(props: PropsIF) {
     const bidUsdValue =
         nativeTokenUsdPrice !== undefined && bidDisplayNum !== undefined
             ? nativeTokenUsdPrice * bidDisplayNum
-            : undefined;
-
-    const bidUsdValueTruncated =
-        bidUsdValue !== undefined
-            ? bidUsdValue
-                ? getFormattedNumber({
-                      value: bidUsdValue,
-                      isUSD: true,
-                  })
-                : '$0.00'
             : undefined;
 
     const nativeTokenDecimals = nativeToken.decimals;
@@ -252,9 +303,6 @@ export default function TickerComponent(props: PropsIF) {
         value: nativeTokenWalletBalanceDisplayNum,
     });
 
-    const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
-    );
     const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
         Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
     )
@@ -280,7 +328,6 @@ export default function TickerComponent(props: PropsIF) {
     const nativeTokenWalletBalanceAdjustedNonDisplayString =
         nativeTokenWalletBalance
             ? BigNumber.from(nativeTokenWalletBalance)
-
                   .sub(amountToReduceNativeTokenQty)
                   .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
                   .toString()
@@ -318,53 +365,6 @@ export default function TickerComponent(props: PropsIF) {
         }
     };
 
-    const statusData = [
-        {
-            label: 'status',
-            value: !placeholderTicker ? auctionDetails?.status : '-',
-            color: 'var(--accent1)',
-        },
-        {
-            label: 'time remaining',
-            value: !placeholderTicker ? 'XXh:XXm:XXs' : '-',
-            color: 'var(--positive)',
-        },
-        {
-            label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
-            color: 'var(--text1)',
-        },
-        {
-            label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
-            color: 'var(--text1)',
-        },
-    ];
-    const openedBidData = [
-        {
-            label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
-            color: 'var(--text1)',
-        },
-        {
-            label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
-            color: 'var(--text1)',
-        },
-        {
-            label: 'bid size',
-            value: !placeholderTicker ? 'XXX.XXX / XXX.XXX' : '-',
-            color: 'var(--accent1)',
-        },
-    ];
-    const maxFdvData = [
-        { value: 0.216 },
-        { value: 0.271 },
-        { value: 0.338 },
-        { value: 0.423 },
-        { value: 0.529 },
-    ];
-
     const formattedPriceImpact =
         !priceImpact || isPriceImpactQueryInProgress
             ? '...'
@@ -373,197 +373,11 @@ export default function TickerComponent(props: PropsIF) {
                   isPercentage: true,
               }) + '%';
 
-    const networkFee = bidGasPriceinDollars;
-
-    const extraInfoData = isAuctionCompleted
-        ? [
-              {
-                  title: 'NETWORK FEE',
-                  tooltipTitle:
-                      'Estimated network fee (i.e. gas cost) to join bid',
-                  data: networkFee ? '~' + networkFee : '...',
-              },
-          ]
-        : [
-              {
-                  title: 'PRICE IMPACT',
-                  tooltipTitle:
-                      'Difference Between Current (Spot) Price and Final Price',
-                  data: formattedPriceImpact,
-              },
-              {
-                  title: 'NETWORK FEE',
-                  tooltipTitle:
-                      'Estimated network fee (i.e. gas cost) to join bid',
-                  data: networkFee ? '~' + networkFee : '...',
-              },
-          ];
-    const progressValue = !placeholderTicker ? 'XX.X' : '-';
-
-    const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
-
-    const handleSelectItem = (item: { value: number }) => {
-        setSelectedMaxValue(item);
-        setIsMaxDropdownOpen(false);
-    };
-
-    const tickerDisplay = (
-        <div className={styles.tickerContainer}>
-            {!isAuctionPage && <Divider count={2} />}
-            <div className={styles.tickerNameContainer}>
-                <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
-                {!placeholderTicker && (
-                    <button onClick={() => setShowComments(!showComments)}>
-                        COMMENTS{' '}
-                        <FaEye
-                            size={20}
-                            color={showComments ? 'var(--accent1)' : ''}
-                        />
-                    </button>
-                )}
-            </div>
-            {!showComments &&
-                statusData.map((item, idx) => (
-                    <div className={styles.tickerRow} key={idx}>
-                        <p className={styles.tickerLabel}>{item.label}:</p>
-                        <p style={{ color: item.color }}>{item.value}</p>
-                    </div>
-                ))}
-        </div>
-    );
-
-    const openedBidDisplay = (
-        <div className={styles.tickerContainer}>
-            <h3>OPEN BID</h3>
-            {openedBidData.map((item, idx) => (
-                <div className={styles.tickerRow} key={idx}>
-                    <p className={styles.tickerLabel}>{item.label}:</p>
-                    <p style={{ color: item.color }}>{item.value}</p>
-                </div>
-            ))}
-            <div className={styles.progressContainer}>
-                <div className={styles.progressContent}>
-                    {Array.from({ length: 10 }, (_, idx) => (
-                        <span className={styles.progressBar} key={idx} />
-                    ))}
-                </div>
-                {!placeholderTicker ? (
-                    <p className={styles.progressValue}>{progressValue}%</p>
-                ) : (
-                    '-'
-                )}
-            </div>
-        </div>
-    );
-    const tickerDropdownRef = useRef<HTMLDivElement>(null);
-    const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
-
     const fdvUsdValue =
         nativeTokenUsdPrice !== undefined &&
         selectedMaxValue.value !== undefined
             ? nativeTokenUsdPrice * selectedMaxValue.value
             : undefined;
-
-    const selectedFdvUsdMaxValue =
-        fdvUsdValue !== undefined
-            ? fdvUsdValue
-                ? getFormattedNumber({
-                      value: fdvUsdValue,
-                      isUSD: true,
-                  })
-                : '$0.00'
-            : '...';
-    useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
-    const maxFdvDisplay = (
-        <div className={styles.tickerContainer}>
-            <h3>MAX MARKET CAP</h3>
-            <div className={styles.maxDropdownContainer}>
-                <button
-                    onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
-                    className={styles.maxDropdownButton}
-                >
-                    <p> {!placeholderTicker ? selectedMaxValue.value : '-'}</p>
-                    {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
-                </button>
-                {isMaxDropdownOpen && (
-                    <div
-                        className={styles.maxDropdownContent}
-                        ref={tickerDropdownRef}
-                    >
-                        {maxFdvData.map((item, idx) => {
-                            const fdvUsdValue =
-                                nativeTokenUsdPrice !== undefined &&
-                                item.value !== undefined
-                                    ? nativeTokenUsdPrice * item.value
-                                    : undefined;
-
-                            const fdvUsdValueTruncated =
-                                fdvUsdValue !== undefined
-                                    ? fdvUsdValue
-                                        ? getFormattedNumber({
-                                              value: fdvUsdValue,
-                                              isUSD: true,
-                                          })
-                                        : '$0.00'
-                                    : undefined;
-
-                            return (
-                                <div
-                                    className={styles.maxRow}
-                                    key={idx}
-                                    onClick={() => handleSelectItem(item)}
-                                >
-                                    <p>{item.value}</p>({fdvUsdValueTruncated})
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-
-    const userQtyDisplay = (
-        <div className={styles.userQtyDisplay}>
-            <p style={{ color: 'var(--text2)' }}>{bidUsdValueTruncated}</p>
-            {nativeTokenWalletBalance !== '0' && (
-                <div
-                    className={styles.maxButtonContainer}
-                    onClick={handleBalanceClick}
-                >
-                    <p>{nativeTokenWalletBalanceTruncated}</p>
-                </div>
-            )}
-        </div>
-    );
-    const bidSizeDisplay = (
-        <div className={styles.tickerContainer}>
-            <h3>BID SIZE</h3>
-            <CurrencySelector
-                selectedToken={nativeToken}
-                setQty={setBidQtyNonDisplay}
-                inputValue={inputValue}
-                setInputValue={setInputValue}
-                customBottomContent={userQtyDisplay}
-                customBorderRadius='0px'
-                noModals
-            />
-        </div>
-    );
-
-    const extraInfoDisplay = (
-        <div className={styles.extraInfoContainer}>
-            {extraInfoData.map((item, idx) => (
-                <div className={styles.extraRow} key={idx}>
-                    <div className={styles.alignCenter}>
-                        <p>{item.title}</p>
-                        <TooltipComponent title={item.tooltipTitle} />
-                    </div>
-                    <p style={{ color: 'var(--text2)' }}>{item.data}</p>
-                </div>
-            ))}
-        </div>
-    );
 
     const isAllocationAvailableToClaim =
         allocationForConnectedUser?.unclaimedAllocation &&
@@ -620,6 +434,34 @@ export default function TickerComponent(props: PropsIF) {
         </button>
     );
 
+    const tickerConstantsProps = {
+        placeholderTicker,
+        auctionDetails,
+        bidGasPriceinDollars,
+        formattedPriceImpact,
+        isAuctionPage,
+        isMaxDropdownOpen,
+        setIsMaxDropdownOpen,
+        selectedMaxValue,
+        setSelectedMaxValue,
+        fdvUsdValue,
+        bidUsdValue,
+        handleBalanceClick,
+        nativeTokenWalletBalanceTruncated,
+        bidQtyNonDisplay,
+        setBidQtyNonDisplay,
+        inputValue,
+        setInputValue,
+    };
+
+    const {
+        maxFdvDisplay,
+        bidSizeDisplay,
+        extraInfoDisplay,
+        tickerDisplay,
+        openedBidDisplay,
+    } = tickerConstants(tickerConstantsProps);
+
     const allocationDisplay = (
         <div className={styles.allocationContainer}>
             <h3>ALLOCATION</h3>
@@ -629,6 +471,7 @@ export default function TickerComponent(props: PropsIF) {
             {extraInfoDisplay}
         </div>
     );
+
     const QTY_INPUT_ID = 'exchangeBalance_qty';
     const bidQtyInputField = document.getElementById(
         QTY_INPUT_ID,
@@ -653,13 +496,15 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
-                        {!isAuctionCompleted && maxFdvDisplay}
-                        {!isAuctionCompleted && bidSizeDisplay}
-                        {isUserConnected &&
-                            !showTradeButton &&
-                            isAuctionCompleted &&
-                            allocationDisplay}
-                        {!isAuctionCompleted && extraInfoDisplay}
+                        <div className={styles.flexColumn}>
+                            {!isAuctionCompleted && maxFdvDisplay}
+                            {!isAuctionCompleted && bidSizeDisplay}
+                            {isUserConnected &&
+                                !showTradeButton &&
+                                isAuctionCompleted &&
+                                allocationDisplay}
+                            {!isAuctionCompleted && extraInfoDisplay}
+                        </div>
                     </>
                 )}
             </div>

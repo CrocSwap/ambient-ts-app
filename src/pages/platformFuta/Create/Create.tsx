@@ -148,6 +148,8 @@ export default function Create() {
                         type='text'
                         maxLength={TICKER_MAX_LENGTH}
                         onChange={(e) => handleChange(e.target.value)}
+                        autoCorrect='off'
+                        spellCheck='false'
                         autoComplete='off'
                     />
                     <p>{TICKER_MAX_LENGTH - tickerInput.length}</p>

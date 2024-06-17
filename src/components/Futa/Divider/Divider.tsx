@@ -26,7 +26,7 @@ const Divider: React.FC<DividerProps> = ({ count, vertical }) => {
             style={{
                 display: 'flex',
                 flexDirection: vertical ? 'row' : 'column',
-                gap: '2px',
+                gap: '4px',
                 width: vertical ? 'auto' : '100%',
                 height: vertical ? '100%' : 'auto',
             }}

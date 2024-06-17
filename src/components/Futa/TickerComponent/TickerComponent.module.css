@@ -30,10 +30,14 @@
     
 }
 
-.tickerContainer:not(:first-of-type){
+
+.openBidContainer,
+.maxMarketContainer {
     border-top: 1px solid var(--dark3);
     padding-top: 8px;
 }
+
+
 .tickerContainer h2 {
     color: var(--text1, #f0f0f8);
 
@@ -63,6 +67,17 @@
     color: var(--text2, #8b98a5);
     letter-spacing: -0.36px;
     text-transform: uppercase;
+}
+
+.tickerLabelTooltip{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    color: var(--text2, #8b98a5);
+    letter-spacing: -0.36px;
+    text-transform: uppercase;
+    font-size: 20px;
 }
 .progressBar {
     width: 27.9px;
@@ -248,17 +263,47 @@ cursor: pointer;
 
 }
 
+.tooltipLabelContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
 .tickerNameContainer button:hover{
     border: 1px solid var(--dark3)
+}
+
+.tooltipTitleDisplay{
+    border: 1px solid var(--text2);
+    padding: 8px;
+    font-size: 16px;
+    background: var(--dark2);
+    color: var(--text3);
+    line-height: 1.2;
+    text-transform: uppercase;
+   
 }
 
 @media (min-width: 1280px) {
     .container {
         padding: 0;
         padding-top: 12px;
-        border-left: 1px dashed var(--dark3);
+        /* border-left: 1px dashed var(--dark3); */
+        position: relative;
 
     }
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 12px; 
+        left: 0;
+        height: 100%; 
+        width: 1px;
+        
+        border-left: 1px dashed var(--dark3);
+       
+    }
+
 
     .content{
         padding-left: 8px;
@@ -266,5 +311,6 @@ cursor: pointer;
     .bidButton {
         margin: 0 auto;
         width: 100%;
+        margin-left: 8px;
     }
 }
