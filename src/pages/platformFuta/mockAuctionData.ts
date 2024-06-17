@@ -1,7 +1,7 @@
 export interface auctionDataIF {
     ticker: string;
     marketCap: number;
-    timeRem: string;
+    createdAt: number;
     status?: null;
 }
 
@@ -9,61 +9,61 @@ export const mockAuctionData: auctionDataIF[] = [
     {
         ticker: 'DOGE',
         marketCap: 67316,
-        timeRem: '40m',
+        createdAt: 1718054594,
     },
     {
         ticker: 'PEPE',
         marketCap: 34466,
-        timeRem: '15h',
+        createdAt: 1718130986,
     },
     {
         ticker: 'BODEN',
         marketCap: 27573,
-        timeRem: '21h',
+        createdAt: 1718181398,
     },
     {
         ticker: 'APU',
         marketCap: 979579,
-        timeRem: '07h',
+        createdAt: 1718195814,
     },
     {
         ticker: 'BOME',
         marketCap: 626930,
-        timeRem: '40m',
+        createdAt: 1718210226,
     },
     {
         ticker: 'USA',
         marketCap: 11294,
-        timeRem: '05h',
+        createdAt: 1718224639,
     },
     {
         ticker: 'BITCOIN',
         marketCap: 17647,
-        timeRem: '01h',
+        createdAt: 1718275051,
     },
     {
         ticker: 'WIF',
         marketCap: 5782,
-        timeRem: '10h',
+        createdAt: 1718293065,
     },
     {
         ticker: 'TRUMP',
         marketCap: 22058,
-        timeRem: '07h',
+        createdAt: 1718307476,
     },
     {
         ticker: 'EMILY',
         marketCap: 27673,
-        timeRem: 'COMPLETE',
+        createdAt: 1718311100,
     },
     {
         ticker: 'DEGEN',
         marketCap: 5782,
-        timeRem: '05h',
+        createdAt: 1718361510,
     },
     {
         ticker: 'LOCKIN',
         marketCap: 27573,
-        timeRem: '05m',
+        createdAt: 1718447920,
     },
 ];

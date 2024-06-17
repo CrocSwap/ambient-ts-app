@@ -206,9 +206,12 @@ export default function SearchableTicker(props: propsIF) {
                 <div className={styles.tickerTableContent}>
                     {filteredData
                         .filter((auction: auctionDataIF) =>
+                            // show auctions that are more than 1 week old if showComplete is true
                             showComplete
-                                ? true
-                                : auction.timeRem !== 'COMPLETE',
+                                ? auction.createdAt <
+                                  (Date.now() - 604800000) / 1000
+                                : auction.createdAt >
+                                  (Date.now() - 604800000) / 1000,
                         )
                         .map((auction: auctionDataIF) => (
                             <TickerItem
