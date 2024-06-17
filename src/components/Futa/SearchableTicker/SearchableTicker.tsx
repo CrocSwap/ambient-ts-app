@@ -32,7 +32,7 @@ export default function SearchableTicker(props: propsIF) {
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
-    const [currentOrder, setCurrentOrder] = useState<'ASC' | 'DSC'>('ASC');
+    // const [currentOrder, setCurrentOrder] = useState<'ASC' | 'DSC'>('ASC');
     const customLoading = false;
     const { setIsLoading } = useContext(AuctionsContext);
     useEffect(() => console.log(showComplete), [showComplete]);
@@ -48,9 +48,9 @@ export default function SearchableTicker(props: propsIF) {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
-    const toggleOrder = () => {
-        setCurrentOrder((prevOrder) => (prevOrder === 'ASC' ? 'DSC' : 'ASC'));
-    };
+    // const toggleOrder = () => {
+    //     setCurrentOrder((prevOrder) => (prevOrder === 'ASC' ? 'DSC' : 'ASC'));
+    // };
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -184,19 +184,18 @@ export default function SearchableTicker(props: propsIF) {
                         )}
                     </div>
 
-                    <div className={styles.sortOptions} onClick={toggleOrder}>
+                    <div
+                        className={styles.sortOptions}
+                        onClick={() => auctions.reverse()}
+                    >
                         <IoIosArrowUp
                             size={14}
-                            color={
-                                currentOrder === 'ASC' ? 'var(--accent1)' : ''
-                            }
+                            color={auctions.isReversed ? 'var(--accent1)' : ''}
                         />
 
                         <IoIosArrowDown
                             size={14}
-                            color={
-                                currentOrder === 'DSC' ? 'var(--accent1)' : ''
-                            }
+                            color={!auctions.isReversed ? 'var(--accent1)' : ''}
                         />
                     </div>
                 </div>
