@@ -89,8 +89,8 @@ export default function SearchableTicker(props: propsIF) {
                         {title}
                     </h3>
                 )}
-                <div className={styles.headerBottom}>
-                    <div className={styles.searchContainer}>
+                <div className={styles.filter_options}>
+                    <div className={styles.text_search_box}>
                         <BiSearch
                             size={20}
                             color='var(--text2)'
@@ -98,7 +98,6 @@ export default function SearchableTicker(props: propsIF) {
                             onClick={() => focusInput()}
                         />
                         <input
-                            className={styles.searchInput}
                             type='text'
                             id={INPUT_DOM_ID}
                             value={searchInputRaw}
@@ -114,7 +113,7 @@ export default function SearchableTicker(props: propsIF) {
                             onClick={() => clearInput()}
                         />{' '}
                     </div>
-                    <section className={styles.timeDropdownContainer}>
+                    <div className={styles.sort_toggles}>
                         <div className={styles.timeDropdownLeft}>
                             <div className={styles.timeDropdownContent}>
                                 <div
@@ -192,7 +191,7 @@ export default function SearchableTicker(props: propsIF) {
                                 SHOW COMPLETE
                             </button>
                         </div>
-                    </section>
+                    </div>
                 </div>
             </div>
             <div className={styles.tickerTableContainer}>
