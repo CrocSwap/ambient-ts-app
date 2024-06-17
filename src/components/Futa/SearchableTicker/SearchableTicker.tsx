@@ -234,15 +234,9 @@ export default function SearchableTicker(props: propsIF) {
     const tickerTableDisplay = (
         <div className={styles.tickerTableContainer}>
             <header className={styles.tickerHeader}>
-                <p onClick={() => auctions.update('ticker')}>TICKER</p>
-                <p
-                    onClick={() => {
-                        auctions.update('marketCap');
-                    }}
-                >
-                    MARKET CAP
-                </p>
-                <p onClick={() => auctions.update('timeLeft')}>REMAINING</p>
+                <p>TICKER</p>
+                <p>MARKET CAP</p>
+                <p>REMAINING</p>
                 <div className={styles.statusContainer}>
                     <span />
                 </div>
