@@ -64,9 +64,10 @@ export default function Create() {
     };
 
     function handleChange(text: string) {
-        if (checkTickerPattern(text)) {
+        const sanitized = text.trim();
+        if (checkTickerPattern(sanitized)) {
             setIsValidationInProgress(true);
-            setTickerInput(text.toUpperCase());
+            setTickerInput(sanitized.toUpperCase());
         }
     }
 

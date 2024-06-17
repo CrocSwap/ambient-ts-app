@@ -1,16 +1,9 @@
 import { Link } from 'react-router-dom';
 import styles from './SearchableTicker.module.css';
-type TickerItem = {
-    ticker: string;
-    marketCap: string;
-    timeRem: string;
-    status: string | null;
-};
-interface PropsIF {
-    tickerItem: TickerItem;
-}
-export default function TickerItem({ tickerItem }: PropsIF) {
-    const { ticker, marketCap, timeRem, status } = tickerItem;
+import { auctionDataIF } from '../../../pages/platformFuta/mockAuctionData';
+
+export default function TickerItem(props: auctionDataIF) {
+    const { ticker, marketCap, timeRem, status } = props;
 
     return (
         <Link

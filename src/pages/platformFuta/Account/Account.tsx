@@ -5,6 +5,12 @@ import TooltipComponent from '../../../components/Global/TooltipComponent/Toolti
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Divider from '../../../components/Futa/Divider/Divider';
+import { mockAuctionData } from '../mockAuctionData';
+import {
+    sortedAuctionsIF,
+    useSortedAuctions,
+} from '../Auctions/useSortedAuctions';
+
 export default function Account() {
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
@@ -21,12 +27,14 @@ export default function Account() {
         </div>
     );
 
+    const sorted: sortedAuctionsIF = useSortedAuctions(mockAuctionData);
+
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     const desktopVersion = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <SearchableTicker title='account' />
+                <SearchableTicker auctions={sorted} title='account' />
             </div>
 
             <div className={styles.rightLayout}>
@@ -44,7 +52,7 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker />
+                <SearchableTicker auctions={sorted} />
             </div>
             {claimAllContainer}
             <button className={styles.claimButton}>CLAIM ALL</button>

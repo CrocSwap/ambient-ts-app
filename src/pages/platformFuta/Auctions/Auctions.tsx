@@ -3,16 +3,11 @@ import SearchableTicker from '../../../components/Futa/SearchableTicker/Searchab
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Divider from '../../../components/Futa/Divider/Divider';
 import { useState } from 'react';
-import { sortedAuctions, useSortedAuctions } from './useSortedAuctions';
+import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Chart from '../../../components/Futa/Chart/Chart';
-
-export interface auctionDataIF {
-    ticker: string;
-    marketCap: number;
-    timeRem: string;
-}
+import { mockAuctionData } from '../mockAuctionData';
 
 interface propsIF {
     hideTicker?: boolean;
@@ -22,70 +17,12 @@ interface propsIF {
 export default function Auctions(props: propsIF) {
     const { hideTicker, placeholderTicker } = props;
     // placeholder data until the platform has live data
-    const rawData: auctionDataIF[] = [
-        {
-            ticker: 'DOGE',
-            marketCap: 67316,
-            timeRem: '40m',
-        },
-        {
-            ticker: 'PEPE',
-            marketCap: 34466,
-            timeRem: '15h',
-        },
-        {
-            ticker: 'BODEN',
-            marketCap: 27573,
-            timeRem: '21h',
-        },
-        {
-            ticker: 'APU',
-            marketCap: 979579,
-            timeRem: '07h',
-        },
-        {
-            ticker: 'BOME',
-            marketCap: 626930,
-            timeRem: '40m',
-        },
-        {
-            ticker: 'USA',
-            marketCap: 11294,
-            timeRem: '05h',
-        },
-        {
-            ticker: 'BITCOIN',
-            marketCap: 17647,
-            timeRem: '01h',
-        },
-        {
-            ticker: 'WIF',
-            marketCap: 5782,
-            timeRem: '10h',
-        },
-        {
-            ticker: 'TRUMP',
-            marketCap: 22058,
-            timeRem: '07h',
-        },
-        {
-            ticker: 'DEGEN',
-            marketCap: 5782,
-            timeRem: '05h',
-        },
-        {
-            ticker: 'LOCKIN',
-            marketCap: 27573,
-            timeRem: '05m',
-        },
-    ];
 
-    const sorted: sortedAuctions = useSortedAuctions(rawData);
+    const sorted: sortedAuctionsIF = useSortedAuctions(mockAuctionData);
 
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
 
-    false && sorted;
     false && INPUT_DOM_ID;
 
     const desktopScreen: boolean = useMediaQuery('(min-width: 1280px)');
@@ -104,6 +41,7 @@ export default function Auctions(props: propsIF) {
                     {isFullLayoutActive ? (
                         <div className={styles.auctionChartContainer}>
                             <SearchableTicker
+                                auctions={sorted}
                                 title='Auctions'
                                 setIsFullLayoutActive={setIsFullLayoutActive}
                             />
@@ -115,7 +53,8 @@ export default function Auctions(props: propsIF) {
                         </div>
                     ) : (
                         <SearchableTicker
-                            title='Auctions'
+                            auctions={sorted}
+                            title='AUCTIONS'
                             setIsFullLayoutActive={setIsFullLayoutActive}
                         />
                     )}
@@ -135,7 +74,7 @@ export default function Auctions(props: propsIF) {
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <SearchableTicker />
+            <SearchableTicker auctions={sorted} />
         </div>
     );
 }

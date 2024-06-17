@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
-import { auctionDataIF } from './Auctions';
+import { auctionDataIF } from '../mockAuctionData';
 
 export type auctionSorts = 'recent' | 'ticker' | 'mCap' | 'timeLeft';
 export interface sortByIF {
     method: auctionSorts;
     reverse: boolean;
 }
-export interface sortedAuctions {
+export interface sortedAuctionsIF {
     data: auctionDataIF[];
     update: (sortType: auctionSorts) => void;
 }
