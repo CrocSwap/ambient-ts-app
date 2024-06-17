@@ -53,7 +53,7 @@ export default function SearchableTicker(props: propsIF) {
         return auctions.data.filter((auc: auctionDataIF) =>
             auc.ticker.includes(searchInput.toUpperCase()),
         );
-    }, [searchInput]);
+    }, [searchInput, auctions.data]);
 
     // const toggleOrder = () => {
     //     setCurrentOrder((prevOrder) => (prevOrder === 'ASC' ? 'DSC' : 'ASC'));
