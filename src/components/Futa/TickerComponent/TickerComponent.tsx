@@ -129,6 +129,7 @@ const useAuctionStates = () => {
 // Utility functions
 const getAuctionDetails = async (ticker: string) => {
     if (
+        ticker.toLowerCase() === 'doge' ||
         ticker.toLowerCase() === 'not' ||
         ticker.toLowerCase() === 'mog' ||
         ticker.toLowerCase() === 'mew'
