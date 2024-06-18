@@ -3,80 +3,78 @@ import SearchableTicker from '../../../components/Futa/SearchableTicker/Searchab
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Divider from '../../../components/Futa/Divider/Divider';
 import { useState } from 'react';
+import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Chart from '../../../components/Futa/Chart/Chart';
+import { mockAuctionData } from '../mockAuctionData';
 
-export interface auctionDataIF {
-    ticker: string;
-    marketCap: number;
-    timeRem: string;
-}
-
-interface PropsIF {
+interface propsIF {
     hideTicker?: boolean;
     placeholderTicker?: boolean;
 }
-export default function Auctions(props: PropsIF) {
+
+export default function Auctions(props: propsIF) {
     const { hideTicker, placeholderTicker } = props;
+    // placeholder data until the platform has live data
 
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
-    const [isFullLayoutActive, setIsFullLayoutActive] = useState(false);
+    const sorted: sortedAuctionsIF = useSortedAuctions(mockAuctionData);
 
-    const consoleAndChartDisplay = (
-        <div className={styles.consoleChartComponent}>
-            <ConsoleComponent />
-            <span />
+    // DOM id for search input field
+    const INPUT_DOM_ID = 'ticker_auction_search_input';
 
-            <Chart />
-        </div>
-    );
+    false && INPUT_DOM_ID;
 
-    const auctionsAndChart = (
-        <div className={styles.auctionChartContainer}>
-            <SearchableTicker
-                title='Auctions'
-                setIsFullLayoutActive={setIsFullLayoutActive}
-            />
-            {consoleAndChartDisplay}
-        </div>
-    );
-    const auctionAndTicker = (
-        <div
-            className={styles.auctionsTickerContainer}
-            style={{ gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px' }}
-        >
-            {isFullLayoutActive ? (
-                auctionsAndChart
-            ) : (
-                <SearchableTicker
-                    title='Auctions'
-                    setIsFullLayoutActive={setIsFullLayoutActive}
-                />
-            )}
+    const desktopScreen: boolean = useMediaQuery('(min-width: 1280px)');
+    const [isFullLayoutActive, setIsFullLayoutActive] =
+        useState<boolean>(false);
 
-            <div className={styles.flexColumn}>
-                <Divider count={2} />
-                {!hideTicker && (
-                    <TickerComponent
-                        isAuctionPage
-                        placeholderTicker={placeholderTicker}
-                    />
-                )}
+    if (desktopScreen)
+        return (
+            <div className={styles.desktopContainer}>
+                <div
+                    className={styles.auctionsTickerContainer}
+                    style={{
+                        gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
+                    }}
+                >
+                    {isFullLayoutActive ? (
+                        <div className={styles.auctionChartContainer}>
+                            <SearchableTicker
+                                auctions={sorted}
+                                title='Auctions'
+                                setIsFullLayoutActive={setIsFullLayoutActive}
+                            />
+                            <div className={styles.consoleChartComponent}>
+                                <ConsoleComponent />
+                                <span />
+                                <Chart />
+                            </div>
+                        </div>
+                    ) : (
+                        <SearchableTicker
+                            auctions={sorted}
+                            title='AUCTIONS'
+                            setIsFullLayoutActive={setIsFullLayoutActive}
+                        />
+                    )}
+                    <div className={styles.flexColumn}>
+                        <Divider count={2} />
+                        {!hideTicker && (
+                            <TickerComponent
+                                isAuctionPage
+                                placeholderTicker={placeholderTicker}
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
-        </div>
-    );
-
-    const desktopVersion = (
-        <div className={styles.desktopContainer}>{auctionAndTicker}</div>
-    );
-
-    if (desktopScreen) return desktopVersion;
+        );
 
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <SearchableTicker />
+            <SearchableTicker auctions={sorted} />
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './TickerComponent.module.css';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -129,6 +129,7 @@ const useAuctionStates = () => {
 // Utility functions
 const getAuctionDetails = async (ticker: string) => {
     if (
+        ticker.toLowerCase() === 'doge' ||
         ticker.toLowerCase() === 'not' ||
         ticker.toLowerCase() === 'mog' ||
         ticker.toLowerCase() === 'mew'

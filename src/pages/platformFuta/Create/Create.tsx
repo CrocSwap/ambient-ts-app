@@ -64,9 +64,10 @@ export default function Create() {
     };
 
     function handleChange(text: string) {
-        if (checkTickerPattern(text)) {
+        const sanitized = text.trim();
+        if (checkTickerPattern(sanitized)) {
             setIsValidationInProgress(true);
-            setTickerInput(text.toUpperCase());
+            setTickerInput(sanitized.toUpperCase());
         }
     }
 
@@ -147,6 +148,8 @@ export default function Create() {
                         type='text'
                         maxLength={TICKER_MAX_LENGTH}
                         onChange={(e) => handleChange(e.target.value)}
+                        autoCorrect='off'
+                        spellCheck='false'
                         autoComplete='off'
                     />
                     <p>{TICKER_MAX_LENGTH - tickerInput.length}</p>
@@ -178,12 +181,12 @@ export default function Create() {
                 {!isUserConnected
                     ? 'Connect Wallet'
                     : tickerInput === ''
-                      ? 'Enter a Token Ticker'
-                      : isValidationInProgress
-                        ? 'Validating Ticker...'
-                        : isValidated
-                          ? 'Create Auction'
-                          : `Invalid Ticker: ${tickerInput}`}
+                    ? 'Enter a Token Ticker'
+                    : isValidationInProgress
+                    ? 'Validating Ticker...'
+                    : isValidated
+                    ? 'Create Auction'
+                    : `Invalid Ticker: ${tickerInput}`}
             </button>
         </footer>
     );

@@ -1,24 +1,39 @@
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import TickerItem from './TickerItem';
 import { MdClose } from 'react-icons/md';
-import { Dispatch, SetStateAction, useContext, useRef, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/Divider';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
+import {
+    auctionSorts,
+    sortedAuctionsIF,
+} from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 
-interface PropsIF {
+interface propsIF {
+    auctions: sortedAuctionsIF;
     title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
 }
-export default function SearchableTicker(props: PropsIF) {
-    const { title, setIsFullLayoutActive } = props;
+
+export default function SearchableTicker(props: propsIF) {
+    const { auctions, title, setIsFullLayoutActive } = props;
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
-    const [currentOrder, setCurrentOrder] = useState<'ASC' | 'DSC'>('ASC');
     const customLoading = false;
     const { setIsLoading } = useContext(AuctionsContext);
 
@@ -26,17 +41,23 @@ export default function SearchableTicker(props: PropsIF) {
     const INPUT_DOM_ID = 'ticker_auction_search_input';
 
     // variable to hold user search input from the DOM
-    const [searchInput, setSearchInput] = useState<string>('');
+    const [searchInputRaw, setSearchInputRaw] = useState<string>('');
 
     // fn to clear search input and re-focus the input element
     function clearInput(): void {
-        setSearchInput('');
+        setSearchInputRaw('');
+        focusInput();
+    }
+
+    function focusInput(): void {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
-    const toggleOrder = () => {
-        setCurrentOrder((prevOrder) => (prevOrder === 'ASC' ? 'DSC' : 'ASC'));
-    };
+    const filteredData = useMemo<AuctionDataIF[]>(() => {
+        return auctions.data.filter((auc: AuctionDataIF) =>
+            auc.ticker.includes(searchInputRaw.toUpperCase()),
+        );
+    }, [searchInputRaw, auctions.data]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,231 +66,163 @@ export default function SearchableTicker(props: PropsIF) {
     };
     useOnClickOutside(timeDropdownRef, clickOutsideHandler);
 
-    const searchContainer = (
-        <div className={styles.searchContainer}>
-            <BiSearch
-                size={20}
-                color='var(--text2)'
-                id='searchable_ticker_input'
-
-                // color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
-                // onClick={focusInput}
-            />
-            <input
-                className={styles.searchInput}
-                type='text'
-                id={INPUT_DOM_ID}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder='SEARCH...'
-                spellCheck={false}
-                autoComplete='off'
-                tabIndex={1}
-            />
-            <MdClose
-                size={20}
-                color='var(--text2)'
-                onClick={() => clearInput()}
-            />{' '}
-        </div>
-    );
     const creationTimeData = [
-        { label: 'Creation Time', value: 'Creation Time' },
-        { label: 'Market Cap', value: 'Market Cap' },
-        { label: 'Last Bid', value: 'Last Bid' },
-        { label: 'Last Reply', value: 'Last Reply' },
+        { label: 'Creation Time', value: 'Creation Time', slug: 'createdAt' },
+        { label: 'Market Cap', value: 'Market Cap', slug: 'marketCap' },
     ];
 
     const [activeTime, setActiveTime] = useState(creationTimeData[0]);
 
-    const tickerData = [
-        {
-            ticker: 'PEPE',
-            marketCap: '34,466',
-            timeRem: '15h',
-            status: null,
-        },
-        {
-            ticker: 'BODEN',
-            marketCap: '27,573',
-            timeRem: '21h',
-            status: 'var(--negative)',
-        },
-        {
-            ticker: 'BOME',
-            marketCap: '626,930',
-            timeRem: '40m',
-            status: 'null',
-        },
-        {
-            ticker: 'BITCOIN',
-            marketCap: '17,647',
-            timeRem: '01h',
-            status: 'var(--positive)',
-        },
-        {
-            ticker: 'TRUMP',
-            marketCap: '22,058',
-            timeRem: '07h',
-            status: null,
-        },
-        {
-            ticker: 'LOCKIN',
-            marketCap: '27,573',
-            timeRem: '05m',
-            status: 'null',
-        },
-        {
-            ticker: 'NOT',
-            marketCap: '783,663',
-            timeRem: 'COMPLETE',
-            status: 'var(--text1)',
-        },
-        {
-            ticker: 'MOG',
-            marketCap: '783,663',
-            timeRem: 'COMPLETE',
-            status: 'var(--text1)',
-        },
-        {
-            ticker: 'MEW',
-            marketCap: '14,117',
-            timeRem: 'COMPLETE',
-            status: 'var(--accent4)',
-        },
-    ];
-
-    const [tickerDataToShow, setTickerDataToShow] = useState(
-        tickerData.filter((item) => item.timeRem !== 'COMPLETE'),
-    );
-    const handleShowComplete = () => {
-        setShowComplete(!showComplete);
-        if (!showComplete) {
-            setTickerDataToShow(
-                tickerData.filter((item) => item.timeRem === 'COMPLETE'),
-            );
-        } else {
-            setTickerDataToShow(
-                tickerData.filter((item) => item.timeRem !== 'COMPLETE'),
-            );
-        }
-    };
-
-    const timeDropdown = (
-        <section className={styles.timeDropdownContainer}>
-            <div className={styles.timeDropdownLeft}>
-                <div className={styles.timeDropdownContent}>
-                    <div
-                        className={styles.timeDropdownButton}
-                        onClick={() =>
-                            setIsTimeDropdownOpen(!isTimeDropdownOpen)
-                        }
-                    >
-                        <p>{activeTime.label}</p>
-                        {isTimeDropdownOpen ? (
-                            <IoIosArrowUp />
-                        ) : (
-                            <IoIosArrowDown color='var(--text1)' />
-                        )}
-                    </div>
-
-                    <div className={styles.sortOptions} onClick={toggleOrder}>
-                        <IoIosArrowUp
-                            size={14}
-                            color={
-                                currentOrder === 'ASC' ? 'var(--accent1)' : ''
-                            }
-                        />
-
-                        <IoIosArrowDown
-                            size={14}
-                            color={
-                                currentOrder === 'DSC' ? 'var(--accent1)' : ''
-                            }
-                        />
-                    </div>
-                </div>
-
-                {isTimeDropdownOpen && (
-                    <div className={styles.dropdown} ref={timeDropdownRef}>
-                        {creationTimeData.map((item, idx) => (
-                            <p
-                                className={styles.timeItem}
-                                key={idx}
-                                onClick={() => {
-                                    setActiveTime(item),
-                                        setIsTimeDropdownOpen(false);
-                                }}
-                            >
-                                {item.label}
-                            </p>
-                        ))}
-                    </div>
-                )}
-            </div>
-            <div className={styles.timeDropdownRight}>
-                <button
-                    onClick={handleShowComplete}
-                    className={
-                        showComplete ? styles.buttonOn : styles.buttonOff
-                    }
-                >
-                    SHOW COMPLETE
-                </button>
-            </div>
-        </section>
-    );
-
-    const tickerTableDisplay = (
-        <div className={styles.tickerTableContainer}>
-            <header className={styles.tickerHeader}>
-                <p>TICKER</p>
-                <p className={styles.marketCapHeader}>MARKET CAP</p>
-                <p>REMAINING</p>
-                <div className={styles.statusContainer}>
-                    <span />
-                </div>
-            </header>
-            <div className={styles.tickerTableContent}>
-                {tickerDataToShow.map((item) => (
-                    <TickerItem
-                        tickerItem={item}
-                        key={JSON.stringify(item)}
-                        {...item}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-    console.log({ title });
-
-    const header = (
-        <div className={styles.header}>
-            {title && (
-                <h3
-                    className={styles.title}
-                    onClick={
-                        setIsFullLayoutActive
-                            ? () => setIsFullLayoutActive((prev) => !prev)
-                            : () => null
-                    }
-                >
-                    {title}
-                </h3>
-            )}
-            <div className={styles.headerBottom}>
-                {searchContainer}
-                {timeDropdown}
-            </div>
-        </div>
-    );
-
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
+
     return (
         <div className={styles.container}>
             <Divider count={2} />
-            {header}
-            {tickerTableDisplay}
+            <div className={styles.header}>
+                {title && (
+                    <h3
+                        className={styles.title}
+                        onClick={
+                            setIsFullLayoutActive
+                                ? () => setIsFullLayoutActive((prev) => !prev)
+                                : () => null
+                        }
+                    >
+                        {title}
+                    </h3>
+                )}
+                <div className={styles.filter_options}>
+                    <div className={styles.text_search_box}>
+                        <BiSearch
+                            size={20}
+                            color='var(--text2)'
+                            id='searchable_ticker_input'
+                            onClick={() => focusInput()}
+                        />
+                        <input
+                            type='text'
+                            id={INPUT_DOM_ID}
+                            value={searchInputRaw}
+                            onChange={(e) => setSearchInputRaw(e.target.value)}
+                            placeholder='SEARCH...'
+                            spellCheck={false}
+                            autoComplete='off'
+                            tabIndex={1}
+                        />
+                        <MdClose
+                            size={20}
+                            color='var(--text2)'
+                            onClick={() => clearInput()}
+                        />{' '}
+                    </div>
+                    <div className={styles.sort_toggles}>
+                        <div className={styles.timeDropdownLeft}>
+                            <div className={styles.timeDropdownContent}>
+                                <div
+                                    className={styles.timeDropdownButton}
+                                    onClick={() =>
+                                        setIsTimeDropdownOpen(
+                                            !isTimeDropdownOpen,
+                                        )
+                                    }
+                                >
+                                    <p>{activeTime.label}</p>
+                                    {isTimeDropdownOpen ? (
+                                        <IoIosArrowUp />
+                                    ) : (
+                                        <IoIosArrowDown color='var(--text1)' />
+                                    )}
+                                </div>
+
+                                <div
+                                    className={styles.sortOptions}
+                                    onClick={() => auctions.reverse()}
+                                >
+                                    <IoIosArrowUp
+                                        size={14}
+                                        color={
+                                            auctions.isReversed
+                                                ? 'var(--accent1)'
+                                                : ''
+                                        }
+                                    />
+
+                                    <IoIosArrowDown
+                                        size={14}
+                                        color={
+                                            !auctions.isReversed
+                                                ? 'var(--accent1)'
+                                                : ''
+                                        }
+                                    />
+                                </div>
+                            </div>
+
+                            {isTimeDropdownOpen && (
+                                <div
+                                    className={styles.dropdown}
+                                    ref={timeDropdownRef}
+                                >
+                                    {creationTimeData.map((item, idx) => (
+                                        <p
+                                            className={styles.timeItem}
+                                            key={idx}
+                                            onClick={() => {
+                                                setActiveTime(item);
+                                                setIsTimeDropdownOpen(false);
+                                                auctions.update(
+                                                    item.slug as auctionSorts,
+                                                );
+                                            }}
+                                        >
+                                            {item.label}
+                                        </p>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <div className={styles.timeDropdownRight}>
+                            <button
+                                onClick={() => setShowComplete(!showComplete)}
+                                className={
+                                    showComplete
+                                        ? styles.buttonOn
+                                        : styles.buttonOff
+                                }
+                            >
+                                SHOW COMPLETE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className={styles.tickerTableContainer}>
+                <header className={styles.tickerHeader}>
+                    <p>TICKER</p>
+                    <p className={styles.marketCapHeader}>MARKET CAP</p>
+                    <p>REMAINING</p>
+                    <div className={styles.statusContainer}>
+                        <span />
+                    </div>
+                </header>
+                <div className={styles.tickerTableContent}>
+                    {filteredData
+                        .filter((auction: AuctionDataIF) =>
+                            // show auctions that are more than 1 week old if showComplete is true
+                            showComplete
+                                ? auction.createdAt <
+                                  (Date.now() - 604800000) / 1000
+                                : auction.createdAt >
+                                  (Date.now() - 604800000) / 1000,
+                        )
+                        .map((auction: AuctionDataIF) => (
+                            <TickerItem
+                                key={JSON.stringify(auction)}
+                                {...auction}
+                            />
+                        ))}
+                </div>
+            </div>
         </div>
     );
 }

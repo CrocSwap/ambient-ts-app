@@ -117,6 +117,7 @@ export default function CustomBid(props: Props) {
                 Custom Bid
                 <MdClose color='#8b98a5' onClick={handleClose} />
             </header>
+            {userQtyDisplay}
 
             <div className={styles.customBidContainer}>
                 <div className={styles.fdvContainer}>

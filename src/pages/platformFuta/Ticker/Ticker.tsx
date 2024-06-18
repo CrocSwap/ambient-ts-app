@@ -11,7 +11,9 @@ export default function Ticker() {
     const { ticker: tickerFromParams } = useParams();
 
     const getAuctionDetails = async (ticker: string) => {
+        console.log({ ticker });
         if (
+            ticker.toLowerCase() === 'doge' ||
             ticker.toLowerCase() === 'not' ||
             ticker.toLowerCase() === 'mog' ||
             ticker.toLowerCase() === 'mew'

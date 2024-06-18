@@ -1,7 +1,7 @@
 import AuctionCard from './AuctionCard';
 import styles from './Auctions.module.css';
 
-export interface auctionDataIF {
+export interface AuctionDataIF {
     author: string;
     name: string;
     ticker: string;
@@ -11,7 +11,7 @@ export interface auctionDataIF {
 }
 
 export default function Auctions() {
-    const auctionData: auctionDataIF[] = [
+    const auctionData: AuctionDataIF[] = [
         {
             author: '0x10D1F681C0A27F35BF29F297613742E44F00C4F379',
             name: 'Doge 2.0',
@@ -41,7 +41,7 @@ export default function Auctions() {
                 <button>Create Token</button>
             </header>
             <div className={styles.auctions_main}>
-                {auctionData.map((auc: auctionDataIF) => (
+                {auctionData.map((auc: AuctionDataIF) => (
                     <AuctionCard key={JSON.stringify(auc)} auction={auc} />
                 ))}
             </div>

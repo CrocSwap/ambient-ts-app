@@ -9,8 +9,7 @@ import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
-import { TokenIF } from '../../../ambient-utils/types';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+
 import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
@@ -107,7 +106,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
         showComments,
         setShowComments,
     } = useContext(AuctionsContext);
-    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const isAuctionCompleted =
         auctionDetails?.status?.toLowerCase() === 'closed';
@@ -289,8 +287,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
             />
             <div className={styles.maxDropdownContainer}>
                 <button
-                    onClick={() => setIsMaxDropdownOpen(!isMaxDropdownOpen)}
+                    onClick={() => {
+                        tickerFromParams &&
+                            setIsMaxDropdownOpen(!isMaxDropdownOpen);
+                    }}
                     className={styles.maxDropdownButton}
+                    style={tickerFromParams ? {} : { cursor: 'not-allowed' }}
                 >
                     <p> {!placeholderTicker ? selectedMaxValue.value : '-'}</p>
                     {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
@@ -354,6 +356,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 isHeader
             />
             <CurrencySelector
+                disable={!tickerFromParams}
                 selectedToken={nativeToken}
                 setQty={setBidQtyNonDisplay}
                 inputValue={inputValue}
