@@ -12,6 +12,7 @@ interface propsIF {
     black?: boolean;
     width?: string;
     style?: React.CSSProperties;
+    isFuta?: boolean;
 }
 
 export default function Button(props: propsIF) {
@@ -26,6 +27,7 @@ export default function Button(props: propsIF) {
         width,
         style,
         thin,
+        isFuta,
     } = props;
 
     const ariaLabelToDisplay = disabled
@@ -37,6 +39,7 @@ export default function Button(props: propsIF) {
         <ButtonBase
             id={idForDOM}
             style={{
+                color: isFuta ? 'var(--dark1)' : '',
                 ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
                 ...style, // Merge with style prop
             }}

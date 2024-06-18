@@ -192,6 +192,9 @@ export default function SearchableTicker(props: propsIF) {
                             >
                                 SHOW COMPLETE
                             </button>
+                            <button className={styles.buttonOff}>
+                                WATCHLIST
+                            </button>
                         </div>
                     </div>
                 </div>
