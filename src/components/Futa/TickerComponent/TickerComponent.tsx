@@ -45,11 +45,10 @@ interface PropsIF {
 
 // Contexts
 const useAuctionContexts = () => {
-    const {
-        auctions: { chainId },
-        showComments,
-        setShowComments,
-    } = useContext(AuctionsContext);
+    const { showComments, setShowComments, auctions, accountData } =
+        useContext(AuctionsContext);
+
+    const chainId = auctions.chainId;
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
@@ -61,6 +60,8 @@ const useAuctionContexts = () => {
         useContext(ChainDataContext);
 
     return {
+        accountData,
+        auctions,
         chainId,
         showComments,
         setShowComments,
@@ -92,7 +93,7 @@ const useAuctionStates = () => {
         AuctionDataIF | undefined
     >();
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
-        useState<{ unclaimedAllocation: string } | undefined>();
+        useState<string | undefined>();
     const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -135,26 +136,6 @@ const useAuctionStates = () => {
     };
 };
 
-// Utility functions
-const getAuctionDetails = async (ticker: string) => {
-    return mockAuctionData.find(
-        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-    );
-};
-
-const getAllocationByUser = async (
-    ticker: string,
-    userAddress: `0x${string}` | undefined,
-) => {
-    if (!userAddress) return { unclaimedAllocation: '0' };
-    if (ticker.toLowerCase() === 'not')
-        return { unclaimedAllocation: '100000' };
-    if (ticker.toLowerCase() === 'mog')
-        return { unclaimedAllocation: '168200' };
-
-    return { unclaimedAllocation: '0' };
-};
-
 // Component
 export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
@@ -169,6 +150,7 @@ export default function TickerComponent(props: PropsIF) {
         gasPriceInGwei,
         isActiveNetworkL2,
         nativeTokenUsdPrice,
+        accountData,
     } = useAuctionContexts();
 
     const {
@@ -197,10 +179,22 @@ export default function TickerComponent(props: PropsIF) {
         l1GasFeeLimitInGwei,
     } = useAuctionStates();
 
+    // Utility functions
+    const getAuctionDetails = async (ticker: string) => {
+        return mockAuctionData.find(
+            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+        );
+    };
+    const getAuctionDetailsForAccount = async (ticker: string) => {
+        return accountData.auctions.find(
+            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+        );
+    };
+
     const { ticker: tickerFromParams } = useParams();
 
     const formattedUnclaimedAllocationForConnectedUser = parseFloat(
-        allocationForConnectedUser?.unclaimedAllocation ?? '0',
+        allocationForConnectedUser ?? '0',
     ).toLocaleString('en-US', {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
@@ -254,9 +248,14 @@ export default function TickerComponent(props: PropsIF) {
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(
-            getAllocationByUser(tickerFromParams, userAddress),
-        ).then((details) => setAllocationForConnectedUser(details));
+        Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
+            (details) =>
+                setAllocationForConnectedUser(
+                    details?.unclaimedAllocation
+                        ? details?.unclaimedAllocation.toString()
+                        : undefined,
+                ),
+        );
     }, [tickerFromParams, userAddress]);
 
     const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
@@ -425,8 +424,8 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        allocationForConnectedUser?.unclaimedAllocation &&
-        parseFloat(allocationForConnectedUser.unclaimedAllocation) > 0;
+        allocationForConnectedUser &&
+        parseFloat(allocationForConnectedUser) > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
