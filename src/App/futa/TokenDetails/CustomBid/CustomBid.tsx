@@ -132,7 +132,6 @@ export default function CustomBid(props: Props) {
                             setTokenModalOpen={setTokenModalOpen}
                             inputValue={inputValue}
                             setInputValue={setInputValue}
-                            customBottomContent={userQtyDisplay}
                             customBorderRadius='0px'
                         />
                     </div>

@@ -81,6 +81,7 @@ transition: all var(--animation-speed) ease-in-out;
 
 .buttonOn:hover, .buttonOff:hover{
     border: 1px solid var(--dark3);
+    color: var(--text1)
 }
  .buttonOn{
     color: var(--accent1) !important

@@ -78,7 +78,7 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 };
 
 // Main function
-export const tickerConstants = (props: PropsIF) => {
+export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
         placeholderTicker,
@@ -345,29 +345,6 @@ export const tickerConstants = (props: PropsIF) => {
 
     const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
-    const nativeData: TokenIF | undefined =
-        tokenBalances &&
-        tokenBalances.find(
-            (tkn: TokenIF) => tkn.address === nativeToken.address,
-        );
-
-    const nativeTokenWalletBalance = nativeData?.walletBalance;
-
-    // User quantity display component
-    const userQtyDisplay = (
-        <div className={styles.userQtyDisplay}>
-            <p style={{ color: 'var(--text2)' }}>{bidUsdValueTruncated}</p>
-            {nativeTokenWalletBalance !== '0' && (
-                <div
-                    className={styles.maxButtonContainer}
-                    onClick={handleBalanceClick}
-                >
-                    <p>{nativeTokenWalletBalanceTruncated}</p>
-                </div>
-            )}
-        </div>
-    );
-
     // Bid size display component
     const bidSizeDisplay = (
         <div className={styles.tickerContainer}>
@@ -381,9 +358,11 @@ export const tickerConstants = (props: PropsIF) => {
                 setQty={setBidQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
-                customBottomContent={userQtyDisplay}
                 customBorderRadius='0px'
                 noModals
+                usdValue={bidUsdValueTruncated}
+                walletBalance={nativeTokenWalletBalanceTruncated}
+                handleBalanceClick={handleBalanceClick}
             />
         </div>
     );

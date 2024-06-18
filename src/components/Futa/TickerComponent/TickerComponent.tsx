@@ -27,7 +27,7 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
-import { tickerConstants } from './tickerConstants';
+import { tickerDisplayElements } from './tickerDisplayElements';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -432,7 +432,7 @@ export default function TickerComponent(props: PropsIF) {
         </button>
     );
 
-    const tickerConstantsProps = {
+    const tickerDisplayElementsProps = {
         placeholderTicker,
         auctionDetails,
         bidGasPriceinDollars,
@@ -458,7 +458,7 @@ export default function TickerComponent(props: PropsIF) {
         extraInfoDisplay,
         tickerDisplay,
         openedBidDisplay,
-    } = tickerConstants(tickerConstantsProps);
+    } = tickerDisplayElements(tickerDisplayElementsProps);
 
     const allocationDisplay = (
         <div className={styles.allocationContainer}>

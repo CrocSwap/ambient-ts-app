@@ -205,6 +205,7 @@
     pointer-events: none;
     background: var(--dark4);
     border: none;
+    color: var(--text2)
 }
 .bidButtonDesktop:hover {
     background: var(--accent2);
@@ -270,7 +271,8 @@ cursor: pointer;
     gap: 8px;
 }
 .tickerNameContainer button:hover{
-    border: 1px solid var(--dark3)
+    border: 1px solid var(--dark3);
+    color: var(--text1)
 }
 
 .tooltipTitleDisplay{
