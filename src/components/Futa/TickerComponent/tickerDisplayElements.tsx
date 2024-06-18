@@ -17,6 +17,8 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
 export interface PropsIF {
+    marketCapEthValue: number | undefined;
+    currentMarketCapUsdValue: number | undefined;
     timeRemaining: string | undefined;
     isAuctionCompleted?: boolean;
     placeholderTicker?: boolean;
@@ -81,6 +83,8 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
+        marketCapEthValue,
+        currentMarketCapUsdValue,
         timeRemaining,
         isAuctionCompleted,
         placeholderTicker,
@@ -109,6 +113,14 @@ export const tickerDisplayElements = (props: PropsIF) => {
         setShowComments,
     } = useContext(AuctionsContext);
 
+    const currentMarketCapUsdFormatted =
+        currentMarketCapUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: currentMarketCapUsdValue,
+                  isUSD: true,
+              })
+            : '...';
+
     // Status data
     const statusData = [
         {
@@ -129,13 +141,13 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
+            value: !placeholderTicker ? 'Ξ ' + marketCapEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'Current filled market cap in eth terms',
         },
         {
             label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
+            value: !placeholderTicker ? currentMarketCapUsdFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel:
                 'Current filled market cap in dollars based on the current price of eth',

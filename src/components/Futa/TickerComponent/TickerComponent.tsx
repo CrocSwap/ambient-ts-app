@@ -206,6 +206,8 @@ export default function TickerComponent(props: PropsIF) {
         maximumFractionDigits: 2,
     });
 
+    const marketCapEthValue = auctionDetails?.marketCap;
+
     const timeRemainingAbbrev = auctionDetails
         ? getTimeRemainingAbbrev(
               moment(auctionDetails.createdAt * 1000).diff(
@@ -417,6 +419,11 @@ export default function TickerComponent(props: PropsIF) {
             ? nativeTokenUsdPrice * selectedMaxValue.value
             : undefined;
 
+    const currentMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && marketCapEthValue !== undefined
+            ? nativeTokenUsdPrice * marketCapEthValue
+            : undefined;
+
     const isAllocationAvailableToClaim =
         allocationForConnectedUser?.unclaimedAllocation &&
         parseFloat(allocationForConnectedUser.unclaimedAllocation) > 0;
@@ -473,6 +480,8 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const tickerDisplayElementsProps = {
+        marketCapEthValue,
+        currentMarketCapUsdValue,
         timeRemaining,
         isAuctionCompleted,
         placeholderTicker,
