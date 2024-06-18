@@ -27,10 +27,11 @@ interface propsIF {
     auctions: sortedAuctionsIF;
     title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
+    isAccount?: boolean;
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const { auctions, title, setIsFullLayoutActive } = props;
+    const { auctions, title, setIsFullLayoutActive, isAccount } = props;
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
@@ -54,10 +55,20 @@ export default function SearchableTicker(props: propsIF) {
     }
 
     const filteredData = useMemo<AuctionDataIF[]>(() => {
-        return auctions.data.filter((auc: AuctionDataIF) =>
-            auc.ticker.includes(searchInputRaw.toUpperCase()),
+        const dataFilteredBySearch = auctions.data.filter(
+            (auc: AuctionDataIF) =>
+                auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
-    }, [searchInputRaw, auctions.data]);
+        const filteredByCompletion = !isAccount
+            ? dataFilteredBySearch.filter((auction: AuctionDataIF) =>
+                  // show auctions that are more than 1 week old if showComplete is true
+                  showComplete
+                      ? auction.createdAt < (Date.now() - 604800000) / 1000
+                      : auction.createdAt > (Date.now() - 604800000) / 1000,
+              )
+            : dataFilteredBySearch;
+        return filteredByCompletion;
+    }, [searchInputRaw, auctions.data, isAccount, showComplete]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -181,21 +192,25 @@ export default function SearchableTicker(props: propsIF) {
                                 </div>
                             )}
                         </div>
-                        <div className={styles.timeDropdownRight}>
-                            <button
-                                onClick={() => setShowComplete(!showComplete)}
-                                className={
-                                    showComplete
-                                        ? styles.buttonOn
-                                        : styles.buttonOff
-                                }
-                            >
-                                SHOW COMPLETE
-                            </button>
-                            <button className={styles.buttonOff}>
-                                WATCHLIST
-                            </button>
-                        </div>
+                        {!isAccount && (
+                            <div className={styles.timeDropdownRight}>
+                                <button
+                                    onClick={() =>
+                                        setShowComplete(!showComplete)
+                                    }
+                                    className={
+                                        showComplete
+                                            ? styles.buttonOn
+                                            : styles.buttonOff
+                                    }
+                                >
+                                    SHOW COMPLETE
+                                </button>
+                                <button className={styles.buttonOff}>
+                                    WATCHLIST
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -209,21 +224,12 @@ export default function SearchableTicker(props: propsIF) {
                     </div>
                 </header>
                 <div className={styles.tickerTableContent}>
-                    {filteredData
-                        .filter((auction: AuctionDataIF) =>
-                            // show auctions that are more than 1 week old if showComplete is true
-                            showComplete
-                                ? auction.createdAt <
-                                  (Date.now() - 604800000) / 1000
-                                : auction.createdAt >
-                                  (Date.now() - 604800000) / 1000,
-                        )
-                        .map((auction: AuctionDataIF) => (
-                            <TickerItem
-                                key={JSON.stringify(auction)}
-                                {...auction}
-                            />
-                        ))}
+                    {filteredData.map((auction: AuctionDataIF) => (
+                        <TickerItem
+                            key={JSON.stringify(auction)}
+                            {...auction}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

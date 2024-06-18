@@ -7,6 +7,11 @@ export const mockAuctionData: AuctionDataIF[] = [
         createdAt: 1718054594,
     },
     {
+        ticker: 'MOG',
+        marketCap: 0.59,
+        createdAt: 1718054594,
+    },
+    {
         ticker: 'PEPE',
         marketCap: 15.23,
         createdAt: 1718125986,
@@ -61,11 +66,6 @@ export const mockAuctionData: AuctionDataIF[] = [
         marketCap: 24.129,
         createdAt: 1718447920,
     },
-    {
-        ticker: 'MOG',
-        marketCap: 0.59,
-        createdAt: 1718054594,
-    },
 ];
 
 export const mockAccountData: AuctionDataIF[] = [
@@ -76,15 +76,15 @@ export const mockAccountData: AuctionDataIF[] = [
         unclaimedAllocation: 100000,
     },
     {
-        ticker: 'BODEN',
-        marketCap: 25.59,
-        createdAt: 1718138398,
-    },
-    {
         ticker: 'MOG',
         marketCap: 0.59,
         createdAt: 1718054594,
         unclaimedAllocation: 168200,
+    },
+    {
+        ticker: 'BODEN',
+        marketCap: 25.59,
+        createdAt: 1718138398,
     },
     {
         ticker: 'APU',
