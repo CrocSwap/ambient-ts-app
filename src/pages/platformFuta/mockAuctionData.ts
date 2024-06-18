@@ -8,62 +8,63 @@ export interface auctionDataIF {
 export const mockAuctionData: auctionDataIF[] = [
     {
         ticker: 'DOGE',
-        marketCap: 67316,
+        marketCap: 20,
         createdAt: 1718054594,
     },
     {
         ticker: 'PEPE',
-        marketCap: 34466,
-        createdAt: 1718130986,
+        marketCap: 15,
+        createdAt: 1718118986,
+        // createdAt: 1718130986,
     },
     {
         ticker: 'BODEN',
-        marketCap: 27573,
+        marketCap: 25,
         createdAt: 1718181398,
     },
     {
         ticker: 'APU',
-        marketCap: 979579,
+        marketCap: 12,
         createdAt: 1718195814,
     },
     {
         ticker: 'BOME',
-        marketCap: 626930,
+        marketCap: 1,
         createdAt: 1718210226,
     },
     {
         ticker: 'USA',
-        marketCap: 11294,
+        marketCap: 50,
         createdAt: 1718224639,
     },
     {
         ticker: 'BITCOIN',
-        marketCap: 17647,
+        marketCap: 32,
         createdAt: 1718275051,
     },
     {
         ticker: 'WIF',
-        marketCap: 5782,
+        marketCap: 11,
         createdAt: 1718293065,
     },
     {
         ticker: 'TRUMP',
-        marketCap: 22058,
+        marketCap: 45,
         createdAt: 1718307476,
     },
     {
         ticker: 'EMILY',
-        marketCap: 27673,
+        marketCap: 27,
         createdAt: 1718311100,
     },
     {
         ticker: 'DEGEN',
-        marketCap: 5782,
+        marketCap: 16,
         createdAt: 1718361510,
     },
     {
         ticker: 'LOCKIN',
-        marketCap: 27573,
+        marketCap: 24,
         createdAt: 1718447920,
     },
 ];
