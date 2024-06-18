@@ -31,9 +31,11 @@ export default function TickerItem(props: AuctionDataIF) {
             ? marketCapUsdValue
                 ? getFormattedNumber({
                       value: marketCapUsdValue,
+                      minFracDigits: 0,
+                      maxFracDigits: 0,
                       isUSD: true,
                   })
-                : '$0.00'
+                : '$0'
             : undefined;
 
     return (
