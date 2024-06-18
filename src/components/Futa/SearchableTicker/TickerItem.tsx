@@ -18,7 +18,7 @@ export default function TickerItem({ tickerItem }: PropsIF) {
             to={'/auctions/v1/' + ticker}
         >
             <p>{ticker}</p>
-            <p>${marketCap}</p>
+            <p className={styles.marketCap}>${marketCap}</p>
             <p style={{ color: status ? status : 'var(--text1)' }}>{timeRem}</p>
             <div className={styles.statusContainer}>
                 {status && (

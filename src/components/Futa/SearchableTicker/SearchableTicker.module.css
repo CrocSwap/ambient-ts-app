@@ -216,6 +216,14 @@ color: var(--text1)
   
 }
 
+.marketCap{
+    text-align: end;
+}
+
+.marketCapHeader{
+    text-align: end;
+    padding: 0 12px;
+}
 
 @media (min-width: 1280px) {
 .content{

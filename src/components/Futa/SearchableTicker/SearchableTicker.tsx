@@ -224,7 +224,7 @@ export default function SearchableTicker(props: PropsIF) {
         <div className={styles.tickerTableContainer}>
             <header className={styles.tickerHeader}>
                 <p>TICKER</p>
-                <p>MARKET CAP</p>
+                <p className={styles.marketCapHeader}>MARKET CAP</p>
                 <p>REMAINING</p>
                 <div className={styles.statusContainer}>
                     <span />
