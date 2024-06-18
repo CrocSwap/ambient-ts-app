@@ -93,18 +93,28 @@ export const mockAccountData: AuctionDataIF[] = [
     },
 ];
 
-export const mockFdvData1 = [
-    { value: 0.219 },
-    { value: 0.271 },
-    { value: 0.338 },
-    { value: 0.423 },
-    { value: 0.529 },
-];
+export const mockAuctionStatus1 = {
+    openBidMaxMarketCap: 1.81,
+    currentBidSize: 0.271,
+    currentAmountFilled: 0.066,
+    maxFdvData: [
+        { value: 1.81 },
+        { value: 2.271 },
+        { value: 3.338 },
+        { value: 4.423 },
+        { value: 5.529 },
+    ],
+};
 
-export const mockFdvData2 = [
-    { value: 0.419 },
-    { value: 0.471 },
-    { value: 0.538 },
-    { value: 0.623 },
-    { value: 0.729 },
-];
+export const mockAuctionStatus2 = {
+    openBidMaxMarketCap: 2.92,
+    currentBidSize: 0.471,
+    currentAmountFilled: 0.166,
+    maxFdvData: [
+        { value: 2.92 },
+        { value: 2.95 },
+        { value: 3.338 },
+        { value: 4.423 },
+        { value: 5.529 },
+    ],
+};

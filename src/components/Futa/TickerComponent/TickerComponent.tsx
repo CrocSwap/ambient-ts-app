@@ -148,6 +148,7 @@ export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const {
+        auctionStatusData,
         getAuctionData,
         chainId,
         showComments,
@@ -497,6 +498,7 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const tickerDisplayElementsProps = {
+        auctionStatusData,
         maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,

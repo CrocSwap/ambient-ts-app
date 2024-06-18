@@ -7,6 +7,7 @@ import Divider from '../Divider/Divider';
 import { FaEye } from 'react-icons/fa';
 import {
     AuctionDataIF,
+    AuctionStatusDataIF,
     AuctionsContext,
 } from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
@@ -17,6 +18,7 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
 export interface PropsIF {
+    auctionStatusData: AuctionStatusDataIF;
     maxFdvData: { value: number }[];
     marketCapEthValue: number | undefined;
     currentMarketCapUsdValue: number | undefined;
@@ -84,6 +86,7 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
+        auctionStatusData,
         maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,
@@ -174,6 +177,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
               })
             : '...';
 
+    const formattedOpenBidStatus = `${auctionStatusData.currentAmountFilled} / ${auctionStatusData.currentBidSize}`;
+
     // Opened bid data
     const openedBidData = [
         {
@@ -191,7 +196,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
         {
             label: 'bid size',
-            value: !placeholderTicker ? 'XXX.XXX / XXX.XXX' : '-',
+            value: !placeholderTicker ? formattedOpenBidStatus : '-',
             color: 'var(--accent1)',
             tooltipLabel: 'Filled and total bid sized of the current open bid',
         },

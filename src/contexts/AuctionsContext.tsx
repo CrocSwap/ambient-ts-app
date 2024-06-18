@@ -4,8 +4,8 @@ import { CrocEnvContext } from './CrocEnvContext';
 import {
     mockAccountData,
     mockAuctionData,
-    mockFdvData1,
-    mockFdvData2,
+    mockAuctionStatus1,
+    mockAuctionStatus2,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
 
@@ -46,6 +46,9 @@ export interface AccountDataIF {
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
     chainId: string;
+    openBidMaxMarketCap: number | undefined;
+    currentBidSize: number | undefined;
+    currentAmountFilled: number | undefined;
     maxFdvData: {
         value: number;
     }[];
@@ -89,6 +92,9 @@ export const AuctionsContextProvider = (props: {
         React.useState<AuctionStatusDataIF>({
             dataReceived: false,
             chainId: chainId,
+            openBidMaxMarketCap: undefined,
+            currentBidSize: undefined,
+            currentAmountFilled: undefined,
             maxFdvData: [],
         });
 
@@ -122,9 +128,9 @@ export const AuctionsContextProvider = (props: {
 
     const fetchAuctionStatusData = async (ticker: string) => {
         if (ticker === 'APU' || ticker === 'DEGEN') {
-            return mockFdvData1;
+            return mockAuctionStatus1;
         } else {
-            return mockFdvData2;
+            return mockAuctionStatus2;
         }
     };
 
@@ -156,7 +162,10 @@ export const AuctionsContextProvider = (props: {
             setAuctionStatusData({
                 dataReceived: true,
                 chainId: chainId,
-                maxFdvData: data,
+                openBidMaxMarketCap: data.openBidMaxMarketCap,
+                currentBidSize: data.currentBidSize,
+                currentAmountFilled: data.currentAmountFilled,
+                maxFdvData: data.maxFdvData,
             });
         });
     }
