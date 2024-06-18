@@ -33,7 +33,7 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    max-width: 700px;
+    max-width: 50%;
     height: 24px;
     padding: 0px 4px 0px 8px;
     gap: 4px;
@@ -66,7 +66,10 @@ color: var(--text2)
 .timeDropdownRight{
     display: flex;
     justify-content: flex-end;
-    min-width: 120px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    
 }
 
 .timeDropdownRight button {
@@ -87,12 +90,13 @@ color: var(--text2)
 }
 
 .buttonOn:hover, .buttonOff:hover{
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--text1);
     color: var(--text1)
 }
 
 .buttonOn{
-    color: var(--accent1) !important
+    color: var(--accent1) !important;
+    border: 1px solid var(--accent1) !important
 }
 .timeDropdownLeft{
     width: 100%;
@@ -249,6 +253,13 @@ color: var(--text1)
 font-size: 36px;
 text-transform: uppercase;
 }
+
+.text_search_box {
+
+    max-width: 60%;
+   
+}
+
 
 }
 

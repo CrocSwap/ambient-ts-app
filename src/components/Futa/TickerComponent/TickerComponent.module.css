@@ -184,6 +184,10 @@
     color: var(--text2);
 }
 
+.buttonOn{
+    color: var(--accent1) !important;
+    border: 1px solid var(--accent1) !important
+}
 .bidButton {
     display: flex;
     padding: 2px 8px;
@@ -249,7 +253,7 @@
     gap: 8px;
     align-items: center;
 }
-.tickerNameContainer button{
+.commentButton{
     border: 1px solid var(--dark2, #111A1E);
 background: var(--dark2, #111A1E);
 padding: 4px 8px;
@@ -263,17 +267,25 @@ transition: all var(--animation-speed) ease-in-out;
 cursor: pointer;
 
 }
+.commentButton:hover{
+    border: 1px solid var(--accent1);
+    color: var(--accent1)
+}
+.watchlistButton{
+    padding: 4px;
+}
 
+.watchlistButton:hover{
+    border: 1px solid var(--accent1);
+    
+}
 .tooltipLabelContainer{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
 }
-.tickerNameContainer button:hover{
-    border: 1px solid var(--dark3);
-    color: var(--text1)
-}
+
 
 .tooltipTitleDisplay{
     border: 1px solid var(--text2);
