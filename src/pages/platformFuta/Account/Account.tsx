@@ -37,7 +37,11 @@ export default function Account() {
     const desktopVersion = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
-                <SearchableTicker auctions={sorted} title='account' />
+                <SearchableTicker
+                    auctions={sorted}
+                    title='account'
+                    isAccount={true}
+                />
             </div>
 
             <div className={styles.rightLayout}>
@@ -55,7 +59,7 @@ export default function Account() {
             <div className={styles.content}>
                 <BreadCrumb />
                 <h2>Account</h2>
-                <SearchableTicker auctions={sorted} />
+                <SearchableTicker auctions={sorted} isAccount={true} />
             </div>
             {claimAllContainer}
             <button className={styles.claimButton}>CLAIM ALL</button>

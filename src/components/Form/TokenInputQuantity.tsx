@@ -24,6 +24,7 @@ import { useModal } from '../Global/Modal/useModal';
 import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
+import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -66,7 +67,7 @@ function TokenInputQuantity(props: propsIF) {
         usdValue,
         noModals,
         walletBalance,
-        handleBalanceClick,
+        // handleBalanceClick,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -218,6 +219,7 @@ function TokenInputQuantity(props: propsIF) {
             ref={tokenSelectRef}
             style={{
                 borderRadius: customBorderRadius ? customBorderRadius : '50px',
+                paddingRight: brand === 'futa' ? '20px' : '0',
             }}
         >
             <TokenIcon
@@ -241,7 +243,8 @@ function TokenInputQuantity(props: propsIF) {
                 {tokenSelectButton}
                 <button
                     className={styles.walletBalanceButton}
-                    onClick={handleBalanceClick}
+                    style={{ cursor: 'default' }}
+                    // onClick={handleBalanceClick}
                 >
                     {walletBalance}
                 </button>
@@ -249,8 +252,7 @@ function TokenInputQuantity(props: propsIF) {
         </section>
     );
 
-    const yes = true;
-    if (yes) return futaLayout;
+    if (brand === 'futa') return futaLayout;
 
     return (
         <div

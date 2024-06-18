@@ -24,6 +24,7 @@ export interface AuctionDataIF {
     marketCap: number;
     createdAt: number;
     status?: null;
+    unclaimedAllocation?: number;
 }
 
 export interface AuctionsDataIF {
