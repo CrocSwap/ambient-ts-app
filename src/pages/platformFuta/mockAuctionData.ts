@@ -3,62 +3,80 @@ import { AuctionDataIF } from '../../contexts/AuctionsContext';
 export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
-        marketCap: 20,
+        marketCap: 20.52,
         createdAt: 1718054594,
     },
     {
         ticker: 'PEPE',
-        marketCap: 15,
-        createdAt: 1718118986,
+        marketCap: 15.23,
+        createdAt: 1718125986,
     },
     {
         ticker: 'BODEN',
-        marketCap: 25,
-        createdAt: 1718181398,
+        marketCap: 25.59,
+        createdAt: 1718138398,
     },
     {
         ticker: 'APU',
-        marketCap: 12,
+        marketCap: 12.11,
         createdAt: 1718195814,
     },
     {
         ticker: 'BOME',
-        marketCap: 1,
+        marketCap: 1.343,
         createdAt: 1718210226,
     },
     {
         ticker: 'USA',
-        marketCap: 50,
+        marketCap: 50.25,
         createdAt: 1718224639,
     },
     {
         ticker: 'BITCOIN',
-        marketCap: 32,
+        marketCap: 32.11,
         createdAt: 1718275051,
     },
     {
         ticker: 'WIF',
-        marketCap: 11,
+        marketCap: 0.399,
         createdAt: 1718293065,
     },
     {
         ticker: 'TRUMP',
-        marketCap: 45,
+        marketCap: 0.45,
         createdAt: 1718307476,
     },
     {
         ticker: 'EMILY',
-        marketCap: 27,
+        marketCap: 0.3927,
         createdAt: 1718311100,
     },
     {
         ticker: 'DEGEN',
-        marketCap: 16,
+        marketCap: 16.23,
         createdAt: 1718361510,
     },
     {
         ticker: 'LOCKIN',
-        marketCap: 24,
+        marketCap: 24.129,
         createdAt: 1718447920,
+    },
+];
+
+export const mockAccountData: AuctionDataIF[] = [
+    {
+        ticker: 'DOGE',
+        marketCap: 20.55,
+        createdAt: 1718054594,
+    },
+    {
+        ticker: 'BODEN',
+        marketCap: 25.59,
+        createdAt: 1718130398,
+    },
+    {
+        ticker: 'APU',
+        marketCap: 12.11,
+        createdAt: 1718195814,
     },
 ];

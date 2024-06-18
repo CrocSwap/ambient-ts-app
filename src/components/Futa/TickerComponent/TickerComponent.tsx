@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import styles from './TickerComponent.module.css';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -18,7 +21,11 @@ import {
     NUM_WEI_IN_GWEI,
     supportedNetworks,
 } from '../../../ambient-utils/constants';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    getTimeRemaining,
+    getTimeRemainingAbbrev,
+} from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -28,6 +35,8 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';
+import moment from 'moment';
+import { mockAuctionData } from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -80,7 +89,7 @@ const useAuctionStates = () => {
         string | undefined
     >('');
     const [auctionDetails, setAuctionDetails] = useState<
-        { status: string } | undefined
+        AuctionDataIF | undefined
     >();
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
         useState<{ unclaimedAllocation: string } | undefined>();
@@ -128,15 +137,9 @@ const useAuctionStates = () => {
 
 // Utility functions
 const getAuctionDetails = async (ticker: string) => {
-    if (
-        ticker.toLowerCase() === 'doge' ||
-        ticker.toLowerCase() === 'not' ||
-        ticker.toLowerCase() === 'mog' ||
-        ticker.toLowerCase() === 'mew'
-    )
-        return { status: 'CLOSED' };
-
-    return { status: 'OPEN' };
+    return mockAuctionData.find(
+        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+    );
 };
 
 const getAllocationByUser = async (
@@ -203,14 +206,50 @@ export default function TickerComponent(props: PropsIF) {
         maximumFractionDigits: 2,
     });
 
+    const marketCapEthValue = auctionDetails?.marketCap;
+
+    const timeRemainingAbbrev = auctionDetails
+        ? getTimeRemainingAbbrev(
+              moment(auctionDetails.createdAt * 1000).diff(
+                  Date.now() - 604800000,
+                  'seconds',
+              ),
+          )
+        : undefined;
+
+    const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
+
+    const refreshTimeRemaining = () => {
+        if (auctionDetails) {
+            const timeRemainingInSeconds = moment(
+                auctionDetails.createdAt * 1000,
+            ).diff(Date.now() - 604800000, 'seconds');
+            const timeRemainingString = getTimeRemaining(
+                timeRemainingInSeconds,
+            );
+            setTimeRemaining(
+                timeRemainingInSeconds < 0 ? '-' : timeRemainingString,
+            );
+        }
+    };
+
+    useEffect(() => {
+        // refresh time remaining every 1 second
+        refreshTimeRemaining();
+        const interval = setInterval(() => {
+            refreshTimeRemaining();
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [tickerFromParams, auctionDetails]);
+
     const isAuctionCompleted =
-        auctionDetails?.status?.toLowerCase() === 'closed';
+        timeRemainingAbbrev?.toLowerCase() === 'complete';
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) =>
-            setAuctionDetails(details),
-        );
+        Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) => {
+            setAuctionDetails(details);
+        });
     }, [tickerFromParams]);
 
     useEffect(() => {
@@ -380,6 +419,11 @@ export default function TickerComponent(props: PropsIF) {
             ? nativeTokenUsdPrice * selectedMaxValue.value
             : undefined;
 
+    const currentMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && marketCapEthValue !== undefined
+            ? nativeTokenUsdPrice * marketCapEthValue
+            : undefined;
+
     const isAllocationAvailableToClaim =
         allocationForConnectedUser?.unclaimedAllocation &&
         parseFloat(allocationForConnectedUser.unclaimedAllocation) > 0;
@@ -398,16 +442,16 @@ export default function TickerComponent(props: PropsIF) {
     const buttonLabel = isAllocationAvailableToClaim
         ? 'Claim'
         : showTradeButton
-        ? 'Trade'
-        : !isUserConnected
-        ? 'Connect Wallet'
-        : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-        ? 'Enter a Bid Size'
-        : isValidationInProgress
-        ? 'Validating Bid...'
-        : isValidated
-        ? 'Bid'
-        : 'Invalid Bid';
+          ? 'Trade'
+          : !isUserConnected
+            ? 'Connect Wallet'
+            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+              ? 'Enter a Bid Size'
+              : isValidationInProgress
+                ? 'Validating Bid...'
+                : isValidated
+                  ? 'Bid'
+                  : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -420,12 +464,14 @@ export default function TickerComponent(props: PropsIF) {
                           `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
                     : showTradeButton
-                    ? console.log(
-                          `clicked Trade for ticker: ${tickerFromParams}`,
-                      )
-                    : !isUserConnected
-                    ? openWalletModal()
-                    : console.log(`clicked Bid for display qty: ${inputValue}`)
+                      ? console.log(
+                            `clicked Trade for ticker: ${tickerFromParams}`,
+                        )
+                      : !isUserConnected
+                        ? openWalletModal()
+                        : console.log(
+                              `clicked Bid for display qty: ${inputValue}`,
+                          )
             }
             disabled={isButtonDisabled}
         >
@@ -434,6 +480,10 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const tickerDisplayElementsProps = {
+        marketCapEthValue,
+        currentMarketCapUsdValue,
+        timeRemaining,
+        isAuctionCompleted,
         placeholderTicker,
         auctionDetails,
         bidGasPriceinDollars,

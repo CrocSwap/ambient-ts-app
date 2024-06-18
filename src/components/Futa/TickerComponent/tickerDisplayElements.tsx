@@ -5,7 +5,10 @@ import styles from './TickerComponent.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import Divider from '../Divider/Divider';
 import { FaEye } from 'react-icons/fa';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
@@ -14,12 +17,12 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
 export interface PropsIF {
+    marketCapEthValue: number | undefined;
+    currentMarketCapUsdValue: number | undefined;
+    timeRemaining: string | undefined;
+    isAuctionCompleted?: boolean;
     placeholderTicker?: boolean;
-    auctionDetails:
-        | {
-              status: string;
-          }
-        | undefined;
+    auctionDetails: AuctionDataIF | undefined;
     bidGasPriceinDollars: string | undefined;
     formattedPriceImpact: string;
     isAuctionPage?: boolean;
@@ -80,8 +83,11 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
+        marketCapEthValue,
+        currentMarketCapUsdValue,
+        timeRemaining,
+        isAuctionCompleted,
         placeholderTicker,
-        auctionDetails,
         bidGasPriceinDollars,
         formattedPriceImpact,
         isAuctionPage,
@@ -107,32 +113,41 @@ export const tickerDisplayElements = (props: PropsIF) => {
         setShowComments,
     } = useContext(AuctionsContext);
 
-    const isAuctionCompleted =
-        auctionDetails?.status?.toLowerCase() === 'closed';
+    const currentMarketCapUsdFormatted =
+        currentMarketCapUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: currentMarketCapUsdValue,
+                  isUSD: true,
+              })
+            : '...';
 
     // Status data
     const statusData = [
         {
             label: 'status',
-            value: !placeholderTicker ? auctionDetails?.status : '-',
+            value: !placeholderTicker
+                ? isAuctionCompleted
+                    ? 'CLOSED'
+                    : 'OPEN'
+                : '-',
             color: 'var(--accent1)',
             tooltipLabel: 'The current status of the auction - open or closed',
         },
         {
             label: 'time remaining',
-            value: !placeholderTicker ? 'XXh:XXm:XXs' : '-',
+            value: !placeholderTicker ? timeRemaining : '-',
             color: 'var(--positive)',
             tooltipLabel: 'The time remaining till the auction is closed',
         },
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
+            value: !placeholderTicker ? 'Ξ ' + marketCapEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'Current filled market cap in eth terms',
         },
         {
             label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
+            value: !placeholderTicker ? currentMarketCapUsdFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel:
                 'Current filled market cap in dollars based on the current price of eth',

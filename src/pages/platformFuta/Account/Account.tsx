@@ -5,13 +5,16 @@ import TooltipComponent from '../../../components/Global/TooltipComponent/Toolti
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Divider from '../../../components/Futa/Divider/Divider';
-import { mockAuctionData } from '../mockAuctionData';
 import {
     sortedAuctionsIF,
     useSortedAuctions,
 } from '../Auctions/useSortedAuctions';
+import { useContext } from 'react';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 export default function Account() {
+    const { accountData } = useContext(AuctionsContext);
+
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
             <h3>CLAIM ALL</h3>
@@ -27,7 +30,7 @@ export default function Account() {
         </div>
     );
 
-    const sorted: sortedAuctionsIF = useSortedAuctions(mockAuctionData);
+    const sorted: sortedAuctionsIF = useSortedAuctions(accountData.auctions);
 
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 

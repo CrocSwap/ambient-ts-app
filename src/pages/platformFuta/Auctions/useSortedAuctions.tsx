@@ -23,7 +23,6 @@ export interface sortedAuctionsIF {
 
 export function useSortedAuctions(unsorted: AuctionDataIF[]) {
     const [sorted, setSorted] = useState<AuctionDataIF[]>(unsorted);
-
     const DEFAULT_SORT: auctionSorts = 'recent';
     const sortDetails = useRef<sortDetailsIF>({
         sortBy: DEFAULT_SORT,

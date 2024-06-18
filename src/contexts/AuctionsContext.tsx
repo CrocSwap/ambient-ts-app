@@ -1,10 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 // import { fetchAuctionsData } from '../ambient-utils/api';
 import { CrocEnvContext } from './CrocEnvContext';
-import { mockAuctionData } from '../pages/platformFuta/mockAuctionData';
+import {
+    mockAccountData,
+    mockAuctionData,
+} from '../pages/platformFuta/mockAuctionData';
+import { UserDataContext } from './UserDataContext';
 
 interface AuctionsContextIF {
     auctions: AuctionsDataIF;
+    accountData: AccountDataIF;
     getAuctions(): void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +29,13 @@ export interface AuctionDataIF {
 export interface AuctionsDataIF {
     dataReceived: boolean;
     chainId: string;
-    data: AuctionDataIF[] | undefined;
+    data: AuctionDataIF[];
+}
+
+export interface AccountDataIF {
+    dataReceived: boolean;
+    chainId: string;
+    auctions: AuctionDataIF[];
 }
 // export interface AuctionsDataIF {
 //     global: XpLeaderboardDataIF;
@@ -47,11 +58,18 @@ export const AuctionsContextProvider = (props: {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [auctionsData, setAuctionsData] = React.useState<AuctionsDataIF>({
         dataReceived: false,
         chainId: chainId,
-        data: undefined,
+        data: [],
+    });
+
+    const [accountData, setAccountData] = React.useState<AccountDataIF>({
+        dataReceived: false,
+        chainId: chainId,
+        auctions: [],
     });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -78,7 +96,12 @@ export const AuctionsContextProvider = (props: {
         return mockAuctionData;
     };
 
-    function getAuctions() {
+    const fetchAccountData = async () => {
+        return mockAccountData;
+    };
+
+    function getAuctionsData() {
+        console.log('getAuctions');
         fetchAuctionsData().then((data) => {
             setAuctionsData({
                 dataReceived: true,
@@ -88,22 +111,47 @@ export const AuctionsContextProvider = (props: {
         });
     }
 
-    // useEffect to fetch auctions data every 30 seconds
+    function getAccountData() {
+        console.log('getAccount');
+        fetchAccountData().then((data) => {
+            setAccountData({
+                dataReceived: true,
+                chainId: chainId,
+                auctions: data,
+            });
+        });
+    }
+
+    // useEffect to fetch auctions  data every 30 seconds
     useEffect(() => {
-        getAuctions();
+        getAuctionsData();
         const interval = setInterval(() => {
-            getAuctions();
+            getAuctionsData();
         }, 30000);
         return () => clearInterval(interval);
     }, [chainId]);
+
+    // useEffect to fetch account data every 30 seconds
+    useEffect(() => {
+        getAccountData();
+        const interval = setInterval(() => {
+            getAccountData();
+        }, 30000);
+        return () => clearInterval(interval);
+    }, [chainId, userAddress]);
 
     const auctionsContext: AuctionsContextIF = {
         auctions: {
             dataReceived: auctionsData.dataReceived,
             chainId: chainId,
-            data: auctionsData.data,
+            data: auctionsData.data || [],
         },
-        getAuctions: getAuctions,
+        accountData: {
+            dataReceived: accountData.dataReceived,
+            chainId: chainId,
+            auctions: accountData.auctions || [],
+        },
+        getAuctions: getAuctionsData,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
         tickerInput: tickerInput,

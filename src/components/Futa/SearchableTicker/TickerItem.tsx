@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import styles from './SearchableTicker.module.css';
 import {
     getFormattedNumber,
-    getTimeRemaining,
+    getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import moment from 'moment';
 import { useContext } from 'react';
@@ -14,7 +14,7 @@ export default function TickerItem(props: AuctionDataIF) {
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
-    const timeRemaining = getTimeRemaining(
+    const timeRemaining = getTimeRemainingAbbrev(
         moment(createdAt * 1000).diff(Date.now() - 604800000, 'seconds'),
     );
 
@@ -31,9 +31,11 @@ export default function TickerItem(props: AuctionDataIF) {
             ? marketCapUsdValue
                 ? getFormattedNumber({
                       value: marketCapUsdValue,
+                      minFracDigits: 0,
+                      maxFracDigits: 0,
                       isUSD: true,
                   })
-                : '$0.00'
+                : '$0'
             : undefined;
 
     return (
