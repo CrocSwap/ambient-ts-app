@@ -44,8 +44,14 @@ interface PropsIF {
 
 // Contexts
 const useAuctionContexts = () => {
-    const { showComments, setShowComments, auctions, accountData } =
-        useContext(AuctionsContext);
+    const {
+        showComments,
+        setShowComments,
+        auctions,
+        accountData,
+        getAuctionData,
+        auctionStatusData,
+    } = useContext(AuctionsContext);
 
     const chainId = auctions.chainId;
 
@@ -59,6 +65,8 @@ const useAuctionContexts = () => {
         useContext(ChainDataContext);
 
     return {
+        getAuctionData,
+        auctionStatusData,
         accountData,
         auctions,
         chainId,
@@ -76,14 +84,7 @@ const useAuctionContexts = () => {
 
 // States
 const useAuctionStates = () => {
-    const { isActiveNetworkL2 } = useAuctionContexts();
-    const maxFdvData = [
-        { value: 0.216 },
-        { value: 0.271 },
-        { value: 0.338 },
-        { value: 0.423 },
-        { value: 0.529 },
-    ];
+    const { isActiveNetworkL2, auctionStatusData } = useAuctionContexts();
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
@@ -103,12 +104,19 @@ const useAuctionStates = () => {
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [priceImpact, setPriceImpact] = useState<number | undefined>();
-    const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
+    const [selectedMaxValue, setSelectedMaxValue] = useState(
+        auctionStatusData.maxFdvData[0],
+    );
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
+    useEffect(() => {
+        setSelectedMaxValue(auctionStatusData.maxFdvData[0]);
+    }, [auctionStatusData.maxFdvData[0]]);
+
     return {
+        maxFdvData: auctionStatusData.maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -140,6 +148,7 @@ export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const {
+        getAuctionData,
         chainId,
         showComments,
         isUserConnected,
@@ -154,6 +163,7 @@ export default function TickerComponent(props: PropsIF) {
     } = useAuctionContexts();
 
     const {
+        maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -192,6 +202,13 @@ export default function TickerComponent(props: PropsIF) {
     };
 
     const { ticker: tickerFromParams } = useParams();
+
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
+            console.log('fetched data for ' + tickerFromParams);
+        });
+    }, [tickerFromParams]);
 
     const formattedUnclaimedAllocationForConnectedUser = parseFloat(
         allocationForConnectedUser ?? '0',
@@ -414,6 +431,7 @@ export default function TickerComponent(props: PropsIF) {
 
     const fdvUsdValue =
         nativeTokenUsdPrice !== undefined &&
+        selectedMaxValue &&
         selectedMaxValue.value !== undefined
             ? nativeTokenUsdPrice * selectedMaxValue.value
             : undefined;
@@ -479,6 +497,7 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const tickerDisplayElementsProps = {
+        maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -530,7 +549,7 @@ export default function TickerComponent(props: PropsIF) {
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
-    }, [bidQtyInputField, selectedMaxValue.value, inputValue]);
+    }, [bidQtyInputField, selectedMaxValue?.value, inputValue]);
 
     return (
         <div className={styles.container}>

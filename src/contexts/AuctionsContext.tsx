@@ -4,6 +4,8 @@ import { CrocEnvContext } from './CrocEnvContext';
 import {
     mockAccountData,
     mockAuctionData,
+    mockFdvData1,
+    mockFdvData2,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
 
@@ -11,12 +13,14 @@ interface AuctionsContextIF {
     auctions: AuctionsDataIF;
     accountData: AccountDataIF;
     getAuctions(): void;
+    getAuctionData(ticker: string): void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     showComments: boolean;
     setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
     tickerInput: string;
     setTickerInput: React.Dispatch<React.SetStateAction<string>>;
+    auctionStatusData: AuctionStatusDataIF;
 }
 
 export interface AuctionDataIF {
@@ -37,6 +41,14 @@ export interface AccountDataIF {
     dataReceived: boolean;
     chainId: string;
     auctions: AuctionDataIF[];
+}
+
+export interface AuctionStatusDataIF {
+    dataReceived: boolean;
+    chainId: string;
+    maxFdvData: {
+        value: number;
+    }[];
 }
 // export interface AuctionsDataIF {
 //     global: XpLeaderboardDataIF;
@@ -73,6 +85,13 @@ export const AuctionsContextProvider = (props: {
         auctions: [],
     });
 
+    const [auctionStatusData, setAuctionStatusData] =
+        React.useState<AuctionStatusDataIF>({
+            dataReceived: false,
+            chainId: chainId,
+            maxFdvData: [],
+        });
+
     const [isLoading, setIsLoading] = useState(true);
     const [tickerInput, setTickerInput] = useState('');
     const [showComments, setShowComments] = useState(false);
@@ -101,6 +120,14 @@ export const AuctionsContextProvider = (props: {
         return mockAccountData;
     };
 
+    const fetchAuctionStatusData = async (ticker: string) => {
+        if (ticker === 'APU' || ticker === 'DEGEN') {
+            return mockFdvData1;
+        } else {
+            return mockFdvData2;
+        }
+    };
+
     function getAuctionsData() {
         console.log('getAuctions');
         fetchAuctionsData().then((data) => {
@@ -119,6 +146,17 @@ export const AuctionsContextProvider = (props: {
                 dataReceived: true,
                 chainId: chainId,
                 auctions: data,
+            });
+        });
+    }
+
+    function getAuctionData(ticker: string) {
+        console.log('getAuctionData for: ' + ticker);
+        fetchAuctionStatusData(ticker).then((data) => {
+            setAuctionStatusData({
+                dataReceived: true,
+                chainId: chainId,
+                maxFdvData: data,
             });
         });
     }
@@ -142,17 +180,11 @@ export const AuctionsContextProvider = (props: {
     }, [chainId, userAddress]);
 
     const auctionsContext: AuctionsContextIF = {
-        auctions: {
-            dataReceived: auctionsData.dataReceived,
-            chainId: chainId,
-            data: auctionsData.data || [],
-        },
-        accountData: {
-            dataReceived: accountData.dataReceived,
-            chainId: chainId,
-            auctions: accountData.auctions || [],
-        },
+        auctionStatusData: auctionStatusData,
+        auctions: auctionsData,
+        accountData: accountData,
         getAuctions: getAuctionsData,
+        getAuctionData: getAuctionData,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
         tickerInput: tickerInput,

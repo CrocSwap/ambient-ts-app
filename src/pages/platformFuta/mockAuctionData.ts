@@ -92,3 +92,19 @@ export const mockAccountData: AuctionDataIF[] = [
         createdAt: 1718195814,
     },
 ];
+
+export const mockFdvData1 = [
+    { value: 0.219 },
+    { value: 0.271 },
+    { value: 0.338 },
+    { value: 0.423 },
+    { value: 0.529 },
+];
+
+export const mockFdvData2 = [
+    { value: 0.419 },
+    { value: 0.471 },
+    { value: 0.538 },
+    { value: 0.623 },
+    { value: 0.729 },
+];

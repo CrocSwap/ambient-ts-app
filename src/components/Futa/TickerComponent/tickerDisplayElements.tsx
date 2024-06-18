@@ -17,6 +17,7 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
 export interface PropsIF {
+    maxFdvData: { value: number }[];
     marketCapEthValue: number | undefined;
     currentMarketCapUsdValue: number | undefined;
     timeRemaining: string | undefined;
@@ -83,6 +84,7 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
+        maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -154,17 +156,35 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
     ];
 
+    const openBidEthValueNum = maxFdvData[0] ? maxFdvData[0].value : undefined;
+    const openBidEthValueFormatted = openBidEthValueNum
+        ? openBidEthValueNum.toString()
+        : '...';
+
+    const currentOpenBidUsdValue =
+        nativeTokenUsdPrice !== undefined && openBidEthValueNum !== undefined
+            ? nativeTokenUsdPrice * openBidEthValueNum
+            : undefined;
+
+    const currentOpenBidUsdValueFormatted =
+        currentOpenBidUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: currentOpenBidUsdValue,
+                  isUSD: true,
+              })
+            : '...';
+
     // Opened bid data
     const openedBidData = [
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
+            value: !placeholderTicker ? 'Ξ ' + openBidEthValueFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel: 'Current open bid market cap in ETH terms',
         },
         {
             label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
+            value: !placeholderTicker ? currentOpenBidUsdValueFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel:
                 'Current open bid market cap in dollar terms based on the current price of ETH',
@@ -175,15 +195,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
             color: 'var(--accent1)',
             tooltipLabel: 'Filled and total bid sized of the current open bid',
         },
-    ];
-
-    // Max FDV data
-    const maxFdvData = [
-        { value: 0.216 },
-        { value: 0.271 },
-        { value: 0.338 },
-        { value: 0.423 },
-        { value: 0.529 },
     ];
 
     // Extra info data
@@ -313,7 +324,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
                     className={styles.maxDropdownButton}
                     style={tickerFromParams ? {} : { cursor: 'not-allowed' }}
                 >
-                    <p> {!placeholderTicker ? selectedMaxValue.value : '-'}</p>
+                    <p>
+                        {!placeholderTicker && selectedMaxValue
+                            ? selectedMaxValue?.value
+                            : '-'}
+                    </p>
                     {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
                 </button>
                 {isMaxDropdownOpen && (
