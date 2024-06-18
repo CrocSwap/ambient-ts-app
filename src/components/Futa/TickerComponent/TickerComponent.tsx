@@ -36,7 +36,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';
 import moment from 'moment';
-import { mockAuctionData } from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -151,6 +150,7 @@ export default function TickerComponent(props: PropsIF) {
         isActiveNetworkL2,
         nativeTokenUsdPrice,
         accountData,
+        auctions,
     } = useAuctionContexts();
 
     const {
@@ -181,7 +181,7 @@ export default function TickerComponent(props: PropsIF) {
 
     // Utility functions
     const getAuctionDetails = async (ticker: string) => {
-        return mockAuctionData.find(
+        return auctions.data.find(
             (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
         );
     };
@@ -244,7 +244,7 @@ export default function TickerComponent(props: PropsIF) {
         Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) => {
             setAuctionDetails(details);
         });
-    }, [tickerFromParams]);
+    }, [tickerFromParams, auctions.data]);
 
     useEffect(() => {
         if (!tickerFromParams) return;

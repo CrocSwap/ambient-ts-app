@@ -19,7 +19,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'BODEN',
         marketCap: 25.59,
-        createdAt: 1718138398,
+        createdAt: 1718148398,
     },
     {
         ticker: 'APU',
@@ -84,7 +84,7 @@ export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'BODEN',
         marketCap: 25.59,
-        createdAt: 1718138398,
+        createdAt: 1718148398,
     },
     {
         ticker: 'APU',
