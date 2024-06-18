@@ -9,12 +9,12 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'PEPE',
         marketCap: 15,
-        createdAt: 1718118986,
+        createdAt: 1718125986,
     },
     {
         ticker: 'BODEN',
         marketCap: 25,
-        createdAt: 1718181398,
+        createdAt: 1718130398,
     },
     {
         ticker: 'APU',

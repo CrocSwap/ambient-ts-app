@@ -5,7 +5,10 @@ import styles from './TickerComponent.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import Divider from '../Divider/Divider';
 import { FaEye } from 'react-icons/fa';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
@@ -14,12 +17,10 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
 export interface PropsIF {
+    timeRemaining: string | undefined;
+    isAuctionCompleted?: boolean;
     placeholderTicker?: boolean;
-    auctionDetails:
-        | {
-              status: string;
-          }
-        | undefined;
+    auctionDetails: AuctionDataIF | undefined;
     bidGasPriceinDollars: string | undefined;
     formattedPriceImpact: string;
     isAuctionPage?: boolean;
@@ -80,8 +81,9 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
+        timeRemaining,
+        isAuctionCompleted,
         placeholderTicker,
-        auctionDetails,
         bidGasPriceinDollars,
         formattedPriceImpact,
         isAuctionPage,
@@ -107,20 +109,21 @@ export const tickerDisplayElements = (props: PropsIF) => {
         setShowComments,
     } = useContext(AuctionsContext);
 
-    const isAuctionCompleted =
-        auctionDetails?.status?.toLowerCase() === 'closed';
-
     // Status data
     const statusData = [
         {
             label: 'status',
-            value: !placeholderTicker ? auctionDetails?.status : '-',
+            value: !placeholderTicker
+                ? isAuctionCompleted
+                    ? 'CLOSED'
+                    : 'OPEN'
+                : '-',
             color: 'var(--accent1)',
             tooltipLabel: 'The current status of the auction - open or closed',
         },
         {
             label: 'time remaining',
-            value: !placeholderTicker ? 'XXh:XXm:XXs' : '-',
+            value: !placeholderTicker ? timeRemaining : '-',
             color: 'var(--positive)',
             tooltipLabel: 'The time remaining till the auction is closed',
         },
