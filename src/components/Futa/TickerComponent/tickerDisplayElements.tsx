@@ -179,6 +179,17 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     const formattedOpenBidStatus = `${auctionStatusData.currentAmountFilled} / ${auctionStatusData.currentBidSize}`;
 
+    const fillPercentage =
+        auctionStatusData.currentAmountFilled &&
+        auctionStatusData.currentBidSize
+            ? auctionStatusData.currentAmountFilled /
+              auctionStatusData.currentBidSize
+            : 0.0;
+
+    const fillPercentageFormatted = getFormattedNumber({
+        value: fillPercentage,
+        isPercentage: true,
+    });
     // Opened bid data
     const openedBidData = [
         {
@@ -228,7 +239,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
               },
           ];
 
-    const progressValue = !placeholderTicker ? 'XX.X' : '-';
+    const progressValue = !placeholderTicker ? fillPercentageFormatted : '-';
 
     // Ticker display component
     const tickerDisplay = (
@@ -278,7 +289,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
             ))}
             <div className={styles.progressContainer}>
                 <div className={styles.progressContent}>
-                    {Array.from({ length: 10 }, (_, idx) => (
+                    {Array.from({ length: fillPercentage * 10 }, (_, idx) => (
                         <span className={styles.progressBar} key={idx} />
                     ))}
                 </div>
