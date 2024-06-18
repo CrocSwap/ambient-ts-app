@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import styles from './SearchableTicker.module.css';
-import { auctionDataIF } from '../../../pages/platformFuta/mockAuctionData';
 import {
     getFormattedNumber,
     getTimeRemaining,
@@ -8,8 +7,9 @@ import {
 import moment from 'moment';
 import { useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { AuctionDataIF } from '../../../contexts/AuctionsContext';
 
-export default function TickerItem(props: auctionDataIF) {
+export default function TickerItem(props: AuctionDataIF) {
     const { ticker, marketCap, createdAt, status } = props;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);

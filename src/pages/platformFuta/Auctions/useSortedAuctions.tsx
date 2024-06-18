@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { auctionDataIF } from '../mockAuctionData';
+import { AuctionDataIF } from '../../../contexts/AuctionsContext';
 
 export type auctionSorts =
     | 'createdAt'
@@ -14,15 +14,15 @@ export interface sortDetailsIF {
 }
 
 export interface sortedAuctionsIF {
-    data: auctionDataIF[];
+    data: AuctionDataIF[];
     active: auctionSorts;
     isReversed: boolean;
     update: (sortType: auctionSorts) => void;
     reverse: () => void;
 }
 
-export function useSortedAuctions(unsorted: auctionDataIF[]) {
-    const [sorted, setSorted] = useState<auctionDataIF[]>(unsorted);
+export function useSortedAuctions(unsorted: AuctionDataIF[]) {
+    const [sorted, setSorted] = useState<AuctionDataIF[]>(unsorted);
 
     const DEFAULT_SORT: auctionSorts = 'recent';
     const sortDetails = useRef<sortDetailsIF>({
@@ -30,27 +30,27 @@ export function useSortedAuctions(unsorted: auctionDataIF[]) {
         isReversed: false,
     });
 
-    function sortByTicker(d: auctionDataIF[]): auctionDataIF[] {
-        return [...d].sort((a: auctionDataIF, b: auctionDataIF) =>
+    function sortByTicker(d: AuctionDataIF[]): AuctionDataIF[] {
+        return [...d].sort((a: AuctionDataIF, b: AuctionDataIF) =>
             b.ticker.localeCompare(a.ticker),
         );
     }
 
-    function sortByCreationTime(d: auctionDataIF[]): auctionDataIF[] {
+    function sortByCreationTime(d: AuctionDataIF[]): AuctionDataIF[] {
         return d;
     }
 
-    function sortByMarketCap(d: auctionDataIF[]): auctionDataIF[] {
+    function sortByMarketCap(d: AuctionDataIF[]): AuctionDataIF[] {
         console.log('sorting by market cap');
         return [...d].sort(
-            (a: auctionDataIF, b: auctionDataIF) => b.marketCap - a.marketCap,
+            (a: AuctionDataIF, b: AuctionDataIF) => b.marketCap - a.marketCap,
         );
     }
 
     function updateSort(sortType: auctionSorts): void {
         const isNewSortType: boolean = sortType !== sortDetails.current.sortBy;
         if (isNewSortType) {
-            let newlySortedData: auctionDataIF[];
+            let newlySortedData: AuctionDataIF[];
             sortDetails.current.sortBy = sortType;
             switch (sortType) {
                 case 'ticker':

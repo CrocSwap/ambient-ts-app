@@ -1,10 +1,10 @@
 import { BsChatLeftText } from 'react-icons/bs';
 import { trimString } from '../../ambient-utils/dataLayer';
 import styles from './AuctionCard.module.css';
-import { auctionDataIF } from './Auctions';
+import { AuctionDataIF } from './Auctions';
 
 interface propsIF {
-    auction: auctionDataIF;
+    auction: AuctionDataIF;
 }
 
 export default function AuctionCard(props: propsIF) {

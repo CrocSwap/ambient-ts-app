@@ -13,13 +13,15 @@ import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/Divider';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import {
     auctionSorts,
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
-import { auctionDataIF } from '../../../pages/platformFuta/mockAuctionData';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -51,8 +53,8 @@ export default function SearchableTicker(props: propsIF) {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
-    const filteredData = useMemo<auctionDataIF[]>(() => {
-        return auctions.data.filter((auc: auctionDataIF) =>
+    const filteredData = useMemo<AuctionDataIF[]>(() => {
+        return auctions.data.filter((auc: AuctionDataIF) =>
             auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
     }, [searchInputRaw, auctions.data]);
@@ -205,7 +207,7 @@ export default function SearchableTicker(props: propsIF) {
                 </header>
                 <div className={styles.tickerTableContent}>
                     {filteredData
-                        .filter((auction: auctionDataIF) =>
+                        .filter((auction: AuctionDataIF) =>
                             // show auctions that are more than 1 week old if showComplete is true
                             showComplete
                                 ? auction.createdAt <
@@ -213,7 +215,7 @@ export default function SearchableTicker(props: propsIF) {
                                 : auction.createdAt >
                                   (Date.now() - 604800000) / 1000,
                         )
-                        .map((auction: auctionDataIF) => (
+                        .map((auction: AuctionDataIF) => (
                             <TickerItem
                                 key={JSON.stringify(auction)}
                                 {...auction}

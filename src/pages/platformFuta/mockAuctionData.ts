@@ -1,11 +1,6 @@
-export interface auctionDataIF {
-    ticker: string;
-    marketCap: number;
-    createdAt: number;
-    status?: null;
-}
+import { AuctionDataIF } from '../../contexts/AuctionsContext';
 
-export const mockAuctionData: auctionDataIF[] = [
+export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
         marketCap: 20,
@@ -15,7 +10,6 @@ export const mockAuctionData: auctionDataIF[] = [
         ticker: 'PEPE',
         marketCap: 15,
         createdAt: 1718118986,
-        // createdAt: 1718130986,
     },
     {
         ticker: 'BODEN',

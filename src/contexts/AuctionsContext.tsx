@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 // import { fetchAuctionsData } from '../ambient-utils/api';
 import { CrocEnvContext } from './CrocEnvContext';
+import { mockAuctionData } from '../pages/platformFuta/mockAuctionData';
 
 interface AuctionsContextIF {
     auctions: AuctionsDataIF;
@@ -13,10 +14,17 @@ interface AuctionsContextIF {
     setTickerInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
+export interface AuctionDataIF {
+    ticker: string;
+    marketCap: number;
+    createdAt: number;
+    status?: null;
+}
+
 export interface AuctionsDataIF {
     dataReceived: boolean;
     chainId: string;
-    data: AuctionsDataIF | undefined;
+    data: AuctionDataIF[] | undefined;
 }
 // export interface AuctionsDataIF {
 //     global: XpLeaderboardDataIF;
@@ -67,11 +75,7 @@ export const AuctionsContextProvider = (props: {
     //     });
 
     const fetchAuctionsData = async () => {
-        return {
-            dataReceived: false,
-            chainId: chainId,
-            data: undefined,
-        };
+        return mockAuctionData;
     };
 
     function getAuctions() {
@@ -84,11 +88,20 @@ export const AuctionsContextProvider = (props: {
         });
     }
 
+    // useEffect to fetch auctions data every 30 seconds
+    useEffect(() => {
+        getAuctions();
+        const interval = setInterval(() => {
+            getAuctions();
+        }, 30000);
+        return () => clearInterval(interval);
+    }, [chainId]);
+
     const auctionsContext: AuctionsContextIF = {
         auctions: {
             dataReceived: auctionsData.dataReceived,
             chainId: chainId,
-            data: auctionsData,
+            data: auctionsData.data,
         },
         getAuctions: getAuctions,
         isLoading: isLoading,
