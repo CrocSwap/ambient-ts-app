@@ -33,13 +33,7 @@ interface propsIF {
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const {
-        auctions,
-        title,
-        setIsFullLayoutActive,
-        isAccount,
-        placeholderTicker,
-    } = props;
+    const { auctions, title, setIsFullLayoutActive, placeholderTicker } = props;
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
@@ -64,22 +58,33 @@ export default function SearchableTicker(props: propsIF) {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
+    const incompleteAuctions = useMemo<AuctionDataIF[]>(() => {
+        return auctions.data.filter(
+            (auction: AuctionDataIF) =>
+                auction.createdAt >
+                (Date.now() - auction.auctionLength * 1000) / 1000,
+        );
+    }, [auctions.data]);
+
+    const completeAuctions = useMemo<AuctionDataIF[]>(() => {
+        return auctions.data.filter(
+            (auction: AuctionDataIF) =>
+                auction.createdAt <=
+                (Date.now() - auction.auctionLength * 1000) / 1000,
+        );
+    }, [auctions.data]);
+
     const filteredData = useMemo<AuctionDataIF[]>(() => {
-        const dataFilteredBySearch = auctions.data.filter(
+        const dataFilteredByCompletion = showComplete
+            ? completeAuctions
+            : incompleteAuctions;
+        const dataFilteredBySearch = dataFilteredByCompletion.filter(
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
-        const filteredByCompletion =
-            !isAccount || showComplete
-                ? dataFilteredBySearch.filter((auction: AuctionDataIF) =>
-                      // show auctions that are more than 1 week old if showComplete is true
-                      showComplete
-                          ? auction.createdAt < (Date.now() - 604800000) / 1000
-                          : auction.createdAt > (Date.now() - 604800000) / 1000,
-                  )
-                : dataFilteredBySearch;
-        return filteredByCompletion;
-    }, [searchInputRaw, auctions.data, isAccount, showComplete]);
+
+        return dataFilteredBySearch;
+    }, [searchInputRaw, incompleteAuctions, completeAuctions, showComplete]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 

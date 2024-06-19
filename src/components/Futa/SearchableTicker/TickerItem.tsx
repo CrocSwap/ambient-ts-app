@@ -19,12 +19,15 @@ interface PropsIF {
 export default function TickerItem(props: PropsIF) {
     const { auction, selectedTicker, setSelectedTicker } = props;
 
-    const { ticker, marketCap, createdAt, status } = auction;
+    const { ticker, marketCap, createdAt, status, auctionLength } = auction;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
     const timeRemaining = getTimeRemainingAbbrev(
-        moment(createdAt * 1000).diff(Date.now() - 604800000, 'seconds'),
+        moment(createdAt * 1000).diff(
+            Date.now() - auctionLength * 1000,
+            'seconds',
+        ),
     );
 
     const status2 =

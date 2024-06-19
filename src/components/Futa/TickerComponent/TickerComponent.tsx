@@ -222,7 +222,7 @@ export default function TickerComponent(props: PropsIF) {
     const timeRemainingAbbrev = auctionDetails
         ? getTimeRemainingAbbrev(
               moment(auctionDetails.createdAt * 1000).diff(
-                  Date.now() - 604800000,
+                  Date.now() - auctionDetails.auctionLength * 1000,
                   'seconds',
               ),
           )
@@ -234,7 +234,7 @@ export default function TickerComponent(props: PropsIF) {
         if (auctionDetails) {
             const timeRemainingInSeconds = moment(
                 auctionDetails.createdAt * 1000,
-            ).diff(Date.now() - 604800000, 'seconds');
+            ).diff(Date.now() - auctionDetails.auctionLength * 1000, 'seconds');
             const timeRemainingString = getTimeRemaining(
                 timeRemainingInSeconds,
             );
@@ -461,21 +461,22 @@ export default function TickerComponent(props: PropsIF) {
         !isAuctionCompleted &&
         (isValidationInProgress || !isValidated);
 
-    const buttonLabel = !tickerFromParams
-        ? 'Select an Auction'
-        : isAllocationAvailableToClaim
-          ? 'Claim'
-          : showTradeButton
+    const buttonLabel =
+        !tickerFromParams && isUserConnected
+            ? 'Select an Auction'
+            : isAllocationAvailableToClaim
+            ? 'Claim'
+            : showTradeButton
             ? 'Trade'
             : !isUserConnected
-              ? 'Connect Wallet'
-              : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-                ? 'Enter a Bid Size'
-                : isValidationInProgress
-                  ? 'Validating Bid...'
-                  : isValidated
-                    ? 'Bid'
-                    : 'Invalid Bid';
+            ? 'Connect Wallet'
+            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+            ? 'Enter a Bid Size'
+            : isValidationInProgress
+            ? 'Validating Bid...'
+            : isValidated
+            ? 'Bid'
+            : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -488,14 +489,12 @@ export default function TickerComponent(props: PropsIF) {
                           `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
                       )
                     : showTradeButton
-                      ? console.log(
-                            `clicked Trade for ticker: ${tickerFromParams}`,
-                        )
-                      : !isUserConnected
-                        ? openWalletModal()
-                        : console.log(
-                              `clicked Bid for display qty: ${inputValue}`,
-                          )
+                    ? console.log(
+                          `clicked Trade for ticker: ${tickerFromParams}`,
+                      )
+                    : !isUserConnected
+                    ? openWalletModal()
+                    : console.log(`clicked Bid for display qty: ${inputValue}`)
             }
             disabled={isButtonDisabled}
         >
