@@ -59,14 +59,15 @@ export default function SearchableTicker(props: propsIF) {
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
-        const filteredByCompletion = !isAccount
-            ? dataFilteredBySearch.filter((auction: AuctionDataIF) =>
-                  // show auctions that are more than 1 week old if showComplete is true
-                  showComplete
-                      ? auction.createdAt < (Date.now() - 604800000) / 1000
-                      : auction.createdAt > (Date.now() - 604800000) / 1000,
-              )
-            : dataFilteredBySearch;
+        const filteredByCompletion =
+            !isAccount || showComplete
+                ? dataFilteredBySearch.filter((auction: AuctionDataIF) =>
+                      // show auctions that are more than 1 week old if showComplete is true
+                      showComplete
+                          ? auction.createdAt < (Date.now() - 604800000) / 1000
+                          : auction.createdAt > (Date.now() - 604800000) / 1000,
+                  )
+                : dataFilteredBySearch;
         return filteredByCompletion;
     }, [searchInputRaw, auctions.data, isAccount, showComplete]);
 
@@ -192,7 +193,7 @@ export default function SearchableTicker(props: propsIF) {
                                 </div>
                             )}
                         </div>
-                        {!isAccount && (
+                        {
                             <div className={styles.timeDropdownRight}>
                                 <button
                                     onClick={() =>
@@ -210,7 +211,7 @@ export default function SearchableTicker(props: propsIF) {
                                     WATCHLIST
                                 </button>
                             </div>
-                        )}
+                        }
                     </div>
                 </div>
             </div>
