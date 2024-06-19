@@ -6,6 +6,7 @@ import {
     mockAuctionData,
     mockAuctionStatus1,
     mockAuctionStatus2,
+    mockAuctionStatus3,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
 
@@ -43,15 +44,18 @@ export interface AccountDataIF {
     auctions: AuctionDataIF[];
 }
 
+export interface AuctionStatusDataServerIF {
+    openBidMarketCap: number | undefined;
+    openBidSize: number | undefined;
+    openBidAmountFilled: number | undefined;
+}
+
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
     chainId: string;
     openBidMarketCap: number | undefined;
     openBidSize: number | undefined;
     openBidAmountFilled: number | undefined;
-    maxFdvData: {
-        value: number;
-    }[];
 }
 // export interface AuctionsDataIF {
 //     global: XpLeaderboardDataIF;
@@ -95,7 +99,6 @@ export const AuctionsContextProvider = (props: {
             openBidMarketCap: undefined,
             openBidSize: undefined,
             openBidAmountFilled: undefined,
-            maxFdvData: [],
         });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -129,13 +132,14 @@ export const AuctionsContextProvider = (props: {
     const fetchAuctionStatusData = async (ticker: string) => {
         if (ticker === 'APU' || ticker === 'DEGEN') {
             return mockAuctionStatus1;
-        } else {
+        } else if (ticker === 'USA' || ticker === 'DOGE') {
             return mockAuctionStatus2;
+        } else {
+            return mockAuctionStatus3;
         }
     };
 
     function getAuctionsData() {
-        console.log('getAuctions');
         fetchAuctionsData().then((data) => {
             setAuctionsData({
                 dataReceived: true,
@@ -146,7 +150,6 @@ export const AuctionsContextProvider = (props: {
     }
 
     function getAccountData() {
-        console.log('getAccount');
         fetchAccountData().then((data) => {
             setAccountData({
                 dataReceived: true,
@@ -157,7 +160,6 @@ export const AuctionsContextProvider = (props: {
     }
 
     function getAuctionData(ticker: string) {
-        console.log('getAuctionData for: ' + ticker);
         fetchAuctionStatusData(ticker).then((data) => {
             setAuctionStatusData({
                 dataReceived: true,
@@ -165,7 +167,6 @@ export const AuctionsContextProvider = (props: {
                 openBidMarketCap: data.openBidMarketCap,
                 openBidSize: data.openBidSize,
                 openBidAmountFilled: data.openBidAmountFilled,
-                maxFdvData: data.maxFdvData,
             });
         });
     }

@@ -93,7 +93,7 @@ const useAuctionStates = () => {
         AuctionDataIF | undefined
     >();
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
-        useState<string | undefined>();
+        useState<number | undefined>();
     const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -104,19 +104,18 @@ const useAuctionStates = () => {
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [priceImpact, setPriceImpact] = useState<number | undefined>();
-    const [selectedMaxValue, setSelectedMaxValue] = useState(
-        auctionStatusData.maxFdvData[0],
-    );
+    const [selectedMaxValue, setSelectedMaxValue] = useState<
+        number | undefined
+    >();
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
     useEffect(() => {
-        setSelectedMaxValue(auctionStatusData.maxFdvData[0]);
-    }, [auctionStatusData.maxFdvData[0]]);
+        setSelectedMaxValue(auctionStatusData.openBidMarketCap);
+    }, [auctionStatusData.openBidMarketCap]);
 
     return {
-        maxFdvData: auctionStatusData.maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -164,7 +163,6 @@ export default function TickerComponent(props: PropsIF) {
     } = useAuctionContexts();
 
     const {
-        maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -211,12 +209,13 @@ export default function TickerComponent(props: PropsIF) {
         });
     }, [tickerFromParams]);
 
-    const formattedUnclaimedAllocationForConnectedUser = parseFloat(
-        allocationForConnectedUser ?? '0',
-    ).toLocaleString('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    });
+    const formattedUnclaimedAllocationForConnectedUser =
+        allocationForConnectedUser
+            ? allocationForConnectedUser.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+              })
+            : undefined;
 
     const marketCapEthValue = auctionDetails?.marketCap;
 
@@ -266,14 +265,18 @@ export default function TickerComponent(props: PropsIF) {
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
-            (details) =>
-                setAllocationForConnectedUser(
-                    details?.unclaimedAllocation
-                        ? details?.unclaimedAllocation.toString()
-                        : undefined,
-                ),
-        );
+        if (userAddress) {
+            Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
+                (details) =>
+                    setAllocationForConnectedUser(
+                        details?.unclaimedAllocation
+                            ? details?.unclaimedAllocation
+                            : undefined,
+                    ),
+            );
+        } else {
+            setAllocationForConnectedUser(undefined);
+        }
     }, [tickerFromParams, userAddress]);
 
     const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
@@ -411,6 +414,10 @@ export default function TickerComponent(props: PropsIF) {
         });
     }, [debouncedBidInput, nativeTokenWalletBalanceAdjustedNonDisplayString]);
 
+    useEffect(() => {
+        setIsValidationInProgress(true);
+    }, [bidQtyNonDisplay]);
+
     const handleBalanceClick = () => {
         if (isTokenWalletBalanceGreaterThanZero) {
             setBidQtyNonDisplay(
@@ -431,10 +438,8 @@ export default function TickerComponent(props: PropsIF) {
               }) + '%';
 
     const fdvUsdValue =
-        nativeTokenUsdPrice !== undefined &&
-        selectedMaxValue &&
-        selectedMaxValue.value !== undefined
-            ? nativeTokenUsdPrice * selectedMaxValue.value
+        nativeTokenUsdPrice !== undefined && selectedMaxValue
+            ? nativeTokenUsdPrice * selectedMaxValue
             : undefined;
 
     const currentMarketCapUsdValue =
@@ -443,8 +448,7 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        allocationForConnectedUser &&
-        parseFloat(allocationForConnectedUser) > 0;
+        allocationForConnectedUser && allocationForConnectedUser > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
@@ -457,19 +461,21 @@ export default function TickerComponent(props: PropsIF) {
         !isAuctionCompleted &&
         (isValidationInProgress || !isValidated);
 
-    const buttonLabel = isAllocationAvailableToClaim
-        ? 'Claim'
-        : showTradeButton
-          ? 'Trade'
-          : !isUserConnected
-            ? 'Connect Wallet'
-            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-              ? 'Enter a Bid Size'
-              : isValidationInProgress
-                ? 'Validating Bid...'
-                : isValidated
-                  ? 'Bid'
-                  : 'Invalid Bid';
+    const buttonLabel = !tickerFromParams
+        ? 'Select an Auction'
+        : isAllocationAvailableToClaim
+          ? 'Claim'
+          : showTradeButton
+            ? 'Trade'
+            : !isUserConnected
+              ? 'Connect Wallet'
+              : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+                ? 'Enter a Bid Size'
+                : isValidationInProgress
+                  ? 'Validating Bid...'
+                  : isValidated
+                    ? 'Bid'
+                    : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -499,7 +505,6 @@ export default function TickerComponent(props: PropsIF) {
 
     const tickerDisplayElementsProps = {
         auctionStatusData,
-        maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -541,7 +546,7 @@ export default function TickerComponent(props: PropsIF) {
         </div>
     );
 
-    const QTY_INPUT_ID = 'exchangeBalance_qty';
+    const QTY_INPUT_ID = 'bid_size_qty_input';
     const bidQtyInputField = document.getElementById(
         QTY_INPUT_ID,
     ) as HTMLInputElement;
@@ -551,7 +556,7 @@ export default function TickerComponent(props: PropsIF) {
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
-    }, [bidQtyInputField, selectedMaxValue?.value, inputValue]);
+    }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
     return (
         <div className={styles.container}>
