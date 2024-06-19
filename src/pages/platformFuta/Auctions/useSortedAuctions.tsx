@@ -13,6 +13,7 @@ export interface sortDetailsIF {
     isReversed: boolean;
 }
 
+// interface for return value of the hook
 export interface sortedAuctionsIF {
     data: AuctionDataIF[];
     active: auctionSorts;
@@ -22,29 +23,35 @@ export interface sortedAuctionsIF {
 }
 
 export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
+    // default sort sequence for data
     const DEFAULT_SORT: auctionSorts = 'recent';
 
+    // metadata on how data should be sorted
     const [sortDetails, setSortDetails] = useState<sortDetailsIF>({
         sortBy: DEFAULT_SORT,
         isReversed: false,
     });
 
+    // fn to sort data by ticker (alphabetical)
     function sortByTicker(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort((a: AuctionDataIF, b: AuctionDataIF) =>
             b.ticker.localeCompare(a.ticker),
         );
     }
 
+    // fn to sort data by creation time (numerical, also native sequence)
     function sortByCreationTime(d: AuctionDataIF[]): AuctionDataIF[] {
         return d;
     }
 
+    // fn to sort by market cap (numerical)
     function sortByMarketCap(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort(
             (a: AuctionDataIF, b: AuctionDataIF) => b.marketCap - a.marketCap,
         );
     }
 
+    // fn to update which sort should be applied
     function updateSort(newSort: auctionSorts): void {
         newSort !== sortDetails.sortBy &&
             setSortDetails({
@@ -53,6 +60,7 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
             });
     }
 
+    // fn to reverse or un-reverse sorted data
     function reverseSort(): void {
         setSortDetails({
             sortBy: sortDetails.sortBy,
@@ -60,6 +68,7 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
         });
     }
 
+    // logic router to sort data according to the indicated method
     const sortedData = useMemo<AuctionDataIF[]>(() => {
         let output: AuctionDataIF[];
         switch (sortDetails.sortBy) {
@@ -77,6 +86,7 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
         return sortDetails.isReversed ? [...output].reverse() : output;
     }, [unsorted, sortDetails]);
 
+    // return val of hook
     return {
         data: sortedData,
         active: sortDetails.sortBy,
