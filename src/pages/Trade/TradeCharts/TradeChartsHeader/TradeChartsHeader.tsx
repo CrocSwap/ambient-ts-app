@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AiOutlineDollarCircle } from 'react-icons/ai';
+import { AiOutlineDollarCircle, AiOutlineAreaChart } from 'react-icons/ai';
 import { FiCopy, FiStopCircle } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -11,6 +11,7 @@ import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulate
 import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
 import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
@@ -28,6 +29,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
+    const { isCondensedModeEnabled, setIsCondensedModeEnabled } =
+        useContext(CandleContext);
     const {
         baseToken: { symbol: baseTokenSymbol },
         quoteToken: { symbol: quoteTokenSymbol },
@@ -66,6 +69,32 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             <DefaultTooltip
                 interactive
                 title={
+                    isCondensedModeEnabled
+                        ? 'Show all candles'
+                        : 'Hide empty candles'
+                }
+                enterDelay={500}
+            >
+                <HeaderButtons
+                    onClick={() =>
+                        setIsCondensedModeEnabled(!isCondensedModeEnabled)
+                    }
+                >
+                    <AiOutlineAreaChart
+                        size={20}
+                        id='trade_Condensed_Mode_button'
+                        aria-label='Toggle condensed mode button'
+                        style={{
+                            color: isCondensedModeEnabled
+                                ? 'var(--accent1)'
+                                : undefined,
+                        }}
+                    />
+                </HeaderButtons>
+            </DefaultTooltip>
+            <DefaultTooltip
+                interactive
+                title={
                     isTradeDollarizationEnabled
                         ? `Switch to prices in ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}`
                         : 'Switch to prices in USD'
@@ -95,7 +124,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={'Toggle Full Screen Chart'}
+                title={
+                    isChartFullScreen
+                        ? 'Close full screen chart'
+                        : 'Display full screen chart'
+                }
                 enterDelay={500}
             >
                 <HeaderButtons
@@ -111,7 +144,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={'Copy to Clipboard'}
+                title={'Copy image of chart to clipboard'}
                 enterDelay={500}
             >
                 <HeaderButtons mobileHide onClick={copyChartToClipboard}>
