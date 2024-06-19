@@ -4,7 +4,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
         marketCap: 20.52,
-        createdAt: 1718054594,
+        createdAt: 1718354594,
     },
     {
         ticker: 'MOG',
@@ -72,7 +72,7 @@ export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
         marketCap: 20.55,
-        createdAt: 1718054594,
+        createdAt: 1718354594,
         unclaimedAllocation: 100000,
     },
     {
@@ -94,9 +94,9 @@ export const mockAccountData: AuctionDataIF[] = [
 ];
 
 export const mockAuctionStatus1 = {
-    openBidMaxMarketCap: 1.81,
-    currentBidSize: 0.271,
-    currentAmountFilled: 0.066,
+    openBidMarketCap: 1.81,
+    openBidSize: 0.271,
+    openBidAmountFilled: 0.066,
     maxFdvData: [
         { value: 1.81 },
         { value: 2.271 },
@@ -107,9 +107,9 @@ export const mockAuctionStatus1 = {
 };
 
 export const mockAuctionStatus2 = {
-    openBidMaxMarketCap: 2.92,
-    currentBidSize: 0.471,
-    currentAmountFilled: 0.166,
+    openBidMarketCap: 2.92,
+    openBidSize: 0.471,
+    openBidAmountFilled: 0.166,
     maxFdvData: [
         { value: 2.92 },
         { value: 2.95 },

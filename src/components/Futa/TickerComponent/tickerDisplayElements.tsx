@@ -177,17 +177,16 @@ export const tickerDisplayElements = (props: PropsIF) => {
               })
             : '...';
 
-    const formattedOpenBidStatus = `${auctionStatusData.currentAmountFilled} / ${auctionStatusData.currentBidSize}`;
+    const formattedOpenBidStatus = `${auctionStatusData.openBidAmountFilled} / ${auctionStatusData.openBidSize}`;
 
     const fillPercentage =
-        auctionStatusData.currentAmountFilled &&
-        auctionStatusData.currentBidSize
-            ? auctionStatusData.currentAmountFilled /
-              auctionStatusData.currentBidSize
+        auctionStatusData.openBidAmountFilled && auctionStatusData.openBidSize
+            ? auctionStatusData.openBidAmountFilled /
+              auctionStatusData.openBidSize
             : 0.0;
 
     const fillPercentageFormatted = getFormattedNumber({
-        value: fillPercentage,
+        value: fillPercentage * 100,
         isPercentage: true,
     });
     // Opened bid data
