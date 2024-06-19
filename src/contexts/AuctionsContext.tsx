@@ -6,6 +6,7 @@ import {
     mockAuctionData,
     mockAuctionStatus1,
     mockAuctionStatus2,
+    mockAuctionStatus3,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
 
@@ -49,9 +50,6 @@ export interface AuctionStatusDataIF {
     openBidMarketCap: number | undefined;
     openBidSize: number | undefined;
     openBidAmountFilled: number | undefined;
-    maxFdvData: {
-        value: number;
-    }[];
 }
 // export interface AuctionsDataIF {
 //     global: XpLeaderboardDataIF;
@@ -95,7 +93,6 @@ export const AuctionsContextProvider = (props: {
             openBidMarketCap: undefined,
             openBidSize: undefined,
             openBidAmountFilled: undefined,
-            maxFdvData: [],
         });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -129,8 +126,10 @@ export const AuctionsContextProvider = (props: {
     const fetchAuctionStatusData = async (ticker: string) => {
         if (ticker === 'APU' || ticker === 'DEGEN') {
             return mockAuctionStatus1;
-        } else {
+        } else if (ticker === 'USA' || ticker === 'DOGE') {
             return mockAuctionStatus2;
+        } else {
+            return mockAuctionStatus3;
         }
     };
 
@@ -165,7 +164,6 @@ export const AuctionsContextProvider = (props: {
                 openBidMarketCap: data.openBidMarketCap,
                 openBidSize: data.openBidSize,
                 openBidAmountFilled: data.openBidAmountFilled,
-                maxFdvData: data.maxFdvData,
             });
         });
     }

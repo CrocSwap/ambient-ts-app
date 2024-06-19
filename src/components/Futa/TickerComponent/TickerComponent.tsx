@@ -104,19 +104,18 @@ const useAuctionStates = () => {
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [priceImpact, setPriceImpact] = useState<number | undefined>();
-    const [selectedMaxValue, setSelectedMaxValue] = useState(
-        auctionStatusData.maxFdvData[0],
-    );
+    const [selectedMaxValue, setSelectedMaxValue] = useState<
+        number | undefined
+    >();
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
     useEffect(() => {
-        setSelectedMaxValue(auctionStatusData.maxFdvData[0]);
-    }, [auctionStatusData.maxFdvData[0]]);
+        setSelectedMaxValue(auctionStatusData.openBidMarketCap);
+    }, [auctionStatusData.openBidMarketCap]);
 
     return {
-        maxFdvData: auctionStatusData.maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -164,7 +163,6 @@ export default function TickerComponent(props: PropsIF) {
     } = useAuctionContexts();
 
     const {
-        maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -431,10 +429,8 @@ export default function TickerComponent(props: PropsIF) {
               }) + '%';
 
     const fdvUsdValue =
-        nativeTokenUsdPrice !== undefined &&
-        selectedMaxValue &&
-        selectedMaxValue.value !== undefined
-            ? nativeTokenUsdPrice * selectedMaxValue.value
+        nativeTokenUsdPrice !== undefined && selectedMaxValue
+            ? nativeTokenUsdPrice * selectedMaxValue
             : undefined;
 
     const currentMarketCapUsdValue =
@@ -499,7 +495,6 @@ export default function TickerComponent(props: PropsIF) {
 
     const tickerDisplayElementsProps = {
         auctionStatusData,
-        maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -551,7 +546,7 @@ export default function TickerComponent(props: PropsIF) {
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
-    }, [bidQtyInputField, selectedMaxValue?.value, inputValue]);
+    }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
     return (
         <div className={styles.container}>

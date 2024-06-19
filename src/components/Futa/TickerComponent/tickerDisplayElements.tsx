@@ -15,11 +15,11 @@ import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
 
 import { CurrencySelector } from '../../Form/CurrencySelector';
+import { marketCapMultipliers } from '../../../pages/platformFuta/mockAuctionData';
 
 // Props interface
 export interface PropsIF {
     auctionStatusData: AuctionStatusDataIF;
-    maxFdvData: { value: number }[];
     marketCapEthValue: number | undefined;
     currentMarketCapUsdValue: number | undefined;
     timeRemaining: string | undefined;
@@ -31,14 +31,8 @@ export interface PropsIF {
     isAuctionPage?: boolean;
     isMaxDropdownOpen: boolean;
     setIsMaxDropdownOpen: Dispatch<SetStateAction<boolean>>;
-    selectedMaxValue: {
-        value: number;
-    };
-    setSelectedMaxValue: Dispatch<
-        SetStateAction<{
-            value: number;
-        }>
-    >;
+    selectedMaxValue: number | undefined;
+    setSelectedMaxValue: Dispatch<SetStateAction<number | undefined>>;
     fdvUsdValue: number | undefined;
     bidUsdValue: number | undefined;
     handleBalanceClick: () => void;
@@ -87,7 +81,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
         auctionStatusData,
-        maxFdvData,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -159,14 +152,18 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
     ];
 
-    const openBidEthValueNum = maxFdvData[0] ? maxFdvData[0].value : undefined;
-    const openBidEthValueFormatted = openBidEthValueNum
-        ? openBidEthValueNum.toString()
+    const openBidMarketCapEthValueNum = auctionStatusData.openBidMarketCap
+        ? auctionStatusData.openBidMarketCap
+        : undefined;
+
+    const openBidEthValueFormatted = openBidMarketCapEthValueNum
+        ? openBidMarketCapEthValueNum.toString()
         : '...';
 
     const currentOpenBidUsdValue =
-        nativeTokenUsdPrice !== undefined && openBidEthValueNum !== undefined
-            ? nativeTokenUsdPrice * openBidEthValueNum
+        nativeTokenUsdPrice !== undefined &&
+        openBidMarketCapEthValueNum !== undefined
+            ? nativeTokenUsdPrice * openBidMarketCapEthValueNum
             : undefined;
 
     const currentOpenBidUsdValueFormatted =
@@ -176,6 +173,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
                   isUSD: true,
               })
             : '...';
+
+    const openBidMarketCapIndex = marketCapMultipliers.findIndex(
+        (item) => item === auctionStatusData.openBidMarketCap,
+    );
 
     const formattedOpenBidStatus = `${auctionStatusData.openBidAmountFilled} / ${auctionStatusData.openBidSize}`;
 
@@ -316,10 +317,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 : '$0.00'
             : '...';
 
-    const handleSelectItem = (item: { value: number }) => {
+    const handleSelectItem = (item: number) => {
         setSelectedMaxValue(item);
         setIsMaxDropdownOpen(false);
     };
+
+    const maxFdvData = marketCapMultipliers.slice(openBidMarketCapIndex);
 
     const maxFdvDisplay = (
         <div
@@ -341,7 +344,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 >
                     <p>
                         {!placeholderTicker && selectedMaxValue
-                            ? selectedMaxValue?.value
+                            ? selectedMaxValue
                             : '-'}
                     </p>
                     {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
@@ -354,8 +357,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
                         {maxFdvData.map((item, idx) => {
                             const fdvUsdValue =
                                 nativeTokenUsdPrice !== undefined &&
-                                item.value !== undefined
-                                    ? nativeTokenUsdPrice * item.value
+                                item !== undefined
+                                    ? nativeTokenUsdPrice * item
                                     : undefined;
 
                             const fdvUsdValueTruncated =
@@ -374,7 +377,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                                     key={idx}
                                     onClick={() => handleSelectItem(item)}
                                 >
-                                    <p>{item.value}</p>({fdvUsdValueTruncated})
+                                    <p>{item}</p>({fdvUsdValueTruncated})
                                 </div>
                             );
                         })}
