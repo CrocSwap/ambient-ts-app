@@ -374,6 +374,14 @@
             "logoURI": "https://scrollscan.com/token/images/tranchess_32.png"
         },
         {
+            "name": "StargateToken",
+            "address": "0x8731d54E9D02c286767d56ac03e8037C07e01e98",
+            "symbol": "STG",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png"
+        },
+        {
             "name": "Wrapped Kelp DAO Restaked ETH",
             "address": "0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f",
             "symbol": "wrsETH",
