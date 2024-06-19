@@ -1,4 +1,7 @@
-import { AuctionDataIF } from '../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionStatusDataServerIF,
+} from '../../contexts/AuctionsContext';
 
 export const mockAuctionData: AuctionDataIF[] = [
     {
@@ -93,19 +96,19 @@ export const mockAccountData: AuctionDataIF[] = [
     },
 ];
 
-export const mockAuctionStatus1 = {
+export const mockAuctionStatus1: AuctionStatusDataServerIF = {
     openBidMarketCap: 3.051758,
     openBidSize: 0.271,
     openBidAmountFilled: 0.066,
 };
 
-export const mockAuctionStatus2 = {
+export const mockAuctionStatus2: AuctionStatusDataServerIF = {
     openBidMarketCap: 69.38894,
     openBidSize: 0.471,
     openBidAmountFilled: 0.166,
 };
 
-export const mockAuctionStatus3 = {
+export const mockAuctionStatus3: AuctionStatusDataServerIF = {
     openBidMarketCap: 2.441406,
     openBidSize: 0.471,
     openBidAmountFilled: 0.166,

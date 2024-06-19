@@ -44,6 +44,12 @@ export interface AccountDataIF {
     auctions: AuctionDataIF[];
 }
 
+export interface AuctionStatusDataServerIF {
+    openBidMarketCap: number | undefined;
+    openBidSize: number | undefined;
+    openBidAmountFilled: number | undefined;
+}
+
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
     chainId: string;
@@ -134,7 +140,6 @@ export const AuctionsContextProvider = (props: {
     };
 
     function getAuctionsData() {
-        console.log('getAuctions');
         fetchAuctionsData().then((data) => {
             setAuctionsData({
                 dataReceived: true,
@@ -145,7 +150,6 @@ export const AuctionsContextProvider = (props: {
     }
 
     function getAccountData() {
-        console.log('getAccount');
         fetchAccountData().then((data) => {
             setAccountData({
                 dataReceived: true,
@@ -156,7 +160,6 @@ export const AuctionsContextProvider = (props: {
     }
 
     function getAuctionData(ticker: string) {
-        console.log('getAuctionData for: ' + ticker);
         fetchAuctionStatusData(ticker).then((data) => {
             setAuctionStatusData({
                 dataReceived: true,
