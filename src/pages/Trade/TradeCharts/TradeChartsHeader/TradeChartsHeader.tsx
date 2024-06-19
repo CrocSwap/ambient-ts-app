@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiStopCircle } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
@@ -12,6 +12,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import { HeaderButtons } from '../../../../styled/Components/Chart';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { BsFullscreen } from 'react-icons/bs';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -26,6 +27,12 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
+
+    const {
+        baseToken: { symbol: baseTokenSymbol },
+        quoteToken: { symbol: quoteTokenSymbol },
+        isDenomBase,
+    } = useContext(TradeDataContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -58,7 +65,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
             <DefaultTooltip
                 interactive
-                title={'Toggle USD Price Estimates'}
+                title={
+                    isTradeDollarizationEnabled
+                        ? `Switch to prices in ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}`
+                        : 'Switch to prices in USD'
+                }
                 enterDelay={500}
             >
                 <HeaderButtons
@@ -66,16 +77,20 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }
                 >
-                    <AiOutlineDollarCircle
-                        size={20}
-                        id='trade_dollarized_prices_button'
-                        aria-label='Toggle dollarized prices button'
-                        style={{
-                            color: isTradeDollarizationEnabled
-                                ? 'var(--accent1)'
-                                : undefined,
-                        }}
-                    />
+                    {isTradeDollarizationEnabled ? (
+                        <AiOutlineDollarCircle
+                            size={20}
+                            id='trade_dollarized_prices_button'
+                            aria-label='Toggle dollarized prices button'
+                        />
+                    ) : (
+                        <FiStopCircle
+                            size={20}
+                            id='trade_dollarized_prices_button'
+                            aria-label='Toggle dollarized prices button'
+                            style={{ transform: 'rotate(45deg)' }}
+                        />
+                    )}
                 </HeaderButtons>
             </DefaultTooltip>
             <DefaultTooltip
