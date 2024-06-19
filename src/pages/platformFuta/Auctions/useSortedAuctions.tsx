@@ -42,7 +42,7 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     // fn to sort data by creation time (numerical)
     function sortByCreationTime(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort(
-            (a: AuctionDataIF, b: AuctionDataIF) => b.createdAt - a.createdAt,
+            (a: AuctionDataIF, b: AuctionDataIF) => a.createdAt - b.createdAt,
         );
     }
 
