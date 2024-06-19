@@ -93,7 +93,7 @@ const useAuctionStates = () => {
         AuctionDataIF | undefined
     >();
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
-        useState<string | undefined>();
+        useState<number | undefined>();
     const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -209,12 +209,13 @@ export default function TickerComponent(props: PropsIF) {
         });
     }, [tickerFromParams]);
 
-    const formattedUnclaimedAllocationForConnectedUser = parseFloat(
-        allocationForConnectedUser ?? '0',
-    ).toLocaleString('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-    });
+    const formattedUnclaimedAllocationForConnectedUser =
+        allocationForConnectedUser
+            ? allocationForConnectedUser.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+              })
+            : undefined;
 
     const marketCapEthValue = auctionDetails?.marketCap;
 
@@ -264,14 +265,18 @@ export default function TickerComponent(props: PropsIF) {
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
-            (details) =>
-                setAllocationForConnectedUser(
-                    details?.unclaimedAllocation
-                        ? details?.unclaimedAllocation.toString()
-                        : undefined,
-                ),
-        );
+        if (userAddress) {
+            Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
+                (details) =>
+                    setAllocationForConnectedUser(
+                        details?.unclaimedAllocation
+                            ? details?.unclaimedAllocation
+                            : undefined,
+                    ),
+            );
+        } else {
+            setAllocationForConnectedUser(undefined);
+        }
     }, [tickerFromParams, userAddress]);
 
     const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
@@ -443,8 +448,7 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        allocationForConnectedUser &&
-        parseFloat(allocationForConnectedUser) > 0;
+        allocationForConnectedUser && allocationForConnectedUser > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
@@ -457,27 +461,21 @@ export default function TickerComponent(props: PropsIF) {
         !isAuctionCompleted &&
         (isValidationInProgress || !isValidated);
 
-    useEffect(() => {
-        console.log({
-            isValidationInProgress,
-            isValidated,
-            isButtonDisabled,
-        });
-    }, [isValidationInProgress, isValidated, isButtonDisabled]);
-
-    const buttonLabel = isAllocationAvailableToClaim
-        ? 'Claim'
-        : showTradeButton
-          ? 'Trade'
-          : !isUserConnected
-            ? 'Connect Wallet'
-            : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-              ? 'Enter a Bid Size'
-              : isValidationInProgress
-                ? 'Validating Bid...'
-                : isValidated
-                  ? 'Bid'
-                  : 'Invalid Bid';
+    const buttonLabel = !tickerFromParams
+        ? 'Select an Auction'
+        : isAllocationAvailableToClaim
+          ? 'Claim'
+          : showTradeButton
+            ? 'Trade'
+            : !isUserConnected
+              ? 'Connect Wallet'
+              : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+                ? 'Enter a Bid Size'
+                : isValidationInProgress
+                  ? 'Validating Bid...'
+                  : isValidated
+                    ? 'Bid'
+                    : 'Invalid Bid';
 
     const bidButton = (
         <button

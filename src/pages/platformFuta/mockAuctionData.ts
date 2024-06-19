@@ -76,7 +76,6 @@ export const mockAccountData: AuctionDataIF[] = [
         ticker: 'DOGE',
         marketCap: 55.51115,
         createdAt: 1718354594,
-        unclaimedAllocation: 100000,
     },
     {
         ticker: 'MOG',
@@ -88,6 +87,7 @@ export const mockAccountData: AuctionDataIF[] = [
         ticker: 'BODEN',
         marketCap: 1.953125,
         createdAt: 1718148398,
+        unclaimedAllocation: 100000,
     },
     {
         ticker: 'APU',
