@@ -11,9 +11,16 @@ import {
 } from '../Auctions/useSortedAuctions';
 import { useContext } from 'react';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
+    const { isUserConnected } = useContext(UserDataContext);
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
 
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
@@ -31,10 +38,19 @@ export default function Account() {
     );
 
     const sorted: sortedAuctionsIF = useSortedAuctions(accountData.auctions);
+    const connectWalletContent = (
+        <div className={styles.connectWalletContent}>
+            <Typewriter text='Connect your wallet to view your auctions' />
+
+            <button onClick={openWalletModal}>Connect wallet</button>
+        </div>
+    );
 
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
-    const desktopVersion = (
+    const desktopVersion = !isUserConnected ? (
+        connectWalletContent
+    ) : (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
                 <SearchableTicker
@@ -54,7 +70,7 @@ export default function Account() {
 
     if (desktopScreen) return desktopVersion;
 
-    return (
+    return isUserConnected ? (
         <div className={styles.container}>
             <div className={styles.content}>
                 <BreadCrumb />
@@ -64,5 +80,7 @@ export default function Account() {
             {claimAllContainer}
             <button className={styles.claimButton}>CLAIM ALL</button>
         </div>
+    ) : (
+        connectWalletContent
     );
 }

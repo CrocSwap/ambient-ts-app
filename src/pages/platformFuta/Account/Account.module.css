@@ -105,7 +105,44 @@ transition: all var(--animation-speed) ease-in-out;
 }
 
 
+.connectWalletContent{
+    width: 100%;
+    height: calc(100vh - 56px);
+    gap: 16px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 
 
 
+
+
+.connectWalletContent button{
+   
+    height: 28px;
+    outline: none;
+    padding: 2px 8px;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: stretch;
+    background: var(--accent1, #0CCDFF);
+    outline: none;
+    border: 1px solid var(--accent1);
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+    text-transform: uppercase;
+   
+    margin: 0 auto;
+}
+
+.connectWalletContent button:hover{
+    background: transparent;
+    color: var(--accent1)
+}

@@ -5,6 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    useEffect,
     useMemo,
     useRef,
     useState,
@@ -28,15 +29,24 @@ interface propsIF {
     title?: string;
     setIsFullLayoutActive?: Dispatch<SetStateAction<boolean>>;
     isAccount?: boolean;
+    placeholderTicker?: boolean | undefined;
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const { auctions, title, setIsFullLayoutActive, isAccount } = props;
+    const {
+        auctions,
+        title,
+        setIsFullLayoutActive,
+        isAccount,
+        placeholderTicker,
+    } = props;
     const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
     const customLoading = false;
     const { setIsLoading } = useContext(AuctionsContext);
+    const [selectedTicker, setSelectedTicker] =
+        useState<AuctionDataIF | null>();
 
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
@@ -84,6 +94,9 @@ export default function SearchableTicker(props: propsIF) {
     ];
 
     const [activeTime, setActiveTime] = useState(creationTimeData[0]);
+    useEffect(() => {
+        if (placeholderTicker) setSelectedTicker(null);
+    }, [placeholderTicker]);
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
@@ -228,7 +241,9 @@ export default function SearchableTicker(props: propsIF) {
                     {filteredData.map((auction: AuctionDataIF) => (
                         <TickerItem
                             key={JSON.stringify(auction)}
-                            {...auction}
+                            auction={auction}
+                            selectedTicker={selectedTicker}
+                            setSelectedTicker={setSelectedTicker}
                         />
                     ))}
                 </div>

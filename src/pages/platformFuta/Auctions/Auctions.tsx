@@ -66,6 +66,7 @@ export default function Auctions(props: propsIF) {
                             auctions={sorted}
                             title='AUCTIONS'
                             setIsFullLayoutActive={setIsFullLayoutActive}
+                            placeholderTicker={placeholderTicker}
                         />
                     )}
                     <div className={styles.flexColumn}>
@@ -84,7 +85,10 @@ export default function Auctions(props: propsIF) {
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <SearchableTicker auctions={sorted} />
+            <SearchableTicker
+                auctions={sorted}
+                placeholderTicker={placeholderTicker}
+            />
         </div>
     );
 }

@@ -9,7 +9,7 @@
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    overflow-y: hidden;
+    overflow: hidden;
     }
     
     .content {
@@ -304,6 +304,7 @@ cursor: pointer;
         padding-top: 12px;
         /* border-left: 1px dashed var(--dark3); */
         position: relative;
+        overflow: hidden;
 
     }
     .container::before {

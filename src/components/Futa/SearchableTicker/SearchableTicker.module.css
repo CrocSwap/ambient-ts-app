@@ -179,6 +179,11 @@ color: var(--text1)
 
 }
 
+.active{
+    background: #28585D;
+}
+
+
 .tickerItemContainer:hover{
     background: var(--dark4);
 }
