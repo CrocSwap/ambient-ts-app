@@ -12,6 +12,7 @@ import {
     drawnShapeEditAttributes,
     findSnapTime,
     formatTimeDifference,
+    getCandleCount,
     lineData,
     renderCanvasArray,
     scaleData,
@@ -39,6 +40,7 @@ import { fibDefaultLevels } from '../../ChartUtils/drawConstants';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
+import { CandleContext } from '../../../../contexts/CandleContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -76,6 +78,7 @@ interface DrawCanvasProps {
     quoteTokenDecimals: number;
     baseTokenDecimals: number;
     setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
+    bandwidth: number;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -111,6 +114,8 @@ function DrawCanvas(props: DrawCanvasProps) {
     const {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
+
+    const { isCondensedModeEnabled } = useContext(CandleContext);
 
     const circleSeries = createCircle(
         scaleData?.xScale,
@@ -203,6 +208,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
+
         const nearest = snapForCandle(offsetX, visibleCandleData);
 
         const high = denomInBase
@@ -264,27 +270,31 @@ function DrawCanvas(props: DrawCanvasProps) {
         }
 
         let valueX = nearest.time * 1000;
-        const valueXLocation = scaleData.xScale(nearest.time * 1000);
-        const sensitiveDistance =
-            scaleData.xScale(nearest.time * 1000 + nearest.period * 1000) -
-            scaleData.xScale(nearest.time * 1000);
         const snappedTime = findSnapTime(
             scaleData?.xScale.invert(offsetX),
             nearest.period,
         );
+        const checkVisibleCandle = visibleCandleData.length === 0;
+        const lastDateLocation = checkVisibleCandle
+            ? 0
+            : scaleData.xScale(visibleCandleData[0].time * 1000);
+        const firstDateLocation = checkVisibleCandle
+            ? 0
+            : scaleData.xScale(
+                  visibleCandleData[visibleCandleData.length - 1].time * 1000,
+              );
         if (
-            Math.abs(valueXLocation - offsetX) > sensitiveDistance &&
-            nearest === visibleCandleData[0]
+            offsetX > lastDateLocation ||
+            offsetX < firstDateLocation ||
+            checkVisibleCandle
         ) {
             valueX = snappedTime;
             valueY = scaleData?.yScale.invert(offsetY);
+        } else {
+            valueX = nearest.time * 1000;
         }
 
-        if (scaleData.xScale.invert(offsetX) < valueX) {
-            valueX = scaleData.xScale.invert(offsetX);
-        }
-
-        return { valueX: valueX, valueY: valueY };
+        return { valueX: valueX, valueY: valueY, nearest: nearest };
     }
 
     useEffect(() => {
@@ -492,12 +502,12 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
-                const { valueX, valueY } = getXandYvalueOfDrawnShape(
+                const { valueX, valueY, nearest } = getXandYvalueOfDrawnShape(
                     offsetX,
                     offsetY,
                 );
 
-                setCrossHairDataFunc(offsetX, offsetY);
+                setCrossHairDataFunc(nearest, offsetX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 
@@ -764,7 +774,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                     }
 
                     if (activeDrawingType === 'DPRange') {
-                        const lineOfBand = createPointsOfDPRangeLine(lineData);
+                        const lineOfBand = createPointsOfDPRangeLine(
+                            lineData,
+                            scaleData.xScale,
+                        );
 
                         if (drawSettings[activeDrawingType].border.active) {
                             const lineOfBand = createPointsOfBandLine(lineData);
@@ -809,9 +822,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                             0,
                         );
 
-                        const lengthAsBars = Math.abs(
-                            lineData[0].x - lineData[1].x,
-                        );
+                        // const lengthAsBars = Math.abs(
+                        //     lineData[0].x - lineData[1].x,
+                        // );
+
                         const lengthAsDate =
                             (lineData[0].x > lineData[1].x ? '-' : '') +
                             formatTimeDifference(
@@ -852,11 +866,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                             scaleData.yScale(firstPointYAxisData) < 0
                                 ? infoLabelYAxisData
                                 : scaleData.yScale(firstPointYAxisData) < 463
-                                ? infoLabelYAxisData + infoLabelHeight >
-                                  canvasRect.height
-                                    ? canvasRect.height - infoLabelHeight - 5
-                                    : Math.max(infoLabelYAxisData, 5)
-                                : infoLabelYAxisData;
+                                  ? infoLabelYAxisData + infoLabelHeight >
+                                    canvasRect.height
+                                      ? canvasRect.height - infoLabelHeight - 5
+                                      : Math.max(infoLabelYAxisData, 5)
+                                  : infoLabelYAxisData;
 
                         if (ctx) {
                             const arrowArray = createArrowPointsOfDPRangeLine(
@@ -918,12 +932,19 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 scaleData.xScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 16,
                             );
+
+                            const min = Math.min(lineData[0].x, lineData[1].x);
+                            const max = Math.max(lineData[0].x, lineData[1].x);
+                            const showCandleCount = getCandleCount(
+                                scaleData.xScale,
+                                visibleCandleData,
+                                [min, max],
+                                period,
+                                isCondensedModeEnabled,
+                            );
+
                             ctx.fillText(
-                                (lengthAsBars / (1000 * period))
-                                    .toFixed(0)
-                                    .toString() +
-                                    ' bars,  ' +
-                                    lengthAsDate,
+                                showCandleCount + ' bars,  ' + lengthAsDate,
                                 scaleData.xScale(infoLabelXAxisData),
                                 dpRangeLabelYPlacement + 33,
                             );
@@ -1115,11 +1136,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     localDrawSettings.labelPlacement === 'Left'
                                         ? scaleData.xScale.domain()[0]
                                         : localDrawSettings.extendRight
-                                        ? scaleData.xScale.domain()[1]
-                                        : Math.max(
-                                              lineData[0].x,
-                                              lineData[1].x,
-                                          );
+                                          ? scaleData.xScale.domain()[1]
+                                          : Math.max(
+                                                lineData[0].x,
+                                                lineData[1].x,
+                                            );
                             } else if (localDrawSettings.extendRight) {
                                 location =
                                     localDrawSettings.labelPlacement === 'Left'
@@ -1151,9 +1172,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     'top'
                                         ? 5
                                         : localDrawSettings.labelAlignment.toLowerCase() ===
-                                          'bottom'
-                                        ? -5
-                                        : 0),
+                                            'bottom'
+                                          ? -5
+                                          : 0),
                             );
                         }
                     });
