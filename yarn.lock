@@ -1643,8 +1643,10 @@
     preact "^10.16.0"
     sha.js "^2.4.11"
 
-"@crocswap-libs/sdk@file:../sdk":
+"@crocswap-libs/sdk@^1.0.0-1":
   version "1.0.0-1"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-1.0.0-1.tgz#fe3414d29e790d0cdcb0bff1c7a897d8f2281260"
+  integrity sha512-N9Wbh75JX1xi/rF2YCGyhlAmYhlXiSu+HB2hAFlU5u1KLtEltD0A3kX9ZrF8Z9kuevO11XxisBwMGyBQshhieA==
   dependencies:
     ethers "^6.13.0"
 
@@ -5325,7 +5327,7 @@ file-entry-cache@^6.0.1:
   dependencies:
     flat-cache "^3.0.4"
 
-fill-range@^7.1.1:
+fill-range@^7.0.1, fill-range@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/fill-range/-/fill-range-7.1.1.tgz#44265d3cac07e3ea7dc247516380643754a05292"
   integrity sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==
