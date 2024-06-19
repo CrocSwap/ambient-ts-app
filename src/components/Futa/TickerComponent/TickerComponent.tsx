@@ -461,21 +461,22 @@ export default function TickerComponent(props: PropsIF) {
         !isAuctionCompleted &&
         (isValidationInProgress || !isValidated);
 
-    const buttonLabel = !tickerFromParams
-        ? 'Select an Auction'
-        : isAllocationAvailableToClaim
-          ? 'Claim'
-          : showTradeButton
-            ? 'Trade'
-            : !isUserConnected
-              ? 'Connect Wallet'
-              : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-                ? 'Enter a Bid Size'
-                : isValidationInProgress
-                  ? 'Validating Bid...'
-                  : isValidated
-                    ? 'Bid'
-                    : 'Invalid Bid';
+    const buttonLabel =
+        !tickerFromParams && isUserConnected
+            ? 'Select an Auction'
+            : isAllocationAvailableToClaim
+              ? 'Claim'
+              : showTradeButton
+                ? 'Trade'
+                : !isUserConnected
+                  ? 'Connect Wallet'
+                  : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+                    ? 'Enter a Bid Size'
+                    : isValidationInProgress
+                      ? 'Validating Bid...'
+                      : isValidated
+                        ? 'Bid'
+                        : 'Invalid Bid';
 
     const bidButton = (
         <button
