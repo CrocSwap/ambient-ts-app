@@ -46,9 +46,9 @@ export interface AccountDataIF {
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
     chainId: string;
-    openBidMaxMarketCap: number | undefined;
-    currentBidSize: number | undefined;
-    currentAmountFilled: number | undefined;
+    openBidMarketCap: number | undefined;
+    openBidSize: number | undefined;
+    openBidAmountFilled: number | undefined;
     maxFdvData: {
         value: number;
     }[];
@@ -92,9 +92,9 @@ export const AuctionsContextProvider = (props: {
         React.useState<AuctionStatusDataIF>({
             dataReceived: false,
             chainId: chainId,
-            openBidMaxMarketCap: undefined,
-            currentBidSize: undefined,
-            currentAmountFilled: undefined,
+            openBidMarketCap: undefined,
+            openBidSize: undefined,
+            openBidAmountFilled: undefined,
             maxFdvData: [],
         });
 
@@ -162,9 +162,9 @@ export const AuctionsContextProvider = (props: {
             setAuctionStatusData({
                 dataReceived: true,
                 chainId: chainId,
-                openBidMaxMarketCap: data.openBidMaxMarketCap,
-                currentBidSize: data.currentBidSize,
-                currentAmountFilled: data.currentAmountFilled,
+                openBidMarketCap: data.openBidMarketCap,
+                openBidSize: data.openBidSize,
+                openBidAmountFilled: data.openBidAmountFilled,
                 maxFdvData: data.maxFdvData,
             });
         });
