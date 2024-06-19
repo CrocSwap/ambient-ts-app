@@ -68,7 +68,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
             <DefaultTooltip
                 interactive
-                title={'Toggle Condensed Mode'}
+                title={
+                    isCondensedModeEnabled
+                        ? 'Show all candles'
+                        : 'Hide empty candles'
+                }
                 enterDelay={500}
             >
                 <HeaderButtons
@@ -81,7 +85,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         id='trade_Condensed_Mode_button'
                         aria-label='Toggle condensed mode button'
                         style={{
-                            color: !isCondensedModeEnabled
+                            color: isCondensedModeEnabled
                                 ? 'var(--accent1)'
                                 : undefined,
                         }}
@@ -120,7 +124,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={'Toggle Full Screen Chart'}
+                title={
+                    isChartFullScreen
+                        ? 'Close full screen chart'
+                        : 'Display full screen chart'
+                }
                 enterDelay={500}
             >
                 <HeaderButtons
@@ -136,7 +144,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={'Copy to Clipboard'}
+                title={'Copy image of chart to clipboard'}
                 enterDelay={500}
             >
                 <HeaderButtons mobileHide onClick={copyChartToClipboard}>
