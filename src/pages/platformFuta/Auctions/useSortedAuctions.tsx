@@ -21,7 +21,7 @@ export interface sortedAuctionsIF {
     reverse: () => void;
 }
 
-export function useSortedAuctions(unsorted: AuctionDataIF[]) {
+export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     const DEFAULT_SORT: auctionSorts = 'recent';
 
     const [sortDetails, setSortDetails] = useState<sortDetailsIF>({
