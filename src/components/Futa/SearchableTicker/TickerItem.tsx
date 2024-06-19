@@ -10,12 +10,15 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionDataIF } from '../../../contexts/AuctionsContext';
 
 export default function TickerItem(props: AuctionDataIF) {
-    const { ticker, marketCap, createdAt, status } = props;
+    const { ticker, marketCap, createdAt, status, auctionLength } = props;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
     const timeRemaining = getTimeRemainingAbbrev(
-        moment(createdAt * 1000).diff(Date.now() - 604800000, 'seconds'),
+        moment(createdAt * 1000).diff(
+            Date.now() - auctionLength * 1000,
+            'seconds',
+        ),
     );
 
     const status2 =

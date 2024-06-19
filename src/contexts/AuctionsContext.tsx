@@ -28,6 +28,7 @@ export interface AuctionDataIF {
     ticker: string;
     marketCap: number;
     createdAt: number;
+    auctionLength: number;
     status?: null;
     unclaimedAllocation?: number;
 }

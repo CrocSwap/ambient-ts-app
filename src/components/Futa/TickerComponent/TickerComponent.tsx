@@ -222,7 +222,7 @@ export default function TickerComponent(props: PropsIF) {
     const timeRemainingAbbrev = auctionDetails
         ? getTimeRemainingAbbrev(
               moment(auctionDetails.createdAt * 1000).diff(
-                  Date.now() - 604800000,
+                  Date.now() - auctionDetails.auctionLength * 1000,
                   'seconds',
               ),
           )
@@ -234,7 +234,7 @@ export default function TickerComponent(props: PropsIF) {
         if (auctionDetails) {
             const timeRemainingInSeconds = moment(
                 auctionDetails.createdAt * 1000,
-            ).diff(Date.now() - 604800000, 'seconds');
+            ).diff(Date.now() - auctionDetails.auctionLength * 1000, 'seconds');
             const timeRemainingString = getTimeRemaining(
                 timeRemainingInSeconds,
             );
