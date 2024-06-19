@@ -39,9 +39,11 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
         );
     }
 
-    // fn to sort data by creation time (numerical, also native sequence)
+    // fn to sort data by creation time (numerical)
     function sortByCreationTime(d: AuctionDataIF[]): AuctionDataIF[] {
-        return d;
+        return [...d].sort(
+            (a: AuctionDataIF, b: AuctionDataIF) => b.createdAt - a.createdAt,
+        );
     }
 
     // fn to sort by market cap (numerical)
