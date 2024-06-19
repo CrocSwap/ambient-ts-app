@@ -7,12 +7,13 @@ import {
     diffHashSigScaleData,
 } from '../../../../../ambient-utils/dataLayer';
 import {
+    CandleDataChart,
     crosshair,
-    isTimeZoneStart,
     renderCanvasArray,
     scaleData,
     selectedDrawnData,
     setCanvasResolution,
+    timeGapsValue,
 } from '../../ChartUtils/chartUtils';
 import { CandleContext } from '../../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
@@ -36,7 +37,7 @@ interface xAxisIF {
     setXaxisActiveTooltip: React.Dispatch<React.SetStateAction<string>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     setIsCrDataIndActive: React.Dispatch<React.SetStateAction<boolean>>;
-    unparsedCandleData: CandleDataIF[];
+    unparsedCandleData: CandleDataChart[];
     firstCandleData: CandleDataIF;
     lastCandleData: CandleDataIF;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,6 +55,8 @@ interface xAxisIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     d3Xaxis: MutableRefObject<any>;
     isUpdatingShape: boolean;
+    timeGaps: timeGapsValue[];
+    isDiscontinuityScaleEnabled: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -84,6 +87,8 @@ function XAxisCanvas(props: xAxisIF) {
         toolbarWidth,
         d3Xaxis,
         isUpdatingShape,
+        timeGaps,
+        isDiscontinuityScaleEnabled,
     } = props;
 
     const { timeOfEndCandle } = useContext(CandleContext);
@@ -146,6 +151,39 @@ function XAxisCanvas(props: xAxisIF) {
         return formatValue;
     };
 
+    const filterClosePoints = (
+        data: xAxisTick[],
+        threshold: number,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        xScale: any,
+    ) => {
+        const filteredData = [data[0]];
+        for (let i = 1; i < data.length; i++) {
+            const currentDataLocation = xScale(data[i].date);
+            const previousDataLocation = xScale(data[i - 1].date);
+            const nextDataLocation = xScale(data[i + 1]?.date);
+
+            const currentStyle = data[i].style;
+            const nextStyle = data[i + 1]?.style;
+            const checkPrevData =
+                Math.abs(currentDataLocation - previousDataLocation) >
+                threshold;
+            const checkNextData =
+                Math.abs(currentDataLocation - nextDataLocation) > threshold;
+
+            if (checkPrevData && checkNextData) {
+                filteredData.push(data[i]);
+            } else if (checkPrevData && !checkNextData) {
+                if (!currentStyle && nextStyle) {
+                    filteredData.push(data[i + 1]);
+                } else {
+                    filteredData.push(data[i]);
+                }
+            }
+        }
+        return filteredData;
+    };
+
     const drawXaxis = (
         context: CanvasRenderingContext2D,
         xScale: d3.ScaleLinear<number, number>,
@@ -178,13 +216,46 @@ function XAxisCanvas(props: xAxisIF) {
 
                 const ticks = scaleData?.xScaleTime.ticks(factor);
 
-                const data = correctStyleForData(
+                let data = correctStyleForData(
                     scaleData?.xScale.domain()[0],
                     scaleData?.xScale.domain()[1],
-                    ticks,
+                    timeGaps.length > 0
+                        ? [
+                              ...ticks,
+                              new Date(),
+                              new Date(
+                                  scaleData?.xScale.domain()[1] -
+                                      period * 5 * 1000,
+                              ),
+                          ]
+                        : ticks,
                 );
 
-                data.forEach((d: xAxisTick) => {
+                if (isDiscontinuityScaleEnabled) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    data = data.map((itemA: any) => {
+                        const dateTimestamp = new Date(itemA.date).getTime();
+                        for (const gap of timeGaps) {
+                            const startRange = gap.range[0];
+                            const endRange = gap.range[1];
+                            if (
+                                dateTimestamp >= startRange &&
+                                dateTimestamp <= endRange &&
+                                !itemA.style
+                            ) {
+                                return {
+                                    ...itemA,
+                                    date: new Date(endRange),
+                                };
+                            }
+                        }
+                        return itemA;
+                    });
+                }
+
+                const filteredData = filterClosePoints(data, 35, xScale);
+
+                filteredData.forEach((d: xAxisTick) => {
                     if (d.date instanceof Date) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
@@ -227,53 +298,12 @@ function XAxisCanvas(props: xAxisIF) {
                             )
                         ) {
                             if (formatValue) {
-                                const indexValue = data.findIndex(
-                                    (d1: xAxisTick) => d1.date === d.date,
-                                );
                                 if (!d.style) {
-                                    const maxIndex =
-                                        indexValue === data.length - 1
-                                            ? indexValue
-                                            : indexValue + 1;
-                                    const minIndex =
-                                        indexValue === 0
-                                            ? indexValue
-                                            : indexValue - 1;
-                                    const lastData = data[maxIndex];
-                                    const beforeData = data[minIndex];
-
-                                    const lastDataLocation = scaleData.xScale(
-                                        lastData.date,
+                                    context.fillText(
+                                        formatValue,
+                                        xScale(d.date.getTime()),
+                                        Y + tickSize,
                                     );
-                                    const beforeDataLocation = scaleData.xScale(
-                                        beforeData.date,
-                                    );
-                                    const currentDataLocation =
-                                        scaleData.xScale(d.date);
-
-                                    const isTimeZoneStartLastData =
-                                        isTimeZoneStart(lastData.date);
-
-                                    if (
-                                        Math.abs(
-                                            currentDataLocation -
-                                                beforeDataLocation,
-                                        ) > 20
-                                    ) {
-                                        if (
-                                            !isTimeZoneStartLastData ||
-                                            Math.abs(
-                                                lastDataLocation -
-                                                    currentDataLocation,
-                                            ) > 20
-                                        ) {
-                                            context.fillText(
-                                                formatValue,
-                                                currentDataLocation,
-                                                Y + tickSize,
-                                            );
-                                        }
-                                    }
                                 } else {
                                     context.fillText(
                                         formatValue,
