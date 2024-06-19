@@ -117,6 +117,7 @@ export default function CustomBid(props: Props) {
                 Custom Bid
                 <MdClose color='#8b98a5' onClick={handleClose} />
             </header>
+            {userQtyDisplay}
 
             <div className={styles.customBidContainer}>
                 <div className={styles.fdvContainer}>
@@ -132,7 +133,6 @@ export default function CustomBid(props: Props) {
                             setTokenModalOpen={setTokenModalOpen}
                             inputValue={inputValue}
                             setInputValue={setInputValue}
-                            customBottomContent={userQtyDisplay}
                             customBorderRadius='0px'
                         />
                     </div>

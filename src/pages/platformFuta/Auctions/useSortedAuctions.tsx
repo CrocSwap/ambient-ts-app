@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import { auctionDataIF } from '../mockAuctionData';
+import { useMemo, useState } from 'react';
+import { AuctionDataIF } from '../../../contexts/AuctionsContext';
 
 export type auctionSorts =
     | 'createdAt'
@@ -14,74 +14,74 @@ export interface sortDetailsIF {
 }
 
 export interface sortedAuctionsIF {
-    data: auctionDataIF[];
+    data: AuctionDataIF[];
     active: auctionSorts;
     isReversed: boolean;
-    update: (sortType: auctionSorts) => void;
+    update: (newSort: auctionSorts) => void;
     reverse: () => void;
 }
 
-export function useSortedAuctions(unsorted: auctionDataIF[]) {
-    const [sorted, setSorted] = useState<auctionDataIF[]>(unsorted);
-
+export function useSortedAuctions(unsorted: AuctionDataIF[]) {
     const DEFAULT_SORT: auctionSorts = 'recent';
-    const sortDetails = useRef<sortDetailsIF>({
+
+    const [sortDetails, setSortDetails] = useState<sortDetailsIF>({
         sortBy: DEFAULT_SORT,
         isReversed: false,
     });
 
-    function sortByTicker(d: auctionDataIF[]): auctionDataIF[] {
-        return [...d].sort((a: auctionDataIF, b: auctionDataIF) =>
+    function sortByTicker(d: AuctionDataIF[]): AuctionDataIF[] {
+        return [...d].sort((a: AuctionDataIF, b: AuctionDataIF) =>
             b.ticker.localeCompare(a.ticker),
         );
     }
 
-    function sortByCreationTime(d: auctionDataIF[]): auctionDataIF[] {
+    function sortByCreationTime(d: AuctionDataIF[]): AuctionDataIF[] {
         return d;
     }
 
-    function sortByMarketCap(d: auctionDataIF[]): auctionDataIF[] {
-        console.log('sorting by market cap');
+    function sortByMarketCap(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort(
-            (a: auctionDataIF, b: auctionDataIF) => b.marketCap - a.marketCap,
+            (a: AuctionDataIF, b: AuctionDataIF) => b.marketCap - a.marketCap,
         );
     }
 
-    function updateSort(sortType: auctionSorts): void {
-        const isNewSortType: boolean = sortType !== sortDetails.current.sortBy;
-        if (isNewSortType) {
-            let newlySortedData: auctionDataIF[];
-            sortDetails.current.sortBy = sortType;
-            switch (sortType) {
-                case 'ticker':
-                    newlySortedData = sortByTicker(unsorted);
-                    break;
-                case 'marketCap':
-                    newlySortedData = sortByMarketCap(unsorted);
-                    break;
-                case 'createdAt':
-                    newlySortedData = sortByCreationTime(unsorted);
-                    break;
-                default:
-                    newlySortedData = unsorted;
-                    break;
-            }
-            setSorted(newlySortedData);
-        }
+    function updateSort(newSort: auctionSorts): void {
+        newSort !== sortDetails.sortBy &&
+            setSortDetails({
+                sortBy: newSort,
+                isReversed: sortDetails.isReversed,
+            });
     }
 
     function reverseSort(): void {
-        sortDetails.current.isReversed = !sortDetails.current.isReversed;
-        setSorted([...sorted].reverse());
+        setSortDetails({
+            sortBy: sortDetails.sortBy,
+            isReversed: !sortDetails.isReversed,
+        });
     }
 
-    return useMemo<sortedAuctionsIF>(() => {
-        return {
-            data: sorted,
-            active: sortDetails.current.sortBy,
-            isReversed: sortDetails.current.isReversed,
-            update: updateSort,
-            reverse: reverseSort,
-        };
-    }, [sorted]);
+    const sortedData = useMemo<AuctionDataIF[]>(() => {
+        let output: AuctionDataIF[];
+        switch (sortDetails.sortBy) {
+            case 'ticker':
+                output = sortByTicker(unsorted);
+                break;
+            case 'marketCap':
+                output = sortByMarketCap(unsorted);
+                break;
+            case 'createdAt':
+            default:
+                output = sortByCreationTime(unsorted);
+                break;
+        }
+        return sortDetails.isReversed ? [...output].reverse() : output;
+    }, [unsorted, sortDetails]);
+
+    return {
+        data: sortedData,
+        active: sortDetails.sortBy,
+        isReversed: sortDetails.isReversed,
+        update: updateSort,
+        reverse: reverseSort,
+    };
 }

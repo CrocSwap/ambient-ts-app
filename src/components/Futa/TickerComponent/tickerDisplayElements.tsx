@@ -5,22 +5,27 @@ import styles from './TickerComponent.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import Divider from '../Divider/Divider';
 import { FaEye } from 'react-icons/fa';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionStatusDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
-import { TokenIF } from '../../../ambient-utils/types';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+
 import { CurrencySelector } from '../../Form/CurrencySelector';
 
 // Props interface
 export interface PropsIF {
+    auctionStatusData: AuctionStatusDataIF;
+    maxFdvData: { value: number }[];
+    marketCapEthValue: number | undefined;
+    currentMarketCapUsdValue: number | undefined;
+    timeRemaining: string | undefined;
+    isAuctionCompleted?: boolean;
     placeholderTicker?: boolean;
-    auctionDetails:
-        | {
-              status: string;
-          }
-        | undefined;
+    auctionDetails: AuctionDataIF | undefined;
     bidGasPriceinDollars: string | undefined;
     formattedPriceImpact: string;
     isAuctionPage?: boolean;
@@ -78,11 +83,16 @@ const TooltipLabel = (props: TooltipTitleProps) => {
 };
 
 // Main function
-export const tickerConstants = (props: PropsIF) => {
+export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
+        auctionStatusData,
+        maxFdvData,
+        marketCapEthValue,
+        currentMarketCapUsdValue,
+        timeRemaining,
+        isAuctionCompleted,
         placeholderTicker,
-        auctionDetails,
         bidGasPriceinDollars,
         formattedPriceImpact,
         isAuctionPage,
@@ -107,70 +117,100 @@ export const tickerConstants = (props: PropsIF) => {
         showComments,
         setShowComments,
     } = useContext(AuctionsContext);
-    const { tokenBalances } = useContext(TokenBalanceContext);
 
-    const isAuctionCompleted =
-        auctionDetails?.status?.toLowerCase() === 'closed';
+    const currentMarketCapUsdFormatted =
+        currentMarketCapUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: currentMarketCapUsdValue,
+                  isUSD: true,
+              })
+            : '...';
 
     // Status data
     const statusData = [
         {
             label: 'status',
-            value: !placeholderTicker ? auctionDetails?.status : '-',
+            value: !placeholderTicker
+                ? isAuctionCompleted
+                    ? 'CLOSED'
+                    : 'OPEN'
+                : '-',
             color: 'var(--accent1)',
             tooltipLabel: 'The current status of the auction - open or closed',
         },
         {
             label: 'time remaining',
-            value: !placeholderTicker ? 'XXh:XXm:XXs' : '-',
+            value: !placeholderTicker ? timeRemaining : '-',
             color: 'var(--positive)',
             tooltipLabel: 'The time remaining till the auction is closed',
         },
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
+            value: !placeholderTicker ? 'Ξ ' + marketCapEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'Current filled market cap in eth terms',
         },
         {
             label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
+            value: !placeholderTicker ? currentMarketCapUsdFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel:
                 'Current filled market cap in dollars based on the current price of eth',
         },
     ];
 
+    const openBidEthValueNum = maxFdvData[0] ? maxFdvData[0].value : undefined;
+    const openBidEthValueFormatted = openBidEthValueNum
+        ? openBidEthValueNum.toString()
+        : '...';
+
+    const currentOpenBidUsdValue =
+        nativeTokenUsdPrice !== undefined && openBidEthValueNum !== undefined
+            ? nativeTokenUsdPrice * openBidEthValueNum
+            : undefined;
+
+    const currentOpenBidUsdValueFormatted =
+        currentOpenBidUsdValue !== undefined
+            ? getFormattedNumber({
+                  value: currentOpenBidUsdValue,
+                  isUSD: true,
+              })
+            : '...';
+
+    const formattedOpenBidStatus = `${auctionStatusData.currentAmountFilled} / ${auctionStatusData.currentBidSize}`;
+
+    const fillPercentage =
+        auctionStatusData.currentAmountFilled &&
+        auctionStatusData.currentBidSize
+            ? auctionStatusData.currentAmountFilled /
+              auctionStatusData.currentBidSize
+            : 0.0;
+
+    const fillPercentageFormatted = getFormattedNumber({
+        value: fillPercentage,
+        isPercentage: true,
+    });
     // Opened bid data
     const openedBidData = [
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'XXX.XXX' : '-',
+            value: !placeholderTicker ? 'Ξ ' + openBidEthValueFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel: 'Current open bid market cap in ETH terms',
         },
         {
             label: 'market cap ($)',
-            value: !placeholderTicker ? '($XXX,XXX,XXX)' : '-',
+            value: !placeholderTicker ? currentOpenBidUsdValueFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel:
                 'Current open bid market cap in dollar terms based on the current price of ETH',
         },
         {
             label: 'bid size',
-            value: !placeholderTicker ? 'XXX.XXX / XXX.XXX' : '-',
+            value: !placeholderTicker ? formattedOpenBidStatus : '-',
             color: 'var(--accent1)',
             tooltipLabel: 'Filled and total bid sized of the current open bid',
         },
-    ];
-
-    // Max FDV data
-    const maxFdvData = [
-        { value: 0.216 },
-        { value: 0.271 },
-        { value: 0.338 },
-        { value: 0.423 },
-        { value: 0.529 },
     ];
 
     // Extra info data
@@ -199,7 +239,7 @@ export const tickerConstants = (props: PropsIF) => {
               },
           ];
 
-    const progressValue = !placeholderTicker ? 'XX.X' : '-';
+    const progressValue = !placeholderTicker ? fillPercentageFormatted : '-';
 
     // Ticker display component
     const tickerDisplay = (
@@ -208,13 +248,17 @@ export const tickerConstants = (props: PropsIF) => {
             <div className={styles.tickerNameContainer}>
                 <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
                 {!placeholderTicker && (
-                    <button onClick={() => setShowComments(!showComments)}>
-                        COMMENTS{' '}
-                        <FaEye
-                            size={20}
-                            color={showComments ? 'var(--accent1)' : ''}
-                        />
-                    </button>
+                    <div className={styles.alignCenter}>
+                        <button
+                            onClick={() => setShowComments(!showComments)}
+                            className={`${styles.commentButton} ${
+                                showComments && styles.buttonOn
+                            }`}
+                        >
+                            COMMENTS{' '}
+                        </button>
+                        <FaEye size={25} className={styles.watchlistButton} />
+                    </div>
                 )}
             </div>
             {!showComments &&
@@ -245,7 +289,7 @@ export const tickerConstants = (props: PropsIF) => {
             ))}
             <div className={styles.progressContainer}>
                 <div className={styles.progressContent}>
-                    {Array.from({ length: 10 }, (_, idx) => (
+                    {Array.from({ length: fillPercentage * 10 }, (_, idx) => (
                         <span className={styles.progressBar} key={idx} />
                     ))}
                 </div>
@@ -296,7 +340,11 @@ export const tickerConstants = (props: PropsIF) => {
                     className={styles.maxDropdownButton}
                     style={tickerFromParams ? {} : { cursor: 'not-allowed' }}
                 >
-                    <p> {!placeholderTicker ? selectedMaxValue.value : '-'}</p>
+                    <p>
+                        {!placeholderTicker && selectedMaxValue
+                            ? selectedMaxValue?.value
+                            : '-'}
+                    </p>
                     {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
                 </button>
                 {isMaxDropdownOpen && (
@@ -349,29 +397,6 @@ export const tickerConstants = (props: PropsIF) => {
 
     const nativeToken = supportedNetworks[chainId]?.defaultPair[0];
 
-    const nativeData: TokenIF | undefined =
-        tokenBalances &&
-        tokenBalances.find(
-            (tkn: TokenIF) => tkn.address === nativeToken.address,
-        );
-
-    const nativeTokenWalletBalance = nativeData?.walletBalance;
-
-    // User quantity display component
-    const userQtyDisplay = (
-        <div className={styles.userQtyDisplay}>
-            <p style={{ color: 'var(--text2)' }}>{bidUsdValueTruncated}</p>
-            {nativeTokenWalletBalance !== '0' && (
-                <div
-                    className={styles.maxButtonContainer}
-                    onClick={handleBalanceClick}
-                >
-                    <p>{nativeTokenWalletBalanceTruncated}</p>
-                </div>
-            )}
-        </div>
-    );
-
     // Bid size display component
     const bidSizeDisplay = (
         <div className={styles.tickerContainer}>
@@ -386,9 +411,11 @@ export const tickerConstants = (props: PropsIF) => {
                 setQty={setBidQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
-                customBottomContent={userQtyDisplay}
                 customBorderRadius='0px'
                 noModals
+                usdValue={bidUsdValueTruncated}
+                walletBalance={nativeTokenWalletBalanceTruncated}
+                handleBalanceClick={handleBalanceClick}
             />
         </div>
     );

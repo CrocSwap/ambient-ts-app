@@ -1,4 +1,14 @@
-export function getTimeRemaining(
+import moment from 'moment';
+
+export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
+    const duration = moment.duration(remainingTimeInSecondsNum, 'seconds');
+    const hours = Math.floor(duration.asHours());
+    const minutes = Math.floor(duration.minutes());
+    const secs = Math.floor(duration.seconds());
+
+    return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
+}
+export function getTimeRemainingAbbrev(
     remainingTimeInSecondsNum: number | undefined,
 ): string {
     const remainingTimeString =

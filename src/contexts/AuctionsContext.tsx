@@ -1,22 +1,57 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 // import { fetchAuctionsData } from '../ambient-utils/api';
 import { CrocEnvContext } from './CrocEnvContext';
+import {
+    mockAccountData,
+    mockAuctionData,
+    mockAuctionStatus1,
+    mockAuctionStatus2,
+} from '../pages/platformFuta/mockAuctionData';
+import { UserDataContext } from './UserDataContext';
 
 interface AuctionsContextIF {
     auctions: AuctionsDataIF;
+    accountData: AccountDataIF;
     getAuctions(): void;
+    getAuctionData(ticker: string): void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     showComments: boolean;
     setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
     tickerInput: string;
     setTickerInput: React.Dispatch<React.SetStateAction<string>>;
+    auctionStatusData: AuctionStatusDataIF;
+}
+
+export interface AuctionDataIF {
+    ticker: string;
+    marketCap: number;
+    createdAt: number;
+    status?: null;
+    unclaimedAllocation?: number;
 }
 
 export interface AuctionsDataIF {
     dataReceived: boolean;
     chainId: string;
-    data: AuctionsDataIF | undefined;
+    data: AuctionDataIF[];
+}
+
+export interface AccountDataIF {
+    dataReceived: boolean;
+    chainId: string;
+    auctions: AuctionDataIF[];
+}
+
+export interface AuctionStatusDataIF {
+    dataReceived: boolean;
+    chainId: string;
+    openBidMaxMarketCap: number | undefined;
+    currentBidSize: number | undefined;
+    currentAmountFilled: number | undefined;
+    maxFdvData: {
+        value: number;
+    }[];
 }
 // export interface AuctionsDataIF {
 //     global: XpLeaderboardDataIF;
@@ -39,12 +74,29 @@ export const AuctionsContextProvider = (props: {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [auctionsData, setAuctionsData] = React.useState<AuctionsDataIF>({
         dataReceived: false,
         chainId: chainId,
-        data: undefined,
+        data: [],
     });
+
+    const [accountData, setAccountData] = React.useState<AccountDataIF>({
+        dataReceived: false,
+        chainId: chainId,
+        auctions: [],
+    });
+
+    const [auctionStatusData, setAuctionStatusData] =
+        React.useState<AuctionStatusDataIF>({
+            dataReceived: false,
+            chainId: chainId,
+            openBidMaxMarketCap: undefined,
+            currentBidSize: undefined,
+            currentAmountFilled: undefined,
+            maxFdvData: [],
+        });
 
     const [isLoading, setIsLoading] = useState(true);
     const [tickerInput, setTickerInput] = useState('');
@@ -67,14 +119,23 @@ export const AuctionsContextProvider = (props: {
     //     });
 
     const fetchAuctionsData = async () => {
-        return {
-            dataReceived: false,
-            chainId: chainId,
-            data: undefined,
-        };
+        return mockAuctionData;
     };
 
-    function getAuctions() {
+    const fetchAccountData = async () => {
+        return mockAccountData;
+    };
+
+    const fetchAuctionStatusData = async (ticker: string) => {
+        if (ticker === 'APU' || ticker === 'DEGEN') {
+            return mockAuctionStatus1;
+        } else {
+            return mockAuctionStatus2;
+        }
+    };
+
+    function getAuctionsData() {
+        console.log('getAuctions');
         fetchAuctionsData().then((data) => {
             setAuctionsData({
                 dataReceived: true,
@@ -84,13 +145,55 @@ export const AuctionsContextProvider = (props: {
         });
     }
 
+    function getAccountData() {
+        console.log('getAccount');
+        fetchAccountData().then((data) => {
+            setAccountData({
+                dataReceived: true,
+                chainId: chainId,
+                auctions: data,
+            });
+        });
+    }
+
+    function getAuctionData(ticker: string) {
+        console.log('getAuctionData for: ' + ticker);
+        fetchAuctionStatusData(ticker).then((data) => {
+            setAuctionStatusData({
+                dataReceived: true,
+                chainId: chainId,
+                openBidMaxMarketCap: data.openBidMaxMarketCap,
+                currentBidSize: data.currentBidSize,
+                currentAmountFilled: data.currentAmountFilled,
+                maxFdvData: data.maxFdvData,
+            });
+        });
+    }
+
+    // useEffect to fetch auctions  data every 30 seconds
+    useEffect(() => {
+        getAuctionsData();
+        const interval = setInterval(() => {
+            getAuctionsData();
+        }, 30000);
+        return () => clearInterval(interval);
+    }, [chainId]);
+
+    // useEffect to fetch account data every 30 seconds
+    useEffect(() => {
+        getAccountData();
+        const interval = setInterval(() => {
+            getAccountData();
+        }, 30000);
+        return () => clearInterval(interval);
+    }, [chainId, userAddress]);
+
     const auctionsContext: AuctionsContextIF = {
-        auctions: {
-            dataReceived: auctionsData.dataReceived,
-            chainId: chainId,
-            data: auctionsData,
-        },
-        getAuctions: getAuctions,
+        auctionStatusData: auctionStatusData,
+        auctions: auctionsData,
+        accountData: accountData,
+        getAuctions: getAuctionsData,
+        getAuctionData: getAuctionData,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
         tickerInput: tickerInput,

@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
 import styles from './TickerComponent.module.css';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -18,7 +21,11 @@ import {
     NUM_WEI_IN_GWEI,
     supportedNetworks,
 } from '../../../ambient-utils/constants';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    getTimeRemaining,
+    getTimeRemainingAbbrev,
+} from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import { BigNumber } from 'ethers';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -27,7 +34,8 @@ import { toDisplayQty } from '@crocswap-libs/sdk';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
-import { tickerConstants } from './tickerConstants';
+import { tickerDisplayElements } from './tickerDisplayElements';
+import moment from 'moment';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -37,10 +45,15 @@ interface PropsIF {
 // Contexts
 const useAuctionContexts = () => {
     const {
-        auctions: { chainId },
         showComments,
         setShowComments,
+        auctions,
+        accountData,
+        getAuctionData,
+        auctionStatusData,
     } = useContext(AuctionsContext);
+
+    const chainId = auctions.chainId;
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
@@ -52,6 +65,10 @@ const useAuctionContexts = () => {
         useContext(ChainDataContext);
 
     return {
+        getAuctionData,
+        auctionStatusData,
+        accountData,
+        auctions,
         chainId,
         showComments,
         setShowComments,
@@ -67,23 +84,16 @@ const useAuctionContexts = () => {
 
 // States
 const useAuctionStates = () => {
-    const { isActiveNetworkL2 } = useAuctionContexts();
-    const maxFdvData = [
-        { value: 0.216 },
-        { value: 0.271 },
-        { value: 0.338 },
-        { value: 0.423 },
-        { value: 0.529 },
-    ];
+    const { isActiveNetworkL2, auctionStatusData } = useAuctionContexts();
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
     >('');
     const [auctionDetails, setAuctionDetails] = useState<
-        { status: string } | undefined
+        AuctionDataIF | undefined
     >();
     const [allocationForConnectedUser, setAllocationForConnectedUser] =
-        useState<{ unclaimedAllocation: string } | undefined>();
+        useState<string | undefined>();
     const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -94,12 +104,19 @@ const useAuctionStates = () => {
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [priceImpact, setPriceImpact] = useState<number | undefined>();
-    const [selectedMaxValue, setSelectedMaxValue] = useState(maxFdvData[0]);
+    const [selectedMaxValue, setSelectedMaxValue] = useState(
+        auctionStatusData.maxFdvData[0],
+    );
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
+    useEffect(() => {
+        setSelectedMaxValue(auctionStatusData.maxFdvData[0]);
+    }, [auctionStatusData.maxFdvData[0]]);
+
     return {
+        maxFdvData: auctionStatusData.maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -126,37 +143,13 @@ const useAuctionStates = () => {
     };
 };
 
-// Utility functions
-const getAuctionDetails = async (ticker: string) => {
-    if (
-        ticker.toLowerCase() === 'doge' ||
-        ticker.toLowerCase() === 'not' ||
-        ticker.toLowerCase() === 'mog' ||
-        ticker.toLowerCase() === 'mew'
-    )
-        return { status: 'CLOSED' };
-
-    return { status: 'OPEN' };
-};
-
-const getAllocationByUser = async (
-    ticker: string,
-    userAddress: `0x${string}` | undefined,
-) => {
-    if (!userAddress) return { unclaimedAllocation: '0' };
-    if (ticker.toLowerCase() === 'not')
-        return { unclaimedAllocation: '100000' };
-    if (ticker.toLowerCase() === 'mog')
-        return { unclaimedAllocation: '168200' };
-
-    return { unclaimedAllocation: '0' };
-};
-
 // Component
 export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const {
+        auctionStatusData,
+        getAuctionData,
         chainId,
         showComments,
         isUserConnected,
@@ -166,9 +159,12 @@ export default function TickerComponent(props: PropsIF) {
         gasPriceInGwei,
         isActiveNetworkL2,
         nativeTokenUsdPrice,
+        accountData,
+        auctions,
     } = useAuctionContexts();
 
     const {
+        maxFdvData,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
         bidQtyNonDisplay,
@@ -194,30 +190,90 @@ export default function TickerComponent(props: PropsIF) {
         l1GasFeeLimitInGwei,
     } = useAuctionStates();
 
+    // Utility functions
+    const getAuctionDetails = async (ticker: string) => {
+        return auctions.data.find(
+            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+        );
+    };
+    const getAuctionDetailsForAccount = async (ticker: string) => {
+        return accountData.auctions.find(
+            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+        );
+    };
+
     const { ticker: tickerFromParams } = useParams();
 
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
+            console.log('fetched data for ' + tickerFromParams);
+        });
+    }, [tickerFromParams]);
+
     const formattedUnclaimedAllocationForConnectedUser = parseFloat(
-        allocationForConnectedUser?.unclaimedAllocation ?? '0',
+        allocationForConnectedUser ?? '0',
     ).toLocaleString('en-US', {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
     });
 
+    const marketCapEthValue = auctionDetails?.marketCap;
+
+    const timeRemainingAbbrev = auctionDetails
+        ? getTimeRemainingAbbrev(
+              moment(auctionDetails.createdAt * 1000).diff(
+                  Date.now() - 604800000,
+                  'seconds',
+              ),
+          )
+        : undefined;
+
+    const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
+
+    const refreshTimeRemaining = () => {
+        if (auctionDetails) {
+            const timeRemainingInSeconds = moment(
+                auctionDetails.createdAt * 1000,
+            ).diff(Date.now() - 604800000, 'seconds');
+            const timeRemainingString = getTimeRemaining(
+                timeRemainingInSeconds,
+            );
+            setTimeRemaining(
+                timeRemainingInSeconds < 0 ? '-' : timeRemainingString,
+            );
+        }
+    };
+
+    useEffect(() => {
+        // refresh time remaining every 1 second
+        refreshTimeRemaining();
+        const interval = setInterval(() => {
+            refreshTimeRemaining();
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [tickerFromParams, auctionDetails]);
+
     const isAuctionCompleted =
-        auctionDetails?.status?.toLowerCase() === 'closed';
+        timeRemainingAbbrev?.toLowerCase() === 'complete';
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) =>
-            setAuctionDetails(details),
+        Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) => {
+            setAuctionDetails(details);
+        });
+    }, [tickerFromParams, auctions.data]);
+
+    useEffect(() => {
+        if (!tickerFromParams) return;
+        Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
+            (details) =>
+                setAllocationForConnectedUser(
+                    details?.unclaimedAllocation
+                        ? details?.unclaimedAllocation.toString()
+                        : undefined,
+                ),
         );
-    }, [tickerFromParams]);
-
-    useEffect(() => {
-        if (!tickerFromParams) return;
-        Promise.resolve(
-            getAllocationByUser(tickerFromParams, userAddress),
-        ).then((details) => setAllocationForConnectedUser(details));
     }, [tickerFromParams, userAddress]);
 
     const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
@@ -376,13 +432,19 @@ export default function TickerComponent(props: PropsIF) {
 
     const fdvUsdValue =
         nativeTokenUsdPrice !== undefined &&
+        selectedMaxValue &&
         selectedMaxValue.value !== undefined
             ? nativeTokenUsdPrice * selectedMaxValue.value
             : undefined;
 
+    const currentMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && marketCapEthValue !== undefined
+            ? nativeTokenUsdPrice * marketCapEthValue
+            : undefined;
+
     const isAllocationAvailableToClaim =
-        allocationForConnectedUser?.unclaimedAllocation &&
-        parseFloat(allocationForConnectedUser.unclaimedAllocation) > 0;
+        allocationForConnectedUser &&
+        parseFloat(allocationForConnectedUser) > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
@@ -435,7 +497,13 @@ export default function TickerComponent(props: PropsIF) {
         </button>
     );
 
-    const tickerConstantsProps = {
+    const tickerDisplayElementsProps = {
+        auctionStatusData,
+        maxFdvData,
+        marketCapEthValue,
+        currentMarketCapUsdValue,
+        timeRemaining,
+        isAuctionCompleted,
         placeholderTicker,
         auctionDetails,
         bidGasPriceinDollars,
@@ -461,7 +529,7 @@ export default function TickerComponent(props: PropsIF) {
         extraInfoDisplay,
         tickerDisplay,
         openedBidDisplay,
-    } = tickerConstants(tickerConstantsProps);
+    } = tickerDisplayElements(tickerDisplayElementsProps);
 
     const allocationDisplay = (
         <div className={styles.allocationContainer}>
@@ -483,7 +551,7 @@ export default function TickerComponent(props: PropsIF) {
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
-    }, [bidQtyInputField, selectedMaxValue.value, inputValue]);
+    }, [bidQtyInputField, selectedMaxValue?.value, inputValue]);
 
     return (
         <div className={styles.container}>

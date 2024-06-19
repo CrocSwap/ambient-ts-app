@@ -9,6 +9,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 100%;
 }
 
 .filter_options {
@@ -18,6 +19,7 @@
     justify-content: space-between;
     gap: 10px;
     width: 100%;
+    align-items: center;
 }
 
 .title {
@@ -35,6 +37,7 @@
     padding: 0px 4px 0px 8px;
     gap: 4px;
     background-color: var(--dark4);
+  
 }
 
 .text_search_box > input {
@@ -55,18 +58,26 @@ color: var(--text2)
 }
 
 .sort_toggles {
-    display: grid;
+    /* display: grid;
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 8px;
 }
 
 .timeDropdownRight{
     display: flex;
     justify-content: flex-end;
-    min-width: 120px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    
 }
 
 .timeDropdownRight button {
+    width: 110px;
     height: 24px;
     border: 1px solid var(--dark3, #1E1E24);
     background: var(--dark4, #171F22);
@@ -74,7 +85,7 @@ color: var(--text2)
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 4px 8px;
+    /* padding: 4px 8px; */
     text-align: center;
     gap: 10px;
     font-size: 12px;
@@ -84,16 +95,19 @@ color: var(--text2)
 }
 
 .buttonOn:hover, .buttonOff:hover{
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--text1);
+    color: var(--text1)
 }
 
 .buttonOn{
-    color: var(--accent1) !important
+    color: var(--accent1) !important;
+    border: 1px solid var(--accent1) !important
 }
 .timeDropdownLeft{
-    width: 100%;
-    min-width: 160px;
-    position: relative
+    width: 180px;
+    position: relative;
+   
+  
 
 }
 
@@ -101,6 +115,8 @@ color: var(--text2)
     width: 100%;
    display: grid;
    grid-template-columns:  auto 25px;
+   align-items: center;
+  
 }
 .timeDropdownButton{
 border-left: 4px solid var(--accent1, #62EBF1);
@@ -111,6 +127,8 @@ justify-content: space-between;
 align-items: center;
 cursor: pointer;
 height: 24px;
+width: 100%;
+
 }
 .timeDropdownButton p{
 font-size: 12px;
@@ -122,8 +140,9 @@ color: var(--text1)
     align-items: center;
 }
 .dropdown{
+    
     height: auto;
-    width: calc(100% - 25px);
+    width: 155px;
     background-color: var(--dark4);
     position: absolute;
     top: 30px;
@@ -221,6 +240,14 @@ color: var(--text1)
   
 }
 
+.marketCap{
+    text-align: end;
+}
+
+.marketCapHeader{
+    text-align: end;
+    padding: 0 12px;
+}
 
 .buttonOn, .buttonOff {
     outline: 1px solid green;
@@ -237,6 +264,13 @@ color: var(--text1)
 font-size: 36px;
 text-transform: uppercase;
 }
+
+/* .text_search_box {
+
+    max-width: 60%;
+   
+} */
+
 
 }
 
