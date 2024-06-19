@@ -27,7 +27,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'APU',
         marketCap: 2.441406,
-        createdAt: 1718295814,
+        createdAt: 1718235814,
     },
     {
         ticker: 'BOME',
@@ -69,6 +69,126 @@ export const mockAuctionData: AuctionDataIF[] = [
         marketCap: 1.953125,
         createdAt: 1718447920,
     },
+    {
+        ticker: 'TRUMP1',
+        marketCap: 1.953125,
+        createdAt: 1718307476,
+    },
+    {
+        ticker: 'EMILY1',
+        marketCap: 1.953125,
+        createdAt: 1718311100,
+    },
+    {
+        ticker: 'DEGEN1',
+        marketCap: 2.441406,
+        createdAt: 1718361510,
+    },
+    {
+        ticker: 'LOCKIN1',
+        marketCap: 1.953125,
+        createdAt: 1718447920,
+    },
+    {
+        ticker: 'TRUMP2',
+        marketCap: 1.953125,
+        createdAt: 1718307476,
+    },
+    {
+        ticker: 'EMILY2',
+        marketCap: 1.953125,
+        createdAt: 1718311100,
+    },
+    {
+        ticker: 'DEGEN2',
+        marketCap: 2.441406,
+        createdAt: 1718361510,
+    },
+    {
+        ticker: 'LOCKIN2',
+        marketCap: 1.953125,
+        createdAt: 1718447920,
+    },
+    {
+        ticker: 'TRUMP3',
+        marketCap: 1.953125,
+        createdAt: 1718307476,
+    },
+    {
+        ticker: 'EMILY3',
+        marketCap: 1.953125,
+        createdAt: 1718311100,
+    },
+    {
+        ticker: 'DEGEN3',
+        marketCap: 2.441406,
+        createdAt: 1718361510,
+    },
+    {
+        ticker: 'LOCKIN3',
+        marketCap: 1.953125,
+        createdAt: 1718447920,
+    },
+    {
+        ticker: 'TRUMP4',
+        marketCap: 1.953125,
+        createdAt: 1718307476,
+    },
+    {
+        ticker: 'EMILY4',
+        marketCap: 1.953125,
+        createdAt: 1718311100,
+    },
+    {
+        ticker: 'DEGEN4',
+        marketCap: 2.441406,
+        createdAt: 1718361510,
+    },
+    {
+        ticker: 'LOCKIN4',
+        marketCap: 1.953125,
+        createdAt: 1718447920,
+    },
+    {
+        ticker: 'TRUMP5',
+        marketCap: 1.953125,
+        createdAt: 1718307476,
+    },
+    {
+        ticker: 'EMILY5',
+        marketCap: 1.953125,
+        createdAt: 1718311100,
+    },
+    {
+        ticker: 'DEGEN5',
+        marketCap: 2.441406,
+        createdAt: 1718361510,
+    },
+    {
+        ticker: 'LOCKIN5',
+        marketCap: 1.953125,
+        createdAt: 1718447920,
+    },
+    {
+        ticker: 'TRUMP6',
+        marketCap: 1.953125,
+        createdAt: 1718307476,
+    },
+    {
+        ticker: 'EMILY6',
+        marketCap: 1.953125,
+        createdAt: 1718311100,
+    },
+    {
+        ticker: 'DEGEN6',
+        marketCap: 2.441406,
+        createdAt: 1718361510,
+    },
+    {
+        ticker: 'LOCKIN6',
+        marketCap: 1.953125,
+        createdAt: 1718447920,
+    },
 ];
 
 export const mockAccountData: AuctionDataIF[] = [
@@ -92,7 +212,7 @@ export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'APU',
         marketCap: 2.441406,
-        createdAt: 1718295814,
+        createdAt: 1718235814,
     },
 ];
 
