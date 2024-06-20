@@ -38,9 +38,8 @@ export default function SearchableTicker(props: propsIF) {
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
     const customLoading = false;
-    const { setIsLoading } = useContext(AuctionsContext);
-    const [selectedTicker, setSelectedTicker] =
-        useState<AuctionDataIF | null>();
+    const { setIsLoading, selectedTicker, setSelectedTicker } =
+        useContext(AuctionsContext);
 
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
@@ -99,8 +98,9 @@ export default function SearchableTicker(props: propsIF) {
     ];
 
     const [activeTime, setActiveTime] = useState(creationTimeData[0]);
+
     useEffect(() => {
-        if (placeholderTicker) setSelectedTicker(null);
+        if (placeholderTicker) setSelectedTicker(undefined);
     }, [placeholderTicker]);
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;

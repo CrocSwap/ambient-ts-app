@@ -22,6 +22,8 @@ interface AuctionsContextIF {
     tickerInput: string;
     setTickerInput: React.Dispatch<React.SetStateAction<string>>;
     auctionStatusData: AuctionStatusDataIF;
+    selectedTicker: string | undefined;
+    setSelectedTicker: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export interface AuctionDataIF {
@@ -105,6 +107,8 @@ export const AuctionsContextProvider = (props: {
     const [isLoading, setIsLoading] = useState(true);
     const [tickerInput, setTickerInput] = useState('');
     const [showComments, setShowComments] = useState(false);
+
+    const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
 
     // const [auctionsGlobal, setAuctionsGlobal] =
     //     React.useState<XpLeaderboardDataIF>({
@@ -202,6 +206,8 @@ export const AuctionsContextProvider = (props: {
         setTickerInput: setTickerInput,
         showComments: showComments,
         setShowComments: setShowComments,
+        selectedTicker: selectedTicker,
+        setSelectedTicker: setSelectedTicker,
     };
 
     return (

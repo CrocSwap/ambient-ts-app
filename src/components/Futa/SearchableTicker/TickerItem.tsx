@@ -5,16 +5,14 @@ import {
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import moment from 'moment';
-import { Dispatch, SetStateAction, useContext, useEffect } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionDataIF } from '../../../contexts/AuctionsContext';
 
 interface PropsIF {
     auction: AuctionDataIF;
-    setSelectedTicker: Dispatch<
-        SetStateAction<AuctionDataIF | null | undefined>
-    >;
-    selectedTicker: AuctionDataIF | null | undefined;
+    setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
+    selectedTicker: string | undefined;
 }
 export default function TickerItem(props: PropsIF) {
     const { auction, selectedTicker, setSelectedTicker } = props;
@@ -50,19 +48,13 @@ export default function TickerItem(props: PropsIF) {
                 : '$0'
             : undefined;
 
-    useEffect(() => {
-        if (ticker) {
-            setSelectedTicker(auction);
-        }
-    }, [ticker]);
-
     return (
         <Link
             className={`${styles.tickerItemContainer} ${
-                auction?.ticker === selectedTicker?.ticker ? styles.active : ''
+                auction?.ticker === selectedTicker ? styles.active : ''
             }`}
             to={'/auctions/v1/' + ticker}
-            onClick={() => setSelectedTicker(auction)}
+            onClick={() => setSelectedTicker(ticker)}
         >
             <p>{ticker}</p>
             <p className={styles.marketCap}>{formattedMarketCap}</p>
