@@ -4,7 +4,6 @@ import {
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
-import moment from 'moment';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionDataIF } from '../../../contexts/AuctionsContext';
@@ -21,12 +20,11 @@ export default function TickerItem(props: PropsIF) {
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
-    const timeRemaining = getTimeRemainingAbbrev(
-        moment(createdAt * 1000).diff(
-            Date.now() - auctionLength * 1000,
-            'seconds',
-        ),
-    );
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+    const auctionEndTime = createdAt + auctionLength;
+    const timeRemainingInSec = auctionEndTime - currentTimeInSeconds;
+
+    const timeRemaining = getTimeRemainingAbbrev(timeRemainingInSec);
 
     const status2 =
         timeRemaining === 'COMPLETE' ? 'var(--accent1)' : 'var(--accent4)';

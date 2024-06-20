@@ -34,7 +34,7 @@ interface propsIF {
 
 export default function SearchableTicker(props: propsIF) {
     const { auctions, title, setIsFullLayoutActive, placeholderTicker } = props;
-    const [isTimeDropdownOpen, setIsTimeDropdownOpen] =
+    const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
     const customLoading = false;
@@ -88,16 +88,18 @@ export default function SearchableTicker(props: propsIF) {
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
-        setIsTimeDropdownOpen(false);
+        setIsSortDropdownOpen(false);
     };
     useOnClickOutside(timeDropdownRef, clickOutsideHandler);
 
-    const creationTimeData = [
-        { label: 'Creation Time', value: 'Creation Time', slug: 'createdAt' },
+    const sortDropdownOptions = [
+        { label: 'Time Remaining', value: 'Time Remaining', slug: 'timeLeft' },
         { label: 'Market Cap', value: 'Market Cap', slug: 'marketCap' },
     ];
 
-    const [activeTime, setActiveTime] = useState(creationTimeData[0]);
+    const [activeSortOption, setActiveSortOption] = useState(
+        sortDropdownOptions[0],
+    );
 
     useEffect(() => {
         if (placeholderTicker) setSelectedTicker(undefined);
@@ -143,21 +145,24 @@ export default function SearchableTicker(props: propsIF) {
                             size={20}
                             color='var(--text2)'
                             onClick={() => clearInput()}
-                        />{' '}
+                        />
                     </div>
                     <div className={styles.sort_toggles}>
-                        <div className={styles.timeDropdownLeft}>
+                        <div
+                            className={styles.timeDropdownLeft}
+                            ref={timeDropdownRef}
+                        >
                             <div className={styles.timeDropdownContent}>
                                 <div
                                     className={styles.timeDropdownButton}
                                     onClick={() =>
-                                        setIsTimeDropdownOpen(
-                                            !isTimeDropdownOpen,
+                                        setIsSortDropdownOpen(
+                                            !isSortDropdownOpen,
                                         )
                                     }
                                 >
-                                    <p>{activeTime.label}</p>
-                                    {isTimeDropdownOpen ? (
+                                    <p>{activeSortOption.label}</p>
+                                    {isSortDropdownOpen ? (
                                         <IoIosArrowUp />
                                     ) : (
                                         <IoIosArrowDown color='var(--text1)' />
@@ -171,35 +176,47 @@ export default function SearchableTicker(props: propsIF) {
                                     <IoIosArrowUp
                                         size={14}
                                         color={
-                                            auctions.isReversed
-                                                ? 'var(--accent1)'
-                                                : ''
+                                            activeSortOption.slug === 'timeLeft'
+                                                ? auctions.isReversed
+                                                    ? ''
+                                                    : 'var(--accent1)'
+                                                : auctions.isReversed
+                                                  ? 'var(--accent1)'
+                                                  : ''
                                         }
                                     />
 
                                     <IoIosArrowDown
                                         size={14}
                                         color={
-                                            !auctions.isReversed
-                                                ? 'var(--accent1)'
-                                                : ''
+                                            activeSortOption.slug === 'timeLeft'
+                                                ? !auctions.isReversed
+                                                    ? ''
+                                                    : 'var(--accent1)'
+                                                : !auctions.isReversed
+                                                  ? 'var(--accent1)'
+                                                  : ''
                                         }
                                     />
                                 </div>
                             </div>
 
-                            {isTimeDropdownOpen && (
-                                <div
-                                    className={styles.dropdown}
-                                    ref={timeDropdownRef}
-                                >
-                                    {creationTimeData.map((item, idx) => (
+                            {isSortDropdownOpen && (
+                                <div className={styles.dropdown}>
+                                    {sortDropdownOptions.map((item, idx) => (
                                         <p
                                             className={styles.timeItem}
                                             key={idx}
                                             onClick={() => {
-                                                setActiveTime(item);
-                                                setIsTimeDropdownOpen(false);
+                                                setActiveSortOption(item);
+                                                setIsSortDropdownOpen(false);
+
+                                                // if (
+                                                //     item.slug === 'timeLeft' &&
+                                                //     !auctions.isReversed
+                                                // ) {
+                                                //     auctions.reverse();
+                                                // }
                                                 auctions.update(
                                                     item.slug as auctionSorts,
                                                 );
@@ -239,7 +256,7 @@ export default function SearchableTicker(props: propsIF) {
                     <p className={styles.marketCapHeader}>MARKET CAP</p>
                     <p>REMAINING</p>
                     <div className={styles.statusContainer}>
-                        <span />
+                        {/* <span /> */}
                     </div>
                 </header>
                 <div className={styles.tickerTableContent}>

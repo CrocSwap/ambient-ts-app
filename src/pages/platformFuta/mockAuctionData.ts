@@ -25,7 +25,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'BODEN',
         marketCap: 1.953125,
-        createdAt: 1718148398,
+        createdAt: 1718447920,
         auctionLength: 604800,
     },
     {
@@ -37,7 +37,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'BOME',
         marketCap: 1.953125,
-        createdAt: 1718210226,
+        createdAt: 1718249226,
         auctionLength: 604800,
     },
     {
@@ -244,8 +244,8 @@ export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'BODEN',
         marketCap: 1.953125,
-        createdAt: 1718148398,
-        unclaimedAllocation: 100000,
+        createdAt: 1718447920,
+        // unclaimedAllocation: 100000,
         auctionLength: 604800,
     },
     {

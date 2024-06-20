@@ -24,7 +24,7 @@ export interface sortedAuctionsIF {
 
 export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     // default sort sequence for data
-    const DEFAULT_SORT: auctionSorts = 'recent';
+    const DEFAULT_SORT: auctionSorts = 'timeLeft';
 
     // metadata on how data should be sorted
     const [sortDetails, setSortDetails] = useState<sortDetailsIF>({
@@ -40,10 +40,13 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     }
 
     // fn to sort data by creation time (numerical)
-    function sortByCreationTime(d: AuctionDataIF[]): AuctionDataIF[] {
-        return [...d].sort(
-            (a: AuctionDataIF, b: AuctionDataIF) => a.createdAt - b.createdAt,
-        );
+    function sortByTimeRemaining(d: AuctionDataIF[]): AuctionDataIF[] {
+        return [...d].sort((a: AuctionDataIF, b: AuctionDataIF) => {
+            const aEndTime = a.createdAt + a.auctionLength;
+            const bEndTime = b.createdAt + b.auctionLength;
+
+            return aEndTime - bEndTime;
+        });
     }
 
     // fn to sort by market cap (numerical)
@@ -80,9 +83,9 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
             case 'marketCap':
                 output = sortByMarketCap(unsorted);
                 break;
-            case 'createdAt':
+            case 'timeLeft':
             default:
-                output = sortByCreationTime(unsorted);
+                output = sortByTimeRemaining(unsorted);
                 break;
         }
         return sortDetails.isReversed ? [...output].reverse() : output;
