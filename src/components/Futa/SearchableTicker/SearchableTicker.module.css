@@ -166,10 +166,11 @@
     align-items: center;
     font-size: 18px;
     color: var(--text1);
-    max-height: 366px;
-    overflow-y: scroll;
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
+
+    
+    height: 22px;
 }
 
 .tickerItemContainer:hover {
@@ -200,6 +201,7 @@
 }
 .tickerTableContainer {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -226,6 +228,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    height: 100%;
 }
 .active{ background: #28585D; }
 
@@ -243,6 +246,16 @@
     outline: 1px solid green;
 }
 
+@media (min-width: 780px) {
+    .tickerTableContent {
+     
+       
+        height: calc(100vh - 200px);
+        overflow-y: scroll;
+    }
+
+}
+
 @media (min-width: 1280px) {
     .content {
         display: grid;
@@ -254,6 +267,8 @@
         font-size: 36px;
         text-transform: uppercase;
     }
+
+  
 
     /* .text_search_box {
 
