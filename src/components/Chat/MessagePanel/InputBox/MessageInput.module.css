@@ -17,7 +17,7 @@
     position: relative;
     bottom: 0;
 }
-.message_input_field{
+.message_input_field {
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -32,6 +32,7 @@
     flex: none;
     order: 0;
     flex-grow: 1;
+    justify-content: center; /* Center contents horizontally */
 }
 
 .message_input_field_limit_exceeded{
@@ -48,21 +49,28 @@
     background-color: transparent;
     flex: none;
     order: 0;
-    flex-grow: 1;
+    flex-grow: 0;
 }
-
+.circularWrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px; /* Adjust as needed */
+    height: 100px; /* Adjust as needed */
+}
 .remainingText {
     position: absolute;
-    top: 50%;
-    left: 77%;
-    transform: translate(-50%, -50%);
+    transform: all 0.2s ease-in-out;
     color: rgb(255, 255, 255);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 80%;
     text-align: center;
+    
 }
+
+
 
 .input_box_not_allowed {
     display: flex;
