@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
+    CandleDataChart,
     chartItemStates,
     renderCanvasArray,
     scaleData,
@@ -20,11 +21,13 @@ interface candlePropsIF {
     selectedDate: number | undefined;
     showLatest: boolean | undefined;
     denomInBase: boolean;
-    data: CandleDataIF[];
+    data: CandleDataChart[];
     period: number;
     lastCandleData: CandleDataIF;
     prevlastCandleTime: number;
     setPrevLastCandleTime: React.Dispatch<React.SetStateAction<number>>;
+    isDiscontinuityScaleEnabled: boolean;
+    visibleDateForCandle: number;
     chartThemeColors: ChartThemeIF | undefined;
 }
 
@@ -40,6 +43,8 @@ export default function CandleChart(props: candlePropsIF) {
         lastCandleData,
         prevlastCandleTime,
         setPrevLastCandleTime,
+        isDiscontinuityScaleEnabled,
+        visibleDateForCandle,
         chartThemeColors,
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
@@ -75,14 +80,16 @@ export default function CandleChart(props: candlePropsIF) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
 
-                const diff =
-                    (lastCandleData.time - prevlastCandleTime) / period;
-
-                setPrevLastCandleTime(lastCandleData.time);
+                const count = data.filter(
+                    (i: CandleDataChart) =>
+                        i.time <= lastCandleData.time - period &&
+                        i.time >= prevlastCandleTime,
+                ).length;
+                setPrevLastCandleTime(lastCandleData.time - period);
 
                 scaleData?.xScale.domain([
-                    domainLeft + diff * period * 1000,
-                    domainRight + diff * period * 1000,
+                    domainLeft + count * period * 1000,
+                    domainRight + count * period * 1000,
                 ]);
             }
         }
@@ -127,7 +134,7 @@ export default function CandleChart(props: candlePropsIF) {
     useEffect(() => {
         if (candlestick && chartThemeColors) {
             candlestick.decorate(
-                (context: CanvasRenderingContext2D, d: CandleDataIF) => {
+                (context: CanvasRenderingContext2D, d: CandleDataChart) => {
                     const nowDate = new Date();
 
                     const close = denomInBase
@@ -144,8 +151,8 @@ export default function CandleChart(props: candlePropsIF) {
                                 ? chartThemeColors.lightFillColor.toString()
                                 : crocCandleLightColor
                             : chartThemeColors.darkFillColor
-                            ? chartThemeColors.darkFillColor.toString()
-                            : crocCandleDarkColor;
+                              ? chartThemeColors.darkFillColor.toString()
+                              : crocCandleDarkColor;
 
                     const uniswapColor =
                         close > open
@@ -158,8 +165,8 @@ export default function CandleChart(props: candlePropsIF) {
                                 ? chartThemeColors.lightStrokeColor.toString()
                                 : crocCandleBorderLightColor
                             : chartThemeColors.darkStrokeColor
-                            ? chartThemeColors.darkStrokeColor.toString()
-                            : crocCandleBorderDarkColor;
+                              ? chartThemeColors.darkStrokeColor.toString()
+                              : crocCandleBorderDarkColor;
 
                     const uniswapBorderColor =
                         close > open
@@ -173,9 +180,9 @@ export default function CandleChart(props: candlePropsIF) {
                                 ? chartThemeColors.selectedDateFillColor.toString()
                                 : selectedCandleColor
                             : d.tvlData.tvl === 0 &&
-                              d.time * 1000 < nowDate.getTime()
-                            ? uniswapColor
-                            : crocColor;
+                                d.time * 1000 < nowDate.getTime()
+                              ? uniswapColor
+                              : crocColor;
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
@@ -184,13 +191,24 @@ export default function CandleChart(props: candlePropsIF) {
                                 ? chartThemeColors.selectedDateFillColor.toString()
                                 : selectedCandleColor
                             : d.tvlData.tvl === 0 &&
-                              d.time * 1000 < nowDate.getTime()
-                            ? uniswapBorderColor
-                            : crocBorderColor;
+                                d.time * 1000 < nowDate.getTime()
+                              ? uniswapBorderColor
+                              : crocBorderColor;
+
+                    if (d.time * 1000 > visibleDateForCandle) {
+                        context.fillStyle = 'transparent';
+                        context.strokeStyle = 'transparent';
+                    }
                 },
             );
         }
-    }, [candlestick, selectedDate, chartThemeColors]);
+    }, [
+        candlestick,
+        selectedDate,
+        isDiscontinuityScaleEnabled,
+        visibleDateForCandle,
+        chartThemeColors,
+    ]);
 
     useEffect(() => {
         const canvas = d3
