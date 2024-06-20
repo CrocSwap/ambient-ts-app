@@ -131,34 +131,33 @@ export default function SearchableTicker(props: propsIF) {
                     </h3>
                 )}
                 <div className={styles.filter_options}>
-                    <div className={styles.text_search_box}>
-                        <BiSearch
-                            size={20}
-                            color='var(--text2)'
-                            id='searchable_ticker_input'
-                            onClick={() => focusInput()}
-                        />
-                        <input
-                            type='text'
-                            id={INPUT_DOM_ID}
-                            value={searchInputRaw}
-                            onChange={(e) => setSearchInputRaw(e.target.value)}
-                            placeholder='SEARCH...'
-                            spellCheck={false}
-                            autoComplete='off'
-                            tabIndex={1}
-                        />
-                        <MdClose
-                            size={20}
-                            color='var(--text2)'
-                            onClick={() => clearInput()}
-                        />
-                    </div>
-                    <div className={styles.sort_toggles}>
-                        <div
-                            className={styles.timeDropdownLeft}
-                            ref={timeDropdownRef}
-                        >
+                    <div className={styles.search_and_filter}>
+                        <div className={styles.text_search_box}>
+                            <BiSearch
+                                size={20}
+                                color='var(--text2)'
+                                id='searchable_ticker_input'
+                                onClick={() => focusInput()}
+                            />
+                            <input
+                                type='text'
+                                id={INPUT_DOM_ID}
+                                value={searchInputRaw}
+                                onChange={(e) =>
+                                    setSearchInputRaw(e.target.value)
+                                }
+                                placeholder='SEARCH...'
+                                spellCheck={false}
+                                autoComplete='off'
+                                tabIndex={1}
+                            />
+                            <MdClose
+                                size={20}
+                                color='var(--text2)'
+                                onClick={() => clearInput()}
+                            />
+                        </div>
+                        <div className={styles.filters} ref={timeDropdownRef}>
                             <div className={styles.timeDropdownContent}>
                                 <div
                                     className={styles.timeDropdownButton}
@@ -217,13 +216,6 @@ export default function SearchableTicker(props: propsIF) {
                                             onClick={() => {
                                                 setActiveSortOption(item);
                                                 setIsSortDropdownOpen(false);
-
-                                                // if (
-                                                //     item.slug === 'timeLeft' &&
-                                                //     !auctions.isReversed
-                                                // ) {
-                                                //     auctions.reverse();
-                                                // }
                                                 auctions.update(
                                                     item.slug as auctionSorts,
                                                 );
@@ -235,25 +227,19 @@ export default function SearchableTicker(props: propsIF) {
                                 </div>
                             )}
                         </div>
-                        {
-                            <div className={styles.timeDropdownRight}>
-                                <button
-                                    onClick={() =>
-                                        setShowComplete(!showComplete)
-                                    }
-                                    className={
-                                        showComplete
-                                            ? styles.buttonOn
-                                            : styles.buttonOff
-                                    }
-                                >
-                                    SHOW COMPLETE
-                                </button>
-                                <button className={styles.buttonOff}>
-                                    WATCHLIST
-                                </button>
-                            </div>
-                        }
+                    </div>
+                    <div className={styles.sort_toggles}>
+                        <button
+                            onClick={() => setShowComplete(!showComplete)}
+                            className={
+                                showComplete
+                                    ? styles.buttonOn
+                                    : styles.buttonOff
+                            }
+                        >
+                            SHOW COMPLETE
+                        </button>
+                        <button className={styles.buttonOff}>WATCHLIST</button>
                     </div>
                 </div>
             </div>

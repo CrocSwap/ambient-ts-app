@@ -13,6 +13,11 @@
     width: 100%;
 }
 
+.header > h3 {
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
 .filter_options {
     display: flex;
     flex-direction: row;
@@ -21,19 +26,25 @@
     gap: 10px;
     width: 100%;
     align-items: center;
+    /* outline: 2px solid green; */
 }
 
-.title {
-    font-size: 24px;
-    text-transform: uppercase;
+.search_and_filter {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    /* outline: 2px solid salmon; */
 }
 
 .text_search_box {
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 100%;
-    max-width: 1000px;
+    width: 75%;
     height: 24px;
     padding: 0px 4px 0px 8px;
     gap: 4px;
@@ -58,24 +69,13 @@
 }
 
 .sort_toggles {
-    /* display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px; */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-}
-
-.timeDropdownRight {
     display: flex;
     justify-content: flex-end;
-    flex-direction: row;
     align-items: center;
     gap: 8px;
 }
 
-.timeDropdownRight button {
+.sort_toggles > button {
     width: 110px;
     height: 24px;
     border: 1px solid var(--dark3, #1e1e24);
@@ -103,8 +103,9 @@
     color: var(--accent1) !important;
     border: 1px solid var(--accent1) !important;
 }
-.timeDropdownLeft {
-    width: 180px;
+
+.filters {
+    width: 240px;
     position: relative;
 }
 
@@ -254,12 +255,6 @@
         font-size: 36px;
         text-transform: uppercase;
     }
-
-    /* .text_search_box {
-
-    max-width: 60%;
-   
-} */
 }
 
 @media (max-width: 600px) {
