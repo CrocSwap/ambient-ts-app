@@ -26,6 +26,7 @@ import {
     DOCS_LINK,
     TWITTER_LINK,
 } from '../../../ambient-utils/constants';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 // Animation Variants
 const dropdownVariants = {
@@ -94,6 +95,8 @@ export default function Navbar() {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
+    const { selectedTicker } = useContext(AuctionsContext);
+
     // Refs
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -135,7 +138,9 @@ export default function Navbar() {
     const navbarLinks = [
         {
             label: 'Auctions',
-            link: '/auctions',
+            link: selectedTicker
+                ? `/auctions/v1/${selectedTicker}`
+                : '/auctions',
         },
         {
             label: 'Account',
