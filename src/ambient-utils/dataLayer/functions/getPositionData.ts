@@ -236,6 +236,9 @@ export const getPositionData = async (
     newPosition.askTickPriceDecimalCorrected = upperPriceDisplayInQuote;
     newPosition.askTickInvPriceDecimalCorrected = upperPriceDisplayInBase;
 
+    // uncomment below to test SDK call fallback when server is down
+    // newPosition.liqRefreshTime = 0;
+
     if (position.positionType == 'ambient') {
         if (newPosition.liqRefreshTime === 0) {
             const pos = crocEnv.positions(
@@ -264,42 +267,43 @@ export const getPositionData = async (
                 position.bidTick,
                 position.askTick,
             );
-            const positionRewardsNum = bigNumToFloat(positionRewards);
-            newPosition.feesLiqBase =
-                positionRewardsNum * Math.sqrt(await poolPriceNonDisplay);
-            newPosition.feesLiqQuote =
-                positionRewardsNum / Math.sqrt(await poolPriceNonDisplay);
+            newPosition.feesLiqBase = bigNumToFloat(
+                positionRewards.baseRewards,
+            );
+            newPosition.feesLiqQuote = bigNumToFloat(
+                positionRewards.quoteRewards,
+            );
 
             const liqBigNum = (
                 await pos.queryRangePos(position.bidTick, position.askTick)
             ).liq;
             const liqNum = bigNumToFloat(liqBigNum);
+
             newPosition.positionLiq = liqNum;
         } else {
             newPosition.positionLiq = position.concLiq;
-
-            newPosition.positionLiqBase = bigNumToFloat(
-                baseTokenForConcLiq(
-                    await poolPriceNonDisplay,
-                    floatToBigNum(position.concLiq),
-                    tickToPrice(position.bidTick),
-                    tickToPrice(position.askTick),
-                ),
-            );
-            newPosition.positionLiqQuote = bigNumToFloat(
-                quoteTokenForConcLiq(
-                    await poolPriceNonDisplay,
-                    floatToBigNum(position.concLiq),
-                    tickToPrice(position.bidTick),
-                    tickToPrice(position.askTick),
-                ),
-            );
 
             newPosition.feesLiqBase =
                 position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
             newPosition.feesLiqQuote =
                 position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
         }
+        newPosition.positionLiqBase = bigNumToFloat(
+            baseTokenForConcLiq(
+                await poolPriceNonDisplay,
+                floatToBigNum(newPosition.positionLiq),
+                tickToPrice(position.bidTick),
+                tickToPrice(position.askTick),
+            ),
+        );
+        newPosition.positionLiqQuote = bigNumToFloat(
+            quoteTokenForConcLiq(
+                await poolPriceNonDisplay,
+                floatToBigNum(newPosition.positionLiq),
+                tickToPrice(position.bidTick),
+                tickToPrice(position.askTick),
+            ),
+        );
         newPosition.feesLiqBaseDecimalCorrected =
             newPosition.feesLiqBase / Math.pow(10, baseTokenDecimals);
         newPosition.feesLiqQuoteDecimalCorrected =
