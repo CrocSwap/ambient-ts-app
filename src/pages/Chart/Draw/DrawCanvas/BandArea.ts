@@ -51,33 +51,34 @@ export function createPointsOfBandLine(data: lineData[]) {
 
     return lineOfBand;
 }
-export function createPointsOfDPRangeLine(data: lineData[]) {
-    const startX = Math.min(data[0].x, data[1].x);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createPointsOfDPRangeLine(data: lineData[], xScale: any) {
+    const startX = Math.min(xScale(data[0].x), xScale(data[1].x));
     const startY = Math.max(data[0].y, data[1].y);
-    const endX = Math.max(data[0].x, data[1].x);
+    const endX = Math.max(xScale(data[0].x), xScale(data[1].x));
     const endY = Math.min(data[0].y, data[1].y);
 
     const lineOfDPRange = [
         [
             {
-                x: startX + (endX - startX) / 2,
+                x: xScale.invert(startX + (endX - startX) / 2),
                 y: startY,
                 denomInBase: data[0].denomInBase,
             },
             {
-                x: startX + (endX - startX) / 2,
+                x: xScale.invert(startX + (endX - startX) / 2),
                 y: endY,
                 denomInBase: data[1].denomInBase,
             },
         ],
         [
             {
-                x: startX,
+                x: xScale.invert(startX),
                 y: startY - (startY - endY) / 2,
                 denomInBase: data[0].denomInBase,
             },
             {
-                x: endX,
+                x: xScale.invert(endX),
                 y: startY - (startY - endY) / 2,
                 denomInBase: data[0].denomInBase,
             },
@@ -108,11 +109,12 @@ export function createArrowPointsOfDPRangeLine(
         denomInBase === data[1].denomInBase ? data[1].y : 1 / data[1].y;
 
     const startX = Math.min(data[0].x, data[1].x);
+    const endX = Math.max(data[0].x, data[1].x);
+
     const startY =
         denomInBase === data[0].denomInBase
             ? Math.max(fistYData, lastYData)
             : 1 / Math.max(fistYData, lastYData);
-    const endX = Math.max(data[0].x, data[1].x);
     const endY =
         denomInBase === data[1].denomInBase
             ? Math.min(fistYData, lastYData)
@@ -120,9 +122,13 @@ export function createArrowPointsOfDPRangeLine(
 
     const horizontalArrowYAxisData =
         horizontalArrowDirection === 'down' ? endY : startY;
-    const horizontalArrowXAxisData = startX + (endX - startX) / 2;
+
+    const horizontalArrowXAxisData =
+        scaleData.xScale(startX) +
+        (scaleData.xScale(endX) - scaleData.xScale(startX)) / 2;
 
     const verticalArrowYAxisData = startY + (endY - startY) / 2;
+
     const verticalArrowXAxisData =
         verticalArrowDirection === 'right' ? endX : startX;
 
@@ -153,7 +159,7 @@ export function createArrowPointsOfDPRangeLine(
         [
             {
                 x: scaleData.xScale.invert(
-                    scaleData.xScale(horizontalArrowXAxisData) - arrowSize,
+                    horizontalArrowXAxisData - arrowSize,
                 ),
                 y:
                     denomInBase === data[0].denomInBase
@@ -162,20 +168,20 @@ export function createArrowPointsOfDPRangeLine(
                 denomInBase: data[0].denomInBase,
             },
             {
-                x: horizontalArrowXAxisData,
+                x: scaleData.xScale.invert(horizontalArrowXAxisData),
                 y: horizontalArrowYAxisData,
                 denomInBase: data[1].denomInBase,
             },
         ],
         [
             {
-                x: horizontalArrowXAxisData,
+                x: scaleData.xScale.invert(horizontalArrowXAxisData),
                 y: horizontalArrowYAxisData,
                 denomInBase: data[0].denomInBase,
             },
             {
                 x: scaleData.xScale.invert(
-                    scaleData.xScale(horizontalArrowXAxisData) + arrowSize,
+                    horizontalArrowXAxisData + arrowSize,
                 ),
                 y:
                     denomInBase === data[0].denomInBase
