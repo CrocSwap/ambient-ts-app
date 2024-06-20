@@ -73,6 +73,13 @@ export default function SearchableTicker(props: propsIF) {
         );
     }, [auctions.data]);
 
+    useEffect(() => {
+        // auto switch to complete auctions if user only has complete auctions
+        if (!incompleteAuctions.length && completeAuctions.length) {
+            setShowComplete(true);
+        }
+    }, [incompleteAuctions.length, completeAuctions.length]);
+
     const filteredData = useMemo<AuctionDataIF[]>(() => {
         const dataFilteredByCompletion = showComplete
             ? completeAuctions
