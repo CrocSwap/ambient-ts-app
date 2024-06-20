@@ -26,7 +26,6 @@
     gap: 10px;
     width: 100%;
     align-items: center;
-    /* outline: 2px solid green; */
 }
 
 .search_and_filter {
@@ -37,7 +36,6 @@
     align-items: center;
     width: 100%;
     gap: 10px;
-    /* outline: 2px solid salmon; */
 }
 
 .text_search_box {
@@ -84,7 +82,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* padding: 4px 8px; */
     text-align: center;
     gap: 10px;
     font-size: 12px;
@@ -158,7 +155,6 @@
     cursor: pointer;
 }
 
-/* ticker item */
 .tickerItemContainer {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 30px;
