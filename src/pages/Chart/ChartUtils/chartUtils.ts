@@ -86,6 +86,7 @@ export type selectedDrawnData = {
 
 export interface CandleDataChart extends CandleDataIF {
     isFakeData: boolean;
+    isShowData: boolean;
 }
 export type liquidityChartData = {
     liqAskData: LiquidityDataLocal[];
@@ -99,7 +100,8 @@ export type liquidityChartData = {
 };
 
 export type scaleData = {
-    xScale: d3.ScaleLinear<number, number>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    xScale: any;
     xScaleTime: d3.ScaleTime<number, number>;
     yScale: d3.ScaleLinear<number, number>;
     volumeScale: d3.ScaleLinear<number, number>;
@@ -135,6 +137,11 @@ export interface SubChartValue {
 export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
+};
+
+export type timeGapsValue = {
+    range: number[];
+    isAddedPixel: boolean;
 };
 
 export type orderHistory = {
@@ -554,6 +561,47 @@ export function checkShowLatestCandle(
     return false;
 }
 
+export function getCandleCount(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    xScale: any,
+    data: CandleDataChart[],
+    domain: number[],
+    period: number,
+    isCondensedMode: boolean,
+) {
+    const min = domain[0];
+    const max = domain[1];
+
+    const filtered = data.filter(
+        (data: CandleDataIF) =>
+            data.time * 1000 >= min && data.time * 1000 <= max,
+    );
+
+    let dataLenght = filtered.length;
+
+    if (filtered && dataLenght && isCondensedMode) {
+        const diffMaxPixel = xScale(filtered[0].time * 1000) - xScale(max);
+        const diffMinPixel =
+            xScale(filtered[filtered.length - 1].time) - xScale(min);
+
+        const maxGap = Math.floor(
+            (max - filtered[0].time * 1000) / (period * 1000),
+        );
+        const minGap = Math.floor(
+            (filtered[filtered.length - 1].time * 1000 - min) / (period * 1000),
+        );
+        if (maxGap > 0 && diffMaxPixel) {
+            dataLenght = dataLenght + maxGap;
+        }
+        if (minGap > 0 && diffMinPixel) {
+            dataLenght = dataLenght + minGap;
+        }
+    } else {
+        dataLenght = Math.floor((max - min) / (period * 1000)) + 1;
+    }
+
+    return dataLenght;
+}
 export function roundToNearestPreset(closest: number) {
     if (closest < 1) {
         if (closest < 0.1) {
@@ -579,4 +627,15 @@ export const getCssVariable = (skin: skins, variableName: string) => {
         .trim();
 
     return d3.color(value);
+};
+
+export const getLast15Minutes = (period: number) => {
+    const currentTime = findSnapTime(Date.now(), period) - period * 1000;
+    const totalTimeMs = 15 * 60 * 1000; // 15 min to ms
+    const candleCount = Math.trunc(totalTimeMs / (period * 1000));
+    const times = [];
+    for (let index = 0; index < candleCount; index++) {
+        times.push(currentTime - period * 1000 * index);
+    }
+    return times;
 };
