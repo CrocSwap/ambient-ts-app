@@ -98,7 +98,19 @@ export default function ChartSettings(props: ContextMenuIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         newColor: any,
     ) => {
-        const replaceColor = d3.color(newColor.hex);
+        const colorRgbaCode =
+            'rgba(' +
+            newColor.rgb.r +
+            ',' +
+            newColor.rgb.g +
+            ',' +
+            newColor.rgb.b +
+            ',' +
+            newColor.rgb.a +
+            ')';
+
+        const replaceColor = d3.color(colorRgbaCode);
+
         if (replaceSelector && replaceColor) {
             chartThemeColors[replaceSelector] = replaceColor;
 
@@ -110,6 +122,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                         selectedColor: replaceColor.toString(),
                         replaceSelector: prev.replaceSelector,
                         index: prev.index,
+                        placement: prev.placement,
                     } as ColorObjIF;
 
                     return colorRep;
@@ -434,14 +447,22 @@ export default function ChartSettings(props: ContextMenuIF) {
                                         event: MouseEvent<HTMLElement>,
                                     ) => {
                                         event.stopPropagation();
-                                        setSelectedColorObj({
-                                            selectedColor:
-                                                chartThemeColors[
-                                                    item.upColor
-                                                ]?.toString(),
-                                            replaceSelector: item.upColor,
-                                            index: index,
-                                            placement: 'left',
+                                        setSelectedColorObj((prev) => {
+                                            const selectedObj = {
+                                                selectedColor:
+                                                    chartThemeColors[
+                                                        item.upColor
+                                                    ]?.toString(),
+                                                replaceSelector: item.upColor,
+                                                index: index,
+                                                placement: 'left',
+                                            };
+
+                                            return prev === undefined ||
+                                                prev.index !== index ||
+                                                prev.placement !== 'left'
+                                                ? selectedObj
+                                                : undefined;
                                         });
                                     }}
                                 ></OptionColor>
@@ -454,14 +475,22 @@ export default function ChartSettings(props: ContextMenuIF) {
                                         event: MouseEvent<HTMLElement>,
                                     ) => {
                                         event.stopPropagation();
-                                        setSelectedColorObj({
-                                            selectedColor:
-                                                chartThemeColors[
-                                                    item.downColor
-                                                ]?.toString(),
-                                            replaceSelector: item.downColor,
-                                            index: index,
-                                            placement: 'right',
+                                        setSelectedColorObj((prev) => {
+                                            const selectedObj = {
+                                                selectedColor:
+                                                    chartThemeColors[
+                                                        item.downColor
+                                                    ]?.toString(),
+                                                replaceSelector: item.downColor,
+                                                index: index,
+                                                placement: 'right',
+                                            };
+
+                                            return prev === undefined ||
+                                                prev.index !== index ||
+                                                prev.placement !== 'right'
+                                                ? selectedObj
+                                                : undefined;
                                         });
                                     }}
                                 ></OptionColor>
