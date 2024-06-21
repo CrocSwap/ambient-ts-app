@@ -73,7 +73,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'USA',
         marketCap: 55.51115,
-        createdAt: 1718224639,
+        createdAt: 1717224639,
         auctionLength: 604800,
     },
     {
@@ -91,7 +91,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'TRUMP',
         marketCap: 1.953125,
-        createdAt: 1718307476,
+        createdAt: 1718367476,
         auctionLength: 604800,
     },
     {

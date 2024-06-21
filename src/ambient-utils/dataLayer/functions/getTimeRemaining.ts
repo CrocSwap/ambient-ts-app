@@ -7,16 +7,35 @@ export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
     const minutes = Math.floor(duration.minutes());
     const secs = Math.floor(duration.seconds());
 
-    const hoursMinusDays = hours - days * 24;
+    if (remainingTimeInSecondsNum < 0) {
+        const elapsedSeconds = Math.abs(remainingTimeInSecondsNum);
+        const elapsedTimeString =
+            elapsedSeconds < 60
+                ? '< 1 minute ago'
+                : elapsedSeconds < 120
+                  ? '1 minute ago'
+                  : elapsedSeconds < 3600
+                    ? `${Math.floor(elapsedSeconds / 60)} minutes ago `
+                    : elapsedSeconds < 7200
+                      ? '1 hour ago'
+                      : elapsedSeconds < 86400
+                        ? `${Math.floor(elapsedSeconds / 3600)} hours ago `
+                        : elapsedSeconds < 172800
+                          ? '1 day ago'
+                          : `${Math.floor(elapsedSeconds / 86400)} days ago `;
+        return elapsedTimeString;
+    } else {
+        const hoursMinusDays = hours - days * 24;
 
-    const daysAndHours =
-        days > 0
-            ? hoursMinusDays > 0
-                ? `${String(days).padStart(2, '0') + 'd'}:${String(hoursMinusDays).padStart(2, '0') + 'h'}`
-                : `${String(days).padStart(2, '0') + 'd'}`
-            : `${hours}h`;
+        const daysAndHours =
+            days > 0
+                ? hoursMinusDays > 0
+                    ? `${String(days).padStart(2, '0') + 'd'}:${String(hoursMinusDays).padStart(2, '0') + 'h'}`
+                    : `${String(days).padStart(2, '0') + 'd'}`
+                : `${hours}h`;
 
-    return `${daysAndHours}:${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
+        return `${daysAndHours}:${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
+    }
 }
 export function getTimeRemainingAbbrev(
     remainingTimeInSecondsNum: number | undefined,

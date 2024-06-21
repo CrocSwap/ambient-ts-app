@@ -132,10 +132,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
             tooltipLabel: 'The current status of the auction - open or closed',
         },
         {
-            label: 'time remaining',
+            label: isAuctionCompleted ? 'time completed' : 'time remaining',
             value: !placeholderTicker ? timeRemaining : '-',
             color: 'var(--positive)',
-            tooltipLabel: 'The time remaining till the auction is closed',
+            tooltipLabel: isAuctionCompleted
+                ? 'The time since the auction closed'
+                : 'The time remaining till the auction is closed',
         },
         {
             label: 'market cap (ETH)',
