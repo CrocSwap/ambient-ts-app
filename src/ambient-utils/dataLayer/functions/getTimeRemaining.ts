@@ -2,11 +2,21 @@ import moment from 'moment';
 
 export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
     const duration = moment.duration(remainingTimeInSecondsNum, 'seconds');
+    const days = Math.floor(duration.asDays());
     const hours = Math.floor(duration.asHours());
     const minutes = Math.floor(duration.minutes());
     const secs = Math.floor(duration.seconds());
 
-    return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
+    const hoursMinusDays = hours - days * 24;
+
+    const daysAndHours =
+        days > 0
+            ? hoursMinusDays > 0
+                ? `${String(days).padStart(2, '0') + 'd'}:${String(hoursMinusDays).padStart(2, '0') + 'h'}`
+                : `${String(days).padStart(2, '0') + 'd'}`
+            : `${hours}h`;
+
+    return `${daysAndHours}:${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
 }
 export function getTimeRemainingAbbrev(
     remainingTimeInSecondsNum: number | undefined,
