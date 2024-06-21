@@ -219,7 +219,6 @@ function TokenInputQuantity(props: propsIF) {
             ref={tokenSelectRef}
             style={{
                 borderRadius: customBorderRadius ? customBorderRadius : '50px',
-                paddingRight: brand === 'futa' ? '20px' : '0',
             }}
         >
             <TokenIcon
