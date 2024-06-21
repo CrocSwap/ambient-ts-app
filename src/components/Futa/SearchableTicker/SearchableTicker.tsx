@@ -58,17 +58,22 @@ export default function SearchableTicker(props: propsIF) {
     }
 
     // split auction data into complete vs incomplete subsets
+    // runs any time new data is received by the components
     const [incompleteAuctions, completeAuctions] = useMemo<
         [AuctionDataIF[], AuctionDataIF[]]
     >(() => {
+        // declare output variables
         const complete: AuctionDataIF[] = [];
         const incomplete: AuctionDataIF[] = [];
+        // function to push an auction into the relevant output variables
         function categorize(a: AuctionDataIF): void {
             const isComplete: boolean =
                 a.createdAt <= (Date.now() - a.auctionLength * 1000) / 1000;
             isComplete ? complete.push(a) : incomplete.push(a);
         }
+        // iterate over auction data to split into complete vs incomplete subsets
         auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
+        // return output variables
         return [incomplete, complete.reverse()];
     }, [auctions.data]);
 
@@ -79,29 +84,44 @@ export default function SearchableTicker(props: propsIF) {
         }
     }, [incompleteAuctions.length, completeAuctions.length]);
 
+    // choose data set to display and apply post-processing middleware
     const filteredData = useMemo<AuctionDataIF[]>(() => {
-        const dataFilteredByCompletion = showComplete
+        // show the relevant data subset (complete vs incomplete)
+        const dataSubset: AuctionDataIF[] = showComplete
             ? completeAuctions
             : incompleteAuctions;
-        const dataFilteredBySearch = dataFilteredByCompletion.filter(
+        // filter data subset by search input from user
+        const searchHits: AuctionDataIF[] = dataSubset.filter(
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
-        return dataFilteredBySearch;
+        // return auctions from correct subset matching user search input
+        return searchHits;
     }, [searchInputRaw, incompleteAuctions, completeAuctions, showComplete]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
-    const clickOutsideHandler = () => {
+    // fn to close the sort filter menu when user clicks outside
+    const clickOutsideHandler = (): void => {
         setIsSortDropdownOpen(false);
     };
+
+    // hook to handle user click outside of the dropdown modal
     useOnClickOutside(timeDropdownRef, clickOutsideHandler);
 
-    const sortDropdownOptions = [
+    // shape of data to create filter dropdown menu options
+    interface filterOptionIF {
+        label: string;
+        value: string;
+        slug: auctionSorts;
+    }
+
+    const sortDropdownOptions: filterOptionIF[] = [
         { label: 'Time Remaining', value: 'Time Remaining', slug: 'timeLeft' },
         { label: 'Market Cap', value: 'Market Cap', slug: 'marketCap' },
     ];
 
+    // current sort being applied to display to user
     const [activeSortOption, setActiveSortOption] = useState(
         sortDropdownOptions[0],
     );
