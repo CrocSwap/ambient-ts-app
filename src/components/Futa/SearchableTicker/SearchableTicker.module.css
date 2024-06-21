@@ -273,6 +273,12 @@
     }
 }
 
+@media (max-width: 780px) {
+    .container {
+        margin-bottom: 70px;
+    }
+}
+
 @media (max-width: 600px) {
     .filter_options {
         flex-wrap: wrap;
