@@ -545,7 +545,7 @@ export default function TickerComponent(props: PropsIF) {
         </div>
     );
 
-    const QTY_INPUT_ID = 'bid_size_qty_input';
+    const QTY_INPUT_ID = 'exchangeBalance_qty';
     const bidQtyInputField = document.getElementById(
         QTY_INPUT_ID,
     ) as HTMLInputElement;
