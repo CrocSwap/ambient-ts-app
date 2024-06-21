@@ -62,6 +62,7 @@ interface ColorObjIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     replaceSelector: string;
     index: number | undefined;
+    placement: string;
 }
 
 export default function ChartSettings(props: ContextMenuIF) {
@@ -440,6 +441,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                 ]?.toString(),
                                             replaceSelector: item.upColor,
                                             index: index,
+                                            placement: 'left',
                                         });
                                     }}
                                 ></OptionColor>
@@ -459,6 +461,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                 ]?.toString(),
                                             replaceSelector: item.downColor,
                                             index: index,
+                                            placement: 'right',
                                         });
                                     }}
                                 ></OptionColor>
@@ -469,9 +472,13 @@ export default function ChartSettings(props: ContextMenuIF) {
                                             style={{
                                                 position: 'fixed',
                                                 zIndex: 199,
-                                                paddingTop: '15px',
                                                 transform:
-                                                    'translateX(' + -90 + 'px)',
+                                                    'translate(' +
+                                                    (selectedColorObj.placement ===
+                                                    'left'
+                                                        ? -90
+                                                        : -60) +
+                                                    'px, 10px)',
                                             }}
                                             onClick={(
                                                 event: MouseEvent<HTMLElement>,
