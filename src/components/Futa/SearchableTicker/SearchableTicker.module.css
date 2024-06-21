@@ -127,10 +127,17 @@
     font-size: 12px;
     color: var(--text1);
 }
-.sortOptions {
+
+.sort_direction {
     display: flex;
     flex-direction: column;
     align-items: center;
+    cursor: pointer;
+}
+
+.hi:hover {
+    color: var(--accent1);
+    opacity: 50%;
 }
 .dropdown {
     height: auto;
@@ -144,6 +151,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    border: 0.5px solid var(--accent1);
 }
 .timeItem {
     font-size: 12px;
@@ -152,7 +160,6 @@
 
 .timeItem:hover {
     background: var(--dark2);
-    cursor: pointer;
 }
 
 .tickerItemContainer {
@@ -273,5 +280,6 @@
 
     .sort_toggles {
         width: 100%;
+        justify-content: flex-start;
     }
 }

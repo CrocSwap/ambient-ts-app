@@ -176,7 +176,7 @@ export default function SearchableTicker(props: propsIF) {
                                 </div>
 
                                 <div
-                                    className={styles.sortOptions}
+                                    className={styles.sort_direction}
                                     onClick={() => auctions.reverse()}
                                 >
                                     <IoIosArrowUp
