@@ -57,17 +57,18 @@ export default function SearchableTicker(props: propsIF) {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
+    // split auction data into complete vs incomplete subsets
     const [incompleteAuctions, completeAuctions] = useMemo<
         [AuctionDataIF[], AuctionDataIF[]]
     >(() => {
         const complete: AuctionDataIF[] = [];
         const incomplete: AuctionDataIF[] = [];
-        auctions.data.forEach((auction: AuctionDataIF) => {
-            auction.createdAt >
-            (Date.now() - auction.auctionLength * 1000) / 1000
-                ? incomplete.push(auction)
-                : complete.push(auction);
-        });
+        function categorize(a: AuctionDataIF): void {
+            const isComplete: boolean =
+                a.createdAt <= (Date.now() - a.auctionLength * 1000) / 1000;
+            isComplete ? incomplete.push(a) : complete.push(a);
+        }
+        auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
         return [incomplete, complete.reverse()];
     }, [auctions.data]);
 
