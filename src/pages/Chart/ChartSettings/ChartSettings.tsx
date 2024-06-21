@@ -43,6 +43,7 @@ import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
 interface ContextMenuIF {
     contextMenuPlacement: { top: number; left: number };
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
     chartItemStates: chartItemStates;
     chartThemeColors: ChartThemeIF;
     setChartThemeColors: React.Dispatch<
@@ -72,6 +73,7 @@ export default function ChartSettings(props: ContextMenuIF) {
         defaultChartSettings,
         setLocalChartSettings,
         render,
+        setColorChangeTrigger,
     } = props;
 
     const {
@@ -99,6 +101,8 @@ export default function ChartSettings(props: ContextMenuIF) {
         if (replaceSelector && replaceColor) {
             chartThemeColors[replaceSelector] = replaceColor;
 
+            setColorChangeTrigger(true);
+
             setSelectedColorObj((prev: ColorObjIF | undefined) => {
                 if (prev) {
                     const colorRep = {
@@ -122,6 +126,8 @@ export default function ChartSettings(props: ContextMenuIF) {
         setShowVolume(chartSettings.showVolume);
         setShowTvl(chartSettings.showTvl);
         setShowFeeRate(chartSettings.showFeeRate);
+
+        setColorChangeTrigger(true);
 
         setIsTradeDollarizationEnabled(
             chartSettings.isTradeDollarizationEnabled,
@@ -188,6 +194,8 @@ export default function ChartSettings(props: ContextMenuIF) {
         } else {
             handleApplyDefaults(defaultChartSettings);
         }
+
+        setColorChangeTrigger(true);
     };
 
     const handleSaveChanges = () => {

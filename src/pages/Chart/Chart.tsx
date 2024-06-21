@@ -281,6 +281,7 @@ export default function Chart(props: propsIF) {
     const period = unparsedData.duration;
 
     const [contextmenu, setContextmenu] = useState(false);
+    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
 
     const [contextMenuPlacement, setContextMenuPlacement] = useState<{
         top: number;
@@ -5652,6 +5653,9 @@ export default function Chart(props: propsIF) {
                                 }
                                 setLiqMaxActiveLiq={setLiqMaxActiveLiq}
                                 chartThemeColors={chartThemeColors}
+                                render={render}
+                                colorChangeTrigger={colorChangeTrigger}
+                                setColorChangeTrigger={setColorChangeTrigger}
                             />
                         )}
 
@@ -5787,6 +5791,8 @@ export default function Chart(props: propsIF) {
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
                                 chartThemeColors={chartThemeColors}
+                                colorChangeTrigger={colorChangeTrigger}
+                                setColorChangeTrigger={setColorChangeTrigger}
                             />
                         </>
                     )}
@@ -5823,6 +5829,8 @@ export default function Chart(props: propsIF) {
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
                                 chartThemeColors={chartThemeColors}
+                                colorChangeTrigger={colorChangeTrigger}
+                                setColorChangeTrigger={setColorChangeTrigger}
                             />
                         </>
                     )}
@@ -5958,6 +5966,7 @@ export default function Chart(props: propsIF) {
                     localChartSettings={localChartSettings}
                     setLocalChartSettings={setLocalChartSettings}
                     render={render}
+                    setColorChangeTrigger={setColorChangeTrigger}
                 />
             )}
         </div>

@@ -52,6 +52,10 @@ interface liquidityPropsIF {
     mainCanvasBoundingClientRect: any;
     setLiqMaxActiveLiq: React.Dispatch<number | undefined>;
     chartThemeColors: ChartThemeIF | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: any;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type nearestLiquidity = {
@@ -120,6 +124,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         mainCanvasBoundingClientRect,
         setLiqMaxActiveLiq,
         chartThemeColors,
+        render,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = props;
 
     const currentPoolPriceTick =
@@ -317,8 +324,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
-        console.log(chartThemeColors);
-
         if (liqSeries && chartThemeColors) {
             decorateForLiquidityArea(
                 liqSeries,
@@ -357,6 +362,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             );
         }
 
+        setColorChangeTrigger(false);
+
+        render();
         renderCanvasArray([d3CanvasLiq]);
     }, [
         liqMode,
@@ -368,7 +376,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         lineLiqSeries,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
-        chartThemeColors,
+        colorChangeTrigger,
     ]);
 
     const clipCanvas = (

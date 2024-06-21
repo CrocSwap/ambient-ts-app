@@ -41,6 +41,8 @@ interface TvlData {
     isToolbarOpen: boolean;
     toolbarWidth: number;
     chartThemeColors: ChartThemeIF | undefined;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function TvlChart(props: TvlData) {
@@ -68,6 +70,8 @@ function TvlChart(props: TvlData) {
         isToolbarOpen,
         toolbarWidth,
         chartThemeColors,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -296,7 +300,13 @@ function TvlChart(props: TvlData) {
                 });
             }
         }
-    }, [d3CanvasArea, diffHashSig(tvlyScale), buffer, resizeHeight]);
+    }, [
+        d3CanvasArea,
+        diffHashSig(tvlyScale),
+        buffer,
+        resizeHeight,
+        colorChangeTrigger,
+    ]);
 
     useEffect(() => {
         if (d3CanvasArea) {
@@ -395,8 +405,10 @@ function TvlChart(props: TvlData) {
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
+
+            setColorChangeTrigger(false);
         }
-    }, [scaleData, tvlyScale, tvlGradient]);
+    }, [scaleData, tvlyScale, tvlGradient, colorChangeTrigger]);
 
     useEffect(() => {
         const canvas = d3

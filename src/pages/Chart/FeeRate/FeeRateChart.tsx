@@ -37,6 +37,8 @@ interface FreeRateData {
     isToolbarOpen: boolean;
     toolbarWidth: number;
     chartThemeColors: ChartThemeIF | undefined;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -64,6 +66,8 @@ function FeeRateChart(props: FreeRateData) {
         isToolbarOpen,
         toolbarWidth,
         chartThemeColors,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -235,8 +239,10 @@ function FeeRateChart(props: FreeRateData) {
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
+
+            setColorChangeTrigger(false);
         }
-    }, [feeRateyScale, scaleData?.xScale]);
+    }, [feeRateyScale, scaleData?.xScale, colorChangeTrigger]);
 
     useEffect(() => {
         if (feeData !== undefined) {
