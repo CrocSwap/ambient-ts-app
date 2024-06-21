@@ -41,6 +41,34 @@ export default function SearchableTicker(props: propsIF) {
     const { setIsLoading, selectedTicker, setSelectedTicker } =
         useContext(AuctionsContext);
 
+    // shape of data to create filter dropdown menu options
+    interface filterOptionIF {
+        label: string;
+        value: string;
+        slug: auctionSorts;
+        default: 'asc' | 'desc';
+    }
+
+    const sortDropdownOptions: filterOptionIF[] = [
+        {
+            label: 'Time Remaining',
+            value: 'Time Remaining',
+            slug: 'timeLeft',
+            default: 'asc',
+        },
+        {
+            label: 'Market Cap',
+            value: 'Market Cap',
+            slug: 'marketCap',
+            default: 'desc',
+        },
+    ];
+
+    // current sort being applied to display to user
+    const [activeSortOption, setActiveSortOption] = useState<filterOptionIF>(
+        sortDropdownOptions[0],
+    );
+
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
 
@@ -74,7 +102,7 @@ export default function SearchableTicker(props: propsIF) {
         // iterate over auction data to split into complete vs incomplete subsets
         auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
         // return output variables
-        return [incomplete, complete.reverse()];
+        return [incomplete, complete];
     }, [auctions.data]);
 
     // auto switch to complete auctions if user only has complete auctions
@@ -96,7 +124,9 @@ export default function SearchableTicker(props: propsIF) {
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
         // return auctions from correct subset matching user search input
-        return searchHits;
+        return activeSortOption.label === 'timeRemaining'
+            ? searchHits.reverse()
+            : searchHits;
     }, [searchInputRaw, incompleteAuctions, completeAuctions, showComplete]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
@@ -108,23 +138,6 @@ export default function SearchableTicker(props: propsIF) {
 
     // hook to handle user click outside of the dropdown modal
     useOnClickOutside(timeDropdownRef, clickOutsideHandler);
-
-    // shape of data to create filter dropdown menu options
-    interface filterOptionIF {
-        label: string;
-        value: string;
-        slug: auctionSorts;
-    }
-
-    const sortDropdownOptions: filterOptionIF[] = [
-        { label: 'Time Remaining', value: 'Time Remaining', slug: 'timeLeft' },
-        { label: 'Market Cap', value: 'Market Cap', slug: 'marketCap' },
-    ];
-
-    // current sort being applied to display to user
-    const [activeSortOption, setActiveSortOption] = useState(
-        sortDropdownOptions[0],
-    );
 
     useEffect(() => {
         if (placeholderTicker) setSelectedTicker(undefined);
@@ -201,8 +214,8 @@ export default function SearchableTicker(props: propsIF) {
                                         size={14}
                                         color={
                                             auctions.isReversed
-                                                ? 'var(--accent1)'
-                                                : ''
+                                                ? ''
+                                                : 'var(--accent1)'
                                         }
                                         // color={
                                         //     activeSortOption.slug === 'timeLeft'
@@ -218,7 +231,7 @@ export default function SearchableTicker(props: propsIF) {
                                     <IoIosArrowDown
                                         size={14}
                                         color={
-                                            !auctions.isReversed
+                                            auctions.isReversed
                                                 ? 'var(--accent1)'
                                                 : ''
                                         }

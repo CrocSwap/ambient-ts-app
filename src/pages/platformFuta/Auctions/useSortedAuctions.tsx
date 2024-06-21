@@ -73,6 +73,13 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
         });
     }
 
+    // // fn to allow custom sort option input
+    // function sortCustom(s: auctionSorts, r: boolean): void {
+    //     setSortDetails({
+    //         sortBy:
+    //     });
+    // }
+
     // logic router to sort data according to the indicated method
     const sortedData = useMemo<AuctionDataIF[]>(() => {
         let output: AuctionDataIF[];
