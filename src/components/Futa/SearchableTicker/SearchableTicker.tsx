@@ -68,7 +68,7 @@ export default function SearchableTicker(props: propsIF) {
                 ? incomplete.push(auction)
                 : complete.push(auction);
         });
-        return [incomplete, complete];
+        return [incomplete, complete.reverse()];
     }, [auctions.data]);
 
     // auto switch to complete auctions if user only has complete auctions
@@ -86,7 +86,6 @@ export default function SearchableTicker(props: propsIF) {
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
-
         return dataFilteredBySearch;
     }, [searchInputRaw, incompleteAuctions, completeAuctions, showComplete]);
 
