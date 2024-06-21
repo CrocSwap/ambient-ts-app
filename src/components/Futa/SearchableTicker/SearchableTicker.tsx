@@ -66,7 +66,7 @@ export default function SearchableTicker(props: propsIF) {
         function categorize(a: AuctionDataIF): void {
             const isComplete: boolean =
                 a.createdAt <= (Date.now() - a.auctionLength * 1000) / 1000;
-            isComplete ? incomplete.push(a) : complete.push(a);
+            isComplete ? complete.push(a) : incomplete.push(a);
         }
         auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
         return [incomplete, complete.reverse()];
