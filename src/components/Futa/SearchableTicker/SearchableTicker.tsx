@@ -57,24 +57,22 @@ export default function SearchableTicker(props: propsIF) {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
-    const incompleteAuctions = useMemo<AuctionDataIF[]>(() => {
-        return auctions.data.filter(
-            (auction: AuctionDataIF) =>
-                auction.createdAt >
-                (Date.now() - auction.auctionLength * 1000) / 1000,
-        );
+    const [incompleteAuctions, completeAuctions] = useMemo<
+        [AuctionDataIF[], AuctionDataIF[]]
+    >(() => {
+        const complete: AuctionDataIF[] = [];
+        const incomplete: AuctionDataIF[] = [];
+        auctions.data.forEach((auction: AuctionDataIF) => {
+            auction.createdAt >
+            (Date.now() - auction.auctionLength * 1000) / 1000
+                ? incomplete.push(auction)
+                : complete.push(auction);
+        });
+        return [incomplete, complete];
     }, [auctions.data]);
 
-    const completeAuctions = useMemo<AuctionDataIF[]>(() => {
-        return auctions.data.filter(
-            (auction: AuctionDataIF) =>
-                auction.createdAt <=
-                (Date.now() - auction.auctionLength * 1000) / 1000,
-        );
-    }, [auctions.data]);
-
+    // auto switch to complete auctions if user only has complete auctions
     useEffect(() => {
-        // auto switch to complete auctions if user only has complete auctions
         if (!incompleteAuctions.length && completeAuctions.length) {
             setShowComplete(true);
         }
