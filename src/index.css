@@ -185,26 +185,27 @@
     /* colors */
     --blur-bg: rgba(239, 178, 115, 0.5);
 
-    --text1: #CEFFFF;
-    --text2: #3D565B;
-    --text3: #283941;
+    --text1: #E1EEEE;
+    --text2: #939C9E;
+    --text3: #4D5255;
 
-    --dark1: #0B0D10;
-    --dark2: #12121A;
-    --dark3: #1E1E24;
+    --dark1: #0D0F13;
+    --dark2: #14161A;
+    --dark3: #1B1E22;
     --dark4: #171F22;
     --accent1: #62EBF1;
-    --accent2: #1D282E;
-    --accent3: #5ffff2;
+    --accent2: #3C898E;
+    --accent3: #29585D;
+
     --accent4: #71b5fc;
     --accent5: #7BE4FF;
 
-    --orange: #CE8964;
-    --green: #77B28C;
-    --red: #FF0000;
+    --orange: #F1B162;
+    --green: #62F1B0;
+    --red: #F16962;
 
-    --positive: #15be6f;
-    --negative: #f6385b;
+    --positive: #62F1B0;
+    --negative: #F16962;
 
     --other-green: #6bae52;
     --other-red: #e75670;
@@ -227,67 +228,6 @@
     /* sizes */
     --footer-height: 24px;
 
-    /* gradients, shadows */
-    --shimmer: linear-gradient(to right, #bc6d24, #f39f4e);
-    --gradient-box-shadow: 0px 0px 20px 0px rgba(242, 153, 74, 0.25) inset;
-
-    --title-gradient: linear-gradient(
-        90deg,
-        var(--accent1) 0%,
-        var(--accent5) 49.48%,
-        var(--accent1) 100%
-    );
-    --primary-gradient: linear-gradient(90deg, hsla(192, 100%, 52%, 1) 0%, hsla(211, 76%, 64%, 1) 100%);
-    --chart-gradient: linear-gradient(to right, #87421e, #b26533);
-    --dark-gradient: linear-gradient(
-        90deg,
-        #7d5734 0%,
-        #aa7e4b 49.48%,
-        #8f6e42 100%
-    );
-    --highlight-gradient: linear-gradient(
-        270deg,
-        #f2993a,
-        #f9c06d,
-        #f06a2e,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
-    --red-gradient: linear-gradient(
-        90deg,
-        #ff6e34 32.38%,
-        #ff904c 51.39%,
-        #ff7a34 68.17%
-    );
-    --apr-gradient-primary: linear-gradient(
-        90deg,
-        #ffa15f 32.38%,
-        #ffd5b6 51.39%,
-        #ffa15f 68.17%
-    );
-    --apr-gradient-secondary: linear-gradient(
-        90deg,
-        #c7d80c 0%,
-        #e0ea74 49.48%,
-        #c7d80c 100%
-    );
-
-    --swap-box-shadow: none;
-    --dark-box-shadow: 1px 1px 1px #000, 0 0 1px #4e331f;
-    --dark1-box-shadow: 2px 2px 10px 0px var(--dark1);
-    --trade-box-shadow: 0 0 3px white, 0 0 5px white, 0 0 10px white,
-        0 0 30px #f2883a, 0 0 50px #f2883a, 0 0 80px #f2883a;
-    --glow-box-shadow: 0px 0px 100px rgba(254, 224, 181, 0.3),
-        0px 0px 60px rgba(254, 224, 181, 0.3),
-        0px 0px 20px rgba(254, 224, 181, 0.3),
-        0px 0px 12px rgba(254, 224, 181, 0.3),
-        0px 0px 6px rgba(254, 224, 181, 0.3),
-        0px 0px 3px rgba(254, 224, 181, 0.3);
-    --glow-light-box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
 
         --border: rgba(225, 238, 238, 0.25);
 
