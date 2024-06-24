@@ -1,7 +1,9 @@
 import styled from 'styled-components/macro';
 import { FlexContainer, Text } from '../Common';
 
-export const HeaderButtons = styled.button<{ mobileHide?: boolean }>`
+export const HeaderButtons = styled.button<{
+    mobileHide?: boolean;
+}>`
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -21,7 +23,6 @@ export const HeaderButtons = styled.button<{ mobileHide?: boolean }>`
     &:focus-visible {
         box-shadow: var(--glow-light-box-shadow);
     }
-
     @media (max-width: 680px) {
         ${({ mobileHide }) => mobileHide && 'display: none'};
     }
