@@ -289,6 +289,8 @@
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 
+        --border: rgba(225, 238, 238, 0.25);
+
     --font-logo: "Fira Mono", monospace;;
     --font-family: "Fira Mono", monospace;;
     --roboto: "Fira Mono", monospace;;

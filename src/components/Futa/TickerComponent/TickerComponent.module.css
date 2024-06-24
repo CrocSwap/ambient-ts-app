@@ -312,25 +312,13 @@ cursor: pointer;
         height: calc(100vh - 85px);
 
     }
-    .container::before {
-        content: '';
-        position: absolute;
-        top: 12px; 
-        left: 0;
-        height: 100%; 
-        width: 1px;
-        
-        border-left: 1px dashed var(--dark3);
-       
-    }
+ 
 
 
-    .content{
-        padding-left: 8px;
-    }
+  
     .bidButton {
         margin: 0 auto;
         width: 100%;
-        margin-left: 8px;
+     
     }
 }

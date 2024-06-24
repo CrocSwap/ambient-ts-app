@@ -12,7 +12,7 @@ import TickerComponent from '../../../components/Futa/TickerComponent/TickerComp
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Chart from '../../../components/Futa/Chart/Chart';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-
+import Separator from '../../../components/Futa/Seperator/Seperator';
 interface propsIF {
     hideTicker?: boolean;
     placeholderTicker?: boolean;
@@ -45,7 +45,9 @@ export default function Auctions(props: propsIF) {
                 <div
                     className={styles.auctionsTickerContainer}
                     style={{
-                        gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
+                        gridTemplateColumns: hideTicker
+                            ? '1fr'
+                            : '1fr 4px 390px',
                     }}
                 >
                     {isFullLayoutActive ? (
@@ -76,6 +78,8 @@ export default function Auctions(props: propsIF) {
                             />
                         </div>
                     )}
+
+                    <Separator dots={90} />
                     <div className={styles.flexColumn}>
                         <Divider count={2} />
                         {!hideTicker && (

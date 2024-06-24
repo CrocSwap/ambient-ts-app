@@ -9,9 +9,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 export default function Create() {
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
-    const [showDevElement, setShowDevElements] = useState(false);
-    const [showDevElement2, setShowDevElements2] = useState(false);
+    const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -110,7 +108,7 @@ export default function Create() {
     const createHeader = (
         <div className={styles.create_token_top}>
             {!desktopScreen && <BreadCrumb />}
-            <h3 onClick={() => setShowDevElements(!showDevElement)}>CREATE</h3>
+            <h3>CREATE</h3>
             <p className={styles.description}>
                 Some text here describing how launching a token works and what
                 things will happen.
@@ -136,9 +134,7 @@ export default function Create() {
         <div className={styles.create_token_middle}>
             <div className={styles.ticker_input_fields}>
                 <label htmlFor={TICKER_INPUT_ID}>
-                    <h4 onClick={() => setShowDevElements2(!showDevElement2)}>
-                        Token Ticker
-                    </h4>
+                    <h4>Token Ticker</h4>
                 </label>
                 <div className={styles.inputContainer}>
                     <input
@@ -181,26 +177,19 @@ export default function Create() {
                 {!isUserConnected
                     ? 'Connect Wallet'
                     : tickerInput === ''
-                      ? 'Enter a Token Ticker'
-                      : isValidationInProgress
-                        ? 'Validating Ticker...'
-                        : isValidated
-                          ? 'Create Auction'
-                          : `Invalid Ticker: ${tickerInput}`}
+                    ? 'Enter a Token Ticker'
+                    : isValidationInProgress
+                    ? 'Validating Ticker...'
+                    : isValidated
+                    ? 'Create Auction'
+                    : `Invalid Ticker: ${tickerInput}`}
             </button>
         </footer>
     );
 
     return (
-        <section className={showDevElement ? styles.mainContainer : ''}>
-            <div
-                className={styles.create_token}
-                style={{
-                    border: showDevElement2
-                        ? '1px solid rgba( 255, 255, 255, 0.1 )'
-                        : '',
-                }}
-            >
+        <section className={styles.mainContainer}>
+            <div className={styles.create_token}>
                 {createHeader}
 
                 {tokenTicker}
