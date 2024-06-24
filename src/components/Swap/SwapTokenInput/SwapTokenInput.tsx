@@ -233,7 +233,11 @@ function SwapTokenInput(props: propsIF) {
                 return parseFloat(sellToken ? impact.buyQty : impact.sellQty);
             }
         } else {
-            setIsLiquidityInsufficient(true);
+            if (isPoolInitialized) {
+                setIsLiquidityInsufficient(true);
+            } else {
+                setIsLiquidityInsufficient(false);
+            }
             setSwapAllowed(false);
             return undefined;
         }

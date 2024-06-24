@@ -5,7 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import {
     getFormattedNumber,
     getTxReceipt,
@@ -202,8 +202,14 @@ export default function Limit() {
 
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verify(tokenA.address);
-    const needConfirmTokenB = !tokens.verify(tokenB.address);
+
+    const needConfirmTokenA = useMemo(() => {
+        return !tokens.verify(tokenA.address);
+    }, [tokenA.address, tokens]);
+    const needConfirmTokenB = useMemo(() => {
+        return !tokens.verify(tokenB.address);
+    }, [tokenB.address, tokens]);
+
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 

@@ -6,7 +6,11 @@ import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import { TokenIF } from '../../ambient-utils/types';
 // import { getDefaultPairForChain } from '../../ambient-utils/constants';
-import { validateAddress, validateChain } from '../../ambient-utils/dataLayer';
+import {
+    remapTokenIfWrappedNative,
+    validateAddress,
+    validateChain,
+} from '../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { getTopPairedTokenAddress } from '../../ambient-utils/dataLayer/functions/getTopPairedTokenAddress';
@@ -114,35 +118,38 @@ export const useUrlParams = (
         const areParamsMissing: boolean = requiredParams.some(
             (param: validParamsType) => !paramKeys.includes(param),
         );
-        const containsTokenParam: boolean =
-            paramKeys.includes('token') &&
-            !paramKeys.includes('tokenA') &&
-            !paramKeys.includes('tokenB');
+        const containsSingleTokenParam: boolean =
+            (paramKeys.includes('token') &&
+                !paramKeys.includes('tokenA') &&
+                !paramKeys.includes('tokenB')) ||
+            (!paramKeys.includes('token') &&
+                !paramKeys.includes('tokenA') &&
+                paramKeys.includes('tokenB'));
 
-        if (containsTokenParam) {
+        if (containsSingleTokenParam) {
+            const singleToken = remapTokenIfWrappedNative(
+                urlParamMap.get('token') || urlParamMap.get('tokenB') || '',
+            );
+
+            const chainToUse = urlParamMap.get('chain') || dfltChainId;
+
             Promise.resolve(
                 getTopPairedTokenAddress(
-                    urlParamMap.get('chain') || '',
-                    urlParamMap.get('token') || ZERO_ADDRESS,
+                    chainToUse,
+                    singleToken || ZERO_ADDRESS,
                     cachedFetchTopPairedToken,
                 ),
             )
                 .then((result) => {
                     linkGenSwap.redirect({
-                        chain: urlParamMap.get('chain') || '',
+                        chain: chainToUse,
                         tokenA: result || ZERO_ADDRESS,
-                        tokenB: urlParamMap.get('token') || '',
+                        tokenB: singleToken || '',
                     });
                 })
                 .catch((err) => console.error(err));
         }
 
-        containsTokenParam &&
-            linkGenSwap.redirect({
-                chain: urlParamMap.get('chain') || '',
-                tokenA: ZERO_ADDRESS,
-                tokenB: urlParamMap.get('token') || '',
-            });
         // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
         // array of parameter tuples from URL

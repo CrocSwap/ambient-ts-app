@@ -110,7 +110,7 @@ export default function Stats() {
                 mainnetCrocEnv,
                 GCGO_ETHEREUM_URL,
                 cachedFetchTokenPrice,
-                15,
+                20,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -133,18 +133,21 @@ export default function Stats() {
                             value: tvlTotalUsd,
                             prefix: '$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                 }
@@ -156,7 +159,7 @@ export default function Stats() {
                 scrollCrocEnv,
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
-                15,
+                20,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -178,18 +181,21 @@ export default function Stats() {
                             value: tvlTotalUsd,
                             prefix: '$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                 }
@@ -201,7 +207,7 @@ export default function Stats() {
                 blastCrocEnv,
                 GCGO_BLAST_URL,
                 cachedFetchTokenPrice,
-                15,
+                20,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {
@@ -222,18 +228,21 @@ export default function Stats() {
                             value: tvlTotalUsd,
                             prefix: '$',
                             isTvl: true,
+                            mantissa: 1,
                         }),
                     );
                     setTotalVolumeString(
                         getFormattedNumber({
                             value: volumeTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                     setTotalFeesString(
                         getFormattedNumber({
                             value: feesTotalUsd,
                             prefix: '$',
+                            mantissa: 1,
                         }),
                     );
                 }

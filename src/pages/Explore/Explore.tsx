@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { FiRefreshCw } from 'react-icons/fi';
+import { FiRefreshCw, FiStopCircle } from 'react-icons/fi';
 import TopPools from '../../components/Global/Explore/TopPools';
 import DexTokens from '../../components/Global/Explore/DexTokens';
 import { ExploreContext } from '../../contexts/ExploreContext';
@@ -147,7 +147,11 @@ export default function Explore(props: ExploreIF) {
                     {view === 'pools' && (
                         <DefaultTooltip
                             interactive
-                            title={'Toggle USD Price Estimates'}
+                            title={
+                                isExploreDollarizationEnabled
+                                    ? 'Switch to prices in native currency'
+                                    : 'Switch to prices in USD'
+                            }
                             enterDelay={500}
                         >
                             <Refresh>
@@ -158,11 +162,20 @@ export default function Explore(props: ExploreIF) {
                                         )
                                     }
                                 >
-                                    <DollarizationIcon
-                                        isExploreDollarizationEnabled={
-                                            isExploreDollarizationEnabled
-                                        }
-                                    />
+                                    {isExploreDollarizationEnabled ? (
+                                        <AiOutlineDollarCircle
+                                            size={20}
+                                            aria-label='Switch to prices in native currency'
+                                        />
+                                    ) : (
+                                        <FiStopCircle
+                                            size={20}
+                                            aria-label='Switch to prices in USD'
+                                            style={{
+                                                transform: 'rotate(45deg)',
+                                            }}
+                                        />
+                                    )}
                                 </RefreshButton>
                             </Refresh>
                         </DefaultTooltip>
@@ -278,13 +291,4 @@ const RefreshButton = styled.button`
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: var(--header2-size);
     cursor: pointer;
-`;
-
-const DollarizationIcon = styled(AiOutlineDollarCircle)<{
-    isExploreDollarizationEnabled?: boolean;
-}>`
-    font-size: var(--header2-size);
-    cursor: pointer;
-    color: ${({ isExploreDollarizationEnabled }) =>
-        isExploreDollarizationEnabled && 'var(--accent1)'};
 `;

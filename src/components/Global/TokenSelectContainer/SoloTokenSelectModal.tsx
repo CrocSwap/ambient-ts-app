@@ -19,7 +19,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
 import {
     removeWrappedNative,
-    isWethToken,
+    isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -274,7 +274,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 <div style={{ padding: '1rem' }}>
-                    {isWethToken(validatedInput) && (
+                    {isWrappedNativeToken(validatedInput) && (
                         <WarningBox
                             title=''
                             details={WETH_WARNING}
@@ -302,7 +302,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         />
                     )}
                 </div>
-                {isWethToken(validatedInput) &&
+                {isWrappedNativeToken(validatedInput) &&
                     [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                         (token: TokenIF) => (
                             <TokenSelect
