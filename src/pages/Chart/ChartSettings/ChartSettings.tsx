@@ -42,7 +42,7 @@ import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 
 interface ContextMenuIF {
-    contextMenuPlacement: { top: number; left: number };
+    contextMenuPlacement: { top: number; left: number; isReversed: boolean };
     setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
     setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
     chartItemStates: chartItemStates;
@@ -359,6 +359,7 @@ export default function ChartSettings(props: ContextMenuIF) {
             ref={contextMenuRef}
             top={contextMenuPlacement.top}
             left={contextMenuPlacement.left}
+            isReversed={contextMenuPlacement.isReversed}
             onClick={() => {
                 setSelectedColorObj(undefined);
                 setIsSelecboxActive(false);

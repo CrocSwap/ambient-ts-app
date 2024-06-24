@@ -316,6 +316,7 @@ export default function Chart(props: propsIF) {
     const [contextMenuPlacement, setContextMenuPlacement] = useState<{
         top: number;
         left: number;
+        isReversed: boolean;
     }>();
 
     const side =
@@ -4669,9 +4670,14 @@ export default function Chart(props: propsIF) {
                     if (!event.shiftKey) {
                         event.preventDefault();
 
+                        const screenHeight = window.innerHeight;
+
+                        const diff = screenHeight - event.clientY;
+
                         setContextMenuPlacement({
                             top: event.clientY,
                             left: event.clientX,
+                            isReversed: diff < 350,
                         });
 
                         setContextmenu(true);

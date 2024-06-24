@@ -564,9 +564,14 @@ function TvlChart(props: TvlData) {
                         if (!event.shiftKey) {
                             event.preventDefault();
 
+                            const screenHeight = window.innerHeight;
+
+                            const diff = screenHeight - event.clientY;
+
                             setContextMenuPlacement({
                                 top: event.clientY,
                                 left: event.clientX,
+                                isReversed: diff < 350,
                             });
 
                             setContextmenu(true);

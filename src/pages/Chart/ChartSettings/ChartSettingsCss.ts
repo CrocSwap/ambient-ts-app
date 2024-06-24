@@ -3,11 +3,20 @@ import styled from 'styled-components';
 const ChartSettingsContainer = styled.div<{
     top: number;
     left: number;
+    isReversed: boolean;
 }>`
     position: fixed;
 
     top: ${({ top }) => top + 'px'};
     left: ${({ left }) => left + 'px'};
+
+    ${({ isReversed }) => {
+        if (isReversed) {
+            return `
+            transform: translateY(-100%);
+            `;
+        }
+    }}
 
     overflow: visible;
 
