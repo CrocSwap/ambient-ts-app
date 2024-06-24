@@ -285,7 +285,7 @@
 @media (max-width: 1280px) {
     .tickerTableContent{
     
-        height: 60svh;
+        max-height: 60svh;
         overflow-y: scroll;
     }
 }

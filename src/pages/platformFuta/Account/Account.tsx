@@ -14,6 +14,7 @@ import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { Link } from 'react-router-dom';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
@@ -45,11 +46,23 @@ export default function Account() {
             <button onClick={openWalletModal}>Connect wallet</button>
         </div>
     );
+    const noAuctionsContent = (
+        <div className={styles.connectWalletContent}>
+            <Typewriter text='No auctions found' />
+            <p>Consider viewing all auctions</p>
 
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+            <Link to='/auctions'>All auctions</Link>
+        </div>
+    );
+
+    const desktopScreen = useMediaQuery('(min-width: 1080px)');
+
+    const noAuctions = false;
 
     const desktopVersion = !isUserConnected ? (
         connectWalletContent
+    ) : noAuctions ? (
+        noAuctionsContent
     ) : (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
@@ -71,15 +84,19 @@ export default function Account() {
     if (desktopScreen) return desktopVersion;
 
     return isUserConnected ? (
-        <div className={styles.container}>
-            <div className={styles.content}>
-                <BreadCrumb />
-                <h2>Account</h2>
-                <SearchableTicker auctions={sorted} isAccount={true} />
+        noAuctions ? (
+            noAuctionsContent
+        ) : (
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <BreadCrumb />
+                    <h2>Account</h2>
+                    <SearchableTicker auctions={sorted} isAccount={true} />
+                </div>
+                {claimAllContainer}
+                <button className={styles.claimButton}>CLAIM ALL</button>
             </div>
-            {claimAllContainer}
-            <button className={styles.claimButton}>CLAIM ALL</button>
-        </div>
+        )
     ) : (
         connectWalletContent
     );
