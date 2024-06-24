@@ -55,6 +55,8 @@ interface ContextMenuIF {
     setLocalChartSettings: React.Dispatch<
         React.SetStateAction<LocalChartSettingsIF | undefined>
     >;
+    isCondensedModeEnabled: boolean;
+    setIsCondensedModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
     render: () => void;
 }
 
@@ -76,6 +78,8 @@ export default function ChartSettings(props: ContextMenuIF) {
         setLocalChartSettings,
         render,
         setColorChangeTrigger,
+        isCondensedModeEnabled,
+        setIsCondensedModeEnabled,
     } = props;
 
     const {
@@ -312,8 +316,8 @@ export default function ChartSettings(props: ContextMenuIF) {
             selection: 'Show Fee Rate',
         },
         {
-            checked: false,
-            action: setShowFeeRate,
+            checked: isCondensedModeEnabled,
+            action: setIsCondensedModeEnabled,
             selection: 'Show empty candles',
         },
     ];

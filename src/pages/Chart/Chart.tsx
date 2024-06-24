@@ -250,6 +250,7 @@ export default function Chart(props: propsIF) {
         setCandleScale,
         timeOfEndCandle,
         isCondensedModeEnabled,
+        setIsCondensedModeEnabled,
         setCandleData,
     } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
@@ -666,19 +667,17 @@ export default function Chart(props: propsIF) {
         isCondensedModeEnabled,
     ]);
 
-    const lastCandleData = unparsedData.candles?.reduce(function (
-        prev,
-        current,
-    ) {
-        return prev.time > current.time ? prev : current;
-    });
+    const lastCandleData = unparsedData.candles?.reduce(
+        function (prev, current) {
+            return prev.time > current.time ? prev : current;
+        },
+    );
 
-    const firstCandleData = unparsedData.candles?.reduce(function (
-        prev,
-        current,
-    ) {
-        return prev.time < current.time ? prev : current;
-    });
+    const firstCandleData = unparsedData.candles?.reduce(
+        function (prev, current) {
+            return prev.time < current.time ? prev : current;
+        },
+    );
 
     const [visibleDateForCandle, setVisibleDateForCandle] = useState(
         lastCandleData.time * 1000,
@@ -1963,9 +1962,9 @@ export default function Chart(props: propsIF) {
                             event.subject.name !== undefined
                                 ? event.subject.name
                                 : Math.abs(advancedValue - low) <
-                                  Math.abs(advancedValue - high)
-                                ? 'Min'
-                                : 'Max';
+                                    Math.abs(advancedValue - high)
+                                  ? 'Min'
+                                  : 'Max';
                     }
                 })
                 .on('drag', function (event) {
@@ -2016,9 +2015,9 @@ export default function Chart(props: propsIF) {
                                     draggedValue === 0
                                         ? 0
                                         : draggedValue <
-                                          liquidityData?.lowBoundary
-                                        ? draggedValue
-                                        : 0;
+                                            liquidityData?.lowBoundary
+                                          ? draggedValue
+                                          : 0;
 
                                 setRanges((prevState) => {
                                     const newTargets = [...prevState];
@@ -3417,20 +3416,20 @@ export default function Chart(props: propsIF) {
                                                                   5),
                                                       )
                                                 : scaleData.yScale(
-                                                      firstPointYAxisData,
-                                                  ) < 5
-                                                ? scaleData.yScale(
-                                                      secondPointYAxisData,
-                                                  ) -
-                                                  (infoLabelHeight + 15)
-                                                : Math.max(
-                                                      scaleData.yScale(
-                                                          secondPointYAxisData,
-                                                      ) -
-                                                          (infoLabelHeight +
-                                                              15),
-                                                      5,
-                                                  );
+                                                        firstPointYAxisData,
+                                                    ) < 5
+                                                  ? scaleData.yScale(
+                                                        secondPointYAxisData,
+                                                    ) -
+                                                    (infoLabelHeight + 15)
+                                                  : Math.max(
+                                                        scaleData.yScale(
+                                                            secondPointYAxisData,
+                                                        ) -
+                                                            (infoLabelHeight +
+                                                                15),
+                                                        5,
+                                                    );
 
                                         const arrowArray =
                                             createArrowPointsOfDPRangeLine(
@@ -3839,9 +3838,9 @@ export default function Chart(props: propsIF) {
                                             item.labelAlignment === 'Top'
                                                 ? 'bottom'
                                                 : item.labelAlignment ===
-                                                  'Bottom'
-                                                ? 'top'
-                                                : (item.labelAlignment.toLowerCase() as CanvasTextBaseline);
+                                                    'Bottom'
+                                                  ? 'top'
+                                                  : (item.labelAlignment.toLowerCase() as CanvasTextBaseline);
 
                                         if (item.labelPlacement === 'Center') {
                                             alignment = 'center';
@@ -3939,8 +3938,8 @@ export default function Chart(props: propsIF) {
                                                 (alignment === 'right'
                                                     ? -10
                                                     : alignment === 'left'
-                                                    ? +10
-                                                    : 0);
+                                                      ? +10
+                                                      : 0);
 
                                             ctx.fillText(
                                                 lineLabel,
@@ -3955,9 +3954,9 @@ export default function Chart(props: propsIF) {
                                                     'bottom'
                                                         ? 5
                                                         : item.labelAlignment.toLowerCase() ===
-                                                          'top'
-                                                        ? -5
-                                                        : 0),
+                                                            'top'
+                                                          ? -5
+                                                          : 0),
                                             );
                                         }
                                     });
@@ -6318,6 +6317,8 @@ export default function Chart(props: propsIF) {
                     setLocalChartSettings={setLocalChartSettings}
                     render={render}
                     setColorChangeTrigger={setColorChangeTrigger}
+                    isCondensedModeEnabled={isCondensedModeEnabled}
+                    setIsCondensedModeEnabled={setIsCondensedModeEnabled}
                 />
             )}
         </div>
