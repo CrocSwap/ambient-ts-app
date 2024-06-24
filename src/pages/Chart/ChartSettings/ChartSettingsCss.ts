@@ -159,10 +159,14 @@ const FooterButtons = styled.div<{
     hoverColor: string;
     textColor: string;
     hoverTextColor: string;
+    width: string;
 }>`
     padding: 5px 8px 5px 8px;
     gap: 10px;
     border-radius: 50px;
+
+    width: ${({ width }) => width};
+    height: 27px;
 
     border: 1px solid var(--accent1);
 

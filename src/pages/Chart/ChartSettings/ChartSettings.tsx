@@ -39,6 +39,7 @@ import { SketchPicker } from 'react-color';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
+import Spinner from '../../../components/Global/Spinner/Spinner';
 
 interface ContextMenuIF {
     contextMenuPlacement: { top: number; left: number };
@@ -93,6 +94,9 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     const { skin } = useContext(BrandContext);
 
+    const [isSaving, setIsSaving] = useState(false);
+    const [applyDefault, setApplyDefault] = useState(false);
+
     const handleCandleColorPicker = (
         replaceSelector: string,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -137,6 +141,8 @@ export default function ChartSettings(props: ContextMenuIF) {
         chartSettings: LocalChartSettingsIF,
         isDefault = true,
     ) => {
+        setApplyDefault(true);
+
         setShowVolume(chartSettings.showVolume);
         setShowTvl(chartSettings.showTvl);
         setShowFeeRate(chartSettings.showFeeRate);
@@ -193,6 +199,13 @@ export default function ChartSettings(props: ContextMenuIF) {
         chartThemeColors.liqAskColor = liqAskColor;
         chartThemeColors.liqBidColor = liqBidColor;
         chartThemeColors.selectedDateStrokeColor = selectedDateStrokeColor;
+
+        const applyTimeOut = setTimeout(() => {
+            setApplyDefault(false);
+        }, 2000);
+        return () => {
+            clearTimeout(applyTimeOut);
+        };
     };
 
     const handleCancelChanges = () => {
@@ -210,9 +223,11 @@ export default function ChartSettings(props: ContextMenuIF) {
         }
 
         setColorChangeTrigger(true);
+        setContextmenu(false);
     };
 
     const handleSaveChanges = () => {
+        setIsSaving(true);
         const localSettings = {
             chartColors: {
                 lightFillColor: chartThemeColors.lightFillColor
@@ -256,6 +271,13 @@ export default function ChartSettings(props: ContextMenuIF) {
             LS_KEY_CHART_CONTEXT_SETTINGS,
             JSON.stringify(localSettings),
         );
+
+        const savedTimeOut = setTimeout(() => {
+            setIsSaving(false);
+        }, 2000);
+        return () => {
+            clearTimeout(savedTimeOut);
+        };
     };
 
     const handlePriceInChange = (option: string) => {
@@ -536,15 +558,21 @@ export default function ChartSettings(props: ContextMenuIF) {
                 <ContextMenuFooter>
                     <FooterButtons
                         backgroundColor={'transparent'}
-                        hoverColor={'var(--accent1)'}
+                        hoverColor={
+                            applyDefault ? 'transparent' : 'var(--accent1)'
+                        }
                         textColor={'var(--accent1)'}
                         hoverTextColor={'var(--text1)'}
-                        style={{ width: '80%' }}
+                        width={'98px'}
                         onClick={() =>
                             handleApplyDefaults(defaultChartSettings)
                         }
                     >
-                        <FooterContextText>Apply defauls</FooterContextText>
+                        {applyDefault ? (
+                            <Spinner size={14} bg='transparent' centered />
+                        ) : (
+                            <FooterContextText>Apply defauls</FooterContextText>
+                        )}
                     </FooterButtons>
                     <ActionButtonContainer>
                         <div
@@ -559,6 +587,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 hoverColor={'var(--accent1)'}
                                 textColor={'var(--accent1)'}
                                 hoverTextColor={'var(--text1)'}
+                                width={'55px'}
                                 onClick={() => handleCancelChanges()}
                             >
                                 <FooterContextText>Cancel</FooterContextText>
@@ -572,13 +601,24 @@ export default function ChartSettings(props: ContextMenuIF) {
                             }}
                         >
                             <FooterButtons
-                                backgroundColor={'var(--accent1)'}
+                                backgroundColor={
+                                    isSaving ? 'transparent' : 'var(--accent1)'
+                                }
                                 hoverColor={'transparent'}
                                 textColor={'var(--text1)'}
                                 hoverTextColor={'var(--accent1)'}
+                                width={'32px'}
                                 onClick={() => handleSaveChanges()}
                             >
-                                <FooterContextText>Ok</FooterContextText>
+                                {isSaving ? (
+                                    <Spinner
+                                        size={14}
+                                        bg='transparent'
+                                        centered
+                                    />
+                                ) : (
+                                    <FooterContextText>Ok</FooterContextText>
+                                )}
                             </FooterButtons>
                         </div>
                     </ActionButtonContainer>
