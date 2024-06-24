@@ -39,6 +39,8 @@ interface FreeRateData {
     chartThemeColors: ChartThemeIF | undefined;
     colorChangeTrigger: boolean;
     setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextMenuPlacement: any;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -68,6 +70,8 @@ function FeeRateChart(props: FreeRateData) {
         chartThemeColors,
         colorChangeTrigger,
         setColorChangeTrigger,
+        setContextmenu,
+        setContextMenuPlacement,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -402,6 +406,24 @@ function FeeRateChart(props: FreeRateData) {
                     setCrosshairActive('none');
                     renderCanvas();
                 });
+
+                d3.select(d3CanvasCrosshair.current).on(
+                    'contextmenu',
+                    (event: PointerEvent) => {
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
+                    },
+                );
             }
         },
         [crosshairForSubChart, feeData],

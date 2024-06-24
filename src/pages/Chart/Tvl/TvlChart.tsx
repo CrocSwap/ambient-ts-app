@@ -43,6 +43,8 @@ interface TvlData {
     chartThemeColors: ChartThemeIF | undefined;
     colorChangeTrigger: boolean;
     setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextMenuPlacement: any;
 }
 
 function TvlChart(props: TvlData) {
@@ -72,6 +74,8 @@ function TvlChart(props: TvlData) {
         chartThemeColors,
         colorChangeTrigger,
         setColorChangeTrigger,
+        setContextmenu,
+        setContextMenuPlacement,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -553,6 +557,24 @@ function TvlChart(props: TvlData) {
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setCrosshairActive('none');
                 });
+
+                d3.select(d3CanvasCrosshair.current).on(
+                    'contextmenu',
+                    (event: PointerEvent) => {
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
+                    },
+                );
             }
         },
         [tvlData],

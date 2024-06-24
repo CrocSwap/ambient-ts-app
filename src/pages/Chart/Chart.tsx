@@ -1263,6 +1263,7 @@ export default function Chart(props: propsIF) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
                         setIsChartZoom(true);
+                        setContextmenu(false);
 
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
@@ -6140,6 +6141,10 @@ export default function Chart(props: propsIF) {
                                 chartThemeColors={chartThemeColors}
                                 colorChangeTrigger={colorChangeTrigger}
                                 setColorChangeTrigger={setColorChangeTrigger}
+                                setContextmenu={setContextmenu}
+                                setContextMenuPlacement={
+                                    setContextMenuPlacement
+                                }
                             />
                         </>
                     )}
@@ -6178,6 +6183,10 @@ export default function Chart(props: propsIF) {
                                 chartThemeColors={chartThemeColors}
                                 colorChangeTrigger={colorChangeTrigger}
                                 setColorChangeTrigger={setColorChangeTrigger}
+                                setContextmenu={setContextmenu}
+                                setContextMenuPlacement={
+                                    setContextMenuPlacement
+                                }
                             />
                         </>
                     )}
