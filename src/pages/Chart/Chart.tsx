@@ -2667,8 +2667,8 @@ export default function Chart(props: propsIF) {
             if (rescale) {
                 resetFunc();
             } else {
-                fetchCandleForResetOrLatest();
                 setXScaleDefault();
+                fetchCandleForResetOrLatest();
 
                 const targetValue = poolPriceDisplay;
                 const targetPixel = scaleData.yScale.range()[0] / 2;
@@ -2689,7 +2689,6 @@ export default function Chart(props: propsIF) {
                 const domain = [newDomainMin, newDomainMax];
 
                 setYaxisDomain(domain[0], domain[1]);
-
                 render();
             }
 
