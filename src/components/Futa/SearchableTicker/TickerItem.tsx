@@ -27,7 +27,14 @@ export default function TickerItem(props: PropsIF) {
     const timeRemaining = getTimeRemainingAbbrev(timeRemainingInSec);
 
     const status2 =
-        timeRemaining === 'COMPLETE' ? 'var(--accent1)' : 'var(--accent4)';
+        ticker.toLowerCase().includes('ben') ||
+        ticker.toLowerCase().includes('trump')
+            ? 'var(--orange)'
+            : ticker.toLowerCase().includes('lockin')
+              ? 'var(--text1)'
+              : ticker.toLowerCase().includes('emily')
+                ? 'var(--accent2)'
+                : undefined;
 
     const marketCapUsdValue =
         nativeTokenUsdPrice !== undefined && marketCap !== undefined
