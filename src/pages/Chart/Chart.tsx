@@ -2632,13 +2632,13 @@ export default function Chart(props: propsIF) {
 
                 if (!isReset) {
                     let maxTime: number | undefined = undefined;
-                    for (let i = 0; i < unparsedCandleData.length - 1; i++) {
+                    for (let i = 0; i < unparsedData.candles.length - 1; i++) {
                         if (
-                            unparsedCandleData[i].time -
-                                unparsedCandleData[i + 1].time >
+                            unparsedData.candles[i].time -
+                                unparsedData.candles[i + 1].time >
                             period
                         ) {
-                            maxTime = unparsedCandleData[i].time * 1000;
+                            maxTime = unparsedData.candles[i].time * 1000;
                         }
                     }
                     if (maxTime && unparsedData) {
@@ -2688,8 +2688,8 @@ export default function Chart(props: propsIF) {
             if (rescale) {
                 resetFunc();
             } else {
-                fetchCandleForResetOrLatest();
                 setXScaleDefault();
+                fetchCandleForResetOrLatest();
 
                 const targetValue = poolPriceDisplay;
                 const targetPixel = scaleData.yScale.range()[0] / 2;
@@ -2710,7 +2710,6 @@ export default function Chart(props: propsIF) {
                 const domain = [newDomainMin, newDomainMax];
 
                 setYaxisDomain(domain[0], domain[1]);
-
                 render();
             }
 
