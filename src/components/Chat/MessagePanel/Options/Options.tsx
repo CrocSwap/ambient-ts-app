@@ -5,6 +5,10 @@ import { SlOptions } from 'react-icons/sl';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { Message } from '../../Model/MessageModel';
 import styles from './Options.module.css';
+import {
+    ALLOW_REACTIONS,
+    ALLOW_REPLIES,
+} from '../../ChatConstants/ChatConstants';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
@@ -187,14 +191,14 @@ export default function Options(props: propsIF) {
         <>
             <div key={props.tsForRefresh}>
                 <div className={styles.dropdown_item}>
-                    {ReplyWithTooltip}
+                    {ALLOW_REPLIES && ReplyWithTooltip}
                     {props.isUsersMessage || props.isModerator ? (
                         deleteMessage
                     ) : (
                         <></>
                     )}
                     {showFlipCard && flipCard}
-                    {addReactionWithTooltip}
+                    {ALLOW_REACTIONS && addReactionWithTooltip}
                     {showMore && optionsWithTooltip}
                 </div>
             </div>

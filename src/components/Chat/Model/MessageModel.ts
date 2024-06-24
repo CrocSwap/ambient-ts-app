@@ -21,4 +21,5 @@ export interface Message {
     reactions: ReactionModel;
     isVerified?: boolean;
     avatarImage: string;
+    chainId?: string;
 }

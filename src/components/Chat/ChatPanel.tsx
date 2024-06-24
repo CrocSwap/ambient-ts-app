@@ -18,7 +18,11 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
-import { LS_USER_VERIFY_TOKEN } from './ChatConstants/ChatConstants';
+import {
+    ALLOW_AUTH,
+    ALLOW_MENTIONS,
+    LS_USER_VERIFY_TOKEN,
+} from './ChatConstants/ChatConstants';
 import { ChatVerificationTypes } from './ChatEnums';
 import { ChatGoToChatParamsIF } from './ChatIFs';
 import ChatNotificationBubble from './ChatNotification/ChatNotificationBubble';
@@ -36,6 +40,7 @@ import { UserSummaryModel } from './Model/UserSummaryModel';
 import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -43,7 +48,9 @@ interface propsIF {
 }
 
 function ChatPanel(props: propsIF) {
-    const [isFocusMentions, setIsFocusMentions] = useState(true);
+    const [isFocusMentions, setIsFocusMentions] = useState(
+        true && ALLOW_MENTIONS,
+    );
     const { isFullScreen } = props;
     const {
         chat: {
@@ -57,6 +64,8 @@ function ChatPanel(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     if (!isChatEnabled) return <NotFound />;
+
+    const { selectedNetwork } = useContext(CrocEnvContext);
 
     const messageListWrapper = useRef<HTMLDivElement>(null);
     const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
@@ -843,7 +852,7 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
 
-            {isChatOpen && (
+            {isChatOpen && ALLOW_AUTH && (
                 <div
                     ref={verifyBtnRef}
                     className={`${styles.verify_button} ${
@@ -1200,6 +1209,7 @@ function ChatPanel(props: propsIF) {
             isChatOpen={isChatOpen}
             isMobile={isMobile}
             userMap={userMap}
+            chainId={selectedNetwork.chainId}
         />
     );
 
