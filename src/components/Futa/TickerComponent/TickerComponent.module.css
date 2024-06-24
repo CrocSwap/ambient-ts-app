@@ -211,7 +211,7 @@
 .bidButtonDisabled {
     pointer-events: none;
     background: var(--dark4);
-    border: none;
+    border: 1px solid transparent;
     color: var(--text2)
 }
 .bidButtonDesktop:hover {

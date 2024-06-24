@@ -12,7 +12,7 @@ import TickerComponent from '../../../components/Futa/TickerComponent/TickerComp
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Chart from '../../../components/Futa/Chart/Chart';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import Separator from '../../../components/Futa/Seperator/Seperator';
+import Seperator from '../../../components/Futa/Seperator/Seperator';
 interface propsIF {
     hideTicker?: boolean;
     placeholderTicker?: boolean;
@@ -64,7 +64,7 @@ export default function Auctions(props: propsIF) {
 
                             <div className={styles.consoleChartComponent}>
                                 <ConsoleComponent />
-                                <span />
+                                <Seperator dots={50} />
                                 <Chart />
                             </div>
                         </div>
@@ -79,7 +79,7 @@ export default function Auctions(props: propsIF) {
                         </div>
                     )}
 
-                    <Separator dots={90} />
+                    <Seperator dots={100} />
                     <div className={styles.flexColumn}>
                         <Divider count={2} />
                         {!hideTicker && (
