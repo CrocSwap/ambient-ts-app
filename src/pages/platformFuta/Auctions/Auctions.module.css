@@ -1,33 +1,24 @@
  .mobileContainer{
     padding: 8px 16px;
+    
 }
 
 .desktopContainer{
     padding: 0px 16px;
-}
-
-.auctions_main {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    height: calc(100vh - 85px);
-}
-
-.auctions_main > h3 {
-    font-size: 24px;
-    color: var(--text1);
-}
-
-.desktopContainer{
     height: calc(100vh - 85px);
 
-    }
+    
+}
+
+
+
     
 
 .consoleChartComponent{
     display: grid;
     grid-template-columns: 30% 5px 1fr;
     gap: 8px;
+    
 }
 .consoleChartComponent span{
     border-left: 1px dashed var(--dark3);
@@ -38,6 +29,9 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    
+    height: 100%;
+    
 }
 
 .auctionsTickerContainer{
