@@ -6,6 +6,7 @@ import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,
     scrollBrandAssets,
+    plumeSepoliaBrandAssets,
     defaultBrandAssets,
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
@@ -67,6 +68,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return blastBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
+            case 'plumeSepolia':
+                return plumeSepoliaBrandAssets;
             case 'futa':
                 return futaBrandAssets;
             case 'ambientProduction':
