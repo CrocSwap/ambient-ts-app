@@ -21,6 +21,7 @@ import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+import plumeLogo from '../../../../assets/images/networks/plume.png';
 import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
@@ -274,6 +275,37 @@ export default function NetworkSelector(props: propsIF) {
         </NetworkItem>
     );
 
+    // JSX element to select plume sepolia network
+    const plumeSepoliaNetwork: JSX.Element = (
+        <NetworkItem
+            id='plume_sepolia_network_selector'
+            onClick={() => handleClick(chainMap.get('0x99c0a0f'))}
+            key='plume-scroll'
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0x99c0a0f'}>
+                <img
+                    src={plumeLogo}
+                    alt='plume sepolia network'
+                    width='22px'
+                    height='22px'
+                    style={{ borderRadius: '50%' }}
+                />
+                <Text
+                    color={chainId === '0x99c0a0f' ? 'accent1' : 'white'}
+                    style={{ marginLeft: '4px' }}
+                >
+                    Plume
+                </Text>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                    Testnet
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
     return (
         <div style={{ position: 'relative' }}>
             <DropdownMenuContainer
@@ -292,10 +324,14 @@ export default function NetworkSelector(props: propsIF) {
                             .includes('scroll')
                             ? scrollLogo
                             : lookupChain(chainId)
-                                  .displayName.toLowerCase()
-                                  .includes('blast')
-                            ? blastLogo
-                            : ETH
+                                    .displayName.toLowerCase()
+                                    .includes('blast')
+                              ? blastLogo
+                              : lookupChain(chainId)
+                                      .displayName.toLowerCase()
+                                      .includes('plume')
+                                ? plumeLogo
+                                : ETH
                     }
                 >
                     <MenuContent
@@ -310,6 +346,7 @@ export default function NetworkSelector(props: propsIF) {
                             cantoNetwork}
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
                         {chainMap.has('0xa0c71fd') && blastSepoliaNetwork}
+                        {chainMap.has('0x99c0a0f') && plumeSepoliaNetwork}
                         {chainMap.has('0x8274f') && scrollSepoliaNetwork}
                     </MenuContent>
                 </DropdownMenu2>

@@ -88,8 +88,8 @@ export default function DropdownMenu2(props: propsIF) {
                     minWidth: !desktopScreen
                         ? ''
                         : titleWidth
-                        ? titleWidth
-                        : '100px',
+                          ? titleWidth
+                          : '100px',
                 }}
             >
                 <MenuItem gap={4}>
@@ -114,8 +114,7 @@ export default function DropdownMenu2(props: propsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia' ||
-                            title === 'Blast Sepolia'
+                            {title.toLowerCase().includes('sepolia')
                                 ? 'Sepolia'
                                 : title}
                         </Icon>

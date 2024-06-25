@@ -1541,10 +1541,10 @@
     preact "^10.16.0"
     sha.js "^2.4.11"
 
-"@crocswap-libs/sdk@^0.3.9-3":
-  version "0.3.9-3"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.3.9-3.tgz#a08d55aeaeedafaa3258b826fa46f632d6293e0e"
-  integrity sha512-mJD7BHGUgXi5mrutVqxxOuODkx9g6bO1cG74vZxVr3rpO17vGQD/JeSc/oKN+ire0HVAyj2yPSGLVeFAuRUFLA==
+"@crocswap-libs/sdk@^0.3.10":
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.3.10.tgz#ae36d591be726579954736fc7ff27bd2b304588c"
+  integrity sha512-GKy/0oHC6kMrH85+mO6ySRFmsFUP6OlU9Wj9azhiXHS0EkRUpO2ITKs6LsECsINCzzp0T11cD5/HgERs+KEwlw==
   dependencies:
     ethers "^5.5.3"
 
@@ -4430,7 +4430,7 @@ braces@~3.0.2:
   resolved "https://registry.yarnpkg.com/braces/-/braces-3.0.2.tgz#3454e1a462ee8d599e236df336cd9ea4f8afe107"
   integrity sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==
   dependencies:
-    fill-range "^7.1.1"
+    fill-range "^7.0.1"
 
 brorand@^1.1.0:
   version "1.1.0"

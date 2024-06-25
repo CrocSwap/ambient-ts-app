@@ -33,6 +33,15 @@ export const defaultBrandAssets: brandIF = {
                 { content: scrollLogo, processAs: 'image' },
             ],
         },
+        // plume sepolia
+        '0x99c0a0f': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
+        },
         // blast mainnet
         '0x13e31': {
             color: 'purple_dark',

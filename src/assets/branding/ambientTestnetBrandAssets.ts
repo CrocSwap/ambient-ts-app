@@ -10,6 +10,15 @@ export const ambientTestnetBrandAssets: brandIF = {
             color: 'purple_dark',
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
+        // plume sepolia
+        '0x99c0a0f': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
+        },
         // scroll sepolia
         '0x8274f': {
             color: 'purple_dark',

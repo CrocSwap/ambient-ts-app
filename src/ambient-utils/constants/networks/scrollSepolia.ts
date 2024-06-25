@@ -35,12 +35,12 @@ export const scrollSepolia: NetworkIF = {
         new TopPool(
             scrollSepoliaETH,
             scrollSepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
+            lookupChain('0x8274f').poolIndex,
         ),
         new TopPool(
             scrollSepoliaUSDC,
             scrollSepoliaWBTC,
-            lookupChain('0xaa36a7').poolIndex,
+            lookupChain('0x8274f').poolIndex,
         ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
