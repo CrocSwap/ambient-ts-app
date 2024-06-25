@@ -59,29 +59,30 @@ interface ButtonProps {
 export const StyledLink = styled(Link)<ButtonProps>`
     width: 100%;
     z-index: 1;
-    border-radius: var(--border-radius);
-    background: var(--title-gradient);
-    max-width: 16rem;
-    max-height: 3rem;
-    padding: 1px;
-    height: 54px;
     display: flex;
     justify-content: center;
     align-items: center;
-    outline: none;
-    border: none;
     cursor: pointer;
     text-align: center;
     text-decoration: none;
-    border-radius: var(--border-radius);
+    max-width: 16rem;
+    max-height: 3rem;
+    outline: none;
+    border: none;
+    padding: 5px 16px;
+    border-radius: 50px;
+    background: var(--accent1);
+    color: var(--text1);
+    font-size: 36px;
+    transition: all var(--animation-speed) ease-in-out;
 
     ${(props) =>
         props.inNav &&
         `
-        max-width: 10rem;
-        max-height: 2rem;
-        height: 54px;
-    `}
+       max-width: 10rem;
+       max-height: 2rem;
+       height: 54px;
+   `}
 
     &:hover, &:focus-visible {
         box-shadow: var(--glow-box-shadow);
