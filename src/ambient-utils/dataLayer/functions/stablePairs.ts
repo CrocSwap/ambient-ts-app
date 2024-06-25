@@ -34,6 +34,7 @@ import {
     blastWEETH,
     plumeSepoliaUSDC,
     plumeSepoliaUSD,
+    plumeSepoliaP,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -95,6 +96,7 @@ export const STABLE_USD_TOKENS = [
     scrollSepoliaUSDC.address,
     plumeSepoliaUSDC.address,
     plumeSepoliaUSD.address,
+    plumeSepoliaP.address,
 ].map((x) => x.toLowerCase());
 
 export const USDC_TOKENS = [
