@@ -171,6 +171,15 @@ export const blastUSDB: TokenIF = {
     symbol: 'USDB',
 };
 
+export const blastBLAST: TokenIF = {
+    address: '0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad',
+    chainId: 81457,
+    decimals: 18,
+    logoURI: '',
+    name: 'Blast',
+    symbol: 'BLAST',
+};
+
 export const blastUSDPLUS: TokenIF = {
     address: '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd',
     chainId: 81457,
@@ -609,6 +618,7 @@ export const defaultTokens: TokenIF[] = [
     blastETH,
     blastWrsETH,
     blastUSDB,
+    blastBLAST,
     blastUSDPLUS,
     blastMIA,
     blastBIG,
