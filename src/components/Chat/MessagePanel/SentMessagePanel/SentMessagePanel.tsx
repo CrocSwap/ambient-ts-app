@@ -379,12 +379,19 @@ function SentMessagePanel(props: SentMessageProps) {
                     <>
                         <span> {word.slice(0, word.lastIndexOf('@'))} </span>
                         <span
-                            onClick={(e) => {
-                                props.mentionHoverListener(
-                                    e.currentTarget.getBoundingClientRect()
-                                        .top - (props.isMobile ? 40 : 0),
+                            onClick={() => {
+                                goToMentionedProfile(
+                                    word.slice(
+                                        word.lastIndexOf('@'),
+                                        word.length,
+                                    ),
                                     props.message.mentionedWalletID,
                                 );
+                                // props.mentionHoverListener(
+                                //     e.currentTarget.getBoundingClientRect()
+                                //         .top - (props.isMobile ? 40 : 0),
+                                //     props.message.mentionedWalletID,
+                                // );
                             }}
                             // onMouseLeave={props.mentionMouseLeftListener}
                             className={styles.mentioned_name_token}
@@ -547,6 +554,20 @@ function SentMessagePanel(props: SentMessageProps) {
             );
         }
         return false;
+    }
+
+    function goToMentionedProfile(
+        mentionStr: string,
+        mentionedWalletID: string,
+    ) {
+        const targetStr = props.mentionIndex
+            ? 'account'
+            : mentionStr.indexOf('.eth') >= 0
+              ? mentionStr.replace('@', '')
+              : mentionedWalletID;
+        if (location.pathname != `/${targetStr}`) {
+            navigate(`/${targetStr}`);
+        }
     }
 
     function goToProfilePage() {
