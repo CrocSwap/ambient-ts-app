@@ -35,6 +35,7 @@ import {
     plumeSepoliaUSDC,
     plumeSepoliaUSD,
     plumeSepoliaP,
+    blastBLAST,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -51,6 +52,10 @@ export function isStableToken(addr: string): boolean {
 
 export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isBlastRewardToken(addr: string): boolean {
+    return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
 }
 
 export function isETHorStakedEthToken(addr: string): boolean {
@@ -108,6 +113,10 @@ export const USDC_TOKENS = [
     scrollUSDC.address,
     plumeSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
+
+export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
+    x.toLowerCase(),
+);
 
 export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
     x.toLowerCase(),
