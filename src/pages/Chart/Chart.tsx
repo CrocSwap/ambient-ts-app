@@ -4258,21 +4258,21 @@ export default function Chart(props: propsIF) {
         let maxYBoundary = undefined;
         if (scaleData) {
             if (
-                visibleCandleData !== undefined &&
-                (!isTriggeredByZoom || visibleCandleData.length > 10) &&
+                unparsedCandleData !== undefined &&
+                (!isTriggeredByZoom || unparsedCandleData.length > 10) &&
                 poolPriceWithoutDenom
             ) {
                 const placeHolderPrice = denomInBase
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
-                const filteredMin = d3.min(visibleCandleData, (d) =>
+                const filteredMin = d3.min(unparsedCandleData, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
                         : d.minPriceExclMEVDecimalCorrected,
                 );
 
-                const filteredMax = d3.max(visibleCandleData, (d) =>
+                const filteredMax = d3.max(unparsedCandleData, (d) =>
                     denomInBase
                         ? d.invMinPriceExclMEVDecimalCorrected
                         : d.maxPriceExclMEVDecimalCorrected,
