@@ -15,6 +15,8 @@ interface propsIF {
 }
 
 export default function Button(props: propsIF) {
+    const isSepolia = import.meta.env.VITE_BRAND_ASSET_SET === 'plumeSepolia';
+
     const {
         idForDOM,
         disabled,
@@ -31,14 +33,21 @@ export default function Button(props: propsIF) {
     const ariaLabelToDisplay = disabled
         ? `Button is disabled. ${title}`
         : customAriaLabel
-        ? customAriaLabel
-        : '';
+          ? customAriaLabel
+          : '';
     return (
         <ButtonBase
             id={idForDOM}
             style={{
                 ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
                 ...style, // Merge with style prop
+                ...(isSepolia
+                    ? {
+                          border: '3px solid #000',
+                          boxShadow:
+                              'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 6px 5px #000',
+                      }
+                    : {}),
             }}
             onClick={action}
             disabled={disabled}

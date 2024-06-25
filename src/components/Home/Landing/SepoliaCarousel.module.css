@@ -1,0 +1,35 @@
+@keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .carousel {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+  
+  .carouselTrack {
+    display: flex;
+    width: 200%; /* Double the width for seamless scrolling */
+    animation: scroll 20s linear infinite;
+  }
+  
+  .carouselList {
+    flex: 0 0 16.66%; /* Each item takes up 1/6 of the track for 6 images */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .image {
+    width: 100%; /* Make sure images are responsive */
+    height: auto;
+  }
+  

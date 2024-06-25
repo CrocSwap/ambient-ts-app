@@ -62,6 +62,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
+
     const brandAssets = useMemo<brandIF>(() => {
         switch (brand) {
             case 'blast':
@@ -90,7 +91,9 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     function getSkin(): skins {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
+        console.log({ networkPrefs });
         return networkPrefs ? networkPrefs.color : 'purple_dark';
+
         // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
     }
 

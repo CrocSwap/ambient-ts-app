@@ -1,5 +1,5 @@
 .swap_page_container {
-    background: url(../../assets/images/backgrounds/swap_bg.png) no-repeat;
+    background:  var(--swap-bg) no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -12,7 +12,45 @@
 
 }
 
-.swap_page_container > section {
-    margin-top: 64px;
+
+
+.swap_page_container > section , .swap_page_content{
+    margin-top: 24px;
     height: auto;
+}
+.swap_page_content section{
+    margin-top: 16px;
+}
+.swap_page_content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.swap_text{
+    color: var(--text2);
+    font-size: 22px;
+    font-weight: 400;
+}
+
+
+    .swap_page_container h2{
+        font-size: 6rem;
+        font-weight: 600;
+        color: var(--text2)
+    }
+
+.arrow_container{
+    width: 50px;
+    height: 50px;
+    background: var(--accent2);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    padding: 1rem;
+    font-size: 1.3rem;
+    border-radius: 8px;
+
 }

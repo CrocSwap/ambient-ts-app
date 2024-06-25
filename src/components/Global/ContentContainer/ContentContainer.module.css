@@ -4,8 +4,8 @@
     color: var(--text2);
     border-radius: var(--border-radius);
 
-    background-color: var(--accent1);
-    background: var(--accent1);
+    /* background-color: var(--accent1);
+    background: var(--accent1); */
 }
 
 .main_content {
@@ -40,7 +40,7 @@
 }
 
 .swap_route {
-    background: var(--accent1);
+    /* background: var(--accent1); */
     padding: 1px;
     border-radius: var(--border-radius);
     box-shadow: var(--swap-box-shadow);
@@ -89,8 +89,8 @@
         max-width: 420px;
     }
     .swap_route {
-        min-width: 430px;
-        max-width: 440px;
+        min-width: 560px;
+        max-width: 640px;
     }
     .customWidth_container {
         max-width: 640px;

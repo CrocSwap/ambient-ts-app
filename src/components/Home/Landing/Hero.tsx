@@ -12,7 +12,7 @@ export default function Hero() {
     const { hero, platformName } = useContext(BrandContext);
 
     // recognized slugs for background image CSS classes
-    type cssSlugs = 'purple_waves' | 'stars';
+    type cssSlugs = 'purple_waves' | 'stars' | 'clouds';
     // slug to specify the desired background image
     const cssSlug = useMemo<cssSlugs>(() => {
         // declare an output variable
@@ -21,6 +21,9 @@ export default function Hero() {
         switch (platformName) {
             case 'futa':
                 slug = 'stars';
+                break;
+            case 'plumeSepolia':
+                slug = 'clouds';
                 break;
             case 'ambient':
             default:

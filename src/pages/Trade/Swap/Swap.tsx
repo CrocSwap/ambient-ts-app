@@ -391,16 +391,16 @@ function Swap(props: propsIF) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? GAS_DROPS_ESTIMATE_SWAP_NATIVE
                 : isWithdrawFromDexChecked
-                ? isTokenADexSurplusSufficient
-                    ? isSaveAsDexSurplusChecked
-                        ? GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX
-                        : GAS_DROPS_ESTIMATE_SWAP_FROM_DEX
-                    : isSaveAsDexSurplusChecked
+                  ? isTokenADexSurplusSufficient
+                      ? isSaveAsDexSurplusChecked
+                          ? GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX
+                          : GAS_DROPS_ESTIMATE_SWAP_FROM_DEX
+                      : isSaveAsDexSurplusChecked
+                        ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
+                        : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET
+                  : isSaveAsDexSurplusChecked
                     ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
-                    : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET
-                : isSaveAsDexSurplusChecked
-                ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
-                : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
+                    : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
 
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
@@ -728,12 +728,12 @@ function Swap(props: propsIF) {
                     : 'Submit Swap'
                 : swapButtonErrorMessage
             : swapAllowed
-            ? showWarning
-                ? showPriceImpactWarning
-                    ? 'I understand the price impact of this swap. Confirm anyway!'
-                    : 'I understand the loss of value. Confirm anyway!'
-                : 'Confirm'
-            : swapButtonErrorMessage
+              ? showWarning
+                  ? showPriceImpactWarning
+                      ? 'I understand the price impact of this swap. Confirm anyway!'
+                      : 'I understand the loss of value. Confirm anyway!'
+                  : 'Confirm'
+              : swapButtonErrorMessage
         : 'Acknowledge';
 
     return (

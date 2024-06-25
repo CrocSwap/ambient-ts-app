@@ -55,12 +55,14 @@ export const HeroContainer = styled(FlexContainer)`
 interface ButtonProps {
     inNav?: boolean;
     mobileVersion?: boolean;
+    isSepolia?: boolean;
 }
 export const StyledLink = styled(Link)<ButtonProps>`
     width: 100%;
     z-index: 1;
     border-radius: var(--border-radius);
-    background: var(--title-gradient);
+    background: ${(props) =>
+        props.isSepolia ? 'var(--accent1)' : 'var(--title-gradient)'};
     max-width: 16rem;
     max-height: 3rem;
     padding: 1px;
@@ -74,6 +76,12 @@ export const StyledLink = styled(Link)<ButtonProps>`
     text-align: center;
     text-decoration: none;
     border-radius: var(--border-radius);
+
+    border: ${(props) => (props.isSepolia ? '3px solid #000' : 'none')};
+    box-shadow: ${(props) =>
+        props.isSepolia
+            ? 'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 6px 5px #000'
+            : 'none'};
 
     ${(props) =>
         props.inNav &&
