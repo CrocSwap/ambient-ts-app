@@ -12,7 +12,7 @@ import TickerComponent from '../../../components/Futa/TickerComponent/TickerComp
 import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
 import Chart from '../../../components/Futa/Chart/Chart';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-
+import Seperator from '../../../components/Futa/Seperator/Seperator';
 interface propsIF {
     hideTicker?: boolean;
     placeholderTicker?: boolean;
@@ -45,30 +45,41 @@ export default function Auctions(props: propsIF) {
                 <div
                     className={styles.auctionsTickerContainer}
                     style={{
-                        gridTemplateColumns: hideTicker ? '1fr' : '1fr 390px',
+                        gridTemplateColumns: hideTicker
+                            ? '1fr'
+                            : '1fr 4px 390px',
                     }}
                 >
                     {isFullLayoutActive ? (
                         <div className={styles.auctionChartContainer}>
-                            <SearchableTicker
-                                auctions={sorted}
-                                title='Auctions'
-                                setIsFullLayoutActive={setIsFullLayoutActive}
-                            />
+                            <div style={{ height: '50vh' }}>
+                                <SearchableTicker
+                                    auctions={sorted}
+                                    title='Auctions'
+                                    setIsFullLayoutActive={
+                                        setIsFullLayoutActive
+                                    }
+                                />
+                            </div>
+
                             <div className={styles.consoleChartComponent}>
                                 <ConsoleComponent />
-                                <span />
+                                <Seperator dots={50} />
                                 <Chart />
                             </div>
                         </div>
                     ) : (
-                        <SearchableTicker
-                            auctions={sorted}
-                            title='AUCTIONS'
-                            setIsFullLayoutActive={setIsFullLayoutActive}
-                            placeholderTicker={placeholderTicker}
-                        />
+                        <div style={{ height: 'calc(100vh - 200px)' }}>
+                            <SearchableTicker
+                                auctions={sorted}
+                                title='AUCTIONS'
+                                setIsFullLayoutActive={setIsFullLayoutActive}
+                                placeholderTicker={placeholderTicker}
+                            />
+                        </div>
                     )}
+
+                    <Seperator dots={100} />
                     <div className={styles.flexColumn}>
                         <Divider count={2} />
                         {!hideTicker && (

@@ -209,7 +209,7 @@ export default function TickerComponent(props: PropsIF) {
         });
     }, [tickerFromParams]);
 
-    const formattedUnclaimedAllocationForConnectedUser =
+    const formattedunclaimedTokenAllocationForConnectedUser =
         allocationForConnectedUser
             ? allocationForConnectedUser.toLocaleString('en-US', {
                   minimumFractionDigits: 0,
@@ -267,8 +267,8 @@ export default function TickerComponent(props: PropsIF) {
             Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
                 (details) =>
                     setAllocationForConnectedUser(
-                        details?.unclaimedAllocation
-                            ? details?.unclaimedAllocation
+                        details?.unclaimedTokenAllocation
+                            ? details?.unclaimedTokenAllocation
                             : undefined,
                     ),
             );
@@ -484,7 +484,7 @@ export default function TickerComponent(props: PropsIF) {
             onClick={() =>
                 isAllocationAvailableToClaim
                     ? console.log(
-                          `clicked claim for amount: ${formattedUnclaimedAllocationForConnectedUser}`,
+                          `clicked claim for amount: ${formattedunclaimedTokenAllocationForConnectedUser}`,
                       )
                     : showTradeButton
                       ? console.log(
@@ -539,7 +539,7 @@ export default function TickerComponent(props: PropsIF) {
         <div className={styles.allocationContainer}>
             <h3>ALLOCATION</h3>
             <div className={styles.allocationDisplay}>
-                {formattedUnclaimedAllocationForConnectedUser}
+                {formattedunclaimedTokenAllocationForConnectedUser}
             </div>
             {extraInfoDisplay}
         </div>

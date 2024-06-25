@@ -139,7 +139,7 @@
     gap: 8px;
 }
 
-@media only screen and (min-width: 1280px) {
+@media only screen and (min-width: 1080px) {
     .mainContainer {
         transition: all var(--animation-speed) ease-in-out;
         background: radial-gradient(
@@ -147,17 +147,12 @@
             rgba(12, 205, 255, 0.2) 0%,
             rgba(12, 205, 255, 0) 100%
         );
-    }
-    .create_token {
-        margin-top: 5rem;
-        /* height: calc(100svh - 320px); */
-        min-height: 500px;
-        max-height: 600px;
-        border-radius: 15px;
-        background: rgba(6, 6, 13, 0.15);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        border-radius: 10px;
-        /* border: 1px solid rgba( 255, 255, 255, 0.1 ); */
+        }
+        .create_token {
+            margin-top: 5rem;
+            min-height: 500px;
+            max-height: 600px;
+            border: 1px solid var(--border);
+            padding: 16px;
     }
 }

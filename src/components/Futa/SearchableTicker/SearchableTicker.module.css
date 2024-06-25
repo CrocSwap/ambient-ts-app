@@ -1,6 +1,7 @@
 .container,
 .content {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -168,13 +169,16 @@
     border-left: 4px solid var(--accent2);
     border-right: 4px solid var(--accent2);
     align-items: center;
+ 
     font-size: 18px;
     color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
+    vertical-align: middle;
 
     
-    height: 22px;
+    height: 32px;
+    
 }
 
 .tickerItemContainer:hover {
@@ -202,6 +206,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
+  
 }
 .tickerTableContainer {
     width: 100%;
@@ -254,8 +259,13 @@
     .tickerTableContent {
      
        
-        height: calc(100vh - 200px);
+        /* height: calc(100vh - 200px);
+        overflow-y: scroll; */
+        height: 100%;
         overflow-y: scroll;
+    
+
+       
     }
 
 }
@@ -272,11 +282,20 @@
         text-transform: uppercase;
     }
 }
+@media (max-width: 1280px) {
+    .tickerTableContent{
+    
+        max-height: 60svh;
+        overflow-y: scroll;
+    }
+}
 
 @media (max-width: 780px) {
     .container {
         margin-bottom: 70px;
+        
     }
+
 }
 
 @media (max-width: 800px) {
@@ -288,4 +307,5 @@
         width: 100%;
         justify-content: flex-start;
     }
+
 }

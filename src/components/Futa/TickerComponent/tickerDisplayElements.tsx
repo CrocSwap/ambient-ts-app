@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useRef } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useParams } from 'react-router-dom';
 import styles from './TickerComponent.module.css';
@@ -176,7 +176,15 @@ export const tickerDisplayElements = (props: PropsIF) => {
               })
             : '...';
 
-    const openBidMarketCapIndex = marketCapMultipliers.findIndex(
+    const maxMarketCapValues = marketCapMultipliers.map((item) => {
+        return item * 0.25;
+    });
+
+    useEffect(() => {
+        console.log({ maxMarketCapValues });
+    }, [maxMarketCapValues.length]);
+
+    const openBidMarketCapIndex = maxMarketCapValues.findIndex(
         (item) => item === auctionStatusData.openBidMarketCap,
     );
 
@@ -324,7 +332,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         setIsMaxDropdownOpen(false);
     };
 
-    const maxFdvData = marketCapMultipliers.slice(openBidMarketCapIndex);
+    const maxFdvData = maxMarketCapValues.slice(openBidMarketCapIndex);
 
     const maxFdvDisplay = (
         <div
