@@ -1,10 +1,12 @@
 import {
     memo,
+    useContext,
     // useContext
 } from 'react';
 
 import SwapComponent from '../Trade/Swap/Swap';
 import styles from './Swap.module.css';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 const arrowDisplay = (
     <div className={styles.arrow_container}>
@@ -13,6 +15,14 @@ const arrowDisplay = (
 );
 
 function Swap() {
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
+
+    if (!isActiveNetworkPlume)
+        return (
+            <div className={styles.swap_page_container}>
+                <SwapComponent />
+            </div>
+        );
     return (
         <div className={styles.swap_page_container}>
             <div className={styles.swap_page_content}>
