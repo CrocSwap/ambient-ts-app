@@ -215,8 +215,8 @@
     color: var(--text2)
 }
 .bidButtonDesktop:hover {
-    background: var(--accent2);
-    border: 1px solid var(--accent2);
+    background: transparent;
+    border: 1px solid var(--accent1);
     color: var(--accent1);
 }
 .create_button_disabled {

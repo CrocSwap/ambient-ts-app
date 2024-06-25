@@ -89,7 +89,9 @@
 .justDisplay {
     cursor: default;
     pointer-events: none;
-    padding-right: 12px;
+    padding-left: 8px;
+    padding-right: 1.5rem;
+    
 }
 @keyframes shadow-pulse {
     0% {
@@ -138,10 +140,11 @@
 
 .futaLayoutRight button {
     background: var(--dark2, #111a1e);
-    padding: 8px;
+   
     outline: none;
     border: none;
-    padding: 8px;
+   
+   
 }
 
 .walletBalanceButton {
