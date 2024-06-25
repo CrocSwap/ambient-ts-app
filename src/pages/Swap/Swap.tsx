@@ -27,7 +27,7 @@ function Swap() {
     return (
         <div className={styles.swap_page_container}>
             <div className={styles.swap_page_content}>
-                <img src={plumeLogo} alt='plume logo' />
+                <img src={plumeLogo} alt='plume logo' width='50px' />
                 <h2>SWAP</h2>
                 <p className={styles.swap_text}>
                     Swap testnet tokens & earn Miles daily
