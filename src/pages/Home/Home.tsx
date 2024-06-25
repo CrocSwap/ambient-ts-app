@@ -43,7 +43,7 @@ export default function Home() {
                 targetChain !== chainData.chainId
             ) {
                 // use web3modal if wallet is connected, otherwise use in-app toggle
-                if (switchNetwork) {
+                if (isUserConnected) {
                     switchNetwork(parseInt(targetChain));
                 } else if (!isUserConnected) {
                     chooseNetwork(supportedNetworks[targetChain]);
@@ -52,7 +52,7 @@ export default function Home() {
                 setSearchParams('');
             }
         }
-    }, [switchNetwork]);
+    }, [isUserConnected]);
 
     const { showPoints, showDexStats } = useContext(BrandContext);
 
