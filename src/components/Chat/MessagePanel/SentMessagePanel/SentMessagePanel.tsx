@@ -560,16 +560,13 @@ function SentMessagePanel(props: SentMessageProps) {
         mentionStr: string,
         mentionedWalletID: string,
     ) {
-        const targetPath =
-            '/' + props.mentionIndex
-                ? 'account'
-                : mentionStr.indexOf('.eth')
-                  ? mentionStr
-                  : mentionedWalletID;
-
-        console.log(`redirecting ${targetPath}`);
-        if (location.pathname != targetPath) {
-            navigate(targetPath);
+        const targetStr = props.mentionIndex
+            ? 'account'
+            : mentionStr.indexOf('.eth') >= 0
+              ? mentionStr.replace('@', '')
+              : mentionedWalletID;
+        if (location.pathname != `/${targetStr}`) {
+            navigate(`/${targetStr}`);
         }
     }
 
