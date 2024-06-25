@@ -6,10 +6,12 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useContext, useMemo } from 'react';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { heroItem } from '../../../assets/branding/types';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function Hero() {
     const smallScreen: boolean = useMediaQuery('(max-width: 1200px)');
     const { hero, platformName } = useContext(BrandContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     // recognized slugs for background image CSS classes
     type cssSlugs = 'purple_waves' | 'stars' | 'clouds';
@@ -22,7 +24,7 @@ export default function Hero() {
             case 'futa':
                 slug = 'stars';
                 break;
-            case 'plumeSepolia':
+            case 'plumeSepolia' || isActiveNetworkPlume:
                 slug = 'clouds';
                 break;
             case 'ambient':
