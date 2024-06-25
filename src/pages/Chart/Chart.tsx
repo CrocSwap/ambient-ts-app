@@ -170,12 +170,10 @@ interface propsIF {
     setChartResetStatus: React.Dispatch<
         React.SetStateAction<{
             isResetChart: boolean;
-            resetDomain: undefined | number[];
         }>
     >;
     chartResetStatus: {
         isResetChart: boolean;
-        resetDomain: undefined | number[];
     };
 }
 
@@ -546,7 +544,10 @@ export default function Chart(props: propsIF) {
 
             return filtered;
         }
-        return unparsedCandleData;
+        return unparsedCandleData.filter(
+            (data: CandleDataChart) =>
+                data.isShowData || !isCondensedModeEnabled,
+        );
     };
 
     const unparsedCandleData = useMemo(() => {
@@ -2569,17 +2570,31 @@ export default function Chart(props: propsIF) {
 
             setChartResetStatus({
                 isResetChart: true,
-                resetDomain: [
-                    centerX - diff * xAxisBuffer,
-                    centerX + diff * (1 - xAxisBuffer),
-                ],
             });
             timeGaps.forEach((obj) => (obj.isAddedPixel = false));
 
-            scaleData?.xScale.domain([
+            const targetValue = Date.now();
+            const targetPixel = scaleData.xScale.range()[1] * (1 - xAxisBuffer);
+
+            const currentRange = scaleData?.xScale.range();
+            const currentDomain = [
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
-            ]);
+            ];
+
+            const newDomainMin =
+                targetValue -
+                ((targetPixel - currentRange[1]) /
+                    (currentRange[0] - currentRange[1])) *
+                    (currentDomain[1] - currentDomain[0]);
+            const newDomainMax =
+                targetValue +
+                ((currentRange[0] - targetPixel) /
+                    (currentRange[0] - currentRange[1])) *
+                    (currentDomain[1] - currentDomain[0]);
+            const domain = [newDomainMin, newDomainMax];
+
+            scaleData?.xScale.domain([domain[0], domain[1]]);
         }
     }
 
@@ -2595,7 +2610,7 @@ export default function Chart(props: propsIF) {
 
             setCandleDomains(candleDomain);
         } else {
-            if (reset && scaleData) {
+            if ((reset || latest) && scaleData) {
                 const lastCandleDataTime =
                     lastCandleData?.time * 1000 - period * 1000;
                 const minDomain = Math.floor(scaleData?.xScale.domain()[0]);
@@ -5915,7 +5930,7 @@ export default function Chart(props: propsIF) {
                     >
                         <CandleChart
                             chartItemStates={props.chartItemStates}
-                            data={visibleCandleData}
+                            data={unparsedCandleData}
                             denomInBase={denomInBase}
                             lastCandleData={lastCandleData}
                             period={period}
