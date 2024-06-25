@@ -508,6 +508,54 @@
             "decimals": 18,
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
             "symbol": "DAI"
+        },
+        {
+            "name": "Native Ether",
+            "address": "0x0000000000000000000000000000000000000000",
+            "symbol": "ETH",
+            "decimals": 18,
+            "chainId": 161221135,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+        },
+        {
+            "name": "USDC",
+            "address": "0xEa237441c92CAe6FC17Caaf9a7acB3f953be4bd1",
+            "symbol": "USDC",
+            "decimals": 6,
+            "chainId": 161221135,
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
+        },
+        {
+            "name": "Tether USD",
+            "address": "0x4632403a83fb736Ab2c76b4C32FAc9F81e2CfcE2",
+            "symbol": "USDT",
+            "decimals": 6,
+            "chainId": 161221135,
+            "logoURI": "https://scroll-tech.github.io/token-list/data/USDT/logo.svg"
+        },
+        {
+            "name": "Dai Stablecoin",
+            "address": "0x1aa70741167155E08bD319bE096C94eE54C6CA19",
+            "symbol": "DAI",
+            "decimals": 18,
+            "chainId": 161221135,
+            "logoURI": "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png"
+        },
+        {
+            "name": "Plume",
+            "address": "0x9C43568e50CaDd2e78942C1d4C66dF3489f65D6a",
+            "symbol": "P",
+            "decimals": 18,
+            "chainId": 161221135,
+            "logoURI": ""
+        },
+        {
+            "name": "Plume USD Stablecoin",
+            "address": "0x29582A0c01EC512Ad25F9B15d28495062007c28b",
+            "symbol": "USD",
+            "decimals": 18,
+            "chainId": 161221135,
+            "logoURI": ""
         }
     ]
 }
