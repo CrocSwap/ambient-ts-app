@@ -211,73 +211,79 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         const nearest = snapForCandle(offsetX, visibleCandleData);
 
-        const high = denomInBase
-            ? nearest?.invMinPriceExclMEVDecimalCorrected
-            : nearest?.minPriceExclMEVDecimalCorrected;
+        if (nearest) {
+            const high = denomInBase
+                ? nearest?.invMinPriceExclMEVDecimalCorrected
+                : nearest?.minPriceExclMEVDecimalCorrected;
 
-        const low = denomInBase
-            ? nearest?.invMaxPriceExclMEVDecimalCorrected
-            : nearest?.maxPriceExclMEVDecimalCorrected;
+            const low = denomInBase
+                ? nearest?.invMaxPriceExclMEVDecimalCorrected
+                : nearest?.maxPriceExclMEVDecimalCorrected;
 
-        const open = denomInBase
-            ? nearest.invPriceOpenExclMEVDecimalCorrected
-            : nearest.priceOpenExclMEVDecimalCorrected;
+            const open = denomInBase
+                ? nearest.invPriceOpenExclMEVDecimalCorrected
+                : nearest.priceOpenExclMEVDecimalCorrected;
 
-        const close = denomInBase
-            ? nearest.invPriceCloseExclMEVDecimalCorrected
-            : nearest.priceCloseExclMEVDecimalCorrected;
+            const close = denomInBase
+                ? nearest.invPriceCloseExclMEVDecimalCorrected
+                : nearest.priceCloseExclMEVDecimalCorrected;
 
-        const highToCoordinat = scaleData.yScale(high);
-        const lowToCoordinat = scaleData.yScale(low);
-        const openToCoordinat = scaleData.yScale(open);
-        const closeToCoordinat = scaleData.yScale(close);
+            const highToCoordinat = scaleData.yScale(high);
+            const lowToCoordinat = scaleData.yScale(low);
+            const openToCoordinat = scaleData.yScale(open);
+            const closeToCoordinat = scaleData.yScale(close);
 
-        const highDiff = Math.abs(offsetY - highToCoordinat);
-        const lowDiff = Math.abs(offsetY - lowToCoordinat);
-        const openDiff = Math.abs(offsetY - openToCoordinat);
-        const closeDiff = Math.abs(offsetY - closeToCoordinat);
+            const highDiff = Math.abs(offsetY - highToCoordinat);
+            const lowDiff = Math.abs(offsetY - lowToCoordinat);
+            const openDiff = Math.abs(offsetY - openToCoordinat);
+            const closeDiff = Math.abs(offsetY - closeToCoordinat);
 
-        if (
-            isMagnetActive.value &&
-            (highDiff <= 100 ||
-                lowDiff <= 100 ||
-                openDiff <= 100 ||
-                closeDiff <= 100)
-        ) {
-            const minDiffForYValue = Math.min(
-                openDiff,
-                closeDiff,
-                lowDiff,
-                highDiff,
-            );
+            if (
+                isMagnetActive.value &&
+                (highDiff <= 100 ||
+                    lowDiff <= 100 ||
+                    openDiff <= 100 ||
+                    closeDiff <= 100)
+            ) {
+                const minDiffForYValue = Math.min(
+                    openDiff,
+                    closeDiff,
+                    lowDiff,
+                    highDiff,
+                );
 
-            switch (minDiffForYValue) {
-                case highDiff:
-                    valueY = high;
-                    break;
+                switch (minDiffForYValue) {
+                    case highDiff:
+                        valueY = high;
+                        break;
 
-                case lowDiff:
-                    valueY = low;
-                    break;
-                case openDiff:
-                    valueY = open;
-                    break;
+                    case lowDiff:
+                        valueY = low;
+                        break;
+                    case openDiff:
+                        valueY = open;
+                        break;
 
-                case closeDiff:
-                    valueY = close;
-                    break;
+                    case closeDiff:
+                        valueY = close;
+                        break;
+                }
             }
         }
 
-        let valueX = nearest.time * 1000;
         const snappedTime = findSnapTime(
             scaleData?.xScale.invert(offsetX),
-            nearest.period,
+            period,
         );
+
+        let valueX = snappedTime;
+
         const checkVisibleCandle = visibleCandleData.length === 0;
+
         const lastDateLocation = checkVisibleCandle
             ? 0
             : scaleData.xScale(visibleCandleData[0].time * 1000);
+
         const firstDateLocation = checkVisibleCandle
             ? 0
             : scaleData.xScale(
@@ -288,10 +294,8 @@ function DrawCanvas(props: DrawCanvasProps) {
             offsetX < firstDateLocation ||
             checkVisibleCandle
         ) {
-            valueX = snappedTime;
+            valueX = scaleData?.xScale.invert(offsetX);
             valueY = scaleData?.yScale.invert(offsetY);
-        } else {
-            valueX = nearest.time * 1000;
         }
 
         return { valueX: valueX, valueY: valueY, nearest: nearest };
@@ -502,12 +506,12 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
-                const { valueX, valueY, nearest } = getXandYvalueOfDrawnShape(
+                const { valueX, valueY } = getXandYvalueOfDrawnShape(
                     offsetX,
                     offsetY,
                 );
 
-                setCrossHairDataFunc(nearest, offsetX, offsetY);
+                setCrossHairDataFunc(valueX / 1000, offsetX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 
@@ -866,11 +870,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                             scaleData.yScale(firstPointYAxisData) < 0
                                 ? infoLabelYAxisData
                                 : scaleData.yScale(firstPointYAxisData) < 463
-                                ? infoLabelYAxisData + infoLabelHeight >
-                                  canvasRect.height
-                                    ? canvasRect.height - infoLabelHeight - 5
-                                    : Math.max(infoLabelYAxisData, 5)
-                                : infoLabelYAxisData;
+                                  ? infoLabelYAxisData + infoLabelHeight >
+                                    canvasRect.height
+                                      ? canvasRect.height - infoLabelHeight - 5
+                                      : Math.max(infoLabelYAxisData, 5)
+                                  : infoLabelYAxisData;
 
                         if (ctx) {
                             const arrowArray = createArrowPointsOfDPRangeLine(
@@ -1136,11 +1140,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     localDrawSettings.labelPlacement === 'Left'
                                         ? scaleData.xScale.domain()[0]
                                         : localDrawSettings.extendRight
-                                        ? scaleData.xScale.domain()[1]
-                                        : Math.max(
-                                              lineData[0].x,
-                                              lineData[1].x,
-                                          );
+                                          ? scaleData.xScale.domain()[1]
+                                          : Math.max(
+                                                lineData[0].x,
+                                                lineData[1].x,
+                                            );
                             } else if (localDrawSettings.extendRight) {
                                 location =
                                     localDrawSettings.labelPlacement === 'Left'
@@ -1172,9 +1176,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     'top'
                                         ? 5
                                         : localDrawSettings.labelAlignment.toLowerCase() ===
-                                          'bottom'
-                                        ? -5
-                                        : 0),
+                                            'bottom'
+                                          ? -5
+                                          : 0),
                             );
                         }
                     });
