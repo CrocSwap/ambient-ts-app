@@ -102,7 +102,13 @@ export default function VolumeBarCanvas(props: propsIF) {
                 },
             );
         }
-    }, [barSeries, selectedDate, visibleDateForCandle, chartThemeColors]);
+    }, [
+        barSeries,
+        selectedDate,
+        visibleDateForCandle,
+        chartThemeColors,
+        denomInBase,
+    ]);
 
     useEffect(() => {
         if (showVolume) {
