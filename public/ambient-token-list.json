@@ -99,6 +99,14 @@
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
+            "name": "Blast",
+            "address": "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad",
+            "symbol": "BLAST",
+            "decimals": 18,
+            "chainId": 81457,
+            "logoURI": ""
+        },
+        {
             "name": "USD+",
             "address": "0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd",
             "symbol": "USD+",
