@@ -6109,6 +6109,10 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 setIsDragActive={setIsDragActive}
                                 period={period}
+                                setContextmenu={setContextmenu}
+                                setContextMenuPlacement={
+                                    setContextMenuPlacement
+                                }
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />

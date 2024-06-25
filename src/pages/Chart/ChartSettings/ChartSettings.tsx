@@ -1,4 +1,4 @@
-import { MouseEvent, useContext, useRef, useState } from 'react';
+import { MouseEvent, useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
     ActionButtonContainer,
@@ -100,6 +100,15 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
+
+    useEffect(() => {
+        d3.select(contextMenuRef.current).on(
+            'contextmenu',
+            (event: PointerEvent) => {
+                event.preventDefault();
+            },
+        );
+    }, []);
 
     const handleCandleColorPicker = (
         replaceSelector: string,
@@ -206,7 +215,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
         const applyTimeOut = setTimeout(() => {
             setApplyDefault(false);
-        }, 2000);
+        }, 1000);
         return () => {
             clearTimeout(applyTimeOut);
         };
@@ -278,7 +287,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
         const savedTimeOut = setTimeout(() => {
             setIsSaving(false);
-        }, 2000);
+        }, 1000);
         return () => {
             clearTimeout(savedTimeOut);
         };
@@ -318,7 +327,7 @@ export default function ChartSettings(props: ContextMenuIF) {
         {
             checked: isCondensedModeEnabled,
             action: setIsCondensedModeEnabled,
-            selection: 'Show empty candles',
+            selection: 'Hide empty candles',
         },
     ];
 
