@@ -14,6 +14,7 @@ import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
@@ -41,7 +42,7 @@ function TradeModuleHeader(props: propsIF) {
     // TODO:    refactor this file to have only a single top-level return and remove
     // TODO:    ... the `<div>` wrapper around the `TradeModuleHeaderContainer` element
 
-    const yes = true;
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     return (
         <>
@@ -54,7 +55,7 @@ function TradeModuleHeader(props: propsIF) {
                     fontSize='header1'
                     color='text2'
                 >
-                    {yes ? (
+                    {isActiveNetworkPlume ? (
                         <p
                             style={{
                                 color: 'var(--text2)',
@@ -73,7 +74,7 @@ function TradeModuleHeader(props: propsIF) {
                             aria-label='Share button'
                         />
                     )}
-                    {!yes && (
+                    {!isActiveNetworkPlume && (
                         <>
                             {isSwapPage ? (
                                 <Text
