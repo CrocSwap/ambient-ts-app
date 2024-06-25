@@ -7,6 +7,8 @@ import {
     mockAuctionStatus1,
     mockAuctionStatus2,
     mockAuctionStatus3,
+    mockAuctionStatus4,
+    mockAuctionStatus5,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
 
@@ -32,7 +34,9 @@ export interface AuctionDataIF {
     createdAt: number;
     auctionLength: number;
     status?: null;
-    unclaimedAllocation?: number;
+    currentUserBid?: number;
+    unclaimedTokenAllocation?: number;
+    unclaimedEthAllocation?: number;
 }
 
 export interface AuctionsDataIF {
@@ -135,10 +139,26 @@ export const AuctionsContextProvider = (props: {
     };
 
     const fetchAuctionStatusData = async (ticker: string) => {
-        if (ticker === 'APU' || ticker === 'DEGEN') {
+        if (
+            ticker.toLowerCase().includes('apu') ||
+            ticker.toLowerCase().includes('degen')
+        ) {
             return mockAuctionStatus1;
-        } else if (ticker === 'USA' || ticker === 'DOGE') {
+        } else if (
+            ticker.toLowerCase().includes('usa') ||
+            ticker.toLowerCase().includes('ben')
+        ) {
             return mockAuctionStatus2;
+        } else if (
+            ticker.toLowerCase().includes('lockin') ||
+            ticker.toLowerCase().includes('emily')
+        ) {
+            return mockAuctionStatus4;
+        } else if (
+            ticker.toLowerCase().includes('junior') ||
+            ticker.toLowerCase().includes('trump')
+        ) {
+            return mockAuctionStatus5;
         } else {
             return mockAuctionStatus3;
         }
