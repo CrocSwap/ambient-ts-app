@@ -107,26 +107,34 @@ interface ChartContextIF {
 }
 
 export interface ChartThemeIF {
-    lightFillColor: d3.RGBColor | d3.HSLColor | null;
-    darkFillColor: d3.RGBColor | d3.HSLColor | null;
+    // candle color
+    upCandleBodyColor: d3.RGBColor | d3.HSLColor | null;
+    downCandleBodyColor: d3.RGBColor | d3.HSLColor | null;
+    upCandleBorderColor: d3.RGBColor | d3.HSLColor | null;
+    downCandleBorderColor: d3.RGBColor | d3.HSLColor | null;
+
     selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
-    // border
-    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
-    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
+
+    // liq Color
     liqAskColor: d3.RGBColor | d3.HSLColor | null;
     liqBidColor: d3.RGBColor | d3.HSLColor | null;
+
+    // drawing color
+    drawngShapeDefaultColor: d3.RGBColor | d3.HSLColor | null;
+
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
     textColor: string;
+
     [key: string]: d3.RGBColor | d3.HSLColor | string | null;
 }
 
 export interface LocalChartSettingsIF {
     chartColors: {
-        lightFillColor: string;
-        darkFillColor: string;
+        upCandleBodyColor: string;
+        downCandleBodyColor: string;
         selectedDateFillColor: string;
-        lightStrokeColor: string;
-        darkStrokeColor: string;
+        upCandleBorderColor: string;
+        downCandleBorderColor: string;
         liqAskColor: string;
         liqBidColor: string;
         selectedDateStrokeColor: string;
@@ -214,11 +222,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [defaultChartSettings] = useState<LocalChartSettingsIF>({
         chartColors: {
-            lightFillColor: '--accent5',
-            darkFillColor: '--dark2',
+            upCandleBodyColor: '--accent5',
+            downCandleBodyColor: '--dark2',
             selectedDateFillColor: '--accent2',
-            lightStrokeColor: '--accent5',
-            darkStrokeColor: '--accent1',
+            upCandleBorderColor: '--accent5',
+            downCandleBorderColor: '--accent1',
             liqAskColor: '--accent5',
             liqBidColor: '--accent1',
             selectedDateStrokeColor: '--accent2',
@@ -288,8 +296,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         chartHeights.current === chartHeights.min
             ? 'Expanded'
             : chartHeights.current === chartHeights.max
-            ? 'Collapsed'
-            : undefined;
+              ? 'Collapsed'
+              : undefined;
 
     const isChartEnabled =
         !!import.meta.env.VITE_CHART_IS_ENABLED &&
@@ -405,26 +413,26 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 ? parsedContextData.chartColors
                 : undefined;
 
-        const lightFillColor =
-            contextChartColors && contextChartColors.lightFillColor
-                ? d3.color(contextChartColors.lightFillColor)
+        const upCandleBodyColor =
+            contextChartColors && contextChartColors.upCandleBodyColor
+                ? d3.color(contextChartColors.upCandleBodyColor)
                 : getCssVariable(skin, '--accent5');
-        const darkFillColor =
-            contextChartColors && contextChartColors.darkFillColor
-                ? d3.color(contextChartColors.darkFillColor)
+        const downCandleBodyColor =
+            contextChartColors && contextChartColors.downCandleBodyColor
+                ? d3.color(contextChartColors.downCandleBodyColor)
                 : getCssVariable(skin, '--dark2');
         const selectedDateFillColor =
             contextChartColors && contextChartColors.selectedDateFillColor
                 ? d3.color(contextChartColors.selectedDateFillColor)
                 : getCssVariable(skin, '--accent2');
 
-        const darkStrokeColor =
-            contextChartColors && contextChartColors.darkStrokeColor
-                ? d3.color(contextChartColors.darkStrokeColor)
+        const downCandleBorderColor =
+            contextChartColors && contextChartColors.downCandleBorderColor
+                ? d3.color(contextChartColors.downCandleBorderColor)
                 : getCssVariable(skin, '--accent1');
-        const lightStrokeColor =
-            contextChartColors && contextChartColors.lightStrokeColor
-                ? d3.color(contextChartColors.lightStrokeColor)
+        const upCandleBorderColor =
+            contextChartColors && contextChartColors.upCandleBorderColor
+                ? d3.color(contextChartColors.upCandleBorderColor)
                 : getCssVariable(skin, '--accent5');
 
         const liqAskColor =
@@ -441,13 +449,20 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 ? d3.color(contextChartColors.selectedDateStrokeColor)
                 : getCssVariable(skin, '--accent2');
 
+        const drawngShapeDefaultColor =
+            contextChartColors && contextChartColors.drawngShapeDefaultColor
+                ? d3.color(contextChartColors.drawngShapeDefaultColor)
+                : getCssVariable(skin, '--accent1');
+
         const chartThemeColors = {
-            lightFillColor: lightFillColor,
-            darkFillColor: darkFillColor,
+            upCandleBodyColor: upCandleBodyColor,
+            downCandleBodyColor: downCandleBodyColor,
+            upCandleBorderColor: upCandleBorderColor,
+            downCandleBorderColor: downCandleBorderColor,
+
+            drawngShapeDefaultColor: drawngShapeDefaultColor,
+
             selectedDateFillColor: selectedDateFillColor,
-            // border
-            lightStrokeColor: lightStrokeColor,
-            darkStrokeColor: darkStrokeColor,
             liqAskColor: liqAskColor,
             liqBidColor: liqBidColor,
             selectedDateStrokeColor: selectedDateStrokeColor,

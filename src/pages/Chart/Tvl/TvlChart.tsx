@@ -282,8 +282,9 @@ function TvlChart(props: TvlData) {
                 );
 
                 const d3TvlGradientStart =
-                    chartThemeColors.darkStrokeColor?.copy();
-                const d3TvlGradient = chartThemeColors.darkStrokeColor?.copy();
+                    chartThemeColors.downCandleBorderColor?.copy();
+                const d3TvlGradient =
+                    chartThemeColors.downCandleBorderColor?.copy();
 
                 if (d3TvlGradientStart) d3TvlGradientStart.opacity = 0;
                 if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
@@ -348,7 +349,8 @@ function TvlChart(props: TvlData) {
                 return areaSeries;
             });
 
-            const d3TvlGradient = chartThemeColors.darkStrokeColor?.copy();
+            const d3TvlGradient =
+                chartThemeColors.downCandleBorderColor?.copy();
 
             if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
 

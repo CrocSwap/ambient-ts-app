@@ -363,17 +363,20 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        if (chartThemeColors && chartThemeColors.darkStrokeColor !== null) {
+        if (
+            chartThemeColors &&
+            chartThemeColors.downCandleBorderColor !== null
+        ) {
             setLineSellColor((prev) => {
-                if (chartThemeColors.darkStrokeColor)
-                    return chartThemeColors.darkStrokeColor.toString();
+                if (chartThemeColors.downCandleBorderColor)
+                    return chartThemeColors.downCandleBorderColor.toString();
 
                 return prev;
             });
 
             setLineBuyColor((prev) => {
-                if (chartThemeColors.lightFillColor)
-                    return chartThemeColors.lightFillColor.toString();
+                if (chartThemeColors.upCandleBodyColor)
+                    return chartThemeColors.upCandleBodyColor.toString();
 
                 return prev;
             });

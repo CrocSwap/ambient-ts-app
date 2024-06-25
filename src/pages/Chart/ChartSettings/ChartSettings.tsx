@@ -166,13 +166,16 @@ export default function ChartSettings(props: ContextMenuIF) {
             chartSettings.isTradeDollarizationEnabled,
         );
 
-        const lightFillColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.lightFillColor)
-            : d3.color(chartSettings.chartColors.lightFillColor);
+        const upCandleBodyColor = isDefault
+            ? getCssVariable(skin, chartSettings.chartColors.upCandleBodyColor)
+            : d3.color(chartSettings.chartColors.upCandleBodyColor);
 
-        const darkFillColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.darkFillColor)
-            : d3.color(chartSettings.chartColors.darkFillColor);
+        const downCandleBodyColor = isDefault
+            ? getCssVariable(
+                  skin,
+                  chartSettings.chartColors.downCandleBodyColor,
+              )
+            : d3.color(chartSettings.chartColors.downCandleBodyColor);
 
         const selectedDateFillColor = isDefault
             ? getCssVariable(
@@ -181,13 +184,19 @@ export default function ChartSettings(props: ContextMenuIF) {
               )
             : d3.color(chartSettings.chartColors.selectedDateFillColor);
 
-        const darkStrokeColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.darkStrokeColor)
-            : d3.color(chartSettings.chartColors.darkStrokeColor);
+        const downCandleBorderColor = isDefault
+            ? getCssVariable(
+                  skin,
+                  chartSettings.chartColors.downCandleBorderColor,
+              )
+            : d3.color(chartSettings.chartColors.downCandleBorderColor);
 
-        const lightStrokeColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.lightStrokeColor)
-            : d3.color(chartSettings.chartColors.lightStrokeColor);
+        const upCandleBorderColor = isDefault
+            ? getCssVariable(
+                  skin,
+                  chartSettings.chartColors.upCandleBorderColor,
+              )
+            : d3.color(chartSettings.chartColors.upCandleBorderColor);
 
         const liqAskColor = isDefault
             ? getCssVariable(skin, chartSettings.chartColors.liqAskColor)
@@ -204,11 +213,11 @@ export default function ChartSettings(props: ContextMenuIF) {
               )
             : d3.color(chartSettings.chartColors.selectedDateStrokeColor);
 
-        chartThemeColors.lightFillColor = lightFillColor;
-        chartThemeColors.darkFillColor = darkFillColor;
+        chartThemeColors.upCandleBodyColor = upCandleBodyColor;
+        chartThemeColors.downCandleBodyColor = downCandleBodyColor;
         chartThemeColors.selectedDateFillColor = selectedDateFillColor;
-        chartThemeColors.lightStrokeColor = lightStrokeColor;
-        chartThemeColors.darkStrokeColor = darkStrokeColor;
+        chartThemeColors.upCandleBorderColor = upCandleBorderColor;
+        chartThemeColors.downCandleBorderColor = downCandleBorderColor;
         chartThemeColors.liqAskColor = liqAskColor;
         chartThemeColors.liqBidColor = liqBidColor;
         chartThemeColors.selectedDateStrokeColor = selectedDateStrokeColor;
@@ -243,20 +252,20 @@ export default function ChartSettings(props: ContextMenuIF) {
         setIsSaving(true);
         const localSettings = {
             chartColors: {
-                lightFillColor: chartThemeColors.lightFillColor
-                    ? chartThemeColors.lightFillColor.toString()
+                upCandleBodyColor: chartThemeColors.upCandleBodyColor
+                    ? chartThemeColors.upCandleBodyColor.toString()
                     : '--accent5',
-                darkFillColor: chartThemeColors.darkFillColor
-                    ? chartThemeColors.darkFillColor.toString()
+                downCandleBodyColor: chartThemeColors.downCandleBodyColor
+                    ? chartThemeColors.downCandleBodyColor.toString()
                     : '--dark2',
                 selectedDateFillColor: chartThemeColors.selectedDateFillColor
                     ? chartThemeColors.selectedDateFillColor.toString()
                     : '--accent2',
-                lightStrokeColor: chartThemeColors.lightStrokeColor
-                    ? chartThemeColors.lightStrokeColor.toString()
+                upCandleBorderColor: chartThemeColors.upCandleBorderColor
+                    ? chartThemeColors.upCandleBorderColor.toString()
                     : '--accent5',
-                darkStrokeColor: chartThemeColors.darkStrokeColor
-                    ? chartThemeColors.darkStrokeColor.toString()
+                downCandleBorderColor: chartThemeColors.downCandleBorderColor
+                    ? chartThemeColors.downCandleBorderColor.toString()
                     : '--accent1',
                 liqAskColor: chartThemeColors.liqAskColor
                     ? chartThemeColors.liqAskColor.toString()
@@ -344,15 +353,15 @@ export default function ChartSettings(props: ContextMenuIF) {
             selection: 'Candle Body',
             actionHandler: 'body',
             action: handleCandleColorPicker,
-            upColor: 'lightFillColor',
-            downColor: 'darkFillColor',
+            upColor: 'upCandleBodyColor',
+            downColor: 'downCandleBodyColor',
         },
         {
             selection: 'Candle Borders',
             actionHandler: 'border',
             action: handleCandleColorPicker,
-            upColor: 'lightStrokeColor',
-            downColor: 'darkStrokeColor',
+            upColor: 'upCandleBorderColor',
+            downColor: 'downCandleBorderColor',
         },
         {
             selection: 'Liquidity Area',

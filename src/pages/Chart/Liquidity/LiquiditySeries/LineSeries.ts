@@ -86,14 +86,14 @@ export function createLiquidityLineSeries(
             context.lineWidth = 1.5;
             if (liqType === 'bid') {
                 context.strokeStyle =
-                    chartThemeColors && chartThemeColors.darkStrokeColor
-                        ? chartThemeColors.darkStrokeColor.toString()
+                    chartThemeColors && chartThemeColors.downCandleBorderColor
+                        ? chartThemeColors.downCandleBorderColor.toString()
                         : lineSellColor;
             }
             if (liqType === 'ask') {
                 context.strokeStyle =
-                    chartThemeColors && chartThemeColors.lightStrokeColor
-                        ? chartThemeColors.lightStrokeColor.toString()
+                    chartThemeColors && chartThemeColors.upCandleBorderColor
+                        ? chartThemeColors.upCandleBorderColor.toString()
                         : lineBuyColor;
             }
         });
