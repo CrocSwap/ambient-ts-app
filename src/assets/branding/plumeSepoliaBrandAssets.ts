@@ -6,7 +6,7 @@ export const plumeSepoliaBrandAssets: brandIF = {
     networks: {
         // plume sepolia
         '0x99c0a0f': {
-            color: 'sepolia_light',
+            color: 'plume_light',
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },

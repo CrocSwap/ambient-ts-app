@@ -11,6 +11,7 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     fieldId: string;
@@ -20,7 +21,8 @@ interface propsIF {
 export default function TradeNowButton(props: propsIF) {
     const { fieldId, inNav } = props;
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const isSepolia = import.meta.env.VITE_BRAND_ASSET_SET === 'plumeSepolia';
+
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
@@ -36,7 +38,7 @@ export default function TradeNowButton(props: propsIF) {
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
-            isSepolia={isSepolia}
+            isPlume={isActiveNetworkPlume}
         >
             <FlexContainer
                 fullHeight
@@ -45,7 +47,7 @@ export default function TradeNowButton(props: propsIF) {
                 alignItems='center'
                 rounded
                 style={{
-                    background: isSepolia ? 'accent1' : 'dark2',
+                    background: isActiveNetworkPlume ? 'accent1' : 'dark2',
                     color: 'var(--text1)',
                 }}
             >
@@ -53,7 +55,7 @@ export default function TradeNowButton(props: propsIF) {
                     fontWeight='300'
                     font='font-logo'
                     fontSize='header2'
-                    color={isSepolia ? 'text1' : 'accent1'}
+                    color={isActiveNetworkPlume ? 'text1' : 'accent1'}
                     inNav={inNav}
                 >
                     Trade Now

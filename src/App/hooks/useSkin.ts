@@ -12,7 +12,7 @@ export type skins =
     | 'purple_dark'
     | 'purple_light'
     | 'orange_dark'
-    | 'sepolia_light';
+    | 'plume_light';
 
 // export interface skinMethodsIF {
 //     active: skins;

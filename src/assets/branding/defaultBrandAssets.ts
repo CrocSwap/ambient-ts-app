@@ -36,7 +36,7 @@ export const defaultBrandAssets: brandIF = {
         },
         // plume sepolia
         '0x99c0a0f': {
-            color: 'purple_dark',
+            color: 'plume_light',
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
