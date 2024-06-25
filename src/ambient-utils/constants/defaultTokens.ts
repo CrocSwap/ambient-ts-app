@@ -109,7 +109,7 @@ export const mainnetWstETH: TokenIF = {
     address: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
     chainId: 1,
     decimals: 18,
-    logoURI: '',
+    logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
     name: 'Wrapped liquid staked Ether 2.0',
     symbol: 'wstETH',
 };
@@ -118,7 +118,7 @@ export const mainnetMATIC: TokenIF = {
     address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
     chainId: 1,
     decimals: 18,
-    logoURI: '',
+    logoURI: 'https://assets.coingecko.com/coins/images/4713/thumb/polygon.png',
     name: 'Matic Token',
     symbol: 'MATIC',
 };
