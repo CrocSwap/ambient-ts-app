@@ -1,6 +1,7 @@
 import { brandIF } from './types';
 import large from '../images/logos/large.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
+import plumeLogo from '../../assets/images/logos/plume_brand_logo.svg';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const defaultBrandAssets: brandIF = {
@@ -39,7 +40,7 @@ export const defaultBrandAssets: brandIF = {
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
+                { content: plumeLogo, processAs: 'image' },
             ],
         },
         // blast mainnet
