@@ -381,9 +381,10 @@ function XAxisCanvas(props: xAxisIF) {
 
                     const style = getComputedStyle(canvas);
 
-                    const darkFillColor = style.getPropertyValue('--accent1');
+                    const downCandleBodyColor =
+                        style.getPropertyValue('--accent1');
 
-                    const d3LightFillColor = d3.color(darkFillColor);
+                    const d3LightFillColor = d3.color(downCandleBodyColor);
 
                     if (d3LightFillColor) d3LightFillColor.opacity = 0.075;
 
@@ -421,8 +422,8 @@ function XAxisCanvas(props: xAxisIF) {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = darkFillColor
-                                    ? darkFillColor
+                                context.fillStyle = downCandleBodyColor
+                                    ? downCandleBodyColor
                                     : 'rgba(115, 113, 252, 1)';
 
                                 context.fillRect(

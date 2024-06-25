@@ -123,6 +123,8 @@ import {
     pinTickToTickUpper,
 } from '../../ambient-utils/dataLayer/functions/pinTick';
 import { filterCandleWithTransaction } from './ChartUtils/discontinuityScaleUtils';
+import ChartSettings from './ChartSettings/ChartSettings';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -234,6 +236,10 @@ export default function Chart(props: propsIF) {
         isMagnetActiveLocal,
         setChartContainerOptions,
         chartThemeColors,
+        setChartThemeColors,
+        defaultChartSettings,
+        localChartSettings,
+        setLocalChartSettings,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -242,6 +248,7 @@ export default function Chart(props: propsIF) {
         setCandleScale,
         timeOfEndCandle,
         isCondensedModeEnabled,
+        setIsCondensedModeEnabled,
         setCandleData,
     } = useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
@@ -301,6 +308,15 @@ export default function Chart(props: propsIF) {
     const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
 
+    const [contextmenu, setContextmenu] = useState(false);
+    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
+
+    const [contextMenuPlacement, setContextMenuPlacement] = useState<{
+        top: number;
+        left: number;
+        isReversed: boolean;
+    }>();
+
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -345,17 +361,20 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
-        if (chartThemeColors && chartThemeColors.darkStrokeColor !== null) {
+        if (
+            chartThemeColors &&
+            chartThemeColors.downCandleBorderColor !== null
+        ) {
             setLineSellColor((prev) => {
-                if (chartThemeColors.darkStrokeColor)
-                    return chartThemeColors.darkStrokeColor.toString();
+                if (chartThemeColors.downCandleBorderColor)
+                    return chartThemeColors.downCandleBorderColor.toString();
 
                 return prev;
             });
 
             setLineBuyColor((prev) => {
-                if (chartThemeColors.lightFillColor)
-                    return chartThemeColors.lightFillColor.toString();
+                if (chartThemeColors.upCandleBodyColor)
+                    return chartThemeColors.upCandleBodyColor.toString();
 
                 return prev;
             });
@@ -443,6 +462,12 @@ export default function Chart(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
+
+    const clickOutsideChartHandler = () => {
+        setContextmenu(false);
+    };
+
+    useOnClickOutside(d3Container, clickOutsideChartHandler);
 
     const isShowLatestCandle = useMemo(() => {
         return checkShowLatestCandle(period, scaleData?.xScale);
@@ -1243,6 +1268,7 @@ export default function Chart(props: propsIF) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
                         setIsChartZoom(true);
+                        setContextmenu(false);
 
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
@@ -4589,6 +4615,8 @@ export default function Chart(props: propsIF) {
                 const offsetX = event.offsetX;
                 const offsetY = event.offsetY;
 
+                setContextmenu(false);
+
                 let isOrderHistorySelected = undefined;
                 if (showSwap) {
                     isOrderHistorySelected = orderHistoryHoverStatus(
@@ -4651,6 +4679,29 @@ export default function Chart(props: propsIF) {
                 'click',
                 (event: PointerEvent) => {
                     onClickCanvas(event);
+                },
+            );
+
+            d3.select(d3CanvasMain.current).on(
+                'contextmenu',
+                (event: PointerEvent) => {
+                    if (!event.shiftKey) {
+                        event.preventDefault();
+
+                        const screenHeight = window.innerHeight;
+
+                        const diff = screenHeight - event.clientY;
+
+                        setContextMenuPlacement({
+                            top: event.clientY,
+                            left: event.clientX,
+                            isReversed: diff < 350,
+                        });
+
+                        setContextmenu(true);
+                    } else {
+                        setContextmenu(false);
+                    }
                 },
             );
 
@@ -5972,6 +6023,9 @@ export default function Chart(props: propsIF) {
                                 }
                                 setLiqMaxActiveLiq={setLiqMaxActiveLiq}
                                 chartThemeColors={chartThemeColors}
+                                render={render}
+                                colorChangeTrigger={colorChangeTrigger}
+                                setColorChangeTrigger={setColorChangeTrigger}
                             />
                         )}
 
@@ -6073,6 +6127,10 @@ export default function Chart(props: propsIF) {
                                 firstCandleData={firstCandleData}
                                 setIsDragActive={setIsDragActive}
                                 period={period}
+                                setContextmenu={setContextmenu}
+                                setContextMenuPlacement={
+                                    setContextMenuPlacement
+                                }
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
@@ -6109,6 +6167,12 @@ export default function Chart(props: propsIF) {
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
                                 chartThemeColors={chartThemeColors}
+                                colorChangeTrigger={colorChangeTrigger}
+                                setColorChangeTrigger={setColorChangeTrigger}
+                                setContextmenu={setContextmenu}
+                                setContextMenuPlacement={
+                                    setContextMenuPlacement
+                                }
                             />
                         </>
                     )}
@@ -6145,6 +6209,12 @@ export default function Chart(props: propsIF) {
                                 isToolbarOpen={isToolbarOpen}
                                 toolbarWidth={toolbarWidth}
                                 chartThemeColors={chartThemeColors}
+                                colorChangeTrigger={colorChangeTrigger}
+                                setColorChangeTrigger={setColorChangeTrigger}
+                                setContextmenu={setContextmenu}
+                                setContextMenuPlacement={
+                                    setContextMenuPlacement
+                                }
                             />
                         </>
                     )}
@@ -6270,6 +6340,23 @@ export default function Chart(props: propsIF) {
                         setHoverOHTooltip={setHoverOHTooltip}
                     />
                 )}
+
+            {contextmenu && contextMenuPlacement && chartThemeColors && (
+                <ChartSettings
+                    contextMenuPlacement={contextMenuPlacement}
+                    setContextmenu={setContextmenu}
+                    chartItemStates={props.chartItemStates}
+                    chartThemeColors={chartThemeColors}
+                    setChartThemeColors={setChartThemeColors}
+                    defaultChartSettings={defaultChartSettings}
+                    localChartSettings={localChartSettings}
+                    setLocalChartSettings={setLocalChartSettings}
+                    render={render}
+                    setColorChangeTrigger={setColorChangeTrigger}
+                    isCondensedModeEnabled={isCondensedModeEnabled}
+                    setIsCondensedModeEnabled={setIsCondensedModeEnabled}
+                />
+            )}
         </div>
     );
 }

@@ -96,7 +96,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 interactive
                 title={
                     isTradeDollarizationEnabled
-                        ? `Switch to prices in ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}`
+                        ? `Switch to prices in ${
+                              isDenomBase ? quoteTokenSymbol : baseTokenSymbol
+                          }`
                         : 'Switch to prices in USD'
                 }
                 enterDelay={500}

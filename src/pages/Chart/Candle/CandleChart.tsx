@@ -7,7 +7,10 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
-import { diffHashSigScaleData } from '../../../ambient-utils/dataLayer';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../ambient-utils/dataLayer';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../ambient-utils/types';
@@ -97,7 +100,7 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
-    }, [diffHashSigScaleData(scaleData)]);
+    }, [diffHashSigScaleData(scaleData), diffHashSig(chartThemeColors)]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -147,11 +150,11 @@ export default function CandleChart(props: candlePropsIF) {
 
                     const crocColor =
                         close > open
-                            ? chartThemeColors.lightFillColor
-                                ? chartThemeColors.lightFillColor.toString()
+                            ? chartThemeColors.upCandleBodyColor
+                                ? chartThemeColors.upCandleBodyColor.toString()
                                 : crocCandleLightColor
-                            : chartThemeColors.darkFillColor
-                              ? chartThemeColors.darkFillColor.toString()
+                            : chartThemeColors.downCandleBodyColor
+                              ? chartThemeColors.downCandleBodyColor.toString()
                               : crocCandleDarkColor;
 
                     const uniswapColor =
@@ -161,11 +164,11 @@ export default function CandleChart(props: candlePropsIF) {
 
                     const crocBorderColor =
                         close > open
-                            ? chartThemeColors.lightStrokeColor
-                                ? chartThemeColors.lightStrokeColor.toString()
+                            ? chartThemeColors.upCandleBorderColor
+                                ? chartThemeColors.upCandleBorderColor.toString()
                                 : crocCandleBorderLightColor
-                            : chartThemeColors.darkStrokeColor
-                              ? chartThemeColors.darkStrokeColor.toString()
+                            : chartThemeColors.downCandleBorderColor
+                              ? chartThemeColors.downCandleBorderColor.toString()
                               : crocCandleBorderDarkColor;
 
                     const uniswapBorderColor =
