@@ -55,14 +55,14 @@ export const HeroContainer = styled(FlexContainer)`
 interface ButtonProps {
     inNav?: boolean;
     mobileVersion?: boolean;
-    isSepolia?: boolean;
+    isPlume?: boolean;
 }
 export const StyledLink = styled(Link)<ButtonProps>`
     width: 100%;
     z-index: 1;
     border-radius: var(--border-radius);
     background: ${(props) =>
-        props.isSepolia ? 'var(--accent1)' : 'var(--title-gradient)'};
+        props.isPlume ? 'var(--accent1)' : 'var(--title-gradient)'};
     max-width: 16rem;
     max-height: 3rem;
     padding: 1px;
@@ -77,9 +77,9 @@ export const StyledLink = styled(Link)<ButtonProps>`
     text-decoration: none;
     border-radius: var(--border-radius);
 
-    border: ${(props) => (props.isSepolia ? '3px solid #000' : 'none')};
+    border: ${(props) => (props.isPlume ? '3px solid #000' : 'none')};
     box-shadow: ${(props) =>
-        props.isSepolia
+        props.isPlume
             ? 'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 6px 5px #000'
             : 'none'};
 

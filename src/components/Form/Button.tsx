@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { ButtonBase } from './Form.styles';
 
 interface propsIF {
@@ -15,7 +17,7 @@ interface propsIF {
 }
 
 export default function Button(props: propsIF) {
-    const isSepolia = import.meta.env.VITE_BRAND_ASSET_SET === 'plumeSepolia';
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const {
         idForDOM,
@@ -41,7 +43,7 @@ export default function Button(props: propsIF) {
             style={{
                 ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
                 ...style, // Merge with style prop
-                ...(isSepolia
+                ...(isActiveNetworkPlume
                     ? {
                           border: '3px solid #000',
                           boxShadow:
