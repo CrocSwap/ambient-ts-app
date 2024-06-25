@@ -1,5 +1,12 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { plumeSepoliaETH, plumeSepoliaUSDC } from '../defaultTokens';
+import {
+    plumeSepoliaDAI,
+    plumeSepoliaETH,
+    plumeSepoliaP,
+    plumeSepoliaUSD,
+    plumeSepoliaUSDC,
+    plumeSepoliaUSDT,
+} from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from '@ethersproject/providers';
@@ -26,6 +33,26 @@ export const plumeSepolia: NetworkIF = {
         new TopPool(
             plumeSepoliaETH,
             plumeSepoliaUSDC,
+            lookupChain('0x99c0a0f').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaUSDT,
+            lookupChain('0x99c0a0f').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaDAI,
+            lookupChain('0x99c0a0f').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaP,
+            lookupChain('0x99c0a0f').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaUSD,
             lookupChain('0x99c0a0f').poolIndex,
         ),
     ],
