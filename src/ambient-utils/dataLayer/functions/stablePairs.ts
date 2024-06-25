@@ -36,6 +36,8 @@ import {
     plumeSepoliaUSD,
     plumeSepoliaP,
     blastBLAST,
+    plumeSepoliaUSDT,
+    plumeSepoliaDAI,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -100,6 +102,8 @@ export const STABLE_USD_TOKENS = [
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     plumeSepoliaUSDC.address,
+    plumeSepoliaUSDT.address,
+    plumeSepoliaDAI.address,
     plumeSepoliaUSD.address,
     plumeSepoliaP.address,
 ].map((x) => x.toLowerCase());
