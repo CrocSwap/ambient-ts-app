@@ -8,6 +8,7 @@ bottom:0;
 padding: 8px;
 display: grid;
 grid-template-columns: repeat(3, 1fr);
+color: var(--text2)
 
 }
 
@@ -38,21 +39,21 @@ grid-template-columns: repeat(3, 1fr);
     width: 100%;
     height: 20px;
     padding:  6px;
-    border-top: 1px solid var(--text3, #3E5859);
     font-family: 'Fira Mono';
     font-size: 12px;
     color: var(--text2, #789090);
+    border-top: 1px solid #424649;
 }
 
 .network{
-    border-right: 1px solid var(--text3, #3E5859);
+    border-right: 1px solid #424649;
 }
 .leftContainer{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
-    border-left: 1px solid var(--text3, #3E5859);
+    border-left: 1px solid #424649;
 }
 
 .status{
@@ -61,7 +62,7 @@ grid-template-columns: repeat(3, 1fr);
     gap: 8px;
 }
 .status, .blockNumber{
-    border-left: 1px solid var(--text3, #3E5859);
+    border-left: 1px solid #424649;
     padding:  0 8px;
 }
 

@@ -16,6 +16,7 @@ import { supportedNetworks } from '../../../ambient-utils/constants';
 
 import { CurrencySelector } from '../../Form/CurrencySelector';
 import { marketCapMultipliers } from '../../../pages/platformFuta/mockAuctionData';
+import { LuChevronDown } from 'react-icons/lu';
 
 // Props interface
 export interface PropsIF {
@@ -58,7 +59,7 @@ const TooltipLabel = (props: TooltipTitleProps) => {
                 className={styles.tickerLabel}
                 style={{
                     color: isHeader ? 'var(--text1)' : '',
-                    fontSize: isHeader ? '20px' : '',
+                    fontSize: isHeader ? '24px' : '',
                 }}
             >
                 {itemTitle}
@@ -258,7 +259,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
             <div className={styles.tickerNameContainer}>
                 <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
                 {!placeholderTicker && (
-                    <div className={styles.alignCenter}>
+                    <div className={styles.commentWatchlistContainer}>
                         <button
                             onClick={() => setShowComments(!showComments)}
                             className={`${styles.commentButton} ${
@@ -357,7 +358,13 @@ export const tickerDisplayElements = (props: PropsIF) => {
                             ? selectedMaxValue
                             : '-'}
                     </p>
-                    {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
+                    <div
+                        className={styles.alignCenter}
+                        style={{ fontSize: '18px' }}
+                    >
+                        {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
+                        {!placeholderTicker && <LuChevronDown size={20} />}
+                    </div>
                 </button>
                 {isMaxDropdownOpen && (
                     <div

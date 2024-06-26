@@ -114,8 +114,9 @@
 
 .create_button,
 .create_button_disabled {
-    border: 1px solid var(--accent1);
-    background-color: var(--accent1);
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1);
+    border: none;
     transition: all var(--animation-speed) ease-in-out
 }
 
@@ -129,8 +130,8 @@
 
 
 .create_button:hover{
-    background-color: transparent;
-    color: var(--accent1)
+    background: var(--accent2);
+    color: var(--dark1);
 }
 .footerContainer {
     width: 100%;
@@ -139,20 +140,53 @@
     gap: 8px;
 }
 
+.tooltipLabelContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+
+}
+
+
+.tooltipTitleDisplay{
+  
+    padding: 8px;
+    font-size: 14px;
+    background: var(--dark3);
+    color: var(--text1);
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin-left: 50px;
+    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.25);
+   
+}
+
+.justifyRow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 @media only screen and (min-width: 1080px) {
-    .mainContainer {
+    .mainContainer{
+        background: url('../../../assets//futa/images/synthwave.png') no-repeat ; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: calc(100vh - 75px);
         transition: all var(--animation-speed) ease-in-out;
-        background: radial-gradient(
-            43.75% 50% at 0% 50%,
-            rgba(12, 205, 255, 0.2) 0%,
-            rgba(12, 205, 255, 0) 100%
-        );
-        }
+       
+    }
+   
         .create_token {
             margin-top: 5rem;
             min-height: 500px;
             max-height: 600px;
             border: 1px solid var(--border);
+            background: var(--dark1);
             padding: 16px;
     }
 }

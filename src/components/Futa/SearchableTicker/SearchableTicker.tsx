@@ -23,6 +23,7 @@ import {
     auctionSorts,
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
+import { FaEye } from 'react-icons/fa';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -200,9 +201,9 @@ export default function SearchableTicker(props: propsIF) {
                                 >
                                     <p>{activeSortOption.label}</p>
                                     {isSortDropdownOpen ? (
-                                        <IoIosArrowUp />
+                                        <IoIosArrowUp color='var(--accent1)' />
                                     ) : (
-                                        <IoIosArrowDown color='var(--text1)' />
+                                        <IoIosArrowDown color='var(--accent1)' />
                                     )}
                                 </div>
 
@@ -266,7 +267,10 @@ export default function SearchableTicker(props: propsIF) {
                         >
                             SHOW COMPLETE
                         </button>
-                        <button className={styles.buttonOff}>WATCHLIST</button>
+                        <button className={styles.buttonOff}>
+                            <FaEye size={17} />
+                            WATCHLIST
+                        </button>
                     </div>
                 </div>
             </div>

@@ -38,7 +38,7 @@ text-transform: uppercase;
     gap: 8px;
 
     
-    padding-top: 3.5rem;
+    padding-top: 2.7rem;
     
 }
 
@@ -46,11 +46,15 @@ text-transform: uppercase;
     color: var(--text1, #CEFFFF);
 font-size: 20px;
 }
-.claimAllContainer p{
+.claimAllText{
+    padding: 0 16px;
+    }
+    
+    .claimAllContainer p{
     color: var(--text2);
     font-size: 12px;
-    padding: 0 16px;
     text-align: center;
+
 }
 
 .extraFeeContainer{
@@ -77,24 +81,29 @@ justify-content: center;
 align-items: center;
 gap: 10px;
 align-self: stretch;
-background: var(--accent1, #0CCDFF);
 outline: none;
-border: 1px solid var(--accent1);
+background: var(--accent1, #0ccdff);
+color: var(--dark1);
+border: none;
 cursor: pointer;
 transition: all var(--animation-speed) ease-in-out;
 }
 .claimButton:hover{
-    background: transparent;
-    color: var(--accent1)
+    background: var(--accent2);
+    color: var(--dark1);
 }
 
 /* desktop */
 .desktopContainer {
     display: grid;
-    grid-template-columns: auto 390px;
+    grid-template-columns: auto 4px 390px;
     padding: 0 16px;
     height: calc(100vh - 56px);
     gap: 16px;
+}
+.seperatorContainer{
+   
+    height: calc(100vh - 80px)
 }
 
 .rightLayout{
@@ -125,21 +134,20 @@ transition: all var(--animation-speed) ease-in-out;
 
 .connectWalletContent button, .connectWalletContent a{
    
-    height: 28px;
-    outline: none;
-    padding: 2px 8px;
-    font-size: var(--header-size);
-    line-height: var(--header1-lh);
+    
     display: flex;
+    padding: 2px 8px;
     justify-content: center;
     align-items: center;
-    align-self: stretch;
-    background: var(--accent1, #0CCDFF);
-    outline: none;
-    border: 1px solid var(--accent1);
-    cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
     text-transform: uppercase;
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1);
+    border: none;
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    outline: none;
    
     margin: 0 auto;
     
@@ -150,10 +158,37 @@ transition: all var(--animation-speed) ease-in-out;
 }
 
 .connectWalletContent button:hover, .connectWalletContent a:hover{
-    background: transparent;
-    color: var(--accent1)
+    background: var(--accent2);
+    color: var(--dark1);
 }
 
+.justifyRow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tooltipLabelContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+
+.tooltipTitleDisplay{
+  
+    padding: 8px;
+    font-size: 14px;
+    background: var(--dark3);
+    color: var(--text1);
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin-left: 50px;
+    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.25);
+   
+}
 @media (max-width: 780px) {
 
 .claimAllContainer h3{

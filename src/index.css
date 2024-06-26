@@ -212,7 +212,7 @@
 
     /* border */
     --color-border: 1px solid var(--accent1);
-    --border: var(--dark2);
+    --border: #424649;
     --border-radius: 4px;
     --swap-border: var(--title-gradient);
     --grey-light-border: 1px solid var(--text2);
@@ -229,7 +229,7 @@
     --footer-height: 24px;
 
 
-        --border: rgba(225, 238, 238, 0.25);
+       
 
     --font-logo: "Fira Mono", monospace;
     --font-family: "Fira Mono", monospace;

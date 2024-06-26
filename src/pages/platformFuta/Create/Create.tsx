@@ -4,9 +4,9 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
-import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
@@ -119,12 +119,14 @@ export default function Create() {
     const extraInfoDisplay = (
         <div className={styles.extraInfoContainer}>
             {extraInfoData.map((item, idx) => (
-                <div className={styles.extraRow} key={idx}>
-                    <div className={styles.alignCenter}>
-                        <p>{item.title}</p>
-                        <TooltipComponent title={item.tooltipTitle} />
-                    </div>
-                    <p style={{ color: 'var(--text2)' }}>{item.data}</p>
+                <div className={styles.justifyRow} key={idx}>
+                    <TooltipLabel
+                        itemTitle={item.title}
+                        tooltipTitle={item.tooltipTitle}
+                    />
+                    <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
+                        {item.data}
+                    </p>
                 </div>
             ))}
         </div>
@@ -177,12 +179,12 @@ export default function Create() {
                 {!isUserConnected
                     ? 'Connect Wallet'
                     : tickerInput === ''
-                    ? 'Enter a Token Ticker'
-                    : isValidationInProgress
-                    ? 'Validating Ticker...'
-                    : isValidated
-                    ? 'Create Auction'
-                    : `Invalid Ticker: ${tickerInput}`}
+                      ? 'Enter a Token Ticker'
+                      : isValidationInProgress
+                        ? 'Validating Ticker...'
+                        : isValidated
+                          ? 'Create Auction'
+                          : `Invalid Ticker: ${tickerInput}`}
             </button>
         </footer>
     );

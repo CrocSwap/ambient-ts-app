@@ -54,7 +54,7 @@
     
     color: var(--text1, #f0f0f8);
 
-    font-size: 20px;
+    font-size: 24px;
     text-transform: uppercase;
     
 }
@@ -122,13 +122,13 @@
     width: 100%;
     outline: none;
     border: none;
-    background: var(--dark4);
+    background: var(--dark2);
     display: flex;
     justify-content: space-between;
     height: 42px;
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: 18px;
     text-transform: uppercase;
     padding: 8px;
     color: var(--text2);
@@ -171,6 +171,7 @@
     align-self: stretch;
     border: 1px solid var(--dark3, #1e1e24);
     margin-bottom: 8px;
+    
 }
 .extraRow {
     width: 100%;
@@ -178,15 +179,20 @@
     align-items: center;
     justify-content: space-between;
 }
+
+
 .alignCenter {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    font-size: 12px;
+    
     color: var(--text2);
 }
 
+.extraRow p{
+    font-size: 14px;
+}
 .buttonOn{
     color: var(--accent1) !important;
     border: 1px solid var(--accent1) !important
@@ -199,11 +205,11 @@
     gap: 10px;
     align-self: stretch;
     background: var(--accent1, #0ccdff);
+    color: var(--dark1);
     outline: none;
-    border: 1px solid var(--accent1);
+    border: none;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
-    color: var(--dark1);
     font-size: 24px;
     text-transform: uppercase;
 }
@@ -211,13 +217,12 @@
 .bidButtonDisabled {
     pointer-events: none;
     background: var(--dark4);
-    border: 1px solid transparent;
+    border: none;
     color: var(--text2)
 }
 .bidButtonDesktop:hover {
-    background: transparent;
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
+    background: var(--accent2);
+    color: var(--dark1);
 }
 .create_button_disabled {
     border: none;
@@ -252,17 +257,24 @@
 
 .tickerNameContainer{
     display: grid;
-    grid-template-columns: auto 120px;
+    grid-template-columns: auto 150px;
     gap: 8px;
     align-items: center;
+}
+.commentWatchlistContainer{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   
 }
 .commentButton{
     border: 1px solid var(--dark2, #111A1E);
 background: var(--dark2, #111A1E);
-padding: 4px 8px;
+padding: 4px 16px;
 color: var(--text2, #789090);
 font-size: 14px;
-height: 20px;
+height: 25px;
 display: flex;
 justify-content: space-between;
 align-items: center;
@@ -271,11 +283,20 @@ cursor: pointer;
 
 }
 .commentButton:hover{
+    transition: all var(--animation-speed) ease-in-out;
+
     border: 1px solid var(--accent1);
     color: var(--accent1)
 }
 .watchlistButton{
     padding: 4px;
+    background: var(--dark2);
+    border: 1px solid var(--dark2);
+    height: 25px;
+    width: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .watchlistButton:hover{
@@ -291,20 +312,21 @@ cursor: pointer;
 
 
 .tooltipTitleDisplay{
-    border: 1px solid var(--text2);
+  
     padding: 8px;
-    font-size: 16px;
-    background: var(--dark2);
-    color: var(--text3);
+    font-size: 14px;
+    background: var(--dark3);
+    color: var(--text1);
     line-height: 1.2;
     text-transform: uppercase;
+    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.25);
    
 }
 
 @media (min-width: 1280px) {
     .container {
         padding: 0;
-        padding-top: 12px;
+        padding: 12px 0;
         /* border-left: 1px dashed var(--dark3); */
         position: relative;
         overflow: hidden;
