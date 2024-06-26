@@ -18,7 +18,7 @@ export default function DesktopFooter() {
     });
 
     return (
-        <div
+        <footer
             className={styles.desktopContainer}
             style={{ fontFamily: '"Fira Mono", monospace' }}
         >
@@ -29,9 +29,8 @@ export default function DesktopFooter() {
                 <p className={styles.price}>
                     ETH PRICE : {nativeTokenPriceFormatted}
                 </p>
-
                 <p className={styles.blockNumber}>{lastBlockNumber}</p>
             </div>
-        </div>
+        </footer>
     );
 }

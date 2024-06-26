@@ -34,14 +34,9 @@ font-family: var(--font-family)  !important;
 .desktopContainer{
     background: var(--dark1);
     width: 100%;
-    position:fixed;
-bottom:0;
-display: flex;
-justify-content: space-between;
-align-items: center;
     height: 20px;
     padding:  6px;
-    border-top: 1px solid #424649;
+    font-family: 'Fira Mono';
     font-size: 12px;
     color: var(--text2);
     font-family: var(--font-family)  !important;

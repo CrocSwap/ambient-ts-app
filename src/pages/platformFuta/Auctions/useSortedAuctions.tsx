@@ -20,6 +20,7 @@ export interface sortedAuctionsIF {
     isReversed: boolean;
     update: (newSort: auctionSorts) => void;
     reverse: () => void;
+    custom(s: auctionSorts, r: boolean): void;
 }
 
 export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
@@ -73,12 +74,13 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
         });
     }
 
-    // // fn to allow custom sort option input
-    // function sortCustom(s: auctionSorts, r: boolean): void {
-    //     setSortDetails({
-    //         sortBy:
-    //     });
-    // }
+    // fn to allow custom sort option input
+    function sortCustom(s: auctionSorts, r: boolean): void {
+        setSortDetails({
+            sortBy: s,
+            isReversed: r,
+        });
+    }
 
     // logic router to sort data according to the indicated method
     const sortedData = useMemo<AuctionDataIF[]>(() => {
@@ -105,5 +107,6 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
         isReversed: sortDetails.isReversed,
         update: updateSort,
         reverse: reverseSort,
+        custom: sortCustom,
     };
 }
