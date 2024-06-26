@@ -51,9 +51,9 @@ export default function TradeNowButton(props: propsIF) {
                 justifyContent='center'
                 alignItems='center'
                 rounded
+                background={!isActiveNetworkPlume ? 'dark2' : undefined}
                 style={{
-                    background: isActiveNetworkPlume ? 'accent1' : 'dark2',
-                    color: 'var(--text1)',
+                    color: isActiveNetworkPlume ? 'var(--text1)' : 'none',
                 }}
             >
                 <TradeNowButtonText

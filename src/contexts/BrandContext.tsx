@@ -91,7 +91,6 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     function getSkin(): skins {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
-        console.log({ networkPrefs });
         return networkPrefs ? networkPrefs.color : 'purple_dark';
 
         // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
