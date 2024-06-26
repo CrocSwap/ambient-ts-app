@@ -148,10 +148,8 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [chartResetStatus, setChartResetStatus] = useState<{
         isResetChart: boolean;
-        resetDomain: undefined | number[];
     }>({
         isResetChart: false,
-        resetDomain: undefined,
     });
     const {
         tokenA,
@@ -207,7 +205,6 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCompletedFetchData(true);
         setChartResetStatus({
             isResetChart: false,
-            resetDomain: undefined,
         });
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
@@ -943,19 +940,17 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData[0].period === period &&
                 isFetchingEnoughData
             ) {
-                const lastCandleDate = unparsedCandleData?.reduce(function (
-                    prev,
-                    current,
-                ) {
-                    return prev.time > current.time ? prev : current;
-                }).time;
+                const lastCandleDate = unparsedCandleData?.reduce(
+                    function (prev, current) {
+                        return prev.time > current.time ? prev : current;
+                    },
+                ).time;
 
-                const firstCandleDate = unparsedCandleData?.reduce(function (
-                    prev,
-                    current,
-                ) {
-                    return prev.time < current.time ? prev : current;
-                }).time;
+                const firstCandleDate = unparsedCandleData?.reduce(
+                    function (prev, current) {
+                        return prev.time < current.time ? prev : current;
+                    },
+                ).time;
 
                 const maxDom =
                     scaleData !== undefined
