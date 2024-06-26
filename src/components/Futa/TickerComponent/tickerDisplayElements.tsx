@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useContext, useRef } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useParams } from 'react-router-dom';
 import styles from './TickerComponent.module.css';
@@ -14,9 +14,13 @@ import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
 
 import { CurrencySelector } from '../../Form/CurrencySelector';
-import { marketCapMultipliers } from '../../../pages/platformFuta/mockAuctionData';
 import { LuChevronDown } from 'react-icons/lu';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
+import {
+    bidSizeMultipliers,
+    marketCapMultiplier,
+    minBidSizeInEth,
+} from '../../../pages/platformFuta/mockAuctionData';
 
 // Props interface
 export interface PropsIF {
@@ -122,18 +126,17 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
     ];
 
-    const openBidMarketCapEthValueNum = auctionStatusData.openBidMarketCap
-        ? auctionStatusData.openBidMarketCap
+    const openBidMarketCapInEth = auctionStatusData.openBidInEth
+        ? auctionStatusData.openBidInEth * marketCapMultiplier
         : undefined;
 
-    const openBidEthValueFormatted = openBidMarketCapEthValueNum
-        ? openBidMarketCapEthValueNum.toString()
+    const openBidEthValueFormatted = openBidMarketCapInEth
+        ? openBidMarketCapInEth.toString()
         : '...';
 
     const currentOpenBidUsdValue =
-        nativeTokenUsdPrice !== undefined &&
-        openBidMarketCapEthValueNum !== undefined
-            ? nativeTokenUsdPrice * openBidMarketCapEthValueNum
+        nativeTokenUsdPrice !== undefined && openBidMarketCapInEth !== undefined
+            ? nativeTokenUsdPrice * openBidMarketCapInEth
             : undefined;
 
     const currentOpenBidUsdValueFormatted =
@@ -144,24 +147,20 @@ export const tickerDisplayElements = (props: PropsIF) => {
               })
             : '...';
 
-    const maxMarketCapValues = marketCapMultipliers.map((item) => {
-        return item * 0.25;
+    const maxMarketCapEthValues = bidSizeMultipliers.map((item) => {
+        return item * minBidSizeInEth * marketCapMultiplier;
     });
 
-    useEffect(() => {
-        console.log({ maxMarketCapValues });
-    }, [maxMarketCapValues.length]);
-
-    const openBidMarketCapIndex = maxMarketCapValues.findIndex(
-        (item) => item === auctionStatusData.openBidMarketCap,
+    const openBidMarketCapIndex = maxMarketCapEthValues.findIndex(
+        (item) => item === openBidMarketCapInEth,
     );
-
-    const formattedOpenBidStatus = `${auctionStatusData.openBidAmountFilled} / ${auctionStatusData.openBidSize}`;
+    const formattedOpenBidStatus = `${auctionStatusData.openBidAmountFilledInEth} / ${auctionStatusData.openBidInEth}`;
 
     const fillPercentage =
-        auctionStatusData.openBidAmountFilled && auctionStatusData.openBidSize
-            ? auctionStatusData.openBidAmountFilled /
-              auctionStatusData.openBidSize
+        auctionStatusData.openBidAmountFilledInEth &&
+        auctionStatusData.openBidInEth
+            ? auctionStatusData.openBidAmountFilledInEth /
+              auctionStatusData.openBidInEth
             : 0.0;
 
     const fillPercentageFormatted = getFormattedNumber({
@@ -300,7 +299,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         setIsMaxDropdownOpen(false);
     };
 
-    const maxFdvData = maxMarketCapValues.slice(openBidMarketCapIndex);
+    const maxFdvData = maxMarketCapEthValues.slice(openBidMarketCapIndex);
 
     const maxFdvDisplay = (
         <div

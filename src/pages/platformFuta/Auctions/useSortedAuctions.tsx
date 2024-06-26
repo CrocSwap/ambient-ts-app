@@ -53,7 +53,8 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     // fn to sort by market cap (numerical)
     function sortByMarketCap(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort(
-            (a: AuctionDataIF, b: AuctionDataIF) => b.marketCap - a.marketCap,
+            (a: AuctionDataIF, b: AuctionDataIF) =>
+                b.highestFilledBidInEth - a.highestFilledBidInEth,
         );
     }
 

@@ -36,6 +36,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';
 import moment from 'moment';
+import { marketCapMultiplier } from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -112,8 +113,11 @@ const useAuctionStates = () => {
     );
 
     useEffect(() => {
-        setSelectedMaxValue(auctionStatusData.openBidMarketCap);
-    }, [auctionStatusData.openBidMarketCap]);
+        const openBidMarketCap = auctionStatusData.openBidInEth
+            ? auctionStatusData.openBidInEth * marketCapMultiplier
+            : 0;
+        setSelectedMaxValue(openBidMarketCap);
+    }, [auctionStatusData.openBidInEth]);
 
     return {
         isMaxDropdownOpen,
@@ -217,7 +221,9 @@ export default function TickerComponent(props: PropsIF) {
               })
             : undefined;
 
-    const marketCapEthValue = auctionDetails?.marketCap;
+    const marketCapEthValue = auctionDetails
+        ? auctionDetails.highestFilledBidInEth * marketCapMultiplier
+        : undefined;
 
     const timeRemainingAbbrev = auctionDetails
         ? getTimeRemainingAbbrev(
@@ -267,8 +273,8 @@ export default function TickerComponent(props: PropsIF) {
             Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
                 (details) =>
                     setAllocationForConnectedUser(
-                        details?.unclaimedTokenAllocation
-                            ? details?.unclaimedTokenAllocation
+                        details?.tokenAllocationUnclaimedByUser
+                            ? details?.tokenAllocationUnclaimedByUser
                             : undefined,
                     ),
             );
