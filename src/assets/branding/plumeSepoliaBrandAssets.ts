@@ -17,7 +17,7 @@ export const plumeSepoliaBrandAssets: brandIF = {
     platformName: 'plumeSepolia',
     fontSet: 'ambient',
     showPoints: false,
-    showDexStats: true,
+    showDexStats: false,
     headerImage: large as string,
     includeCanto: false,
 };

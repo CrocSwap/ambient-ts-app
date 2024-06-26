@@ -21,6 +21,7 @@ interface propsIF {
 export default function TradeNowButton(props: propsIF) {
     const { fieldId, inNav } = props;
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
@@ -34,7 +35,11 @@ export default function TradeNowButton(props: propsIF) {
     return (
         <StyledLink
             id={fieldId}
-            to={linkGenMarket.getFullURL(tradeButtonParams)}
+            to={
+                isActiveNetworkPlume
+                    ? linkGenSwap.getFullURL(tradeButtonParams)
+                    : linkGenMarket.getFullURL(tradeButtonParams)
+            }
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
@@ -58,7 +63,7 @@ export default function TradeNowButton(props: propsIF) {
                     color={isActiveNetworkPlume ? 'text1' : 'accent1'}
                     inNav={inNav}
                 >
-                    Trade Now
+                    {isActiveNetworkPlume ? 'Swap Now' : 'Trade Now'}
                 </TradeNowButtonText>
             </FlexContainer>
         </StyledLink>

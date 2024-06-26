@@ -164,25 +164,27 @@ export default function MobileLandingSections() {
                         </FlexContainer>
                     </MobileMainLogo>
                 )}
-
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    gap={8}
-                >
-                    <Text fontSize='body' style={{ marginTop: '2.5px' }}>
-                        Points system now live!{' '}
-                    </Text>
-                    <Link to='/xp-leaderboard'>
-                        <Text
-                            fontSize='body'
-                            color='accent1'
-                            style={{ textDecoration: 'underline' }}
-                        >
-                            View Leaderboard
+                {!isActiveNetworkPlume && (
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        gap={8}
+                    >
+                        <Text fontSize='body' style={{ marginTop: '2.5px' }}>
+                            Points system now live!{' '}
                         </Text>
-                    </Link>
-                </FlexContainer>
+                        <Link to='/xp-leaderboard'>
+                            <Text
+                                fontSize='body'
+                                color='accent1'
+                                style={{ textDecoration: 'underline' }}
+                            >
+                                View Leaderboard
+                            </Text>
+                        </Link>
+                    </FlexContainer>
+                )}
+
                 <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
                 </div>

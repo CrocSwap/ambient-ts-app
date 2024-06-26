@@ -9,6 +9,7 @@ import {
     TopPoolContainer,
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -18,6 +19,7 @@ interface TopPoolsPropsIF {
 // eslint-disable-next-line
 export default function TopPools(props: TopPoolsPropsIF) {
     const { topPools } = useContext(CrocEnvContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
@@ -26,8 +28,8 @@ export default function TopPools(props: TopPoolsPropsIF) {
             ? topPools.slice(0, 3)
             : topPools.slice(0, 2)
         : show4TopPools
-        ? topPools.slice(0, 4)
-        : topPools;
+          ? topPools.slice(0, 4)
+          : topPools;
 
     return (
         <TopPoolContainer flexDirection='column' gap={16}>
@@ -39,14 +41,16 @@ export default function TopPools(props: TopPoolsPropsIF) {
                     <PoolCard key={idx} pool={pool} />
                 ))}
             </HomeContent>
-            <HomeContent
-                justifyContent='center'
-                alignItems='center'
-                gap={16}
-                as={TopPoolViewMore}
-            >
-                <Link to='/explore'>View More</Link>
-            </HomeContent>
+            {!isActiveNetworkPlume && (
+                <HomeContent
+                    justifyContent='center'
+                    alignItems='center'
+                    gap={16}
+                    as={TopPoolViewMore}
+                >
+                    <Link to='/explore'>View More</Link>
+                </HomeContent>
+            )}
         </TopPoolContainer>
     );
 }

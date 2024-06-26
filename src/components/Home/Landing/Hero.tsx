@@ -20,11 +20,12 @@ export default function Hero() {
         // declare an output variable
         let slug: cssSlugs;
         // router to map a background image from deployment config
+        if (isActiveNetworkPlume) return 'clouds';
         switch (platformName) {
             case 'futa':
                 slug = 'stars';
                 break;
-            case 'plumeSepolia' || isActiveNetworkPlume:
+            case 'plumeSepolia':
                 slug = 'clouds';
                 break;
             case 'ambient':
@@ -34,7 +35,7 @@ export default function Hero() {
         }
         // return output variable
         return slug;
-    }, [platformName]);
+    }, [platformName, isActiveNetworkPlume]);
 
     // fn to turn hero banner metadata into JSX for DOM
     function makeHeroJSX(h: heroItem): JSX.Element {

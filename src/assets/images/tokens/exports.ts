@@ -44,7 +44,7 @@ import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
 import WEETH from './WEETH.svg';
-import P from './PLUME.png';
+import P from './P.jpg';
 import BLAST from './BLAST.png';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };

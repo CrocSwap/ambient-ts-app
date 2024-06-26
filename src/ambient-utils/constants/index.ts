@@ -1,3 +1,5 @@
+import { brand } from './networks';
+
 export * from './networks';
 export * from './blacklist';
 export * from './defaultTokens';
@@ -117,19 +119,27 @@ export const REQUEST_TIMEOUT_DELAY = import.meta.env.VITE_REQUEST_TIMEOUT_DELAY
 export const NETWORK_ACCESS = import.meta.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
-export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
-    .VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
-    ? parseFloat(
-          import.meta.env.VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
-      )
-    : undefined;
+const brandsExcludedFromPointsDisplays = ['plumeSepolia', 'plume', 'futa'];
 
-export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES = import.meta.env
-    .VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
-    ? parseFloat(
-          import.meta.env.VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
-      )
-    : undefined;
+export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES =
+    brand && brandsExcludedFromPointsDisplays.includes(brand)
+        ? Infinity
+        : import.meta.env.VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES
+          ? parseFloat(
+                import.meta.env
+                    .VITE_DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES,
+            )
+          : undefined;
+
+export const DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES =
+    brand && brandsExcludedFromPointsDisplays.includes(brand)
+        ? Infinity
+        : import.meta.env.VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES
+          ? parseFloat(
+                import.meta.env
+                    .VITE_DEFAULT_BANNER_CTA_DISMISSAL_DURATION_MINUTES,
+            )
+          : undefined;
 
 export const WALLETCONNECT_PROJECT_ID = import.meta.env
     .VITE_WALLETCONNECT_PROJECT_ID

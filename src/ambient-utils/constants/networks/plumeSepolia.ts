@@ -28,8 +28,18 @@ export const plumeSepolia: NetworkIF = {
     chain: chain,
     shouldPollBlock: true,
     marketData: '0x1',
-    defaultPair: [plumeSepoliaETH, plumeSepoliaUSDC],
+    defaultPair: [plumeSepoliaETH, plumeSepoliaP],
     topPools: [
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaP,
+            lookupChain('0x99c0a0f').poolIndex,
+        ),
+        new TopPool(
+            plumeSepoliaETH,
+            plumeSepoliaUSD,
+            lookupChain('0x99c0a0f').poolIndex,
+        ),
         new TopPool(
             plumeSepoliaETH,
             plumeSepoliaUSDC,
@@ -43,16 +53,6 @@ export const plumeSepolia: NetworkIF = {
         new TopPool(
             plumeSepoliaETH,
             plumeSepoliaDAI,
-            lookupChain('0x99c0a0f').poolIndex,
-        ),
-        new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaP,
-            lookupChain('0x99c0a0f').poolIndex,
-        ),
-        new TopPool(
-            plumeSepoliaETH,
-            plumeSepoliaUSD,
             lookupChain('0x99c0a0f').poolIndex,
         ),
     ],

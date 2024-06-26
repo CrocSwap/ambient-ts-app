@@ -14,6 +14,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -26,6 +27,7 @@ export default function PoolCard(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
     const poolData = useFetchPoolStats(pool);
@@ -72,36 +74,46 @@ export default function PoolCard(props: propsIF) {
                               : '…'
                       }`
                     : poolPrice === undefined
-                    ? '…'
-                    : poolPrice
+                      ? '…'
+                      : poolPrice
                 : denomTokenIsWBTCToken || isEthStakedEthPair
-                ? poolPrice === undefined
-                    ? '…'
-                    : poolPrice
-                : `${
-                      usdPrice
-                          ? getFormattedNumber({ value: usdPrice, prefix: '$' })
-                          : '…'
-                  }`}
+                  ? poolPrice === undefined
+                      ? '…'
+                      : poolPrice
+                  : `${
+                        usdPrice
+                            ? getFormattedNumber({
+                                  value: usdPrice,
+                                  prefix: '$',
+                              })
+                            : '…'
+                    }`}
         </div>
     );
 
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     const [addrTokenA, addrTokenB] =
         tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
             ? [pool.base.address, pool.quote.address]
             : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
-            ? [pool.quote.address, pool.base.address]
-            : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-            ? [pool.quote.address, pool.base.address]
-            : [pool.base.address, pool.quote.address];
+              ? [pool.quote.address, pool.base.address]
+              : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+                ? [pool.quote.address, pool.base.address]
+                : [pool.base.address, pool.quote.address];
 
-    const poolLink = linkGenMarket.getFullURL({
-        chain: chainId,
-        tokenA: addrTokenA,
-        tokenB: addrTokenB,
-    });
+    const poolLink = isActiveNetworkPlume
+        ? linkGenSwap.getFullURL({
+              chain: chainId,
+              tokenA: addrTokenA,
+              tokenB: addrTokenB,
+          })
+        : linkGenMarket.getFullURL({
+              chain: chainId,
+              tokenA: addrTokenA,
+              tokenB: addrTokenB,
+          });
 
     const poolPriceChangeDisplay = (
         <div className={styles.pool_price_change}>
@@ -146,23 +158,23 @@ export default function PoolCard(props: propsIF) {
                                 shouldInvertDisplay === undefined
                                     ? pool.base
                                     : shouldInvertDisplay
-                                    ? pool.base
-                                    : pool.quote
+                                      ? pool.base
+                                      : pool.quote
                             }
                             size='2xl'
                             src={uriToHttp(
                                 shouldInvertDisplay === undefined
                                     ? pool.base.logoURI
                                     : shouldInvertDisplay
-                                    ? pool.base.logoURI
-                                    : pool.quote.logoURI,
+                                      ? pool.base.logoURI
+                                      : pool.quote.logoURI,
                             )}
                             alt={
                                 shouldInvertDisplay === undefined
                                     ? pool.base.symbol
                                     : shouldInvertDisplay
-                                    ? pool.base.symbol
-                                    : pool.quote.symbol
+                                      ? pool.base.symbol
+                                      : pool.quote.symbol
                             }
                         />
                         <TokenIcon
@@ -170,23 +182,23 @@ export default function PoolCard(props: propsIF) {
                                 shouldInvertDisplay === undefined
                                     ? pool.quote
                                     : shouldInvertDisplay
-                                    ? pool.quote
-                                    : pool.base
+                                      ? pool.quote
+                                      : pool.base
                             }
                             size='2xl'
                             src={uriToHttp(
                                 shouldInvertDisplay === undefined
                                     ? pool.quote.logoURI
                                     : shouldInvertDisplay
-                                    ? pool.quote.logoURI
-                                    : pool.base.logoURI,
+                                      ? pool.quote.logoURI
+                                      : pool.base.logoURI,
                             )}
                             alt={
                                 shouldInvertDisplay === undefined
                                     ? pool.quote.symbol
                                     : shouldInvertDisplay
-                                    ? pool.quote.symbol
-                                    : pool.base.symbol
+                                      ? pool.quote.symbol
+                                      : pool.base.symbol
                             }
                         />
                     </div>
@@ -194,8 +206,8 @@ export default function PoolCard(props: propsIF) {
                         {shouldInvertDisplay === undefined
                             ? `${pool.base.symbol} / ${pool.quote.symbol}`
                             : shouldInvertDisplay
-                            ? `${pool.base.symbol} / ${pool.quote.symbol}`
-                            : `${pool.quote.symbol} / ${pool.base.symbol}`}
+                              ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                              : `${pool.quote.symbol} / ${pool.base.symbol}`}
                     </div>
                 </div>
                 <div className={styles.row}>

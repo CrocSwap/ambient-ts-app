@@ -17,6 +17,8 @@ import {
 } from '../../ambient-utils/constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import FooterCard from './FooterCard';
+import { useContext } from 'react';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export interface footerItemIF {
     title: JSX.Element;
@@ -26,6 +28,7 @@ export interface footerItemIF {
 
 export default function Footer() {
     const [, , termsUrls] = useTermsAgreed();
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     // raw data to generate cards in the footer
     const footerData: footerItemIF[] = [
@@ -137,12 +140,12 @@ export default function Footer() {
                     <FooterCard key={card.link} data={card} />
                 ))}
                 <Link
-                    to={'/trade'}
+                    to={isActiveNetworkPlume ? '/swap' : '/trade'}
                     tabIndex={0}
                     aria-label='Go to trade page button'
                     className={styles.started_button}
                 >
-                    Trade Now
+                    {isActiveNetworkPlume ? 'Swap Now' : 'Trade Now'}
                 </Link>
             </footer>
         );

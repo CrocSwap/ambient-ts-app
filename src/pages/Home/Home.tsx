@@ -14,6 +14,7 @@ import { Text } from '../../styled/Common';
 import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { BrandContext } from '../../contexts/BrandContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -22,6 +23,8 @@ export default function Home() {
     // hook from web3modal indicating if user is connected
     const { isUserConnected } = useContext(UserDataContext);
     const { chainData, chooseNetwork } = useContext(TradeDataContext);
+    const { showPoints, showDexStats } = useContext(BrandContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
     // hook to consume and alter search params on the index page
     const [searchParams, setSearchParams] = useSearchParams();
     // logic to consume chain param data from the URL
@@ -54,8 +57,6 @@ export default function Home() {
         }
     }, [isUserConnected]);
 
-    const { showPoints, showDexStats } = useContext(BrandContext);
-
     const PointSystemContainer = styled.section`
         margin: 0 auto;
         display: flex;
@@ -83,7 +84,7 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            {showPoints && (
+            {showPoints && !isActiveNetworkPlume && (
                 <PointSystemContainer>
                     <Text fontSize='header1'>Points system now live!</Text>
 
@@ -104,7 +105,7 @@ export default function Home() {
             )}
             <div>
                 <TopPools />
-                {showDexStats && <Stats />}
+                {showDexStats && !isActiveNetworkPlume && <Stats />}
             </div>
             <LandingSections />
         </section>
