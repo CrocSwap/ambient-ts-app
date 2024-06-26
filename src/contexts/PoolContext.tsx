@@ -16,6 +16,8 @@ import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { TradeDataContext } from './TradeDataContext';
 import {
     getFormattedNumber,
+    isETHPair,
+    isStablePair,
     isWrappedNativeToken,
 } from '../ambient-utils/dataLayer';
 
@@ -58,20 +60,21 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
     const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
-        useState(
-            localStorage.getItem('isTradeDollarizationEnabled') === 'true',
-        );
+        useState(true);
 
     useEffect(() => {
-        const savedTradeDollarizationPreference =
-            localStorage.getItem('isTradeDollarizationEnabled') === 'true';
-        if (isTradeDollarizationEnabled !== savedTradeDollarizationPreference) {
-            localStorage.setItem(
-                'isTradeDollarizationEnabled',
-                isTradeDollarizationEnabled.toString(),
-            );
+        const isPairStablePair = isStablePair(
+            baseTokenAddress,
+            quoteTokenAddress,
+        );
+        const isPairEthPair = isETHPair(baseTokenAddress, quoteTokenAddress);
+
+        if (isPairStablePair || isPairEthPair) {
+            setIsTradeDollarizationEnabled(false);
+        } else {
+            setIsTradeDollarizationEnabled(true);
         }
-    }, [isTradeDollarizationEnabled]);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
