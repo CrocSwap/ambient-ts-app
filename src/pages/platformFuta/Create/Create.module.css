@@ -141,19 +141,23 @@
 }
 
 @media only screen and (min-width: 1080px) {
-    .mainContainer {
+    .mainContainer{
+        background: url('../../../assets//futa/images/synthwave.png') no-repeat ; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: calc(100vh - 75px);
         transition: all var(--animation-speed) ease-in-out;
-        background: radial-gradient(
-            43.75% 50% at 0% 50%,
-            rgba(12, 205, 255, 0.2) 0%,
-            rgba(12, 205, 255, 0) 100%
-        );
-        }
+       
+    }
+   
         .create_token {
             margin-top: 5rem;
             min-height: 500px;
             max-height: 600px;
             border: 1px solid var(--border);
+            background: var(--dark1);
             padding: 16px;
     }
 }
