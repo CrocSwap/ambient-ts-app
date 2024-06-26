@@ -239,11 +239,22 @@ function TokenInputQuantity(props: propsIF) {
                 <p>{usdValue}</p>
             </div>
             <div className={styles.futaLayoutRight}>
-                {tokenSelectButton}
+                {/* {tokenSelectButton} */}
+                <button
+                    className={styles.tokenButton}
+                    style={{ cursor: 'default' }}
+                >
+                    <TokenIcon
+                        token={token}
+                        src={uriToHttp(token.logoURI)}
+                        alt={token.symbol}
+                        size='xl'
+                    />
+                    {tokenSymbol}
+                </button>
                 <button
                     className={styles.walletBalanceButton}
                     style={{ cursor: 'default' }}
-                    // onClick={handleBalanceClick}
                 >
                     {walletBalance}
                 </button>

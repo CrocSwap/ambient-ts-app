@@ -18,7 +18,10 @@ export default function DesktopFooter() {
     });
 
     return (
-        <div className={styles.desktopContainer}>
+        <div
+            className={styles.desktopContainer}
+            style={{ fontFamily: '"Fira Mono", monospace' }}
+        >
             <p className={styles.network}>
                 NETWORK : {chainData.displayName.toUpperCase()}
             </p>
@@ -26,17 +29,7 @@ export default function DesktopFooter() {
                 <p className={styles.price}>
                     ETH PRICE : {nativeTokenPriceFormatted}
                 </p>
-                {/* <div className={styles.status}>
-                    <p>RPC STATUS : </p>
-                    <span
-                        className={styles.statusDisplay}
-                        style={{
-                            background: isStatusPositive
-                                ? 'var(--positive)'
-                                : 'var(--negative)',
-                        }}
-                    />
-                </div> */}
+
                 <p className={styles.blockNumber}>{lastBlockNumber}</p>
             </div>
         </div>

@@ -8,7 +8,8 @@ bottom:0;
 padding: 8px;
 display: grid;
 grid-template-columns: repeat(3, 1fr);
-color: var(--text2)
+color: var(--text2);
+font-family: var(--font-family)  !important;
 
 }
 
@@ -42,6 +43,7 @@ align-items: center;
     border-top: 1px solid #424649;
     font-size: 12px;
     color: var(--text2);
+    font-family: var(--font-family)  !important;
 
 }
 

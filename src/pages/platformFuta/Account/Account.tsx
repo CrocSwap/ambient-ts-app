@@ -1,7 +1,6 @@
 import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 import styles from './Account.module.css';
 
-import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Divider from '../../../components/Futa/Divider/Divider';
@@ -16,12 +15,7 @@ import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { Link } from 'react-router-dom';
 import Seperator from '../../../components/Futa/Seperator/Seperator';
-// Tooltip Label Component
-interface TooltipTitleProps {
-    itemTitle: string;
-    tooltipTitle: string;
-    isHeader?: boolean;
-}
+import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
@@ -29,32 +23,6 @@ export default function Account() {
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
-
-    const TooltipLabel = (props: TooltipTitleProps) => {
-        const { itemTitle, tooltipTitle, isHeader } = props;
-        return (
-            <div className={styles.tooltipLabelContainer}>
-                <p
-                    className={styles.tickerLabel}
-                    style={{
-                        color: isHeader ? 'var(--text1)' : '',
-                        fontSize: isHeader ? '24px' : '',
-                    }}
-                >
-                    {itemTitle}
-                </p>
-                <TooltipComponent
-                    placement='bottom'
-                    noBg
-                    title={
-                        <div className={styles.tooltipTitleDisplay}>
-                            {tooltipTitle}
-                        </div>
-                    }
-                />
-            </div>
-        );
-    };
 
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
@@ -68,7 +36,9 @@ export default function Account() {
                         itemTitle='NETWORK FEE'
                         tooltipTitle='Estimated network fee (i.e. gas cost) to join bid'
                     />
-                    <p style={{ color: 'var(--text2)' }}>~0.01</p>
+                    <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
+                        ~0.01
+                    </p>
                 </div>
             </div>
             <button className={styles.claimButton}>CLAIM ALL</button>

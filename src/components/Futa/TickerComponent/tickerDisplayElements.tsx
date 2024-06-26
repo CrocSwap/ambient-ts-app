@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useParams } from 'react-router-dom';
 import styles from './TickerComponent.module.css';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import Divider from '../Divider/Divider';
 import { FaEye } from 'react-icons/fa';
 import {
@@ -17,6 +16,7 @@ import { supportedNetworks } from '../../../ambient-utils/constants';
 import { CurrencySelector } from '../../Form/CurrencySelector';
 import { marketCapMultipliers } from '../../../pages/platformFuta/mockAuctionData';
 import { LuChevronDown } from 'react-icons/lu';
+import TooltipLabel from '../TooltipLabel/TooltipLabel';
 
 // Props interface
 export interface PropsIF {
@@ -43,39 +43,6 @@ export interface PropsIF {
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
 }
-
-// Tooltip Label Component
-interface TooltipTitleProps {
-    itemTitle: string;
-    tooltipTitle: string;
-    isHeader?: boolean;
-}
-
-const TooltipLabel = (props: TooltipTitleProps) => {
-    const { itemTitle, tooltipTitle, isHeader } = props;
-    return (
-        <div className={styles.tooltipLabelContainer}>
-            <p
-                className={styles.tickerLabel}
-                style={{
-                    color: isHeader ? 'var(--text1)' : '',
-                    fontSize: isHeader ? '24px' : '',
-                }}
-            >
-                {itemTitle}
-            </p>
-            <TooltipComponent
-                placement='bottom'
-                noBg
-                title={
-                    <div className={styles.tooltipTitleDisplay}>
-                        {tooltipTitle}
-                    </div>
-                }
-            />
-        </div>
-    );
-};
 
 // Main function
 export const tickerDisplayElements = (props: PropsIF) => {
@@ -444,10 +411,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
         <div className={styles.extraInfoContainer}>
             {extraInfoData.map((item, idx) => (
                 <div className={styles.extraRow} key={idx}>
-                    <div className={styles.alignCenter}>
-                        <p>{item.title}</p>
-                        <TooltipComponent title={item.tooltipTitle} />
-                    </div>
+                    <TooltipLabel
+                        itemTitle={item.title}
+                        tooltipTitle={item.tooltipTitle}
+                    />
                     <p style={{ color: 'var(--text2)' }}>{item.data}</p>
                 </div>
             ))}
