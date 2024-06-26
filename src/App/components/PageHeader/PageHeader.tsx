@@ -56,6 +56,7 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../contexts/BrandContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 const PageHeader = function () {
     const {
@@ -71,6 +72,7 @@ const PageHeader = function () {
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
@@ -216,10 +218,10 @@ const PageHeader = function () {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/edit')
+            ? '/trade/edit/'
+            : '/trade/market/';
 
     // hooks to generate URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
@@ -272,7 +274,8 @@ const PageHeader = function () {
         {
             title: 'Points',
             destination: '/account/points',
-            shouldDisplay: !!isUserConnected && desktopScreen,
+            shouldDisplay:
+                !!isUserConnected && desktopScreen && !isActiveNetworkPlume,
         },
     ];
 
