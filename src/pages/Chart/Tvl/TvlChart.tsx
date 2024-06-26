@@ -29,8 +29,6 @@ interface TvlData {
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
-    lastCrDate: number | undefined;
-    isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
     mainZoom: any;
@@ -59,8 +57,6 @@ function TvlChart(props: TvlData) {
         setCrosshairActive,
         setCrosshairData,
         crosshairActive,
-        lastCrDate,
-        isCrDataIndActive,
         xAxisActiveTooltip,
         mainZoom,
         firstCandleData,
@@ -429,11 +425,6 @@ function TvlChart(props: TvlData) {
                     setCanvasResolution(canvas);
                     areaSeries(tvlData);
                     lineSeries(tvlData);
-
-                    if (isCrDataIndActive || xAxisActiveTooltip === 'croc') {
-                        ctx.setLineDash([0.6, 0.6]);
-                        crDataIndicator([lastCrDate]);
-                    }
                 })
                 .on('measure', (event: any) => {
                     tvlyScale.range([event.detail.height, 0]);
@@ -450,8 +441,6 @@ function TvlChart(props: TvlData) {
         lineSeries,
         diffHashSig(tvlData),
         crDataIndicator,
-        lastCrDate,
-        isCrDataIndActive,
         xAxisActiveTooltip,
     ]);
 
@@ -504,11 +493,7 @@ function TvlChart(props: TvlData) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasArea, d3Yaxis]);
-    }, [
-        tvlyScale,
-        tvlData,
-        isCrDataIndActive || xAxisActiveTooltip === 'croc',
-    ]);
+    }, [tvlyScale, tvlData]);
     // Tvl Chart
     useEffect(() => {
         if (
