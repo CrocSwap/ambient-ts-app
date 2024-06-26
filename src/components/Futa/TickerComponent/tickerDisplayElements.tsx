@@ -258,7 +258,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
             <div className={styles.tickerNameContainer}>
                 <h2>{!placeholderTicker ? tickerFromParams : '-'}</h2>
                 {!placeholderTicker && (
-                    <div className={styles.alignCenter}>
+                    <div className={styles.commentWatchlistContainer}>
                         <button
                             onClick={() => setShowComments(!showComments)}
                             className={`${styles.commentButton} ${

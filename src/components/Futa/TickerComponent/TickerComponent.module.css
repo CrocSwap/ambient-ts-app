@@ -251,17 +251,24 @@
 
 .tickerNameContainer{
     display: grid;
-    grid-template-columns: auto 120px;
+    grid-template-columns: auto 150px;
     gap: 8px;
     align-items: center;
+}
+.commentWatchlistContainer{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   
 }
 .commentButton{
     border: 1px solid var(--dark2, #111A1E);
 background: var(--dark2, #111A1E);
-padding: 4px 8px;
+padding: 4px 16px;
 color: var(--text2, #789090);
 font-size: 14px;
-height: 20px;
+height: 25px;
 display: flex;
 justify-content: space-between;
 align-items: center;
@@ -270,11 +277,20 @@ cursor: pointer;
 
 }
 .commentButton:hover{
+    transition: all var(--animation-speed) ease-in-out;
+
     border: 1px solid var(--accent1);
     color: var(--accent1)
 }
 .watchlistButton{
     padding: 4px;
+    background: var(--dark2);
+    border: 1px solid var(--dark2);
+    height: 25px;
+    width: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .watchlistButton:hover{

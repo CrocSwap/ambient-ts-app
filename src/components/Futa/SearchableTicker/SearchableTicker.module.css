@@ -47,7 +47,7 @@
     height: 24px;
     padding: 0px 4px 0px 8px;
     gap: 4px;
-    background-color: var(--dark4);
+    background-color: var(--dark2);
 }
 
 .text_search_box > input {
@@ -76,9 +76,9 @@
 
 .sort_toggles > button {
     width: 110px;
-    height: 24px;
-    border: 1px solid var(--dark3, #1e1e24);
-    background: var(--dark4, #171f22);
+    height: 25px;
+    border: 1px solid var(--dark3);
+    background: var(--dark3);
     color: var(--text2);
     display: flex;
     justify-content: center;
@@ -91,16 +91,18 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.buttonOn:hover,
-.buttonOff:hover {
-    border: 1px solid var(--text1);
-    color: var(--text1);
+.sort_toggles button:hover{
+    border: 1px solid var(--accent1);
+    color: var(--accent1)
+    
 }
+
+
 
 .buttonOn {
     color: var(--accent1) !important;
     border: 1px solid var(--accent1) !important;
-}
+} 
 
 .filters {
     position: relative;
@@ -114,18 +116,19 @@
 }
 .timeDropdownButton {
     border-left: 4px solid var(--accent1, #62ebf1);
-    background: var(--dark4, #171f22);
+    background: var(--dark2);
     display: flex;
     padding: 4px 4px 4px 8px;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    height: 24px;
+    height: 25px;
     width: 100%;
+    text-transform: uppercase;
 }
 .timeDropdownButton p {
-    font-size: 12px;
-    color: var(--text1);
+    font-size: 14px;
+    color: var(--accent1);
 }
 
 .sort_direction {
@@ -142,7 +145,7 @@
 .dropdown {
     height: auto;
     width: calc(100% - 25px);
-    background-color: var(--dark4);
+    background-color: var(--dark2);
     position: absolute;
     top: 30px;
     overflow-y: scroll;
@@ -158,6 +161,8 @@
     color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
+    padding: 0 4px;
+    text-transform: uppercase;
 }
 
 .timeItem:hover {

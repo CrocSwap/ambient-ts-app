@@ -16,7 +16,7 @@ const Divider: React.FC<DividerProps> = ({ count, vertical }) => {
             style={{
                 height: vertical ? '100%' : '1px',
                 width: vertical ? '1px' : '100%',
-                backgroundColor: 'var(--dark3)',
+                backgroundColor: '#424649',
             }}
         />
     ));
