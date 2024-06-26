@@ -17,6 +17,7 @@ import {
 } from './ambient-utils/constants';
 import scrollLogo from './assets/images/networks/scroll.png';
 import blastLogo from './assets/images/networks/blast_logo.png';
+import sepoliaLogo from './assets/images/networks/sepolia_network_logo.png';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -61,6 +62,7 @@ const modal = createWeb3Modal({
         168587773: blastLogo,
         534351: scrollLogo,
         534352: scrollLogo,
+        11155111: sepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',

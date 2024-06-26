@@ -34,7 +34,11 @@ export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
                     : `${String(days).padStart(2, '0') + 'd'}`
                 : `${hours}h`;
 
-        return `${daysAndHours}:${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
+        const daysAndHoursAndMinutes = `${daysAndHours}:${String(minutes).padStart(2, '0')}m`;
+
+        return days > 0
+            ? daysAndHoursAndMinutes
+            : `${daysAndHoursAndMinutes}:${String(secs).padStart(2, '0')}s`;
     }
 }
 export function getTimeRemainingAbbrev(
