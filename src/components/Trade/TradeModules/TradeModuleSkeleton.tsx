@@ -19,6 +19,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface PropsIF {
     chainId: string;
@@ -60,6 +61,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -148,7 +150,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     padding='0 32px'
                 >
                     {transactionDetails}
-                    <SmolRefuelLink />
+                    {(isSwapPage && isActiveNetworkPlume) || <SmolRefuelLink />}
                     {isUserConnected === undefined ||
                     !areDefaultTokensUpdatedForChain ? null : isUserConnected ===
                       true ? (
