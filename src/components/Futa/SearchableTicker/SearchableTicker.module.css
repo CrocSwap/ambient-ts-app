@@ -15,7 +15,7 @@
 }
 
 .header > h3 {
-    font-size: 24px;
+    font-size: 36px;
     text-transform: uppercase;
 }
 
@@ -193,13 +193,14 @@
 .tickerItemContainer p:first-of-type {
     text-transform: uppercase;
 }
-.tickerItemContainer p {
+.tickerItemContainer p:not(:nth-of-type(3)) {
     padding: 0 8px;
 }
 
 .tickerItemContainer p:nth-of-type(3),
 .tickerHeader p:nth-of-type(3) {
     text-align: end;
+  
 }
 
 .statusContainer {
