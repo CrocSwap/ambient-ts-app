@@ -196,11 +196,13 @@ export default function SearchableTicker(props: propsIF) {
                                 autoComplete='off'
                                 tabIndex={1}
                             />
-                            <MdClose
-                                size={20}
-                                color='var(--text2)'
-                                onClick={() => clearInput()}
-                            />
+                            {searchInputRaw && (
+                                <MdClose
+                                    size={20}
+                                    color='var(--text2)'
+                                    onClick={() => clearInput()}
+                                />
+                            )}
                         </div>
                         <div className={styles.filters} ref={timeDropdownRef}>
                             <div className={styles.timeDropdownContent}>
