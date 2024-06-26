@@ -119,7 +119,11 @@ export const REQUEST_TIMEOUT_DELAY = import.meta.env.VITE_REQUEST_TIMEOUT_DELAY
 export const NETWORK_ACCESS = import.meta.env.NETWORK_ACCESS || 'disabled';
 export const CACHE_UPDATE_FREQ_IN_MS = 60000; // 1 minute
 
-const brandsExcludedFromPointsDisplays = ['plumeSepolia', 'plume', 'futa'];
+export const brandsExcludedFromPointsDisplays = [
+    'plumeSepolia',
+    'plume',
+    'futa',
+];
 
 export const DEFAULT_POPUP_CTA_DISMISSAL_DURATION_MINUTES =
     brand && brandsExcludedFromPointsDisplays.includes(brand)

@@ -46,6 +46,7 @@ import PointsBanner from './PointsBanner';
 
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { BrandContext } from '../../contexts/BrandContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -73,6 +74,7 @@ function Trade() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { showTopPtsBanner, dismissTopBannerPopup } =
         useContext(AppStateContext);
@@ -277,11 +279,15 @@ function Trade() {
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
-                    {showTopPtsBanner && showPoints && (
-                        <div style={{ padding: '0 8px' }}>
-                            <PointsBanner dismissElem={dismissTopBannerPopup} />
-                        </div>
-                    )}
+                    {showTopPtsBanner &&
+                        showPoints &&
+                        !isActiveNetworkPlume && (
+                            <div style={{ padding: '0 8px' }}>
+                                <PointsBanner
+                                    dismissElem={dismissTopBannerPopup}
+                                />
+                            </div>
+                        )}
 
                     <TradeChartsHeader tradePage />
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
