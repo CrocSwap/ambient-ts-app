@@ -55,7 +55,7 @@
 }
 
 .linkContainer:hover {
-    color: var(--accent1);
+    color: var(--text1);
 }
 
 .version {
@@ -64,25 +64,26 @@
     text-transform: uppercase;
 }
 
-.logoutButton {
+.connectButton {
     width: 100%;
     display: flex;
     padding: 2px 8px;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
     text-transform: uppercase;
     background: var(--accent1, #0ccdff);
-    color: var(--dark1, #06060c);
-    border: 1px solid var(--accent1);
+    color: var(--dark1);
+    border: none;
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
     outline: none;
 }
 
-.logoutButton:hover {
-    background-color: transparent;
-    color: var(--accent1);
+.connectButton:hover {
+    background: var(--accent2);
+    color: var(--dark1);
 }
 
 .logoContainer {
@@ -105,33 +106,12 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 .desktopLink:hover {
-    color: var(--accent1);
+    color: var(--text1);
 }
 
-.connectButton{
-   
-    height: 28px;
-    outline: none;
-    padding: 2px 8px;
-    font-size: var(--header-size);
-    line-height: var(--header1-lh);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-self: stretch;
-    background: var(--accent1, #0CCDFF);
-    outline: none;
-    border: 1px solid var(--accent1);
-    cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
-}
 
-.connectButton:hover{
-    background: transparent;
-    color: var(--accent1)
-}
 @media (min-width: 768px) {
-    .logoutButton {
+    .connectButton {
         max-width: 300px;
     }
 

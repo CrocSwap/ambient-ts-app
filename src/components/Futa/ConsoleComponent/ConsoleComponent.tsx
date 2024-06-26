@@ -6,7 +6,7 @@ export default function ConsoleComponent() {
     const containerVariants = {
         hidden: { height: 0, opacity: 0 },
         visible: {
-            height: 'auto',
+            height: '',
             opacity: 1,
             transition: {
                 duration: 0.3,
@@ -48,7 +48,7 @@ export default function ConsoleComponent() {
                 exit='exit'
                 variants={containerVariants}
             >
-                {auctionData.map((item) => (
+                {[...auctionData, ...auctionData].map((item) => (
                     <motion.div
                         className={styles.actionItem}
                         key={JSON.stringify(item)}

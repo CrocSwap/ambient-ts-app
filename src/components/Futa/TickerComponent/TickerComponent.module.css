@@ -199,11 +199,11 @@
     gap: 10px;
     align-self: stretch;
     background: var(--accent1, #0ccdff);
+    color: var(--dark1);
     outline: none;
-    border: 1px solid var(--accent1);
+    border: none;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
-    color: var(--dark1);
     font-size: 24px;
     text-transform: uppercase;
 }
@@ -215,9 +215,8 @@
     color: var(--text2)
 }
 .bidButtonDesktop:hover {
-    background: transparent;
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
+    background: var(--accent2);
+    color: var(--dark1);
 }
 .create_button_disabled {
     border: none;
