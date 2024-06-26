@@ -32,6 +32,7 @@ font-family: var(--font-family)  !important;
 }
 
 .desktopContainer{
+    background: var(--dark1);
     width: 100%;
     position:fixed;
 bottom:0;

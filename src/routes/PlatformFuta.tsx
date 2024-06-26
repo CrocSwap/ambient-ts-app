@@ -15,33 +15,42 @@ const PlatformFutaRoutes: React.FC = () => {
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
 
     return (
-        <Routes>
-            <Route
-                path='/'
-                element={
-                    <Home
-                        hasVideoPlayedOnce={hasVideoPlayedOnce}
-                        setHasVideoPlayedOnce={setHasVideoPlayedOnce}
-                    />
-                }
-            />
-            <Route path='/explore' element={<Explore />} />
-            <Route path='/swap' element={<Swap />} />
-            <Route path='/learn' element={<Learn />} />
-            <Route path='/account' element={<Account />} />
-            <Route path='/auctions' element={<Auctions placeholderTicker />} />
+        <div style={{ background: 'var(--dark1)' }}>
+            <Routes>
+                <Route
+                    path='/'
+                    element={
+                        <Home
+                            hasVideoPlayedOnce={hasVideoPlayedOnce}
+                            setHasVideoPlayedOnce={setHasVideoPlayedOnce}
+                        />
+                    }
+                />
 
-            <Route path='/trade' element={<Navigate to='/explore' replace />} />
-            <Route path='/create' element={<Create />} />
-            <Route
-                path='/auctions/ticker'
-                element={desktopScreen ? <Auctions /> : <Ticker />}
-            />
-            <Route
-                path='/auctions/:version/:ticker'
-                element={desktopScreen ? <Auctions /> : <Ticker />}
-            />
-        </Routes>
+                <Route path='/explore' element={<Explore />} />
+                <Route path='/swap' element={<Swap />} />
+                <Route path='/learn' element={<Learn />} />
+                <Route path='/account' element={<Account />} />
+                <Route
+                    path='/auctions'
+                    element={<Auctions placeholderTicker />}
+                />
+
+                <Route
+                    path='/trade'
+                    element={<Navigate to='/explore' replace />}
+                />
+                <Route path='/create' element={<Create />} />
+                <Route
+                    path='/auctions/ticker'
+                    element={desktopScreen ? <Auctions /> : <Ticker />}
+                />
+                <Route
+                    path='/auctions/:version/:ticker'
+                    element={desktopScreen ? <Auctions /> : <Ticker />}
+                />
+            </Routes>
+        </div>
     );
 };
 
