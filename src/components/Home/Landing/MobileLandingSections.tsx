@@ -117,7 +117,7 @@ export default function MobileLandingSections() {
                         justifyContent='center'
                         alignItems='center'
                         fullWidth
-                        className={styles.home_wallpaper_mobile}
+                        className={styles.clouds}
                     >
                         <FlexContainer
                             flexDirection={'column'}
