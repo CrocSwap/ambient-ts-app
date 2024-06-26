@@ -563,7 +563,7 @@ function SentMessagePanel(props: SentMessageProps) {
         const targetStr = props.mentionIndex
             ? 'account'
             : mentionStr.indexOf('.eth') >= 0
-              ? mentionStr.replace('@', '')
+              ? mentionStr.replace('@', '').replace(',', '')
               : mentionedWalletID;
         if (location.pathname != `/${targetStr}`) {
             navigate(`/${targetStr}`);
