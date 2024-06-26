@@ -46,7 +46,6 @@ import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
 import VolumeBarCanvas from './Volume/VolumeBarCanvas';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
-import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 import { CSSTransition } from 'react-transition-group';
 import Divider from '../../components/Global/Divider/Divider';
 import YAxisCanvas from './Axes/yAxis/YaxisCanvas';
@@ -172,12 +171,10 @@ interface propsIF {
     setChartResetStatus: React.Dispatch<
         React.SetStateAction<{
             isResetChart: boolean;
-            resetDomain: undefined | number[];
         }>
     >;
     chartResetStatus: {
         isResetChart: boolean;
-        resetDomain: undefined | number[];
     };
 }
 
@@ -360,7 +357,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
-    const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         if (
@@ -571,7 +567,10 @@ export default function Chart(props: propsIF) {
 
             return filtered;
         }
-        return unparsedCandleData;
+        return unparsedCandleData.filter(
+            (data: CandleDataChart) =>
+                data.isShowData || !isCondensedModeEnabled,
+        );
     };
 
     const unparsedCandleData = useMemo(() => {
@@ -719,7 +718,6 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxisTooltip, setXaxisTooltip] = useState<any>();
     const [crosshairActive, setCrosshairActive] = useState<string>('none');
-    const [isCrDataIndActive, setIsCrDataIndActive] = useState<boolean>(false);
     const [xAxisActiveTooltip, setXaxisActiveTooltip] = useState('');
 
     // Crosshairs
@@ -727,8 +725,6 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [crDataIndicator, setCrDataIndicator] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
 
@@ -789,30 +785,6 @@ export default function Chart(props: propsIF) {
             setCandleDomains(localCandleDomains);
         }
     }, [debouncedGetNewCandleDataRight]);
-
-    // calculates time croc icon will be found
-    const lastCrDate = useMemo(() => {
-        const nowDate = new Date();
-
-        const filteredData = unparsedData.candles
-            .filter((item) => {
-                return (
-                    item.tvlData.tvl === 0 &&
-                    item.time * 1000 < nowDate.getTime()
-                );
-            })
-            .map((o) => {
-                return o.time;
-            });
-
-        if (filteredData.length > 0) {
-            const lastCrocDate = Math.max(...filteredData);
-
-            if (lastCrocDate) {
-                return lastCrocDate * 1000;
-            }
-        }
-    }, [unparsedData.candles?.length]);
 
     const render = useCallback(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2595,17 +2567,31 @@ export default function Chart(props: propsIF) {
 
             setChartResetStatus({
                 isResetChart: true,
-                resetDomain: [
-                    centerX - diff * xAxisBuffer,
-                    centerX + diff * (1 - xAxisBuffer),
-                ],
             });
             timeGaps.forEach((obj) => (obj.isAddedPixel = false));
 
-            scaleData?.xScale.domain([
+            const targetValue = Date.now();
+            const targetPixel = scaleData.xScale.range()[1] * (1 - xAxisBuffer);
+
+            const currentRange = scaleData?.xScale.range();
+            const currentDomain = [
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
-            ]);
+            ];
+
+            const newDomainMin =
+                targetValue -
+                ((targetPixel - currentRange[1]) /
+                    (currentRange[0] - currentRange[1])) *
+                    (currentDomain[1] - currentDomain[0]);
+            const newDomainMax =
+                targetValue +
+                ((currentRange[0] - targetPixel) /
+                    (currentRange[0] - currentRange[1])) *
+                    (currentDomain[1] - currentDomain[0]);
+            const domain = [newDomainMin, newDomainMax];
+
+            scaleData?.xScale.domain([domain[0], domain[1]]);
         }
     }
 
@@ -2621,7 +2607,7 @@ export default function Chart(props: propsIF) {
 
             setCandleDomains(candleDomain);
         } else {
-            if (reset && scaleData) {
+            if ((reset || latest) && scaleData) {
                 const lastCandleDataTime =
                     lastCandleData?.time * 1000 - period * 1000;
                 const minDomain = Math.floor(scaleData?.xScale.domain()[0]);
@@ -2958,15 +2944,6 @@ export default function Chart(props: propsIF) {
 
             setCrosshairHorizontal(() => {
                 return crosshairHorizontal;
-            });
-
-            const crDataIndicator = createIndicatorLine(
-                scaleData?.xScale,
-                scaleData.yScale,
-            );
-
-            setCrDataIndicator(() => {
-                return crDataIndicator;
             });
 
             if (
@@ -4130,31 +4107,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         const canvas = d3
-            .select(d3CanvasCrIndicator.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        if (crDataIndicator) {
-            d3.select(d3CanvasCrIndicator.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
-
-                    if (isCrDataIndActive || xAxisActiveTooltip === 'croc') {
-                        crDataIndicator([lastCrDate]);
-                    }
-                })
-                .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
-                    crDataIndicator.context(ctx);
-                });
-        }
-        renderCanvasArray([d3CanvasCrIndicator]);
-    }, [crDataIndicator, isCrDataIndActive, xAxisActiveTooltip]);
-
-    useEffect(() => {
-        const canvas = d3
             .select(d3CanvasMarketLine.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
@@ -4243,21 +4195,21 @@ export default function Chart(props: propsIF) {
         let maxYBoundary = undefined;
         if (scaleData) {
             if (
-                visibleCandleData !== undefined &&
-                (!isTriggeredByZoom || visibleCandleData.length > 10) &&
+                unparsedCandleData !== undefined &&
+                (!isTriggeredByZoom || unparsedCandleData.length > 10) &&
                 poolPriceWithoutDenom
             ) {
                 const placeHolderPrice = denomInBase
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
-                const filteredMin = d3.min(visibleCandleData, (d) =>
+                const filteredMin = d3.min(unparsedCandleData, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
                         : d.minPriceExclMEVDecimalCorrected,
                 );
 
-                const filteredMax = d3.max(visibleCandleData, (d) =>
+                const filteredMax = d3.max(unparsedCandleData, (d) =>
                     denomInBase
                         ? d.invMinPriceExclMEVDecimalCorrected
                         : d.maxPriceExclMEVDecimalCorrected,
@@ -4739,11 +4691,9 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         lastCandleData,
         advancedMode,
-        lastCrDate,
         showVolume,
         xAxisActiveTooltip,
         timeOfEndCandle,
-        isCrDataIndActive,
         bandwidth,
         liquidityData,
         hoveredDrawnShape,
@@ -5552,29 +5502,7 @@ export default function Chart(props: propsIF) {
     }, [crosshairData]);
 
     useEffect(() => {
-        if (xAxisTooltip) {
-            xAxisTooltip.html('<p> 🐊 Beginning of Ambient Data </p>');
-
-            xAxisTooltip.style(
-                'visibility',
-                xAxisActiveTooltip === 'croc' ? 'visible' : 'hidden',
-            );
-
-            if (lastCrDate) {
-                relocateTooltip(xAxisTooltip, lastCrDate);
-            }
-        }
-    }, [
-        xAxisActiveTooltip,
-        xAxisTooltip,
-        isCrDataIndActive,
-        lastCrDate,
-        mainCanvasBoundingClientRect,
-        xAxisHeightPixel,
-    ]);
-
-    useEffect(() => {
-        if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
+        if (xAxisTooltip && scaleData) {
             xAxisTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
 
             xAxisTooltip.style(
@@ -5966,7 +5894,7 @@ export default function Chart(props: propsIF) {
                     >
                         <CandleChart
                             chartItemStates={props.chartItemStates}
-                            data={visibleCandleData}
+                            data={unparsedCandleData}
                             denomInBase={denomInBase}
                             lastCandleData={lastCandleData}
                             period={period}
@@ -6041,11 +5969,6 @@ export default function Chart(props: propsIF) {
                             ref={d3CanvasCrosshair}
                             className='cr-canvas'
                         ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasCrIndicator}
-                            className='cr-indicator-canvas'
-                        ></d3fc-canvas>
-
                         <d3fc-canvas
                             ref={d3CanvasMarketLine}
                             className='market-line-canvas'
@@ -6140,8 +6063,6 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
-                                lastCrDate={lastCrDate}
-                                isCrDataIndActive={isCrDataIndActive}
                                 xAxisActiveTooltip={xAxisActiveTooltip}
                                 zoomBase={zoomBase}
                                 mainZoom={mainZoom}
@@ -6182,8 +6103,6 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
-                                lastCrDate={lastCrDate}
-                                isCrDataIndActive={isCrDataIndActive}
                                 xAxisActiveTooltip={xAxisActiveTooltip}
                                 mainZoom={mainZoom}
                                 lastCandleData={lastCandleData}
@@ -6212,21 +6131,16 @@ export default function Chart(props: propsIF) {
                             crosshairActive={crosshairActive}
                             crosshairData={crosshairData}
                             firstCandleData={firstCandleData}
-                            isCrDataIndActive={isCrDataIndActive}
                             isLineDrag={isLineDrag}
                             lastCandleData={lastCandleData}
-                            lastCrDate={lastCrDate}
                             mouseLeaveCanvas={mouseLeaveCanvas}
                             period={period}
                             render={render}
                             scaleData={scaleData}
                             reset={reset}
                             setCrosshairActive={setCrosshairActive}
-                            setIsCrDataIndActive={setIsCrDataIndActive}
                             setXaxisActiveTooltip={setXaxisActiveTooltip}
                             showLatestActive={showLatestActive}
-                            unparsedCandleData={visibleCandleData}
-                            xAxisActiveTooltip={xAxisActiveTooltip}
                             zoomBase={zoomBase}
                             isChartZoom={isChartZoom}
                             isToolbarOpen={isToolbarOpen}

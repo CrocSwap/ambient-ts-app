@@ -25,8 +25,6 @@ interface FreeRateData {
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
-    lastCrDate: number | undefined;
-    isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
     mainZoom: any;
@@ -55,8 +53,6 @@ function FeeRateChart(props: FreeRateData) {
         setCrosshairActive,
         setCrosshairData,
         crosshairActive,
-        lastCrDate,
-        isCrDataIndActive,
         xAxisActiveTooltip,
         zoomBase,
         mainZoom,
@@ -263,13 +259,6 @@ function FeeRateChart(props: FreeRateData) {
                     .on('draw', () => {
                         setCanvasResolution(canvas);
                         lineSeries(_feeData);
-                        if (
-                            isCrDataIndActive ||
-                            xAxisActiveTooltip === 'croc'
-                        ) {
-                            ctx.setLineDash([0.6, 0.6]);
-                            crDataIndicator([lastCrDate]);
-                        }
                     })
                     .on('measure', (event: any) => {
                         feeRateyScale.range([event.detail.height, 0]);
@@ -280,14 +269,7 @@ function FeeRateChart(props: FreeRateData) {
             }
             renderCanvas();
         }
-    }, [
-        lineSeries,
-        feeData,
-        crDataIndicator,
-        lastCrDate,
-        isCrDataIndActive,
-        xAxisActiveTooltip,
-    ]);
+    }, [lineSeries, feeData, crDataIndicator, xAxisActiveTooltip]);
 
     useEffect(() => {
         const canvas = d3
