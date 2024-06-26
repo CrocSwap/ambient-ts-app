@@ -15,6 +15,13 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { Link } from 'react-router-dom';
+import Seperator from '../../../components/Futa/Seperator/Seperator';
+// Tooltip Label Component
+interface TooltipTitleProps {
+    itemTitle: string;
+    tooltipTitle: string;
+    isHeader?: boolean;
+}
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
@@ -23,16 +30,46 @@ export default function Account() {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
 
+    const TooltipLabel = (props: TooltipTitleProps) => {
+        const { itemTitle, tooltipTitle, isHeader } = props;
+        return (
+            <div className={styles.tooltipLabelContainer}>
+                <p
+                    className={styles.tickerLabel}
+                    style={{
+                        color: isHeader ? 'var(--text1)' : '',
+                        fontSize: isHeader ? '24px' : '',
+                    }}
+                >
+                    {itemTitle}
+                </p>
+                <TooltipComponent
+                    placement='bottom'
+                    noBg
+                    title={
+                        <div className={styles.tooltipTitleDisplay}>
+                            {tooltipTitle}
+                        </div>
+                    }
+                />
+            </div>
+        );
+    };
+
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
             <h3>CLAIM ALL</h3>
-            <p>CLAIM ALL TOKENS FROM WINNING AUCTIONS AND UNUSED BIDS</p>
+            <p className={styles.claimAllText}>
+                CLAIM ALL TOKENS FROM WINNING AUCTIONS AND UNUSED BIDS
+            </p>
             <div className={styles.extraFeeContainer}>
-                <div className={styles.alignCenter}>
-                    <p>NETWORK FEE</p>
-                    <TooltipComponent title='Estimated network fee (i.e. gas cost) to join bid' />
+                <div className={styles.justifyRow}>
+                    <TooltipLabel
+                        itemTitle='NETWORK FEE'
+                        tooltipTitle='Estimated network fee (i.e. gas cost) to join bid'
+                    />
+                    <p style={{ color: 'var(--text2)' }}>~0.01</p>
                 </div>
-                <p style={{ color: 'var(--text2)' }}>~0.01</p>
             </div>
             <button className={styles.claimButton}>CLAIM ALL</button>
         </div>
@@ -71,6 +108,9 @@ export default function Account() {
                     title='account'
                     isAccount={true}
                 />
+            </div>
+            <div className={styles.seperatorContainer}>
+                <Seperator dots={70} />
             </div>
 
             <div className={styles.rightLayout}>

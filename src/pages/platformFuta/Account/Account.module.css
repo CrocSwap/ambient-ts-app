@@ -38,7 +38,7 @@ text-transform: uppercase;
     gap: 8px;
 
     
-    padding-top: 3.5rem;
+    padding-top: 2.7rem;
     
 }
 
@@ -46,11 +46,15 @@ text-transform: uppercase;
     color: var(--text1, #CEFFFF);
 font-size: 20px;
 }
-.claimAllContainer p{
+.claimAllText{
+    padding: 0 16px;
+    }
+    
+    .claimAllContainer p{
     color: var(--text2);
     font-size: 12px;
-    padding: 0 16px;
     text-align: center;
+
 }
 
 .extraFeeContainer{
@@ -92,10 +96,14 @@ transition: all var(--animation-speed) ease-in-out;
 /* desktop */
 .desktopContainer {
     display: grid;
-    grid-template-columns: auto 390px;
+    grid-template-columns: auto 4px 390px;
     padding: 0 16px;
     height: calc(100vh - 56px);
     gap: 16px;
+}
+.seperatorContainer{
+   
+    height: calc(100vh - 80px)
 }
 
 .rightLayout{
@@ -154,6 +162,32 @@ transition: all var(--animation-speed) ease-in-out;
     color: var(--dark1);
 }
 
+.justifyRow{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tooltipLabelContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+
+.tooltipTitleDisplay{
+    border: 1px solid var(--text2);
+    padding: 8px;
+    font-size: 16px;
+    background: var(--dark2);
+    color: var(--text3);
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin-left: 50px;
+   
+}
 @media (max-width: 780px) {
 
 .claimAllContainer h3{

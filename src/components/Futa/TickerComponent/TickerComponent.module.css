@@ -54,7 +54,7 @@
     
     color: var(--text1, #f0f0f8);
 
-    font-size: 20px;
+    font-size: 24px;
     text-transform: uppercase;
     
 }
@@ -122,13 +122,13 @@
     width: 100%;
     outline: none;
     border: none;
-    background: var(--dark4);
+    background: var(--dark2);
     display: flex;
     justify-content: space-between;
     height: 42px;
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: 18px;
     text-transform: uppercase;
     padding: 8px;
     color: var(--text2);
@@ -171,6 +171,7 @@
     align-self: stretch;
     border: 1px solid var(--dark3, #1e1e24);
     margin-bottom: 8px;
+    
 }
 .extraRow {
     width: 100%;
@@ -178,15 +179,20 @@
     align-items: center;
     justify-content: space-between;
 }
+
+
 .alignCenter {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    font-size: 12px;
+    
     color: var(--text2);
 }
 
+.extraRow p{
+    font-size: 14px;
+}
 .buttonOn{
     color: var(--accent1) !important;
     border: 1px solid var(--accent1) !important
@@ -211,7 +217,7 @@
 .bidButtonDisabled {
     pointer-events: none;
     background: var(--dark4);
-    border: 1px solid transparent;
+    border: none;
     color: var(--text2)
 }
 .bidButtonDesktop:hover {
@@ -319,7 +325,7 @@ cursor: pointer;
 @media (min-width: 1280px) {
     .container {
         padding: 0;
-        padding-top: 12px;
+        padding: 12px 0;
         /* border-left: 1px dashed var(--dark3); */
         position: relative;
         overflow: hidden;
