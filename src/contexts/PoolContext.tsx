@@ -18,8 +18,10 @@ import {
     getFormattedNumber,
     isETHPair,
     isStablePair,
+    isWbtcToken,
     isWrappedNativeToken,
 } from '../ambient-utils/dataLayer';
+import { ZERO_ADDRESS } from '../ambient-utils/constants';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -69,7 +71,10 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         );
         const isPairEthPair = isETHPair(baseTokenAddress, quoteTokenAddress);
 
-        if (isPairStablePair || isPairEthPair) {
+        const isPairEthWbtc =
+            baseTokenAddress === ZERO_ADDRESS && isWbtcToken(quoteTokenAddress);
+
+        if (isPairStablePair || isPairEthPair || isPairEthWbtc) {
             setIsTradeDollarizationEnabled(false);
         } else {
             setIsTradeDollarizationEnabled(true);
