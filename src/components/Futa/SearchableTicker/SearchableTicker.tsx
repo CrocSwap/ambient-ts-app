@@ -86,6 +86,19 @@ export default function SearchableTicker(props: propsIF) {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
 
+    // clear search input on ESC keypress
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent): void => {
+            if (document.activeElement?.id === INPUT_DOM_ID) {
+                e.code === 'Escape' && clearInput();
+            }
+        };
+        document.body.addEventListener('keydown', handleEscape);
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', handleEscape);
+        };
+    });
+
     // split auction data into complete vs incomplete subsets
     // runs any time new data is received by the components
     const [incompleteAuctions, completeAuctions] = useMemo<
