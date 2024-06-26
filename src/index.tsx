@@ -10,11 +10,13 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
 
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
+    brand,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
 import scrollLogo from './assets/images/networks/scroll.png';
+import plumeLogo from './assets/images/networks/plume.png';
 import blastLogo from './assets/images/networks/blast_logo.png';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
@@ -60,16 +62,27 @@ const modal = createWeb3Modal({
         168587773: blastLogo,
         534351: scrollLogo,
         534352: scrollLogo,
+        161221135: plumeLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',
     enableAnalytics: false,
-    themeVariables: {
-        '--w3m-color-mix': 'var(--dark2)',
-        '--w3m-color-mix-strength': 40,
-        '--w3m-font-family': 'var(--font-family)',
-        '--w3m-accent': 'var(--accent1)',
-    },
+    themeVariables:
+        brand === 'plumeSepolia'
+            ? {
+                  //   '--w3m-color-mix': '#ebebed',
+                  //   '--w3m-color-mix': '#eff1f4',
+                  '--w3m-color-mix': '#e6eaf2',
+                  '--w3m-color-mix-strength': 20,
+                  '--w3m-font-family': 'var(--font-family)',
+                  '--w3m-accent': '#f44336',
+              }
+            : {
+                  '--w3m-color-mix': 'var(--dark2)',
+                  '--w3m-color-mix-strength': 40,
+                  '--w3m-font-family': 'var(--font-family)',
+                  '--w3m-accent': 'var(--accent1)',
+              },
 });
 
 modal.subscribeEvents((event) => {
