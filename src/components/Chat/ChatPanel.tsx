@@ -1,6 +1,7 @@
 import { useMediaQuery } from '@material-ui/core';
 import Picker, { IEmojiData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
+import EmojiPickerComponent from './EmojiPickerComponent';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
@@ -128,6 +129,8 @@ function ChatPanel(props: propsIF) {
         showVerifyWalletConfirmationInDelete,
         setShowVerifyWalletConfirmationInDelete,
     ] = useState(false);
+
+    const [activeCategory, setActiveCategory] = useState('smileys_people');
 
     // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
@@ -1421,6 +1424,10 @@ function ChatPanel(props: propsIF) {
                                 onEmojiClick={addReactionEmojiPickListener}
                                 pickerStyle={{ width: '100%' }}
                                 disableSkinTonePicker={true}
+                            />
+                            <EmojiPickerComponent
+                                activeCategory={activeCategory}
+                                setActiveCategory={setActiveCategory}
                             />
                         </div>
                     )}

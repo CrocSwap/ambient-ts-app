@@ -145,7 +145,7 @@
 .emojiPicker {
     width: 97%;
     padding: 0px 8px;
-    height: 304px;
+    bottom: 0;
     text-emphasis-color: white;
 }
 

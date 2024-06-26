@@ -117,6 +117,7 @@ export default function MessageInput(props: MessageInputProps) {
         event: React.MouseEvent,
         emojiObject: IEmojiData,
     ) => {
+        console.log('--HERE-- MESSAGE İNPUT');
         if (inputRef.current) {
             const emoji = emojiObject.emoji;
             const currentMessage = message;
