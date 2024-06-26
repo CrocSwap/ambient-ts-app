@@ -56,7 +56,7 @@
 }
 .inputContainer {
     padding: 2px 8px;
-    background-color: var(--dark4);
+    background-color: var(--dark2);
     height: 40px;
     display: grid;
     grid-template-columns: 1fr 30px;
@@ -140,27 +140,6 @@
     gap: 8px;
 }
 
-.tooltipLabelContainer{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-
-}
-
-
-.tooltipTitleDisplay{
-  
-    padding: 8px;
-    font-size: 14px;
-    background: var(--dark3);
-    color: var(--text1);
-    line-height: 1.2;
-    text-transform: uppercase;
-    margin-left: 50px;
-    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.25);
-   
-}
 
 .justifyRow{
     width: 100%;
@@ -176,7 +155,7 @@
         -moz-background-size: cover;
         -o-background-size: cover;
         background-size: cover;
-        height: calc(100vh - 75px);
+        height: calc(100vh - 155px);
         transition: all var(--animation-speed) ease-in-out;
        
     }

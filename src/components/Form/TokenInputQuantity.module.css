@@ -108,13 +108,13 @@
     animation: shadow-pulse 1s 6;
 }
 .futaLayout {
+   
     display: grid;
-    grid-template-columns: 70% 30%;
-    min-height: 40px;
+    grid-template-columns: 70% 27%;
     gap: 8px;
-
     width: 100%;
     font-family: 'Fira Mono';
+    height: 70px;
 }
 
 .futaLayoutLeft {
@@ -126,6 +126,9 @@
     align-items: flex-start;
     flex: 1 0 0;
     align-self: stretch;
+    height: 70px;
+
+   
 }
 
 .futaLayoutLeft p {
@@ -133,8 +136,13 @@
     color: var(--text2);
 }
 .futaLayoutRight {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
+
+    height: 70px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
     gap: 8px;
 }
 
@@ -147,6 +155,17 @@
    
 }
 
+.tokenButton{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    height: 60%;
+    color: var(--text1);
+    font-size: 18px;
+}
 .walletBalanceButton {
     display: flex;
     justify-content: center;
@@ -156,4 +175,5 @@
     font-size: 18px;
     color: var(--text2);
     cursor: pointer;
+    height: 39%;
 }

@@ -71,7 +71,7 @@ const modal = createWeb3Modal({
         '--w3m-color-mix': 'var(--dark2)',
         '--w3m-color-mix-strength': 40,
         '--w3m-font-family':
-            brand === 'futa' ? 'var(--roboto)' : 'var(--font-family)',
+            brand === 'futa' ? 'var(--font-family)' : 'var(--font-family)',
         '--w3m-accent': brand === 'futa' ? '#0CCDFF' : 'var(--accent1)',
     },
 });

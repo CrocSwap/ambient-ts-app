@@ -156,10 +156,7 @@
 }
 
 [data-theme='orange_dark'] {
-    --font-logo: 'Lexend Exa', sans-serif;
-    --font-family: 'Lexend Deca', sans-serif;
-    --roboto: 'Roboto Mono', monospace;
-    --mono: monospace, 'Lexend Deca' sans-serif;
+
 
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
