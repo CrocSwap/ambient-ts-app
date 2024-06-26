@@ -294,7 +294,10 @@ export default function SearchableTicker(props: propsIF) {
                     </div>
                 </header>
                 <div className={styles.tickerTableContent}>
-                    {filteredData.map((auction: AuctionDataIF) => (
+                    {(showComplete && auctions.active === 'timeLeft'
+                        ? [...filteredData].reverse()
+                        : [...filteredData]
+                    ).map((auction: AuctionDataIF) => (
                         <TickerItem
                             key={JSON.stringify(auction)}
                             auction={auction}

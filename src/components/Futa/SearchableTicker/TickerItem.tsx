@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './SearchableTicker.module.css';
+import styles2 from './TickerItem.module.css';
 import {
     getFormattedNumber,
     getTimeRemainingAbbrev,
@@ -61,7 +62,7 @@ export default function TickerItem(props: PropsIF) {
             to={'/auctions/v1/' + ticker}
             onClick={() => setSelectedTicker(ticker)}
         >
-            <p>{ticker}</p>
+            <p className={styles2.ticker_name}>{ticker}</p>
             <p className={styles.marketCap}>{formattedMarketCap}</p>
             <p style={{ color: status ? status : 'var(--text1)' }}>
                 {timeRemaining}
