@@ -213,37 +213,23 @@ export default function SearchableTicker(props: propsIF) {
                                     <IoIosArrowUp
                                         size={14}
                                         color={
-                                            auctions.isReversed
+                                            auctions.isReversed ||
+                                            (!auctions.isReversed &&
+                                                auctions.active === 'timeLeft')
                                                 ? ''
                                                 : 'var(--accent1)'
                                         }
-                                        // color={
-                                        //     activeSortOption.slug === 'timeLeft'
-                                        //         ? auctions.isReversed
-                                        //             ? ''
-                                        //             : 'var(--accent1)'
-                                        //         : auctions.isReversed
-                                        //           ? 'var(--accent1)'
-                                        //           : ''
-                                        // }
                                     />
 
                                     <IoIosArrowDown
                                         size={14}
                                         color={
-                                            auctions.isReversed
+                                            auctions.isReversed ||
+                                            (!auctions.isReversed &&
+                                                auctions.active === 'timeLeft')
                                                 ? 'var(--accent1)'
                                                 : ''
                                         }
-                                        // color={
-                                        //     activeSortOption.slug === 'timeLeft'
-                                        //         ? !auctions.isReversed
-                                        //             ? ''
-                                        //             : 'var(--accent1)'
-                                        //         : !auctions.isReversed
-                                        //           ? 'var(--accent1)'
-                                        //           : ''
-                                        // }
                                     />
                                 </div>
                             </div>
