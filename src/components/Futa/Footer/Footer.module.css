@@ -29,19 +29,19 @@ grid-template-columns: repeat(3, 1fr);
     color: var(--accent1)
 }
 
-.desktopContainer{
+.desktopContainer {
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-    position:fixed;
-bottom:0;
-display: flex;
-justify-content: space-between;
-align-items: center;
     height: 20px;
     padding:  6px;
     border-top: 1px solid var(--text3, #3E5859);
+    font-family: 'Fira Mono';
     font-size: 12px;
     color: var(--text2, #789090);
-
 }
 
 .network{

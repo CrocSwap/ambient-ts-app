@@ -231,10 +231,10 @@
 
         --border: rgba(225, 238, 238, 0.25);
 
-    --font-logo: "Fira Mono", monospace;;
-    --font-family: "Fira Mono", monospace;;
-    --roboto: "Fira Mono", monospace;;
-    --mono: "Fira Mono", monospace;;
+    --font-logo: "Fira Mono", monospace;
+    --font-family: "Fira Mono", monospace;
+    --roboto: "Fira Mono", monospace;
+    --mono: "Fira Mono", monospace;
 }
 
 *::placeholder {
