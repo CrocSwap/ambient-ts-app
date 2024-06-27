@@ -2,7 +2,7 @@ import styled from 'styled-components/macro';
 import { FlexContainer } from '../../../../styled/Common';
 
 export const MainContainer = styled.div`
-    z-index: 10;
+    z-index: 15;
     width: 380px;
     height: calc(100vh - 9rem);
     position: absolute;

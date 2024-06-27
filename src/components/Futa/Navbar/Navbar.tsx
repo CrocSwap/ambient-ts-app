@@ -3,13 +3,10 @@ import { useCallback, useContext, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { motion } from 'framer-motion';
-// import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
+import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
 import styles from './Navbar.module.css';
 import Logo from '../../../assets/futa/images/futaLogo.svg';
-import {
-    useWeb3ModalAccount,
-    // useSwitchNetwork,
-} from '@web3modal/ethers/react';
+import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -123,9 +120,9 @@ export default function Navbar() {
     // Custom Hooks
     useOnClickOutside(dropdownRef, clickOutsideHandler);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
-    // const switchNetwork = isConnected
-    //     ? useSwitchNetwork().switchNetwork
-    //     : undefined;
+    const switchNetwork = isConnected
+        ? useSwitchNetwork().switchNetwork
+        : undefined;
 
     // Data
     const dropdownData = [
@@ -195,10 +192,12 @@ export default function Navbar() {
                 {desktopScreen && linksDisplay}
             </div>
             <div className={styles.rightContainer}>
-                {/* <NetworkSelector
-                    switchNetwork={switchNetwork}
-                    customBR={'50%'}
-                /> */}
+                {!desktopScreen && (
+                    <NetworkSelector
+                        switchNetwork={switchNetwork}
+                        customBR={'50%'}
+                    />
+                )}
                 {!isUserConnected && connectWagmiButton}
                 <div className={styles.moreContainer} ref={dropdownRef}>
                     <FiMoreHorizontal

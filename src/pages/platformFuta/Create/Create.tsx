@@ -100,7 +100,7 @@ export default function Create() {
         },
         {
             title: 'NETWORK FEE',
-            tooltipTitle: 'Estimated network fee (i.e. gas cost) to join bid',
+            tooltipTitle: 'NETWORK FEE PAID IN ORDER TO TRANSACT',
             data: networkFee ? '~' + networkFee : '...',
         },
     ];
