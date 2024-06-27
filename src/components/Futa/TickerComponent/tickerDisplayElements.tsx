@@ -84,6 +84,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         auctions: { chainId },
         showComments,
         setShowComments,
+        watchlists,
     } = useContext(AuctionsContext);
 
     const currentMarketCapUsdFormatted =
@@ -269,7 +270,23 @@ export const tickerDisplayElements = (props: PropsIF) => {
                         >
                             COMMENTS{' '}
                         </button>
-                        <FaEye size={25} className={styles.watchlistButton} />
+                        <FaEye
+                            className={
+                                styles[
+                                    tickerFromParams &&
+                                    watchlists.v1.data.includes(
+                                        tickerFromParams,
+                                    )
+                                        ? 'watchlistButtonActive'
+                                        : 'watchlistButtonInactive'
+                                ]
+                            }
+                            size={25}
+                            onClick={() =>
+                                tickerFromParams &&
+                                watchlists.v1.toggle(tickerFromParams)
+                            }
+                        />
                     </div>
                 )}
             </div>

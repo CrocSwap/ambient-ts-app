@@ -10,8 +10,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ fillPercentage }) => {
     // Calculate the number of filled bars
     const filledBars = fillPercentage / 10;
 
-    console.log({ fillPercentage });
-    console.log({ filledBars });
+    // console.log({ fillPercentage });
+    // console.log({ filledBars });
 
     return (
         <div className={styles.progressBarContainer}>

@@ -7,6 +7,11 @@ import {
     mockAuctionDetailsServerResponseGenerator,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
+import {
+    tickerVersions,
+    tickerWatchlistIF,
+    useTickerWatchlist,
+} from '../pages/platformFuta/useTickerWatchlist';
 
 interface AuctionsContextIF {
     auctions: AuctionsDataIF;
@@ -22,6 +27,7 @@ interface AuctionsContextIF {
     auctionStatusData: AuctionStatusDataIF;
     selectedTicker: string | undefined;
     setSelectedTicker: React.Dispatch<React.SetStateAction<string | undefined>>;
+    watchlists: Record<tickerVersions, tickerWatchlistIF>;
     showComplete: boolean;
     setShowComplete: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -183,6 +189,14 @@ export const AuctionsContextProvider = (props: {
         return () => clearInterval(interval);
     }, [chainId, userAddress]);
 
+    // hook managing ticker watchlists for each FUTA version
+    const watchlistV1: tickerWatchlistIF = useTickerWatchlist('v1', [
+        'JUNIOR1',
+        'PEPE1',
+        'DEGEN2',
+        'EMILY3',
+    ]);
+
     const auctionsContext: AuctionsContextIF = {
         auctionStatusData: auctionStatusData,
         auctions: auctionsData,
@@ -197,6 +211,9 @@ export const AuctionsContextProvider = (props: {
         setShowComments: setShowComments,
         selectedTicker: selectedTicker,
         setSelectedTicker: setSelectedTicker,
+        watchlists: {
+            v1: watchlistV1,
+        },
         showComplete: showComplete,
         setShowComplete: setShowComplete,
     };
