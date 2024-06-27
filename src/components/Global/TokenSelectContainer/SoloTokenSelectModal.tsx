@@ -159,11 +159,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
         // Otherwise, query to get token metadata from on-chain
         setCustomToken('querying');
-        cachedTokenDetails(
-            provider as ethers.providers.Provider,
-            validatedInput,
-            chainId,
-        )
+        cachedTokenDetails(provider as ethers.Provider, validatedInput, chainId)
             .then((res) => {
                 // If response has a `decimals` value, treat it as valid
                 if (res?.decimals) {

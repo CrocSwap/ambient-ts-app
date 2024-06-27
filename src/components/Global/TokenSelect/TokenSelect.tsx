@@ -2,7 +2,6 @@
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../ambient-utils/types';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
@@ -30,13 +29,10 @@ export default function TokenSelect(props: propsIF) {
 
     const combinedBalance =
         tokenBalances && indexOfToken !== -1
-            ? BigNumber.from(tokenBalances[indexOfToken].walletBalance ?? '0')
-                  .add(
-                      BigNumber.from(
-                          tokenBalances[indexOfToken].dexBalance ?? '0',
-                      ),
-                  )
-                  .toString()
+            ? (
+                  BigInt(tokenBalances[indexOfToken].walletBalance ?? '0') +
+                  BigInt(tokenBalances[indexOfToken].dexBalance ?? '0')
+              ).toString()
             : undefined;
 
     const combinedBalanceDisplay =
