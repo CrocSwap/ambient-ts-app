@@ -1,4 +1,5 @@
 import {
+    AccountDataIF,
     AuctionDataIF,
     AuctionStatusDataServerIF,
 } from '../../contexts/AuctionsContext';
@@ -56,7 +57,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         ticker: 'JUNIOR',
         createdAt: 1718025986,
         auctionLength: 604800,
-        highestFilledBidInEth: 1.192093,
+        highestFilledBidInEth: 0.7629395,
     },
     {
         ticker: 'EMILY',
@@ -81,7 +82,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         ticker: 'JUNIOR1',
         createdAt: 1719148920,
         auctionLength: 604800,
-        highestFilledBidInEth: 1.192093,
+        highestFilledBidInEth: 1.490116,
     },
     {
         ticker: 'EMILY1',
@@ -116,7 +117,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'DEGEN2',
-        createdAt: 1719448920,
+        createdAt: 1718215986,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
@@ -228,7 +229,8 @@ export const mockAccountData: AuctionDataIF[] = [
         createdAt: 1718125986,
         auctionLength: 86400,
         highestFilledBidInEth: 0.25,
-        highestBidByUserInEth: 3.63798,
+        highestBidByUserInEth: 0.25,
+        userBidSizeUserInEth: 0.12,
         tokenAllocationUnclaimedByUser: 50000,
     },
     {
@@ -237,14 +239,16 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 0.3125,
         highestBidByUserInEth: 0.25,
+        userBidSizeUserInEth: 0.1,
         ethUnclaimedByUser: 0.1,
     },
     {
         ticker: 'JUNIOR',
         createdAt: 1718025986,
         auctionLength: 604800,
-        highestFilledBidInEth: 1.192093,
+        highestFilledBidInEth: 0.7629395,
         highestBidByUserInEth: 0.7629395,
+        userBidSizeUserInEth: 0.15,
         tokenAllocationUnclaimedByUser: 168200,
     },
     {
@@ -253,14 +257,16 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 11.10223,
         highestBidByUserInEth: 0.7629395,
-        tokenAllocationUnclaimedByUser: 168200,
+        userBidSizeUserInEth: 0.05,
+        ethUnclaimedByUser: 0.05,
     },
     {
         ticker: 'DEGEN',
         createdAt: 1718225986,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
-        highestBidByUserInEth: 1.490116,
+        highestBidByUserInEth: 21.6840425,
+        userBidSizeUserInEth: 0.5,
         tokenAllocationUnclaimedByUser: 100000,
     },
     {
@@ -277,16 +283,16 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 0.3125,
         highestBidByUserInEth: 0.25,
-        userBidSizeUserInEth: 0.4,
+        userBidSizeUserInEth: 0.1,
     },
 
     {
         ticker: 'JUNIOR1',
         createdAt: 1719148920,
         auctionLength: 604800,
-        highestFilledBidInEth: 1.192093,
-        highestBidByUserInEth: 0.7629395,
-        userBidSizeUserInEth: 0.1,
+        highestFilledBidInEth: 1.490116,
+        highestBidByUserInEth: 1.490116,
+        userBidSizeUserInEth: 0.05,
     },
 
     {
@@ -300,7 +306,7 @@ export const mockAccountData: AuctionDataIF[] = [
 
     {
         ticker: 'DEGEN1',
-        createdAt: 1719158920,
+        createdAt: 1718225986,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
         highestBidByUserInEth: 1.490116,
@@ -378,3 +384,21 @@ export const bidSizeMultipliers = [
 
 export const minBidSizeInEth = 0.25;
 export const marketCapMultiplier = 5;
+
+export const getFreshAuctionDetailsForAccount = async (
+    ticker: string,
+    accountData: AccountDataIF,
+) => {
+    return accountData.auctions.find(
+        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+    );
+};
+
+export const getRetrievedAuctionDetailsForAccount = (
+    ticker: string,
+    accountData: AccountDataIF,
+) => {
+    return accountData.auctions.find(
+        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+    );
+};

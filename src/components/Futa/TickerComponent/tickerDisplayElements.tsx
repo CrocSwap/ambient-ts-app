@@ -149,8 +149,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     const userBidSizeInEth =
         auctionDetailsForConnectedUser?.userBidSizeUserInEth
-            ? auctionDetailsForConnectedUser?.userBidSizeUserInEth *
-              marketCapMultiplier
+            ? auctionDetailsForConnectedUser?.userBidSizeUserInEth
             : undefined;
 
     const userBidSizeInEthFormatted = userBidSizeInEth

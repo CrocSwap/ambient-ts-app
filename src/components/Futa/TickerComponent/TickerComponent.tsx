@@ -35,7 +35,10 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';
 import moment from 'moment';
-import { marketCapMultiplier } from '../../../pages/platformFuta/mockAuctionData';
+import {
+    getFreshAuctionDetailsForAccount,
+    marketCapMultiplier,
+} from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -197,18 +200,13 @@ export default function TickerComponent(props: PropsIF) {
             (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
         );
     };
-    const getAuctionDetailsForAccount = async (ticker: string) => {
-        return accountData.auctions.find(
-            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-        );
-    };
 
     const { ticker: tickerFromParams } = useParams();
 
     useEffect(() => {
         if (!tickerFromParams) return;
         Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
-            console.log('fetched data for ' + tickerFromParams);
+            // console.log('fetched data for ' + tickerFromParams);
         });
     }, [tickerFromParams]);
 
@@ -272,13 +270,13 @@ export default function TickerComponent(props: PropsIF) {
     useEffect(() => {
         if (!tickerFromParams) return;
         if (userAddress) {
-            Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
-                (details) => {
-                    setAuctionDetailsForConnectedUser(
-                        details ? details : undefined,
-                    );
-                },
-            );
+            Promise.resolve(
+                getFreshAuctionDetailsForAccount(tickerFromParams, accountData),
+            ).then((details) => {
+                setAuctionDetailsForConnectedUser(
+                    details ? details : undefined,
+                );
+            });
         } else {
             setAuctionDetailsForConnectedUser(undefined);
         }
