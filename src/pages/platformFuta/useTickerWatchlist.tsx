@@ -34,11 +34,12 @@ export function useTickerWatchlist(version: tickerVersions): tickerWatchlistIF {
 
     function unwatchTicker(t: string): void {
         if (watchlist.includes(t)) {
-            processUpdate(watchlist.filter((e: string) => e === t));
+            processUpdate(watchlist.filter((e: string) => e !== t));
         }
     }
 
     function toggleWatching(t: string): void {
+        console.log('toggling!');
         watchlist.includes(t) ? unwatchTicker(t) : watchTicker(t);
     }
 
