@@ -95,6 +95,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
               })
             : '...';
 
+    const formattedMarketCapEthValue = getFormattedNumber({
+        value: marketCapEthValue,
+        prefix: 'Ξ ',
+    });
+
     // Status data
     const statusData = [
         {
@@ -115,7 +120,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'Ξ ' + marketCapEthValue : '-',
+            value: !placeholderTicker ? formattedMarketCapEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel:
                 'CURRENT FILLED MARKET CAP OF THE AUCTION IN ETH TERMS',
@@ -133,8 +138,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
         ? auctionStatusData.openBidInEth * marketCapMultiplier
         : undefined;
 
-    const openBidEthValueFormatted = openBidMarketCapInEth
-        ? openBidMarketCapInEth.toString()
+    const formattedOpenBidMarketCapEthValue = openBidMarketCapInEth
+        ? getFormattedNumber({
+              value: openBidMarketCapInEth,
+              prefix: 'Ξ ',
+          })
         : '...';
 
     const userBidMarketCapInEth =
@@ -143,8 +151,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
               marketCapMultiplier
             : undefined;
 
-    const userBidMarketCapFormatted = userBidMarketCapInEth
-        ? userBidMarketCapInEth.toString()
+    const formattedUserBidMarketCapEthValue = userBidMarketCapInEth
+        ? getFormattedNumber({
+              value: userBidMarketCapInEth,
+              prefix: 'Ξ ',
+          })
         : '...';
 
     const userBidSizeInEth =
@@ -152,8 +163,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
             ? auctionDetailsForConnectedUser?.userBidSizeUserInEth
             : undefined;
 
-    const userBidSizeInEthFormatted = userBidSizeInEth
-        ? userBidSizeInEth.toString()
+    const formattedBidSizeEthValue = userBidSizeInEth
+        ? getFormattedNumber({
+              value: userBidSizeInEth,
+              prefix: 'Ξ ',
+          })
         : '...';
 
     const currentOpenBidUsdValue =
@@ -193,7 +207,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const openedBidData = [
         {
             label: 'market cap (ETH)',
-            value: !placeholderTicker ? 'Ξ ' + openBidEthValueFormatted : '-',
+            value: !placeholderTicker ? formattedOpenBidMarketCapEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'Current open bid market cap in ETH terms',
         },
@@ -215,13 +229,13 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const yourBidData = [
         {
             label: 'Max Market cap',
-            value: !placeholderTicker ? 'Ξ ' + userBidMarketCapFormatted : '-',
+            value: !placeholderTicker ? formattedUserBidMarketCapEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
         },
         {
             label: 'Bid size',
-            value: !placeholderTicker ? 'Ξ ' + userBidSizeInEthFormatted : '-',
+            value: !placeholderTicker ? formattedBidSizeEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'THE MAX BID SIZE YOU ARE WILLING TO GET FILLED',
         },
@@ -361,6 +375,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
         setIsMaxDropdownOpen(false);
     };
 
+    const formattedSelectedFdvValue = getFormattedNumber({
+        value: selectedMaxValue,
+        prefix: 'Ξ ',
+    });
+
     const maxFdvData = maxMarketCapEthValues.slice(openBidMarketCapIndex);
 
     const maxFdvDisplay = (
@@ -382,15 +401,17 @@ export const tickerDisplayElements = (props: PropsIF) => {
                     style={tickerFromParams ? {} : { cursor: 'not-allowed' }}
                 >
                     <p>
-                        {!placeholderTicker && selectedMaxValue
-                            ? selectedMaxValue
+                        {!placeholderTicker && formattedSelectedFdvValue
+                            ? formattedSelectedFdvValue
                             : '-'}
                     </p>
                     <div
                         className={styles.alignCenter}
                         style={{ fontSize: '18px' }}
                     >
-                        {!placeholderTicker ? selectedFdvUsdMaxValue : '-'}
+                        {!placeholderTicker
+                            ? '(' + selectedFdvUsdMaxValue + ')'
+                            : '-'}
                         {!placeholderTicker && <LuChevronDown size={20} />}
                     </div>
                 </button>
@@ -416,13 +437,19 @@ export const tickerDisplayElements = (props: PropsIF) => {
                                         : '$0.00'
                                     : undefined;
 
+                            const formattedFdvValue = getFormattedNumber({
+                                value: item,
+                                prefix: 'Ξ ',
+                            });
+
                             return (
                                 <div
                                     className={styles.maxRow}
                                     key={idx}
                                     onClick={() => handleSelectItem(item)}
                                 >
-                                    <p>{item}</p>({fdvUsdValueTruncated})
+                                    <p>{formattedFdvValue}</p>(
+                                    {fdvUsdValueTruncated})
                                 </div>
                             );
                         })}
