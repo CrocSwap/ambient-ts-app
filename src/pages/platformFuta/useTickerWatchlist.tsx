@@ -16,13 +16,24 @@ export function useTickerWatchlist(
 ): tickerWatchlistIF {
     const LS_KEY: string = 'ticker_watchlist_' + version;
 
-    const [watchlist, setWatchlist] = useState<string[]>(
-        getPersisted() ?? defaultWatchlist,
-    );
+    const [watchlist, setWatchlist] = useState<string[]>(getPersisted());
 
-    function getPersisted(): string[] | null {
+    function getPersisted(): string[] {
+        let output;
         const persistedRaw: string | null = localStorage.getItem(LS_KEY);
-        return persistedRaw ? JSON.parse(persistedRaw) : null;
+        if (persistedRaw) {
+            const parsed: string[] = JSON.parse(persistedRaw);
+            if (Array.isArray(parsed)) {
+                output = parsed;
+            } else {
+                localStorage.setItem(LS_KEY, JSON.stringify(defaultWatchlist));
+                output = defaultWatchlist;
+            }
+        } else {
+            localStorage.setItem(LS_KEY, JSON.stringify(defaultWatchlist));
+            output = defaultWatchlist;
+        }
+        return output;
     }
 
     function processUpdate(tickers: string[]): void {

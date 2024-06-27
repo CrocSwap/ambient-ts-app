@@ -186,7 +186,12 @@ export const AuctionsContextProvider = (props: {
     }, [chainId, userAddress]);
 
     // hook managing ticker watchlists for each FUTA version
-    const watchlistV1: tickerWatchlistIF = useTickerWatchlist('v1');
+    const watchlistV1: tickerWatchlistIF = useTickerWatchlist('v1', [
+        'JUNIOR1',
+        'PEPE1',
+        'DEGEN2',
+        'EMILY3',
+    ]);
 
     const auctionsContext: AuctionsContextIF = {
         auctionStatusData: auctionStatusData,
