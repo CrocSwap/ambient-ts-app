@@ -116,7 +116,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'DEGEN2',
-        createdAt: 1718225986,
+        createdAt: 1719448920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
@@ -141,7 +141,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'DEGEN3',
-        createdAt: 1718225986,
+        createdAt: 1719448920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
@@ -166,7 +166,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'DEGEN4',
-        createdAt: 1718225986,
+        createdAt: 1719448920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
@@ -191,7 +191,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'DEGEN5',
-        createdAt: 1718225986,
+        createdAt: 1719448920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
@@ -216,7 +216,7 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'DEGEN6',
-        createdAt: 1718225986,
+        createdAt: 1719448920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
@@ -232,13 +232,6 @@ export const mockAccountData: AuctionDataIF[] = [
         tokenAllocationUnclaimedByUser: 50000,
     },
     {
-        ticker: 'DOGE1',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-        highestBidByUserInEth: 3.63798,
-    },
-    {
         ticker: 'PEPE',
         createdAt: 1717125986,
         auctionLength: 604800,
@@ -247,24 +240,8 @@ export const mockAccountData: AuctionDataIF[] = [
         ethUnclaimedByUser: 0.1,
     },
     {
-        ticker: 'PEPE1',
-        createdAt: 1719548920,
-        auctionLength: 604800,
-        ethUnclaimedByUser: 100000,
-        highestFilledBidInEth: 0.3125,
-        highestBidByUserInEth: 0.25,
-    },
-    {
         ticker: 'JUNIOR',
         createdAt: 1718025986,
-        auctionLength: 604800,
-        highestFilledBidInEth: 1.192093,
-        highestBidByUserInEth: 0.7629395,
-        tokenAllocationUnclaimedByUser: 168200,
-    },
-    {
-        ticker: 'JUNIOR1',
-        createdAt: 1719148920,
         auctionLength: 604800,
         highestFilledBidInEth: 1.192093,
         highestBidByUserInEth: 0.7629395,
@@ -279,14 +256,6 @@ export const mockAccountData: AuctionDataIF[] = [
         tokenAllocationUnclaimedByUser: 168200,
     },
     {
-        ticker: 'EMILY1',
-        createdAt: 1719248920,
-        auctionLength: 604800,
-        highestFilledBidInEth: 11.10223,
-        highestBidByUserInEth: 0.7629395,
-        tokenAllocationUnclaimedByUser: 168200,
-    },
-    {
         ticker: 'DEGEN',
         createdAt: 1718225986,
         auctionLength: 604800,
@@ -295,12 +264,42 @@ export const mockAccountData: AuctionDataIF[] = [
         tokenAllocationUnclaimedByUser: 100000,
     },
     {
+        ticker: 'DOGE1',
+        createdAt: 1719948920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+        highestBidByUserInEth: 3.63798,
+    },
+    {
+        ticker: 'PEPE1',
+        createdAt: 1719548920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
+        highestBidByUserInEth: 0.25,
+    },
+
+    {
+        ticker: 'JUNIOR1',
+        createdAt: 1719148920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
+        highestBidByUserInEth: 0.7629395,
+    },
+
+    {
+        ticker: 'EMILY1',
+        createdAt: 1719248920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
+        highestBidByUserInEth: 0.7629395,
+    },
+
+    {
         ticker: 'DEGEN1',
         createdAt: 1719158920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
         highestBidByUserInEth: 1.490116,
-        tokenAllocationUnclaimedByUser: 100000,
     },
 ];
 
