@@ -32,6 +32,7 @@ export interface AuctionDataIF {
     auctionLength: number;
     highestFilledBidInEth: number;
     highestBidByUserInEth?: number;
+    userBidSizeUserInEth?: number;
     tokenAllocationUnclaimedByUser?: number;
     ethUnclaimedByUser?: number;
 }

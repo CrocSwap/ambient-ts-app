@@ -269,6 +269,7 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 86400,
         highestFilledBidInEth: 0.25,
         highestBidByUserInEth: 3.63798,
+        userBidSizeUserInEth: 0.5,
     },
     {
         ticker: 'PEPE1',
@@ -276,6 +277,7 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 0.3125,
         highestBidByUserInEth: 0.25,
+        userBidSizeUserInEth: 0.4,
     },
 
     {
@@ -284,6 +286,7 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 1.192093,
         highestBidByUserInEth: 0.7629395,
+        userBidSizeUserInEth: 0.1,
     },
 
     {
@@ -292,6 +295,7 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 11.10223,
         highestBidByUserInEth: 0.7629395,
+        userBidSizeUserInEth: 0.2,
     },
 
     {
@@ -300,6 +304,7 @@ export const mockAccountData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
         highestBidByUserInEth: 1.490116,
+        userBidSizeUserInEth: 0.3,
     },
 ];
 
