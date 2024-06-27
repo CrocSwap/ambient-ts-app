@@ -6,7 +6,43 @@ import {
 export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
-        createdAt: 1719948920,
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE1',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE2',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE3',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE4',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE5',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE6',
+        createdAt: 1719438920,
         auctionLength: 86400,
         highestFilledBidInEth: 0.25,
     },
@@ -34,12 +70,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DOGE1',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-    },
+
     {
         ticker: 'PEPE1',
         createdAt: 1719548920,
@@ -64,12 +95,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DOGE2',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-    },
+
     {
         ticker: 'PEPE2',
         createdAt: 1719548920,
@@ -94,12 +120,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DOGE3',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-    },
+
     {
         ticker: 'PEPE3',
         createdAt: 1719548920,
@@ -124,12 +145,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DOGE4',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-    },
+
     {
         ticker: 'PEPE4',
         createdAt: 1719548920,
@@ -154,12 +170,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DOGE5',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-    },
+
     {
         ticker: 'PEPE5',
         createdAt: 1719548920,
@@ -184,12 +195,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DOGE6',
-        createdAt: 1719948920,
-        auctionLength: 86400,
-        highestFilledBidInEth: 0.25,
-    },
+
     {
         ticker: 'PEPE6',
         createdAt: 1719548920,
@@ -265,7 +271,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
         case 'DOGE':
             return {
                 ticker: ticker,
-                createdAt: 1719948920,
+                createdAt: 1719438920,
                 auctionLength: 86400,
                 highestFilledBidInEth: 0.25,
                 openBidInEth: 0.3125,
