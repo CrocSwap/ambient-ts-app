@@ -15,9 +15,16 @@ interface PropsIF {
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
+    setShowComplete: Dispatch<SetStateAction<boolean>>;
 }
 export default function TickerItem(props: PropsIF) {
-    const { auction, selectedTicker, setSelectedTicker, isAccount } = props;
+    const {
+        auction,
+        selectedTicker,
+        setSelectedTicker,
+        isAccount,
+        setShowComplete,
+    } = props;
 
     const { ticker, highestFilledBidInEth, createdAt, auctionLength } = auction;
 
@@ -66,7 +73,13 @@ export default function TickerItem(props: PropsIF) {
                     : ''
             }`}
             to={'/auctions/v1/' + ticker}
-            onClick={() => setSelectedTicker(ticker)}
+            onClick={() => {
+                setSelectedTicker(ticker);
+                const shouldSetShowComplete =
+                    timeRemainingInSec < 0 ? true : false;
+                console.log({ shouldSetShowComplete });
+                setShowComplete(shouldSetShowComplete);
+            }}
         >
             <p className={styles2.ticker_name}>{ticker}</p>
             <p className={styles.marketCap}>{formattedMarketCap}</p>

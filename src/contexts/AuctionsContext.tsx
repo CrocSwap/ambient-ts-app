@@ -22,6 +22,8 @@ interface AuctionsContextIF {
     auctionStatusData: AuctionStatusDataIF;
     selectedTicker: string | undefined;
     setSelectedTicker: React.Dispatch<React.SetStateAction<string | undefined>>;
+    showComplete: boolean;
+    setShowComplete: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface AuctionDataIF {
@@ -109,6 +111,7 @@ export const AuctionsContextProvider = (props: {
     const [isLoading, setIsLoading] = useState(true);
     const [tickerInput, setTickerInput] = useState('');
     const [showComments, setShowComments] = useState(false);
+    const [showComplete, setShowComplete] = useState<boolean>(false);
 
     const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
 
@@ -193,6 +196,8 @@ export const AuctionsContextProvider = (props: {
         setShowComments: setShowComments,
         selectedTicker: selectedTicker,
         setSelectedTicker: setSelectedTicker,
+        showComplete: showComplete,
+        setShowComplete: setShowComplete,
     };
 
     return (

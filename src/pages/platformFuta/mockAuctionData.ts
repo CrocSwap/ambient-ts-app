@@ -6,7 +6,7 @@ import {
 export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
-        createdAt: 1719438920,
+        createdAt: 1718125986,
         auctionLength: 86400,
         highestFilledBidInEth: 0.25,
     },
@@ -48,19 +48,19 @@ export const mockAuctionData: AuctionDataIF[] = [
     },
     {
         ticker: 'PEPE',
-        createdAt: 1719548920,
+        createdAt: 1717125986,
         auctionLength: 604800,
         highestFilledBidInEth: 0.3125,
     },
     {
         ticker: 'JUNIOR',
-        createdAt: 1719148920,
+        createdAt: 1718025986,
         auctionLength: 604800,
         highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY',
-        createdAt: 1719248920,
+        createdAt: 1716125986,
         auctionLength: 604800,
         highestFilledBidInEth: 11.10223,
     },
@@ -220,17 +220,19 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
-    {
-        ticker: 'DEGEN7',
-        createdAt: 1717125986,
-        auctionLength: 604800,
-        highestFilledBidInEth: 27.10505,
-    },
 ];
 
 export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
+        createdAt: 1718125986,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+        highestBidByUserInEth: 3.63798,
+        tokenAllocationUnclaimedByUser: 50000,
+    },
+    {
+        ticker: 'DOGE1',
         createdAt: 1719948920,
         auctionLength: 86400,
         highestFilledBidInEth: 0.25,
@@ -238,6 +240,14 @@ export const mockAccountData: AuctionDataIF[] = [
     },
     {
         ticker: 'PEPE',
+        createdAt: 1717125986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
+        highestBidByUserInEth: 0.25,
+        ethUnclaimedByUser: 0.1,
+    },
+    {
+        ticker: 'PEPE1',
         createdAt: 1719548920,
         auctionLength: 604800,
         ethUnclaimedByUser: 100000,
@@ -246,6 +256,14 @@ export const mockAccountData: AuctionDataIF[] = [
     },
     {
         ticker: 'JUNIOR',
+        createdAt: 1718025986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
+        highestBidByUserInEth: 0.7629395,
+        tokenAllocationUnclaimedByUser: 168200,
+    },
+    {
+        ticker: 'JUNIOR1',
         createdAt: 1719148920,
         auctionLength: 604800,
         highestFilledBidInEth: 1.192093,
@@ -254,6 +272,14 @@ export const mockAccountData: AuctionDataIF[] = [
     },
     {
         ticker: 'EMILY',
+        createdAt: 1716125986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
+        highestBidByUserInEth: 0.7629395,
+        tokenAllocationUnclaimedByUser: 168200,
+    },
+    {
+        ticker: 'EMILY1',
         createdAt: 1719248920,
         auctionLength: 604800,
         highestFilledBidInEth: 11.10223,
@@ -263,6 +289,14 @@ export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'DEGEN',
         createdAt: 1718225986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+        highestBidByUserInEth: 1.490116,
+        tokenAllocationUnclaimedByUser: 100000,
+    },
+    {
+        ticker: 'DEGEN1',
+        createdAt: 1719158920,
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
         highestBidByUserInEth: 1.490116,
