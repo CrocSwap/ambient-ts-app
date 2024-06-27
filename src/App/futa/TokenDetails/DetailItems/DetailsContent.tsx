@@ -3,7 +3,6 @@ import styles from './DetailsContent.module.css';
 import { FiClock } from 'react-icons/fi';
 import { CiCircleCheck } from 'react-icons/ci';
 import { TfiArrowCircleUp } from 'react-icons/tfi';
-import ProgressBar from '../ProgressBar/ProgressBar';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export default function DetailsContent() {
@@ -43,10 +42,10 @@ export default function DetailsContent() {
                     <span>FDV</span>
                 </p>
             </div>
-            <div className={styles.progressContainer}>
+            {/* <div className={styles.progressContainer}>
                 <ProgressBar value={70} />
                 <p>$2,500 / $5,000</p>
-            </div>
+            </div> */}
         </div>
     );
 

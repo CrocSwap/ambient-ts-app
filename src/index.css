@@ -153,6 +153,16 @@
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
+
+        --scrollbar: none;
+        --scrollbar-track: transparent;
+        --scrollbar-color: transparent;
+        --scrollbar-thumb: linear-gradient(
+            0deg,
+            var(--accent1) 0%,
+            var(--accent5) 49.48%,
+            var(--accent1) 100%
+        );
 }
 
 [data-theme='orange_dark'] {
@@ -232,6 +242,16 @@
     --font-family: "Fira Mono", monospace;
     --roboto: "Fira Mono", monospace;
     --mono: "Fira Mono", monospace;
+
+    --scrollbar: none;
+    --scrollbar-track: transparent;
+    --scrollbar-color: transparent;
+    --scrollbar-thumb: linear-gradient(
+        0deg,
+        var(--accent1) 0%,
+        var(--accent5) 49.48%,
+        var(--accent1) 100%
+    );
 }
 
 *::placeholder {

@@ -116,7 +116,9 @@ export default function App() {
         <>
             <FlexContainer
                 flexDirection='column'
-                className={platformName === 'futa' ? '' : containerStyle}
+                className={
+                    platformName === 'futa' ? 'futa_main' : containerStyle
+                }
                 data-theme={skin}
             >
                 {showPoints && showPointSystemPopup && (

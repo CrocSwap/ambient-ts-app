@@ -14,7 +14,7 @@
 
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
-* {
+.content-container, .content-container-trade {
     scrollbar-width: none;
 }
 
@@ -35,6 +35,12 @@ body::-webkit-scrollbar-thumb {
 
     box-shadow: 0px 0px 0px 100000vh black;
 }
+
+
+
+
+
+
 body {
     background: var(--dark1);
 }
@@ -73,7 +79,7 @@ input:disabled {
 }
 
 body {
-    overflow-x: hidden;
+   
 
     min-height: 100%;
     max-height: 100%;
@@ -230,6 +236,27 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
+}
+/* -----------------------FUTA------------ */
+.futa_main {
+    scrollbar-width: 25px !important;
+    scrollbar-color: var(--accent1) var(--dark2); 
+   
+}
+
+
+.futa_main::-webkit-scrollbar-track {
+    background: var(--dark2);
+    border: 1px solid var(--accent1);
+   
+    
+}
+
+.futa_main::-webkit-scrollbar-thumb {
+    background: var(--accent1);
+    border-radius: 0 !important;
+
+
 }
 
 @media only screen and (max-width: 600px) {
