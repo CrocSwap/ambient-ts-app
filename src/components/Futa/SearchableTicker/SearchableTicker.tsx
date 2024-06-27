@@ -127,7 +127,8 @@ export default function SearchableTicker(props: propsIF) {
         auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
         // return output variables
         return [incomplete, complete];
-    }, [auctions.data]);
+        // remove completed auctions from incomplete auctions list every 5 seconds
+    }, [auctions.data, Math.floor(Date.now() / 1000 / 5)]);
 
     // auto switch to complete auctions if user only has complete auctions
     useEffect(() => {
