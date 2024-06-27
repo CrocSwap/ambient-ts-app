@@ -33,12 +33,11 @@ const NotificationTable = (props: NotificationTableProps) => {
         <ReceiptDisplay
             key={idx}
             status={receipt?.status === 1 ? 'successful' : 'failed'}
-            hash={receipt?.transactionHash}
+            hash={receipt?.hash}
             txBlockNumber={receipt?.blockNumber}
             txType={
-                transactionsByType.find(
-                    (e) => e.txHash === receipt?.transactionHash,
-                )?.txDescription
+                transactionsByType.find((e) => e.txHash === receipt?.hash)
+                    ?.txDescription
             }
         />
     ));
