@@ -220,6 +220,12 @@ export const mockAuctionData: AuctionDataIF[] = [
         auctionLength: 604800,
         highestFilledBidInEth: 21.6840425,
     },
+    {
+        ticker: 'DEGEN7',
+        createdAt: 1717125986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 27.10505,
+    },
 ];
 
 export const mockAccountData: AuctionDataIF[] = [
