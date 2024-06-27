@@ -10,14 +10,19 @@ export interface tickerWatchlistIF {
     toggle: (t: string) => void;
 }
 
-export function useTickerWatchlist(version: tickerVersions): tickerWatchlistIF {
+export function useTickerWatchlist(
+    version: tickerVersions,
+    defaultWatchlist: string[] = [],
+): tickerWatchlistIF {
     const LS_KEY: string = 'ticker_watchlist_' + version;
 
-    const [watchlist, setWatchlist] = useState<string[]>(getPersisted());
+    const [watchlist, setWatchlist] = useState<string[]>(
+        getPersisted() ?? defaultWatchlist,
+    );
 
-    function getPersisted(): string[] {
+    function getPersisted(): string[] | null {
         const persistedRaw: string | null = localStorage.getItem(LS_KEY);
-        return persistedRaw ? JSON.parse(persistedRaw) : [];
+        return persistedRaw ? JSON.parse(persistedRaw) : null;
     }
 
     function processUpdate(tickers: string[]): void {
