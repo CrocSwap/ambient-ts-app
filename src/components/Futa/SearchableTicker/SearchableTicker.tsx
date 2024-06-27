@@ -34,7 +34,13 @@ interface propsIF {
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const { auctions, title, setIsFullLayoutActive, placeholderTicker } = props;
+    const {
+        auctions,
+        title,
+        setIsFullLayoutActive,
+        placeholderTicker,
+        isAccount,
+    } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
@@ -306,6 +312,7 @@ export default function SearchableTicker(props: propsIF) {
                         <TickerItem
                             key={JSON.stringify(auction)}
                             auction={auction}
+                            isAccount={isAccount}
                             selectedTicker={selectedTicker}
                             setSelectedTicker={setSelectedTicker}
                         />

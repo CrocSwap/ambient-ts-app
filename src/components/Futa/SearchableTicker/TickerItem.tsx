@@ -14,9 +14,10 @@ interface PropsIF {
     auction: AuctionDataIF;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
+    isAccount: boolean | undefined;
 }
 export default function TickerItem(props: PropsIF) {
-    const { auction, selectedTicker, setSelectedTicker } = props;
+    const { auction, selectedTicker, setSelectedTicker, isAccount } = props;
 
     const { ticker, highestFilledBidInEth, createdAt, auctionLength } = auction;
 
@@ -60,7 +61,9 @@ export default function TickerItem(props: PropsIF) {
     return (
         <Link
             className={`${styles.tickerItemContainer} ${
-                auction?.ticker === selectedTicker ? styles.active : ''
+                auction?.ticker === selectedTicker && !isAccount
+                    ? styles.active
+                    : ''
             }`}
             to={'/auctions/v1/' + ticker}
             onClick={() => setSelectedTicker(ticker)}
