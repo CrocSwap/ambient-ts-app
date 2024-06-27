@@ -7,6 +7,7 @@ export interface tickerWatchlistIF {
     version: tickerVersions;
     add: (t: string) => void;
     remove: (t: string) => void;
+    toggle: (t: string) => void;
 }
 
 export function useTickerWatchlist(version: tickerVersions): tickerWatchlistIF {
@@ -37,10 +38,15 @@ export function useTickerWatchlist(version: tickerVersions): tickerWatchlistIF {
         }
     }
 
+    function toggleWatching(t: string): void {
+        watchlist.includes(t) ? unwatchTicker(t) : watchTicker(t);
+    }
+
     return {
         data: watchlist,
         version: version,
         add: watchTicker,
         remove: unwatchTicker,
+        toggle: toggleWatching,
     };
 }
