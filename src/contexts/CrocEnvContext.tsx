@@ -7,11 +7,11 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { useWeb3ModalProvider } from '@web3modal/ethers5/react';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
-import { Provider } from '@ethersproject/providers';
+import { Provider, ethers } from 'ethers';
 import { BatchedJsonRpcProvider } from '../utils/batchedProvider';
 import {
     limitParamsIF,
@@ -31,7 +31,6 @@ import {
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
-import { ethers } from 'ethers';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
 import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 
@@ -62,18 +61,18 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
 const mainnetProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.InfuraProvider(
-        'mainnet',
-        import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091',
-    ),
-).proxy;
-
-const scrollProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.StaticJsonRpcProvider(SCROLL_RPC_URL),
-).proxy;
-const blastProvider = new BatchedJsonRpcProvider(
-    new ethers.providers.StaticJsonRpcProvider(BLAST_RPC_URL),
-).proxy;
+    `https://mainnet.infura.io/v3/${
+        import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091'
+    }`,
+    1,
+    { staticNetwork: true },
+);
+const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
+    staticNetwork: true,
+});
+const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
+    staticNetwork: true,
+});
 
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -82,12 +81,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const { userAddress, walletChain } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
-    let w3provider;
-    let signer: ethers.Signer | undefined;
-    if (walletProvider) {
-        w3provider = new ethers.providers.Web3Provider(walletProvider);
-        signer = w3provider.getSigner();
-    }
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
 
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
@@ -141,13 +134,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             tokenA: firstTokenMatchingA
                 ? firstTokenMatchingA.address
                 : shouldReverseDefaultTokens
-                ? dfltTokenB.address
-                : dfltTokenA.address,
+                  ? dfltTokenB.address
+                  : dfltTokenA.address,
             tokenB: firstTokenMatchingB
                 ? firstTokenMatchingB.address
                 : shouldReverseDefaultTokens
-                ? dfltTokenA.address
-                : dfltTokenB.address,
+                  ? dfltTokenA.address
+                  : dfltTokenB.address,
         };
 
         // default URL params for the limit module
@@ -178,28 +171,35 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         import.meta.env.VITE_INFURA_KEY
             ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
             : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-            ? BLAST_RPC_URL
-            : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-            ? SCROLL_RPC_URL
-            : chainData.nodeUrl;
+              ? BLAST_RPC_URL
+              : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                ? SCROLL_RPC_URL
+                : chainData.nodeUrl;
 
     const provider = useMemo(
         () =>
             chainData.chainId === '0x1'
                 ? mainnetProvider
                 : chainData.chainId === '0x82750'
-                ? scrollProvider
-                : chainData.chainId === '0x13e31'
-                ? blastProvider
-                : new BatchedJsonRpcProvider(
-                      new ethers.providers.StaticJsonRpcProvider(nodeUrl),
-                  ).proxy,
+                  ? scrollProvider
+                  : chainData.chainId === '0x13e31'
+                    ? blastProvider
+                    : new BatchedJsonRpcProvider(
+                          nodeUrl,
+                          parseInt(chainData.chainId),
+                          { staticNetwork: true },
+                      ),
         [chainData.chainId],
     );
 
     useBlacklist(userAddress);
 
     const setNewCrocEnv = async () => {
+        let signer = undefined;
+        if (walletProvider) {
+            const w3provider = new ethers.BrowserProvider(walletProvider);
+            signer = await w3provider.getSigner();
+        }
         if (APP_ENVIRONMENT === 'local') {
             console.debug({ provider });
             console.debug({ signer });
@@ -223,17 +223,17 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             // If signer and provider are set to different chains (as can happen)
             // after a network switch, it causes a lot of performance killing timeouts
             // and errors
-            if (
-                (await signer?.getChainId()) ==
-                (await provider.getNetwork()).chainId
-            ) {
-                const newCrocEnv = new CrocEnv(
-                    provider,
-                    signer ? signer : undefined,
-                );
-                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-                setCrocEnv(newCrocEnv);
-            }
+            // if (
+            //     ((await signer?.provider?.getNetwork())?.chainId) ==
+            //     (await provider.getNetwork()).chainId
+            // ) {
+            const newCrocEnv = new CrocEnv(
+                provider,
+                signer ? signer : undefined,
+            );
+            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
+            setCrocEnv(newCrocEnv);
+            // }
         }
     };
     useEffect(() => {
@@ -241,7 +241,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     }, [
         crocEnv === undefined,
         chainData.chainId,
-        signer === undefined,
+        walletProvider,
         userAddress,
         activeNetwork.chainId,
         walletChain,

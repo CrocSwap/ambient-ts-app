@@ -20,10 +20,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import {
-    useWeb3ModalAccount,
-    useSwitchNetwork,
-} from '@web3modal/ethers5/react';
+import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
@@ -216,10 +213,10 @@ const PageHeader = function () {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/edit')
+            ? '/trade/edit/'
+            : '/trade/market/';
 
     // hooks to generate URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');

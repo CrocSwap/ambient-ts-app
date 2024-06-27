@@ -3,7 +3,6 @@ import styles from './CustomBid.module.css';
 import { CurrencySelector } from '../../../../components/Form/CurrencySelector';
 
 import { useContext, useState } from 'react';
-import { BigNumber } from 'ethers';
 import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
@@ -52,19 +51,17 @@ export default function CustomBid(props: Props) {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
-    const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
-        Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
-    )
-        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
-        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
+    const amountToReduceNativeTokenQtyMainnet =
+        BigInt(Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI)) *
+        BigInt(NUM_WEI_IN_GWEI) *
+        BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_MAINNET);
 
-    const amountToReduceNativeTokenQtyL2 = BigNumber.from(
-        Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
-    )
-        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
-        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
+    const amountToReduceNativeTokenQtyL2 =
+        BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
+        BigInt(NUM_WEI_IN_GWEI) *
+        BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
@@ -73,11 +70,11 @@ export default function CustomBid(props: Props) {
         parseFloat(tokenWalletBalance) > 0;
     const tokenWalletBalanceAdjustedNonDisplayString =
         isTokenEth && !!tokenWalletBalance
-            ? BigNumber.from(tokenWalletBalance)
-
-                  .sub(amountToReduceNativeTokenQty)
-                  .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
-                  .toString()
+            ? (
+                  BigInt(tokenWalletBalance) -
+                  amountToReduceNativeTokenQty -
+                  BigInt(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH)
+              ).toString()
             : tokenWalletBalance;
 
     const adjustedTokenWalletBalanceDisplay = useDebounce(

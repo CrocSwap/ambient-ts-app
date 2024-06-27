@@ -135,7 +135,7 @@ function DexTokens(props: propsIF) {
                             sortedTokens={sortedTokens}
                         />
                         <TableBody>
-                            {/* 
+                            {/*
                                 TODO:   change this logic to use React <Suspense />
                             */}
                             {sortedTokens.data.length ? (
@@ -170,7 +170,7 @@ function DexTokens(props: propsIF) {
                                         return null;
                                     return (
                                         <TokenRow
-                                            key={JSON.stringify(token)}
+                                            key={token.tokenAddr}
                                             token={token}
                                             tokenMeta={token.tokenMeta}
                                             samplePool={samplePool}

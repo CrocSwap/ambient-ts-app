@@ -5,7 +5,7 @@ import TopPools from '../../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../../components/Home/Landing/MobileLandingSections';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useSwitchNetwork } from '@web3modal/ethers5/react';
+import { useSwitchNetwork } from '@web3modal/ethers/react';
 import { supportedNetworks } from '../../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../../ambient-utils/dataLayer';

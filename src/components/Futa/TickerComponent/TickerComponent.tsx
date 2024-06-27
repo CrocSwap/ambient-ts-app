@@ -27,7 +27,6 @@ import {
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
-import { BigNumber } from 'ethers';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
@@ -334,9 +333,9 @@ export default function TickerComponent(props: PropsIF) {
         } else {
             if (!nativeTokenWalletBalanceAdjustedNonDisplayString) return false;
 
-            const bidSizeLessThanAdjustedBalance = BigNumber.from(
-                nativeTokenWalletBalanceAdjustedNonDisplayString,
-            ).gt(BigNumber.from(bidQtyNonDisplay));
+            const bidSizeLessThanAdjustedBalance =
+                BigInt(nativeTokenWalletBalanceAdjustedNonDisplayString) >
+                BigInt(bidQtyNonDisplay);
 
             return bidSizeLessThanAdjustedBalance;
         }
@@ -367,19 +366,17 @@ export default function TickerComponent(props: PropsIF) {
         value: nativeTokenWalletBalanceDisplayNum,
     });
 
-    const amountToReduceNativeTokenQtyMainnet = BigNumber.from(
-        Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI),
-    )
-        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
-        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_MAINNET));
+    const amountToReduceNativeTokenQtyMainnet =
+        BigInt(Math.ceil(gasPriceInGwei || DEFAULT_MAINNET_GAS_PRICE_IN_GWEI)) *
+        BigInt(NUM_WEI_IN_GWEI) *
+        BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_MAINNET);
 
-    const amountToReduceNativeTokenQtyL2 = BigNumber.from(
-        Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI),
-    )
-        .mul(BigNumber.from(NUM_WEI_IN_GWEI))
-        .mul(BigNumber.from(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE))
-        .mul(BigNumber.from(DEPOSIT_BUFFER_MULTIPLIER_SCROLL));
+    const amountToReduceNativeTokenQtyL2 =
+        BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
+        BigInt(NUM_WEI_IN_GWEI) *
+        BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
@@ -391,10 +388,11 @@ export default function TickerComponent(props: PropsIF) {
 
     const nativeTokenWalletBalanceAdjustedNonDisplayString =
         nativeTokenWalletBalance
-            ? BigNumber.from(nativeTokenWalletBalance)
-                  .sub(amountToReduceNativeTokenQty)
-                  .sub(BigNumber.from(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH))
-                  .toString()
+            ? (
+                  BigInt(nativeTokenWalletBalance) -
+                  amountToReduceNativeTokenQty -
+                  BigInt(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH)
+              ).toString()
             : nativeTokenWalletBalance;
 
     const adjustedTokenWalletBalanceDisplay = useDebounce(

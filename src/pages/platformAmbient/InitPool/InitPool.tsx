@@ -1675,7 +1675,7 @@ export default function InitPool() {
 
                     if (receipt) {
                         addReceipt(JSON.stringify(receipt));
-                        removePendingTx(receipt.transactionHash);
+                        removePendingTx(receipt.hash);
                     }
                 } finally {
                     setIsWithdrawPending(false);
