@@ -34,7 +34,7 @@ export default function Account() {
                 <div className={styles.justifyRow}>
                     <TooltipLabel
                         itemTitle='NETWORK FEE'
-                        tooltipTitle='Estimated network fee (i.e. gas cost) to join bid'
+                        tooltipTitle='NETWORK FEE PAID IN ORDER TO TRANSACT'
                     />
                     <p style={{ color: 'var(--text2)', fontSize: '14px' }}>
                         ~0.01

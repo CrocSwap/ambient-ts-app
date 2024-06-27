@@ -537,6 +537,7 @@ export default function TickerComponent(props: PropsIF) {
         extraInfoDisplay,
         tickerDisplay,
         openedBidDisplay,
+        yourBidDisplay,
     } = tickerDisplayElements(tickerDisplayElementsProps);
 
     const allocationDisplay = (
@@ -573,6 +574,7 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
+                        {!isAuctionCompleted && yourBidDisplay}
                         <div className={styles.flexColumn}>
                             {!isAuctionCompleted && maxFdvDisplay}
                             {!isAuctionCompleted && bidSizeDisplay}

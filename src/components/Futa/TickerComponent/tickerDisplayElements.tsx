@@ -108,15 +108,14 @@ export const tickerDisplayElements = (props: PropsIF) => {
             label: isAuctionCompleted ? 'time completed' : 'time remaining',
             value: !placeholderTicker ? timeRemaining : '-',
             color: 'var(--positive)',
-            tooltipLabel: isAuctionCompleted
-                ? 'The time since the auction closed'
-                : 'The time remaining till the auction is closed',
+            tooltipLabel: 'The total time remaining in the auction',
         },
         {
             label: 'market cap (ETH)',
             value: !placeholderTicker ? 'Ξ ' + marketCapEthValue : '-',
             color: 'var(--text1)',
-            tooltipLabel: 'Current filled market cap in eth terms',
+            tooltipLabel:
+                'CURRENT FILLED MARKET CAP OF THE AUCTION IN ETH TERMS',
         },
         {
             label: 'market cap ($)',
@@ -187,7 +186,22 @@ export const tickerDisplayElements = (props: PropsIF) => {
             label: 'bid size',
             value: !placeholderTicker ? formattedOpenBidStatus : '-',
             color: 'var(--accent1)',
-            tooltipLabel: 'Filled and total bid sized of the current open bid',
+            tooltipLabel: 'CURRENT OPEN BID TOTAL FILL SIZE',
+        },
+    ];
+    // Your bid data
+    const yourBidData = [
+        {
+            label: 'Max Market cap',
+            value: !placeholderTicker ? 'Ξ ' + '~' : '-',
+            color: 'var(--text1)',
+            tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
+        },
+        {
+            label: 'Bid size',
+            value: !placeholderTicker ? '~' : '-',
+            color: 'var(--text1)',
+            tooltipLabel: 'THE MAX BID SIZE YOU ARE WILLING TO GET FILLED',
         },
     ];
 
@@ -197,8 +211,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         ? [
               {
                   title: 'NETWORK FEE',
-                  tooltipTitle:
-                      'Estimated network fee (i.e. gas cost) to join bid',
+                  tooltipTitle: 'NETWORK FEE PAID IN ORDER TO TRANSACT',
                   data: networkFee ? '~' + networkFee : '...',
               },
           ]
@@ -206,13 +219,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
               {
                   title: 'PRICE IMPACT',
                   tooltipTitle:
-                      'Difference Between Current (Spot) Price and Final Price',
+                      'THE IMPACT YOUR BID HAS ON THE MARKET PRICE OF THIS AUCTION',
                   data: formattedPriceImpact,
               },
               {
                   title: 'NETWORK FEE',
-                  tooltipTitle:
-                      'Estimated network fee (i.e. gas cost) to join bid',
+                  tooltipTitle: 'NETWORK FEE PAID IN ORDER TO TRANSACT',
                   data: networkFee ? '~' + networkFee : '...',
               },
           ];
@@ -273,6 +285,21 @@ export const tickerDisplayElements = (props: PropsIF) => {
                     '-'
                 )}
             </div>
+        </div>
+    );
+    // Your bid display component
+    const yourBidDisplay = (
+        <div className={`${styles.tickerContainer} ${styles.openBidContainer}`}>
+            <h3>YOUR BID</h3>
+            {yourBidData.map((item, idx) => (
+                <div className={styles.tickerRow} key={idx}>
+                    <TooltipLabel
+                        itemTitle={item.label}
+                        tooltipTitle={item.tooltipLabel}
+                    />
+                    <p style={{ color: item.color }}>{item.value}</p>
+                </div>
+            ))}
         </div>
     );
 
@@ -423,5 +450,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
         extraInfoDisplay,
         tickerDisplay,
         openedBidDisplay,
+        yourBidDisplay,
     };
 };
