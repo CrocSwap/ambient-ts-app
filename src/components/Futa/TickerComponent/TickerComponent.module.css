@@ -102,6 +102,7 @@
 }
 .progressValue {
     color: var(--accent1, #0ccdff);
+    font-size: 18px;
 }
 .maxDropdownContainer {
     position: relative;

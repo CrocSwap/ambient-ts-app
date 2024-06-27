@@ -1,0 +1,16 @@
+/* ProgressBar.module.css */
+.progressBarContainer {
+    display: flex;
+    gap: 2px; /* Adjust the gap between bars as needed */
+}
+
+.progressBar {
+    width: 27.9px;
+    height: 12px;
+    background: var(--text1);
+    opacity: 0.5;
+}
+
+.filled {
+    background: var(--text2);
+}

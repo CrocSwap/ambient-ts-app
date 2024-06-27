@@ -17,6 +17,7 @@ import { CurrencySelector } from '../../Form/CurrencySelector';
 import { marketCapMultipliers } from '../../../pages/platformFuta/mockAuctionData';
 import { LuChevronDown } from 'react-icons/lu';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
+import ProgressBar from '../ProgressBar/ProgressBar';
 
 // Props interface
 export interface PropsIF {
@@ -266,11 +267,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 </div>
             ))}
             <div className={styles.progressContainer}>
-                <div className={styles.progressContent}>
-                    {Array.from({ length: fillPercentage * 10 }, (_, idx) => (
-                        <span className={styles.progressBar} key={idx} />
-                    ))}
-                </div>
+                <ProgressBar fillPercentage={fillPercentage * 100} />
                 {!placeholderTicker ? (
                     <p className={styles.progressValue}>{progressValue}%</p>
                 ) : (
