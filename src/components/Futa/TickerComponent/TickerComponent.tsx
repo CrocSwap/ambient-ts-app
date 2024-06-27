@@ -35,7 +35,10 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import Comments from '../Comments/Comments';
 import { tickerDisplayElements } from './tickerDisplayElements';
 import moment from 'moment';
-import { marketCapMultiplier } from '../../../pages/platformFuta/mockAuctionData';
+import {
+    getFreshAuctionDetailsForAccount,
+    marketCapMultiplier,
+} from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -92,8 +95,8 @@ const useAuctionStates = () => {
     const [auctionDetails, setAuctionDetails] = useState<
         AuctionDataIF | undefined
     >();
-    const [allocationForConnectedUser, setAllocationForConnectedUser] =
-        useState<number | undefined>();
+    const [auctionDetailsForConnectedUser, setAuctionDetailsForConnectedUser] =
+        useState<AuctionDataIF | undefined>();
     const [bidGasPriceinDollars, setBidGasPriceinDollars] = useState<
         string | undefined
     >();
@@ -125,8 +128,8 @@ const useAuctionStates = () => {
         setBidQtyNonDisplay,
         auctionDetails,
         setAuctionDetails,
-        allocationForConnectedUser,
-        setAllocationForConnectedUser,
+        auctionDetailsForConnectedUser,
+        setAuctionDetailsForConnectedUser,
         bidGasPriceinDollars,
         setBidGasPriceinDollars,
         inputValue,
@@ -172,8 +175,8 @@ export default function TickerComponent(props: PropsIF) {
         setBidQtyNonDisplay,
         auctionDetails,
         setAuctionDetails,
-        allocationForConnectedUser,
-        setAllocationForConnectedUser,
+        auctionDetailsForConnectedUser,
+        setAuctionDetailsForConnectedUser,
         bidGasPriceinDollars,
         setBidGasPriceinDollars,
         inputValue,
@@ -197,27 +200,25 @@ export default function TickerComponent(props: PropsIF) {
             (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
         );
     };
-    const getAuctionDetailsForAccount = async (ticker: string) => {
-        return accountData.auctions.find(
-            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-        );
-    };
 
     const { ticker: tickerFromParams } = useParams();
 
     useEffect(() => {
         if (!tickerFromParams) return;
         Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
-            console.log('fetched data for ' + tickerFromParams);
+            // console.log('fetched data for ' + tickerFromParams);
         });
     }, [tickerFromParams]);
 
-    const formattedunclaimedTokenAllocationForConnectedUser =
-        allocationForConnectedUser
-            ? allocationForConnectedUser.toLocaleString('en-US', {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 2,
-              })
+    const formattedUnclaimedTokenAllocationForConnectedUser =
+        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser
+            ? auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser.toLocaleString(
+                  'en-US',
+                  {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                  },
+              )
             : undefined;
 
     const marketCapEthValue = auctionDetails
@@ -269,16 +270,15 @@ export default function TickerComponent(props: PropsIF) {
     useEffect(() => {
         if (!tickerFromParams) return;
         if (userAddress) {
-            Promise.resolve(getAuctionDetailsForAccount(tickerFromParams)).then(
-                (details) =>
-                    setAllocationForConnectedUser(
-                        details?.tokenAllocationUnclaimedByUser
-                            ? details?.tokenAllocationUnclaimedByUser
-                            : undefined,
-                    ),
-            );
+            Promise.resolve(
+                getFreshAuctionDetailsForAccount(tickerFromParams, accountData),
+            ).then((details) => {
+                setAuctionDetailsForConnectedUser(
+                    details ? details : undefined,
+                );
+            });
         } else {
-            setAllocationForConnectedUser(undefined);
+            setAuctionDetailsForConnectedUser(undefined);
         }
     }, [tickerFromParams, userAddress]);
 
@@ -450,7 +450,8 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        allocationForConnectedUser && allocationForConnectedUser > 0;
+        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser &&
+        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
@@ -488,7 +489,7 @@ export default function TickerComponent(props: PropsIF) {
             onClick={() =>
                 isAllocationAvailableToClaim
                     ? console.log(
-                          `clicked claim for amount: ${formattedunclaimedTokenAllocationForConnectedUser}`,
+                          `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
                       )
                     : showTradeButton
                       ? console.log(
@@ -508,6 +509,7 @@ export default function TickerComponent(props: PropsIF) {
 
     const tickerDisplayElementsProps = {
         auctionStatusData,
+        auctionDetailsForConnectedUser,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -544,7 +546,7 @@ export default function TickerComponent(props: PropsIF) {
         <div className={styles.allocationContainer}>
             <h3>ALLOCATION</h3>
             <div className={styles.allocationDisplay}>
-                {formattedunclaimedTokenAllocationForConnectedUser}
+                {formattedUnclaimedTokenAllocationForConnectedUser}
             </div>
             {extraInfoDisplay}
         </div>
@@ -562,6 +564,10 @@ export default function TickerComponent(props: PropsIF) {
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
+    const isUserBidDataAvailable =
+        auctionDetailsForConnectedUser?.highestBidByUserInEth !== undefined &&
+        auctionDetailsForConnectedUser?.userBidSizeUserInEth !== undefined;
+
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -574,7 +580,9 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
-                        {!isAuctionCompleted && yourBidDisplay}
+                        {!isAuctionCompleted &&
+                            isUserBidDataAvailable &&
+                            yourBidDisplay}
                         <div className={styles.flexColumn}>
                             {!isAuctionCompleted && maxFdvDisplay}
                             {!isAuctionCompleted && bidSizeDisplay}

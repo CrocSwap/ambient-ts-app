@@ -4,6 +4,7 @@ import { FiClock } from 'react-icons/fi';
 import { CiCircleCheck } from 'react-icons/ci';
 import { TfiArrowCircleUp } from 'react-icons/tfi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import ProgressBar from '../../../../components/Futa/ProgressBar/ProgressBar';
 
 export default function DetailsContent() {
     const smallHeight = useMediaQuery('(max-height: 800px)');
@@ -42,10 +43,10 @@ export default function DetailsContent() {
                     <span>FDV</span>
                 </p>
             </div>
-            {/* <div className={styles.progressContainer}>
-                <ProgressBar value={70} />
+            <div className={styles.progressContainer}>
+                <ProgressBar fillPercentage={70} />
                 <p>$2,500 / $5,000</p>
-            </div> */}
+            </div>
         </div>
     );
 

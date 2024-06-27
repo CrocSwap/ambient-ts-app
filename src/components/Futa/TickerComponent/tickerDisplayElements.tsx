@@ -26,6 +26,7 @@ import {
 // Props interface
 export interface PropsIF {
     auctionStatusData: AuctionStatusDataIF;
+    auctionDetailsForConnectedUser: AuctionDataIF | undefined;
     marketCapEthValue: number | undefined;
     currentMarketCapUsdValue: number | undefined;
     timeRemaining: string | undefined;
@@ -54,6 +55,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
         auctionStatusData,
+        auctionDetailsForConnectedUser,
         marketCapEthValue,
         currentMarketCapUsdValue,
         timeRemaining,
@@ -82,6 +84,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         auctions: { chainId },
         showComments,
         setShowComments,
+        watchlists,
     } = useContext(AuctionsContext);
 
     const currentMarketCapUsdFormatted =
@@ -132,6 +135,25 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     const openBidEthValueFormatted = openBidMarketCapInEth
         ? openBidMarketCapInEth.toString()
+        : '...';
+
+    const userBidMarketCapInEth =
+        auctionDetailsForConnectedUser?.highestBidByUserInEth
+            ? auctionDetailsForConnectedUser?.highestBidByUserInEth *
+              marketCapMultiplier
+            : undefined;
+
+    const userBidMarketCapFormatted = userBidMarketCapInEth
+        ? userBidMarketCapInEth.toString()
+        : '...';
+
+    const userBidSizeInEth =
+        auctionDetailsForConnectedUser?.userBidSizeUserInEth
+            ? auctionDetailsForConnectedUser?.userBidSizeUserInEth
+            : undefined;
+
+    const userBidSizeInEthFormatted = userBidSizeInEth
+        ? userBidSizeInEth.toString()
         : '...';
 
     const currentOpenBidUsdValue =
@@ -193,13 +215,13 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const yourBidData = [
         {
             label: 'Max Market cap',
-            value: !placeholderTicker ? 'Ξ ' + '~' : '-',
+            value: !placeholderTicker ? 'Ξ ' + userBidMarketCapFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
         },
         {
             label: 'Bid size',
-            value: !placeholderTicker ? '~' : '-',
+            value: !placeholderTicker ? 'Ξ ' + userBidSizeInEthFormatted : '-',
             color: 'var(--text1)',
             tooltipLabel: 'THE MAX BID SIZE YOU ARE WILLING TO GET FILLED',
         },
@@ -247,7 +269,23 @@ export const tickerDisplayElements = (props: PropsIF) => {
                         >
                             COMMENTS{' '}
                         </button>
-                        <FaEye size={25} className={styles.watchlistButton} />
+                        <FaEye
+                            className={
+                                styles[
+                                    tickerFromParams &&
+                                    watchlists.v1.data.includes(
+                                        tickerFromParams,
+                                    )
+                                        ? 'watchlistButtonActive'
+                                        : 'watchlistButtonInactive'
+                                ]
+                            }
+                            size={25}
+                            onClick={() =>
+                                tickerFromParams &&
+                                watchlists.v1.toggle(tickerFromParams)
+                            }
+                        />
                     </div>
                 )}
             </div>

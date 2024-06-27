@@ -7,17 +7,32 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { AuctionDataIF } from '../../../contexts/AuctionsContext';
-import { marketCapMultiplier } from '../../../pages/platformFuta/mockAuctionData';
+import {
+    AuctionDataIF,
+    AuctionsContext,
+} from '../../../contexts/AuctionsContext';
+import {
+    getRetrievedAuctionDetailsForAccount,
+    marketCapMultiplier,
+} from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     auction: AuctionDataIF;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
+    setShowComplete: Dispatch<SetStateAction<boolean>>;
 }
 export default function TickerItem(props: PropsIF) {
-    const { auction, selectedTicker, setSelectedTicker, isAccount } = props;
+    const {
+        auction,
+        selectedTicker,
+        setSelectedTicker,
+        isAccount,
+        setShowComplete,
+    } = props;
+
+    const { accountData } = useContext(AuctionsContext);
 
     const { ticker, highestFilledBidInEth, createdAt, auctionLength } = auction;
 
@@ -29,11 +44,40 @@ export default function TickerItem(props: PropsIF) {
 
     const timeRemaining = getTimeRemainingAbbrev(timeRemainingInSec);
 
-    const status2 = ticker.toLowerCase().includes('juni')
-        ? 'var(--orange)'
-        : ticker.toLowerCase().includes('doge')
-          ? 'var(--text1)'
-          : ticker.toLowerCase().includes('emily')
+    const userDataForAuction = getRetrievedAuctionDetailsForAccount(
+        ticker,
+        accountData,
+    );
+
+    const isAuctionOpen = timeRemainingInSec > 0;
+
+    const isUserInTheMoney = isAuctionOpen
+        ? userDataForAuction?.highestBidByUserInEth !== undefined &&
+          userDataForAuction.highestBidByUserInEth >= highestFilledBidInEth
+        : userDataForAuction?.highestBidByUserInEth !== undefined &&
+          userDataForAuction.highestBidByUserInEth === highestFilledBidInEth &&
+          userDataForAuction?.tokenAllocationUnclaimedByUser &&
+          userDataForAuction.tokenAllocationUnclaimedByUser > 0;
+
+    const isUserOutOfTheMoney = isAuctionOpen
+        ? userDataForAuction?.highestBidByUserInEth !== undefined &&
+          userDataForAuction.highestBidByUserInEth < highestFilledBidInEth
+        : userDataForAuction?.highestBidByUserInEth !== undefined &&
+          userDataForAuction.highestBidByUserInEth !== highestFilledBidInEth &&
+          userDataForAuction?.ethUnclaimedByUser &&
+          userDataForAuction.ethUnclaimedByUser > 0;
+
+    const userActionsCompleted =
+        !isAuctionOpen &&
+        userDataForAuction?.highestBidByUserInEth !== undefined &&
+        !userDataForAuction?.tokenAllocationUnclaimedByUser &&
+        !userDataForAuction?.ethUnclaimedByUser;
+
+    const status2 = isUserInTheMoney
+        ? 'var(--text1)'
+        : isUserOutOfTheMoney
+          ? 'var(--orange)'
+          : userActionsCompleted
             ? 'var(--accent2)'
             : undefined;
 
@@ -66,7 +110,12 @@ export default function TickerItem(props: PropsIF) {
                     : ''
             }`}
             to={'/auctions/v1/' + ticker}
-            onClick={() => setSelectedTicker(ticker)}
+            onClick={() => {
+                setSelectedTicker(ticker);
+                const shouldSetShowComplete =
+                    timeRemainingInSec < 0 ? true : false;
+                setShowComplete(shouldSetShowComplete);
+            }}
         >
             <p className={styles2.ticker_name}>{ticker}</p>
             <p className={styles.marketCap}>{formattedMarketCap}</p>

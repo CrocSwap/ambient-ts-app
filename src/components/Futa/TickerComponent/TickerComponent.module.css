@@ -257,40 +257,42 @@
     align-items: center;
 }
 
-.tickerNameContainer{
+.tickerNameContainer {
     display: grid;
     grid-template-columns: auto 150px;
     gap: 8px;
     align-items: center;
 }
-.commentWatchlistContainer{
+
+.commentWatchlistContainer {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-   
 }
+
 .commentButton{
     border: 1px solid var(--dark2, #111A1E);
-background: var(--dark2, #111A1E);
-padding: 4px 16px;
-color: var(--text2, #789090);
-font-size: 14px;
-height: 25px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-transition: all var(--animation-speed) ease-in-out;
-cursor: pointer;
-
-}
-.commentButton:hover{
+    background: var(--dark2, #111A1E);
+    padding: 4px 16px;
+    color: var(--text2, #789090);
+    font-size: 14px;
+    height: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     transition: all var(--animation-speed) ease-in-out;
-
-    border: 1px solid var(--accent1);
-    color: var(--accent1)
+    cursor: pointer;
 }
-.watchlistButton{
+
+.commentButton:hover {
+    transition: all var(--animation-speed) ease-in-out;
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
+}
+
+.watchlistButtonInactive,
+.watchlistButtonActive {
     padding: 4px;
     background: var(--dark2);
     border: 1px solid var(--dark2);
@@ -301,11 +303,12 @@ cursor: pointer;
     align-items: center;
 }
 
-.watchlistButton:hover{
+.watchlistButtonActive,
+.watchlistButtonInactive:hover {
+    transition: all var(--animation-speed) ease-in-out;
     border: 1px solid var(--accent1);
-    
+    color: var(--accent1);
 }
-
 
 @media (min-width: 1280px) {
     .container {
