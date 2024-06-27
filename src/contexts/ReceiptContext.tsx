@@ -123,8 +123,7 @@ export const ReceiptContextProvider = (props: {
         setSessionReceipts((sessionReceipts) =>
             sessionReceipts.filter(
                 (r) =>
-                    JSON.parse(r).transactionHash.toLowerCase() !==
-                    txHash.toLowerCase(),
+                    JSON.parse(r).hash.toLowerCase() !== txHash.toLowerCase(),
             ),
         );
     };

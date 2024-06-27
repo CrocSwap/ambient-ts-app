@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { LimitOrderIF } from '../../../ambient-utils/types';
 import { diffHashSig } from '../../../ambient-utils/dataLayer';
-import { BigNumber } from 'ethers/lib/ethers';
 
 export type LimitSortType =
     | 'wallet'
@@ -53,11 +52,11 @@ export const useSortedLimits = (
             return a.ensResolution.localeCompare(b.ensResolution);
         });
         // sort limit orders with no ENS by the wallet address, for some reason
-        // ... alphanumeric sort fails so we're running a BigNumber comparison
+        // ... alphanumeric sort fails so we're running a BigInt comparison
         const sortedNoENS: LimitOrderIF[] = txsNoENS.sort((a, b) => {
-            const walletA = BigNumber.from(a.user);
-            const walletB = BigNumber.from(b.user);
-            return walletA.gte(walletB) ? 1 : -1;
+            const walletA = BigInt(a.user);
+            const walletB = BigInt(b.user);
+            return walletA > walletB ? 1 : -1;
         });
         // combine and return sorted arrays
         return [...sortedENS, ...sortedNoENS];
