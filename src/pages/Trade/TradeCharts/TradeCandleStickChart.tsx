@@ -944,19 +944,17 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData[0].period === period &&
                 isFetchingEnoughData
             ) {
-                const lastCandleDate = unparsedCandleData?.reduce(function (
-                    prev,
-                    current,
-                ) {
-                    return prev.time > current.time ? prev : current;
-                }).time;
+                const lastCandleDate = unparsedCandleData?.reduce(
+                    function (prev, current) {
+                        return prev.time > current.time ? prev : current;
+                    },
+                ).time;
 
-                const firstCandleDate = unparsedCandleData?.reduce(function (
-                    prev,
-                    current,
-                ) {
-                    return prev.time < current.time ? prev : current;
-                }).time;
+                const firstCandleDate = unparsedCandleData?.reduce(
+                    function (prev, current) {
+                        return prev.time < current.time ? prev : current;
+                    },
+                ).time;
 
                 const maxDom =
                     scaleData !== undefined
@@ -1039,23 +1037,6 @@ function TradeCandleStickChart(props: propsIF) {
         isCondensedModeEnabled,
         isDenomBase,
     ]);
-
-    useEffect(() => {
-        if (unparsedCandleData && unparsedCandleData.length > 0 && period) {
-            const candles = filterCandleWithTransaction(
-                unparsedCandleData,
-                period,
-            ).filter((i) => i.isShowData);
-
-            if (
-                isCondensedModeEnabled &&
-                !isFetchingEnoughData &&
-                candles.length < 20
-            ) {
-                setIsCondensedModeEnabled(false);
-            }
-        }
-    }, [isCondensedModeEnabled]);
 
     const isOpenChart =
         !isLoading &&
