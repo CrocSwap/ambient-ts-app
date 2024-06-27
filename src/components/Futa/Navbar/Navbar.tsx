@@ -9,7 +9,7 @@ import Logo from '../../../assets/futa/images/futaLogo.svg';
 import {
     useWeb3ModalAccount,
     // useSwitchNetwork,
-} from '@web3modal/ethers5/react';
+} from '@web3modal/ethers/react';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { UserDataContext } from '../../../contexts/UserDataContext';

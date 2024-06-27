@@ -34,7 +34,13 @@ interface propsIF {
 }
 
 export default function SearchableTicker(props: propsIF) {
-    const { auctions, title, setIsFullLayoutActive, placeholderTicker } = props;
+    const {
+        auctions,
+        title,
+        setIsFullLayoutActive,
+        placeholderTicker,
+        isAccount,
+    } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
     const [showComplete, setShowComplete] = useState<boolean>(false);
@@ -85,6 +91,19 @@ export default function SearchableTicker(props: propsIF) {
     function focusInput(): void {
         document.getElementById(INPUT_DOM_ID)?.focus();
     }
+
+    // clear search input on ESC keypress
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent): void => {
+            if (document.activeElement?.id === INPUT_DOM_ID) {
+                e.code === 'Escape' && clearInput();
+            }
+        };
+        document.body.addEventListener('keydown', handleEscape);
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', handleEscape);
+        };
+    });
 
     // split auction data into complete vs incomplete subsets
     // runs any time new data is received by the components
@@ -183,11 +202,13 @@ export default function SearchableTicker(props: propsIF) {
                                 autoComplete='off'
                                 tabIndex={1}
                             />
-                            <MdClose
-                                size={20}
-                                color='var(--text2)'
-                                onClick={() => clearInput()}
-                            />
+                            {searchInputRaw && (
+                                <MdClose
+                                    size={20}
+                                    color='var(--text2)'
+                                    onClick={() => clearInput()}
+                                />
+                            )}
                         </div>
                         <div className={styles.filters} ref={timeDropdownRef}>
                             <div className={styles.timeDropdownContent}>
@@ -291,6 +312,7 @@ export default function SearchableTicker(props: propsIF) {
                         <TickerItem
                             key={JSON.stringify(auction)}
                             auction={auction}
+                            isAccount={isAccount}
                             selectedTicker={selectedTicker}
                             setSelectedTicker={setSelectedTicker}
                         />

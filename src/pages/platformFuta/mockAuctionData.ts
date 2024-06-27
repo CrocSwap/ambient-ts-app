@@ -6,350 +6,331 @@ import {
 export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
-        marketCap: 3.63798,
-        createdAt: 1719948920,
+        createdAt: 1719438920,
         auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
     },
     {
-        ticker: 'MOG',
-        marketCap: 0.25,
-        createdAt: 1719548920,
-        auctionLength: 604800,
+        ticker: 'DOGE1',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE2',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE3',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE4',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE5',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
+    },
+    {
+        ticker: 'DOGE6',
+        createdAt: 1719438920,
+        auctionLength: 86400,
+        highestFilledBidInEth: 0.25,
     },
     {
         ticker: 'PEPE',
-        marketCap: 17.347235,
-        createdAt: 1718225986,
+        createdAt: 1719548920,
         auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
         ticker: 'JUNIOR',
-        marketCap: 1.86264525,
         createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'JUNIOR1',
-        marketCap: 1.86264525,
-        createdAt: 1719248920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'JUNIOR2',
-        marketCap: 1.86264525,
-        createdAt: 1719448920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'JUNIOR3',
-        marketCap: 1.86264525,
-        createdAt: 1719648920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'JUNIOR4',
-        marketCap: 1.86264525,
-        createdAt: 1719548920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'BODEN',
-        marketCap: 1.953125,
-        createdAt: 1718447920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'APU',
-        marketCap: 0.7629395,
-        createdAt: 1718235814,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'BOME',
-        marketCap: 1.953125,
-        createdAt: 1718249226,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'USA',
-        marketCap: 3.63798,
-        createdAt: 1717224639,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'BITCOIN',
-        marketCap: 1.953125,
-        createdAt: 1718275051,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'WIF',
-        marketCap: 1.953125,
-        createdAt: 1718293065,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP',
-        marketCap: 1.86264525,
-        createdAt: 1718367476,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY',
-        marketCap: 0.48828125,
-        createdAt: 1719140920,
+        createdAt: 1719248920,
         auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN',
-        marketCap: 0.7629395,
+        createdAt: 1718225986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+    },
+
+    {
+        ticker: 'PEPE1',
         createdAt: 1719548920,
         auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
-        ticker: 'LOCKIN',
-        marketCap: 0.48828125,
-        createdAt: 1718447920,
+        ticker: 'JUNIOR1',
+        createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP1',
-        marketCap: 1.86264525,
-        createdAt: 1719188920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY1',
-        marketCap: 0.48828125,
-        createdAt: 1719170920,
+        createdAt: 1719248920,
         auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN1',
-        marketCap: 0.7629395,
-        createdAt: 1719648920,
+        createdAt: 1718225986,
         auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+    },
+
+    {
+        ticker: 'PEPE2',
+        createdAt: 1719548920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
-        ticker: 'LOCKIN1',
-        marketCap: 0.48828125,
-        createdAt: 1718637920,
+        ticker: 'JUNIOR2',
+        createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP2',
-        marketCap: 1.86264525,
-        createdAt: 1719179920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY2',
-        marketCap: 0.48828125,
-        createdAt: 1718638920,
+        createdAt: 1719248920,
         auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN2',
-        marketCap: 0.7629395,
-        createdAt: 1718858920,
+        createdAt: 1718225986,
         auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+    },
+
+    {
+        ticker: 'PEPE3',
+        createdAt: 1719548920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
-        ticker: 'LOCKIN2',
-        marketCap: 0.48828125,
-        createdAt: 1718847920,
+        ticker: 'JUNIOR3',
+        createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP3',
-        marketCap: 1.86264525,
-        createdAt: 1719180920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY3',
-        marketCap: 0.48828125,
-        createdAt: 1718648920,
+        createdAt: 1719248920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'BEN',
-        marketCap: 3.63798,
-        createdAt: 1718948920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'BEN2',
-        marketCap: 3.63798,
-        createdAt: 1719948920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'BEN3',
-        marketCap: 3.63798,
-        createdAt: 1718958920,
-        auctionLength: 604800,
-    },
-    {
-        ticker: 'BEN4',
-        marketCap: 3.63798,
-        createdAt: 1718968920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN3',
-        marketCap: 0.7629395,
-        createdAt: 1718958920,
+        createdAt: 1718225986,
         auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+    },
+
+    {
+        ticker: 'PEPE4',
+        createdAt: 1719548920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
-        ticker: 'LOCKIN3',
-        marketCap: 0.48828125,
-        createdAt: 1718867920,
+        ticker: 'JUNIOR4',
+        createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP4',
-        marketCap: 1.86264525,
-        createdAt: 1719170920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY4',
-        marketCap: 0.48828125,
-        createdAt: 1718758920,
+        createdAt: 1719248920,
         auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN4',
-        marketCap: 0.7629395,
-        createdAt: 1718978920,
+        createdAt: 1718225986,
         auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+    },
+
+    {
+        ticker: 'PEPE5',
+        createdAt: 1719548920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
-        ticker: 'LOCKIN4',
-        marketCap: 0.48828125,
-        createdAt: 1718868920,
+        ticker: 'JUNIOR5',
+        createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP5',
-        marketCap: 1.86264525,
-        createdAt: 1719160920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY5',
-        marketCap: 0.48828125,
-        createdAt: 1718998920,
+        createdAt: 1719248920,
         auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN5',
-        marketCap: 0.7629395,
-        createdAt: 1719078920,
+        createdAt: 1718225986,
         auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+    },
+
+    {
+        ticker: 'PEPE6',
+        createdAt: 1719548920,
+        auctionLength: 604800,
+        highestFilledBidInEth: 0.3125,
     },
     {
-        ticker: 'LOCKIN5',
-        marketCap: 0.48828125,
-        createdAt: 1718869920,
+        ticker: 'JUNIOR6',
+        createdAt: 1719148920,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'TRUMP6',
-        marketCap: 1.86264525,
-        createdAt: 1719150920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 1.192093,
     },
     {
         ticker: 'EMILY6',
-        marketCap: 0.48828125,
-        createdAt: 1719178920,
+        createdAt: 1719248920,
         auctionLength: 604800,
+        highestFilledBidInEth: 11.10223,
     },
     {
         ticker: 'DEGEN6',
-        marketCap: 0.7629395,
-        createdAt: 1719278920,
+        createdAt: 1718225986,
         auctionLength: 604800,
-    },
-    {
-        ticker: 'LOCKIN6',
-        marketCap: 0.48828125,
-        createdAt: 1718870920,
-        auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
     },
 ];
 
 export const mockAccountData: AuctionDataIF[] = [
     {
         ticker: 'DOGE',
-        marketCap: 3.63798,
-        createdAt: 1718235814,
-        // createdAt: 1719948920,
+        createdAt: 1719948920,
         auctionLength: 86400,
-        currentUserBid: 3.63798,
+        highestFilledBidInEth: 0.25,
+        highestBidByUserInEth: 3.63798,
     },
     {
-        ticker: 'MOG',
-        marketCap: 0.25,
-        createdAt: 1718547920,
-        unclaimedEthAllocation: 100000,
+        ticker: 'PEPE',
+        createdAt: 1719548920,
         auctionLength: 604800,
-        currentUserBid: 0.25,
+        ethUnclaimedByUser: 100000,
+        highestFilledBidInEth: 0.3125,
+        highestBidByUserInEth: 0.25,
     },
     {
-        ticker: 'BODEN',
-        marketCap: 0.95367425,
-        createdAt: 1718447920,
+        ticker: 'JUNIOR',
+        createdAt: 1719148920,
         auctionLength: 604800,
-        unclaimedTokenAllocation: 100000,
-        currentUserBid: 1.490116,
+        highestFilledBidInEth: 1.192093,
+        highestBidByUserInEth: 0.7629395,
+        tokenAllocationUnclaimedByUser: 168200,
     },
     {
-        ticker: 'APU',
-        marketCap: 0.7629395,
-        createdAt: 1718235814,
+        ticker: 'EMILY',
+        createdAt: 1719248920,
         auctionLength: 604800,
-        currentUserBid: 0.7629395,
-        unclaimedTokenAllocation: 168200,
+        highestFilledBidInEth: 11.10223,
+        highestBidByUserInEth: 0.7629395,
+        tokenAllocationUnclaimedByUser: 168200,
+    },
+    {
+        ticker: 'DEGEN',
+        createdAt: 1718225986,
+        auctionLength: 604800,
+        highestFilledBidInEth: 21.6840425,
+        highestBidByUserInEth: 1.490116,
+        tokenAllocationUnclaimedByUser: 100000,
     },
 ];
 
-export const mockAuctionStatus1: AuctionStatusDataServerIF = {
-    openBidMarketCap: 0.95367425,
-    openBidSize: 0.271,
-    openBidAmountFilled: 0.066,
+export const mockAuctionDetailsServerResponseGenerator = (
+    ticker: string,
+): AuctionStatusDataServerIF => {
+    switch (ticker.slice(0, 4)) {
+        case 'DOGE':
+            return {
+                ticker: ticker,
+                createdAt: 1719438920,
+                auctionLength: 86400,
+                highestFilledBidInEth: 0.25,
+                openBidInEth: 0.3125,
+                openBidAmountFilledInEth: 0.056,
+            };
+        case 'PEPE':
+            return {
+                ticker: ticker,
+                createdAt: 1719548920,
+                auctionLength: 604800,
+                highestFilledBidInEth: 0.3125,
+                openBidInEth: 0.390625,
+                openBidAmountFilledInEth: 0.166,
+            };
+        case 'JUNI':
+            return {
+                ticker: ticker,
+                createdAt: 1719148920,
+                auctionLength: 604800,
+                highestFilledBidInEth: 1.192093,
+                openBidInEth: 1.490116,
+                openBidAmountFilledInEth: 1.266,
+            };
+        case 'EMIL':
+            return {
+                ticker: ticker,
+                createdAt: 1719248920,
+                auctionLength: 604800,
+                highestFilledBidInEth: 11.10223,
+                openBidInEth: 13.8777875,
+                openBidAmountFilledInEth: 5.5,
+            };
+        case 'DEGE':
+            return {
+                ticker: ticker,
+                createdAt: 1718225986,
+                auctionLength: 604800,
+                highestFilledBidInEth: 21.6840425,
+                openBidInEth: 27.10505,
+                openBidAmountFilledInEth: 15,
+            };
+        default:
+            return {
+                ticker: ticker,
+                createdAt: 1718235814,
+                auctionLength: 86400,
+                highestFilledBidInEth: 0.6103515,
+                openBidInEth: 0.7629395,
+                openBidAmountFilledInEth: 0.566,
+            };
+    }
 };
 
-export const mockAuctionStatus2: AuctionStatusDataServerIF = {
-    openBidMarketCap: 4.5474725,
-    openBidSize: 0.471,
-    openBidAmountFilled: 0.166,
-};
-
-export const mockAuctionStatus3: AuctionStatusDataServerIF = {
-    openBidMarketCap: 0.3125,
-    openBidSize: 0.471,
-    openBidAmountFilled: 0.166,
-};
-
-export const mockAuctionStatus4: AuctionStatusDataServerIF = {
-    openBidMarketCap: 0.6103515,
-    openBidSize: 0.571,
-    openBidAmountFilled: 0.366,
-};
-
-export const mockAuctionStatus5: AuctionStatusDataServerIF = {
-    openBidMarketCap: 2.3283065,
-    openBidSize: 0.571,
-    openBidAmountFilled: 0.366,
-};
-
-export const marketCapMultipliers = [
+export const bidSizeMultipliers = [
     1, 1.25, 1.5625, 1.953125, 2.441406, 3.051758, 3.814697, 4.768372, 5.960464,
     7.450581, 9.313226, 11.64153, 14.55192, 18.18989, 22.73737, 28.42171,
     35.52714, 44.40892, 55.51115, 69.38894, 86.73617, 108.4202, 135.5253,
     169.4066, 211.7582, 264.6978,
 ];
+
+export const minBidSizeInEth = 0.25;
+export const marketCapMultiplier = 5;

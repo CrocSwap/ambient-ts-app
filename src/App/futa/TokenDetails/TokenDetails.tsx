@@ -12,7 +12,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 
@@ -89,7 +88,7 @@ export default function TokenDetails() {
                 .token(selectedToken.address)
                 .wallet(userAddress)
 
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     setTokenWalletBalance(bal.toString());
 
                     setTokenBalance({
@@ -102,7 +101,7 @@ export default function TokenDetails() {
             crocEnv
                 .token(selectedToken.address)
                 .balance(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     setTokenDexBalance(bal.toString());
 
                     setTokenBalance({

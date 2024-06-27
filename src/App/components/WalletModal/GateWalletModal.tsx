@@ -8,7 +8,7 @@ import Button from '../../../components/Form/Button';
 
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { useWeb3Modal } from '@web3modal/ethers/react';
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import { VIEW_ONLY } from '../../../ambient-utils/constants';
 

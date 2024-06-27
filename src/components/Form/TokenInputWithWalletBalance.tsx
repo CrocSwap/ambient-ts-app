@@ -1,12 +1,11 @@
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { memo } from 'react';
-import { formatTokenInput, stringToBigNumber } from '../../utils/numbers';
+import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { BigNumber } from 'ethers';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -73,13 +72,13 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
 
-    const walletBalanceBigNum = tokenBalance
-        ? stringToBigNumber(tokenBalance, token.decimals)
-        : BigNumber.from(0);
+    const walletBalanceBigInt = tokenBalance
+        ? stringToBigInt(tokenBalance, token.decimals)
+        : BigInt(0);
 
-    const dexBalanceBigNum = tokenDexBalance
-        ? stringToBigNumber(tokenDexBalance, token.decimals)
-        : BigNumber.from(0);
+    const dexBalanceBigInt = tokenDexBalance
+        ? stringToBigInt(tokenDexBalance, token.decimals)
+        : BigInt(0);
 
     const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
     const walletAndExchangeBalance =
@@ -90,21 +89,21 @@ function TokenInputWithWalletBalance(props: propsIF) {
                   ).toString(),
               )
             : '...';
-    const walletAndExchangeBalanceBigNum =
-        walletBalanceBigNum.add(dexBalanceBigNum);
+    const walletAndExchangeBalanceBigInt =
+        walletBalanceBigInt + dexBalanceBigInt;
     const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
-    const balanceBigNum = !isDexSelected
-        ? walletBalanceBigNum
-        : walletAndExchangeBalanceBigNum;
+    const balanceBigInt = !isDexSelected
+        ? walletBalanceBigInt
+        : walletAndExchangeBalanceBigInt;
 
-    const balanceBigNumString = balanceBigNum.toString();
+    const balanceBigIntString = balanceBigInt.toString();
 
     // function to insert character at index from end of string
     const insertCharAt = (str: string, index: number, char: string) =>
         str.slice(0, -index) + char + str.slice(-index);
 
-    const balBigNumStringScaled = insertCharAt(
-        balanceBigNumString.padStart(token.decimals, '0'),
+    const balBigIntStringScaled = insertCharAt(
+        balanceBigIntString.padStart(token.decimals, '0'),
         token.decimals,
         '.',
     );
@@ -117,11 +116,11 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
-            ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
-            : balance;
+              ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
+              : balance;
 
     const balanceWithBuffer = balance
-        ? subtractBuffer(balBigNumStringScaled)
+        ? subtractBuffer(balBigIntStringScaled)
         : '...';
 
     const handleMaxButtonClick = () => {

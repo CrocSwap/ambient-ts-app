@@ -8,16 +8,18 @@ import {
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionDataIF } from '../../../contexts/AuctionsContext';
+import { marketCapMultiplier } from '../../../pages/platformFuta/mockAuctionData';
 
 interface PropsIF {
     auction: AuctionDataIF;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     selectedTicker: string | undefined;
+    isAccount: boolean | undefined;
 }
 export default function TickerItem(props: PropsIF) {
-    const { auction, selectedTicker, setSelectedTicker } = props;
+    const { auction, selectedTicker, setSelectedTicker, isAccount } = props;
 
-    const { ticker, marketCap, createdAt, status, auctionLength } = auction;
+    const { ticker, highestFilledBidInEth, createdAt, auctionLength } = auction;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
@@ -27,15 +29,15 @@ export default function TickerItem(props: PropsIF) {
 
     const timeRemaining = getTimeRemainingAbbrev(timeRemainingInSec);
 
-    const status2 =
-        ticker.toLowerCase().includes('ben') ||
-        ticker.toLowerCase().includes('trump')
-            ? 'var(--orange)'
-            : ticker.toLowerCase().includes('lockin')
-              ? 'var(--text1)'
-              : ticker.toLowerCase().includes('emily')
-                ? 'var(--accent2)'
-                : undefined;
+    const status2 = ticker.toLowerCase().includes('juni')
+        ? 'var(--orange)'
+        : ticker.toLowerCase().includes('doge')
+          ? 'var(--text1)'
+          : ticker.toLowerCase().includes('emily')
+            ? 'var(--accent2)'
+            : undefined;
+
+    const marketCap = highestFilledBidInEth * marketCapMultiplier;
 
     const marketCapUsdValue =
         nativeTokenUsdPrice !== undefined && marketCap !== undefined
@@ -54,17 +56,27 @@ export default function TickerItem(props: PropsIF) {
                 : '$0'
             : undefined;
 
+    const timeRemainingColor = undefined;
+
     return (
         <Link
             className={`${styles.tickerItemContainer} ${
-                auction?.ticker === selectedTicker ? styles.active : ''
+                auction?.ticker === selectedTicker && !isAccount
+                    ? styles.active
+                    : ''
             }`}
             to={'/auctions/v1/' + ticker}
             onClick={() => setSelectedTicker(ticker)}
         >
             <p className={styles2.ticker_name}>{ticker}</p>
             <p className={styles.marketCap}>{formattedMarketCap}</p>
-            <p style={{ color: status ? status : 'var(--text1)' }}>
+            <p
+                style={{
+                    color: timeRemainingColor
+                        ? timeRemainingColor
+                        : 'var(--text1)',
+                }}
+            >
                 {timeRemaining}
             </p>
             <div className={styles.statusContainer}>

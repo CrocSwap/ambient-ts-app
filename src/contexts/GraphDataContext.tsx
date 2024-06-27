@@ -336,7 +336,7 @@ export const GraphDataContextProvider = (props: {
 
     const failedSessionTransactionHashes = allReceipts
         .filter((r) => JSON.parse(r).status === 0)
-        .map((r) => JSON.parse(r).transactionHash);
+        .map((r) => JSON.parse(r).hash);
 
     // transaction hashes for subsequently fully removed positions
     const removedPositionUpdateTxHashes = sessionPositionUpdates

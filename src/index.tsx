@@ -6,7 +6,7 @@ import App from './App/App';
 import './i18n/config';
 import { StyleSheetManager } from 'styled-components';
 import isValidProp from '@emotion/is-prop-valid';
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
@@ -50,7 +50,9 @@ const metadata = {
 const ethersConfig = defaultConfig({
     metadata,
     defaultChainId: 1,
-    // enableEmail: true,
+    enableEmail: false,
+    rpcUrl: ' ',
+    coinbasePreference: 'smartWalletOnly',
 });
 
 const modal = createWeb3Modal({
@@ -69,9 +71,8 @@ const modal = createWeb3Modal({
     enableAnalytics: false,
     themeVariables: {
         '--w3m-color-mix': 'var(--dark2)',
-        '--w3m-color-mix-strength': 40,
-        '--w3m-font-family':
-            brand === 'futa' ? 'var(--font-family)' : 'var(--font-family)',
+        '--w3m-color-mix-strength': 10,
+        '--w3m-font-family': 'var(--font-family)',
         '--w3m-accent': brand === 'futa' ? '#0CCDFF' : 'var(--accent1)',
     },
 });

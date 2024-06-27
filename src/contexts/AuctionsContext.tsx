@@ -4,11 +4,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import {
     mockAccountData,
     mockAuctionData,
-    mockAuctionStatus1,
-    mockAuctionStatus2,
-    mockAuctionStatus3,
-    mockAuctionStatus4,
-    mockAuctionStatus5,
+    mockAuctionDetailsServerResponseGenerator,
 } from '../pages/platformFuta/mockAuctionData';
 import { UserDataContext } from './UserDataContext';
 
@@ -30,13 +26,12 @@ interface AuctionsContextIF {
 
 export interface AuctionDataIF {
     ticker: string;
-    marketCap: number;
     createdAt: number;
     auctionLength: number;
-    status?: null;
-    currentUserBid?: number;
-    unclaimedTokenAllocation?: number;
-    unclaimedEthAllocation?: number;
+    highestFilledBidInEth: number;
+    highestBidByUserInEth?: number;
+    tokenAllocationUnclaimedByUser?: number;
+    ethUnclaimedByUser?: number;
 }
 
 export interface AuctionsDataIF {
@@ -52,24 +47,24 @@ export interface AccountDataIF {
 }
 
 export interface AuctionStatusDataServerIF {
-    openBidMarketCap: number | undefined;
-    openBidSize: number | undefined;
-    openBidAmountFilled: number | undefined;
+    ticker: string;
+    createdAt: number;
+    auctionLength: number;
+    highestFilledBidInEth: number;
+    openBidInEth?: number | undefined;
+    openBidAmountFilledInEth?: number | undefined;
 }
 
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
+    ticker: string;
+    createdAt: number;
+    auctionLength: number;
     chainId: string;
-    openBidMarketCap: number | undefined;
-    openBidSize: number | undefined;
-    openBidAmountFilled: number | undefined;
+    highestFilledBidInEth: number;
+    openBidInEth: number | undefined;
+    openBidAmountFilledInEth: number | undefined;
 }
-// export interface AuctionsDataIF {
-//     global: XpLeaderboardDataIF;
-//     byWeek: XpLeaderboardDataIF;
-//     byChain: XpLeaderboardDataIF;
-//     getAuctions: (xpLeaderboardType: string) => void;
-// }
 
 export interface AuctionIF {
     status: string;
@@ -102,10 +97,13 @@ export const AuctionsContextProvider = (props: {
     const [auctionStatusData, setAuctionStatusData] =
         React.useState<AuctionStatusDataIF>({
             dataReceived: false,
+            ticker: '',
+            createdAt: 0,
+            auctionLength: 0,
             chainId: chainId,
-            openBidMarketCap: undefined,
-            openBidSize: undefined,
-            openBidAmountFilled: undefined,
+            highestFilledBidInEth: 0.25,
+            openBidInEth: undefined,
+            openBidAmountFilledInEth: undefined,
         });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -113,22 +111,6 @@ export const AuctionsContextProvider = (props: {
     const [showComments, setShowComments] = useState(false);
 
     const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
-
-    // const [auctionsGlobal, setAuctionsGlobal] =
-    //     React.useState<XpLeaderboardDataIF>({
-    //         dataReceived: false,
-    //         data: undefined,
-    //     });
-    // const [auctionsByWeek, setAuctionsByWeek] =
-    //     React.useState<XpLeaderboardDataIF>({
-    //         dataReceived: false,
-    //         data: undefined,
-    //     });
-    // const [auctionsByChain, setAuctionsByChain] =
-    //     React.useState<XpLeaderboardDataIF>({
-    //         dataReceived: false,
-    //         data: undefined,
-    //     });
 
     const fetchAuctionsData = async () => {
         return mockAuctionData;
@@ -138,30 +120,10 @@ export const AuctionsContextProvider = (props: {
         return mockAccountData;
     };
 
-    const fetchAuctionStatusData = async (ticker: string) => {
-        if (
-            ticker.toLowerCase().includes('apu') ||
-            ticker.toLowerCase().includes('degen')
-        ) {
-            return mockAuctionStatus1;
-        } else if (
-            ticker.toLowerCase().includes('usa') ||
-            ticker.toLowerCase().includes('ben')
-        ) {
-            return mockAuctionStatus2;
-        } else if (
-            ticker.toLowerCase().includes('lockin') ||
-            ticker.toLowerCase().includes('emily')
-        ) {
-            return mockAuctionStatus4;
-        } else if (
-            ticker.toLowerCase().includes('junior') ||
-            ticker.toLowerCase().includes('trump')
-        ) {
-            return mockAuctionStatus5;
-        } else {
-            return mockAuctionStatus3;
-        }
+    const fetchAuctionStatusData = async (
+        ticker: string,
+    ): Promise<AuctionStatusDataServerIF> => {
+        return mockAuctionDetailsServerResponseGenerator(ticker);
     };
 
     function getAuctionsData() {
@@ -188,10 +150,13 @@ export const AuctionsContextProvider = (props: {
         fetchAuctionStatusData(ticker).then((data) => {
             setAuctionStatusData({
                 dataReceived: true,
+                ticker: data.ticker,
+                createdAt: data.createdAt,
+                auctionLength: data.auctionLength,
                 chainId: chainId,
-                openBidMarketCap: data.openBidMarketCap,
-                openBidSize: data.openBidSize,
-                openBidAmountFilled: data.openBidAmountFilled,
+                highestFilledBidInEth: data.highestFilledBidInEth,
+                openBidInEth: data.openBidInEth,
+                openBidAmountFilledInEth: data.openBidAmountFilledInEth,
             });
         });
     }

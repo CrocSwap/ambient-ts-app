@@ -8,7 +8,7 @@ import {
 } from '../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../ambient-utils/types';
 import moment from 'moment';
-import { getAddress } from 'ethers/lib/utils.js';
+import { getAddress } from 'ethers';
 import {
     toDisplayPrice,
     priceHalfAboveTick,
@@ -170,8 +170,8 @@ export const useProcessTransaction = (
             ? 1 / priceHalfBelow
             : 1 / priceHalfAbove
         : tx.isBid
-        ? priceHalfBelow
-        : priceHalfAbove;
+          ? priceHalfBelow
+          : priceHalfAbove;
 
     if (tx.entityType === 'limitOrder') {
         if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
@@ -200,15 +200,15 @@ export const useProcessTransaction = (
                         ? priceDecimalCorrected * basePrice
                         : undefined
                     : quotePrice
-                    ? invPriceDecimalCorrected * quotePrice
-                    : undefined
+                      ? invPriceDecimalCorrected * quotePrice
+                      : undefined
                 : isDenomBase
-                ? quotePrice
-                    ? invPriceDecimalCorrected * quotePrice
-                    : undefined
-                : basePrice
-                ? priceDecimalCorrected * basePrice
-                : undefined;
+                  ? quotePrice
+                      ? invPriceDecimalCorrected * quotePrice
+                      : undefined
+                  : basePrice
+                    ? priceDecimalCorrected * basePrice
+                    : undefined;
         } else {
             truncatedDisplayPrice = undefined;
         }
@@ -262,15 +262,15 @@ export const useProcessTransaction = (
                         ? bidTickPriceDecimalCorrected * basePrice
                         : undefined
                     : quotePrice
-                    ? bidTickInvPriceDecimalCorrected * quotePrice
-                    : undefined
+                      ? bidTickInvPriceDecimalCorrected * quotePrice
+                      : undefined
                 : isDenomBase
-                ? quotePrice
-                    ? bidTickInvPriceDecimalCorrected * quotePrice
-                    : undefined
-                : basePrice
-                ? bidTickPriceDecimalCorrected * basePrice
-                : undefined;
+                  ? quotePrice
+                      ? bidTickInvPriceDecimalCorrected * quotePrice
+                      : undefined
+                  : basePrice
+                    ? bidTickPriceDecimalCorrected * basePrice
+                    : undefined;
 
             highDisplayPriceInUsd = isAccountView
                 ? isBaseTokenMoneynessGreaterOrEqual
@@ -278,15 +278,15 @@ export const useProcessTransaction = (
                         ? askTickPriceDecimalCorrected * basePrice
                         : undefined
                     : quotePrice
-                    ? askTickInvPriceDecimalCorrected * quotePrice
-                    : undefined
+                      ? askTickInvPriceDecimalCorrected * quotePrice
+                      : undefined
                 : isDenomBase
-                ? quotePrice
-                    ? askTickInvPriceDecimalCorrected * quotePrice
-                    : undefined
-                : basePrice
-                ? askTickPriceDecimalCorrected * basePrice
-                : undefined;
+                  ? quotePrice
+                      ? askTickInvPriceDecimalCorrected * quotePrice
+                      : undefined
+                  : basePrice
+                    ? askTickPriceDecimalCorrected * basePrice
+                    : undefined;
         } else {
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
@@ -317,15 +317,15 @@ export const useProcessTransaction = (
                     ? priceDecimalCorrected * basePrice
                     : undefined
                 : quotePrice
-                ? invPriceDecimalCorrected * quotePrice
-                : undefined
+                  ? invPriceDecimalCorrected * quotePrice
+                  : undefined
             : isDenomBase
-            ? quotePrice
-                ? invPriceDecimalCorrected * quotePrice
-                : undefined
-            : basePrice
-            ? priceDecimalCorrected * basePrice
-            : undefined;
+              ? quotePrice
+                  ? invPriceDecimalCorrected * quotePrice
+                  : undefined
+              : basePrice
+                ? priceDecimalCorrected * basePrice
+                : undefined;
     }
 
     if (
@@ -380,35 +380,35 @@ export const useProcessTransaction = (
             ? tx.changeType === 'burn'
                 ? 'remove'
                 : tx.changeType === 'harvest'
-                ? 'harvest'
-                : 'add'
+                  ? 'harvest'
+                  : 'add'
             : tx.entityType === 'limitOrder'
-            ? tx.changeType === 'mint'
-                ? isAccountView
-                    ? isBaseTokenMoneynessGreaterOrEqual
-                        ? isBuy
-                            ? 'buy'
-                            : 'sell'
-                        : isBuy
+              ? tx.changeType === 'mint'
+                  ? isAccountView
+                      ? isBaseTokenMoneynessGreaterOrEqual
+                          ? isBuy
+                              ? 'buy'
+                              : 'sell'
+                          : isBuy
+                            ? 'sell'
+                            : 'buy'
+                      : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
                         ? 'sell'
                         : 'buy'
-                    : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
-                    ? 'sell'
-                    : 'buy'
-                : tx.changeType === 'recover'
-                ? 'claim'
-                : 'remove'
-            : isAccountView
-            ? isBaseTokenMoneynessGreaterOrEqual
-                ? isBuy
-                    ? 'buy'
-                    : 'sell'
-                : isBuy
-                ? 'sell'
-                : 'buy'
-            : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
-            ? 'sell'
-            : 'buy';
+                  : tx.changeType === 'recover'
+                    ? 'claim'
+                    : 'remove'
+              : isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? isBuy
+                        ? 'buy'
+                        : 'sell'
+                    : isBuy
+                      ? 'sell'
+                      : 'buy'
+                : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+                  ? 'sell'
+                  : 'buy';
 
     const transactionTypeSide =
         tx.entityType === 'liqchange'
@@ -416,8 +416,8 @@ export const useProcessTransaction = (
                 ? 'rangeAdd'
                 : 'rangeRemove'
             : tx.entityType === 'limitOrder'
-            ? 'limit'
-            : 'market';
+              ? 'limit'
+              : 'market';
 
     const type =
         tx.entityType === 'liqchange'
@@ -425,8 +425,8 @@ export const useProcessTransaction = (
                 ? 'range'
                 : 'range'
             : tx.entityType === 'limitOrder'
-            ? 'limit'
-            : 'market';
+              ? 'limit'
+              : 'market';
 
     const usdValueNum = tx.totalValueUSD;
     const totalFlowUSDNum = tx.totalValueUSD;
@@ -480,16 +480,16 @@ export const useProcessTransaction = (
             ? quoteTokenCharacter
             : baseTokenCharacter
         : isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
+          ? baseTokenCharacter
+          : quoteTokenCharacter;
 
     const priceCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
         : !isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
+          ? baseTokenCharacter
+          : quoteTokenCharacter;
 
     // -----------------------------------------------
 

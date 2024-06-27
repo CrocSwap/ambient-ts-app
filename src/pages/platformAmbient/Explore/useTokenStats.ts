@@ -48,7 +48,7 @@ export const useTokenStats = (
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 

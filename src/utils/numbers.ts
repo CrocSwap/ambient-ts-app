@@ -1,7 +1,6 @@
 import numbro from 'numbro';
 import { getFormattedNumber } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
-import { BigNumber } from 'ethers';
 
 // using a currency library here in case we want to add more in future
 export const formatDollarAmount = (
@@ -57,8 +56,8 @@ export const formatPoolPriceAxis = (
     const digit = digits
         ? digits
         : num != undefined
-        ? num.toString().length
-        : 0;
+          ? num.toString().length
+          : 0;
     if (num === 0) return '0.00';
     if (num === undefined) return '-';
     if (!num) return '-';
@@ -93,14 +92,14 @@ export const formatAmountChartData = (
         mantissa: digits
             ? digits
             : num > 10 || num < -10
-            ? 2
-            : (num > 1 && num <= 10) || (num >= -10 && num < -1)
-            ? 3
-            : (num <= 1 && num >= 0.001) || (num >= -1 && num <= -0.001)
-            ? 5
-            : (num < 0.001 && num > 0) || (num < 0 && num > -0.001)
-            ? 7
-            : 2,
+              ? 2
+              : (num > 1 && num <= 10) || (num >= -10 && num < -1)
+                ? 3
+                : (num <= 1 && num >= 0.001) || (num >= -1 && num <= -0.001)
+                  ? 5
+                  : (num < 0.001 && num > 0) || (num < 0 && num > -0.001)
+                    ? 7
+                    : 2,
 
         // mantissa: num > 1000 ? 2 : digits,
         abbreviations: {
@@ -191,7 +190,7 @@ export const formatTokenInput = (
     return inputStr.replace(/0+$/, '').replace(/\.$/, '');
 };
 
-export function stringToBigNumber(tokenString: string, decimals: number) {
+export function stringToBigInt(tokenString: string, decimals: number) {
     // Split the token string into integer and decimal parts
     // eslint-disable-next-line prefer-const
     let [integerPart, decimalPart = ''] = tokenString.split('.');
@@ -200,8 +199,8 @@ export function stringToBigNumber(tokenString: string, decimals: number) {
 
     // Combine the integer and decimal parts into one string
     const combined = `${integerPart}${decimalPart}`;
-    // Convert to a BigNumber
-    const tokenQuantity = BigNumber.from(combined);
-    // Return the BigNumber representation
+    // Convert to a BigInt
+    const tokenQuantity = BigInt(combined);
+    // Return the BigInt representation
     return tokenQuantity;
 }
