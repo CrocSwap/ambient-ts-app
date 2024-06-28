@@ -582,12 +582,6 @@ export default function TickerComponent(props: PropsIF) {
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
-    const isUserBidDataAvailable =
-        auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei !==
-            undefined &&
-        auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei !==
-            undefined;
-
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -600,9 +594,7 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
-                        {!isAuctionCompleted &&
-                            isUserBidDataAvailable &&
-                            yourBidDisplay}
+                        {!isAuctionCompleted && yourBidDisplay}
                         <div className={styles.flexColumn}>
                             {!isAuctionCompleted && maxFdvDisplay}
                             {!isAuctionCompleted && bidSizeDisplay}

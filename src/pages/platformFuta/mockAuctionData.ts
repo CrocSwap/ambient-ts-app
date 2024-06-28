@@ -15,42 +15,42 @@ export const mockAuctionData: AuctionDataIF[] = [
     {
         ticker: 'DOGE1',
         chainId: '0x2105',
-        createdAt: 1719525980,
+        createdAt: 1719635980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
     },
     {
         ticker: 'DOGE2',
         chainId: '0x2105',
-        createdAt: 1719525980,
+        createdAt: 1719635980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
     },
     {
         ticker: 'DOGE3',
         chainId: '0x2105',
-        createdAt: 1719525980,
+        createdAt: 1719635980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
     },
     {
         ticker: 'DOGE4',
         chainId: '0x2105',
-        createdAt: 1719525980,
+        createdAt: 1719635980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
     },
     {
         ticker: 'DOGE5',
         chainId: '0x2105',
-        createdAt: 1719525980,
+        createdAt: 1719635980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
     },
     {
         ticker: 'DOGE6',
         chainId: '0x2105',
-        createdAt: 1719525980,
+        createdAt: 1719635980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
     },
@@ -95,7 +95,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         chainId: '0x2105',
         createdAt: 1719148920,
         auctionLength: 604800,
-        filledClearingPriceInNativeTokenWei: '1490116000000000000',
+        filledClearingPriceInNativeTokenWei: '1192093000000000000',
     },
     {
         ticker: 'EMILY1',
@@ -333,7 +333,7 @@ export const mockAccountData: AuctionDataIF[] = [
         chainId: '0x2105',
         createdAt: 1719148920,
         auctionLength: 604800,
-        filledClearingPriceInNativeTokenWei: '1490116000000000000',
+        filledClearingPriceInNativeTokenWei: '1192093000000000000',
         userBidClearingPriceInNativeTokenWei: '1490116000000000000',
         qtyBidByUserInNativeTokenWei: '50000000000000000',
     },
@@ -428,12 +428,9 @@ export const mockAuctionDetailsServerResponseGenerator = (
     }
 };
 
-export const bidSizeMultipliers = [
-    1, 1.25, 1.5625, 1.953125, 2.441406, 3.051758, 3.814697, 4.768372, 5.960464,
-    7.450581, 9.313226, 11.64153, 14.55192, 18.18989, 22.73737, 28.42171,
-    35.52714, 44.40892, 55.51115, 69.38894, 86.73617, 108.4202, 135.5253,
-    169.4066, 211.7582, 264.6978,
-];
+const length = 50;
+const base = 1.25;
+export const bidSizeMultipliers = Array.from({ length }, (_, i) => base ** i);
 
 export const minBidSizeInEth = 0.25;
 export const marketCapMultiplier = 5;

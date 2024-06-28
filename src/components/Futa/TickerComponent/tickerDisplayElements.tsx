@@ -155,7 +155,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                       auctionStatusData.openBidClearingPriceInNativeTokenWei,
                       18,
                   ),
-              )
+              ) * marketCapMultiplier
             : undefined;
 
     const formattedOpenBidMarketCapEthValue = openBidMarketCapInEth
@@ -222,7 +222,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     const openBidMarketCapIndex = openBidMarketCapInEth
         ? maxMarketCapEthValues.findIndex(
-              (item) => item === openBidMarketCapInEth * marketCapMultiplier,
+              (item) => item.toFixed(2) === openBidMarketCapInEth.toFixed(2),
           )
         : -1;
 
