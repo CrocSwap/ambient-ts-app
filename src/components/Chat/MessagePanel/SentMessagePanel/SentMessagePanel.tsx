@@ -563,7 +563,7 @@ function SentMessagePanel(props: SentMessageProps) {
         const targetStr = props.mentionIndex
             ? 'account'
             : mentionStr.indexOf('.eth') >= 0
-              ? mentionStr.replace('@', '')
+              ? mentionStr.replace('@', '').replace(',', '')
               : mentionedWalletID;
         if (location.pathname != `/${targetStr}`) {
             navigate(`/${targetStr}`);
@@ -872,25 +872,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     />
                                                 </div>
                                             )}
-                                        {showAvatar &&
-                                            !BASIC_CHAT_MODE &&
-                                            props.message &&
-                                            props.message.chainId && (
-                                                <>
-                                                    <div
-                                                        className={
-                                                            styles.chain_info
-                                                        }
-                                                    >
-                                                        {
-                                                            lookupChain(
-                                                                props.message
-                                                                    .chainId,
-                                                            ).displayName
-                                                        }
-                                                    </div>
-                                                </>
-                                            )}
+
                                         {showAvatar &&
                                             !props.message.isVerified &&
                                             ALLOW_AUTH &&
@@ -938,6 +920,25 @@ function SentMessagePanel(props: SentMessageProps) {
                                                             />
                                                         </div>
                                                     </DefaultTooltip>
+                                                </>
+                                            )}
+                                        {showAvatar &&
+                                            !BASIC_CHAT_MODE &&
+                                            props.message &&
+                                            props.message.chainId && (
+                                                <>
+                                                    <div
+                                                        className={
+                                                            styles.chain_info
+                                                        }
+                                                    >
+                                                        {
+                                                            lookupChain(
+                                                                props.message
+                                                                    .chainId,
+                                                            ).displayName
+                                                        }
+                                                    </div>
                                                 </>
                                             )}
                                     </div>

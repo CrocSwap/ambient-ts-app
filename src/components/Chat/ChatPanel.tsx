@@ -384,7 +384,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-        if (userAddress) {
+        if (userAddress && isChatOpen) {
             if (ens === null || ens === undefined) {
                 setEnsName(defaultEnsName);
             } else {
@@ -1405,6 +1405,7 @@ function ChatPanel(props: propsIF) {
                         isModerator={isModerator}
                         isFocusMentions={isFocusMentions}
                         setGoToChartParams={setGoToChartParams}
+                        isChatOpen={isChatOpen}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />

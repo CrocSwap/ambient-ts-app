@@ -119,8 +119,8 @@ function FullChat(props: FullChatPropsIF) {
         params && !params.includes('global')
             ? params.replace('&', ' / ').toUpperCase()
             : params && params.includes('global')
-            ? 'Global'
-            : 'Global';
+              ? 'Global'
+              : 'Global';
 
     useEffect(() => {
         setIsChatOpen(true);
@@ -138,8 +138,8 @@ function FullChat(props: FullChatPropsIF) {
                   return currency1 + ' / ' + currency2;
               })()
             : params && params.includes('global')
-            ? 'Global'
-            : 'Global';
+              ? 'Global'
+              : 'Global';
 
     const reSwappedReconstructedReadableRoom: string =
         currencies && currencies.length === 2
@@ -148,9 +148,9 @@ function FullChat(props: FullChatPropsIF) {
                   return (currency2 + ' / ' + currency1).toUpperCase();
               })()
             : swappedReconstructedReadableRoom &&
-              swappedReconstructedReadableRoom.includes('global')
-            ? 'Global'
-            : 'Global';
+                swappedReconstructedReadableRoom.includes('global')
+              ? 'Global'
+              : 'Global';
 
     // eslint-disable-next-line
     const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
@@ -862,6 +862,7 @@ function FullChat(props: FullChatPropsIF) {
                     isModerator={props.isModerator}
                     isFocusMentions={props.isFocusMentions}
                     setGoToChartParams={props.setGoToChartParams}
+                    isChatOpen={true}
                 />
 
                 {chatContainer}

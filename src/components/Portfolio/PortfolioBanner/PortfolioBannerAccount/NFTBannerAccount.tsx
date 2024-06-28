@@ -275,7 +275,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketAvatarSetListener = (payload: any) => {
-        if (payload.userId == currentUserID) {
+        if (payload.walletID == userAddress) {
             setUserThumbnailNFT(() => payload.avatarThumbnail);
             setUserProfileNFT(() => payload.avatarImage);
             setIsSaveActive(2);
@@ -400,8 +400,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                             selectedNft
                                                 ? selectedNft.cachedUrl
                                                 : userProfileNFT
-                                                ? userProfileNFT
-                                                : '',
+                                                  ? userProfileNFT
+                                                  : '',
                                             51,
                                         )}
                                 </SelectedJazzIcon>
@@ -451,8 +451,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                                             selectedThumbnail
                                                 ? selectedThumbnail.cachedUrl
                                                 : userThumbnailNFT
-                                                ? userThumbnailNFT
-                                                : '',
+                                                  ? userThumbnailNFT
+                                                  : '',
                                             51,
                                         )}
                                 </SelectedJazzIcon>
@@ -694,8 +694,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                     {isSaveActive === 1
                         ? 'Saving..'
                         : isSaveActive === 2
-                        ? 'Saved'
-                        : 'Save'}
+                          ? 'Saved'
+                          : 'Save'}
                 </SaveButton>
             </NFTBannerFooter>
         </NFTBannerAccountContainer>
