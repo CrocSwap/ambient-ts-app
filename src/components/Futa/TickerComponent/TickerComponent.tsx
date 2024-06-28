@@ -227,11 +227,37 @@ export default function TickerComponent(props: PropsIF) {
               )
             : undefined;
 
+    const unclaimedTokenNum = auctionedTokenQtyUnclaimedByUser
+        ? parseFloat(auctionedTokenQtyUnclaimedByUser)
+        : 0;
+
     const formattedUnclaimedTokenAllocationForConnectedUser =
-        auctionedTokenQtyUnclaimedByUser
-            ? auctionedTokenQtyUnclaimedByUser
+        unclaimedTokenNum.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+        }) +
+        ' ' +
+        auctionDetailsForConnectedUser?.ticker;
+
+    const qtyUnreturnedToUser =
+        auctionDetailsForConnectedUser?.qtyUnreturnedToUserInNativeTokenWei
+            ? toDisplayQty(
+                  auctionDetailsForConnectedUser?.qtyUnreturnedToUserInNativeTokenWei,
+                  18,
+              )
             : undefined;
 
+    const unreturnedTokenNum = qtyUnreturnedToUser
+        ? parseFloat(qtyUnreturnedToUser)
+        : 0;
+
+    const formattedQtyUnreturnedToUser =
+        unreturnedTokenNum.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+        }) +
+        ' ' +
+        'ETH';
     const marketCapEthValue = auctionDetails
         ? parseFloat(
               toDisplayQty(
@@ -471,11 +497,15 @@ export default function TickerComponent(props: PropsIF) {
         auctionedTokenQtyUnclaimedByUser &&
         parseFloat(auctionedTokenQtyUnclaimedByUser) > 0;
 
+    const isNativeTokenAvailableToReturn =
+        qtyUnreturnedToUser && parseFloat(qtyUnreturnedToUser) > 0;
+
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
         (isUserConnected &&
             isAuctionCompleted &&
-            !isAllocationAvailableToClaim);
+            !isAllocationAvailableToClaim &&
+            !isNativeTokenAvailableToReturn);
 
     const isButtonDisabled =
         isUserConnected &&
@@ -487,17 +517,19 @@ export default function TickerComponent(props: PropsIF) {
             ? 'Select an Auction'
             : isAllocationAvailableToClaim
               ? 'Claim'
-              : showTradeButton
-                ? 'Trade'
-                : !isUserConnected
-                  ? 'Connect Wallet'
-                  : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-                    ? 'Enter a Bid Size'
-                    : isValidationInProgress
-                      ? 'Validating Bid...'
-                      : isValidated
-                        ? 'Bid'
-                        : 'Invalid Bid';
+              : isNativeTokenAvailableToReturn
+                ? 'Return'
+                : showTradeButton
+                  ? 'Trade'
+                  : !isUserConnected
+                    ? 'Connect Wallet'
+                    : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+                      ? 'Enter a Bid Size'
+                      : isValidationInProgress
+                        ? 'Validating Bid...'
+                        : isValidated
+                          ? 'Bid'
+                          : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -509,15 +541,19 @@ export default function TickerComponent(props: PropsIF) {
                     ? console.log(
                           `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
                       )
-                    : showTradeButton
+                    : isNativeTokenAvailableToReturn
                       ? console.log(
-                            `clicked Trade for ticker: ${tickerFromParams}`,
+                            `clicked return for amount: ${formattedQtyUnreturnedToUser}`,
                         )
-                      : !isUserConnected
-                        ? openWalletModal()
-                        : console.log(
-                              `clicked Bid for display qty: ${inputValue}`,
+                      : showTradeButton
+                        ? console.log(
+                              `clicked Trade for ticker: ${tickerFromParams}`,
                           )
+                        : !isUserConnected
+                          ? openWalletModal()
+                          : console.log(
+                                `clicked Bid for display qty: ${inputValue}`,
+                            )
             }
             disabled={isButtonDisabled}
         >
@@ -560,11 +596,13 @@ export default function TickerComponent(props: PropsIF) {
         yourBidDisplay,
     } = tickerDisplayElements(tickerDisplayElementsProps);
 
-    const allocationDisplay = (
+    const allocationOrReturnDisplay = (
         <div className={styles.allocationContainer}>
-            <h3>ALLOCATION</h3>
+            <h3>{unclaimedTokenNum ? 'ALLOCATION' : 'RETURN'} </h3>
             <div className={styles.allocationDisplay}>
-                {formattedUnclaimedTokenAllocationForConnectedUser}
+                {unclaimedTokenNum
+                    ? formattedUnclaimedTokenAllocationForConnectedUser
+                    : formattedQtyUnreturnedToUser}
             </div>
             {extraInfoDisplay}
         </div>
@@ -599,9 +637,9 @@ export default function TickerComponent(props: PropsIF) {
                             {!isAuctionCompleted && maxFdvDisplay}
                             {!isAuctionCompleted && bidSizeDisplay}
                             {isUserConnected &&
-                                !showTradeButton &&
                                 isAuctionCompleted &&
-                                allocationDisplay}
+                                !showTradeButton &&
+                                allocationOrReturnDisplay}
                             {!isAuctionCompleted && extraInfoDisplay}
                         </div>
                     </>
