@@ -220,9 +220,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
         return item * minBidSizeInEth * marketCapMultiplier;
     });
 
-    const openBidMarketCapIndex = maxMarketCapEthValues.findIndex(
-        (item) => item === openBidMarketCapInEth,
-    );
+    const openBidMarketCapIndex = openBidMarketCapInEth
+        ? maxMarketCapEthValues.findIndex(
+              (item) => item === openBidMarketCapInEth * marketCapMultiplier,
+          )
+        : -1;
 
     const openBidClearingPriceInEth =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
