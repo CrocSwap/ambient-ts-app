@@ -38,15 +38,15 @@ export interface AuctionDataIF {
     chainId: string;
     createdAt: number;
     auctionLength: number;
-    clearingPriceInEth: number;
+    filledClearingPriceInNativeTokenWei: number; // string
 
     // user specific data received for account queries
-    clearingPriceForUserBidInEth?: number | undefined;
-    userBidSizeUserInEth?: number | undefined;
-    tokenAllocationUnclaimedByUser?: number | undefined; // wei as string
-    tokenAllocationClaimedByUser?: number | undefined; // wei as string
-    ethUnclaimedByUser?: number | undefined;
-    ethClaimedByUser?: number | undefined;
+    userBidClearingPriceInNativeTokenWei?: number | undefined; // string
+    qtyBidByUserInNativeTokenWei?: number | undefined; // string
+    qtyUnclaimedByUserInAuctionedTokenWei?: number | undefined; // string
+    qtyClaimedByUserInAuctionedTokenWei?: number | undefined; // string
+    qtyUnreturnedToUserInNativeTokenWei?: number | undefined; // string
+    qtyReturnedToUserInNativeTokenWei?: number | undefined; // string
 }
 
 // interface for auction status data used to generate auction details view
@@ -55,11 +55,11 @@ export interface AuctionStatusDataServerIF {
     chainId: string;
     createdAt: number;
     auctionLength: number;
-    clearingPriceInEth: number;
+    filledClearingPriceInNativeTokenWei: number; // string
 
     // open bid data
-    openBidInEth?: number | undefined;
-    openBidAmountFilledInEth?: number | undefined;
+    openBidClearingPriceInNativeTokenWei?: number | undefined; // string
+    openBidQtyFilledInNativeTokenWei?: number | undefined; // string
 }
 
 export interface AuctionsDataIF {
@@ -80,9 +80,9 @@ export interface AuctionStatusDataIF {
     createdAt: number;
     auctionLength: number;
     chainId: string;
-    clearingPriceInEth: number;
-    openBidInEth: number | undefined;
-    openBidAmountFilledInEth: number | undefined;
+    filledClearingPriceInNativeTokenWei: number;
+    openBidClearingPriceInNativeTokenWei: number | undefined;
+    openBidQtyFilledInNativeTokenWei: number | undefined;
 }
 
 export interface AuctionIF {
@@ -120,9 +120,9 @@ export const AuctionsContextProvider = (props: {
             createdAt: 0,
             auctionLength: 0,
             chainId: chainId,
-            clearingPriceInEth: 0.25,
-            openBidInEth: undefined,
-            openBidAmountFilledInEth: undefined,
+            filledClearingPriceInNativeTokenWei: 0.25,
+            openBidClearingPriceInNativeTokenWei: undefined,
+            openBidQtyFilledInNativeTokenWei: undefined,
         });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -174,9 +174,12 @@ export const AuctionsContextProvider = (props: {
                 createdAt: data.createdAt,
                 auctionLength: data.auctionLength,
                 chainId: chainId,
-                clearingPriceInEth: data.clearingPriceInEth,
-                openBidInEth: data.openBidInEth,
-                openBidAmountFilledInEth: data.openBidAmountFilledInEth,
+                filledClearingPriceInNativeTokenWei:
+                    data.filledClearingPriceInNativeTokenWei,
+                openBidClearingPriceInNativeTokenWei:
+                    data.openBidClearingPriceInNativeTokenWei,
+                openBidQtyFilledInNativeTokenWei:
+                    data.openBidQtyFilledInNativeTokenWei,
             });
         });
     }

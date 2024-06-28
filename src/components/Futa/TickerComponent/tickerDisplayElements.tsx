@@ -124,9 +124,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
             value: !placeholderTicker ? timeRemainingString : '-',
             // set color to orange if time remaining is less than 2 hours
             color:
-                timeRemainingInSeconds && timeRemainingInSeconds > 7200
+                timeRemainingInSeconds && timeRemainingInSeconds <= 0
                     ? 'var(--text1)'
-                    : 'var(--orange)',
+                    : timeRemainingInSeconds && timeRemainingInSeconds <= 7200
+                      ? 'var(--orange)'
+                      : 'var(--text1)',
             tooltipLabel: 'The total time remaining in the auction',
         },
         {
@@ -145,9 +147,11 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
     ];
 
-    const openBidMarketCapInEth = auctionStatusData.openBidInEth
-        ? auctionStatusData.openBidInEth * marketCapMultiplier
-        : undefined;
+    const openBidMarketCapInEth =
+        auctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? auctionStatusData.openBidClearingPriceInNativeTokenWei *
+              marketCapMultiplier
+            : undefined;
 
     const formattedOpenBidMarketCapEthValue = openBidMarketCapInEth
         ? getFormattedNumber({
@@ -157,8 +161,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
         : '...';
 
     const userBidMarketCapInEth =
-        auctionDetailsForConnectedUser?.clearingPriceForUserBidInEth
-            ? auctionDetailsForConnectedUser?.clearingPriceForUserBidInEth *
+        auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei
+            ? auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei *
               marketCapMultiplier
             : undefined;
 
@@ -170,8 +174,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
         : '...';
 
     const userBidSizeInEth =
-        auctionDetailsForConnectedUser?.userBidSizeUserInEth
-            ? auctionDetailsForConnectedUser?.userBidSizeUserInEth
+        auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei
+            ? auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei
             : undefined;
 
     const formattedBidSizeEthValue = userBidSizeInEth
@@ -201,13 +205,13 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const openBidMarketCapIndex = maxMarketCapEthValues.findIndex(
         (item) => item === openBidMarketCapInEth,
     );
-    const formattedOpenBidStatus = `${auctionStatusData.openBidAmountFilledInEth} / ${auctionStatusData.openBidInEth}`;
+    const formattedOpenBidStatus = `${auctionStatusData.openBidQtyFilledInNativeTokenWei} / ${auctionStatusData.openBidClearingPriceInNativeTokenWei}`;
 
     const fillPercentage =
-        auctionStatusData.openBidAmountFilledInEth &&
-        auctionStatusData.openBidInEth
-            ? auctionStatusData.openBidAmountFilledInEth /
-              auctionStatusData.openBidInEth
+        auctionStatusData.openBidQtyFilledInNativeTokenWei &&
+        auctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? auctionStatusData.openBidQtyFilledInNativeTokenWei /
+              auctionStatusData.openBidClearingPriceInNativeTokenWei
             : 0.0;
 
     const fillPercentageFormatted = getFormattedNumber({

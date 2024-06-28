@@ -34,7 +34,12 @@ export default function TickerItem(props: PropsIF) {
 
     const { accountData } = useContext(AuctionsContext);
 
-    const { ticker, clearingPriceInEth, createdAt, auctionLength } = auction;
+    const {
+        ticker,
+        filledClearingPriceInNativeTokenWei,
+        createdAt,
+        auctionLength,
+    } = auction;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
@@ -52,28 +57,35 @@ export default function TickerItem(props: PropsIF) {
     const isAuctionOpen = timeRemainingInSec > 0;
 
     const isUserInTheMoney = isAuctionOpen
-        ? userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
-          userDataForAuction.clearingPriceForUserBidInEth >= clearingPriceInEth
-        : userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
-          userDataForAuction.clearingPriceForUserBidInEth ===
-              clearingPriceInEth &&
-          userDataForAuction?.tokenAllocationUnclaimedByUser &&
-          userDataForAuction.tokenAllocationUnclaimedByUser > 0;
+        ? userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+              undefined &&
+          userDataForAuction.userBidClearingPriceInNativeTokenWei >=
+              filledClearingPriceInNativeTokenWei
+        : userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+              undefined &&
+          userDataForAuction.userBidClearingPriceInNativeTokenWei ===
+              filledClearingPriceInNativeTokenWei &&
+          userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
+          userDataForAuction.qtyUnclaimedByUserInAuctionedTokenWei > 0;
 
     const isUserOutOfTheMoney = isAuctionOpen
-        ? userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
-          userDataForAuction.clearingPriceForUserBidInEth < clearingPriceInEth
-        : userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
-          userDataForAuction.clearingPriceForUserBidInEth !==
-              clearingPriceInEth &&
-          userDataForAuction?.ethUnclaimedByUser &&
-          userDataForAuction.ethUnclaimedByUser > 0;
+        ? userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+              undefined &&
+          userDataForAuction.userBidClearingPriceInNativeTokenWei <
+              filledClearingPriceInNativeTokenWei
+        : userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+              undefined &&
+          userDataForAuction.userBidClearingPriceInNativeTokenWei !==
+              filledClearingPriceInNativeTokenWei &&
+          userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei &&
+          userDataForAuction.qtyUnreturnedToUserInNativeTokenWei > 0;
 
     const userActionsCompleted =
         !isAuctionOpen &&
-        userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
-        !userDataForAuction?.tokenAllocationUnclaimedByUser &&
-        !userDataForAuction?.ethUnclaimedByUser;
+        userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+            undefined &&
+        !userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
+        !userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei;
 
     const status2 = isUserInTheMoney
         ? 'var(--text1)'
@@ -83,7 +95,7 @@ export default function TickerItem(props: PropsIF) {
             ? 'var(--accent2)'
             : undefined;
 
-    const marketCap = clearingPriceInEth * marketCapMultiplier;
+    const marketCap = filledClearingPriceInNativeTokenWei * marketCapMultiplier;
 
     const marketCapUsdValue =
         nativeTokenUsdPrice !== undefined && marketCap !== undefined
@@ -123,9 +135,11 @@ export default function TickerItem(props: PropsIF) {
                 style={{
                     color:
                         // set color to orange if time remaining is less than 2 hours
-                        timeRemainingInSec > 7200
-                            ? 'var(--text1)'
-                            : 'var(--orange)',
+                        timeRemainingInSec <= 0
+                            ? 'var(--accent1)'
+                            : timeRemainingInSec > 7200
+                              ? 'var(--text1)'
+                              : 'var(--orange)',
                 }}
             >
                 {timeRemaining}

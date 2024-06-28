@@ -114,11 +114,13 @@ const useAuctionStates = () => {
     );
 
     useEffect(() => {
-        const openBidMarketCap = auctionStatusData.openBidInEth
-            ? auctionStatusData.openBidInEth * marketCapMultiplier
-            : 0;
+        const openBidMarketCap =
+            auctionStatusData.openBidClearingPriceInNativeTokenWei
+                ? auctionStatusData.openBidClearingPriceInNativeTokenWei *
+                  marketCapMultiplier
+                : 0;
         setSelectedMaxValue(openBidMarketCap);
-    }, [auctionStatusData.openBidInEth]);
+    }, [auctionStatusData.openBidClearingPriceInNativeTokenWei]);
 
     return {
         isMaxDropdownOpen,
@@ -210,8 +212,8 @@ export default function TickerComponent(props: PropsIF) {
     }, [tickerFromParams]);
 
     const formattedUnclaimedTokenAllocationForConnectedUser =
-        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser
-            ? auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser.toLocaleString(
+        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei
+            ? auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei.toLocaleString(
                   'en-US',
                   {
                       minimumFractionDigits: 0,
@@ -221,7 +223,8 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const marketCapEthValue = auctionDetails
-        ? auctionDetails.clearingPriceInEth * marketCapMultiplier
+        ? auctionDetails.filledClearingPriceInNativeTokenWei *
+          marketCapMultiplier
         : undefined;
 
     const timeRemainingAbbrev = auctionDetails
@@ -451,8 +454,9 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser &&
-        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser > 0;
+        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei &&
+        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei >
+            0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
@@ -566,9 +570,10 @@ export default function TickerComponent(props: PropsIF) {
     }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
     const isUserBidDataAvailable =
-        auctionDetailsForConnectedUser?.clearingPriceForUserBidInEth !==
+        auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei !==
             undefined &&
-        auctionDetailsForConnectedUser?.userBidSizeUserInEth !== undefined;
+        auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei !==
+            undefined;
 
     return (
         <div className={styles.container}>
