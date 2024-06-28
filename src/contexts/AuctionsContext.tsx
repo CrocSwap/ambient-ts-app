@@ -38,15 +38,15 @@ export interface AuctionDataIF {
     chainId: string;
     createdAt: number;
     auctionLength: number;
-    filledClearingPriceInNativeTokenWei: number; // string
+    filledClearingPriceInNativeTokenWei: string;
 
     // user specific data received for account queries
-    userBidClearingPriceInNativeTokenWei?: number | undefined; // string
-    qtyBidByUserInNativeTokenWei?: number | undefined; // string
-    qtyUnclaimedByUserInAuctionedTokenWei?: number | undefined; // string
-    qtyClaimedByUserInAuctionedTokenWei?: number | undefined; // string
-    qtyUnreturnedToUserInNativeTokenWei?: number | undefined; // string
-    qtyReturnedToUserInNativeTokenWei?: number | undefined; // string
+    userBidClearingPriceInNativeTokenWei?: string | undefined;
+    qtyBidByUserInNativeTokenWei?: string | undefined;
+    qtyUnclaimedByUserInAuctionedTokenWei?: string | undefined;
+    qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
+    qtyUnreturnedToUserInNativeTokenWei?: string | undefined;
+    qtyReturnedToUserInNativeTokenWei?: string | undefined;
 }
 
 // interface for auction status data used to generate auction details view
@@ -55,11 +55,11 @@ export interface AuctionStatusDataServerIF {
     chainId: string;
     createdAt: number;
     auctionLength: number;
-    filledClearingPriceInNativeTokenWei: number; // string
+    filledClearingPriceInNativeTokenWei: string;
 
     // open bid data
-    openBidClearingPriceInNativeTokenWei?: number | undefined; // string
-    openBidQtyFilledInNativeTokenWei?: number | undefined; // string
+    openBidClearingPriceInNativeTokenWei?: string | undefined;
+    openBidQtyFilledInNativeTokenWei?: string | undefined;
 }
 
 export interface AuctionsDataIF {
@@ -80,9 +80,9 @@ export interface AuctionStatusDataIF {
     createdAt: number;
     auctionLength: number;
     chainId: string;
-    filledClearingPriceInNativeTokenWei: number;
-    openBidClearingPriceInNativeTokenWei: number | undefined;
-    openBidQtyFilledInNativeTokenWei: number | undefined;
+    filledClearingPriceInNativeTokenWei: string;
+    openBidClearingPriceInNativeTokenWei: string | undefined;
+    openBidQtyFilledInNativeTokenWei: string | undefined;
 }
 
 export interface AuctionIF {
@@ -120,7 +120,7 @@ export const AuctionsContextProvider = (props: {
             createdAt: 0,
             auctionLength: 0,
             chainId: chainId,
-            filledClearingPriceInNativeTokenWei: 0.25,
+            filledClearingPriceInNativeTokenWei: '250000000000000000',
             openBidClearingPriceInNativeTokenWei: undefined,
             openBidQtyFilledInNativeTokenWei: undefined,
         });

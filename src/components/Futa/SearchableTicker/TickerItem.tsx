@@ -15,6 +15,7 @@ import {
     getRetrievedAuctionDetailsForAccount,
     marketCapMultiplier,
 } from '../../../pages/platformFuta/mockAuctionData';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface PropsIF {
     auction: AuctionDataIF;
@@ -56,29 +57,55 @@ export default function TickerItem(props: PropsIF) {
 
     const isAuctionOpen = timeRemainingInSec > 0;
 
+    const userBidClearingPriceInEth =
+        userDataForAuction?.userBidClearingPriceInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      userDataForAuction?.userBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const auctionedTokenQtyUnclaimedByUser =
+        userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const qtyUnreturnedToUser =
+        userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const filledClearingPriceInEth = parseFloat(
+        toDisplayQty(filledClearingPriceInNativeTokenWei, 18),
+    );
     const isUserInTheMoney = isAuctionOpen
-        ? userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
-              undefined &&
-          userDataForAuction.userBidClearingPriceInNativeTokenWei >=
-              filledClearingPriceInNativeTokenWei
+        ? userBidClearingPriceInEth !== undefined &&
+          userBidClearingPriceInEth >= filledClearingPriceInEth
         : userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
               undefined &&
-          userDataForAuction.userBidClearingPriceInNativeTokenWei ===
-              filledClearingPriceInNativeTokenWei &&
-          userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
-          userDataForAuction.qtyUnclaimedByUserInAuctionedTokenWei > 0;
+          userBidClearingPriceInEth === filledClearingPriceInEth &&
+          auctionedTokenQtyUnclaimedByUser &&
+          auctionedTokenQtyUnclaimedByUser > 0;
 
     const isUserOutOfTheMoney = isAuctionOpen
-        ? userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
-              undefined &&
-          userDataForAuction.userBidClearingPriceInNativeTokenWei <
-              filledClearingPriceInNativeTokenWei
-        : userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
-              undefined &&
-          userDataForAuction.userBidClearingPriceInNativeTokenWei !==
-              filledClearingPriceInNativeTokenWei &&
-          userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei &&
-          userDataForAuction.qtyUnreturnedToUserInNativeTokenWei > 0;
+        ? userBidClearingPriceInEth !== undefined &&
+          userBidClearingPriceInEth < filledClearingPriceInEth
+        : userBidClearingPriceInEth !== undefined &&
+          userBidClearingPriceInEth !== filledClearingPriceInEth &&
+          qtyUnreturnedToUser &&
+          qtyUnreturnedToUser > 0;
 
     const userActionsCompleted =
         !isAuctionOpen &&
@@ -95,7 +122,7 @@ export default function TickerItem(props: PropsIF) {
             ? 'var(--accent2)'
             : undefined;
 
-    const marketCap = filledClearingPriceInNativeTokenWei * marketCapMultiplier;
+    const marketCap = filledClearingPriceInEth * marketCapMultiplier;
 
     const marketCapUsdValue =
         nativeTokenUsdPrice !== undefined && marketCap !== undefined

@@ -113,14 +113,22 @@ const useAuctionStates = () => {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
+    const openBidClearingPriceInEth =
+        auctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
     useEffect(() => {
-        const openBidMarketCap =
-            auctionStatusData.openBidClearingPriceInNativeTokenWei
-                ? auctionStatusData.openBidClearingPriceInNativeTokenWei *
-                  marketCapMultiplier
-                : 0;
+        const openBidMarketCap = openBidClearingPriceInEth
+            ? openBidClearingPriceInEth * marketCapMultiplier
+            : 0;
         setSelectedMaxValue(openBidMarketCap);
-    }, [auctionStatusData.openBidClearingPriceInNativeTokenWei]);
+    }, [openBidClearingPriceInEth]);
 
     return {
         isMaxDropdownOpen,
@@ -211,20 +219,26 @@ export default function TickerComponent(props: PropsIF) {
         });
     }, [tickerFromParams]);
 
-    const formattedUnclaimedTokenAllocationForConnectedUser =
+    const auctionedTokenQtyUnclaimedByUser =
         auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei
-            ? auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei.toLocaleString(
-                  'en-US',
-                  {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 2,
-                  },
+            ? toDisplayQty(
+                  auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei,
+                  18,
               )
             : undefined;
 
+    const formattedUnclaimedTokenAllocationForConnectedUser =
+        auctionedTokenQtyUnclaimedByUser
+            ? auctionedTokenQtyUnclaimedByUser
+            : undefined;
+
     const marketCapEthValue = auctionDetails
-        ? auctionDetails.filledClearingPriceInNativeTokenWei *
-          marketCapMultiplier
+        ? parseFloat(
+              toDisplayQty(
+                  auctionDetails.filledClearingPriceInNativeTokenWei,
+                  18,
+              ),
+          ) * marketCapMultiplier
         : undefined;
 
     const timeRemainingAbbrev = auctionDetails
@@ -454,9 +468,8 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei &&
-        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei >
-            0;
+        auctionedTokenQtyUnclaimedByUser &&
+        parseFloat(auctionedTokenQtyUnclaimedByUser) > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||

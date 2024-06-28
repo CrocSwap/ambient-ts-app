@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { AuctionDataIF } from '../../../contexts/AuctionsContext';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 export type auctionSorts =
     | 'createdAt'
@@ -54,8 +55,12 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     function sortByMarketCap(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort(
             (a: AuctionDataIF, b: AuctionDataIF) =>
-                b.filledClearingPriceInNativeTokenWei -
-                a.filledClearingPriceInNativeTokenWei,
+                parseFloat(
+                    toDisplayQty(b.filledClearingPriceInNativeTokenWei, 18),
+                ) -
+                parseFloat(
+                    toDisplayQty(a.filledClearingPriceInNativeTokenWei, 18),
+                ),
         );
     }
 

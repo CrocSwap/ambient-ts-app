@@ -25,6 +25,7 @@ import {
     marketCapMultiplier,
     minBidSizeInEth,
 } from '../../../pages/platformFuta/mockAuctionData';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 // Props interface
 export interface PropsIF {
@@ -149,8 +150,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     const openBidMarketCapInEth =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? auctionStatusData.openBidClearingPriceInNativeTokenWei *
-              marketCapMultiplier
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
             : undefined;
 
     const formattedOpenBidMarketCapEthValue = openBidMarketCapInEth
@@ -160,11 +165,19 @@ export const tickerDisplayElements = (props: PropsIF) => {
           })
         : '...';
 
-    const userBidMarketCapInEth =
+    const userBidClearingPriceInEth =
         auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei
-            ? auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei *
-              marketCapMultiplier
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
             : undefined;
+
+    const userBidMarketCapInEth = userBidClearingPriceInEth
+        ? userBidClearingPriceInEth * marketCapMultiplier
+        : undefined;
 
     const formattedUserBidMarketCapEthValue = userBidMarketCapInEth
         ? getFormattedNumber({
@@ -175,7 +188,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
 
     const userBidSizeInEth =
         auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei
-            ? auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei,
+                      18,
+                  ),
+              )
             : undefined;
 
     const formattedBidSizeEthValue = userBidSizeInEth
@@ -207,11 +225,29 @@ export const tickerDisplayElements = (props: PropsIF) => {
     );
     const formattedOpenBidStatus = `${auctionStatusData.openBidQtyFilledInNativeTokenWei} / ${auctionStatusData.openBidClearingPriceInNativeTokenWei}`;
 
-    const fillPercentage =
-        auctionStatusData.openBidQtyFilledInNativeTokenWei &&
+    const openBidClearingPriceInEth =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? auctionStatusData.openBidQtyFilledInNativeTokenWei /
-              auctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const openBidQtyFilledInEth =
+        auctionStatusData.openBidQtyFilledInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionStatusData.openBidQtyFilledInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const fillPercentage =
+        openBidQtyFilledInEth && openBidClearingPriceInEth
+            ? openBidQtyFilledInEth / openBidClearingPriceInEth
             : 0.0;
 
     const fillPercentageFormatted = getFormattedNumber({
