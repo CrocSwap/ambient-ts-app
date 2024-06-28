@@ -296,6 +296,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
         const savedTimeOut = setTimeout(() => {
             setIsSaving(false);
+            setContextmenu(false);
         }, 1000);
         return () => {
             clearTimeout(savedTimeOut);
@@ -314,7 +315,7 @@ export default function ChartSettings(props: ContextMenuIF) {
     const [isSelecboxActive, setIsSelecboxActive] = useState(false);
 
     const [priceInOption, setPriceInOption] = useState<string>(
-        !isTradeDollarizationEnabled ? 'Token' : 'Dolar',
+        !isTradeDollarizationEnabled ? 'Token' : 'USD',
     );
 
     const checkListContent = [
@@ -594,7 +595,9 @@ export default function ChartSettings(props: ContextMenuIF) {
                         {applyDefault ? (
                             <Spinner size={14} bg='transparent' centered />
                         ) : (
-                            <FooterContextText>Apply defauls</FooterContextText>
+                            <FooterContextText>
+                                Apply defaults
+                            </FooterContextText>
                         )}
                     </FooterButtons>
                     <ActionButtonContainer>
@@ -630,7 +633,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 hoverColor={'transparent'}
                                 textColor={'var(--text1)'}
                                 hoverTextColor={'var(--accent1)'}
-                                width={'32px'}
+                                width={'45px'}
                                 onClick={() => handleSaveChanges()}
                             >
                                 {isSaving ? (
@@ -640,7 +643,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                         centered
                                     />
                                 ) : (
-                                    <FooterContextText>Ok</FooterContextText>
+                                    <FooterContextText>Save</FooterContextText>
                                 )}
                             </FooterButtons>
                         </div>

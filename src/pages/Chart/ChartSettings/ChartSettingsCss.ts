@@ -139,7 +139,7 @@ const OptionColor = styled.div<{
 
     border-radius: 2px;
 
-    border: 1px solid var(--text3);
+    border: 1.5px solid var(--text3);
 
     background: ${({ backgroundColor }) =>
         backgroundColor !== null ? backgroundColor : 'transparent'};
