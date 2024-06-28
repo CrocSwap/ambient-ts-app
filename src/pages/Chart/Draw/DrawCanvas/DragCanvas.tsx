@@ -118,6 +118,8 @@ export default function DragCanvas(props: DragCanvasProps) {
         let valueY = scaleData?.yScale.invert(offsetY);
         const nearest = snapForCandle(offsetX, visibleCandleData);
 
+        console.log({ nearest }, new Date(nearest.time * 1000));
+
         if (nearest) {
             const high = denomInBase
                 ? nearest?.invMinPriceExclMEVDecimalCorrected
@@ -238,14 +240,19 @@ export default function DragCanvas(props: DragCanvasProps) {
                     scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
                     movemementX;
 
-                // const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1);
-                // const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1);
+                const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1);
+                const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1);
 
-                // console.log(snap0.valueX, snap1.valueX)
+                console.log(
+                    '**********************',
+                    snap0.valueX,
+                    snap1.valueX,
+                    movemementX,
+                );
 
                 const lastData = [
                     {
-                        x: scaleData.xScale.invert(calPoint0),
+                        x: snap0.valueX, // scaleData.xScale.invert(calPoint0),
                         y: isPointInDenom
                             ? reversedFirstPoint
                             : 1 / reversedFirstPoint,
@@ -253,7 +260,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             hoveredDrawnShape.data?.data[0].denomInBase,
                     },
                     {
-                        x: scaleData.xScale.invert(calPoint1),
+                        x: snap1.valueX, // scaleData.xScale.invert(calPoint1),
                         y: isPointInDenom
                             ? reversedSecondPoint
                             : 1 / reversedSecondPoint,
