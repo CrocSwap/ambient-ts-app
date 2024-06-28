@@ -14,7 +14,6 @@ import {
     WalletWrapper,
     AccountLink,
 } from '../../../../../styled/Components/Header';
-import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     ZERO_ADDRESS,
@@ -115,9 +114,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         }
         const usdcCombinedBalance =
             usdcData.walletBalance !== undefined
-                ? BigNumber.from(usdcData.walletBalance)
-                      .add(BigNumber.from(usdcData.dexBalance ?? '0'))
-                      .toString()
+                ? (
+                      BigInt(usdcData.walletBalance) +
+                      BigInt(usdcData.dexBalance ?? '0')
+                  ).toString()
                 : undefined;
         const usdcCombinedBalanceDisplay =
             usdcData && usdcCombinedBalance
@@ -157,9 +157,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
-            ? BigNumber.from(nativeData.walletBalance)
-                  .add(BigNumber.from(nativeData.dexBalance ?? '0'))
-                  .toString()
+            ? (
+                  BigInt(nativeData.walletBalance) +
+                  BigInt(nativeData.dexBalance ?? '0')
+              ).toString()
             : undefined;
     const nativeCombinedBalanceDisplay =
         nativeData && nativeCombinedBalance

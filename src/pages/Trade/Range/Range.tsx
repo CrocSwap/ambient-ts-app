@@ -195,8 +195,8 @@ function Range() {
             ? getUnicodeCharacter(tokenB.symbol)
             : getUnicodeCharacter(tokenA.symbol)
         : !isTokenABase
-        ? getUnicodeCharacter(tokenB.symbol)
-        : getUnicodeCharacter(tokenA.symbol);
+          ? getUnicodeCharacter(tokenB.symbol)
+          : getUnicodeCharacter(tokenA.symbol);
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
@@ -826,7 +826,7 @@ function Range() {
         isScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+        isScroll ? 0.5 : isActiveNetworkBlast ? 0.5 : 0,
     );
 
     const amountToReduceNativeTokenQty =
@@ -859,12 +859,12 @@ function Range() {
             const costOfScrollPoolInETH =
                 l1CostOfScrollPoolInETH + l2CostOfScrollPoolInETH;
 
-            setAmountToReduceNativeTokenQtyL2(
-                RANGE_BUFFER_MULTIPLIER_MAINNET * costOfScrollPoolInETH,
+            setAmountToReduceNativeTokenQtyMainnet(
+                RANGE_BUFFER_MULTIPLIER_MAINNET * costOfMainnetPoolInETH,
             );
 
             setAmountToReduceNativeTokenQtyL2(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
+                RANGE_BUFFER_MULTIPLIER_SCROLL * costOfScrollPoolInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -945,7 +945,6 @@ function Range() {
         setTokenBInputQty('');
         setPrimaryQuantity('');
     };
-
     const {
         tokenAllowed: tokenAAllowed,
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,

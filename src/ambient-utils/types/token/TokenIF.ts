@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { tokenListURIs } from '../../constants';
 
 // string-union type of all acceptable values for `fromList` property
@@ -24,5 +23,5 @@ export interface TokenIF extends ServerTokenIF {
     listedBy?: string[];
     walletBalance?: string;
     dexBalance?: string;
-    totalSupply?: BigNumber;
+    totalSupply?: bigint;
 }

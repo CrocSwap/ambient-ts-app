@@ -1,5 +1,3 @@
 export const getReceiptTxHashes = (sessionReceipts: string[]) => {
-    return sessionReceipts.map(
-        (receipt) => JSON.parse(receipt).transactionHash,
-    );
+    return sessionReceipts.map((receipt) => JSON.parse(receipt).hash);
 };
