@@ -5,7 +5,7 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers5/react';
+import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/react';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';

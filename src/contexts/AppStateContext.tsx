@@ -22,7 +22,7 @@ import {
     saveCtaDismissalToLocalStorage,
 } from '../App/functions/localStorage';
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
-import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { useWeb3Modal } from '@web3modal/ethers/react';
 
 interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };

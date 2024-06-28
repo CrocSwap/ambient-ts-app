@@ -14,19 +14,19 @@ export function ambientPosSlot(
     quote: string,
     poolType: number,
 ): BytesLike {
-    const encoder = new ethers.utils.AbiCoder();
-    const poolHash = ethers.utils.keccak256(
+    const encoder = new ethers.AbiCoder();
+    const poolHash = ethers.keccak256(
         encoder.encode(
             ['address', 'address', 'uint256'],
             [base, quote, poolType],
         ),
     );
 
-    const posKey = ethers.utils.solidityKeccak256(
+    const posKey = ethers.solidityPackedKeccak256(
         ['address', 'bytes32'],
         [owner, poolHash],
     );
-    return ethers.utils.solidityKeccak256(
+    return ethers.solidityPackedKeccak256(
         ['bytes32', 'uint256'],
         [posKey, AMBIENT_POS_SLOT],
     );
@@ -48,19 +48,19 @@ export function concPosSlot(
     upperTick: number,
     poolType: number,
 ): BytesLike {
-    const encoder = new ethers.utils.AbiCoder();
-    const poolHash = ethers.utils.keccak256(
+    const encoder = new ethers.AbiCoder();
+    const poolHash = ethers.keccak256(
         encoder.encode(
             ['address', 'address', 'uint256'],
             [base, quote, poolType],
         ),
     );
 
-    const posKey = ethers.utils.solidityKeccak256(
+    const posKey = ethers.solidityPackedKeccak256(
         ['address', 'bytes32', 'int24', 'int24'],
         [owner, poolHash, lowerTick, upperTick],
     );
-    return ethers.utils.solidityKeccak256(
+    return ethers.solidityPackedKeccak256(
         ['bytes32', 'uint256'],
         [posKey, CONC_POS_SLOT],
     );

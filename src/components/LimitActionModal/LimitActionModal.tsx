@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -88,7 +87,7 @@ export default function LimitActionModal(props: propsIF) {
     const [networkFee, setNetworkFee] = useState<string | undefined>(undefined);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
-        BigNumber | undefined
+        bigint | undefined
     >();
 
     const resetConfirmation = () => {
@@ -120,14 +119,14 @@ export default function LimitActionModal(props: propsIF) {
                 limitOrder.user,
             );
 
-            const liqBigNum = (
+            const liqBigInt = (
                 await pos.queryKnockoutLivePos(
                     limitOrder.isBid,
                     limitOrder.bidTick,
                     limitOrder.askTick,
                 )
             ).liq;
-            setCurrentLiquidity(liqBigNum);
+            setCurrentLiquidity(liqBigInt);
         } catch (error) {
             console.error(error);
         }
@@ -293,14 +292,14 @@ export default function LimitActionModal(props: propsIF) {
 
             if (receipt) {
                 addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.transactionHash);
+                removePendingTx(receipt.hash);
                 if (receipt.status === 1) {
                     // track removals separately to identify limit mints that were subsequently removed
                     addPositionUpdate({
                         positionID: posHash,
                         isLimit: true,
                         isFullRemoval: true,
-                        txHash: receipt.transactionHash,
+                        txHash: receipt.hash,
                         unixTimeReceipt: Math.floor(Date.now() / 1000),
                     });
                 }
@@ -434,14 +433,14 @@ export default function LimitActionModal(props: propsIF) {
 
             if (receipt) {
                 addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.transactionHash);
+                removePendingTx(receipt.hash);
                 if (receipt.status === 1) {
                     // track claims separately to identify limit mints that were subsequently removed
                     addPositionUpdate({
                         positionID: posHash,
                         isLimit: true,
                         isFullRemoval: true,
-                        txHash: receipt.transactionHash,
+                        txHash: receipt.hash,
                         unixTimeReceipt: Math.floor(Date.now() / 1000),
                     });
                 }
@@ -466,8 +465,8 @@ export default function LimitActionModal(props: propsIF) {
                           ? baseTokenAddress
                           : quoteTokenAddress
                       : !isDenomBase
-                      ? baseTokenAddress
-                      : quoteTokenAddress,
+                        ? baseTokenAddress
+                        : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
                       ? baseDisplay
                       : quoteDisplay,
@@ -497,8 +496,8 @@ export default function LimitActionModal(props: propsIF) {
                           ? baseTokenAddress
                           : quoteTokenAddress
                       : !isDenomBase
-                      ? baseTokenAddress
-                      : quoteTokenAddress,
+                        ? baseTokenAddress
+                        : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
                       ? quoteDisplay
                       : baseDisplay,
@@ -553,13 +552,13 @@ export default function LimitActionModal(props: propsIF) {
                         <Button
                             idForDOM='claim_remove_limit_button'
                             title={
-                                !currentLiquidity
+                                currentLiquidity === undefined
                                     ? '...'
                                     : type === 'Remove'
-                                    ? 'Remove Limit Order'
-                                    : 'Claim Limit Order'
+                                      ? 'Remove Limit Order'
+                                      : 'Claim Limit Order'
                             }
-                            disabled={!currentLiquidity}
+                            disabled={currentLiquidity === undefined}
                             action={type === 'Remove' ? removeFn : claimFn}
                             flat={true}
                         />

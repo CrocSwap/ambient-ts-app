@@ -1,8 +1,8 @@
 import {
     baseTokenForConcLiq,
-    bigNumToFloat,
+    bigIntToFloat,
     CrocEnv,
-    floatToBigNum,
+    floatToBigInt,
     quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
@@ -11,7 +11,7 @@ import { PositionIF, PositionServerIF, TokenIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
@@ -247,7 +247,7 @@ export const getPositionData = async (
                 position.user,
             );
             const liqBigNum = (await pos.queryAmbient()).seeds;
-            const liqNum = bigNumToFloat(liqBigNum);
+            const liqNum = bigIntToFloat(liqBigNum);
             newPosition.positionLiq = liqNum;
         } else {
             newPosition.positionLiq = position.ambientLiq;
@@ -267,17 +267,17 @@ export const getPositionData = async (
                 position.bidTick,
                 position.askTick,
             );
-            newPosition.feesLiqBase = bigNumToFloat(
+            newPosition.feesLiqBase = bigIntToFloat(
                 positionRewards.baseRewards,
             );
-            newPosition.feesLiqQuote = bigNumToFloat(
+            newPosition.feesLiqQuote = bigIntToFloat(
                 positionRewards.quoteRewards,
             );
 
             const liqBigNum = (
                 await pos.queryRangePos(position.bidTick, position.askTick)
             ).liq;
-            const liqNum = bigNumToFloat(liqBigNum);
+            const liqNum = bigIntToFloat(liqBigNum);
 
             newPosition.positionLiq = liqNum;
         } else {
@@ -288,18 +288,18 @@ export const getPositionData = async (
             newPosition.feesLiqQuote =
                 position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
         }
-        newPosition.positionLiqBase = bigNumToFloat(
+        newPosition.positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(newPosition.positionLiq),
+                floatToBigInt(newPosition.positionLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),
         );
-        newPosition.positionLiqQuote = bigNumToFloat(
+        newPosition.positionLiqQuote = bigIntToFloat(
             quoteTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(newPosition.positionLiq),
+                floatToBigInt(newPosition.positionLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),

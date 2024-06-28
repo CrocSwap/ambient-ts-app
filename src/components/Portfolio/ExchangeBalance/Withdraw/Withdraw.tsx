@@ -1,5 +1,4 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
 import {
     Dispatch,
     SetStateAction,
@@ -141,9 +140,7 @@ export default function Withdraw(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!withdrawQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(
-                      BigNumber.from(withdrawQtyNonDisplay),
-                  )
+                ? BigInt(tokenDexBalance) >= BigInt(withdrawQtyNonDisplay)
                 : false,
         [tokenDexBalance, withdrawQtyNonDisplay],
     );
@@ -260,7 +257,7 @@ export default function Withdraw(props: propsIF) {
 
                 if (receipt) {
                     addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.transactionHash);
+                    removePendingTx(receipt.hash);
                     resetWithdrawQty();
                 }
             } catch (error) {
@@ -364,11 +361,13 @@ export default function Withdraw(props: propsIF) {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                NUM_GWEI_IN_WEI *
+                Number(NUM_GWEI_IN_WEI) *
                 ethMainnetUsdPrice *
-                (isTokenEth
-                    ? GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE
-                    : GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20);
+                Number(
+                    isTokenEth
+                        ? GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE
+                        : GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
+                );
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({

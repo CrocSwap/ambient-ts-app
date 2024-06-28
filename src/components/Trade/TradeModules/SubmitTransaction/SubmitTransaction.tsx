@@ -103,7 +103,7 @@ export default function SubmitTransaction(props: propsIF) {
             sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
         if (
             lastReceipt?.status === 0 &&
-            lastReceipt.transactionHash === newTransactionHash
+            lastReceipt.hash === newTransactionHash
         ) {
             setIsTransactionFailed(true);
         } else {

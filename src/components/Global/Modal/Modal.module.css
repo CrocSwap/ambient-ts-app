@@ -21,14 +21,9 @@
 .modal_body {
     border: solid 1px;
     border-color: var(--accent1);
-    background-image: linear-gradient(
-            rgba(189, 27, 27, 0),
-            rgba(255, 255, 255, 0)
-        ),
-        linear-gradient(101deg, var(--accent1), var(--accent1), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
-    box-shadow: 2px 1000px 1px var(--dark1) inset;
+    box-shadow: 2px 2000px 1px var(--dark1) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
 
     height: fit-content;
@@ -72,11 +67,11 @@
 
 .modal_content {
     /* padding: 20px; */
-   
+
     border-radius: var(--border-radius);
-   
-   
-    
+
+
+
 
     /* min-height: 250px; */
 }
@@ -92,6 +87,6 @@
 @media only screen and (min-width: 500px) {
     .modal_body {
         min-width: 400px;
-       
+
     }
 }
