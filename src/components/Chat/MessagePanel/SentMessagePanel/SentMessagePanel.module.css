@@ -616,7 +616,7 @@
 
 .verified_icon{
     display: inline-block;
-    margin-left: .2rem;
+    margin-left: .4rem;
     cursor: default;
 }
 .verified_icon svg{

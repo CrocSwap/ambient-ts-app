@@ -438,6 +438,7 @@ const useChatSocket = (
 
         async function getRest() {
             if (freezePanel) freezePanel();
+            if (room == '') return;
             const data =
                 room === 'Admins'
                     ? await getAllMessages(0)
@@ -470,8 +471,10 @@ const useChatSocket = (
     }, [room]);
 
     useEffect(() => {
-        updateUserCache();
-    }, [messages]);
+        if (isChatOpen) {
+            updateUserCache();
+        }
+    }, [messages, isChatOpen]);
 
     async function deleteMsgFromList(msgId: string) {
         const payload = {

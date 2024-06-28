@@ -102,7 +102,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }, []);
 
     async function updateUser() {
-        console.log('update user called');
         const response = await fetch(host + '/chat/api/auth/updateUser', {
             method: 'PUT',
             headers: {

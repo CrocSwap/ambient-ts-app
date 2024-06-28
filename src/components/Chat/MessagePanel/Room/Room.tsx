@@ -50,6 +50,7 @@ interface propsIF {
     setGoToChartParams?: Dispatch<
         SetStateAction<ChatGoToChatParamsIF | undefined>
     >;
+    isChatOpen: boolean;
 }
 
 export default function Room(props: propsIF) {
@@ -96,6 +97,7 @@ export default function Room(props: propsIF) {
     const { getTokensByNameOrSymbol } = useTokens(chainId, undefined);
 
     const processRoomList = async () => {
+        if (!props.isChatOpen) return;
         const defaultRooms = getDefaultRooms(props.isModerator);
         const newRoomList = [...defaultRooms];
         const topRooms: GetTopPoolsResponse[] = await getTopRooms();
