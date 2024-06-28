@@ -223,7 +223,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const openBidMarketCapIndex = maxMarketCapEthValues.findIndex(
         (item) => item === openBidMarketCapInEth,
     );
-    const formattedOpenBidStatus = `${auctionStatusData.openBidQtyFilledInNativeTokenWei} / ${auctionStatusData.openBidClearingPriceInNativeTokenWei}`;
 
     const openBidClearingPriceInEth =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
@@ -244,6 +243,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
                   ),
               )
             : undefined;
+
+    const formattedOpenBidStatus = `${openBidQtyFilledInEth} / ${openBidClearingPriceInEth}`;
 
     const fillPercentage =
         openBidQtyFilledInEth && openBidClearingPriceInEth
