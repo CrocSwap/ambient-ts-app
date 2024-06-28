@@ -10,7 +10,10 @@ import {
     AuctionsContext,
 } from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    getTimeRemaining,
+} from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
 
 import { CurrencySelector } from '../../Form/CurrencySelector';
@@ -29,7 +32,7 @@ export interface PropsIF {
     auctionDetailsForConnectedUser: AuctionDataIF | undefined;
     marketCapEthValue: number | undefined;
     currentMarketCapUsdValue: number | undefined;
-    timeRemaining: string | undefined;
+    timeRemainingInSeconds: number | undefined;
     isAuctionCompleted?: boolean;
     placeholderTicker?: boolean;
     auctionDetails: AuctionDataIF | undefined;
@@ -58,7 +61,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
         auctionDetailsForConnectedUser,
         marketCapEthValue,
         currentMarketCapUsdValue,
-        timeRemaining,
+        timeRemainingInSeconds,
         isAuctionCompleted,
         placeholderTicker,
         bidGasPriceinDollars,
@@ -100,6 +103,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
         prefix: 'Ξ ',
     });
 
+    const timeRemainingString = timeRemainingInSeconds
+        ? getTimeRemaining(timeRemainingInSeconds)
+        : '-';
+
     // Status data
     const statusData = [
         {
@@ -114,8 +121,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
         {
             label: isAuctionCompleted ? 'time completed' : 'time remaining',
-            value: !placeholderTicker ? timeRemaining : '-',
-            color: 'var(--positive)',
+            value: !placeholderTicker ? timeRemainingString : '-',
+            // set color to orange if time remaining is less than 2 hours
+            color:
+                timeRemainingInSeconds && timeRemainingInSeconds > 7200
+                    ? 'var(--text1)'
+                    : 'var(--orange)',
             tooltipLabel: 'The total time remaining in the auction',
         },
         {
@@ -146,8 +157,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
         : '...';
 
     const userBidMarketCapInEth =
-        auctionDetailsForConnectedUser?.highestBidByUserInEth
-            ? auctionDetailsForConnectedUser?.highestBidByUserInEth *
+        auctionDetailsForConnectedUser?.clearingPriceForUserBidInEth
+            ? auctionDetailsForConnectedUser?.clearingPriceForUserBidInEth *
               marketCapMultiplier
             : undefined;
 

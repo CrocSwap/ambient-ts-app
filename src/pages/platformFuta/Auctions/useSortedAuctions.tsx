@@ -54,7 +54,7 @@ export function useSortedAuctions(unsorted: AuctionDataIF[]): sortedAuctionsIF {
     function sortByMarketCap(d: AuctionDataIF[]): AuctionDataIF[] {
         return [...d].sort(
             (a: AuctionDataIF, b: AuctionDataIF) =>
-                b.highestFilledBidInEth - a.highestFilledBidInEth,
+                b.clearingPriceInEth - a.clearingPriceInEth,
         );
     }
 

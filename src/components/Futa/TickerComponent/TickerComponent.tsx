@@ -23,7 +23,6 @@ import {
 } from '../../../ambient-utils/constants';
 import {
     getFormattedNumber,
-    getTimeRemaining,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
@@ -222,7 +221,7 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const marketCapEthValue = auctionDetails
-        ? auctionDetails.highestFilledBidInEth * marketCapMultiplier
+        ? auctionDetails.clearingPriceInEth * marketCapMultiplier
         : undefined;
 
     const timeRemainingAbbrev = auctionDetails
@@ -234,17 +233,19 @@ export default function TickerComponent(props: PropsIF) {
           )
         : undefined;
 
-    const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
+    const [timeRemainingInSeconds, setTimeRemainingInSeconds] = useState<
+        number | undefined
+    >();
+    // const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
 
     const refreshTimeRemaining = () => {
         if (auctionDetails) {
             const timeRemainingInSeconds = moment(
                 auctionDetails.createdAt * 1000,
             ).diff(Date.now() - auctionDetails.auctionLength * 1000, 'seconds');
-            const timeRemainingString = getTimeRemaining(
-                timeRemainingInSeconds,
-            );
-            setTimeRemaining(timeRemainingString);
+
+            setTimeRemainingInSeconds(timeRemainingInSeconds);
+            // setTimeRemaining(timeRemainingString);
         }
     };
 
@@ -512,7 +513,7 @@ export default function TickerComponent(props: PropsIF) {
         auctionDetailsForConnectedUser,
         marketCapEthValue,
         currentMarketCapUsdValue,
-        timeRemaining,
+        timeRemainingInSeconds,
         isAuctionCompleted,
         placeholderTicker,
         auctionDetails,
@@ -565,7 +566,8 @@ export default function TickerComponent(props: PropsIF) {
     }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
     const isUserBidDataAvailable =
-        auctionDetailsForConnectedUser?.highestBidByUserInEth !== undefined &&
+        auctionDetailsForConnectedUser?.clearingPriceForUserBidInEth !==
+            undefined &&
         auctionDetailsForConnectedUser?.userBidSizeUserInEth !== undefined;
 
     return (

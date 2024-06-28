@@ -30,11 +30,13 @@ export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
         const daysAndHours =
             days > 0
                 ? hoursMinusDays > 0
-                    ? `${String(days).padStart(2, '0') + 'd'}:${String(hoursMinusDays).padStart(2, '0') + 'h'}`
-                    : `${String(days).padStart(2, '0') + 'd'}`
-                : `${hours}h`;
+                    ? `${String(days).padStart(2, '0') + 'd'}:${String(hoursMinusDays).padStart(2, '0') + 'h'}:`
+                    : `${String(days).padStart(2, '0') + 'd'}:`
+                : hours > 0
+                  ? `${hours}h:`
+                  : '';
 
-        const daysAndHoursAndMinutes = `${daysAndHours}:${String(minutes).padStart(2, '0')}m`;
+        const daysAndHoursAndMinutes = `${daysAndHours}${String(minutes).padStart(2, '0')}m`;
 
         return days > 0
             ? daysAndHoursAndMinutes

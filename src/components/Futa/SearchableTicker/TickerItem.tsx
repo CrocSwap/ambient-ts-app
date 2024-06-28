@@ -34,7 +34,7 @@ export default function TickerItem(props: PropsIF) {
 
     const { accountData } = useContext(AuctionsContext);
 
-    const { ticker, highestFilledBidInEth, createdAt, auctionLength } = auction;
+    const { ticker, clearingPriceInEth, createdAt, auctionLength } = auction;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
@@ -52,24 +52,26 @@ export default function TickerItem(props: PropsIF) {
     const isAuctionOpen = timeRemainingInSec > 0;
 
     const isUserInTheMoney = isAuctionOpen
-        ? userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth >= highestFilledBidInEth
-        : userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth === highestFilledBidInEth &&
+        ? userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
+          userDataForAuction.clearingPriceForUserBidInEth >= clearingPriceInEth
+        : userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
+          userDataForAuction.clearingPriceForUserBidInEth ===
+              clearingPriceInEth &&
           userDataForAuction?.tokenAllocationUnclaimedByUser &&
           userDataForAuction.tokenAllocationUnclaimedByUser > 0;
 
     const isUserOutOfTheMoney = isAuctionOpen
-        ? userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth < highestFilledBidInEth
-        : userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth !== highestFilledBidInEth &&
+        ? userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
+          userDataForAuction.clearingPriceForUserBidInEth < clearingPriceInEth
+        : userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
+          userDataForAuction.clearingPriceForUserBidInEth !==
+              clearingPriceInEth &&
           userDataForAuction?.ethUnclaimedByUser &&
           userDataForAuction.ethUnclaimedByUser > 0;
 
     const userActionsCompleted =
         !isAuctionOpen &&
-        userDataForAuction?.highestBidByUserInEth !== undefined &&
+        userDataForAuction?.clearingPriceForUserBidInEth !== undefined &&
         !userDataForAuction?.tokenAllocationUnclaimedByUser &&
         !userDataForAuction?.ethUnclaimedByUser;
 
@@ -81,7 +83,7 @@ export default function TickerItem(props: PropsIF) {
             ? 'var(--accent2)'
             : undefined;
 
-    const marketCap = highestFilledBidInEth * marketCapMultiplier;
+    const marketCap = clearingPriceInEth * marketCapMultiplier;
 
     const marketCapUsdValue =
         nativeTokenUsdPrice !== undefined && marketCap !== undefined
@@ -99,8 +101,6 @@ export default function TickerItem(props: PropsIF) {
                   })
                 : '$0'
             : undefined;
-
-    const timeRemainingColor = undefined;
 
     return (
         <Link
@@ -121,9 +121,11 @@ export default function TickerItem(props: PropsIF) {
             <p className={styles.marketCap}>{formattedMarketCap}</p>
             <p
                 style={{
-                    color: timeRemainingColor
-                        ? timeRemainingColor
-                        : 'var(--text1)',
+                    color:
+                        // set color to orange if time remaining is less than 2 hours
+                        timeRemainingInSec > 7200
+                            ? 'var(--text1)'
+                            : 'var(--orange)',
                 }}
             >
                 {timeRemaining}

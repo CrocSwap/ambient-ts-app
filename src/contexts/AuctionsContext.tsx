@@ -32,15 +32,34 @@ interface AuctionsContextIF {
     setShowComplete: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// interface for auction data used to generate tables
 export interface AuctionDataIF {
     ticker: string;
+    chainId: string;
     createdAt: number;
     auctionLength: number;
-    highestFilledBidInEth: number;
-    highestBidByUserInEth?: number;
-    userBidSizeUserInEth?: number;
-    tokenAllocationUnclaimedByUser?: number;
-    ethUnclaimedByUser?: number;
+    clearingPriceInEth: number;
+
+    // user specific data received for account queries
+    clearingPriceForUserBidInEth?: number | undefined;
+    userBidSizeUserInEth?: number | undefined;
+    tokenAllocationUnclaimedByUser?: number | undefined; // wei as string
+    tokenAllocationClaimedByUser?: number | undefined; // wei as string
+    ethUnclaimedByUser?: number | undefined;
+    ethClaimedByUser?: number | undefined;
+}
+
+// interface for auction status data used to generate auction details view
+export interface AuctionStatusDataServerIF {
+    ticker: string;
+    chainId: string;
+    createdAt: number;
+    auctionLength: number;
+    clearingPriceInEth: number;
+
+    // open bid data
+    openBidInEth?: number | undefined;
+    openBidAmountFilledInEth?: number | undefined;
 }
 
 export interface AuctionsDataIF {
@@ -55,22 +74,13 @@ export interface AccountDataIF {
     auctions: AuctionDataIF[];
 }
 
-export interface AuctionStatusDataServerIF {
-    ticker: string;
-    createdAt: number;
-    auctionLength: number;
-    highestFilledBidInEth: number;
-    openBidInEth?: number | undefined;
-    openBidAmountFilledInEth?: number | undefined;
-}
-
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
     ticker: string;
     createdAt: number;
     auctionLength: number;
     chainId: string;
-    highestFilledBidInEth: number;
+    clearingPriceInEth: number;
     openBidInEth: number | undefined;
     openBidAmountFilledInEth: number | undefined;
 }
@@ -110,7 +120,7 @@ export const AuctionsContextProvider = (props: {
             createdAt: 0,
             auctionLength: 0,
             chainId: chainId,
-            highestFilledBidInEth: 0.25,
+            clearingPriceInEth: 0.25,
             openBidInEth: undefined,
             openBidAmountFilledInEth: undefined,
         });
@@ -133,7 +143,7 @@ export const AuctionsContextProvider = (props: {
     const fetchAuctionStatusData = async (
         ticker: string,
     ): Promise<AuctionStatusDataServerIF> => {
-        return mockAuctionDetailsServerResponseGenerator(ticker);
+        return mockAuctionDetailsServerResponseGenerator(ticker, chainId);
     };
 
     function getAuctionsData() {
@@ -164,7 +174,7 @@ export const AuctionsContextProvider = (props: {
                 createdAt: data.createdAt,
                 auctionLength: data.auctionLength,
                 chainId: chainId,
-                highestFilledBidInEth: data.highestFilledBidInEth,
+                clearingPriceInEth: data.clearingPriceInEth,
                 openBidInEth: data.openBidInEth,
                 openBidAmountFilledInEth: data.openBidAmountFilledInEth,
             });
