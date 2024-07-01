@@ -7,7 +7,7 @@ import {
     querySpotPrice,
 } from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import {
     TokenPriceFn,
     FetchContractDetailsFn,

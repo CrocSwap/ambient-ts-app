@@ -17,7 +17,7 @@ import { diffHashSig, isJsonString } from '../ambient-utils/dataLayer';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
-import { TransactionReceipt } from '@ethersproject/abstract-provider';
+import { TransactionReceipt } from 'ethers';
 
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
@@ -103,8 +103,8 @@ export const SidebarContextProvider = (props: { children: ReactNode }) => {
             openSnackbar(
                 lastReceipt
                     ? isLastReceiptSuccess
-                        ? `Transaction ${lastReceipt.transactionHash} successfully completed`
-                        : `Transaction ${lastReceipt.transactionHash} failed`
+                        ? `Transaction ${lastReceipt.hash} successfully completed`
+                        : `Transaction ${lastReceipt.hash} failed`
                     : '',
                 isLastReceiptSuccess ? 'info' : 'warning',
             );
