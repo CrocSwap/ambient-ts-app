@@ -222,8 +222,10 @@ export const useAppChain = (): {
         setActiveNetwork(network);
         const isPathENS = pathname.slice(1)?.endsWith('.eth');
         const isPathHex =
-            pathname.slice(1)?.startsWith('0x') &&
-            pathname.slice(1)?.length == 42;
+            (pathname.slice(1)?.startsWith('0x') &&
+                pathname.slice(1)?.length == 42) ||
+            (pathname.slice(9)?.startsWith('0x') &&
+                pathname.slice(9)?.length == 42);
         const isPathUserAddress = isPathENS || isPathHex;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');
