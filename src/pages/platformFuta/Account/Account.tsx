@@ -8,21 +8,81 @@ import {
     sortedAuctionsIF,
     useSortedAuctions,
 } from '../Auctions/useSortedAuctions';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { Link } from 'react-router-dom';
+import { Navigate, Link, useParams } from 'react-router-dom';
 import Seperator from '../../../components/Futa/Seperator/Seperator';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 export default function Account() {
-    const { accountData } = useContext(AuctionsContext);
-    const { isUserConnected } = useContext(UserDataContext);
+    const { accountData, getAccountData } = useContext(AuctionsContext);
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const { address: addressFromParams } = useParams();
+
+    const isAddressEns = addressFromParams?.endsWith('.eth');
+    const isAddressHex =
+        addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
+
+    const { mainnetProvider } = useContext(CrocEnvContext);
+
+    const [resolvedAddress, setResolvedAddress] = useState<string | undefined>(
+        undefined,
+    );
+
+    if (addressFromParams && !isAddressEns && !isAddressHex)
+        return <Navigate to='/404' replace />;
+
+    useEffect(() => {
+        (async () => {
+            console.log({
+                addressFromParams,
+                isAddressEns,
+                isAddressHex,
+                mainnetProvider,
+            });
+            if (addressFromParams && isAddressEns && mainnetProvider) {
+                try {
+                    const newResolvedAddress =
+                        await mainnetProvider.resolveName(addressFromParams);
+                    setResolvedAddress(newResolvedAddress ?? '');
+                } catch (error) {
+                    console.error({ error });
+                }
+            } else if (addressFromParams && isAddressHex && !isAddressEns) {
+                setResolvedAddress(addressFromParams);
+            } else {
+                setResolvedAddress('');
+            }
+        })();
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
+
+    useEffect(() => {
+        if (resolvedAddress) {
+            getAccountData(resolvedAddress, chainId);
+            const interval = setInterval(() => {
+                getAccountData(resolvedAddress, chainId);
+            }, 30000);
+            return () => clearInterval(interval);
+        } else if (userAddress) {
+            getAccountData(userAddress, chainId);
+            const interval = setInterval(() => {
+                getAccountData(userAddress, chainId);
+            }, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [resolvedAddress, userAddress, chainId]);
 
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
