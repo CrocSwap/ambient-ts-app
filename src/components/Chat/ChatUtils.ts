@@ -8,7 +8,7 @@ import {
 import {
     ChatRoomIF,
     ChatWsDecodedMessage,
-    GetTopPoolsResponse,
+    GetTopRoomsResponseIF,
 } from './ChatIFs';
 import { Message } from './Model/MessageModel';
 
@@ -233,7 +233,7 @@ export const getDefaultRooms = (isModerator: boolean) => {
 };
 
 export const createRoomIF = (
-    resp: GetTopPoolsResponse,
+    resp: GetTopRoomsResponseIF,
     popularityScore?: number,
 ) => {
     let ret: ChatRoomIF;

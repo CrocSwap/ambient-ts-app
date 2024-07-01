@@ -15,7 +15,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import {
     ChatGoToChatParamsIF,
     ChatRoomIF,
-    GetTopPoolsResponse,
+    GetTopRoomsResponseIF,
 } from '../../ChatIFs';
 import {
     createRoomIF,
@@ -100,23 +100,29 @@ export default function Room(props: propsIF) {
         if (!props.isChatOpen) return;
         const defaultRooms = getDefaultRooms(props.isModerator);
         const newRoomList = [...defaultRooms];
-        const topRooms: GetTopPoolsResponse[] = await getTopRooms();
+        let topRooms: GetTopRoomsResponseIF[] = await getTopRooms();
 
-        // process top rooms
-        topRooms.map((room, index) => {
-            let found = false;
-            if (!props.isModerator && room.roomInfo === 'Admins') return;
+        if (topRooms && topRooms.length > 0) {
+            topRooms = topRooms
+                .sort((a, b) => b.data.messageCount24h - a.data.messageCount24h)
+                .slice(0, 3);
 
-            const popularityScore = topRooms.length - index;
-            newRoomList.map((pool) => {
-                if (pool.name === room.roomInfo) {
-                    found = true;
+            // process top rooms
+            topRooms.map((room, index) => {
+                let found = false;
+                if (!props.isModerator && room.roomInfo === 'Admins') return;
+
+                const popularityScore = topRooms.length - index;
+                newRoomList.map((pool) => {
+                    if (pool.name === room.roomInfo) {
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    newRoomList.push(createRoomIF(room, popularityScore));
                 }
             });
-            if (!found) {
-                newRoomList.push(createRoomIF(room, popularityScore));
-            }
-        });
+        }
 
         // assign current pool
         assignUserCurrentPool();

@@ -25,9 +25,13 @@ export interface AvatarUpdateIF {
     avatarImage: string;
 }
 
-export interface GetTopPoolsResponse {
+export interface TopPoolDataIF {
+    messageCount24h: number;
+}
+
+export interface GetTopRoomsResponseIF {
     roomInfo: string;
-    count: number;
+    data: TopPoolDataIF;
 }
 
 export interface ChatRoomIF {
