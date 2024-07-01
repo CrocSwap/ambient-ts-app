@@ -32,7 +32,12 @@ import {
     scrollRocketPoolETH,
     scrollPufETH,
     blastWEETH,
+    plumeSepoliaUSDC,
+    plumeSepoliaGoonUSD,
+    plumeSepoliaP,
     blastBLAST,
+    plumeSepoliaUSDT,
+    plumeSepoliaDAI,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -96,6 +101,11 @@ export const STABLE_USD_TOKENS = [
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
+    plumeSepoliaUSDC.address,
+    plumeSepoliaUSDT.address,
+    plumeSepoliaDAI.address,
+    plumeSepoliaGoonUSD.address,
+    plumeSepoliaP.address,
 ].map((x) => x.toLowerCase());
 
 export const USDC_TOKENS = [
@@ -105,6 +115,7 @@ export const USDC_TOKENS = [
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
+    plumeSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
 export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>

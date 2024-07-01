@@ -6,6 +6,7 @@ import { chainIds } from '../ambient-utils/types';
 import {
     blastBrandAssets,
     scrollBrandAssets,
+    plumeSepoliaBrandAssets,
     defaultBrandAssets,
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
@@ -61,12 +62,15 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
+
     const brandAssets = useMemo<brandIF>(() => {
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
+            case 'plumeSepolia':
+                return plumeSepoliaBrandAssets;
             case 'futa':
                 return futaBrandAssets;
             case 'ambientProduction':
@@ -88,6 +92,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
         return networkPrefs ? networkPrefs.color : 'purple_dark';
+
         // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
     }
 

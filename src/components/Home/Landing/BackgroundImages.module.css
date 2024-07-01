@@ -35,6 +35,18 @@
             center center;
 }
 
+.clouds{
+   
+
+            background: 
+            url('https://cdn.prod.website-files.com/663ca72ea13862274743163b/664ee49b762bc75b5cbfbf27_2%2018.webp') no-repeat
+                center center ;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+}
+
 .home2 {
     background: url(/src/assets/images/home/home2.png) no-repeat;
 }

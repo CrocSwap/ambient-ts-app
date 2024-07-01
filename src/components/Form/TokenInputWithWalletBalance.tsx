@@ -6,6 +6,7 @@ import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -60,6 +61,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         usdValue,
         percentDiffUsdValue,
     } = props;
+
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const usdValueForDom =
         usdValue && parseFloat(tokenInput) > 0
@@ -116,8 +119,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
-            ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
-            : balance;
+              ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
+              : balance;
 
     const balanceWithBuffer = balance
         ? subtractBuffer(balBigIntStringScaled)
@@ -158,7 +161,10 @@ function TokenInputWithWalletBalance(props: propsIF) {
         <>
             <WalletBalanceSubinfo
                 usdValueForDom={
-                    isLoading || !usdValueForDom || disabledContent
+                    isLoading ||
+                    !usdValueForDom ||
+                    disabledContent ||
+                    (!isPoolInitialized && !isInitPage)
                         ? ''
                         : usdValueForDom
                 }

@@ -46,6 +46,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { ChainDataContext } from '../contexts/ChainDataContext';
 
 /** ***** React Function *******/
 export default function App() {
@@ -69,6 +70,7 @@ export default function App() {
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
@@ -133,11 +135,13 @@ export default function App() {
                 className={containerStyle}
                 data-theme={skin}
             >
-                {showPoints && showPointSystemPopup && (
-                    <PointSystemPopup
-                        dismissPointSystemPopup={dismissPointSystemPopup}
-                    />
-                )}
+                {showPoints &&
+                    showPointSystemPopup &&
+                    !isActiveNetworkPlume && (
+                        <PointSystemPopup
+                            dismissPointSystemPopup={dismissPointSystemPopup}
+                        />
+                    )}
                 <AppOverlay />
                 <PageHeader />
                 <div

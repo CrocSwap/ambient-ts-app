@@ -4,7 +4,7 @@ import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Navigate, Link, useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from '@web3modal/ethers/react';
 import { supportedNetworks } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
@@ -14,6 +14,7 @@ import { Text } from '../../styled/Common';
 import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { BrandContext } from '../../contexts/BrandContext';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -22,10 +23,15 @@ export default function Home() {
     // hook from web3modal indicating if user is connected
     const { isUserConnected } = useContext(UserDataContext);
     const { chainData, chooseNetwork } = useContext(TradeDataContext);
+    const { showPoints, showDexStats } = useContext(BrandContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
     // hook to consume and alter search params on the index page
     const [searchParams, setSearchParams] = useSearchParams();
     // logic to consume chain param data from the URL
     // runs once when the app initializes, again when web3modal finishes initializing
+    if (isActiveNetworkPlume) {
+        return <Navigate to='/swap' />;
+    }
     useEffect(() => {
         // search for param in URL by key 'chain' or 'network'
         const chainParam: string | null =
@@ -43,7 +49,7 @@ export default function Home() {
                 targetChain !== chainData.chainId
             ) {
                 // use web3modal if wallet is connected, otherwise use in-app toggle
-                if (switchNetwork) {
+                if (isUserConnected) {
                     switchNetwork(parseInt(targetChain));
                 } else if (!isUserConnected) {
                     chooseNetwork(supportedNetworks[targetChain]);
@@ -52,9 +58,7 @@ export default function Home() {
                 setSearchParams('');
             }
         }
-    }, [switchNetwork]);
-
-    const { showPoints, showDexStats } = useContext(BrandContext);
+    }, [isUserConnected]);
 
     const PointSystemContainer = styled.section`
         margin: 0 auto;
@@ -83,7 +87,7 @@ export default function Home() {
                     <Hero />
                 </div>
             )}
-            {showPoints && (
+            {showPoints && !isActiveNetworkPlume && (
                 <PointSystemContainer>
                     <Text fontSize='header1'>Points system now live!</Text>
 
@@ -104,7 +108,7 @@ export default function Home() {
             )}
             <div>
                 <TopPools />
-                {showDexStats && <Stats />}
+                {showDexStats && !isActiveNetworkPlume && <Stats />}
             </div>
             <LandingSections />
         </section>

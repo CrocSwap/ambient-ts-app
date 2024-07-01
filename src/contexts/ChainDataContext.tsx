@@ -42,6 +42,7 @@ interface ChainDataContextIF {
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
+    isActiveNetworkPlume: boolean;
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
 }
@@ -74,6 +75,8 @@ export const ChainDataContextProvider = (props: {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
+
+    const isActiveNetworkPlume = ['0x99c0a0f'].includes(chainData.chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
@@ -86,6 +89,7 @@ export const ChainDataContextProvider = (props: {
         '0xa0c71fd',
         '0x82750',
         '0x8274f',
+        '0x99c0a0f', // plume sepolia
     ];
 
     // boolean representing whether the active network is an L2
@@ -101,10 +105,10 @@ export const ChainDataContextProvider = (props: {
                 ? chainData.nodeUrl.slice(0, -32) +
                   import.meta.env.VITE_INFURA_KEY
                 : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-                ? BLAST_RPC_URL
-                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                ? SCROLL_RPC_URL
-                : blockPollingUrl;
+                  ? BLAST_RPC_URL
+                  : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                    ? SCROLL_RPC_URL
+                    : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
@@ -170,9 +174,10 @@ export const ChainDataContextProvider = (props: {
     }, [lastNewHeadMessage]);
 
     const fetchGasPrice = async () => {
-        const newGasPrice = await supportedNetworks[
-            chainData.chainId
-        ].getGasPriceInGwei(provider);
+        const newGasPrice =
+            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
+                provider,
+            );
         if (gasPriceInGwei !== newGasPrice) {
             setGasPriceinGwei(newGasPrice);
         }
@@ -311,6 +316,7 @@ export const ChainDataContextProvider = (props: {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
+        isActiveNetworkPlume,
         isActiveNetworkMainnet,
         isActiveNetworkL2,
     };

@@ -14,6 +14,7 @@ import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
@@ -41,6 +42,8 @@ function TradeModuleHeader(props: propsIF) {
     // TODO:    refactor this file to have only a single top-level return and remove
     // TODO:    ... the `<div>` wrapper around the `TradeModuleHeaderContainer` element
 
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
+
     return (
         <>
             <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
@@ -52,32 +55,57 @@ function TradeModuleHeader(props: propsIF) {
                     fontSize='header1'
                     color='text2'
                 >
-                    <AiOutlineShareAlt
-                        onClick={openShareModal}
-                        id='share_button'
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Share button'
-                    />
-
-                    {isSwapPage ? (
-                        <Text id='swap_header_token_pair' as='h4' color='text1'>
-                            Swap
-                        </Text>
-                    ) : (
-                        <Text
-                            id='trade_header_token_pair'
-                            as='h4'
-                            color='text1'
-                            fontSize='header1'
-                            role='button'
-                            cursor='pointer'
-                            onClick={() => toggleDidUserFlipDenom()}
+                    {isActiveNetworkPlume ? (
+                        <p
+                            style={{
+                                color: 'var(--text2)',
+                                fontWeight: '400',
+                                fontSize: '18px',
+                            }}
                         >
-                            {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                            {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                        </Text>
+                            SELECT TOKEN
+                        </p>
+                    ) : (
+                        <AiOutlineShareAlt
+                            onClick={openShareModal}
+                            id='share_button'
+                            role='button'
+                            tabIndex={0}
+                            aria-label='Share button'
+                        />
                     )}
+                    {!isActiveNetworkPlume && (
+                        <>
+                            {isSwapPage ? (
+                                <Text
+                                    id='swap_header_token_pair'
+                                    as='h4'
+                                    color='text1'
+                                >
+                                    Swap
+                                </Text>
+                            ) : (
+                                <Text
+                                    id='trade_header_token_pair'
+                                    as='h4'
+                                    color='text1'
+                                    fontSize='header1'
+                                    role='button'
+                                    cursor='pointer'
+                                    onClick={() => toggleDidUserFlipDenom()}
+                                >
+                                    {isDenomBase
+                                        ? baseTokenSymbol
+                                        : quoteTokenSymbol}{' '}
+                                    /{' '}
+                                    {isDenomBase
+                                        ? quoteTokenSymbol
+                                        : baseTokenSymbol}
+                                </Text>
+                            )}
+                        </>
+                    )}
+
                     <IconWithTooltip title='Settings' placement='left'>
                         <div
                             onClick={openSettingsModal}

@@ -219,8 +219,8 @@ function Reposition() {
         currentPoolPriceNonDisplay === 0
             ? '...'
             : isDenomBase
-            ? truncatedCurrentPoolDisplayPriceInBase
-            : truncatedCurrentPoolDisplayPriceInQuote;
+              ? truncatedCurrentPoolDisplayPriceInBase
+              : truncatedCurrentPoolDisplayPriceInQuote;
 
     const handleModalOpen = () => {
         resetConfirmation();
@@ -884,10 +884,10 @@ function Reposition() {
                                     isRepositionSent
                                         ? 'Reposition Sent'
                                         : isPositionInRange
-                                        ? 'Position Currently In Range'
-                                        : bypassConfirmRepo.isEnabled
-                                        ? 'Reposition'
-                                        : 'Confirm'
+                                          ? 'Position Currently In Range'
+                                          : bypassConfirmRepo.isEnabled
+                                            ? 'Reposition'
+                                            : 'Confirm'
                                 }
                                 action={
                                     bypassConfirmRepo.isEnabled

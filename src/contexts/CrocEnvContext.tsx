@@ -134,13 +134,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             tokenA: firstTokenMatchingA
                 ? firstTokenMatchingA.address
                 : shouldReverseDefaultTokens
-                ? dfltTokenB.address
-                : dfltTokenA.address,
+                  ? dfltTokenB.address
+                  : dfltTokenA.address,
             tokenB: firstTokenMatchingB
                 ? firstTokenMatchingB.address
                 : shouldReverseDefaultTokens
-                ? dfltTokenA.address
-                : dfltTokenB.address,
+                  ? dfltTokenA.address
+                  : dfltTokenB.address,
         };
 
         // default URL params for the limit module
@@ -171,24 +171,24 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         import.meta.env.VITE_INFURA_KEY
             ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
             : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-            ? BLAST_RPC_URL
-            : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-            ? SCROLL_RPC_URL
-            : chainData.nodeUrl;
+              ? BLAST_RPC_URL
+              : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                ? SCROLL_RPC_URL
+                : chainData.nodeUrl;
 
     const provider = useMemo(
         () =>
             chainData.chainId === '0x1'
                 ? mainnetProvider
                 : chainData.chainId === '0x82750'
-                ? scrollProvider
-                : chainData.chainId === '0x13e31'
-                ? blastProvider
-                : new BatchedJsonRpcProvider(
-                      nodeUrl,
-                      parseInt(chainData.chainId),
-                      { staticNetwork: true },
-                  ),
+                  ? scrollProvider
+                  : chainData.chainId === '0x13e31'
+                    ? blastProvider
+                    : new BatchedJsonRpcProvider(
+                          nodeUrl,
+                          parseInt(chainData.chainId),
+                          { staticNetwork: true },
+                      ),
         [chainData.chainId],
     );
 

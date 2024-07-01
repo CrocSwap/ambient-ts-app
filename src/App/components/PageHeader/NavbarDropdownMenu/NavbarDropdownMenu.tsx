@@ -25,6 +25,7 @@ import {
     NavbarLogoutContainer,
 } from '../../../../styled/Components/Header';
 import NavbarDropdownItem from './NavbarDropdownItem';
+import plumeNetworkLogoBlackAndWhite from '../../../../assets/images/networks/plume_logo_black_white.svg';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -63,6 +64,12 @@ function NavbarDropdownMenu(props: propsIF) {
     }
 
     const navData: navDataIF[] = [
+        {
+            icon: <img src={plumeNetworkLogoBlackAndWhite} width='20px' />,
+            // icon: <SiGitbook size={20} />,
+            resource: 'https://plumenetwork.xyz/',
+            text: 'About Plume',
+        },
         {
             icon: <SiGitbook size={20} />,
             resource: DOCS_LINK,

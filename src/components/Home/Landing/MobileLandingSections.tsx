@@ -6,6 +6,7 @@ import orderImage from '../../../assets/images/home/orders.png';
 import { Fade } from 'react-reveal';
 import blastLogo from '../../../assets/images/logos/blast_logo.svg';
 import scrollLogo from '../../../assets/images/logos/scroll_brand_logo.svg';
+import plumeLogo from '../../../assets/images/logos/plume_brand_logo.svg';
 
 import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
@@ -26,8 +27,11 @@ import { Link } from 'react-router-dom';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function MobileLandingSections() {
-    const { isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const {
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
@@ -108,6 +112,37 @@ export default function MobileLandingSections() {
                             <img src={scrollLogo} alt='' width='130px' />
                         </FlexContainer>
                     </MobileMainLogo>
+                ) : isActiveNetworkPlume ? (
+                    <MobileMainLogo
+                        justifyContent='center'
+                        alignItems='center'
+                        fullWidth
+                        className={styles.clouds}
+                    >
+                        <FlexContainer
+                            flexDirection={'column'}
+                            alignItems='center'
+                            gap={4}
+                        >
+                            <p
+                                className={styles.ambient_blast_logo}
+                                style={{ fontSize: '30px' }}
+                            >
+                                ambient
+                            </p>
+                            <Text
+                                fontWeight='100'
+                                color='text1'
+                                align='center'
+                                style={{
+                                    fontSize: '20px',
+                                }}
+                            >
+                                X
+                            </Text>
+                            <img src={plumeLogo} alt='' width='130px' />
+                        </FlexContainer>
+                    </MobileMainLogo>
                 ) : (
                     <MobileMainLogo
                         justifyContent='center'
@@ -129,25 +164,27 @@ export default function MobileLandingSections() {
                         </FlexContainer>
                     </MobileMainLogo>
                 )}
-
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    gap={8}
-                >
-                    <Text fontSize='body' style={{ marginTop: '2.5px' }}>
-                        Points system now live!{' '}
-                    </Text>
-                    <Link to='/xp-leaderboard'>
-                        <Text
-                            fontSize='body'
-                            color='accent1'
-                            style={{ textDecoration: 'underline' }}
-                        >
-                            View Leaderboard
+                {!isActiveNetworkPlume && (
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        gap={8}
+                    >
+                        <Text fontSize='body' style={{ marginTop: '2.5px' }}>
+                            Points system now live!{' '}
                         </Text>
-                    </Link>
-                </FlexContainer>
+                        <Link to='/xp-leaderboard'>
+                            <Text
+                                fontSize='body'
+                                color='accent1'
+                                style={{ textDecoration: 'underline' }}
+                            >
+                                View Leaderboard
+                            </Text>
+                        </Link>
+                    </FlexContainer>
+                )}
+
                 <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
                 </div>

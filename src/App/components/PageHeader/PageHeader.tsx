@@ -53,6 +53,7 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../contexts/BrandContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 const PageHeader = function () {
     const {
@@ -68,6 +69,7 @@ const PageHeader = function () {
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
@@ -213,10 +215,10 @@ const PageHeader = function () {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/edit')
+            ? '/trade/edit/'
+            : '/trade/market/';
 
     // hooks to generate URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
@@ -244,32 +246,33 @@ const PageHeader = function () {
         {
             title: 'Swap',
             destination: linkGenSwap.getFullURL(swapParams),
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Trade',
             destination: linkGenMarket.getFullURL(swapParams),
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Pool',
             destination: linkGenPool.getFullURL(swapParams),
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Explore',
             destination: '/explore',
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Account',
             destination: '/account',
-            shouldDisplay: !!isUserConnected,
+            shouldDisplay: !!isUserConnected && !isActiveNetworkPlume,
         },
         {
             title: 'Points',
             destination: '/account/points',
-            shouldDisplay: !!isUserConnected && desktopScreen,
+            shouldDisplay:
+                !!isUserConnected && desktopScreen && !isActiveNetworkPlume,
         },
     ];
 
@@ -395,21 +398,6 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
