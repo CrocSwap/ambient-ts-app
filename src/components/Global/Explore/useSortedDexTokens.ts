@@ -38,7 +38,7 @@ export const useSortedDexTokens = (
                 break;
         }
         return sort.reverse ? [...output].reverse() : output;
-    }, [sort, JSON.stringify(unsorted)]);
+    }, [sort, unsorted]);
 
     function sortByName(tkns: dexTokenData[]): dexTokenData[] {
         const data = tkns.sort((a: dexTokenData, b: dexTokenData) => {

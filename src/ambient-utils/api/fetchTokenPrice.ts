@@ -26,8 +26,8 @@ export const fetchTokenPrice = async (
                 chain === '0x82750'
                     ? 'scroll'
                     : chain === '0x13e31'
-                    ? 'blast'
-                    : 'ethereum',
+                      ? 'blast'
+                      : 'ethereum',
             token_address: address,
         };
 
