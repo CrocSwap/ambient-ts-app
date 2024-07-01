@@ -2,8 +2,8 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     plumeSepoliaDAI,
     plumeSepoliaETH,
+    plumeSepoliaGoonUSD,
     plumeSepoliaP,
-    plumeSepoliaUSD,
     plumeSepoliaUSDC,
     plumeSepoliaUSDT,
 } from '../defaultTokens';
@@ -15,7 +15,7 @@ import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 const chain = {
     chainId: 161221135,
-    name: 'Plume Sepolia',
+    name: 'Plume Testnet',
     currency: 'ETH',
     rpcUrl: 'https://testnet-rpc.plumenetwork.xyz/http/',
     explorerUrl: 'https://testnet-explorer.plumenetwork.xyz',
@@ -28,7 +28,7 @@ export const plumeSepolia: NetworkIF = {
     chain: chain,
     shouldPollBlock: true,
     marketData: '0x1',
-    defaultPair: [plumeSepoliaETH, plumeSepoliaP],
+    defaultPair: [plumeSepoliaETH, plumeSepoliaGoonUSD],
     topPools: [
         new TopPool(
             plumeSepoliaETH,
@@ -37,7 +37,7 @@ export const plumeSepolia: NetworkIF = {
         ),
         new TopPool(
             plumeSepoliaETH,
-            plumeSepoliaUSD,
+            plumeSepoliaGoonUSD,
             lookupChain('0x99c0a0f').poolIndex,
         ),
         new TopPool(

@@ -116,7 +116,9 @@ export default function DropdownMenu2(props: propsIF) {
                                 }}
                             />
                             {title.toLowerCase().includes('sepolia')
-                                ? 'Sepolia'
+                                ? title.toLowerCase().includes('plume')
+                                    ? 'Plume Testnet'
+                                    : 'Sepolia'
                                 : title}
                         </Icon>
                     )}

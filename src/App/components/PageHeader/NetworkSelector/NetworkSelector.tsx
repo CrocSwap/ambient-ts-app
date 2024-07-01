@@ -280,7 +280,7 @@ export default function NetworkSelector(props: propsIF) {
         <NetworkItem
             id='plume_sepolia_network_selector'
             onClick={() => handleClick(chainMap.get('0x99c0a0f'))}
-            key='plume-scroll'
+            key='plume-sepolia'
             custom={0}
             variants={ItemEnterAnimation}
             tabIndex={0}

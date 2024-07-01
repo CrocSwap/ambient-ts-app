@@ -246,27 +246,27 @@ const PageHeader = function () {
         {
             title: 'Swap',
             destination: linkGenSwap.getFullURL(swapParams),
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Trade',
             destination: linkGenMarket.getFullURL(swapParams),
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Pool',
             destination: linkGenPool.getFullURL(swapParams),
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Explore',
             destination: '/explore',
-            shouldDisplay: true,
+            shouldDisplay: !isActiveNetworkPlume,
         },
         {
             title: 'Account',
             destination: '/account',
-            shouldDisplay: !!isUserConnected,
+            shouldDisplay: !!isUserConnected && !isActiveNetworkPlume,
         },
         {
             title: 'Points',
@@ -398,21 +398,6 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />

@@ -646,10 +646,10 @@ export const plumeSepoliaP: TokenIF = {
     logoURI: '',
 };
 
-export const plumeSepoliaUSD: TokenIF = {
+export const plumeSepoliaGoonUSD: TokenIF = {
     name: 'Plume USD Stablecoin',
     address: '0x29582A0c01EC512Ad25F9B15d28495062007c28b',
-    symbol: 'USD',
+    symbol: 'goonUSD',
     decimals: 18,
     chainId: 161221135,
     logoURI: '',
@@ -724,5 +724,5 @@ export const defaultTokens: TokenIF[] = [
     plumeSepoliaUSDT,
     plumeSepoliaDAI,
     plumeSepoliaP,
-    plumeSepoliaUSD,
+    plumeSepoliaGoonUSD,
 ];

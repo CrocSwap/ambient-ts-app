@@ -4,7 +4,7 @@ import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Navigate, Link, useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from '@web3modal/ethers/react';
 import { supportedNetworks } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
@@ -29,6 +29,9 @@ export default function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
     // logic to consume chain param data from the URL
     // runs once when the app initializes, again when web3modal finishes initializing
+    if (isActiveNetworkPlume) {
+        return <Navigate to='/swap' />;
+    }
     useEffect(() => {
         // search for param in URL by key 'chain' or 'network'
         const chainParam: string | null =
