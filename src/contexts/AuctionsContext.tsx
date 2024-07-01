@@ -137,11 +137,14 @@ export const AuctionsContextProvider = (props: {
 
     const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
 
-    const fetchAuctionsData = async () => {
+    const fetchAuctionsData = async (): Promise<AuctionDataIF[]> => {
         return mockAuctionData;
     };
 
-    const fetchAccountData = async (address: string, chainId: string) => {
+    const fetchAccountData = async (
+        address: string,
+        chainId: string,
+    ): Promise<AuctionDataIF[]> => {
         false &&
             console.log('fetching account data for address:', {
                 address,
