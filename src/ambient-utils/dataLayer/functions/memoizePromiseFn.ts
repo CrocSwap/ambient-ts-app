@@ -32,7 +32,7 @@ export const memoizeProviderFn = (fn: any) => {
     const cache = new Map();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (provider: ethers.providers.Provider, ...args: any[]) => {
+    return (provider: ethers.Provider, ...args: any[]) => {
         const key = JSON.stringify(args);
 
         if (cache.has(key)) {

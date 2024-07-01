@@ -33,7 +33,7 @@ import {
     getPositionData,
     getTransactionData,
 } from '../../ambient-utils/dataLayer';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';

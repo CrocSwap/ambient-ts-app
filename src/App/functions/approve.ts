@@ -60,10 +60,10 @@ export function useApprove() {
                     IS_LOCAL_ENV && console.debug('repriced');
                     removePendingTx(error.hash);
 
-                    const newTransactionHash = error.replacement.hash;
+                    const newTransactionHash = error.receipt.hash;
                     addPendingTx(newTransactionHash);
 
-                    updateTransactionHash(error.hash, error.replacement.hash);
+                    updateTransactionHash(error.hash, error.receipt.hash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
@@ -73,7 +73,7 @@ export function useApprove() {
             }
             if (receipt) {
                 addReceipt(JSON.stringify(receipt));
-                removePendingTx(receipt.transactionHash);
+                removePendingTx(receipt.hash);
             }
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
