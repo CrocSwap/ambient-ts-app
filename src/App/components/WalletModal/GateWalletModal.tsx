@@ -13,10 +13,6 @@ import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations
 import { VIEW_ONLY } from '../../../ambient-utils/constants';
 
 export default function GateWalletModal() {
-    const isFuta =
-        import.meta.env.VITE_BRAND_ASSET_SET !== undefined
-            ? import.meta.env.VITE_BRAND_ASSET_SET === 'futa'
-            : true;
     const {
         walletModal: { close: closeModal },
     } = useContext(AppStateContext);
@@ -71,7 +67,6 @@ export default function GateWalletModal() {
                         idForDOM='agree_button_ToS'
                         flat
                         title='Agree'
-                        isFuta={isFuta}
                         action={() => {
                             recordAgreed();
                             closeModal();
