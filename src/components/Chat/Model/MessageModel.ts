@@ -1,3 +1,4 @@
+import { TxPosition } from '../MessagePanel/InputBox/MessageInput';
 export interface Message {
     _id: string;
     message: string;
@@ -8,4 +9,5 @@ export interface Message {
     isMentionMessage: boolean;
     mentionedName: string;
     roomInfo: string;
+    position: TxPosition;
 }

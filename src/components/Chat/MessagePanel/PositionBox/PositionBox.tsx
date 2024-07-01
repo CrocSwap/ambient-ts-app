@@ -8,182 +8,113 @@ import {
     useState,
 } from 'react';
 import { HiOutlineExternalLink } from 'react-icons/hi';
-import {
-    trimString,
-    getFormattedNumber,
-    getUnicodeCharacter,
-} from '../../../../ambient-utils/dataLayer';
-import { PositionIF, TransactionIF } from '../../../../ambient-utils/types';
+import { trimString } from '../../../../ambient-utils/dataLayer';
+import { TransactionIF } from '../../../../ambient-utils/types';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TxPosition } from '../InputBox/MessageInput';
+import { Message } from '../../Model/MessageModel';
 
 interface propsIF {
     message: string;
     isInput: boolean;
-    isPosition: boolean;
-    setIsPosition: Dispatch<SetStateAction<boolean>>;
+    isPosition?: boolean;
+    setIsPosition?: Dispatch<SetStateAction<boolean>>;
     walletExplorer: any;
     isCurrentUser?: boolean;
     showAvatar?: boolean;
+    setTxPositionSummary?: Dispatch<SetStateAction<TxPosition>>;
+    txPositionSummary?: TxPosition;
+    txSummary?: TransactionData | null;
+    msg?: Message;
+    isPositionForSentMessagePanel?: boolean;
+    setIsPositionForSentMessagePanel?: Dispatch<SetStateAction<boolean>>;
 }
 
+type TransactionData = {
+    txHash: string | undefined;
+    entityType: string;
+    tx: TransactionIF;
+    poolSymbolsDisplay: string;
+};
 export default function PositionBox(props: propsIF) {
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
     const isInput = props.isInput;
-    const [position, setPosition] = useState<TransactionIF | undefined>(
-        undefined,
-    );
-    const [sPositions, setSPosition] = useState<PositionIF | undefined>(
-        undefined,
-    );
-    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
-        string | undefined
-    >();
-    const { isDenomBase } = useContext(TradeDataContext);
-    const { positionsByPool, transactionsByPool } =
-        useContext(GraphDataContext);
+    const txSummary = props.txSummary;
 
-    const transactionsData = transactionsByPool.changes;
-    const positionData = positionsByPool.positions;
+    // useEffect(() => {
+    //     if (!props.txSummary || Object.keys(props.txSummary).length === 0) {
+    //     }
+    // }, [props.txSummary]);
 
-    const [minPrice, setMinPrice] = useState<string | undefined>();
-    const [maxPrice, setMaxPrice] = useState<string | undefined>();
-    const [apy, setApy] = useState<any | undefined>();
-
-    const posFingerprint = positionData.map((pos) => pos.positionId).join('|');
-    const txFingerprint = transactionsData.map((tx) => tx.txHash).join('|');
-
-    const updateIsPosition = () => {
-        if (message && message.includes('0x')) {
-            const hashMsg = message
-                .split(' ')
-                .find((item) => item.includes('0x'));
-            if (transactionsData.find((item) => item.txHash === hashMsg)) {
-                setPosition(
-                    transactionsData.find((item) => item.txHash === hashMsg),
-                );
-                props.setIsPosition(true);
-            } else if (
-                positionData.find(
-                    (item: PositionIF) => item.firstMintTx === hashMsg,
-                )
-            ) {
-                setSPosition(
-                    positionData.find(
-                        (item: PositionIF) => item.firstMintTx === hashMsg,
-                    ),
-                );
-                props.setIsPosition(true);
+    function returnSideType(tx: TransactionIF) {
+        if (tx.entityType === 'liqchange') {
+            if (tx.changeType === 'burn') {
+                return 'Remove';
+            } else {
+                return 'Add';
             }
         } else {
-            setPosition(undefined);
-            setSPosition(undefined);
-            props.setIsPosition(false);
-        }
-    };
-
-    useEffect(() => {
-        updateIsPosition();
-    }, [message, posFingerprint, txFingerprint]);
-
-    function financial(x: any) {
-        return Number.parseFloat(x).toFixed(2);
-    }
-
-    const sideType =
-        position &&
-        (position.entityType === 'swap' || position.entityType === 'limitOrder'
-            ? (isDenomBase && !position.isBuy) ||
-              (!isDenomBase && position.isBuy)
-                ? 'Buy'
-                : 'Sell'
-            : position.changeType === 'burn'
-            ? 'Sell'
-            : 'Buy');
-
-    useEffect(() => {
-        if (sPositions) {
-            setMinPrice(sPositions?.lowRangeDisplayInBase);
-            setMaxPrice(sPositions?.highRangeDisplayInBase);
-            setApy(sPositions.apy);
-        }
-    }, [sPositions]);
-
-    useEffect(() => {
-        if (position !== undefined) {
-            if (position.entityType === 'limitOrder') {
-                if (
-                    position.limitPriceDecimalCorrected &&
-                    position.invLimitPriceDecimalCorrected
-                ) {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const priceDecimalCorrected =
-                        position.limitPriceDecimalCorrected;
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const invPriceDecimalCorrected =
-                        position.invLimitPriceDecimalCorrected;
-
-                    setTruncatedDisplayPrice(
-                        financial(
-                            position.askTickPriceDecimalCorrected,
-                        ).toString(),
-                    );
-                }
-            } else {
-                if (
-                    position.swapPriceDecimalCorrected &&
-                    position.swapInvPriceDecimalCorrected
-                ) {
-                    const priceDecimalCorrected =
-                        position.swapPriceDecimalCorrected;
-                    const invPriceDecimalCorrected =
-                        position.swapInvPriceDecimalCorrected;
-
-                    const nonInvertedPriceTruncated = getFormattedNumber({
-                        value: priceDecimalCorrected,
-                    });
-                    const invertedPriceTruncated = getFormattedNumber({
-                        value: invPriceDecimalCorrected,
-                    });
-
-                    const truncatedDisplayPrice = isDenomBase
-                        ? (position.quoteSymbol
-                              ? getUnicodeCharacter(position.quoteSymbol)
-                              : '') + invertedPriceTruncated
-                        : (position.baseSymbol
-                              ? getUnicodeCharacter(position.baseSymbol)
-                              : '') + nonInvertedPriceTruncated;
-
-                    setTruncatedDisplayPrice(truncatedDisplayPrice);
+            if (tx.entityType === 'limitOrder') {
+                if (tx.changeType === 'mint') {
+                    if (tx?.isBuy === true) {
+                        return 'Buy';
+                    } else {
+                        return 'Sell';
+                    }
                 } else {
-                    setTruncatedDisplayPrice(undefined);
+                    if (tx.changeType === 'recover') {
+                        return 'Claim';
+                    } else {
+                        return 'Remove';
+                    }
+                }
+            } else if (tx.entityType === 'liqchange') {
+                if (tx.changeType === 'burn') {
+                    return 'Remove';
+                } else {
+                    return 'Add';
+                }
+            } else if (tx.entityType === 'swap') {
+                if (tx?.isBuy) {
+                    return 'Sell';
+                } else {
+                    return 'Buy';
                 }
             }
         }
-    }, [position]);
-
-    function getPositionAdress() {
-        if (position) {
-            return trimString(position.txHash, 6, 4, '…');
+    }
+    function returnTransactionTypeSide(tx: TransactionIF) {
+        if (tx?.entityType === 'liqchange') {
+            return 'Range';
+        } else {
+            if (tx?.entityType === 'swap') {
+                return 'Market';
+            } else if (tx?.entityType === 'limitOrder') {
+                return 'Limit';
+            }
         }
+    }
 
-        if (sPositions) {
-            return trimString(sPositions.firstMintTx, 6, 4, '…');
+    function getPositionAdress(txHash: string) {
+        if (txHash) {
+            return trimString(txHash, 6, 4, '…');
         }
+        return '';
     }
 
     function getRestOfMessagesIfAny() {
         if (message.includes(' ')) {
             return message.substring(message.indexOf(' ') + 1);
         } else {
-            if (
-                (!position && !props.isPosition) ||
-                (!sPositions && !props.isPosition)
-            ) {
+            if (!props.isPosition && !props.isPositionForSentMessagePanel) {
                 return message;
             } else {
                 return '';
@@ -192,11 +123,12 @@ export default function PositionBox(props: propsIF) {
     }
 
     function handleOpenExplorer() {
-        if (sPositions === undefined && position !== undefined) {
+        // chainData may be changed!!
+        if (props.isPosition || props.isPositionForSentMessagePanel) {
             const hashMsg = message
                 .split(' ')
                 .find((item) => item.includes('0x'));
-            const explorerUrl = 'https://goerli.etherscan.io/tx/' + hashMsg;
+            const explorerUrl = `${blockExplorer}tx/${hashMsg}`;
             window.open(explorerUrl);
         } else {
             const walletUrl = props.isCurrentUser
@@ -205,255 +137,88 @@ export default function PositionBox(props: propsIF) {
             window.open(walletUrl);
         }
     }
-    return props.isPosition ? (
-        position !== undefined && !isInput ? (
-            <motion.div className={styles.animate_position_box}>
-                <div
-                    className={
-                        props.showAvatar
-                            ? styles.position_main_box
-                            : styles.position_main_box_without_avatar
-                    }
-                >
-                    <div className={styles.position_box}>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
-                                {position.quoteSymbol} / {position.baseSymbol}
-                            </div>
-                            <div className={styles.address_box}>
-                                <div className={styles.address}>
-                                    {getPositionAdress()}
-                                </div>
 
-                                <div style={{ cursor: 'pointer' }}>
-                                    <HiOutlineExternalLink
-                                        size={16}
-                                        onClick={handleOpenExplorer}
-                                        title='Explorer'
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_type}>
-                                {sideType} Price
-                            </div>
-
-                            <div
-                                className={
-                                    sideType === 'Buy'
-                                        ? styles.buy_price
-                                        : styles.sell_price
-                                }
-                            >
-                                {truncatedDisplayPrice}
-                            </div>
-                        </div>
-                        {isPoolPriceChangePositive ? (
-                            <>
-                                <div className={styles.position_info}>
-                                    <div className={styles.tokens_type}>
-                                        Range
-                                    </div>
-
-                                    <div className={styles.range_price}>
-                                        $2,950.00
-                                    </div>
-                                    <div className={styles.range}>
-                                        $4,200.00
-                                    </div>
-                                </div>
-                                <div className={styles.position_info}>
-                                    <div className={styles.tokens_name}>
-                                        APY
-                                    </div>
-                                    <div
-                                        className={
-                                            isPoolPriceChangePositive
-                                                ? styles.change_positive
-                                                : styles.change_negative
-                                        }
-                                    >
-                                        36.65%
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <></>
-                        )}
-                    </div>
-                </div>
-                <p className={styles.position_message}>
-                    {getRestOfMessagesIfAny()}
-                </p>
-            </motion.div>
-        ) : position !== undefined && isInput ? (
-            <motion.div
-                className={styles.animate_position_box}
-                key='content'
-                initial='collapsed'
-                animate='open'
-                exit='collapsed'
-                variants={{
-                    open: { opacity: 1, height: 'auto' },
-                    collapsed: { opacity: 0, height: 0 },
-                }}
-                transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+    return !props.isPosition && !props.isPositionForSentMessagePanel ? (
+        <></>
+    ) : isInput && props.isPosition ? (
+        <motion.div className={styles.animate_position_box}>
+            <div
+                className={
+                    props.showAvatar
+                        ? styles.position_main_box
+                        : styles.position_main_box_without_avatar
+                }
             >
-                <div className={styles.position_main_box}>
-                    <div className={styles.position_box}>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
-                                {position.quoteSymbol} / {position.baseSymbol}
-                            </div>
-                            <div className={styles.address_box}>
-                                <div className={styles.address}>
-                                    {getPositionAdress()}
-                                </div>
-                            </div>
+                <div className={styles.position_box}>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_name}>
+                            {txSummary?.poolSymbolsDisplay}
                         </div>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_type}>
-                                {sideType} Price
-                            </div>
-
-                            <div className={styles.price}>
-                                {truncatedDisplayPrice}
-                            </div>
-                        </div>
-                        {isPoolPriceChangePositive ? (
-                            <>
-                                <div className={styles.position_info}>
-                                    <div className={styles.tokens_type}>
-                                        Range
-                                    </div>
-
-                                    <div className={styles.range_price}>
-                                        $2,950.00
-                                    </div>
-                                    <div className={styles.range}>
-                                        $4,200.00
-                                    </div>
-                                </div>
-                                <div className={styles.position_info}>
-                                    <div className={styles.tokens_type}>
-                                        APY
-                                    </div>
-                                    <div
-                                        className={
-                                            isPoolPriceChangePositive
-                                                ? styles.change_positive
-                                                : styles.change_negative
-                                        }
-                                    >
-                                        36.65%
-                                    </div>
-                                </div>
-                            </>
-                        ) : (
-                            <></>
-                        )}
-                    </div>
-                </div>
-                <div>
-                    <p className={styles.position_message}>
-                        {getRestOfMessagesIfAny()}
-                    </p>
-                </div>
-            </motion.div>
-        ) : sPositions !== undefined && !isInput ? (
-            <motion.div className={styles.animate_position_box}>
-                <div className={styles.position_main_box}>
-                    <div className={styles.position_box}>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
-                                {sPositions.quoteSymbol} /{' '}
-                                {sPositions.baseSymbol}
-                            </div>
-                            <div className={styles.address_box}>
-                                <div className={styles.address}>
-                                    {getPositionAdress()}
-                                </div>
-                                <div style={{ cursor: 'pointer' }}>
-                                    <HiOutlineExternalLink
-                                        size={16}
-                                        onClick={handleOpenExplorer}
-                                        title='Wallet'
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_type}>Range</div>
-                            <div className={styles.tokens_min_price}>
-                                ${minPrice}
-                            </div>
-                            <div className={styles.tokens_max_price}>
-                                ${maxPrice}
-                            </div>
-                        </div>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_type}>APY</div>
-                            <div className={styles.tokens_apy}>
-                                {financial(apy)}%
+                        <div className={styles.address_box}>
+                            <div className={styles.address}>
+                                {getPositionAdress(txSummary?.txHash as string)}
                             </div>
                         </div>
                     </div>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_type}>
+                            {returnTransactionTypeSide(
+                                txSummary?.tx as TransactionIF,
+                            )}{' '}
+                            {returnSideType(txSummary?.tx as TransactionIF)}{' '}
+                            Price
+                        </div>
+                        <div>
+                            {txSummary?.tx.swapInvPriceDecimalCorrected.toFixed(
+                                2,
+                            )}
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <p className={styles.position_message}>
+                {getRestOfMessagesIfAny()}
+            </p>
+        </motion.div>
+    ) : !props.isInput && props.isPositionForSentMessagePanel ? (
+        <motion.div>
+            <div className={styles.position_main_box}>
+                <div className={styles.position_box}>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_name}>
+                            {props.msg?.position.poolsByDisplay}
+                        </div>
+                        <div className={styles.address_box}>
+                            <div className={styles.address}>
+                                {getPositionAdress(
+                                    props.msg?.position?.txHash as string,
+                                )}
+                            </div>
+                            <div style={{ cursor: 'pointer' }}>
+                                <HiOutlineExternalLink
+                                    size={16}
+                                    onClick={handleOpenExplorer}
+                                    title='Explorer'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_type}>
+                            {props.msg?.position.sideType} Price
+                        </div>
+                        <div className={styles.price}>
+                            {props.msg?.position?.price}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
                 <p className={styles.position_message}>
                     {getRestOfMessagesIfAny()}
                 </p>
-            </motion.div>
-        ) : sPositions !== undefined && isInput ? (
-            <motion.div
-                className={styles.animate_position_box}
-                key='content'
-                initial='collapsed'
-                animate='open'
-                exit='collapsed'
-                variants={{
-                    open: { opacity: 1, height: 'auto' },
-                    collapsed: { opacity: 0, height: 0 },
-                }}
-                transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
-            >
-                <div className={styles.position_main_box}>
-                    <div className={styles.position_box}>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_name}>
-                                {sPositions.quoteSymbol} /{' '}
-                                {sPositions.baseSymbol}
-                            </div>
-                            <div className={styles.address_box}>
-                                <div className={styles.address}>
-                                    {getPositionAdress()}
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_type}>Range</div>
-                            <div className={styles.tokens_min_price}>
-                                ${minPrice}
-                            </div>
-                            <div className={styles.tokens_max_price}>
-                                ${maxPrice}
-                            </div>
-                        </div>
-                        <div className={styles.position_info}>
-                            <div className={styles.tokens_type}>APY</div>
-                            <div className={styles.tokens_apy}>
-                                {financial(apy)}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <p className={styles.position_message}>
-                    {getRestOfMessagesIfAny()}
-                </p>
-            </motion.div>
-        ) : (
-            <></>
-        )
+            </div>
+        </motion.div>
     ) : (
         <></>
     );

@@ -16,6 +16,8 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { getTxSummary } from '../../ambient-utils/dataLayer/functions/findTransactionData';
+import { GraphDataContext } from '../../contexts/GraphDataContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -55,6 +57,7 @@ function ChatPanel(props: propsIF) {
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
+    const [isPosition, setIsPosition] = useState(false);
 
     const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
         room,
@@ -295,6 +298,8 @@ function ChatPanel(props: propsIF) {
                         }
                         nextMessage={i === 0 ? null : messages[i - 1]}
                         key={item._id}
+                        isPosition={isPosition}
+                        setIsPosition={setIsPosition}
                     />
                 ))}
         </div>
@@ -398,6 +403,8 @@ function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
+            isPosition={isPosition}
+            setIsPosition={setIsPosition}
         />
     );
 

@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -27,14 +27,17 @@ interface SentMessageProps {
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
+    isPosition: boolean;
+    setIsPosition: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const [hasSeparator, setHasSeparator] = useState(false);
-    const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
+    const [isPositionForSentMessagePanel, setIsPositionForSentMessagePanel] =
+        useState<boolean>(false);
 
     const crocodileLabsLinks = [
         'https://www.crocswap.com/',
@@ -105,6 +108,12 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 setHasSeparator(true);
             }
         }
+    }, [props.message]);
+
+    useEffect(() => {
+        props.message.position.poolsByDisplay !== undefined
+            ? setIsPositionForSentMessagePanel(true)
+            : setIsPositionForSentMessagePanel(false);
     }, [props.message]);
 
     const formatAMPM = (str: string) => {
@@ -378,13 +387,18 @@ export default function SentMessagePanel(props: SentMessageProps) {
                         <PositionBox
                             message={props.message.message}
                             isInput={false}
-                            isPosition={isPosition}
-                            setIsPosition={setIsPosition}
                             walletExplorer={getName()}
                             isCurrentUser={props.isCurrentUser}
                             showAvatar={showAvatar}
+                            msg={props.message}
+                            isPositionForSentMessagePanel={
+                                isPositionForSentMessagePanel
+                            }
+                            setIsPositionForSentMessagePanel={
+                                setIsPositionForSentMessagePanel
+                            }
                         />
-                        {!isPosition && mentionedMessage()}
+                        {!isPositionForSentMessagePanel && mentionedMessage()}
                     </div>
                     {props.moderator ? (
                         <FiDelete

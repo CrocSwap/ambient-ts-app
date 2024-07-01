@@ -4,30 +4,69 @@ import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { getTxSummary } from '../../../../ambient-utils/dataLayer/functions/findTransactionData';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TransactionIF } from '../../../../ambient-utils/types';
+
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
     room: string;
     ensName: string;
     appPage?: boolean;
+    isPosition: boolean;
+    setIsPosition: Dispatch<SetStateAction<boolean>>;
 }
+
+export interface TxPosition {
+    poolsByDisplay: string;
+    txHash: string;
+    sideType: string;
+    price: string;
+}
+
+type TransactionData = {
+    txHash: string | undefined;
+    entityType: string;
+    tx: TransactionIF;
+    poolSymbolsDisplay: string;
+};
 
 export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
-    const [isPosition, setIsPosition] = useState(false);
+
+    const [txPositionSummary, setTxPositionSummary] = useState<TxPosition>({
+        poolsByDisplay: '',
+        txHash: '',
+        sideType: '',
+        price: '',
+    });
+    const [txSummary, setTxSummary] = useState<TransactionData | null>(null);
     const {
         chat: { isOpen: isChatOpen },
         subscriptions: { isEnabled: isSubscriptionsEnabled },
     } = useContext(AppStateContext);
+
+    const { transactionsByUser, userTransactionsByPool } =
+        useContext(GraphDataContext);
+
+    const { positionsByPool, transactionsByPool } =
+        useContext(GraphDataContext);
 
     const { sendMsg } = useChatSocket(
         props.room?.toUpperCase(),
@@ -35,6 +74,9 @@ export default function MessageInput(props: MessageInputProps) {
         isChatOpen,
     );
     const roomId = props.room;
+
+    const setIsPosition = props.setIsPosition;
+    const isPosition = props.isPosition;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -66,6 +108,119 @@ export default function MessageInput(props: MessageInputProps) {
     useEffect(() => {
         messageInputText();
     }, [isUserConnected, userAddress]);
+
+    function returnSideType(tx: TransactionIF) {
+        if (tx.entityType === 'liqchange') {
+            if (tx.changeType === 'burn') {
+                return 'Remove';
+            } else {
+                return 'Add';
+            }
+        } else {
+            if (tx.entityType === 'limitOrder') {
+                if (tx.changeType === 'mint') {
+                    if (tx?.isBuy === true) {
+                        return 'Buy';
+                    } else {
+                        return 'Sell';
+                    }
+                } else {
+                    if (tx.changeType === 'recover') {
+                        return 'Claim';
+                    } else {
+                        return 'Remove';
+                    }
+                }
+            } else if (tx.entityType === 'liqchange') {
+                if (tx.changeType === 'burn') {
+                    return 'Remove';
+                } else {
+                    return 'Add';
+                }
+            } else if (tx.entityType === 'swap') {
+                if (tx?.isBuy) {
+                    return 'Sell';
+                } else {
+                    return 'Buy';
+                }
+            }
+        }
+    }
+    function returnTransactionTypeSide(tx: TransactionIF) {
+        if (tx?.entityType === 'liqchange') {
+            return 'Range';
+        } else {
+            if (tx?.entityType === 'swap') {
+                return 'Market';
+            } else if (tx?.entityType === 'limitOrder') {
+                return 'Limit';
+            }
+        }
+    }
+
+    useEffect(() => {
+        const hashMsg = message.split(' ').find((item) => item.includes('0x'));
+        const fetchTransactionSummary = async (hashMsg: string) => {
+            try {
+                const txSummaryData = await getTxSummary(
+                    hashMsg,
+                    transactionsByUser.changes,
+                    userTransactionsByPool.changes,
+                    transactionsByPool.changes,
+                );
+                return txSummaryData || null; // Ensure returning null instead of undefined
+            } catch (error) {
+                return null; // Explicitly return null on error
+            }
+        };
+
+        const updatePositionSummary = (
+            txSummaryData: TransactionData | null,
+        ) => {
+            if (txSummaryData && txSummaryData.tx) {
+                const tx = txSummaryData.tx; // Local variable for better readability
+                const sideType =
+                    returnTransactionTypeSide(tx) + ' ' + returnSideType(tx) ||
+                    '';
+                setTxPositionSummary({
+                    poolsByDisplay: txSummaryData.poolSymbolsDisplay || '',
+                    txHash: txSummaryData.txHash || '',
+                    sideType: sideType,
+                    price: tx.swapInvPriceDecimalCorrected?.toFixed(2) || '',
+                });
+                setIsPosition(true);
+            } else {
+                setIsPosition(false);
+            }
+        };
+
+        if (message === '') {
+            setIsPosition(false);
+            setTxSummary(null); // Explicitly handle empty message scenario
+            return;
+        }
+
+        if (message.includes('0x') && message.length === 66) {
+            if (hashMsg) {
+                fetchTransactionSummary(hashMsg)
+                    .then((txSummaryData) => {
+                        setTxSummary(txSummaryData ?? null); // Handle undefined here
+                        updatePositionSummary(txSummaryData);
+                    })
+                    .catch((error) => {
+                        setTxSummary(null); // Ensure state is set to null in case of error
+                        setIsPosition(false);
+                    });
+            }
+        } else {
+            setIsPosition(false);
+        }
+    }, [
+        message,
+        transactionsByUser,
+        userTransactionsByPool,
+        transactionsByPool,
+    ]);
 
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
@@ -113,14 +268,26 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMsg = async (msg: string, roomId: string) => {
         if (msg !== '' && userAddress) {
-            sendMsg(
-                props.currentUser,
-                message,
-                roomId,
-                props.ensName,
-                userAddress,
-            );
+            if (isPosition) {
+                sendMsg(
+                    props.currentUser,
+                    message,
+                    roomId,
+                    props.ensName,
+                    userAddress,
+                    txPositionSummary,
+                );
+            } else {
+                sendMsg(
+                    props.currentUser,
+                    message,
+                    roomId,
+                    props.ensName,
+                    userAddress,
+                );
+            }
         }
+        setIsPosition(false);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -144,6 +311,9 @@ export default function MessageInput(props: MessageInputProps) {
                 walletExplorer={
                     props.ensName === undefined ? userAddress : props.ensName
                 }
+                setTxPositionSummary={setTxPositionSummary}
+                txPositionSummary={txPositionSummary}
+                txSummary={txSummary}
             />
 
             <div
