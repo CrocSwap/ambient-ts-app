@@ -15,6 +15,7 @@ import {
     getRetrievedAuctionDetailsForAccount,
     marketCapMultiplier,
 } from '../../../pages/platformFuta/mockAuctionData';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface PropsIF {
     auction: AuctionDataIF;
@@ -34,7 +35,12 @@ export default function TickerItem(props: PropsIF) {
 
     const { accountData } = useContext(AuctionsContext);
 
-    const { ticker, highestFilledBidInEth, createdAt, auctionLength } = auction;
+    const {
+        ticker,
+        filledClearingPriceInNativeTokenWei,
+        createdAt,
+        auctionLength,
+    } = auction;
 
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
 
@@ -51,27 +57,62 @@ export default function TickerItem(props: PropsIF) {
 
     const isAuctionOpen = timeRemainingInSec > 0;
 
+    const userBidClearingPriceInEth =
+        userDataForAuction?.userBidClearingPriceInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      userDataForAuction?.userBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const auctionedTokenQtyUnclaimedByUser =
+        userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const qtyUnreturnedToUser =
+        userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const filledClearingPriceInEth = parseFloat(
+        toDisplayQty(filledClearingPriceInNativeTokenWei, 18),
+    );
     const isUserInTheMoney = isAuctionOpen
-        ? userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth >= highestFilledBidInEth
-        : userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth === highestFilledBidInEth &&
-          userDataForAuction?.tokenAllocationUnclaimedByUser &&
-          userDataForAuction.tokenAllocationUnclaimedByUser > 0;
+        ? userBidClearingPriceInEth !== undefined &&
+          userBidClearingPriceInEth >= filledClearingPriceInEth
+        : userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+              undefined &&
+          userBidClearingPriceInEth === filledClearingPriceInEth &&
+          auctionedTokenQtyUnclaimedByUser &&
+          auctionedTokenQtyUnclaimedByUser > 0;
 
     const isUserOutOfTheMoney = isAuctionOpen
-        ? userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth < highestFilledBidInEth
-        : userDataForAuction?.highestBidByUserInEth !== undefined &&
-          userDataForAuction.highestBidByUserInEth !== highestFilledBidInEth &&
-          userDataForAuction?.ethUnclaimedByUser &&
-          userDataForAuction.ethUnclaimedByUser > 0;
+        ? userBidClearingPriceInEth !== undefined &&
+          userBidClearingPriceInEth < filledClearingPriceInEth
+        : userBidClearingPriceInEth !== undefined &&
+          userBidClearingPriceInEth !== filledClearingPriceInEth &&
+          qtyUnreturnedToUser &&
+          qtyUnreturnedToUser > 0;
 
     const userActionsCompleted =
         !isAuctionOpen &&
-        userDataForAuction?.highestBidByUserInEth !== undefined &&
-        !userDataForAuction?.tokenAllocationUnclaimedByUser &&
-        !userDataForAuction?.ethUnclaimedByUser;
+        userDataForAuction?.userBidClearingPriceInNativeTokenWei !==
+            undefined &&
+        !userDataForAuction?.qtyUnclaimedByUserInAuctionedTokenWei &&
+        !userDataForAuction?.qtyUnreturnedToUserInNativeTokenWei;
 
     const status2 = isUserInTheMoney
         ? 'var(--text1)'
@@ -81,7 +122,7 @@ export default function TickerItem(props: PropsIF) {
             ? 'var(--accent2)'
             : undefined;
 
-    const marketCap = highestFilledBidInEth * marketCapMultiplier;
+    const marketCap = filledClearingPriceInEth * marketCapMultiplier;
 
     const marketCapUsdValue =
         nativeTokenUsdPrice !== undefined && marketCap !== undefined
@@ -99,8 +140,6 @@ export default function TickerItem(props: PropsIF) {
                   })
                 : '$0'
             : undefined;
-
-    const timeRemainingColor = undefined;
 
     return (
         <Link
@@ -121,9 +160,13 @@ export default function TickerItem(props: PropsIF) {
             <p className={styles.marketCap}>{formattedMarketCap}</p>
             <p
                 style={{
-                    color: timeRemainingColor
-                        ? timeRemainingColor
-                        : 'var(--text1)',
+                    color:
+                        // set color to orange if time remaining is less than 2 hours
+                        timeRemainingInSec <= 0
+                            ? 'var(--accent1)'
+                            : timeRemainingInSec > 7200
+                              ? 'var(--text1)'
+                              : 'var(--orange)',
                 }}
             >
                 {timeRemaining}

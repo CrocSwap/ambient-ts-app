@@ -10,11 +10,12 @@
     padding: 8px;
     overflow: hidden;
 
-    background: #040309;
+    /* background: #040309; */
+    background: #0A0B0D
 }
 
 .backgroundVideo {
-    position: fixed;
+    /* position: fixed;
     left: 6px;
     right: 0;
     top: 0;
@@ -24,12 +25,23 @@
     height: 100vh;
     margin-top: 25%;
 
-    object-fit: fill;
+    object-fit: fill; */
+    height: 100vh;
+    width: 100vw;
+    object-fit: cover;
+
+    top: 90px;
+  
+    position: fixed;
+
+  
+
 }
+
 
 .content {
     position: absolute;
-    bottom: 25%;
+    bottom: 3%;
     z-index: 2;
 
     display: flex;
@@ -94,7 +106,7 @@
     display: none;
 }
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
     .container {
         background: url('../../../assets/futa/images/futaCover.svg') no-repeat center center fixed;
         -webkit-background-size: cover;
@@ -109,5 +121,27 @@
 
     .backgroundVideo {
         display: none;
+    }
+} */
+
+@media (max-width: 560px){
+.backgroundVideo{
+      position: fixed;
+    left: 6px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 100vh;
+    margin-top: 25%;
+
+    /* object-fit: fill; */
+}
+}
+@media (max-width: 768px){
+    .content {
+       
+        bottom: 8%
     }
 }

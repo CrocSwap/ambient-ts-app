@@ -23,7 +23,6 @@ import {
 } from '../../../ambient-utils/constants';
 import {
     getFormattedNumber,
-    getTimeRemaining,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
@@ -114,12 +113,22 @@ const useAuctionStates = () => {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
+    const openBidClearingPriceInEth =
+        auctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
     useEffect(() => {
-        const openBidMarketCap = auctionStatusData.openBidInEth
-            ? auctionStatusData.openBidInEth * marketCapMultiplier
+        const openBidMarketCap = openBidClearingPriceInEth
+            ? openBidClearingPriceInEth * marketCapMultiplier
             : 0;
         setSelectedMaxValue(openBidMarketCap);
-    }, [auctionStatusData.openBidInEth]);
+    }, [openBidClearingPriceInEth]);
 
     return {
         isMaxDropdownOpen,
@@ -210,19 +219,52 @@ export default function TickerComponent(props: PropsIF) {
         });
     }, [tickerFromParams]);
 
-    const formattedUnclaimedTokenAllocationForConnectedUser =
-        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser
-            ? auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser.toLocaleString(
-                  'en-US',
-                  {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 2,
-                  },
+    const auctionedTokenQtyUnclaimedByUser =
+        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei
+            ? toDisplayQty(
+                  auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei,
+                  18,
               )
             : undefined;
 
+    const unclaimedTokenNum = auctionedTokenQtyUnclaimedByUser
+        ? parseFloat(auctionedTokenQtyUnclaimedByUser)
+        : 0;
+
+    const formattedUnclaimedTokenAllocationForConnectedUser =
+        unclaimedTokenNum.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+        }) +
+        ' ' +
+        auctionDetailsForConnectedUser?.ticker;
+
+    const qtyUnreturnedToUser =
+        auctionDetailsForConnectedUser?.qtyUnreturnedToUserInNativeTokenWei
+            ? toDisplayQty(
+                  auctionDetailsForConnectedUser?.qtyUnreturnedToUserInNativeTokenWei,
+                  18,
+              )
+            : undefined;
+
+    const unreturnedTokenNum = qtyUnreturnedToUser
+        ? parseFloat(qtyUnreturnedToUser)
+        : 0;
+
+    const formattedQtyUnreturnedToUser =
+        unreturnedTokenNum.toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 3,
+        }) +
+        ' ' +
+        'ETH';
     const marketCapEthValue = auctionDetails
-        ? auctionDetails.highestFilledBidInEth * marketCapMultiplier
+        ? parseFloat(
+              toDisplayQty(
+                  auctionDetails.filledClearingPriceInNativeTokenWei,
+                  18,
+              ),
+          ) * marketCapMultiplier
         : undefined;
 
     const timeRemainingAbbrev = auctionDetails
@@ -234,17 +276,19 @@ export default function TickerComponent(props: PropsIF) {
           )
         : undefined;
 
-    const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
+    const [timeRemainingInSeconds, setTimeRemainingInSeconds] = useState<
+        number | undefined
+    >();
+    // const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
 
     const refreshTimeRemaining = () => {
         if (auctionDetails) {
             const timeRemainingInSeconds = moment(
                 auctionDetails.createdAt * 1000,
             ).diff(Date.now() - auctionDetails.auctionLength * 1000, 'seconds');
-            const timeRemainingString = getTimeRemaining(
-                timeRemainingInSeconds,
-            );
-            setTimeRemaining(timeRemainingString);
+
+            setTimeRemainingInSeconds(timeRemainingInSeconds);
+            // setTimeRemaining(timeRemainingString);
         }
     };
 
@@ -450,14 +494,18 @@ export default function TickerComponent(props: PropsIF) {
             : undefined;
 
     const isAllocationAvailableToClaim =
-        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser &&
-        auctionDetailsForConnectedUser?.tokenAllocationUnclaimedByUser > 0;
+        auctionedTokenQtyUnclaimedByUser &&
+        parseFloat(auctionedTokenQtyUnclaimedByUser) > 0;
+
+    const isNativeTokenAvailableToReturn =
+        qtyUnreturnedToUser && parseFloat(qtyUnreturnedToUser) > 0;
 
     const showTradeButton =
         (isAuctionCompleted && !isUserConnected) ||
         (isUserConnected &&
             isAuctionCompleted &&
-            !isAllocationAvailableToClaim);
+            !isAllocationAvailableToClaim &&
+            !isNativeTokenAvailableToReturn);
 
     const isButtonDisabled =
         isUserConnected &&
@@ -469,17 +517,19 @@ export default function TickerComponent(props: PropsIF) {
             ? 'Select an Auction'
             : isAllocationAvailableToClaim
               ? 'Claim'
-              : showTradeButton
-                ? 'Trade'
-                : !isUserConnected
-                  ? 'Connect Wallet'
-                  : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-                    ? 'Enter a Bid Size'
-                    : isValidationInProgress
-                      ? 'Validating Bid...'
-                      : isValidated
-                        ? 'Bid'
-                        : 'Invalid Bid';
+              : isNativeTokenAvailableToReturn
+                ? 'Return'
+                : showTradeButton
+                  ? 'Trade'
+                  : !isUserConnected
+                    ? 'Connect Wallet'
+                    : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
+                      ? 'Enter a Bid Size'
+                      : isValidationInProgress
+                        ? 'Validating Bid...'
+                        : isValidated
+                          ? 'Bid'
+                          : 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -491,15 +541,19 @@ export default function TickerComponent(props: PropsIF) {
                     ? console.log(
                           `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
                       )
-                    : showTradeButton
+                    : isNativeTokenAvailableToReturn
                       ? console.log(
-                            `clicked Trade for ticker: ${tickerFromParams}`,
+                            `clicked return for amount: ${formattedQtyUnreturnedToUser}`,
                         )
-                      : !isUserConnected
-                        ? openWalletModal()
-                        : console.log(
-                              `clicked Bid for display qty: ${inputValue}`,
+                      : showTradeButton
+                        ? console.log(
+                              `clicked Trade for ticker: ${tickerFromParams}`,
                           )
+                        : !isUserConnected
+                          ? openWalletModal()
+                          : console.log(
+                                `clicked Bid for display qty: ${inputValue}`,
+                            )
             }
             disabled={isButtonDisabled}
         >
@@ -512,7 +566,7 @@ export default function TickerComponent(props: PropsIF) {
         auctionDetailsForConnectedUser,
         marketCapEthValue,
         currentMarketCapUsdValue,
-        timeRemaining,
+        timeRemainingInSeconds,
         isAuctionCompleted,
         placeholderTicker,
         auctionDetails,
@@ -542,11 +596,13 @@ export default function TickerComponent(props: PropsIF) {
         yourBidDisplay,
     } = tickerDisplayElements(tickerDisplayElementsProps);
 
-    const allocationDisplay = (
+    const allocationOrReturnDisplay = (
         <div className={styles.allocationContainer}>
-            <h3>ALLOCATION</h3>
+            <h3>{unclaimedTokenNum ? 'ALLOCATION' : 'RETURN'} </h3>
             <div className={styles.allocationDisplay}>
-                {formattedUnclaimedTokenAllocationForConnectedUser}
+                {unclaimedTokenNum
+                    ? formattedUnclaimedTokenAllocationForConnectedUser
+                    : formattedQtyUnreturnedToUser}
             </div>
             {extraInfoDisplay}
         </div>
@@ -564,10 +620,6 @@ export default function TickerComponent(props: PropsIF) {
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxValue, inputValue]);
 
-    const isUserBidDataAvailable =
-        auctionDetailsForConnectedUser?.highestBidByUserInEth !== undefined &&
-        auctionDetailsForConnectedUser?.userBidSizeUserInEth !== undefined;
-
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -580,16 +632,14 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
-                        {!isAuctionCompleted &&
-                            isUserBidDataAvailable &&
-                            yourBidDisplay}
+                        {!isAuctionCompleted && yourBidDisplay}
                         <div className={styles.flexColumn}>
                             {!isAuctionCompleted && maxFdvDisplay}
                             {!isAuctionCompleted && bidSizeDisplay}
                             {isUserConnected &&
-                                !showTradeButton &&
                                 isAuctionCompleted &&
-                                allocationDisplay}
+                                !showTradeButton &&
+                                allocationOrReturnDisplay}
                             {!isAuctionCompleted && extraInfoDisplay}
                         </div>
                     </>
