@@ -542,6 +542,15 @@ export const scrollAxlUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const scrollUSDE: TokenIF = {
+    chainId: 534352,
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    name: 'Ethena USDe',
+    symbol: 'USDe',
+    decimals: 18,
+    logoURI: '',
+};
+
 export const scrollDAI: TokenIF = {
     name: 'Dai Stablecoin',
     address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
@@ -576,15 +585,6 @@ export const scrollWBTC: TokenIF = {
     symbol: 'WBTC',
     decimals: 8,
     logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
-};
-
-export const scrollUSDE: TokenIF = {
-    chainId: 534352,
-    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
-    name: 'Ethena USDe',
-    symbol: 'USDe',
-    decimals: 18,
-    logoURI: '',
 };
 
 export const scrollSepoliaETH: TokenIF = {
@@ -656,6 +656,7 @@ export const defaultTokens: TokenIF[] = [
     scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
+    scrollUSDE,
     scrollWBTC,
     scrollRocketPoolETH,
     scrollPxETH,
