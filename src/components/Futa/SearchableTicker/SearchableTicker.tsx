@@ -181,6 +181,8 @@ export default function SearchableTicker(props: propsIF) {
         return output;
     }
 
+    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
+
     return (
         <div className={styles.container}>
             <Divider count={2} />
@@ -312,8 +314,18 @@ export default function SearchableTicker(props: propsIF) {
                         >
                             SHOW COMPLETE
                         </button>
-                        <button className={styles.buttonOff}>
-                            <FaEye size={17} />
+                        <button
+                            onClick={() => setShowWatchlist(!showWatchlist)}
+                            className={
+                                styles[showWatchlist ? 'buttonOn' : 'buttonOff']
+                            }
+                        >
+                            <FaEye
+                                size={17}
+                                className={
+                                    styles[showWatchlist ? 'eyeOn' : 'eyeOff']
+                                }
+                            />
                             WATCHLIST
                         </button>
                     </div>
