@@ -345,7 +345,7 @@ export default function ChartSettings(props: ContextMenuIF) {
         {
             selection: 'Show prices in',
             action: handlePriceInChange,
-            options: ['Token', 'Dolar'],
+            options: ['Token', 'USD'],
         },
     ];
 
