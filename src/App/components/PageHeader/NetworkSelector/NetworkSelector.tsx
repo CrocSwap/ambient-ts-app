@@ -156,7 +156,7 @@ export default function NetworkSelector(props: propsIF) {
     const cantoNetwork: JSX.Element = (
         <NetworkItem
             id='canto_network_selector'
-            onClick={() => window.open('http://canto.io/lp', '_blank')}
+            onClick={() => window.open('https://app.canto.io/lp', '_blank')}
             key='canto'
             custom={chains.length + 1}
             variants={ItemEnterAnimation}
@@ -292,10 +292,10 @@ export default function NetworkSelector(props: propsIF) {
                             .includes('scroll')
                             ? scrollLogo
                             : lookupChain(chainId)
-                                  .displayName.toLowerCase()
-                                  .includes('blast')
-                            ? blastLogo
-                            : ETH
+                                    .displayName.toLowerCase()
+                                    .includes('blast')
+                              ? blastLogo
+                              : ETH
                     }
                 >
                     <MenuContent
