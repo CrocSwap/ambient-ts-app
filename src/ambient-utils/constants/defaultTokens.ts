@@ -578,6 +578,15 @@ export const scrollWBTC: TokenIF = {
     logoURI: 'https://scroll-tech.github.io/token-list/data/WBTC/logo.svg',
 };
 
+export const scrollUSDE: TokenIF = {
+    chainId: 534352,
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    name: 'Ethena USDe',
+    symbol: 'USDe',
+    decimals: 18,
+    logoURI: '',
+};
+
 export const scrollSepoliaETH: TokenIF = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
