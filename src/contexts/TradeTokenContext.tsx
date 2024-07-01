@@ -16,7 +16,6 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { RangeContext } from './RangeContext';
 import { TokenContext } from './TokenContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
 import { UserDataContext } from './UserDataContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 import { TradeDataContext } from './TradeDataContext';
@@ -213,7 +212,7 @@ export const TradeTokenContextProvider = (props: {
             crocEnv
                 .token(baseToken.address)
                 .wallet(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     const displayBalance = toDisplayQty(bal, baseTokenDecimals);
                     if (displayBalance !== baseTokenBalance) {
                         setBaseTokenBalance(displayBalance);
@@ -228,7 +227,7 @@ export const TradeTokenContextProvider = (props: {
             crocEnv
                 .token(baseToken.address)
                 .balance(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     const displayBalance = toDisplayQty(bal, baseTokenDecimals);
                     if (displayBalance !== baseTokenDexBalance) {
                         IS_LOCAL_ENV &&
@@ -244,7 +243,7 @@ export const TradeTokenContextProvider = (props: {
             crocEnv
                 .token(quoteToken.address)
                 .wallet(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     const displayBalance = toDisplayQty(
                         bal,
                         quoteTokenDecimals,
@@ -263,7 +262,7 @@ export const TradeTokenContextProvider = (props: {
             crocEnv
                 .token(quoteToken.address)
                 .balance(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     const displayBalance = toDisplayQty(
                         bal,
                         quoteTokenDecimals,

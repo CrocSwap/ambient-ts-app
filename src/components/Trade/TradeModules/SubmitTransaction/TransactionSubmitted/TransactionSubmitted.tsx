@@ -6,7 +6,7 @@ import Button from '../../../../Form/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
-import { useWeb3ModalProvider } from '@web3modal/ethers5/react';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 
 interface PropsIF {
     type:

@@ -26,6 +26,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         AXLUSDC: 95,
         LUSD: 95,
         USDPLUS: 95,
+        USDE: 95,
         DAI: 90,
         USDT: 80,
         FRAX: 70,
