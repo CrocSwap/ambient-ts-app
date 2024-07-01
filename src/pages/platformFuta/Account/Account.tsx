@@ -46,12 +46,6 @@ export default function Account() {
 
     useEffect(() => {
         (async () => {
-            console.log({
-                addressFromParams,
-                isAddressEns,
-                isAddressHex,
-                mainnetProvider,
-            });
             if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
                     const newResolvedAddress =
