@@ -169,6 +169,16 @@ export default function SearchableTicker(props: propsIF) {
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
+    function getArrowDirection(): 'up' | 'down' | null {
+        let output: 'up' | 'down' | null = null;
+        if (auctions.active === 'marketCap') {
+            output = auctions.isReversed ? 'down' : 'up';
+        } else if (auctions.active === 'timeLeft') {
+            output = auctions.isReversed ? 'down' : 'up';
+        }
+        return output;
+    }
+
     return (
         <div className={styles.container}>
             <Divider count={2} />
@@ -226,9 +236,21 @@ export default function SearchableTicker(props: propsIF) {
                                 >
                                     <p>{activeSortOption.label}</p>
                                     {isSortDropdownOpen ? (
-                                        <IoIosArrowUp color='var(--accent1)' />
+                                        <IoIosArrowUp
+                                            color={
+                                                getArrowDirection() === 'up'
+                                                    ? 'var(--accent1'
+                                                    : ''
+                                            }
+                                        />
                                     ) : (
-                                        <IoIosArrowDown color='var(--accent1)' />
+                                        <IoIosArrowDown
+                                            color={
+                                                getArrowDirection() === 'down'
+                                                    ? 'var(--accent1'
+                                                    : ''
+                                            }
+                                        />
                                     )}
                                 </div>
 
