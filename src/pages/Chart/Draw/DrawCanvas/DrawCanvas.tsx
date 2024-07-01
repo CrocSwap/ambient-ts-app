@@ -866,11 +866,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                             scaleData.yScale(firstPointYAxisData) < 0
                                 ? infoLabelYAxisData
                                 : scaleData.yScale(firstPointYAxisData) < 463
-                                ? infoLabelYAxisData + infoLabelHeight >
-                                  canvasRect.height
-                                    ? canvasRect.height - infoLabelHeight - 5
-                                    : Math.max(infoLabelYAxisData, 5)
-                                : infoLabelYAxisData;
+                                  ? infoLabelYAxisData + infoLabelHeight >
+                                    canvasRect.height
+                                      ? canvasRect.height - infoLabelHeight - 5
+                                      : Math.max(infoLabelYAxisData, 5)
+                                  : infoLabelYAxisData;
 
                         if (ctx) {
                             const arrowArray = createArrowPointsOfDPRangeLine(
@@ -1136,11 +1136,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     localDrawSettings.labelPlacement === 'Left'
                                         ? scaleData.xScale.domain()[0]
                                         : localDrawSettings.extendRight
-                                        ? scaleData.xScale.domain()[1]
-                                        : Math.max(
-                                              lineData[0].x,
-                                              lineData[1].x,
-                                          );
+                                          ? scaleData.xScale.domain()[1]
+                                          : Math.max(
+                                                lineData[0].x,
+                                                lineData[1].x,
+                                            );
                             } else if (localDrawSettings.extendRight) {
                                 location =
                                     localDrawSettings.labelPlacement === 'Left'
@@ -1172,9 +1172,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     'top'
                                         ? 5
                                         : localDrawSettings.labelAlignment.toLowerCase() ===
-                                          'bottom'
-                                        ? -5
-                                        : 0),
+                                            'bottom'
+                                          ? -5
+                                          : 0),
                             );
                         }
                     });

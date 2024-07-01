@@ -81,6 +81,7 @@ function TradeCandleStickChart(props: propsIF) {
         candleScale,
         timeOfEndCandle,
         isCondensedModeEnabled,
+        setIsCondensedModeEnabled,
         candleDomains,
         setCandleDomains,
     } = useContext(CandleContext);
@@ -943,19 +944,17 @@ function TradeCandleStickChart(props: propsIF) {
                 unparsedCandleData[0].period === period &&
                 isFetchingEnoughData
             ) {
-                const lastCandleDate = unparsedCandleData?.reduce(function (
-                    prev,
-                    current,
-                ) {
-                    return prev.time > current.time ? prev : current;
-                }).time;
+                const lastCandleDate = unparsedCandleData?.reduce(
+                    function (prev, current) {
+                        return prev.time > current.time ? prev : current;
+                    },
+                ).time;
 
-                const firstCandleDate = unparsedCandleData?.reduce(function (
-                    prev,
-                    current,
-                ) {
-                    return prev.time < current.time ? prev : current;
-                }).time;
+                const firstCandleDate = unparsedCandleData?.reduce(
+                    function (prev, current) {
+                        return prev.time < current.time ? prev : current;
+                    },
+                ).time;
 
                 const maxDom =
                     scaleData !== undefined
@@ -966,6 +965,16 @@ function TradeCandleStickChart(props: propsIF) {
                     period,
                 ).filter((i) => i.isShowData && i.time * 1000 < maxDom);
                 const minTime = firstCandleDate * 1000;
+
+                const checkDomainData = candles.filter(
+                    (i) => i.time * 1000 > scaleData?.xScale.domain()[0],
+                );
+
+                if (scaleData !== undefined && checkDomainData.length === 0) {
+                    setIsCondensedModeEnabled(false);
+                    setFetchCountForEnoughData(1);
+                    return;
+                }
 
                 if (
                     candles.length < 100 &&
@@ -1001,28 +1010,13 @@ function TradeCandleStickChart(props: propsIF) {
                         return dom;
                     });
                 } else {
-                    const timeframes =
-                        chartSettings.candleTime.global.defaults.map(
-                            (i) => i.seconds,
-                        );
-                    const nextTimeframe = timeframes.find(
-                        (frame) => frame > period || frame === 86400,
-                    );
-
                     if (
                         fetchCountForEnoughData ===
                             maxRequestCountForCondensed &&
                         period !== 86400 &&
-                        nextTimeframe &&
                         candles.length < 100
                     ) {
-                        // TODO: Temporary workaround - Call chartSettings.candleTime.global.changeTime(86400) after 1 second delay.
-                        // This solution should be replaced with a more permanent approach in the future.
-                        setTimeout(() => {
-                            chartSettings.candleTime.global.changeTime(
-                                nextTimeframe,
-                            );
-                        }, 1000);
+                        setIsCondensedModeEnabled(false);
                     } else {
                         if (!candleDomains.isResetRequest) {
                             setFetchCountForEnoughData(
@@ -1043,31 +1037,6 @@ function TradeCandleStickChart(props: propsIF) {
         isCondensedModeEnabled,
         isDenomBase,
     ]);
-
-    useEffect(() => {
-        if (unparsedCandleData && unparsedCandleData.length > 0 && period) {
-            const candles = filterCandleWithTransaction(
-                unparsedCandleData,
-                period,
-            ).filter((i) => i.isShowData);
-
-            const timeframes = chartSettings.candleTime.global.defaults.map(
-                (i) => i.seconds,
-            );
-            const nextTimeframe = timeframes.find(
-                (frame) => frame > period || frame === 86400,
-            );
-
-            if (
-                isCondensedModeEnabled &&
-                !isFetchingEnoughData &&
-                nextTimeframe &&
-                candles.length < 20
-            ) {
-                chartSettings.candleTime.global.changeTime(nextTimeframe);
-            }
-        }
-    }, [isCondensedModeEnabled]);
 
     const isOpenChart =
         !isLoading &&
