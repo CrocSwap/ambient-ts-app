@@ -170,12 +170,13 @@ export default function SearchableTicker(props: propsIF) {
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
+    // fn to determine directionality sort arrows should indicate
     function getArrowDirection(): 'up' | 'down' | null {
         let output: 'up' | 'down' | null = null;
         if (auctions.active === 'marketCap') {
-            output = auctions.isReversed ? 'down' : 'up';
+            output = auctions.isReversed ? 'up' : 'down';
         } else if (auctions.active === 'timeLeft') {
-            output = auctions.isReversed ? 'down' : 'up';
+            output = auctions.isReversed ? 'up' : 'down';
         }
         return output;
     }
@@ -262,21 +263,17 @@ export default function SearchableTicker(props: propsIF) {
                                     <IoIosArrowUp
                                         size={14}
                                         color={
-                                            auctions.isReversed ||
-                                            (!auctions.isReversed &&
-                                                auctions.active === 'timeLeft')
-                                                ? ''
-                                                : 'var(--accent1)'
+                                            getArrowDirection() === 'up'
+                                                ? 'var(--accent1'
+                                                : ''
                                         }
                                     />
 
                                     <IoIosArrowDown
                                         size={14}
                                         color={
-                                            auctions.isReversed ||
-                                            (!auctions.isReversed &&
-                                                auctions.active === 'timeLeft')
-                                                ? 'var(--accent1)'
+                                            getArrowDirection() === 'down'
+                                                ? 'var(--accent1'
                                                 : ''
                                         }
                                     />

@@ -88,7 +88,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         chainId: '0x2105',
         createdAt: 1719548920,
         auctionLength: 604800,
-        filledClearingPriceInNativeTokenWei: '312500000000000000',
+        filledClearingPriceInNativeTokenWei: '212500000000000000',
     },
     {
         ticker: 'JUNIOR1',
