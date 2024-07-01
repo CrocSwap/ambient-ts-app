@@ -9,6 +9,7 @@ import {
     baseURLs,
 } from '../../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../../ambient-utils/types';
+import { brand } from '../../../ambient-utils/constants';
 
 interface propsIF {
     chainId: string;
@@ -19,6 +20,7 @@ interface propsIF {
 
 export default function TradeLinks(props: propsIF) {
     const { chainId, tokenA, tokenB, limitTick } = props;
+    const isFuta = brand === 'futa';
 
     // hooks to generate default URL paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -48,28 +50,41 @@ export default function TradeLinks(props: propsIF) {
     // interface describing shape of route data to generate nav links
     interface routeIF {
         path: string;
-        baseURL: baseURLs;
+        baseURL: baseURLs | string;
         name: 'Swap' | 'Limit' | 'Pool';
     }
 
     // data to generate nav links to the three trade modules
-    const routes: routeIF[] = [
-        {
-            path: linkGenMarket.getFullURL(marketParams),
-            baseURL: linkGenMarket.baseURL,
-            name: 'Swap',
-        },
-        {
-            path: linkGenLimit.getFullURL(limitParams),
-            baseURL: linkGenLimit.baseURL,
-            name: 'Limit',
-        },
-        {
-            path: linkGenPool.getFullURL(poolParams),
-            baseURL: linkGenPool.baseURL,
-            name: 'Pool',
-        },
-    ];
+    const routes: routeIF[] = isFuta
+        ? [
+              {
+                  path: '/swap',
+                  baseURL: '/swap',
+                  name: 'Swap',
+              },
+              {
+                  path: '/limit',
+                  baseURL: '/limit',
+                  name: 'Limit',
+              },
+          ]
+        : [
+              {
+                  path: linkGenMarket.getFullURL(marketParams),
+                  baseURL: linkGenMarket.baseURL,
+                  name: 'Swap',
+              },
+              {
+                  path: linkGenLimit.getFullURL(limitParams),
+                  baseURL: linkGenLimit.baseURL,
+                  name: 'Limit',
+              },
+              {
+                  path: linkGenPool.getFullURL(poolParams),
+                  baseURL: linkGenPool.baseURL,
+                  name: 'Pool',
+              },
+          ];
 
     // nav links to the three trade modules
     return (
@@ -78,8 +93,10 @@ export default function TradeLinks(props: propsIF) {
             justifyContent='center'
             alignItems='center'
             gap={8}
-            margin='0 0 16px 0'
+            margin={!isFuta ? '0 0 16px 0' : '8px 0'}
+            padding={isFuta ? '' : ''}
             height='25px'
+            width='100%'
         >
             {routes.map((route: routeIF) => (
                 <TradeModuleLink
@@ -87,6 +104,7 @@ export default function TradeLinks(props: propsIF) {
                     id={`link_to_${route.name.toLowerCase()}_module`}
                     to={route.path}
                     isActive={location.pathname.includes(route.baseURL)}
+                    isFuta={isFuta}
                 >
                     {route.name}
                 </TradeModuleLink>
