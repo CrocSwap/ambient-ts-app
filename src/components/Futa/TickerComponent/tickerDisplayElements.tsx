@@ -246,7 +246,16 @@ export const tickerDisplayElements = (props: PropsIF) => {
               )
             : undefined;
 
-    const formattedOpenBidStatus = `${openBidQtyFilledInEth} / ${openBidClearingPriceInEth}`;
+    const formattedOpenBidClearingPriceInEth = getFormattedNumber({
+        value: openBidClearingPriceInEth,
+        prefix: 'Ξ ',
+    });
+    const formattedOpenBidQtyFilledInEth = getFormattedNumber({
+        value: openBidQtyFilledInEth,
+        prefix: 'Ξ ',
+    });
+
+    const formattedOpenBidStatus = `${formattedOpenBidQtyFilledInEth} / ${formattedOpenBidClearingPriceInEth}`;
 
     const fillPercentage =
         openBidQtyFilledInEth && openBidClearingPriceInEth
