@@ -322,7 +322,8 @@ export const blastWEETH: TokenIF = {
     decimals: 18,
     name: 'Wrapped eETH',
     symbol: 'weETH',
-    logoURI: 'https://scroll-tech.github.io/token-list/data/weETH/logo.svg',
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const blastWrsETH: TokenIF = {
