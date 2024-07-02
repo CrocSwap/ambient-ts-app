@@ -47,7 +47,7 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
     LIMIT_BUFFER_MULTIPLIER_MAINNET,
-    LIMIT_BUFFER_MULTIPLIER_SCROLL,
+    LIMIT_BUFFER_MULTIPLIER_L2,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
@@ -542,7 +542,7 @@ export default function Limit() {
                 l1CostOfScrollLimitInETH + l2CostOfScrollLimitInETH;
 
             setAmountToReduceNativeTokenQtyL2(
-                LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
+                LIMIT_BUFFER_MULTIPLIER_L2 * costOfScrollLimitInETH,
             );
 
             const gasPriceInDollarsNum =

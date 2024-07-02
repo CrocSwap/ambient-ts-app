@@ -51,7 +51,7 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
     NUM_GWEI_IN_WEI,
     SWAP_BUFFER_MULTIPLIER_MAINNET,
-    SWAP_BUFFER_MULTIPLIER_SCROLL,
+    SWAP_BUFFER_MULTIPLIER_L2,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -378,7 +378,7 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
         isActiveNetworkBlast ? 0.1 : 0,
@@ -416,7 +416,7 @@ function Swap(props: propsIF) {
                 l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
             setAmountToReduceNativeTokenQtyL2(
-                SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
+                SWAP_BUFFER_MULTIPLIER_L2 * costOfScrollSwapInETH,
             );
 
             const gasPriceInDollarsNum =

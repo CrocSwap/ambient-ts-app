@@ -20,7 +20,7 @@ import {
     IS_LOCAL_ENV,
     NUM_WEI_IN_GWEI,
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
+    DEPOSIT_BUFFER_MULTIPLIER_L2,
     ZERO_ADDRESS,
     NUM_GWEI_IN_ETH,
 } from '../../../../ambient-utils/constants';
@@ -109,7 +109,7 @@ export default function Deposit(props: propsIF) {
         BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
         BigInt(NUM_WEI_IN_GWEI) *
         BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
-        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_L2);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
@@ -177,7 +177,7 @@ export default function Deposit(props: propsIF) {
             return true;
         }
         return tokenWalletBalance
-            ? BigInt(tokenWalletBalance) >
+            ? BigInt(tokenWalletBalance) >=
                   amountToReduceNativeTokenQty + BigInt(depositQtyNonDisplay)
             : false;
     }, [
@@ -218,6 +218,7 @@ export default function Deposit(props: propsIF) {
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
+            console.log('setting button to disabled');
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
