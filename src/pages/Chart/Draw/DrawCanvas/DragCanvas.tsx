@@ -50,6 +50,9 @@ interface DragCanvasProps {
     lastCandleData: any;
     setIsDragActive: React.Dispatch<boolean>;
     period: number;
+    setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setContextMenuPlacement: any;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -77,6 +80,8 @@ export default function DragCanvas(props: DragCanvasProps) {
         lastCandleData,
         setIsDragActive,
         period,
+        setContextmenu,
+        setContextMenuPlacement,
     } = props;
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -409,6 +414,29 @@ export default function DragCanvas(props: DragCanvasProps) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             function (event: MouseEvent<HTMLDivElement>) {
                 mousemove(event);
+            },
+        );
+
+        d3.select(d3DragCanvas.current).on(
+            'contextmenu',
+            (event: PointerEvent) => {
+                if (!event.shiftKey) {
+                    event.preventDefault();
+
+                    const screenHeight = window.innerHeight;
+
+                    const diff = screenHeight - event.clientY;
+
+                    setContextMenuPlacement({
+                        top: event.clientY,
+                        left: event.clientX,
+                        isReversed: diff < 350,
+                    });
+
+                    setContextmenu(true);
+                } else {
+                    setContextmenu(false);
+                }
             },
         );
     }, []);

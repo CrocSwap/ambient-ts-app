@@ -151,8 +151,11 @@ function TradeCharts(props: propsIF) {
     const chartItemStates = useMemo(() => {
         return {
             showFeeRate,
+            setShowFeeRate,
             showTvl,
+            setShowTvl,
             showVolume,
+            setShowVolume,
             liqMode: chartSettings.poolOverlay.overlay,
             showSwap,
             showLiquidity,
@@ -162,8 +165,11 @@ function TradeCharts(props: propsIF) {
         isMarketOrLimitModule,
         chartSettings.poolOverlay,
         showTvl,
+        setShowTvl,
         showVolume,
+        setShowVolume,
         showFeeRate,
+        setShowFeeRate,
         showSwap,
         showLiquidity,
         showHistorical,

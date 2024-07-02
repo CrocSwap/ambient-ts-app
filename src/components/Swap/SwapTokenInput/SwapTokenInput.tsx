@@ -122,8 +122,8 @@ function SwapTokenInput(props: propsIF) {
                     ? setIsSellLoading(true)
                     : null
                 : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-                  ? setIsBuyLoading(true)
-                  : null;
+                ? setIsBuyLoading(true)
+                : null;
             if (isTokenAPrimary) {
                 setSellQtyString(primaryQuantity);
             } else {
@@ -364,9 +364,9 @@ function SwapTokenInput(props: propsIF) {
                                 ? setIsSellLoading(true)
                                 : null
                             : buyQtyString !== '' &&
-                                parseFloat(buyQtyString) > 0
-                              ? setIsBuyLoading(true)
-                              : null;
+                              parseFloat(buyQtyString) > 0
+                            ? setIsBuyLoading(true)
+                            : null;
 
                         if (!isTokenAPrimary) {
                             setSellQtyString(primaryQuantity);

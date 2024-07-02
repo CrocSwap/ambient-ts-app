@@ -539,9 +539,10 @@ function YAxisCanvas(props: yAxisIF) {
                         yScale(secondPointInDenom) - yScale(firstPointInDenom);
 
                     const style = getComputedStyle(canvas);
-                    const darkFillColor = style.getPropertyValue('--accent1');
+                    const downCandleBodyColor =
+                        style.getPropertyValue('--accent1');
 
-                    const d3LightFillColor = d3.color(darkFillColor);
+                    const d3LightFillColor = d3.color(downCandleBodyColor);
 
                     if (d3LightFillColor) d3LightFillColor.opacity = 0.075;
 
@@ -560,8 +561,8 @@ function YAxisCanvas(props: yAxisIF) {
                         context,
                         yScale(shapeDataWithDenom),
                         X,
-                        darkFillColor
-                            ? darkFillColor
+                        downCandleBodyColor
+                            ? downCandleBodyColor
                             : 'rgba(115, 113, 252, 1)',
                         'white',
                         shapePoint,
@@ -669,10 +670,10 @@ function YAxisCanvas(props: yAxisIF) {
                                 event.sourceEvent.type === 'wheel'
                                     ? -dy * 0.003
                                     : event.sourceEvent.type === 'mousemove'
-                                    ? -deltaY * 0.003
-                                    : event.sourceEvent.type === 'touchmove'
-                                    ? -deltaY * 0.005
-                                    : 1,
+                                      ? -deltaY * 0.003
+                                      : event.sourceEvent.type === 'touchmove'
+                                        ? -deltaY * 0.005
+                                        : 1,
                             );
 
                             if (

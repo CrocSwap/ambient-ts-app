@@ -379,8 +379,8 @@ function ChartToolbar() {
                                         isActive={isMagnetActive.value}
                                         fill={
                                             chartThemeColors &&
-                                            chartThemeColors.darkStrokeColor
-                                                ? chartThemeColors.darkStrokeColor
+                                            chartThemeColors.downCandleBorderColor
+                                                ? chartThemeColors.downCandleBorderColor
                                                       .copy()
                                                       .darker(0.7)
                                                       .toString()

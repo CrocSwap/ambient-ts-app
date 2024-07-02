@@ -80,18 +80,18 @@ export default function Explore(props: ExploreIF) {
     const titleTextPools: string = isActiveNetworkMainnet
         ? 'Top Ambient Pools on Ethereum'
         : isActiveNetworkBlast
-          ? 'Top Ambient Pools on Blast'
-          : isActiveNetworkScroll
-            ? 'Top Ambient Pools on Scroll'
-            : 'Top Pools on Ambient';
+        ? 'Top Ambient Pools on Blast'
+        : isActiveNetworkScroll
+        ? 'Top Ambient Pools on Scroll'
+        : 'Top Pools on Ambient';
 
     const titleTextTokens: string = isActiveNetworkMainnet
         ? 'Active Tokens on Ethereum'
         : isActiveNetworkBlast
-          ? 'Active Tokens on Blast'
-          : isActiveNetworkScroll
-            ? 'Active Tokens on Scroll'
-            : 'Top Pools on Ambient';
+        ? 'Active Tokens on Blast'
+        : isActiveNetworkScroll
+        ? 'Active Tokens on Scroll'
+        : 'Top Pools on Ambient';
 
     const titleTextForDOM: string =
         view === 'pools' ? titleTextPools : titleTextTokens;

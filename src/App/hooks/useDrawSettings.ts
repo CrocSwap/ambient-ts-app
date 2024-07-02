@@ -11,12 +11,12 @@ import { ChartThemeIF } from '../../contexts/ChartContext';
 
 export const useDrawSettings = (chartThemeColors: ChartThemeIF | undefined) => {
     const drawnShapeDefaultColor =
-        chartThemeColors && chartThemeColors.darkStrokeColor
-            ? chartThemeColors.darkStrokeColor.toString()
+        chartThemeColors && chartThemeColors.drawngShapeDefaultColor
+            ? chartThemeColors.drawngShapeDefaultColor.toString()
             : '#7371fc';
 
     const d3BackgroundColor = chartThemeColors
-        ? chartThemeColors.darkStrokeColor?.copy()
+        ? chartThemeColors.drawngShapeDefaultColor?.copy()
         : undefined;
 
     if (d3BackgroundColor) d3BackgroundColor.opacity = 0.15;

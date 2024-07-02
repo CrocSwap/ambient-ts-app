@@ -964,6 +964,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         isActive={
                                             isLabelPlacementOptionTabActive
                                         }
+                                        width={5}
+                                        height={6}
                                     ></LabelSettingsArrow>
                                 </DropDownHeader>
 
@@ -975,7 +977,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 : '',
                                         }}
                                     >
-                                        <DropDownList>
+                                        <DropDownList width={75}>
                                             {placementOptions.map(
                                                 (item, index) => (
                                                     <ListItem
@@ -1029,6 +1031,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                         isActive={
                                             isLabelAlignmentOptionTabActive
                                         }
+                                        width={5}
+                                        height={6}
                                     ></LabelSettingsArrow>
                                 </DropDownHeader>
                                 {isLabelAlignmentOptionTabActive && (
@@ -1041,7 +1045,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     : '',
                                         }}
                                     >
-                                        <DropDownList>
+                                        <DropDownList width={75}>
                                             {alignmentOptions.map(
                                                 (item, index) => (
                                                     <ListItem
