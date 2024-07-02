@@ -9,6 +9,8 @@ import { useWeb3ModalAccount, useDisconnect } from '@web3modal/ethers/react';
 import { checkBlacklist } from '../ambient-utils/constants';
 import { BlastUserXpIF, UserXpIF } from '../ambient-utils/types';
 import { fetchEnsAddress } from '../ambient-utils/api';
+import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
+import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -19,13 +21,32 @@ interface UserDataContextIF {
     ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
+    userProfileNFT: string | undefined;
+    setUserProfileNFT: Dispatch<SetStateAction<string | undefined>>;
+    userThumbnailNFT: string | undefined;
+    setUserThumbnailNFT: Dispatch<SetStateAction<string | undefined>>;
+    currentUserID: string | undefined;
+    setCurrentUserID: Dispatch<SetStateAction<string | undefined>>;
+    isfetchNftTriggered: boolean;
+    setIsfetchNftTriggered: Dispatch<SetStateAction<boolean>>;
     secondaryEnsFromContext: string;
     setSecondaryEnsInContext: Dispatch<SetStateAction<string>>;
+    nftTestWalletAddress: string;
+    setNftTestWalletAddress: Dispatch<SetStateAction<string>>;
+    userAvatarData: UserAvatarDataIF | undefined;
+    updateUserAvatarData: (
+        walletID: string,
+        avatarData: UserAvatarDataIF,
+    ) => void;
 }
 
 export interface UserXpDataIF {
     dataReceived: boolean;
     data: UserXpIF | undefined;
+}
+export interface UserNftIF {
+    userID: string;
+    avatarImage: string | undefined;
 }
 
 export interface BlastUserXpDataIF {
@@ -55,6 +76,29 @@ export const UserDataContextProvider = (props: {
     if (isBlacklisted) disconnectUser();
 
     const [ensName, setEnsName] = useState('');
+
+    const [userProfileNFT, setUserProfileNFT] = useState<string | undefined>(
+        undefined,
+    );
+
+    const [userThumbnailNFT, setUserThumbnailNFT] = useState<
+        string | undefined
+    >(undefined);
+
+    const [currentUserID, setCurrentUserID] = useState<string | undefined>(
+        undefined,
+    );
+
+    const [isfetchNftTriggered, setIsfetchNftTriggered] =
+        useState<boolean>(false);
+
+    const [nftTestWalletAddress, setNftTestWalletAddress] =
+        useState<string>('');
+
+    const [userAvatarData, setUserAvatarData] = useState<
+        UserAvatarDataIF | undefined
+    >();
+
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
@@ -68,8 +112,23 @@ export const UserDataContextProvider = (props: {
                     console.error({ error });
                 }
             }
+
+            // fetch user avatar
+            if (userAddress) {
+                const resp = await getAvatarRest(userAddress);
+                setUserAvatarData(resp);
+            }
         })();
     }, [userAddress]);
+
+    const updateUserAvatarData = (
+        walletID: string,
+        avatarData: UserAvatarDataIF,
+    ) => {
+        if (walletID == userAddress) {
+            setUserAvatarData(avatarData);
+        }
+    };
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,
@@ -81,6 +140,18 @@ export const UserDataContextProvider = (props: {
         setResolvedAddressInContext,
         secondaryEnsFromContext,
         setSecondaryEnsInContext,
+        userProfileNFT,
+        setUserProfileNFT,
+        userThumbnailNFT,
+        setUserThumbnailNFT,
+        currentUserID,
+        setCurrentUserID,
+        setIsfetchNftTriggered,
+        isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
+        userAvatarData,
+        updateUserAvatarData,
     };
 
     return (

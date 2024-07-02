@@ -1,0 +1,126 @@
+
+.dropdown_item {
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    grid-gap: 4px;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    position: absolute;
+    top: 0rem;
+    right: .5rem;
+    top: 50%;
+
+    transform: translateY(-50%);
+}
+
+.dropdown_item_column {
+    background: var(--dark3);
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-top: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    grid-gap: 4px;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    position: absolute;
+    top: 0rem;
+    right: 1rem;
+    flex-direction: column;
+}
+.id_tooltip_style {
+    margin-left: -100px;
+    background: var(--dark3);
+    background: var(--dark1);
+    color: var(--text1);
+    padding: 4px;
+    border-radius: 4px;
+    cursor: default;
+    font-family: var(--roboto);
+    white-space: nowrap;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.base_color {
+    color: var(--text1);
+}
+
+.hover_style{
+    border: 1px solid rgba(255,255,255, .2);
+    border-radius: .4rem;
+    display: block;
+    text-align: center;
+
+    padding: .1rem .1rem;
+    height: 1.4rem;
+    background: var(--accent1);
+    background: var(--dark3);
+    
+    transition: all .2s ease-in-out;
+}
+
+
+.hover_style svg{
+    fill: white;
+}
+
+.hover_style:hover {
+   box-shadow: 0px 0px 20px 0px var(--accent1);
+   background: var(--accent1);
+    animation: shine 1.5s infinite;
+}
+
+.mono_font {
+    font-family: var(--roboto);
+    font-style: normal;
+    font-weight: 300;
+    font-size: 10px;
+    line-height: 10px;
+}
+
+@keyframes riseWidth{
+    0%{
+        max-width: 0rem;
+        opacity: 0;
+    }
+    100%{
+        max-width: 100rem;
+        opacity: 1;
+    }
+
+}
+
+.sub_options_node_active, .sub_options_node_active svg {
+    max-width: 100rem;
+    width: auto;
+    opacity: 1;
+}
+
+@media only screen and (max-width: 600px){
+    .dropdown_item {
+        gap: .6rem;
+    }
+
+    
+.hover_style{
+ padding: .25rem;
+ margin: .2rem;
+ border-radius: 4rem;
+ transform: scale(1.2);
+
+}
+}

@@ -1,27 +1,42 @@
-import styles from './FullChat.module.css';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useMediaQuery } from '@material-ui/core';
+import Picker, { IEmojiData } from 'emoji-picker-react';
 import {
-    useState,
     Dispatch,
     SetStateAction,
-    useEffect,
+    memo,
     useContext,
+    useEffect,
+    useRef,
+    useState,
 } from 'react';
+import {
+    AiOutlineCheck,
+    AiOutlineClose,
+    AiOutlineSound,
+    AiOutlineUser,
+} from 'react-icons/ai';
 import { FiAtSign, FiSettings } from 'react-icons/fi';
+import { IoNotificationsOutline, IoOptions } from 'react-icons/io5';
+import { MdOutlineChat } from 'react-icons/md';
 import {
     TbLayoutSidebarLeftCollapse,
     TbLayoutSidebarLeftExpand,
 } from 'react-icons/tb';
-import { MdOutlineChat } from 'react-icons/md';
-import { AiOutlineSound } from 'react-icons/ai';
-import { IoOptions, IoNotificationsOutline } from 'react-icons/io5';
 import { Link, useParams } from 'react-router-dom';
 import { favePoolsMethodsIF } from '../../../App/hooks/useFavePools';
-import { PoolIF } from '../../../ambient-utils/types';
-import { useMediaQuery } from '@material-ui/core';
 import { defaultTokens } from '../../../ambient-utils/constants';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { uriToHttp } from '../../../ambient-utils/dataLayer';
+import { PoolIF } from '../../../ambient-utils/types';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import ChatConfirmationPanel from '../ChatConfirmationPanel/ChatConfirmationPanel';
+import { ChatGoToChatParamsIF } from '../ChatIFs';
+import ChatToaster from '../ChatToaster/ChatToaster';
+import Room from '../MessagePanel/Room/Room';
+import styles from './FullChat.module.css';
+import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
+import { Message } from '../Model/MessageModel';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -33,19 +48,69 @@ interface FullChatPropsIF {
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     userCurrentPool: string;
-    favoritePoolsArray: PoolIF[];
+    favoritePools: PoolIF[];
     // eslint-disable-next-line
-    setFavoritePoolsArray: any;
+    setFavoritePools: any;
     setIsChatOpen: (val: boolean) => void;
+    isChatOpen: boolean;
+    isModerator: boolean;
+    isVerified: boolean;
+    verifyWallet: (
+        val: number,
+        date: Date,
+        e: React.MouseEvent<HTMLDivElement>,
+    ) => void;
+    toastrActive: boolean;
+    toastrActivator: Dispatch<SetStateAction<boolean>>;
+    toastrText: string;
+    toastrType?: 'success' | 'error' | 'warning' | 'info';
+    showVerifyOldMessagesPanel: boolean;
+    activateToastr: (
+        text: string,
+        type: 'success' | 'error' | 'warning' | 'info',
+    ) => void;
+    updateUnverifiedMessages: (startDate: Date, endDate?: Date) => void;
+    verifyOldMessagesStartDate: Date;
+    setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
+    showPicker: boolean;
+    addReactionEmojiPickListener: (
+        event: React.MouseEvent,
+        data: IEmojiData,
+    ) => void;
+    setShowPicker: Dispatch<SetStateAction<boolean>>;
+    showDeleteConfirmation: boolean;
+    handleConfirmDelete: () => void;
+    handleCancelDelete: () => void;
+    rndShowPreviousMessages: () => JSX.Element;
+    room: string;
+    isFocusMentions: boolean;
+    setIsFocusMentions: any;
+    isCurrentPool: boolean;
+    ensName: string;
+    currentUser: any;
+    notifications?: Map<string, number>;
+    mentCount: number;
+    mentionIndex: number;
+    setGoToChartParams?: Dispatch<
+        SetStateAction<ChatGoToChatParamsIF | undefined>
+    >;
+    setUserCurrentPool: any;
+    rndMentSkipper?: () => JSX.Element;
+    messageForNotificationBubble?: Message;
+    setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    setMessageForNotificationBubble: Dispatch<
+        SetStateAction<Message | undefined>
+    >;
 }
 
 interface ChannelDisplayPropsIF {
     pool: PoolIF;
     isDropdown: boolean;
-    favoritePoolsArray: PoolIF[];
+    favoritePools: PoolIF[];
     favePools: favePoolsMethodsIF;
 }
-export default function FullChat(props: FullChatPropsIF) {
+function FullChat(props: FullChatPropsIF) {
     const { setIsChatOpen } = props;
     const { params } = useParams();
     const { topPools: rooms } = useContext(CrocEnvContext);
@@ -54,12 +119,14 @@ export default function FullChat(props: FullChatPropsIF) {
         params && !params.includes('global')
             ? params.replace('&', ' / ').toUpperCase()
             : params && params.includes('global')
-            ? 'Global'
-            : 'Global';
+              ? 'Global'
+              : 'Global';
 
     useEffect(() => {
         setIsChatOpen(true);
     }, []);
+
+    const verifyBtnRef = useRef<HTMLDivElement>(null);
 
     const currencies: string[] | null =
         params && !params.includes('global') ? params.split('&') : null;
@@ -71,8 +138,8 @@ export default function FullChat(props: FullChatPropsIF) {
                   return currency1 + ' / ' + currency2;
               })()
             : params && params.includes('global')
-            ? 'Global'
-            : 'Global';
+              ? 'Global'
+              : 'Global';
 
     const reSwappedReconstructedReadableRoom: string =
         currencies && currencies.length === 2
@@ -81,9 +148,9 @@ export default function FullChat(props: FullChatPropsIF) {
                   return (currency2 + ' / ' + currency1).toUpperCase();
               })()
             : swappedReconstructedReadableRoom &&
-              swappedReconstructedReadableRoom.includes('global')
-            ? 'Global'
-            : 'Global';
+                swappedReconstructedReadableRoom.includes('global')
+              ? 'Global'
+              : 'Global';
 
     // eslint-disable-next-line
     const currentPoolChannel = new BroadcastChannel('currentPoolChannel');
@@ -96,7 +163,7 @@ export default function FullChat(props: FullChatPropsIF) {
     } = props;
     const [isChatSidebarOpen, setIsChatSidebarOpen] = useState(true);
 
-    const [isRoomInRoomArray, setIsRoomInRoomArray] = useState(false);
+    // const [isRoomInRoomArray, setIsRoomInRoomArray] = useState(false);
 
     const [roomArray] = useState<PoolIF[]>([]);
 
@@ -122,7 +189,7 @@ export default function FullChat(props: FullChatPropsIF) {
             setReadableRoom(found);
             props.setRoom(reconstructedReadableRoom);
             setReadableName(reconstructedReadableRoom);
-            setIsRoomInRoomArray(true);
+            // setIsRoomInRoomArray(true);
         } else {
             if (
                 roomArray.some(
@@ -136,7 +203,7 @@ export default function FullChat(props: FullChatPropsIF) {
                 setReadableName(reSwappedReconstructedReadableRoom);
                 props.setRoom(reSwappedReconstructedReadableRoom);
                 setReadableName(reSwappedReconstructedReadableRoom);
-                setIsRoomInRoomArray(true);
+                // setIsRoomInRoomArray(true);
             } else {
                 if (
                     currencies &&
@@ -165,12 +232,12 @@ export default function FullChat(props: FullChatPropsIF) {
                             ' / ' +
                             currencies[1].toUpperCase(),
                     );
-                    setIsRoomInRoomArray(false);
+                    // setIsRoomInRoomArray(false);
                 } else {
                     setReadableName('Global');
                     props.setRoom('Global');
                     setReadableName('Global');
-                    setIsRoomInRoomArray(false);
+                    // setIsRoomInRoomArray(false);
                 }
             }
         }
@@ -200,9 +267,9 @@ export default function FullChat(props: FullChatPropsIF) {
         }
 
         if (roomArray.some(({ name }) => name === readableRoomName)) {
-            setIsRoomInRoomArray(true);
+            // setIsRoomInRoomArray(true);
         } else {
-            setIsRoomInRoomArray(false);
+            // setIsRoomInRoomArray(false);
         }
 
         if (isDropdown) setShowChannelsDropdown(!showChannelsDropdown);
@@ -315,11 +382,11 @@ export default function FullChat(props: FullChatPropsIF) {
             }
             fave.push(favPool);
         });
-        props.setFavoritePoolsArray(() => {
+        props.setFavoritePools(() => {
             return fave;
         });
-        const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
-        props.favoritePoolsArray.splice(0, middleIndex);
+        const middleIndex = Math.ceil(props.favoritePools.length / 2);
+        props.favoritePools.splice(0, middleIndex);
     }, [favePools, rooms.length === 0]);
 
     function handleGlobalClick() {
@@ -331,11 +398,11 @@ export default function FullChat(props: FullChatPropsIF) {
         props.setRoom(userCurrentPool);
         setReadableName(userCurrentPool);
         setReadableRoom(currentPoolInfo);
-        if (roomArray.some(({ name }) => name === userCurrentPool)) {
-            setIsRoomInRoomArray(true);
-        } else {
-            setIsRoomInRoomArray(false);
-        }
+        // if (roomArray.some(({ name }) => name === userCurrentPool)) {
+        //     setIsRoomInRoomArray(true);
+        // } else {
+        //     setIsRoomInRoomArray(false);
+        // }
     }
 
     function setCurrentPoolInfo_(pool: PoolIF) {
@@ -426,6 +493,90 @@ export default function FullChat(props: FullChatPropsIF) {
         );
     }
 
+    // const otherRooms = [
+    //     {
+    //         id: 100,
+    //         name: 'Global',
+    //         value: 'Global',
+    //     },
+    //     {
+    //         id: 101,
+    //         name: 'Admins',
+    //         value: 'Admins',
+    //     },
+    // ];
+
+    // const renderOtherRooms = () => {
+    //     const roomsToAdd = otherRooms.filter((room) => {
+    //         return (
+    //             room.name !== readableRoomName &&
+    //             !(room.name == 'Admins' && !props.isModerator)
+    //         );
+    //     });
+
+    //     const renderRoomIcon = (name: string) => {
+    //         switch (name.toLowerCase()) {
+    //             case 'global':
+    //                 return (
+    //                     <AiOutlineGlobal
+    //                         size={20}
+    //                         color='var(--text-highlight)'
+    //                     />
+    //                 );
+    //             case 'admins':
+    //                 return (
+    //                     <AiOutlineUser
+    //                         size={20}
+    //                         color='var(--text-highlight)'
+    //                     />
+    //                 );
+    //         }
+    //     };
+
+    //     return (
+    //         <>
+    //             {roomsToAdd.map((e) => {
+    //                 return (
+    //                     <div
+    //                         key={e.id}
+    //                         className={`${styles.pool_display}`}
+    //                         // eslint-disable-next-line
+    //                         onClick={(event: any) => {
+    //                             props.setRoom(e.name);
+
+    //                             setReadableName(e.name);
+    //                             props.setIsCurrentPool(false);
+    //                             props.setShowCurrentPoolButton(true);
+
+    //                             if (
+    //                                 roomArray.some(
+    //                                     ({ name }) => name === readableRoomName,
+    //                                 )
+    //                             ) {
+    //                                 setIsRoomInRoomArray(true);
+    //                             } else {
+    //                                 setIsRoomInRoomArray(false);
+    //                             }
+    //                             setShowChannelsDropdown(!showChannelsDropdown);
+    //                         }}
+    //                     >
+    //                         <div
+    //                             className={
+    //                                 styles.token_logos +
+    //                                 ' ' +
+    //                                 styles.other_room_icon
+    //                             }
+    //                         >
+    //                             {renderRoomIcon(e.name)}
+    //                         </div>
+    //                         <span>{e.name}</span>
+    //                     </div>
+    //                 );
+    //             })}
+    //         </>
+    //     );
+    // };
+
     const sidebarExpandOrCollapseIcon = (
         <div onClick={() => setIsChatSidebarOpen(!isChatSidebarOpen)}>
             {isChatSidebarOpen ? (
@@ -512,120 +663,163 @@ export default function FullChat(props: FullChatPropsIF) {
                     pool={pool}
                     key={idx}
                     isDropdown={false}
-                    favoritePoolsArray={props.favoritePoolsArray}
+                    favoritePools={props.favoritePools}
                     favePools={favePools}
                 />
             ))}
         </section>
     );
 
-    const channelsDropdown = (
-        <div className={styles.channels_dropdown}>
-            <button
-                className={styles.active_channel_dropdown}
-                onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
-            >
-                {readableRoomName}
-            </button>
-            {showChannelsDropdown && (
-                <div
-                    className={
-                        showChannelsDropdown
-                            ? styles.active_channel_dropdown_items_containers
-                            : styles.channel_dropdown_items_containers
-                    }
-                >
-                    {roomArray.map((pool, idx) => (
-                        <ChannelDisplay
-                            pool={pool}
-                            key={idx}
-                            isDropdown={true}
-                            favoritePoolsArray={props.favoritePoolsArray}
-                            favePools={favePools}
-                        />
-                    ))}
-                    {rooms.length}
-                </div>
-            )}
-        </div>
-    );
-    const smallScrenView = useMediaQuery('(max-width: 968px)');
+    // const channelsDropdown = (
+    //     <div className={styles.channels_dropdown}>
+    //         <button
+    //             className={styles.active_channel_dropdown}
+    //             onClick={() => setShowChannelsDropdown(!showChannelsDropdown)}
+    //         >
+    //             {readableRoomName}
+    //             <div className={styles.dropdown_icon}>
+    //                 <RiArrowDownSLine size={20}></RiArrowDownSLine>
+    //             </div>
+    //         </button>
+    //         {showChannelsDropdown && (
+    //             <div
+    //                 className={
+    //                     showChannelsDropdown
+    //                         ? styles.active_channel_dropdown_items_containers
+    //                         : styles.channel_dropdown_items_containers
+    //                 }
+    //             >
+    //                 {roomArray.map((pool, idx) => (
+    //                     <ChannelDisplay
+    //                         pool={pool}
+    //                         key={idx}
+    //                         isDropdown={true}
+    //                         favoritePools={props.favoritePools}
+    //                         favePools={favePools}
+    //                     />
+    //                 ))}
+    //                 {renderOtherRooms()}
+    //             </div>
+    //         )}
+    //     </div>
+    // );
+
+    // const smallScrenView = useMediaQuery('(max-width: 968px)');
     const chatContainer = (
         <div className={styles.chat_main_container}>
+            {/* {props.isChatOpen && (
+                )} */}
+            <div
+                ref={verifyBtnRef}
+                className={`${styles.verify_button} ${
+                    props.isVerified ? styles.verified : ''
+                } `}
+                onClick={(e) => props.verifyWallet(0, new Date(), e)}
+            >
+                {props.isModerator && props.isVerified && (
+                    <AiOutlineUser
+                        className={
+                            styles.verify_button_icon +
+                            ' ' +
+                            styles.verify_button_mod_icon
+                        }
+                        color='var(--other-green)'
+                        size={14}
+                    ></AiOutlineUser>
+                )}
+                {props.isVerified ? (
+                    <>
+                        <AiOutlineCheck
+                            className={styles.verify_button_icon}
+                            color='var(--other-green)'
+                            size={10}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <AiOutlineClose
+                            className={styles.verify_button_icon}
+                            size={10}
+                        />
+                        <span> Not Verified</span>
+                    </>
+                )}
+            </div>
             {messageList}
             {chatNotification}
 
             {messageInput}
+            {props.rndMentSkipper && props.rndMentSkipper()}
             <div id='thelastmessage' />
         </div>
     );
 
-    const isButtonFavorited =
-        readableRoom &&
-        favePools.check(
-            readableRoom.base.address,
-            readableRoom.quote.address,
-            readableRoom.chainId,
-            readableRoom.poolIdx,
-        );
-    function handleFavButton() {
-        if (readableRoom) {
-            isButtonFavorited
-                ? favePools.remove(
-                      readableRoom.quote,
-                      readableRoom.base,
-                      readableRoom.chainId,
-                      readableRoom.poolIdx,
-                  )
-                : favePools.add(
-                      readableRoom.quote,
-                      readableRoom.base,
-                      readableRoom.chainId,
-                      readableRoom.poolIdx,
-                  );
-        }
-    }
+    // const isButtonFavorited =
+    //     readableRoom &&
+    //     favePools.check(
+    //         readableRoom.base.address,
+    //         readableRoom.quote.address,
+    //         readableRoom.chainId,
+    //         readableRoom.poolIdx,
+    //     );
+    // function handleFavButton() {
+    //     if (readableRoom) {
+    //         isButtonFavorited
+    //             ? favePools.remove(
+    //                   readableRoom.quote,
+    //                   readableRoom.base,
+    //                   readableRoom.chainId,
+    //                   readableRoom.poolIdx,
+    //               )
+    //             : favePools.add(
+    //                   readableRoom.quote,
+    //                   readableRoom.base,
+    //                   readableRoom.chainId,
+    //                   readableRoom.poolIdx,
+    //               );
+    //     }
+    // }
 
-    const favButton =
-        !currentRoomIsGlobal && isRoomInRoomArray ? (
-            <button
-                className={styles.favorite_button}
-                onClick={handleFavButton}
-                id='trade_fav_button'
-            >
-                {
-                    <svg
-                        width={smallScrenView ? '20px' : '30px'}
-                        height={smallScrenView ? '20px' : '30px'}
-                        viewBox='0 0 15 15'
-                        fill='none'
-                        xmlns='http://www.w3.org/2000/svg'
-                    >
-                        <g clipPath='url(#clip0_1874_47746)'>
-                            <path
-                                d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
-                                fill={isButtonFavorited ? '#EBEBFF' : 'none'}
-                                stroke='#EBEBFF'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                            />
-                        </g>
-                        <defs>
-                            <clipPath id='clip0_1874_47746'>
-                                <rect
-                                    width='14'
-                                    height='14'
-                                    fill='white'
-                                    transform='translate(0.600098 0.599976)'
-                                />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                }
-            </button>
-        ) : (
-            ''
-        );
+    // const favButton =
+    //     !currentRoomIsGlobal && isRoomInRoomArray ? (
+    //         <button
+    //             className={styles.favorite_button}
+    //             onClick={handleFavButton}
+    //             id='trade_fav_button'
+    //         >
+    //             {
+    //                 <svg
+    //                     width={smallScrenView ? '20px' : '30px'}
+    //                     height={smallScrenView ? '20px' : '30px'}
+    //                     viewBox='0 0 15 15'
+    //                     fill='none'
+    //                     xmlns='http://www.w3.org/2000/svg'
+    //                 >
+    //                     <g clipPath='url(#clip0_1874_47746)'>
+    //                         <path
+    //                             d='M12.8308 3.34315C12.5303 3.04162 12.1732 2.80237 11.7801 2.63912C11.3869 2.47588 10.9654 2.39185 10.5397 2.39185C10.1141 2.39185 9.69255 2.47588 9.29941 2.63912C8.90626 2.80237 8.54921 3.04162 8.24873 3.34315L7.78753 3.81033L7.32633 3.34315C7.02584 3.04162 6.66879 2.80237 6.27565 2.63912C5.8825 2.47588 5.461 2.39185 5.03531 2.39185C4.60962 2.39185 4.18812 2.47588 3.79498 2.63912C3.40183 2.80237 3.04478 3.04162 2.7443 3.34315C1.47451 4.61294 1.39664 6.75721 2.99586 8.38637L7.78753 13.178L12.5792 8.38637C14.1784 6.75721 14.1005 4.61294 12.8308 3.34315Z'
+    //                             fill={isButtonFavorited ? '#EBEBFF' : 'none'}
+    //                             stroke='#EBEBFF'
+    //                             strokeLinecap='round'
+    //                             strokeLinejoin='round'
+    //                         />
+    //                     </g>
+    //                     <defs>
+    //                         <clipPath id='clip0_1874_47746'>
+    //                             <rect
+    //                                 width='14'
+    //                                 height='14'
+    //                                 fill='white'
+    //                                 transform='translate(0.600098 0.599976)'
+    //                             />
+    //                         </clipPath>
+    //                     </defs>
+    //                 </svg>
+    //             }
+    //         </button>
+    //     ) : (
+    //         ''
+    //     );
 
     return (
         <div
@@ -642,15 +836,104 @@ export default function FullChat(props: FullChatPropsIF) {
                 </header>
                 {chatChanels}
             </section>
-
             <section className={styles.right_container}>
-                <header className={styles.right_container_header}>
+                {/* <header className={styles.right_container_header}>
                     {favButton} {currentRoomIsGlobal ? '#' : ''}{' '}
                     {readableRoomName}
                 </header>{' '}
-                {channelsDropdown}
+                {channelsDropdown} */}
+
+                <Room
+                    selectedRoom={props.room}
+                    setRoom={props.setRoom}
+                    room={props.room}
+                    setIsCurrentPool={props.setIsCurrentPool}
+                    isCurrentPool={props.isCurrentPool}
+                    showCurrentPoolButton={props.showCurrentPoolButton}
+                    setShowCurrentPoolButton={props.setShowCurrentPoolButton}
+                    userCurrentPool={props.userCurrentPool}
+                    setUserCurrentPool={props.setUserCurrentPool}
+                    currentUser={props.currentUser}
+                    ensName={props.ensName}
+                    setIsFocusMentions={props.setIsFocusMentions}
+                    notifications={props.notifications}
+                    mentCount={props.mentCount}
+                    mentionIndex={props.mentionIndex}
+                    isModerator={props.isModerator}
+                    isFocusMentions={props.isFocusMentions}
+                    setGoToChartParams={props.setGoToChartParams}
+                    isChatOpen={true}
+                />
+
                 {chatContainer}
             </section>
+
+            <ChatNotificationBubble
+                message={props.messageForNotificationBubble}
+                setRoom={props.setRoom}
+                setSelectedMessageForReply={props.setSelectedMessageForReply}
+                setIsReplyButtonPressed={props.setIsReplyButtonPressed}
+                setMessageForNotificationBubble={
+                    props.setMessageForNotificationBubble
+                }
+            />
+
+            <ChatToaster
+                isActive={props.toastrActive}
+                activator={props.toastrActivator}
+                text={props.toastrText}
+                type={props.toastrType}
+            />
+            <ChatConfirmationPanel
+                isActive={props.showDeleteConfirmation}
+                title='Delete Message'
+                content='Are you sure you want to delete this message?'
+                confirmListener={props.handleConfirmDelete}
+                cancelListener={props.handleCancelDelete}
+            />
+            <ChatConfirmationPanel
+                isActive={props.showVerifyOldMessagesPanel}
+                title='Verify Old Messages'
+                content='Old messages will be verified. Do you want to verify?'
+                cancelListener={() => {
+                    props.setShowVerifyOldMessagesPanel(false);
+                }}
+                confirmListener={async () => {
+                    props.setShowVerifyOldMessagesPanel(false);
+                    await props.updateUnverifiedMessages(
+                        props.verifyOldMessagesStartDate,
+                        new Date(),
+                    );
+                    props.activateToastr(
+                        'Old messages are verified!',
+                        'success',
+                    );
+                }}
+            />
+            {props.rndShowPreviousMessages()}
+            {props.isChatOpen && props.showPicker && (
+                <div
+                    id='chatReactionWrapper'
+                    className={styles.reaction_picker_wrapper}
+                >
+                    <div
+                        className={styles.reaction_picker_close}
+                        onClick={() => {
+                            props.setShowPicker(false);
+                        }}
+                    >
+                        {' '}
+                        X{' '}
+                    </div>
+                    <Picker
+                        onEmojiClick={props.addReactionEmojiPickListener}
+                        pickerStyle={{ width: '100%' }}
+                        disableSkinTonePicker={true}
+                    />
+                </div>
+            )}
         </div>
     );
 }
+
+export default memo(FullChat);

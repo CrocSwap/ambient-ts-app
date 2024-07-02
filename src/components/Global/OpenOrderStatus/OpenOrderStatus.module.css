@@ -20,6 +20,7 @@
     transform: rotate(-90deg);
 }
 
+
 .circle_background {
     fill: none;
     stroke: var(--text2);
@@ -28,6 +29,14 @@
 .circle_fill {
     fill: none;
     stroke: var(--positive);
+    stroke-linecap: round;
+    transform-origin: center;
+    transition: stroke-dashoffset 0.3s;
+}
+
+.circle_fully_filled {
+    fill: none;
+    stroke: var(--negative);
     stroke-linecap: round;
     transform-origin: center;
     transition: stroke-dashoffset 0.3s;

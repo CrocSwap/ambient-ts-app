@@ -179,7 +179,7 @@ export const PortfolioBannerRectangleContainer = styled.div`
     position: relative;
 
     display: flex;
-    overflow: hidden;
+    /*overflow: hidden;*/
 
     background-color: var(--dark1);
 
@@ -301,4 +301,36 @@ export const MobileButton = styled.button<{ active: boolean }>`
         color: ${active ? 'black' : 'var(--text1)'};
         background: ${active ? 'var(--accent1)' : 'transparent'};
     `}
+`;
+
+export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 65px;
+    width: 65px;
+
+    ${({ placement }) => {
+        if (placement) {
+            return `
+            transform: translate(0%, 23%);
+            `;
+        }
+    }}
+`;
+
+export const UpdateProfileButton = styled.div`
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    color: var(--text1);
+
+    border: none;
+    outline: none;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;
