@@ -12,6 +12,7 @@ import {
     tickerWatchlistIF,
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
+import { UserDataContext } from './UserDataContext';
 
 interface AuctionsContextIF {
     auctions: AuctionsDataIF;
@@ -104,6 +105,7 @@ export const AuctionsContextProvider = (props: {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const [auctionsData, setAuctionsData] = React.useState<AuctionsDataIF>({
         dataReceived: false,
@@ -212,6 +214,12 @@ export const AuctionsContextProvider = (props: {
         }, 30000);
         return () => clearInterval(interval);
     }, [chainId]);
+
+    useEffect(() => {
+        if (userAddress) {
+            getAccountData(userAddress, chainId);
+        }
+    }, [userAddress, chainId]);
 
     // hook managing ticker watchlists for each FUTA version
     const watchlistV1: tickerWatchlistIF = useTickerWatchlist('v1', [
