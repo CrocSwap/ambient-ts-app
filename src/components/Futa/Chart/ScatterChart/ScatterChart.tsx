@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable camelcase */
 import { useEffect, useRef, useState } from 'react';
-// import { FlexContainer } from '../../../../styled/Common';
 import Xaxis from './Xaxis';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -12,7 +9,6 @@ import {
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import Yaxis from './Yaxis';
 import ScatterTooltip from './ScatterTooltip';
-// import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 
 export const axisColor = '#939C9E'; // text2
 export const textColor = '#939C9E'; // text2
@@ -32,6 +28,7 @@ export default function ScatterChart() {
 
     const [xScale, setXscale] = useState<d3.ScaleLinear<number, number>>();
     const [yScale, setYscale] = useState<d3.ScaleLinear<number, number>>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [chartSize, setChartSize] = useState<any>();
     const [hoveredDot, setHoveredDot] = useState<scatterData | undefined>();
     const [selectedDot, setSelectedDot] = useState<scatterData | undefined>();
@@ -91,10 +88,12 @@ export default function ScatterChart() {
                 .seriesSvgPoint()
                 .xScale(xScale)
                 .yScale(yScale)
-                .crossValue((d: any) => d.timeRemaining)
-                .mainValue((d: any) => d.price)
+                .crossValue((d: scatterData) => d.timeRemaining)
+                .mainValue((d: scatterData) => d.price)
                 .size(60)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .decorate((context: any, d: any) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     context.nodes().forEach((selection: any, index: number) => {
                         d3.select(selection)
                             .attr(
@@ -177,11 +176,13 @@ export default function ScatterChart() {
         }
     }, []);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const findNearestCircle = (event: any) => {
         if (xScale && yScale) {
             const canvas = d3
                 .select(d3Chart.current)
                 .select('svg')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .node() as any;
 
             const rectSvg = canvas.getBoundingClientRect();
@@ -207,6 +208,7 @@ export default function ScatterChart() {
         if (xScale && yScale) {
             d3.select(d3Chart.current)
                 .select('svg')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .on('mousemove', (event: any) => {
                     const nearestData = findNearestCircle(event);
                     setHoveredDot(nearestData);

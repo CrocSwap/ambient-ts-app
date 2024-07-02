@@ -7,9 +7,7 @@ export default function Chart() {
         <div className={styles.container}>
             <Divider count={2} />
             <h3>CHART</h3>
-            {/* <div className={styles.content}> */}
             <ScatterChart />
-            {/* </div> */}
         </div>
     );
 }

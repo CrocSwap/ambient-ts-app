@@ -1,4 +1,4 @@
-import { useEffect, useRef /* useState */ } from 'react';
+import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
