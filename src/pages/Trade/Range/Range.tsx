@@ -46,7 +46,7 @@ import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_SCROLL,
+    RANGE_BUFFER_MULTIPLIER_L2,
 } from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
@@ -864,7 +864,7 @@ function Range() {
             );
 
             setAmountToReduceNativeTokenQtyL2(
-                RANGE_BUFFER_MULTIPLIER_SCROLL * costOfScrollPoolInETH,
+                RANGE_BUFFER_MULTIPLIER_L2 * costOfScrollPoolInETH,
             );
 
             const gasPriceInDollarsNum =
