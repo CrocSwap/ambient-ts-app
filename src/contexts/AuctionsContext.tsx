@@ -218,6 +218,13 @@ export const AuctionsContextProvider = (props: {
     useEffect(() => {
         if (userAddress) {
             getAccountData(userAddress, chainId);
+        } else {
+            setAccountData({
+                dataReceived: false,
+                chainId: chainId,
+                userAddress: '',
+                auctions: [],
+            });
         }
     }, [userAddress, chainId]);
 
