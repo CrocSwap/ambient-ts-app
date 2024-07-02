@@ -177,7 +177,7 @@ export default function Deposit(props: propsIF) {
             return true;
         }
         return tokenWalletBalance
-            ? BigInt(tokenWalletBalance) >
+            ? BigInt(tokenWalletBalance) >=
                   amountToReduceNativeTokenQty + BigInt(depositQtyNonDisplay)
             : false;
     }, [
@@ -218,6 +218,7 @@ export default function Deposit(props: propsIF) {
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
+            console.log('setting button to disabled');
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
