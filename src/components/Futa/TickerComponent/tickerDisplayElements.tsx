@@ -5,12 +5,12 @@ import styles from './TickerComponent.module.css';
 import Divider from '../Divider/Divider';
 import { FaEye } from 'react-icons/fa';
 import {
-    AuctionDataIF,
     AuctionStatusDataIF,
     AuctionsContext,
 } from '../../../contexts/AuctionsContext';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import {
+    AuctionDataIF,
     getFormattedNumber,
     getTimeRemaining,
 } from '../../../ambient-utils/dataLayer';
@@ -26,6 +26,7 @@ import {
     minBidSizeInEth,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 // Props interface
 export interface PropsIF {
@@ -85,11 +86,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const { ticker: tickerFromParams } = useParams();
     const { nativeTokenUsdPrice } = useContext(ChainDataContext);
     const {
-        auctions: { chainId },
-        showComments,
-        setShowComments,
-        watchlists,
-    } = useContext(AuctionsContext);
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { showComments, setShowComments, watchlists } =
+        useContext(AuctionsContext);
 
     const currentMarketCapUsdFormatted =
         currentMarketCapUsdValue !== undefined

@@ -14,16 +14,14 @@ import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/Divider';
-import {
-    AuctionDataIF,
-    AuctionsContext,
-} from '../../../contexts/AuctionsContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import {
     auctionSorts,
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FaEye } from 'react-icons/fa';
+import { AuctionDataIF } from '../../../ambient-utils/dataLayer';
 
 interface propsIF {
     auctions: sortedAuctionsIF;

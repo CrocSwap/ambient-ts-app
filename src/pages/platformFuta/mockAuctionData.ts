@@ -1,6 +1,6 @@
+import { AuctionDataIF } from '../../ambient-utils/dataLayer';
 import {
     AccountDataIF,
-    AuctionDataIF,
     AuctionStatusDataServerIF,
 } from '../../contexts/AuctionsContext';
 
@@ -554,16 +554,20 @@ export const getFreshAuctionDetailsForAccount = async (
     ticker: string,
     accountData: AccountDataIF,
 ) => {
-    return accountData.auctions.find(
-        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-    );
+    return accountData.auctions
+        ? accountData.auctions.find(
+              (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+          )
+        : undefined;
 };
 
 export const getRetrievedAuctionDetailsForAccount = (
     ticker: string,
     accountData: AccountDataIF,
 ) => {
-    return accountData.auctions.find(
-        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-    );
+    return accountData.auctions
+        ? accountData.auctions.find(
+              (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+          )
+        : undefined;
 };

@@ -1,24 +1,21 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 // import { fetchAuctionsData } from '../ambient-utils/api';
 import { CrocEnvContext } from './CrocEnvContext';
-import {
-    mockAuctionData,
-    mockAccountData1,
-    mockAccountData2,
-    mockAuctionDetailsServerResponseGenerator,
-} from '../pages/platformFuta/mockAuctionData';
+import { mockAuctionDetailsServerResponseGenerator } from '../pages/platformFuta/mockAuctionData';
 import {
     tickerVersions,
     tickerWatchlistIF,
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
 import { UserDataContext } from './UserDataContext';
+import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
+import { CachedDataContext } from './CachedDataContext';
 
 interface AuctionsContextIF {
-    auctions: AuctionsDataIF;
+    globalAuctionList: AuctionsDataIF;
     accountData: AccountDataIF;
-    getAccountData(address: string, chainId: string): void;
-    getAuctions(): void;
+    updateUserAuctionsList(address: string): void;
+    updateGlobalAuctionsList(): void;
     getAuctionData(ticker: string): void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,22 +32,6 @@ interface AuctionsContextIF {
 }
 
 // interface for auction data used to generate tables
-export interface AuctionDataIF {
-    ticker: string;
-    chainId: string;
-    createdAt: number;
-    auctionLength: number;
-    filledClearingPriceInNativeTokenWei: string;
-
-    // user specific data received for account queries
-    userAddress?: string;
-    userBidClearingPriceInNativeTokenWei?: string | undefined;
-    qtyBidByUserInNativeTokenWei?: string | undefined;
-    qtyUnclaimedByUserInAuctionedTokenWei?: string | undefined;
-    qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
-    qtyUnreturnedToUserInNativeTokenWei?: string | undefined;
-    qtyReturnedToUserInNativeTokenWei?: string | undefined;
-}
 
 // interface for auction status data used to generate auction details view
 export interface AuctionStatusDataServerIF {
@@ -81,14 +62,14 @@ export interface AuctionStatusDataIF {
 export interface AuctionsDataIF {
     dataReceived: boolean;
     chainId: string;
-    data: AuctionDataIF[];
+    data: AuctionDataIF[] | undefined;
 }
 
 export interface AccountDataIF {
     dataReceived: boolean;
     chainId: string;
     userAddress: string;
-    auctions: AuctionDataIF[];
+    auctions: AuctionDataIF[] | undefined;
 }
 
 export interface AuctionIF {
@@ -106,12 +87,15 @@ export const AuctionsContextProvider = (props: {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
+    const { cachedGetGlobalAuctionsList, cachedGetUserAuctionsList } =
+        useContext(CachedDataContext);
 
-    const [auctionsData, setAuctionsData] = React.useState<AuctionsDataIF>({
-        dataReceived: false,
-        chainId: chainId,
-        data: [],
-    });
+    const [globalAuctionList, setGlobalAuctionList] =
+        React.useState<AuctionsDataIF>({
+            dataReceived: false,
+            chainId: chainId,
+            data: [],
+        });
 
     const [accountData, setAccountData] = React.useState<AccountDataIF>({
         dataReceived: false,
@@ -139,27 +123,23 @@ export const AuctionsContextProvider = (props: {
 
     const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
 
-    const fetchAuctionsData = async (): Promise<AuctionDataIF[]> => {
-        return mockAuctionData;
-    };
-
-    const fetchAccountData = async (
-        address: string,
-        chainId: string,
-    ): Promise<AuctionDataIF[]> => {
-        false &&
-            console.log('fetching account data for address:', {
-                address,
-                chainId,
-            });
-        if (
-            address.toLowerCase() ===
-            '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
-        ) {
-            return mockAccountData1;
-        }
-        return mockAccountData2;
-    };
+    // const fetchAccountData = async (
+    //     address: string,
+    //     chainId: string,
+    // ): Promise<AuctionDataIF[]> => {
+    //     false &&
+    //         console.log('fetching account data for address:', {
+    //             address,
+    //             chainId,
+    //         });
+    //     if (
+    //         address.toLowerCase() ===
+    //         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
+    //     ) {
+    //         return mockAccountData1;
+    //     }
+    //     return mockAccountData2;
+    // };
 
     const fetchAuctionStatusData = async (
         ticker: string,
@@ -167,9 +147,12 @@ export const AuctionsContextProvider = (props: {
         return mockAuctionDetailsServerResponseGenerator(ticker, chainId);
     };
 
-    function getAuctionsData() {
-        fetchAuctionsData().then((data) => {
-            setAuctionsData({
+    function updateGlobalAuctionsList() {
+        cachedGetGlobalAuctionsList(
+            chainId,
+            Math.floor(Date.now() / 30000),
+        ).then((data) => {
+            setGlobalAuctionList({
                 dataReceived: true,
                 chainId: chainId,
                 data: data,
@@ -177,8 +160,12 @@ export const AuctionsContextProvider = (props: {
         });
     }
 
-    function getAccountData(address: string, chainId: string) {
-        fetchAccountData(address, chainId).then((data) => {
+    function updateUserAuctionsList(address: string) {
+        cachedGetUserAuctionsList(
+            chainId,
+            address,
+            Math.floor(Date.now() / 30000),
+        ).then((data) => {
             setAccountData({
                 dataReceived: true,
                 chainId: chainId,
@@ -206,27 +193,26 @@ export const AuctionsContextProvider = (props: {
         });
     }
 
-    // useEffect to fetch auctions  data every 30 seconds
-    useEffect(() => {
-        getAuctionsData();
-        const interval = setInterval(() => {
-            getAuctionsData();
-        }, 30000);
-        return () => clearInterval(interval);
-    }, [chainId]);
+    // // useEffect to fetch auctions  data every 30 seconds
+    // useEffect(() => {
+    //     updateGlobalAuctionsList();
+    //     const interval = setInterval(() => {
+    //         updateGlobalAuctionsList();
+    //     }, 30000);
+    //     return () => clearInterval(interval);
+    // }, [chainId]);
 
     useEffect(() => {
-        if (userAddress) {
-            getAccountData(userAddress, chainId);
-        } else {
+        // clear account data when user logs out
+        if (!userAddress) {
             setAccountData({
                 dataReceived: false,
-                chainId: chainId,
+                chainId: '',
                 userAddress: '',
                 auctions: [],
             });
         }
-    }, [userAddress, chainId]);
+    }, [userAddress]);
 
     // hook managing ticker watchlists for each FUTA version
     const watchlistV1: tickerWatchlistIF = useTickerWatchlist('v1', [
@@ -238,10 +224,10 @@ export const AuctionsContextProvider = (props: {
 
     const auctionsContext: AuctionsContextIF = {
         auctionStatusData: auctionStatusData,
-        auctions: auctionsData,
+        globalAuctionList: globalAuctionList,
         accountData: accountData,
-        getAccountData: getAccountData,
-        getAuctions: getAuctionsData,
+        updateUserAuctionsList: updateUserAuctionsList,
+        updateGlobalAuctionsList: updateGlobalAuctionsList,
         getAuctionData: getAuctionData,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
