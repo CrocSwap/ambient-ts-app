@@ -47,6 +47,7 @@ import WEETH from './WEETH.svg';
 import P from './P.svg';
 import BLAST from './BLAST.png';
 import GOONUSD from './goonUSD.svg';
+import USDE from './USDe-Black.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -99,4 +100,5 @@ export {
     P,
     BLAST,
     GOONUSD,
+    USDE,
 };
