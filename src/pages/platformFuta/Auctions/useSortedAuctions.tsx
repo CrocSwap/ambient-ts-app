@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { AuctionDataIF } from '../../../contexts/AuctionsContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { AuctionDataIF } from '../../../ambient-utils/dataLayer';
 
 export type auctionSorts =
     | 'createdAt'

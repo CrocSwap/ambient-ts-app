@@ -19,8 +19,9 @@ import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 export default function Account() {
-    const { accountData, getAccountData } = useContext(AuctionsContext);
+    const { accountData } = useContext(AuctionsContext);
     const { isUserConnected, userAddress } = useContext(UserDataContext);
+    const { updateUserAuctionsList } = useContext(AuctionsContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -62,21 +63,15 @@ export default function Account() {
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
+    const cacheFrequency = Math.floor(Date.now() / 30000);
+
     useEffect(() => {
         if (resolvedAddress) {
-            getAccountData(resolvedAddress, chainId);
-            const interval = setInterval(() => {
-                getAccountData(resolvedAddress, chainId);
-            }, 30000);
-            return () => clearInterval(interval);
+            updateUserAuctionsList(resolvedAddress);
         } else if (userAddress) {
-            getAccountData(userAddress, chainId);
-            const interval = setInterval(() => {
-                getAccountData(userAddress, chainId);
-            }, 30000);
-            return () => clearInterval(interval);
+            updateUserAuctionsList(userAddress);
         }
-    }, [resolvedAddress, userAddress, chainId]);
+    }, [resolvedAddress, userAddress, chainId, cacheFrequency]);
 
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
@@ -113,7 +108,9 @@ export default function Account() {
             <Link to='/auctions'>All auctions</Link>
         </div>
     );
-    const sorted: sortedAuctionsIF = useSortedAuctions(accountData.auctions);
+    const sorted: sortedAuctionsIF = useSortedAuctions(
+        accountData.auctions || [],
+    );
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
     if (!isUserConnected) {

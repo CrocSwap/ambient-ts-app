@@ -1,6 +1,6 @@
+import { AuctionDataIF } from '../../ambient-utils/dataLayer';
 import {
     AccountDataIF,
-    AuctionDataIF,
     AuctionStatusDataServerIF,
 } from '../../contexts/AuctionsContext';
 
@@ -88,7 +88,7 @@ export const mockAuctionData: AuctionDataIF[] = [
         chainId: '0x2105',
         createdAt: 1719548920,
         auctionLength: 604800,
-        filledClearingPriceInNativeTokenWei: '312500000000000000',
+        filledClearingPriceInNativeTokenWei: '212500000000000000',
     },
     {
         ticker: 'JUNIOR1',
@@ -554,16 +554,20 @@ export const getFreshAuctionDetailsForAccount = async (
     ticker: string,
     accountData: AccountDataIF,
 ) => {
-    return accountData.auctions.find(
-        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-    );
+    return accountData.auctions
+        ? accountData.auctions.find(
+              (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+          )
+        : undefined;
 };
 
 export const getRetrievedAuctionDetailsForAccount = (
     ticker: string,
     accountData: AccountDataIF,
 ) => {
-    return accountData.auctions.find(
-        (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-    );
+    return accountData.auctions
+        ? accountData.auctions.find(
+              (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+          )
+        : undefined;
 };

@@ -74,7 +74,7 @@
     gap: 8px;
 }
 
-.sort_toggles > button {
+.buttonOn, .buttonOff {
     width: 110px;
     height: 25px;
     border: 1px solid var(--dark3);
@@ -88,21 +88,18 @@
     font-size: 12px;
     cursor: pointer;
     outline: none;
+}
+
+.buttonOn, .buttonOff:hover {
     transition: all var(--animation-speed) ease-in-out;
-}
-
-.sort_toggles button:hover{
+    color: var(--accent1);
     border: 1px solid var(--accent1);
-    color: var(--accent1)
-    
 }
 
-
-
-.buttonOn {
-    color: var(--accent1) !important;
-    border: 1px solid var(--accent1) !important;
-} 
+.eyeOn {
+    transition: all var(--animation-speed) ease-in-out;
+    color: var(--accent1);
+}
 
 .filters {
     position: relative;
@@ -255,11 +252,6 @@
 .marketCapHeader {
     text-align: end;
     padding: 0 12px;
-}
-
-.buttonOn,
-.buttonOff {
-    outline: 1px solid green;
 }
 
 @media (min-width: 780px) {

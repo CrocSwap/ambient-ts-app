@@ -14,16 +14,14 @@ import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Divider from '../Divider/Divider';
-import {
-    AuctionDataIF,
-    AuctionsContext,
-} from '../../../contexts/AuctionsContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import {
     auctionSorts,
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FaEye } from 'react-icons/fa';
+import { AuctionDataIF } from '../../../ambient-utils/dataLayer';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -170,6 +168,19 @@ export default function SearchableTicker(props: propsIF) {
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
+    // fn to determine directionality sort arrows should indicate
+    function getArrowDirection(): 'up' | 'down' | null {
+        let output: 'up' | 'down' | null = null;
+        if (auctions.active === 'marketCap') {
+            output = auctions.isReversed ? 'up' : 'down';
+        } else if (auctions.active === 'timeLeft') {
+            output = auctions.isReversed ? 'down' : 'up';
+        }
+        return output;
+    }
+
+    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
+
     return (
         <div className={styles.container}>
             <Divider count={2} />
@@ -240,20 +251,16 @@ export default function SearchableTicker(props: propsIF) {
                                     <IoIosArrowUp
                                         size={14}
                                         color={
-                                            auctions.isReversed ||
-                                            (!auctions.isReversed &&
-                                                auctions.active === 'timeLeft')
-                                                ? ''
-                                                : 'var(--accent1)'
+                                            getArrowDirection() === 'up'
+                                                ? 'var(--accent1)'
+                                                : ''
                                         }
                                     />
 
                                     <IoIosArrowDown
                                         size={14}
                                         color={
-                                            auctions.isReversed ||
-                                            (!auctions.isReversed &&
-                                                auctions.active === 'timeLeft')
+                                            getArrowDirection() === 'down'
                                                 ? 'var(--accent1)'
                                                 : ''
                                         }
@@ -293,8 +300,18 @@ export default function SearchableTicker(props: propsIF) {
                         >
                             SHOW COMPLETE
                         </button>
-                        <button className={styles.buttonOff}>
-                            <FaEye size={17} />
+                        <button
+                            onClick={() => setShowWatchlist(!showWatchlist)}
+                            className={
+                                styles[showWatchlist ? 'buttonOn' : 'buttonOff']
+                            }
+                        >
+                            <FaEye
+                                size={17}
+                                className={
+                                    styles[showWatchlist ? 'eyeOn' : 'eyeOff']
+                                }
+                            />
                             WATCHLIST
                         </button>
                     </div>
