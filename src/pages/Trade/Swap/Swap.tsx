@@ -381,7 +381,7 @@ function Swap(props: propsIF) {
         isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
+        isActiveNetworkBlast ? 0.3 : 0,
     );
 
     // calculate price of gas for swap
@@ -390,16 +390,16 @@ function Swap(props: propsIF) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? GAS_DROPS_ESTIMATE_SWAP_NATIVE
                 : isWithdrawFromDexChecked
-                ? isTokenADexSurplusSufficient
-                    ? isSaveAsDexSurplusChecked
-                        ? GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX
-                        : GAS_DROPS_ESTIMATE_SWAP_FROM_DEX
-                    : isSaveAsDexSurplusChecked
+                  ? isTokenADexSurplusSufficient
+                      ? isSaveAsDexSurplusChecked
+                          ? GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX
+                          : GAS_DROPS_ESTIMATE_SWAP_FROM_DEX
+                      : isSaveAsDexSurplusChecked
+                        ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
+                        : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET
+                  : isSaveAsDexSurplusChecked
                     ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
-                    : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET
-                : isSaveAsDexSurplusChecked
-                ? GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_DEX
-                : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
+                    : GAS_DROPS_ESTIMATE_SWAP_FROM_WALLET_TO_WALLET;
 
             const costOfMainnetSwapInETH =
                 gasPriceInGwei * averageSwapCostInGasDrops * NUM_GWEI_IN_WEI;
@@ -474,14 +474,18 @@ function Swap(props: propsIF) {
                     : undefined;
             l1GasInGwei &&
                 setL1GasFeeSwapInGwei(bigIntToFloat(l1GasInGwei) || 0);
+
             const l1GasCents = l1GasInGwei
                 ? (l1GasInGwei * costOfEthInCents) / BigInt(NUM_GWEI_IN_ETH)
                 : undefined;
 
-            const l1GasDollarsNum = l1GasCents
-                ? bigIntToFloat(l1GasCents) / 100
-                : undefined;
-            if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
+            const l1GasDollarsNum =
+                l1GasCents !== undefined
+                    ? bigIntToFloat(l1GasCents) / 100
+                    : undefined;
+            if (l1GasDollarsNum !== undefined) {
+                setExtraL1GasFeeSwap(l1GasDollarsNum + 0.01);
+            }
         })();
     }, [
         crocEnv,
@@ -727,12 +731,12 @@ function Swap(props: propsIF) {
                     : 'Submit Swap'
                 : swapButtonErrorMessage
             : swapAllowed
-            ? showWarning
-                ? showPriceImpactWarning
-                    ? 'I understand the price impact of this swap. Confirm anyway!'
-                    : 'I understand the loss of value. Confirm anyway!'
-                : 'Confirm'
-            : swapButtonErrorMessage
+              ? showWarning
+                  ? showPriceImpactWarning
+                      ? 'I understand the price impact of this swap. Confirm anyway!'
+                      : 'I understand the loss of value. Confirm anyway!'
+                  : 'Confirm'
+              : swapButtonErrorMessage
         : 'Acknowledge';
 
     return (

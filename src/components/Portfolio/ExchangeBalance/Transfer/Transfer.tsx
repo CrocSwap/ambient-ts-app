@@ -308,7 +308,7 @@ export default function Transfer(props: propsIF) {
     };
 
     const [extraL1GasFeeTransfer] = useState(
-        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.35 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.35 : 0,
     );
 
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<

@@ -253,11 +253,11 @@ export default function Limit() {
                             ? displayPriceWithDenom * quotePrice
                             : undefined
                         : basePrice
-                        ? displayPriceWithDenom * basePrice
-                        : undefined
+                          ? displayPriceWithDenom * basePrice
+                          : undefined
                     : usdPriceInverse && displayPriceWithDenom
-                    ? usdPriceInverse * displayPriceWithDenom
-                    : undefined;
+                      ? usdPriceInverse * displayPriceWithDenom
+                      : undefined;
 
                 const limitRateTruncated = isTradeDollarizationEnabled
                     ? getFormattedNumber({
@@ -340,11 +340,11 @@ export default function Limit() {
                             ? displayPriceWithDenom * quotePrice
                             : undefined
                         : basePrice
-                        ? displayPriceWithDenom * basePrice
-                        : undefined
+                          ? displayPriceWithDenom * basePrice
+                          : undefined
                     : usdPriceInverse && displayPriceWithDenom
-                    ? usdPriceInverse * displayPriceWithDenom
-                    : undefined;
+                      ? usdPriceInverse * displayPriceWithDenom
+                      : undefined;
 
                 const limitRateTruncated = isTradeDollarizationEnabled
                     ? getFormattedNumber({
@@ -512,7 +512,7 @@ export default function Limit() {
         isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeeLimit] = useState(
-        isActiveNetworkScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.5 : 0,
     );
 
     useEffect(() => {
@@ -520,10 +520,10 @@ export default function Limit() {
             const averageLimitCostInGasDrops = isSellTokenNativeToken
                 ? GAS_DROPS_ESTIMATE_LIMIT_NATIVE
                 : isWithdrawFromDexChecked
-                ? isTokenADexSurplusSufficient
-                    ? GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX
-                    : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET
-                : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET;
+                  ? isTokenADexSurplusSufficient
+                      ? GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX
+                      : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET
+                  : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET;
 
             const costOfMainnetLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
