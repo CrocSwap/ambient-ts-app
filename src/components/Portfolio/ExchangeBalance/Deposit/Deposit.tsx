@@ -92,7 +92,7 @@ export default function Deposit(props: propsIF) {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
     const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.3 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.05 : 0,
     );
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
@@ -192,8 +192,8 @@ export default function Deposit(props: propsIF) {
                 ? BigInt(tokenWalletBalance) >=
                   BigInt(depositQtyNonDisplay || 0)
                 : tokenWalletBalance && BigInt(tokenWalletBalance) >= BigInt(0)
-                ? true
-                : false,
+                  ? true
+                  : false,
         [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
