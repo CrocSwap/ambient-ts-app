@@ -322,7 +322,8 @@ export const blastWEETH: TokenIF = {
     decimals: 18,
     name: 'Wrapped eETH',
     symbol: 'weETH',
-    logoURI: 'https://scroll-tech.github.io/token-list/data/weETH/logo.svg',
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const blastWrsETH: TokenIF = {
@@ -438,6 +439,15 @@ export const scrollWstETH: TokenIF = {
     decimals: 18,
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
+};
+export const scrollWeETH: TokenIF = {
+    name: 'Wrapped eETH',
+    address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
+    symbol: 'weETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const scrollWrsETH: TokenIF = {
@@ -663,6 +673,7 @@ export const defaultTokens: TokenIF[] = [
     scrollPufETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWeETH,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,
