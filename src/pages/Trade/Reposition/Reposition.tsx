@@ -219,8 +219,8 @@ function Reposition() {
         currentPoolPriceNonDisplay === 0
             ? '...'
             : isDenomBase
-            ? truncatedCurrentPoolDisplayPriceInBase
-            : truncatedCurrentPoolDisplayPriceInQuote;
+              ? truncatedCurrentPoolDisplayPriceInBase
+              : truncatedCurrentPoolDisplayPriceInQuote;
 
     const handleModalOpen = () => {
         resetConfirmation();
@@ -766,7 +766,7 @@ function Reposition() {
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
     const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 2.75 : isActiveNetworkBlast ? 2.5 : 0,
+        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.2 : 0,
     );
 
     useEffect(() => {
@@ -884,10 +884,10 @@ function Reposition() {
                                     isRepositionSent
                                         ? 'Reposition Sent'
                                         : isPositionInRange
-                                        ? 'Position Currently In Range'
-                                        : bypassConfirmRepo.isEnabled
-                                        ? 'Reposition'
-                                        : 'Confirm'
+                                          ? 'Position Currently In Range'
+                                          : bypassConfirmRepo.isEnabled
+                                            ? 'Reposition'
+                                            : 'Confirm'
                                 }
                                 action={
                                     bypassConfirmRepo.isEnabled
