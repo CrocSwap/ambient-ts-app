@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import TopPools from '../../../components/Global/Explore/TopPools';
 import DexTokens from '../../../components/Global/Explore/DexTokens';
 import { ExploreContext } from '../../../contexts/ExploreContext';
-import { FiRefreshCw, FiStopCircle } from 'react-icons/fi';
+import { FiRefreshCw } from 'react-icons/fi';
 import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -162,20 +162,18 @@ export default function Explore(props: ExploreIF) {
                                         )
                                     }
                                 >
-                                    {isExploreDollarizationEnabled ? (
+                                    {
                                         <AiOutlineDollarCircle
                                             size={20}
-                                            aria-label='Switch to prices in native currency'
-                                        />
-                                    ) : (
-                                        <FiStopCircle
-                                            size={20}
-                                            aria-label='Switch to prices in USD'
+                                            id='trade_dollarized_prices_button'
+                                            aria-label='Toggle dollarized prices button'
                                             style={{
-                                                transform: 'rotate(45deg)',
+                                                color: isExploreDollarizationEnabled
+                                                    ? 'var(--accent1)'
+                                                    : undefined,
                                             }}
                                         />
-                                    )}
+                                    }
                                 </RefreshButton>
                             </Refresh>
                         </DefaultTooltip>

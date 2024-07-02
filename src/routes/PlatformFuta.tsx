@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from '../pages/platformFuta/Home/Home';
 import Explore from '../pages/platformFuta/Explore/Explore';
-import Swap from '../pages/platformFuta/Swap/Swap';
 import Learn from '../pages/platformFuta/Learn/Learn';
 import Account from '../pages/platformFuta/Account/Account';
 import Auctions from '../pages/platformFuta/Auctions/Auctions';
 import Create from '../pages/platformFuta/Create/Create';
 import Ticker from '../pages/platformFuta/Ticker/Ticker';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
+import SwapFuta from '../pages/platformFuta/SwapFuta/SwapFuta';
+import LimitFuta from '../pages/platformFuta/LimitFuta/LimitFuta';
 
 const PlatformFutaRoutes: React.FC = () => {
     const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
@@ -26,11 +27,14 @@ const PlatformFutaRoutes: React.FC = () => {
                         />
                     }
                 />
+                <Route path='swap' element={<SwapFuta />} />
+                <Route path='limit' element={<LimitFuta />} />
 
                 <Route path='/explore' element={<Explore />} />
-                <Route path='/swap' element={<Swap />} />
                 <Route path='/learn' element={<Learn />} />
                 <Route path='/account' element={<Account />} />
+                <Route path='/account/:address' element={<Account />} />
+                <Route path='/:address' element={<Account />} />
                 <Route
                     path='/auctions'
                     element={<Auctions placeholderTicker />}

@@ -3,8 +3,8 @@ import styles from './DetailsContent.module.css';
 import { FiClock } from 'react-icons/fi';
 import { CiCircleCheck } from 'react-icons/ci';
 import { TfiArrowCircleUp } from 'react-icons/tfi';
-import ProgressBar from '../ProgressBar/ProgressBar';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import ProgressBar from '../../../../components/Futa/ProgressBar/ProgressBar';
 
 export default function DetailsContent() {
     const smallHeight = useMediaQuery('(max-height: 800px)');
@@ -44,7 +44,7 @@ export default function DetailsContent() {
                 </p>
             </div>
             <div className={styles.progressContainer}>
-                <ProgressBar value={70} />
+                <ProgressBar fillPercentage={70} />
                 <p>$2,500 / $5,000</p>
             </div>
         </div>

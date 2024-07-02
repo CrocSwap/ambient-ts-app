@@ -43,10 +43,14 @@ export default function SearchableTicker(props: propsIF) {
     } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
-    const [showComplete, setShowComplete] = useState<boolean>(false);
     const customLoading = false;
-    const { setIsLoading, selectedTicker, setSelectedTicker } =
-        useContext(AuctionsContext);
+    const {
+        setIsLoading,
+        selectedTicker,
+        setSelectedTicker,
+        showComplete,
+        setShowComplete,
+    } = useContext(AuctionsContext);
 
     // shape of data to create filter dropdown menu options
     interface filterOptionIF {
@@ -123,7 +127,8 @@ export default function SearchableTicker(props: propsIF) {
         auctions.data.forEach((auction: AuctionDataIF) => categorize(auction));
         // return output variables
         return [incomplete, complete];
-    }, [auctions.data]);
+        // remove completed auctions from incomplete auctions list every 5 seconds
+    }, [auctions.data, Math.floor(Date.now() / 1000 / 5)]);
 
     // auto switch to complete auctions if user only has complete auctions
     useEffect(() => {
@@ -315,6 +320,7 @@ export default function SearchableTicker(props: propsIF) {
                             isAccount={isAccount}
                             selectedTicker={selectedTicker}
                             setSelectedTicker={setSelectedTicker}
+                            setShowComplete={setShowComplete}
                         />
                     ))}
                 </div>

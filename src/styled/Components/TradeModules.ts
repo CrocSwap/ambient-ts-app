@@ -1,22 +1,58 @@
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
 import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Common/Animations';
 
-export const TradeModuleLink = styled(Link)<{ isActive: boolean }>`
+interface TradeModuleLinkProps {
+    isActive: boolean;
+    isFuta?: boolean;
+}
+
+export const TradeModuleLink = styled(Link)<TradeModuleLinkProps>`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--text1);
     width: 116px;
-    height: 25px;
+    height: ${({ isFuta }) => (isFuta ? '29px' : '25px')};
     font-size: 18px;
-    background: ${({ isActive }) =>
-        isActive ? 'var(--accent1)' : 'var(--dark2)'};
     border-radius: var(--border-radius);
     transition: all var(--animation-speed) ease-in-out;
-    & a:hover {
-        background: var(--accent1);
+
+    color: ${({ isFuta }) => (isFuta ? 'var(--text2)' : 'var(--text1)')};
+    background: ${({ isFuta }) => (isFuta ? 'var(--dark2)' : 'var(--dark2)')};
+
+    ${({ isFuta, isActive }) =>
+        isFuta &&
+        css`
+            ${isActive &&
+            css`
+                color: var(--accent1);
+                background: var(--base-dark2, #14161a);
+                border: 0.5px solid var(--base-accent1, #62ebf1);
+            `}
+
+            &:hover {
+                opacity: 0.5;
+                border: 0.5px solid var(--base-accent1, #62ebf1);
+            }
+            border-radius: 0;
+            width: 50%;
+            transition: all var(--animation-speed) ease-in-out;
+        `}
+
+    ${({ isActive, isFuta }) =>
+        !isFuta &&
+        isActive &&
+        css`
+            background: var(--accent1);
+        `}
+    
+    &:hover {
+        ${({ isFuta }) =>
+            !isFuta &&
+            css`
+                background: var(--accent1);
+            `}
     }
 `;
 
@@ -223,7 +259,8 @@ export const TokenQuantityInput = styled.input`
     background-color: transparent;
     background-clip: padding-box;
 
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
@@ -507,6 +544,7 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: var(--dark2);
     background-clip: padding-box;
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 `;
