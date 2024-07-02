@@ -35,6 +35,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         WSTETH: 45,
         WRSETH: 45,
         EZETH: 45,
+        WEETH: 45,
         RETH: 45,
         SWETH: 45,
         PXETH: 45,
