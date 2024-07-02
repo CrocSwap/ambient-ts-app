@@ -4,7 +4,7 @@ import ScatterChart from './ScatterChart/ScatterChart';
 
 export default function Chart() {
     return (
-        <div id='container111' className={styles.container}>
+        <div className={styles.container}>
             <Divider count={2} />
             <h3>CHART</h3>
             {/* <div className={styles.content}> */}

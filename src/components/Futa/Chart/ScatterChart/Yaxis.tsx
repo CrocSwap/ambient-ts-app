@@ -9,23 +9,24 @@ interface AxisIF {
     data: any;
     scale: d3.ScaleLinear<number, number> | undefined;
 }
-export default function Xaxis(props: AxisIF) {
-    const d3XaxisRef = useRef<HTMLInputElement | null>(null);
+export default function Yaxis(props: AxisIF) {
+    const d3YaxisRef = useRef<HTMLInputElement | null>(null);
     const { data, scale } = props;
 
     useEffect(() => {
         if (scale) {
-            const xAxis = d3
-                .axisBottom(scale)
-                .tickValues(d3.range(0, 1441, 60))
-                .tickFormat((d) => {
-                    const hour = d.valueOf() / 60;
-                    return hour.toString();
-                });
+            const yAxis = d3
+                .axisLeft(scale)
+                .tickValues(d3.range(0, Number(d3.max(data)) + 100000, 100000))
+                .tickFormat((d) => `${(Number(d) / 1000).toFixed(0)}k`);
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
-            d3.select(d3XaxisRef.current).on('draw', () => {
-                const svg = d3.select(d3XaxisRef.current).select('svg');
+            d3.select(d3YaxisRef.current).on('draw', () => {
+                const svg = d3.select(d3YaxisRef.current).select('svg');
+                svg.attr(
+                    'viewBox',
+                    `${-30} ${0} ${20} ${scale.range()[0] + 1}`,
+                );
                 svg.select('g')
                     .selectAll('path, line')
                     .attr('stroke', axisColor);
@@ -33,23 +34,21 @@ export default function Xaxis(props: AxisIF) {
                     .selectAll('text')
                     .attr('fill', textColor)
                     .style('font-family', 'Roboto Mono');
-                d3LinearAxisJoin(svg, [data]).call(xAxis);
+                d3LinearAxisJoin(svg, [data]).call(yAxis);
             });
         }
 
-        renderCanvasArray([d3XaxisRef]);
-    }, [scale, d3XaxisRef]);
+        renderCanvasArray([d3YaxisRef]);
+    }, [scale, d3YaxisRef]);
 
     return (
         <d3fc-svg
-            ref={d3XaxisRef}
+            ref={d3YaxisRef}
             style={{
-                gridColumnStart: 2,
-                gridColumnEnd: 4,
-                gridRowStart: 2,
-                gridRowEnd: 4,
-                height: '100%',
-                width: '100%',
+                gridColumnStart: 1,
+                gridColumnEnd: 2,
+                gridRowStart: 1,
+                gridRowEnd: 3,
             }}
         ></d3fc-svg>
     );
