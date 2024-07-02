@@ -201,7 +201,7 @@ export const decodeSocketIOMessage = (msg: string) => {
     const ret: ChatWsDecodedMessage = {};
 
     if (msg.length > 2 && msg.indexOf('42[') == 0) {
-        msg = msg.substring(3);
+        msg = msg.substring(2);
         if (msg.length > 0) {
             const parsed = JSON.parse(msg);
             if (parsed.length > 1) {

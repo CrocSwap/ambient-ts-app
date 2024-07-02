@@ -12,6 +12,7 @@ import {
 import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 
 import {
+    decodeSocketIOMessage,
     encodeSocketIOMessage,
     getLS,
     getUnverifiedMsgList,
@@ -35,7 +36,9 @@ import {
     verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
-import { useSocketIO, ReadyState } from 'react-use-websocket';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import {
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
@@ -44,8 +47,6 @@ import { ChatWsQueryParams, LikeDislikePayload } from '../ChatIFs';
 import { domDebug, getTimeForLog } from '../DomDebugger/DomDebuggerUtils';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 
 type ChatSocketListener = {
     msg: string;
@@ -112,28 +113,36 @@ const useChatSocket = (
     }
 
     domDebug('room', qp.roomId);
+
     const {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
         readyState,
-    } = useSocketIO(isChatOpen && !isUserIdle ? url : null, {
+    } = useWebSocket(isChatOpen && !isUserIdle ? url : null, {
         queryParams: {
             roomId: qp.roomId,
             address: qp.address ? qp.address : '',
             ensName: qp.ensName ? qp.ensName : '',
         },
+        fromSocketIO: true,
         shouldReconnect: () => isChatOpen,
-        reconnectAttempts: 10,
-        reconnectInterval: 3000,
+        reconnectAttempts: 20,
+        reconnectInterval: (attemptNumber) =>
+            Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
         share: true,
         onOpen: () => {
             domDebug('connected', getTimeForLog(new Date()));
+            doHandshake();
         },
         onClose: () => {
             domDebug('disconnected', getTimeForLog(new Date()));
         },
         onError: () => {
             domDebug('ERR_error_time', getTimeForLog(new Date()));
+        },
+        heartbeat: {
+            interval: 60000,
+            timeout: 55000,
         },
     });
 
@@ -150,42 +159,48 @@ const useChatSocket = (
 
     useEffect(() => {
         if (isChatOpen) {
-            sendToSocket('handshake-update', {
-                roomId: room,
-                address: address,
-                ensName: ensName,
-            });
+            doHandshake();
         }
     }, [address, ensName, room, isChatOpen, isUserIdle]);
 
     useEffect(() => {
-        switch (socketLastMessage.type) {
+        if (socketLastMessage == null || socketLastMessage.data == null) return;
+        const decoded = decodeSocketIOMessage(socketLastMessage.data);
+        switch (decoded.msgType) {
             case 'msg-recieve-2':
-                newMsgListener(socketLastMessage.payload);
+                newMsgListener(decoded.payload);
                 break;
             case 'message-deleted-listener':
-                deletedMsgListener(socketLastMessage.payload);
+                deletedMsgListener(decoded.payload);
                 break;
             case 'message-updated-listener':
-                updatedMsgListener(socketLastMessage.payload);
+                updatedMsgListener(decoded.payload);
                 break;
             case 'set-avatar-listener':
-                userListLightUpdate(socketLastMessage.payload);
-                handlePossibleAvatarChange(socketLastMessage.payload);
-                if (listeners.some((e) => e.msg === socketLastMessage.type)) {
+                userListLightUpdate(decoded.payload);
+                handlePossibleAvatarChange(decoded.payload);
+                if (listeners.some((e) => e.msg === decoded.msgType)) {
                     const willBeCalled = listeners.filter(
-                        (e) => e.msg === socketLastMessage.type,
+                        (e) => e.msg === decoded.msgType,
                     );
                     willBeCalled.map((e) => {
-                        e.listener(socketLastMessage.payload);
+                        e.listener(decoded.payload);
                     });
                 }
                 break;
             case 'noti':
-                notiListener(socketLastMessage.payload);
+                notiListener(decoded.payload);
                 break;
         }
     }, [socketLastMessage]);
+
+    const doHandshake = () => {
+        sendToSocket('handshake-update', {
+            roomId: room,
+            address: address,
+            ensName: ensName,
+        });
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function sendToSocket(msgType: string, payload: any) {
