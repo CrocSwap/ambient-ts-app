@@ -34,11 +34,7 @@ export default function ScatterChart() {
     const [yScale, setYscale] = useState<d3.ScaleLinear<number, number>>();
     const [chartSize, setChartSize] = useState<any>();
     const [hoveredDot, setHoveredDot] = useState<scatterData | undefined>();
-    const [selectedDot, setSelectedDot] = useState<scatterData | undefined>({
-        name: 'USA',
-        timeRemaining: 300,
-        price: 11294,
-    });
+    const [selectedDot, setSelectedDot] = useState<scatterData | undefined>();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [pointSeries, setPointSeries] = useState<any>();
