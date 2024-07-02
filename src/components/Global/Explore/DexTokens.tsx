@@ -10,7 +10,7 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import TokenRow from './TokenRow';
 import { useSortedDexTokens, sortedDexTokensIF } from './useSortedDexTokens';
-import { dexTokenData } from '../../../pages/Explore/useTokenStats';
+import { dexTokenData } from '../../../pages/platformAmbient/Explore/useTokenStats';
 import TableHeadTokens from './TableHeadTokens';
 import { getDefaultPairForChain } from '../../../ambient-utils/constants';
 import { GCServerPoolIF, PoolIF, TokenIF } from '../../../ambient-utils/types';

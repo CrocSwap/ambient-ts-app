@@ -22,7 +22,10 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
-import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
+import {
+    useTokenStatsIF,
+    useTokenStats,
+} from '../pages/platformAmbient/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {

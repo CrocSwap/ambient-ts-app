@@ -19,6 +19,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import { brand } from '../../../ambient-utils/constants';
 
 interface PropsIF {
     chainId: string;
@@ -65,6 +66,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { tokenA, tokenB, limitTick, areDefaultTokensUpdatedForChain } =
         useContext(TradeDataContext);
+    const isFuta = brand === 'futa';
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -145,7 +147,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
-                    padding='0 32px'
+                    padding={isFuta ? '0 16px' : '0 32px'}
                 >
                     {transactionDetails}
                     <SmolRefuelLink />

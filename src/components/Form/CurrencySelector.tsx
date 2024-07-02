@@ -9,7 +9,12 @@ interface propsIF {
     setQty: Dispatch<SetStateAction<string | undefined>>;
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
-    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
+    customBorderRadius?: string;
+    noModals?: boolean;
+    usdValue?: string | undefined;
+    walletBalance?: string;
+    handleBalanceClick?: () => void;
 }
 
 export function CurrencySelector(props: propsIF) {
@@ -20,6 +25,11 @@ export function CurrencySelector(props: propsIF) {
         inputValue,
         setInputValue,
         setTokenModalOpen,
+        customBorderRadius,
+        usdValue,
+        noModals,
+        walletBalance,
+        handleBalanceClick,
     } = props;
 
     const handleOnChange = (input: string) => {
@@ -33,10 +43,9 @@ export function CurrencySelector(props: propsIF) {
                   ).toString(),
         );
     };
-
     return (
         <TokenInputQuantity
-            label='Select Token'
+            label={customBorderRadius ? '' : 'Select Token'}
             tokenAorB={null}
             value={inputValue}
             handleTokenInputEvent={handleOnChange}
@@ -44,6 +53,11 @@ export function CurrencySelector(props: propsIF) {
             token={selectedToken}
             setTokenModalOpen={setTokenModalOpen}
             fieldId='exchangeBalance'
+            customBorderRadius={customBorderRadius}
+            noModals={noModals}
+            usdValue={usdValue}
+            walletBalance={walletBalance}
+            handleBalanceClick={handleBalanceClick}
         />
     );
 }

@@ -213,10 +213,10 @@ const PageHeader = function () {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/edit')
+            ? '/trade/edit/'
+            : '/trade/market/';
 
     // hooks to generate URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');

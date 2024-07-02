@@ -206,11 +206,11 @@ export const useProcessOrder = (
                 ? 'buy'
                 : 'sell'
             : isBid
-            ? 'sell'
-            : 'buy'
+              ? 'sell'
+              : 'buy'
         : (isDenomBase && isBid) || (!isDenomBase && !isBid)
-        ? 'sell'
-        : 'buy';
+          ? 'sell'
+          : 'buy';
 
     const type = 'limit';
 
@@ -360,13 +360,13 @@ export const useProcessOrder = (
                         ? priceDecimalCorrected * basePrice
                         : undefined
                     : quotePrice
-                    ? invPriceDecimalCorrected * quotePrice
-                    : undefined
+                      ? invPriceDecimalCorrected * quotePrice
+                      : undefined
                 : basePrice && quotePrice
-                ? isDenomBase
-                    ? invPriceDecimalCorrected * quotePrice
-                    : priceDecimalCorrected * basePrice
-                : undefined;
+                  ? isDenomBase
+                      ? invPriceDecimalCorrected * quotePrice
+                      : priceDecimalCorrected * basePrice
+                  : undefined;
 
             const formattedUsdPrice = displayPriceNumInUsd
                 ? getFormattedNumber({
@@ -426,8 +426,8 @@ export const useProcessOrder = (
                     ? bidTickInvPrice
                     : askTickInvPrice
                 : isBid
-                ? askTickPrice
-                : bidTickPrice;
+                  ? askTickPrice
+                  : bidTickPrice;
 
             const startPriceDisplay = getFormattedNumber({
                 value: startPriceDisplayNum,
@@ -439,8 +439,8 @@ export const useProcessOrder = (
                         ? askTickPrice
                         : bidTickPrice
                     : isBid
-                    ? bidTickInvPrice
-                    : askTickInvPrice;
+                      ? bidTickInvPrice
+                      : askTickInvPrice;
 
             const startPriceDisplayDenomByMoneyness = getFormattedNumber({
                 value: startPriceDenomByMoneyness,
@@ -451,8 +451,8 @@ export const useProcessOrder = (
                     ? 1 / priceHalfBelow
                     : 1 / priceHalfAbove
                 : isBid
-                ? priceHalfBelow
-                : priceHalfAbove;
+                  ? priceHalfBelow
+                  : priceHalfAbove;
 
             const middlePriceDisplay = getFormattedNumber({
                 value: middlePriceDisplayNum,
@@ -464,8 +464,8 @@ export const useProcessOrder = (
                         ? priceHalfBelow
                         : priceHalfAbove
                     : isBid
-                    ? 1 / priceHalfBelow
-                    : 1 / priceHalfAbove;
+                      ? 1 / priceHalfBelow
+                      : 1 / priceHalfAbove;
 
             const middlePriceDisplayDenomByMoneyness = getFormattedNumber({
                 value: middlePriceDenomByMoneyness,
@@ -476,8 +476,8 @@ export const useProcessOrder = (
                     ? askTickInvPrice
                     : bidTickInvPrice
                 : isBid
-                ? bidTickPrice
-                : askTickPrice;
+                  ? bidTickPrice
+                  : askTickPrice;
 
             const finishPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -485,8 +485,8 @@ export const useProcessOrder = (
                         ? bidTickPrice
                         : askTickPrice
                     : isBid
-                    ? askTickInvPrice
-                    : bidTickInvPrice;
+                      ? askTickInvPrice
+                      : bidTickInvPrice;
 
             const finishPriceDisplayDenomByMoneyness = getFormattedNumber({
                 value: finishPriceDenomByMoneyness,

@@ -12,6 +12,7 @@ import {
     IS_LOCAL_ENV,
     SCROLL_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
+    ZERO_ADDRESS,
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
@@ -44,6 +45,7 @@ interface ChainDataContextIF {
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
+    nativeTokenUsdPrice: number | undefined;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -58,8 +60,11 @@ export const ChainDataContextProvider = (props: {
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchTokenBalances,
+        cachedTokenDetails,
+        cachedFetchTokenPrice,
+    } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
@@ -101,10 +106,10 @@ export const ChainDataContextProvider = (props: {
                 ? chainData.nodeUrl.slice(0, -32) +
                   import.meta.env.VITE_INFURA_KEY
                 : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-                ? BLAST_RPC_URL
-                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                ? SCROLL_RPC_URL
-                : blockPollingUrl;
+                  ? BLAST_RPC_URL
+                  : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                    ? SCROLL_RPC_URL
+                    : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
@@ -170,9 +175,10 @@ export const ChainDataContextProvider = (props: {
     }, [lastNewHeadMessage]);
 
     const fetchGasPrice = async () => {
-        const newGasPrice = await supportedNetworks[
-            chainData.chainId
-        ].getGasPriceInGwei(provider);
+        const newGasPrice =
+            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
+                provider,
+            );
         if (gasPriceInGwei !== newGasPrice) {
             setGasPriceinGwei(newGasPrice);
         }
@@ -239,6 +245,23 @@ export const ChainDataContextProvider = (props: {
         everyFiveMinutes,
         activeNetwork.graphCacheUrl,
     ]);
+
+    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(ZERO_ADDRESS, chainData.chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setNativeTokenUsdPrice(price.usdPrice);
+            } else {
+                setNativeTokenUsdPrice(undefined);
+            }
+        });
+    }, [crocEnv, chainData.chainId]);
 
     const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
         dataReceived: false,
@@ -313,6 +336,7 @@ export const ChainDataContextProvider = (props: {
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isActiveNetworkL2,
+        nativeTokenUsdPrice,
     };
 
     return (

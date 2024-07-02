@@ -1,0 +1,132 @@
+.container{
+  
+    display: flex;
+    flex-direction: column;
+    gap: 8px;  
+}
+
+.token, .subName, .subDetails, .rowLabel, .timeRowValue, .filledValue, .filledValue span, .progressContainer p{
+    font-family: "Roboto Mono";
+    font-weight: 400;
+    line-height: normal;
+
+}
+.token{
+    text-transform: uppercase;
+    color: var(--text1, #F0F0F8);
+    font-size: 40px;
+    letter-spacing: -0.8px;
+}
+
+.subName{
+    color: var(--accent, #0CCDFF);
+font-size: 20px;
+letter-spacing: -0.4px;
+}
+
+.subDetails{
+    color: var(--text2, #8B98A5);
+    font-size: 14px;
+    letter-spacing: -0.28px; 
+    padding-bottom: 1rem;
+}
+
+/* rows */
+
+.rowsContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.timeRow, .filledBid, .openedBid{
+    background: var(--dark2, #12121A); 
+    display: grid;
+    grid-template-columns: 24px 1fr 1.15fr;
+    align-items: center;
+    gap: 8px;
+}
+
+.timeRow, .filledBid{
+    border: 1px solid var(--dark3, #1E1E24);
+    padding: 8px;
+    border-radius: 8px;
+
+}
+
+.rowLabel{
+color: var(--text2, #8B98A5);
+text-align: start;
+font-size: 14px;
+letter-spacing: -0.28px;
+}
+.timeRowValue{
+    color: var(--accent, #0CCDFF);
+text-align: right;
+font-size: 16px;
+letter-spacing: -0.32px;
+}
+.filledValue{
+    color: var(--text1, #F0F0F8);
+text-align: right;
+font-size: 20px;
+letter-spacing: -0.4px;
+display: flex;
+justify-content: flex-end;
+flex-direction: row;
+align-items: center;
+gap: 8px;
+}
+
+.filledValue span{
+    color: var(--text1, #F0F0F8);
+text-align: right;
+font-size: 12px;
+letter-spacing: -0.24px;
+}
+
+.openedContainer{
+    border-radius: 8px;
+    border: 1px solid var(--dark3, #1E1E24);
+    background: var(--dark2, #12121A); 
+    padding: 8px;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.progressContainer{
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+}
+.progressContainer p{
+color: var(--text2, #8B98A5);
+text-align: right;
+font-size: 14px;
+letter-spacing: -0.28px;
+}
+
+.compactTokenComponent{
+    display: flex;
+    flex-direction: row;
+    gap: 8px
+}
+.imgContainer{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    border-radius: 8px;
+}
+.compactImg{
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    border-radius: 8px;
+
+}
+.compactImg img{
+    object-fit: contain;
+    max-width: 100%;
+    max-height: 100%;
+}

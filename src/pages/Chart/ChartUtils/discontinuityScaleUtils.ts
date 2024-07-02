@@ -1,5 +1,5 @@
 import { CandleDataIF } from '../../../ambient-utils/types';
-import { getLast15Minutes } from './chartUtils';
+import { getLast15Minutes } from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 export interface DiscontinuityProvider {
     distance(start: number, end: number): number;
     offset(location: number | Date, offset: number): number | Date;

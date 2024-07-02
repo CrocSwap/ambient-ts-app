@@ -222,9 +222,8 @@ export class BatchedJsonRpcProvider extends JsonRpcProvider {
                     const payload = batch.map((p) => p.payload);
 
                     try {
-                        const results = await this.multicall.sendMulticall(
-                            payload,
-                        );
+                        const results =
+                            await this.multicall.sendMulticall(payload);
                         for (const { resolve, reject, payload } of batch) {
                             const resp = results.filter(
                                 (r: any) => r.id === payload.id,
@@ -316,9 +315,8 @@ class Multicall {
         const preparedCalls = calls.map((c) => {
             return [c.target, true, c.callData];
         });
-        const rawResults = await this.contract.aggregate3.staticCall(
-            preparedCalls,
-        );
+        const rawResults =
+            await this.contract.aggregate3.staticCall(preparedCalls);
         const results = rawResults.map((r: any, i: number) => {
             return {
                 id: payload[i].id,

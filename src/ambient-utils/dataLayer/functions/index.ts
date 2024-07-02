@@ -5,6 +5,7 @@ export * from './chains';
 export * from './defaultTopPools';
 export * from './diffHashSig';
 export * from './getElapsedTime';
+export * from './getTimeRemaining';
 export * from './getFormattedNumber';
 export * from './getLimitOrderData';
 export * from './getLimitPrice';

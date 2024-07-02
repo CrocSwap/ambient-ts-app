@@ -21,15 +21,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Global/Modal/useModal';
-import { FlexContainer, Text } from '../../styled/Common';
-import {
-    InputDisabledText,
-    TokenQuantityContainer,
-    TokenQuantityInput,
-    TokenSelectButton,
-} from '../../styled/Components/TradeModules';
-import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
+import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
+import { brand } from '../../ambient-utils/constants';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -46,6 +41,11 @@ interface propsIF {
     disabledContent?: React.ReactNode;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     onInitPage?: boolean;
+    customBorderRadius?: string;
+    noModals?: boolean;
+    usdValue?: string | undefined;
+    walletBalance?: string;
+    handleBalanceClick?: () => void;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -63,6 +63,11 @@ function TokenInputQuantity(props: propsIF) {
         handleTokenInputEvent,
         reverseTokens,
         setTokenModalOpen = () => null,
+        customBorderRadius,
+        usdValue,
+        noModals,
+        walletBalance,
+        // handleBalanceClick,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -132,15 +137,9 @@ function TokenInputQuantity(props: propsIF) {
     const tokenSelectRef = useRef(null);
 
     const poolNotInitializedContent = tokenSelectRef.current && (
-        <InputDisabledText
-            flexDirection='column'
-            alignItems='center'
-            justifyContent='center'
-            fullHeight
-            fullWidth
-        >
+        <div className={styles.inputDisabledText}>
             This pool has not been initialized.
-            <Text color='accent1'>
+            <span className={styles.text} style={{ color: 'var(--accent1)' }}>
                 <Link
                     to={linkGenInitPool.getFullURL({
                         chain: chainId,
@@ -150,12 +149,13 @@ function TokenInputQuantity(props: propsIF) {
                 >
                     Initialize it to continue.
                 </Link>
-            </Text>
-        </InputDisabledText>
+            </span>
+        </div>
     );
 
     const input = (
-        <TokenQuantityInput
+        <input
+            className={styles.tokenQuantityInput}
             id={fieldId ? `${fieldId}_qty` : undefined}
             placeholder={isLoading ? '' : '0.0'}
             onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event)}
@@ -173,7 +173,7 @@ function TokenInputQuantity(props: propsIF) {
 
     const isInit = location.pathname.startsWith('/initpool');
 
-    const modalOrNoModal = isInit ? (
+    const modalOrNoModal = !setTokenModalOpen ? null : isInit ? (
         <SoloTokenSelect
             onClose={closeTokenSelect}
             showSoloSelectTokenButtons={showSoloSelectTokenButtons}
@@ -192,63 +192,100 @@ function TokenInputQuantity(props: propsIF) {
             reverseTokens={reverseTokens}
         />
     );
+    const inputDisplay = isLoading ? (
+        <div
+            className={`${styles.flexContainer}`}
+            style={{ width: '100%', height: '100%' }}
+        >
+            <Spinner size={24} bg='var(--dark2)' weight={2} />
+        </div>
+    ) : !isPoolInitialized && fieldId !== 'exchangeBalance' && !onInitPage ? (
+        poolNotInitializedContent
+    ) : disabledContent !== undefined ? (
+        disabledContent
+    ) : (
+        input
+    );
 
-    return (
-        <FlexContainer
-            flexDirection='column'
-            id={fieldId}
+    const tokenSelectButton = (
+        <button
+            className={`${styles.tokenSelectButton} ${
+                noModals ? styles.justDisplay : ''
+            }`}
+            id={fieldId ? `${fieldId}_token_selector` : undefined}
+            onClick={noModals ? undefined : openTokenSelect}
+            tabIndex={0}
+            aria-label='Open swap sell token modal.'
+            ref={tokenSelectRef}
             style={{
-                background: 'var(--dark2)',
-                borderRadius: '1rem',
-                gap: '8px',
-                padding: '8px 8px 8px 16px ',
-                minHeight: '81px',
+                borderRadius: customBorderRadius ? customBorderRadius : '50px',
             }}
         >
-            {label && (
-                <Text margin='4px 0' fontSize='body' color='text1'>
-                    {label}
-                </Text>
-            )}
-            <TokenQuantityContainer
-                animation={showPulseAnimation ? 'pulse' : ''}
-                style={{ marginBottom: !includeWallet ? '8px' : '0' }}
-            >
-                {isLoading ? (
-                    <FlexContainer fullWidth fullHeight alignItems='center'>
-                        <Spinner size={24} bg='var(--dark2)' weight={2} />
-                    </FlexContainer>
-                ) : !isPoolInitialized &&
-                  fieldId !== 'exchangeBalance' &&
-                  !onInitPage ? (
-                    poolNotInitializedContent
-                ) : disabledContent !== undefined ? (
-                    disabledContent
-                ) : (
-                    input
-                )}
+            <TokenIcon
+                token={token}
+                src={uriToHttp(token.logoURI)}
+                alt={token.symbol}
+                size='2xl'
+            />
+            {tokenSymbol}
+            {!noModals && <RiArrowDownSLine size={27} />}
+        </button>
+    );
 
-                <TokenSelectButton
-                    id={fieldId ? `${fieldId}_token_selector` : undefined}
-                    onClick={openTokenSelect}
-                    tabIndex={0}
-                    aria-label='Open swap sell token modal.'
-                    ref={tokenSelectRef}
+    const futaLayout = (
+        <section className={styles.futaLayout}>
+            <div className={styles.futaLayoutLeft}>
+                {inputDisplay}
+                <p>{usdValue}</p>
+            </div>
+            <div className={styles.futaLayoutRight}>
+                {/* {tokenSelectButton} */}
+                <button
+                    className={styles.tokenButton}
+                    style={{ cursor: 'default' }}
                 >
                     <TokenIcon
                         token={token}
                         src={uriToHttp(token.logoURI)}
                         alt={token.symbol}
-                        size='2xl'
+                        size='xl'
                     />
                     {tokenSymbol}
-                    <RiArrowDownSLine size={27} />
-                </TokenSelectButton>
-            </TokenQuantityContainer>
+                </button>
+                <button
+                    className={styles.walletBalanceButton}
+                    style={{ cursor: 'default' }}
+                >
+                    {walletBalance}
+                </button>
+            </div>
+        </section>
+    );
 
+    if (brand === 'futa') return futaLayout;
+
+    return (
+        <div
+            className={styles.flexContainer}
+            id={fieldId}
+            style={{
+                borderRadius: customBorderRadius ? customBorderRadius : '1rem',
+            }}
+        >
+            {label && <span className={styles.text}>{label}</span>}
+            <div
+                className={`${styles.tokenQuantityContainer} ${
+                    showPulseAnimation && styles.pulseAnimation
+                }`}
+                style={{ marginBottom: !includeWallet ? '8px' : '0' }}
+            >
+                {inputDisplay}
+
+                {tokenSelectButton}
+            </div>
             {includeWallet && includeWallet}
-            {isTokenSelectOpen && modalOrNoModal}
-        </FlexContainer>
+            {isTokenSelectOpen && !noModals && modalOrNoModal}
+        </div>
     );
 }
 

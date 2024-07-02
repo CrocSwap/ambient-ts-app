@@ -192,8 +192,8 @@ export default function Deposit(props: propsIF) {
                 ? BigInt(tokenWalletBalance) >=
                   BigInt(depositQtyNonDisplay || 0)
                 : tokenWalletBalance && BigInt(tokenWalletBalance) >= BigInt(0)
-                ? true
-                : false,
+                  ? true
+                  : false,
         [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
     );
 

@@ -66,6 +66,6 @@
     .main_container {
         width: 510px;
 
-        height: 250px;
+        max-height: 350px;
     }
 }
