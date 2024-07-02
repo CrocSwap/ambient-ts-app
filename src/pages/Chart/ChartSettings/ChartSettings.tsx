@@ -40,6 +40,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
 import Spinner from '../../../components/Global/Spinner/Spinner';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface ContextMenuIF {
     contextMenuPlacement: { top: number; left: number; isReversed: boolean };
@@ -100,6 +101,12 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
+
+    const {
+        baseToken: { symbol: baseTokenSymbol },
+        quoteToken: { symbol: quoteTokenSymbol },
+        isDenomBase,
+    } = useContext(TradeDataContext);
 
     useEffect(() => {
         d3.select(contextMenuRef.current).on(
@@ -304,7 +311,9 @@ export default function ChartSettings(props: ContextMenuIF) {
     };
 
     const handlePriceInChange = (option: string) => {
-        setIsTradeDollarizationEnabled(option !== 'Token');
+        setIsTradeDollarizationEnabled(
+            option !== quoteTokenSymbol && option !== baseTokenSymbol,
+        );
         setPriceInOption(option);
     };
 
@@ -315,7 +324,11 @@ export default function ChartSettings(props: ContextMenuIF) {
     const [isSelecboxActive, setIsSelecboxActive] = useState(false);
 
     const [priceInOption, setPriceInOption] = useState<string>(
-        !isTradeDollarizationEnabled ? 'Token' : 'USD',
+        !isTradeDollarizationEnabled
+            ? isDenomBase
+                ? quoteTokenSymbol
+                : baseTokenSymbol
+            : 'USD',
     );
 
     const checkListContent = [
@@ -345,7 +358,7 @@ export default function ChartSettings(props: ContextMenuIF) {
         {
             selection: 'Show prices in',
             action: handlePriceInChange,
-            options: ['Token', 'USD'],
+            options: [isDenomBase ? quoteTokenSymbol : baseTokenSymbol, 'USD'],
         },
     ];
 

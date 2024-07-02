@@ -239,6 +239,10 @@ export default function Chart(props: propsIF) {
         defaultChartSettings,
         localChartSettings,
         setLocalChartSettings,
+        contextmenu,
+        setContextmenu,
+        contextMenuPlacement,
+        setContextMenuPlacement,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -307,14 +311,7 @@ export default function Chart(props: propsIF) {
     const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
 
-    const [contextmenu, setContextmenu] = useState(false);
     const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
-
-    const [contextMenuPlacement, setContextMenuPlacement] = useState<{
-        top: number;
-        left: number;
-        isReversed: boolean;
-    }>();
 
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';

@@ -14,6 +14,7 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { IoSettingsOutline } from 'react-icons/io5';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -24,6 +25,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         chartHeights,
         tradeTableState,
         isCandleDataNull,
+        contextmenu,
+        setContextmenu,
+        setContextMenuPlacement,
     } = useContext(ChartContext);
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
@@ -154,6 +158,31 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         size={20}
                         id='trade_chart_save_image'
                         aria-label='Copy chart image button'
+                    />
+                </HeaderButtons>
+            </DefaultTooltip>
+            <DefaultTooltip
+                interactive
+                title={'Open chart settings'}
+                enterDelay={500}
+            >
+                <HeaderButtons
+                    mobileHide
+                    onClick={() => {
+                        setContextmenu(!contextmenu);
+                        setContextMenuPlacement(() => {
+                            return {
+                                top: 200,
+                                left: 550,
+                                isReversed: false,
+                            };
+                        });
+                    }}
+                >
+                    <IoSettingsOutline
+                        size={20}
+                        id='chart_settings'
+                        aria-label='Chart settings button'
                     />
                 </HeaderButtons>
             </DefaultTooltip>

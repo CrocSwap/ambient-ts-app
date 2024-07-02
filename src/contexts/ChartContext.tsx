@@ -104,6 +104,25 @@ interface ChartContextIF {
     setLocalChartSettings: React.Dispatch<
         SetStateAction<LocalChartSettingsIF | undefined>
     >;
+    setContextmenu: React.Dispatch<SetStateAction<boolean>>;
+    contextmenu: boolean;
+    contextMenuPlacement:
+        | {
+              top: number;
+              left: number;
+              isReversed: boolean;
+          }
+        | undefined;
+    setContextMenuPlacement: React.Dispatch<
+        SetStateAction<
+            | {
+                  top: number;
+                  left: number;
+                  isReversed: boolean;
+              }
+            | undefined
+        >
+    >;
 }
 
 export interface ChartThemeIF {
@@ -199,6 +218,14 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [chartContainerOptions, setChartContainerOptions] = useState();
 
     const [isChartHeightMinimum, setIsChartHeightMinimum] = useState(false);
+
+    const [contextmenu, setContextmenu] = useState(false);
+
+    const [contextMenuPlacement, setContextMenuPlacement] = useState<{
+        top: number;
+        left: number;
+        isReversed: boolean;
+    }>();
 
     const [chartHeights, setChartHeights] = useState<{
         current: number;
@@ -365,6 +392,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         defaultChartSettings,
         localChartSettings,
         setLocalChartSettings,
+        contextmenu,
+        setContextmenu,
+        contextMenuPlacement,
+        setContextMenuPlacement,
     };
 
     useEffect(() => {
