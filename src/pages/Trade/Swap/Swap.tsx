@@ -70,8 +70,12 @@ function Swap(props: propsIF) {
         provider,
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkBlast,
+        isActiveNetworkScroll,
+        isActiveNetworkPlume,
+    } = useContext(ChainDataContext);
     const { isPoolInitialized, poolData } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
 
@@ -831,7 +835,12 @@ function Swap(props: propsIF) {
             button={
                 <Button
                     idForDOM='confirm_swap_button'
-                    style={{ textTransform: 'none' }}
+                    style={{
+                        textTransform: 'none',
+                        fontWeight: isActiveNetworkPlume
+                            ? 'var(--fw-extra-bold)'
+                            : 'var(fw-normal)',
+                    }}
                     title={buttonTitle}
                     action={
                         areBothAckd

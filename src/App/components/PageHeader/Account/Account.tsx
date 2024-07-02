@@ -201,7 +201,16 @@ export default function Account(props: propsIF) {
                 levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
             <NavItem
-                icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
+                icon={
+                    <FiMoreHorizontal
+                        size={20}
+                        color={
+                            isActiveNetworkPlume
+                                ? 'var(--text1)'
+                                : 'var(--text2)'
+                        }
+                    />
+                }
                 open={openNavbarMenu}
                 setOpen={setOpenNavbarMenu}
             >

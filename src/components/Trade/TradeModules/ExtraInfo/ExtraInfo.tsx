@@ -9,6 +9,7 @@ import {
 
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface PropsIF {
     extraInfo: {
@@ -32,7 +33,7 @@ export const ExtraInfo = (props: PropsIF) => {
         showWarning,
         priceImpactExceedsThreshold,
     } = props;
-
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
@@ -68,6 +69,7 @@ export const ExtraInfo = (props: PropsIF) => {
                         : () => setShowExtraInfo(false)
                 }
                 aria-label={`Gas cost is ${gasPrice}. Conversion rate is ${conversionRate}.`}
+                style={{ opacity: isActiveNetworkPlume ? '0.8' : '1' }}
             >
                 {
                     <FlexContainer

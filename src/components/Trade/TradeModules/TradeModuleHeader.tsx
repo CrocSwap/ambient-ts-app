@@ -60,7 +60,7 @@ function TradeModuleHeader(props: propsIF) {
                             style={{
                                 color: 'var(--text2)',
                                 fontWeight: '400',
-                                fontSize: '18px',
+                                fontSize: '16px',
                             }}
                         >
                             SELECT TOKEN

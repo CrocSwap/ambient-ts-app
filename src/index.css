@@ -4,6 +4,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
@@ -59,13 +60,18 @@
     --other-red: #e75670;
 
     /* border */
-    --color-border: 1px solid var(--accent1);
+    --color-border: var(--accent1);
     --border: var(--dark2);
     --border-radius: 4px;
     --swap-border: var(--title-gradient);
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
+
+        /* font weight */
+        --fw-bold: 300;
+        --fw-extra-bold: 300;
+        --fw-normal: 300;
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -354,8 +360,20 @@
 }
 
 [data-theme='plume_light'] {
+    --font-logo: "Poppins", sans-serif;
+    --font-family: "Poppins", sans-serif;
+    --roboto: 'Roboto Mono', monospace;
+    --mono: monospace, 'Lexend Deca' sans-serif;
+
+
     --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);
-    --swap-bg: url('./assets/images/backgrounds/swap_bg_sepolia.webp');
+    --swap-bg: url('./assets/images/backgrounds/swap_bg_sepolia.jpg');
+    --title-gradient: #19222d;
+
+    /* font weight */
+    --fw-bold: 600;
+    --fw-extra-bold: 800;
+    --fw-normal: 500;
 
     /* colors */
     --blur-bg: #ebebed;
@@ -364,16 +382,14 @@
     --text2: #19222d;
     --text3: #0e131a;
 
-    --dark1: #e6f1f4;
-    --dark2: #f6f6f7;
+    --dark1: #f9f9f9;
+    --dark2: #ffffff;
     --dark3: #eff1f4;
 
     --accent1: #ebbe49;
     --accent2: #f44336;
 
-    --gradient-box-shadow: 0px 0px 5px 0px rgba(239, 237, 232, 0.5),
-        0px 0px 10px 2px rgba(243, 241, 237, 0.4),
-        0px 0px 15px 4px rgba(245, 244, 242, 0.3);
+    --gradient-box-shadow: none;
 
     --shimmer: linear-gradient(to right, #ece9e6, white);
     --chart-gradient: linear-gradient(to right, #d8d4d1, white);
@@ -385,9 +401,13 @@
     );
 
     --swap-box-shadow: none;
+    --navbar-bg: #dfeef3;
     --swap-border: none;
     --navbar-border: #cacbcd;
     --dark-border: 0.2px solid #fefefe;
     --border: #cacbcd;
     --select: #acb6c4;
+    --border-radius: 8px;
+    --extra-info-bg: #f7f7f7;
+    --color-border: transparent;
 }

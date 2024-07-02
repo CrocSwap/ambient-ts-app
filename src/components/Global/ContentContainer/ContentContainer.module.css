@@ -19,6 +19,7 @@
 
 .swap_main_content {
     box-shadow: var(--gradient-box-shadow);
+
 }
 
 .swap_bg {
@@ -47,6 +48,14 @@
 }
 
 /* media queries */
+
+/* @media (max-height: 1000px) {
+.swap_main_content {
+   max-height: 470px;
+   overflow-y: scroll;
+}
+} */
+
 
 @media (min-width: 1200px) {
     .container {
@@ -89,8 +98,8 @@
         max-width: 420px;
     }
     .swap_route {
-        min-width: 560px;
-        max-width: 640px;
+      
+        max-width: 558px;
     }
     .customWidth_container {
         max-width: 640px;

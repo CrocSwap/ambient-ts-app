@@ -147,7 +147,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
-                    padding='0 32px'
+                    padding={isActiveNetworkPlume ? '' : '0 32px'}
                 >
                     {transactionDetails}
                     {(isSwapPage && isActiveNetworkPlume) || <SmolRefuelLink />}

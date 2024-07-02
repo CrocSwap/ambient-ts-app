@@ -207,7 +207,7 @@ export const InputDisabledText = styled(FlexContainer)`
 `;
 
 export const TokenQuantityInput = styled.input`
-    font-weight: 300;
+    font-weight: var(--fw-bold);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: var(--text1);
@@ -223,7 +223,8 @@ export const TokenQuantityInput = styled.input`
     background-color: transparent;
     background-clip: padding-box;
 
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
@@ -334,6 +335,14 @@ export const ExtraDetailsContainer = styled.div`
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 8px 16px;
+    background: var(--extra-info-bg, transparent);
+
+    @media only screen and (max-height: 1000px) {
+        // display: none;
+        // background: red;
+        // height: 40px;
+        // overflow-y: scroll;
+    }
 `;
 
 export const ModalContainer = styled(FlexContainer)`
@@ -506,6 +515,7 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: var(--dark2);
     background-clip: padding-box;
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 `;

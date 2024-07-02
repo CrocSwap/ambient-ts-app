@@ -48,6 +48,7 @@ export default function Button(props: propsIF) {
                           border: '3px solid #000',
                           boxShadow:
                               'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 6px 5px #000',
+                          borderRadius: '0.6rem',
                       }
                     : {}),
             }}

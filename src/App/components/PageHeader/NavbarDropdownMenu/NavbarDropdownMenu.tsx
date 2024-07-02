@@ -26,6 +26,7 @@ import {
 } from '../../../../styled/Components/Header';
 import NavbarDropdownItem from './NavbarDropdownItem';
 import plumeNetworkLogoBlackAndWhite from '../../../../assets/images/networks/plume_logo_black_white.svg';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -41,6 +42,7 @@ function NavbarDropdownMenu(props: propsIF) {
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const [, , termsUrls] = useTermsAgreed();
 
@@ -108,7 +110,11 @@ function NavbarDropdownMenu(props: propsIF) {
     ];
 
     return (
-        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel} hasBorder>
+        <NavbarDropdown
+            ref={dropdownRef}
+            aria-label={ariaLabel}
+            hasBorder={!isActiveNetworkPlume}
+        >
             <CSSTransition
                 in={true}
                 unmountOnExit
