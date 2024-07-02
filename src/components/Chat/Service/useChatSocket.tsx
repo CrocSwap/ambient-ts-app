@@ -123,6 +123,8 @@ const useChatSocket = (
             ensName: qp.ensName ? qp.ensName : '',
         },
         shouldReconnect: () => isChatOpen,
+        reconnectAttempts: 10,
+        reconnectInterval: 3000,
         share: true,
         onOpen: () => {
             domDebug('connected', getTimeForLog(new Date()));
