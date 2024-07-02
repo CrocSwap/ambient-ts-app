@@ -153,7 +153,7 @@ function Reposition() {
         }
     }, [position]);
 
-    const [concLiq, setConcLiq] = useState<string>('');
+    const [concLiq, setConcLiq] = useState<bigint>(BigInt(0));
 
     const updateConcLiq = async () => {
         if (!crocEnv || !position) return;
@@ -165,7 +165,7 @@ function Reposition() {
 
         const liquidity = (
             await pos.queryRangePos(position.bidTick, position.askTick)
-        ).liq.toString();
+        ).liq;
 
         setConcLiq(liquidity);
     };
@@ -430,7 +430,7 @@ function Reposition() {
         }
         if (receipt) {
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
         }
     };
 

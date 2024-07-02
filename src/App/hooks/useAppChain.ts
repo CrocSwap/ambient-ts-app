@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    useWeb3ModalAccount,
-    useSwitchNetwork,
-} from '@web3modal/ethers5/react';
+import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
     getDefaultChainId,
     validateChainId,
@@ -109,9 +106,14 @@ export const useAppChain = (): {
                         const { pathname } = window.location;
 
                         const isPathENS = pathname.slice(1)?.endsWith('.eth');
+                        /*  check if path is 42 character hex string 
+                            after removing the first character for /{hex} URLs 
+                            or first 9 characters for /account/{hex} */
                         const isPathHex =
-                            pathname.slice(1)?.startsWith('0x') &&
-                            pathname.slice(1)?.length == 42;
+                            (pathname.slice(1)?.startsWith('0x') &&
+                                pathname.slice(1)?.length == 42) ||
+                            (pathname.slice(9)?.startsWith('0x') &&
+                                pathname.slice(9)?.length == 42);
                         const isPathUserAddress = isPathENS || isPathHex;
                         const isPathUserXpOrLeaderboard =
                             pathname.includes('/xp');
@@ -220,8 +222,10 @@ export const useAppChain = (): {
         setActiveNetwork(network);
         const isPathENS = pathname.slice(1)?.endsWith('.eth');
         const isPathHex =
-            pathname.slice(1)?.startsWith('0x') &&
-            pathname.slice(1)?.length == 42;
+            (pathname.slice(1)?.startsWith('0x') &&
+                pathname.slice(1)?.length == 42) ||
+            (pathname.slice(9)?.startsWith('0x') &&
+                pathname.slice(9)?.length == 42);
         const isPathUserAddress = isPathENS || isPathHex;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');

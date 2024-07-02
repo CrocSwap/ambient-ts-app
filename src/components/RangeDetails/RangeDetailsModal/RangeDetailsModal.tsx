@@ -31,7 +31,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import {
     baseTokenForConcLiq,
-    bigNumToFloat,
+    bigIntToFloat,
     quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
@@ -184,8 +184,8 @@ function RangeDetailsModal(props: propsIF) {
                 setBaseFeesDisplay('...');
                 setQuoteFeesDisplay('...');
 
-                const ambientLiqBigNum = (await pos.queryAmbient()).seeds;
-                const liqNum = bigNumToFloat(ambientLiqBigNum);
+                const ambientLiqBigInt = (await pos.queryAmbient()).seeds;
+                const liqNum = bigIntToFloat(ambientLiqBigInt);
                 const liqBaseNum = liqNum * Math.sqrt(poolPriceNonDisplay);
                 const liqQuoteNum = liqNum / Math.sqrt(poolPriceNonDisplay);
 
@@ -251,10 +251,8 @@ function RangeDetailsModal(props: propsIF) {
                     position.askTick,
                 );
 
-                const baseRewards = bigNumToFloat(positionRewards.baseRewards);
-                const quoteRewards = bigNumToFloat(
-                    positionRewards.quoteRewards,
-                );
+                const baseRewards = bigIntToFloat(positionRewards[1]);
+                const quoteRewards = bigIntToFloat(positionRewards[2]);
 
                 const feesLiqBaseDecimalCorrected =
                     baseRewards / Math.pow(10, position.baseDecimals);
@@ -273,23 +271,23 @@ function RangeDetailsModal(props: propsIF) {
                 });
                 setQuoteFeesDisplay(quoteFeesDisplayTruncated);
 
-                const concLiqBigNum = (
+                const concLiqBigInt = (
                     await pos.queryRangePos(position.bidTick, position.askTick)
                 ).liq;
 
-                const positionLiqBaseNum = bigNumToFloat(
+                const positionLiqBaseNum = bigIntToFloat(
                     baseTokenForConcLiq(
                         poolPriceNonDisplay,
-                        concLiqBigNum,
+                        concLiqBigInt,
                         tickToPrice(position.bidTick),
                         tickToPrice(position.askTick),
                     ),
                 );
 
-                const positionLiqQuoteNum = bigNumToFloat(
+                const positionLiqQuoteNum = bigIntToFloat(
                     quoteTokenForConcLiq(
                         poolPriceNonDisplay,
-                        concLiqBigNum,
+                        concLiqBigInt,
                         tickToPrice(position.bidTick),
                         tickToPrice(position.askTick),
                     ),

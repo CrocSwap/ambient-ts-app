@@ -8,7 +8,7 @@ import {
 } from '../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../ambient-utils/types';
 import moment from 'moment';
-import { getAddress } from 'ethers/lib/utils.js';
+import { getAddress } from 'ethers';
 import {
     toDisplayPrice,
     priceHalfAboveTick,
