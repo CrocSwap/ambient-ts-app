@@ -381,7 +381,7 @@ function Swap(props: propsIF) {
         isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkBlast ? 0.3 : 0,
+        isActiveNetworkBlast ? 0.1 : 0,
     );
 
     // calculate price of gas for swap

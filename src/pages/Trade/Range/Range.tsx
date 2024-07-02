@@ -826,7 +826,7 @@ function Range() {
         isScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 0.01 : isActiveNetworkBlast ? 0.5 : 0,
+        isScroll ? 0.01 : isActiveNetworkBlast ? 0.15 : 0,
     );
 
     const amountToReduceNativeTokenQty =
