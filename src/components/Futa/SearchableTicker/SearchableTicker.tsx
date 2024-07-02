@@ -50,6 +50,7 @@ export default function SearchableTicker(props: propsIF) {
         setSelectedTicker,
         showComplete,
         setShowComplete,
+        watchlists,
     } = useContext(AuctionsContext);
 
     // shape of data to create filter dropdown menu options
@@ -137,6 +138,8 @@ export default function SearchableTicker(props: propsIF) {
         }
     }, [incompleteAuctions.length, completeAuctions.length]);
 
+    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
+
     // choose data set to display and apply post-processing middleware
     const filteredData = useMemo<AuctionDataIF[]>(() => {
         // show the relevant data subset (complete vs incomplete)
@@ -148,11 +151,24 @@ export default function SearchableTicker(props: propsIF) {
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
+        // filter data set to watchlisted tokens
+        const watchlisted: AuctionDataIF[] = searchHits.filter(
+            (auc: AuctionDataIF) =>
+                showWatchlist
+                    ? watchlists.v1.data.includes(auc.ticker.toUpperCase())
+                    : true,
+        );
         // return auctions from correct subset matching user search input
         return activeSortOption.label === 'timeRemaining'
-            ? searchHits.reverse()
-            : searchHits;
-    }, [searchInputRaw, incompleteAuctions, completeAuctions, showComplete]);
+            ? watchlisted.reverse()
+            : watchlisted;
+    }, [
+        searchInputRaw,
+        incompleteAuctions,
+        completeAuctions,
+        showComplete,
+        showWatchlist,
+    ]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -180,8 +196,6 @@ export default function SearchableTicker(props: propsIF) {
         }
         return output;
     }
-
-    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
 
     return (
         <div className={styles.container}>
