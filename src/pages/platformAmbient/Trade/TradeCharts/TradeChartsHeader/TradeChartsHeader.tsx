@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { AiOutlineDollarCircle, AiOutlineAreaChart } from 'react-icons/ai';
-import { FiCopy, FiStopCircle } from 'react-icons/fi';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../../contexts/ChartContext';
 import { printDomToImage } from '../../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { FiCopy } from 'react-icons/fi';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../../styled/Common';
@@ -106,20 +106,16 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }
                 >
-                    {isTradeDollarizationEnabled ? (
-                        <AiOutlineDollarCircle
-                            size={20}
-                            id='trade_dollarized_prices_button'
-                            aria-label='Toggle dollarized prices button'
-                        />
-                    ) : (
-                        <FiStopCircle
-                            size={20}
-                            id='trade_dollarized_prices_button'
-                            aria-label='Toggle dollarized prices button'
-                            style={{ transform: 'rotate(45deg)' }}
-                        />
-                    )}
+                    <AiOutlineDollarCircle
+                        size={20}
+                        id='trade_dollarized_prices_button'
+                        aria-label='Toggle dollarized prices button'
+                        style={{
+                            color: isTradeDollarizationEnabled
+                                ? 'var(--accent1)'
+                                : undefined,
+                        }}
+                    />
                 </HeaderButtons>
             </DefaultTooltip>
             <DefaultTooltip
