@@ -509,7 +509,7 @@ export default function Limit() {
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeLimit] = useState(
         isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.15 : 0,

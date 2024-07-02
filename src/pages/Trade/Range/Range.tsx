@@ -823,7 +823,7 @@ function Range() {
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeePoolInGwei] = useState<number>(
-        isScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeePool] = useState(
         isScroll ? 0.01 : isActiveNetworkBlast ? 0.15 : 0,
