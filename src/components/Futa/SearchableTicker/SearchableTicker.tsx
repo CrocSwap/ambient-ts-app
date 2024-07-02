@@ -176,7 +176,7 @@ export default function SearchableTicker(props: propsIF) {
         if (auctions.active === 'marketCap') {
             output = auctions.isReversed ? 'up' : 'down';
         } else if (auctions.active === 'timeLeft') {
-            output = auctions.isReversed ? 'up' : 'down';
+            output = auctions.isReversed ? 'down' : 'up';
         }
         return output;
     }
@@ -240,21 +240,9 @@ export default function SearchableTicker(props: propsIF) {
                                 >
                                     <p>{activeSortOption.label}</p>
                                     {isSortDropdownOpen ? (
-                                        <IoIosArrowUp
-                                            color={
-                                                getArrowDirection() === 'up'
-                                                    ? 'var(--accent1'
-                                                    : ''
-                                            }
-                                        />
+                                        <IoIosArrowUp color='var(--accent1)' />
                                     ) : (
-                                        <IoIosArrowDown
-                                            color={
-                                                getArrowDirection() === 'down'
-                                                    ? 'var(--accent1'
-                                                    : ''
-                                            }
-                                        />
+                                        <IoIosArrowDown color='var(--accent1)' />
                                     )}
                                 </div>
 
@@ -266,7 +254,7 @@ export default function SearchableTicker(props: propsIF) {
                                         size={14}
                                         color={
                                             getArrowDirection() === 'up'
-                                                ? 'var(--accent1'
+                                                ? 'var(--accent1)'
                                                 : ''
                                         }
                                     />
@@ -275,7 +263,7 @@ export default function SearchableTicker(props: propsIF) {
                                         size={14}
                                         color={
                                             getArrowDirection() === 'down'
-                                                ? 'var(--accent1'
+                                                ? 'var(--accent1)'
                                                 : ''
                                         }
                                     />
