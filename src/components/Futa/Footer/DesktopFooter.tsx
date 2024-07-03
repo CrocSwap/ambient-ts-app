@@ -18,10 +18,7 @@ export default function DesktopFooter() {
     });
 
     return (
-        <footer
-            className={styles.desktopContainer}
-            style={{ fontFamily: '"Fira Mono", monospace' }}
-        >
+        <footer data-theme='orange_dark' className={styles.desktopContainer}>
             <p className={styles.network}>
                 NETWORK : {chainData.displayName.toUpperCase()}
             </p>
