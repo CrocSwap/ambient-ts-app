@@ -1,20 +1,20 @@
-import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
-import styles from './Level.module.css';
-import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
-import { useContext, useEffect, useState } from 'react';
-import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
-import Jazzicon from 'react-jazzicon/dist/Jazzicon';
-import { jsNumberForAddress } from 'react-jazzicon';
-import RankTable from './RankTable/RankTable';
-import { FlexContainer, Text } from '../../styled/Common';
+import { ReactElement, useContext, useEffect, useState } from 'react';
 import { progressToNextLevel } from '../../ambient-utils/api';
+import LevelsCard from '../../components/Global/LevelsCard/LevelsCard';
+import LevelDisplay from '../../components/Global/LevelsCard/UserLevelDisplay';
+import { UserDataContext, UserXpDataIF } from '../../contexts/UserDataContext';
+import { FlexContainer, Text } from '../../styled/Common';
+import styles from './Level.module.css';
+import RankTable from './RankTable/RankTable';
 // import { FiRefreshCcw } from 'react-icons/fi';
-import { XpLeadersContext } from '../../contexts/XpLeadersContext';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
 import {
     getLeaderboardSelectionFromLocalStorage,
     saveLeaderboardSelectionToLocalStorage,
 } from '../../App/functions/localStorage';
+import { getAvatarComponent } from '../../components/Chat/ChatRenderUtils';
+import { getAvatarRest } from '../../components/Chat/ChatUtilsHelper';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { XpLeadersContext } from '../../contexts/XpLeadersContext';
 
 interface propsIF {
     resolvedAddress: string;
@@ -44,19 +44,27 @@ export default function Level(props: propsIF) {
     } = useContext(ChainDataContext);
     const { xpLeaders } = useContext(XpLeadersContext);
 
-    const jazziconsSeed = resolvedAddress
-        ? resolvedAddress.toLowerCase()
-        : userAddress?.toLowerCase() ?? '';
+    const [shownAvatar, setShownAvatar] = useState<ReactElement>(<></>);
 
-    const myJazzicon = (
-        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
-    );
+    useEffect(() => {
+        (async () => {
+            const walletID = resolvedAddress
+                ? resolvedAddress
+                : userAddress
+                ? userAddress
+                : '';
+            const avatarData = await getAvatarRest(walletID);
+            setShownAvatar(
+                getAvatarComponent(walletID, avatarData, 50, false, true),
+            );
+        })();
+    }, [resolvedAddress, userAddress]);
 
     const isUserPage = userAddress === resolvedAddress;
 
     const jazziconsToDisplay =
-        resolvedAddress || connectedAccountActive || (isUserPage && myJazzicon)
-            ? myJazzicon
+        resolvedAddress || connectedAccountActive || (isUserPage && shownAvatar)
+            ? shownAvatar
             : null;
 
     const xpData =
