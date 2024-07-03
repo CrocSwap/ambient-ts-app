@@ -84,6 +84,7 @@ export default function Account(props: propsIF) {
     const mainAriaLabel = 'account dropdown menu container';
 
     const isEscapePressed = useKeyPress('Escape');
+
     useEffect(() => {
         if (isEscapePressed) {
             setShowWalletDropdown(false);
