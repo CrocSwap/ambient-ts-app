@@ -328,10 +328,11 @@ const useChatSocket = (
     async function isUserVerified() {
         if (address) {
             const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
+            if (!userToken) return false;
             const encodedAddress = encodeURIComponent(address);
             let encodedToken = '';
-            if (userToken) {
-                encodedToken = encodeURIComponent(userToken);
+            if (userToken && userToken.length > 20) {
+                encodedToken = encodeURIComponent(userToken.substring(0, 20));
             }
             const response = await fetch(
                 CHAT_BACKEND_URL +
@@ -445,7 +446,7 @@ const useChatSocket = (
         if (!isChatOpen) return;
         async function checkVerified() {
             const data = await isUserVerified();
-            if (!data) return;
+            if (!data) return setIsVerified(false);
             setIsVerified(data.verified);
         }
 

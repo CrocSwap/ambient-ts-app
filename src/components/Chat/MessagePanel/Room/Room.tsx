@@ -12,6 +12,8 @@ import { PoolIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import Toggle from '../../../Form/Toggle';
+import { ALLOW_MENTIONS } from '../../ChatConstants/ChatConstants';
 import {
     ChatGoToChatParamsIF,
     ChatRoomIF,
@@ -26,8 +28,6 @@ import {
 } from '../../ChatUtils';
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
-import Toggle from '../../../Form/Toggle';
-import { ALLOW_MENTIONS } from '../../ChatConstants/ChatConstants';
 
 interface propsIF {
     selectedRoom: string;
@@ -92,6 +92,7 @@ export default function Room(props: propsIF) {
 
     const {
         chainData: { chainId },
+        topPools,
     } = useContext(CrocEnvContext);
 
     const { getTokensByNameOrSymbol } = useTokens(chainId, undefined);
@@ -167,6 +168,25 @@ export default function Room(props: propsIF) {
             newRoomList.push(currentPoolRoomObj);
         }
 
+        // add extra rooms from top pools list if needed
+        let i = 0;
+        while (
+            newRoomList.length < 3 &&
+            topPools.length > 0 &&
+            i < topPools.length
+        ) {
+            const pool = topPools[i];
+            if (!newRoomList.some((e) => e.name == getRoomNameFromPool(pool))) {
+                newRoomList.push({
+                    name: getRoomNameFromPool(pool),
+                    shownName: getRoomNameFromPool(pool) + ' 🏊',
+                    base: pool.base.symbol,
+                    quote: pool.quote.symbol,
+                });
+            }
+            i++;
+        }
+
         setRoomList(newRoomList);
     };
 
@@ -183,15 +203,17 @@ export default function Room(props: propsIF) {
 
     useEffect(() => {
         processRoomList();
-    }, [props.isModerator]);
-
-    useEffect(() => {
-        processRoomList();
     }, []);
 
     useEffect(() => {
         processRoomList();
-    }, [favePools, props.selectedRoom, rooms.length === 0]);
+    }, [
+        props.isModerator,
+        favePools,
+        props.selectedRoom,
+        rooms.length === 0,
+        props.currentUser,
+    ]);
 
     const getRoomName = () => {
         let ret = props.selectedRoom;
