@@ -508,21 +508,25 @@ const useChatSocket = (
                 body: JSON.stringify(payload),
             },
         );
-        activateToastr('Message deleted successfully', 'success');
         const data = await response.json();
-        data.message.deletedMessageText = 'This message has deleted';
-        if (data) {
-            const msg = data.message;
-            sendToSocket('message-deleted', { ...data.message });
-            const newMessageList = messages.map((e) => {
-                if (e && e._id == msg._id) {
-                    return msg;
-                } else {
-                    return e;
-                }
-            });
+        if (data && data.status == 'OK') {
+            activateToastr('Message deleted successfully', 'success');
+            data.message.deletedMessageText = 'This message has deleted';
+            if (data) {
+                const msg = data.message;
+                sendToSocket('message-deleted', { ...data.message });
+                const newMessageList = messages.map((e) => {
+                    if (e && e._id == msg._id) {
+                        return msg;
+                    } else {
+                        return e;
+                    }
+                });
 
-            assignMessages([...newMessageList]);
+                assignMessages([...newMessageList]);
+            }
+        } else {
+            activateToastr(data.status, 'error');
         }
 
         return data;
