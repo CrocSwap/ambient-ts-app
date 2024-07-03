@@ -107,11 +107,15 @@ export default function ScatterChart() {
                 .decorate((context: any, d: any) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     context.nodes().forEach((selection: any, index: number) => {
+                        const time =
+                            d[index].timeRemaining / 60 > 1440
+                                ? 1440
+                                : d[index].timeRemaining / 60;
                         d3.select(selection)
                             .attr(
                                 'transform',
                                 'translate(' +
-                                    xScale(d[index].timeRemaining / 60) +
+                                    xScale(time) +
                                     ',' +
                                     yScale(d[index].price) +
                                     ')',
@@ -205,7 +209,9 @@ export default function ScatterChart() {
             );
 
             const dataAtMouse = data.filter((d) => {
-                const x = xScale(d.timeRemaining / 60);
+                const x = xScale(
+                    d.timeRemaining / 60 > 1440 ? 1440 : d.timeRemaining / 60,
+                );
                 const y = yScale(d.price);
                 return Math.abs(x - offsetX) < 5 && Math.abs(y - offsetY) < 5;
             });
