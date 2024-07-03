@@ -361,6 +361,11 @@ const PageHeader = function () {
         };
     }, []);
 
+    const logoDestination =
+        isActiveNetworkPlume && location.pathname.includes('/swap')
+            ? location.pathname
+            : '/';
+
     return (
         <PrimaryHeader
             data-testid={'page-header'}
@@ -374,7 +379,7 @@ const PageHeader = function () {
                     }
                 }}
             >
-                <LogoContainer to='/' aria-label='Home'>
+                <LogoContainer to={logoDestination} aria-label='Home'>
                     {desktopScreen ? (
                         <img src={headerImage} alt='ambient' />
                     ) : (
