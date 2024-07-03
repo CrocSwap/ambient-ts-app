@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
+    ALCHEMY_API_KEY,
     BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
     SCROLL_RPC_URL,
@@ -108,8 +109,8 @@ export const ChainDataContextProvider = (props: {
     ];
 
     const settings = {
-        apiKey: process.env.REACT_APP_ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
-        network: Network.ETH_MAINNET, // Replace with your network.
+        apiKey: ALCHEMY_API_KEY,
+        network: Network.ETH_MAINNET,
     };
 
     const alchemyClient = new Alchemy(settings);
@@ -127,10 +128,10 @@ export const ChainDataContextProvider = (props: {
                 ? chainData.nodeUrl.slice(0, -32) +
                   import.meta.env.VITE_INFURA_KEY
                 : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-                ? BLAST_RPC_URL
-                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                ? SCROLL_RPC_URL
-                : blockPollingUrl;
+                  ? BLAST_RPC_URL
+                  : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                    ? SCROLL_RPC_URL
+                    : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
@@ -196,9 +197,10 @@ export const ChainDataContextProvider = (props: {
     }, [lastNewHeadMessage]);
 
     const fetchGasPrice = async () => {
-        const newGasPrice = await supportedNetworks[
-            chainData.chainId
-        ].getGasPriceInGwei(provider);
+        const newGasPrice =
+            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
+                provider,
+            );
         if (gasPriceInGwei !== newGasPrice) {
             setGasPriceinGwei(newGasPrice);
         }
