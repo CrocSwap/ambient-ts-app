@@ -33,10 +33,6 @@ export default function Auctions(props: propsIF) {
     const sorted: sortedAuctionsIF = useSortedAuctions(
         globalAuctionList.data || [],
     );
-    // useEffect(() => {
-    //     console.log(auctions.data);
-    // }, [auctions.data]);
-    // useEffect(() => {console.log(sorted);}, [sorted]);
 
     // DOM id for search input field
     const INPUT_DOM_ID = 'ticker_auction_search_input';
