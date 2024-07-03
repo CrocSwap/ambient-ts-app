@@ -20,11 +20,11 @@ export default function DesktopFooter() {
     return (
         <footer data-theme='orange_dark' className={styles.desktopContainer}>
             <p className={styles.network}>
-                NETWORK : {chainData.displayName.toUpperCase()}
+                NETWORK: {chainData.displayName.toUpperCase()}
             </p>
             <div className={styles.leftContainer}>
                 <p className={styles.price}>
-                    ETH PRICE : {nativeTokenPriceFormatted}
+                    ETH PRICE: {nativeTokenPriceFormatted}
                 </p>
                 <p className={styles.blockNumber}>{lastBlockNumber}</p>
             </div>

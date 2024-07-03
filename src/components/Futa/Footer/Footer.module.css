@@ -1,57 +1,54 @@
-.container{
-    background: var(--dark1, #06060C);
-width: 100%;
-height: 64px;
-align-items: center;
-position:fixed;
-bottom:0;
-padding: 8px;
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-color: var(--text2);
-font-family: var(--font-family)  !important;
-
-}
-
-.footerContainer{
+.container {
+    background: var(--dark1, #06060c);
     width: 100%;
-
+    height: 64px;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    color: var(--text2);
+    font-family: var(--font-family) !important;
 }
 
-.footerItem{
+.footerContainer {
+    width: 100%;
+}
+
+.footerItem {
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
-    
 }
 
 .footerItem:hover {
-    color: var(--accent1)
+    color: var(--accent1);
 }
 
-.desktopContainer{
+.desktopContainer {
     background: var(--dark1);
     width: 100%;
-    position:fixed;
-bottom:0;
-display: flex;
-justify-content: space-between;
-align-items: center;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     height: 20px;
-    padding:  6px;
+    padding: 6px;
     border-top: 1px solid #424649;
     font-size: 12px;
     color: var(--text2);
-    font-family: var(--font-family)  !important;
-
+    font-family: var(--font-family) !important;
+    cursor: default;
 }
 
-.network{
+.network {
     border-right: 1px solid #424649;
 }
-.leftContainer{
+.leftContainer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -59,33 +56,34 @@ align-items: center;
     border-left: 1px solid #424649;
 }
 
-.status{
+.status {
     display: flex;
     align-items: center;
     gap: 8px;
 }
-.status, .blockNumber{
+.status,
+.blockNumber {
     border-left: 1px solid #424649;
-    padding:  0 8px;
-}
-
-.price, .network{
     padding: 0 8px;
 }
 
+.price,
+.network {
+    padding: 0 8px;
+}
 
-.statusDisplay{
+.statusDisplay {
     width: 10px;
     height: 10px;
     border-radius: 50%;
 }
 @media (min-width: 768px) {
-.container{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap:14rem;
-    display: none;
-}
+    .container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 14rem;
+        display: none;
+    }
 }
