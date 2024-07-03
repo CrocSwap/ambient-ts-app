@@ -14,7 +14,6 @@ import {
     useEffect,
     useContext,
 } from 'react';
-import { BigNumber } from 'ethers';
 import { fetchEnsAddress } from '../../../ambient-utils/api';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -90,7 +89,7 @@ export default function ExchangeBalance(props: propsIF) {
                 .token(selectedToken.address)
                 .wallet(userAddress)
 
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     setTokenWalletBalance(bal.toString());
 
                     setTokenBalance({
@@ -103,7 +102,7 @@ export default function ExchangeBalance(props: propsIF) {
             crocEnv
                 .token(selectedToken.address)
                 .balance(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     setTokenDexBalance(bal.toString());
 
                     setTokenBalance({
@@ -146,9 +145,8 @@ export default function ExchangeBalance(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(
-                    sendToAddress,
-                );
+                const newResolvedAddress =
+                    await mainnetProvider.resolveName(sendToAddress);
 
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);

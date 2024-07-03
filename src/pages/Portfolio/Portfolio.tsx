@@ -341,8 +341,8 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName: connectedAccountActive
             ? ensName ?? ''
             : secondaryEnsName
-            ? secondaryEnsName
-            : '',
+              ? secondaryEnsName
+              : '',
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
@@ -354,8 +354,8 @@ function Portfolio(props: PortfolioPropsIF) {
             ? ensName
             : trimString(userAddress ?? '', 6, 6, '…')
         : secondaryEnsName
-        ? secondaryEnsName
-        : trimString(resolvedAddress ?? '', 6, 6, '…');
+          ? secondaryEnsName
+          : trimString(resolvedAddress ?? '', 6, 6, '…');
 
     const levelsProps = {
         resolvedAddress: resolvedAddress ?? '',
@@ -393,8 +393,8 @@ function Portfolio(props: PortfolioPropsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute
         ? 0
         : onAccountRoute || addressFromParams
-        ? 3
-        : 0;
+          ? 3
+          : 0;
 
     useEffect(() => {
         if (isPointsTab) {
@@ -407,7 +407,7 @@ function Portfolio(props: PortfolioPropsIF) {
 
     const mobilePortfolio = (
         <FlexContainer
-            flexDirection='column'
+            flexDirection='column-reverse'
             gap={4}
             margin='0 auto'
             height='calc(100vh - 8rem)'
@@ -415,10 +415,9 @@ function Portfolio(props: PortfolioPropsIF) {
                 padding: ' 0 8px',
             }}
         >
-            <PortfolioBanner {...portfolioBannerProps} />
-
-            {connectedAccountActive && mobileDataToggle}
             {contentToRenderOnMobile}
+            {connectedAccountActive && mobileDataToggle}
+            <PortfolioBanner {...portfolioBannerProps} />
         </FlexContainer>
     );
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
@@ -429,13 +428,12 @@ function Portfolio(props: PortfolioPropsIF) {
             data-testid={'portfolio'}
             padding='32px'
             background='dark2'
-            flexDirection='column'
+            flexDirection='column-reverse'
             gap={16}
         >
             {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
-            <PortfolioBanner {...portfolioBannerProps} />
 
             <PortfolioTabsContainer
                 active={connectedAccountActive}
@@ -450,9 +448,10 @@ function Portfolio(props: PortfolioPropsIF) {
                 {connectedAccountActive
                     ? exchangeBalanceComponent
                     : !isUserConnected && !addressFromParams
-                    ? notConnectedContent
-                    : undefined}
+                      ? notConnectedContent
+                      : undefined}
             </PortfolioTabsContainer>
+            <PortfolioBanner {...portfolioBannerProps} />
         </PortfolioContainer>
     );
 }

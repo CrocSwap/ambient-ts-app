@@ -47,7 +47,7 @@ import {
     GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET,
     GAS_DROPS_ESTIMATE_LIMIT_NATIVE,
     LIMIT_BUFFER_MULTIPLIER_MAINNET,
-    LIMIT_BUFFER_MULTIPLIER_SCROLL,
+    LIMIT_BUFFER_MULTIPLIER_L2,
     NUM_GWEI_IN_WEI,
 } from '../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
@@ -253,11 +253,11 @@ export default function Limit() {
                             ? displayPriceWithDenom * quotePrice
                             : undefined
                         : basePrice
-                        ? displayPriceWithDenom * basePrice
-                        : undefined
+                          ? displayPriceWithDenom * basePrice
+                          : undefined
                     : usdPriceInverse && displayPriceWithDenom
-                    ? usdPriceInverse * displayPriceWithDenom
-                    : undefined;
+                      ? usdPriceInverse * displayPriceWithDenom
+                      : undefined;
 
                 const limitRateTruncated = isTradeDollarizationEnabled
                     ? getFormattedNumber({
@@ -340,11 +340,11 @@ export default function Limit() {
                             ? displayPriceWithDenom * quotePrice
                             : undefined
                         : basePrice
-                        ? displayPriceWithDenom * basePrice
-                        : undefined
+                          ? displayPriceWithDenom * basePrice
+                          : undefined
                     : usdPriceInverse && displayPriceWithDenom
-                    ? usdPriceInverse * displayPriceWithDenom
-                    : undefined;
+                      ? usdPriceInverse * displayPriceWithDenom
+                      : undefined;
 
                 const limitRateTruncated = isTradeDollarizationEnabled
                     ? getFormattedNumber({
@@ -509,10 +509,10 @@ export default function Limit() {
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
-        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeLimit] = useState(
-        isActiveNetworkScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.15 : 0,
     );
 
     useEffect(() => {
@@ -520,10 +520,10 @@ export default function Limit() {
             const averageLimitCostInGasDrops = isSellTokenNativeToken
                 ? GAS_DROPS_ESTIMATE_LIMIT_NATIVE
                 : isWithdrawFromDexChecked
-                ? isTokenADexSurplusSufficient
-                    ? GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX
-                    : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET
-                : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET;
+                  ? isTokenADexSurplusSufficient
+                      ? GAS_DROPS_ESTIMATE_LIMIT_FROM_DEX
+                      : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET
+                  : GAS_DROPS_ESTIMATE_LIMIT_FROM_WALLET;
 
             const costOfMainnetLimitInETH =
                 gasPriceInGwei * averageLimitCostInGasDrops * NUM_GWEI_IN_WEI;
@@ -542,7 +542,7 @@ export default function Limit() {
                 l1CostOfScrollLimitInETH + l2CostOfScrollLimitInETH;
 
             setAmountToReduceNativeTokenQtyL2(
-                LIMIT_BUFFER_MULTIPLIER_SCROLL * costOfScrollLimitInETH,
+                LIMIT_BUFFER_MULTIPLIER_L2 * costOfScrollLimitInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -706,7 +706,7 @@ export default function Limit() {
 
         if (receipt) {
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
         }
     };
 

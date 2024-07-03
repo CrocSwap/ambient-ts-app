@@ -5,6 +5,7 @@ import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
 import {
     removeWrappedNative,
     isUsdcToken,
+    isBlastRewardToken,
 } from '../../ambient-utils/dataLayer';
 
 export const useTokenSearch = (
@@ -229,6 +230,8 @@ export const useTokenSearch = (
                         priority = 100;
                     } else if (isUsdcToken(tknAddress)) {
                         priority = 90;
+                    } else if (isBlastRewardToken(tknAddress)) {
+                        priority = 85;
                     } else if (
                         walletTknAddresses.includes(tkn.address.toLowerCase())
                     ) {

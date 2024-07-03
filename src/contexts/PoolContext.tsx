@@ -14,7 +14,14 @@ import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { TradeDataContext } from './TradeDataContext';
-import { getFormattedNumber, isWethToken } from '../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    isETHPair,
+    isStablePair,
+    isWbtcToken,
+    isWrappedNativeToken,
+} from '../ambient-utils/dataLayer';
+import { ZERO_ADDRESS } from '../ambient-utils/constants';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -55,20 +62,24 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
     const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
-        useState(
-            localStorage.getItem('isTradeDollarizationEnabled') === 'true',
-        );
+        useState(true);
 
     useEffect(() => {
-        const savedTradeDollarizationPreference =
-            localStorage.getItem('isTradeDollarizationEnabled') === 'true';
-        if (isTradeDollarizationEnabled !== savedTradeDollarizationPreference) {
-            localStorage.setItem(
-                'isTradeDollarizationEnabled',
-                isTradeDollarizationEnabled.toString(),
-            );
+        const isPairStablePair = isStablePair(
+            baseTokenAddress,
+            quoteTokenAddress,
+        );
+        const isPairEthPair = isETHPair(baseTokenAddress, quoteTokenAddress);
+
+        const isPairEthWbtc =
+            baseTokenAddress === ZERO_ADDRESS && isWbtcToken(quoteTokenAddress);
+
+        if (isPairStablePair || isPairEthPair || isPairEthWbtc) {
+            setIsTradeDollarizationEnabled(false);
+        } else {
+            setIsTradeDollarizationEnabled(true);
         }
-    }, [isTradeDollarizationEnabled]);
+    }, [baseTokenAddress, quoteTokenAddress]);
 
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
@@ -108,8 +119,9 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 const baseAddr: string = p.base.address.toLowerCase();
                 const quoteAddr: string = p.quote.address.toLowerCase();
                 const isMatch: boolean =
-                    (baseAddr === tkn1Addr && !isWethToken(quoteAddr)) ||
-                    (quoteAddr === tkn1Addr && !isWethToken(baseAddr));
+                    (baseAddr === tkn1Addr &&
+                        !isWrappedNativeToken(quoteAddr)) ||
+                    (quoteAddr === tkn1Addr && !isWrappedNativeToken(baseAddr));
                 return isMatch;
             });
         }
@@ -163,8 +175,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 ? (1 / poolPriceDisplay) * quotePrice
                 : undefined
             : basePrice
-            ? poolPriceDisplay * basePrice
-            : undefined
+              ? poolPriceDisplay * basePrice
+              : undefined
         : undefined;
 
     const usdPriceInverse = poolPriceDisplay
@@ -173,8 +185,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                 ? poolPriceDisplay * basePrice
                 : undefined
             : quotePrice
-            ? (1 / poolPriceDisplay) * quotePrice
-            : undefined
+              ? (1 / poolPriceDisplay) * quotePrice
+              : undefined
         : undefined;
 
     // Asynchronously query the APY and volatility estimates from the backend

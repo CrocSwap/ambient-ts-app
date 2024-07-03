@@ -1,4 +1,4 @@
-import { CrocEnv, bigNumToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
@@ -138,20 +138,20 @@ export async function expandPoolStats(
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
         DEFAULT_DECIMALS;
 
-    const baseTotalSupplyBigNum = (
+    const baseTotalSupplyBigInt = (
         await cachedTokenDetails(provider, base, chainId)
     )?.totalSupply;
 
-    const quoteTotalSupplyBigNum = (
+    const quoteTotalSupplyBigInt = (
         await cachedTokenDetails(provider, quote, chainId)
     )?.totalSupply;
 
-    const baseTotalSupplyNum = baseTotalSupplyBigNum
-        ? bigNumToFloat(baseTotalSupplyBigNum)
+    const baseTotalSupplyNum = baseTotalSupplyBigInt
+        ? bigIntToFloat(baseTotalSupplyBigInt)
         : undefined;
 
-    const quoteTotalSupplyNum = quoteTotalSupplyBigNum
-        ? bigNumToFloat(quoteTotalSupplyBigNum)
+    const quoteTotalSupplyNum = quoteTotalSupplyBigInt
+        ? bigIntToFloat(quoteTotalSupplyBigInt)
         : undefined;
 
     const getEthPrice = async () => {
@@ -182,17 +182,17 @@ export async function expandPoolStats(
     const basePrice = baseUsdPrice
         ? baseUsdPrice
         : isETHorStakedEthToken(base)
-        ? (await getEthPrice()) || 0.0
-        : quoteUsdPrice
-        ? quoteUsdPrice / (await getSpotPrice())
-        : 0.0;
+          ? (await getEthPrice()) || 0.0
+          : quoteUsdPrice
+            ? quoteUsdPrice / (await getSpotPrice())
+            : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : isETHorStakedEthToken(quote)
-        ? (await getEthPrice()) || 0.0
-        : baseUsdPrice
-        ? baseUsdPrice * (await getSpotPrice())
-        : 0.0;
+          ? (await getEthPrice()) || 0.0
+          : baseUsdPrice
+            ? baseUsdPrice * (await getSpotPrice())
+            : 0.0;
 
     return decoratePoolStats(
         payload,

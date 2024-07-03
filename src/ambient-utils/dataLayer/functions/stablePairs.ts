@@ -31,6 +31,10 @@ import {
     scrollPxETH,
     scrollRocketPoolETH,
     scrollPufETH,
+    blastWEETH,
+    blastBLAST,
+    scrollUSDE,
+    scrollWeETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -49,6 +53,10 @@ export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
 }
 
+export function isBlastRewardToken(addr: string): boolean {
+    return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
+}
+
 export function isETHorStakedEthToken(addr: string): boolean {
     return (
         addr === ZERO_ADDRESS || STAKED_ETH_TOKENS.includes(addr.toLowerCase())
@@ -64,8 +72,15 @@ export function isWbtcToken(addr: string): boolean {
 }
 
 // @return true if the token is a WETH or wrapped native token asset
-export function isWethToken(addr: string): boolean {
-    return WETH_TOKENS.includes(addr.toLowerCase());
+export function isWrappedNativeToken(addr: string): boolean {
+    return WRAPPED_NATIVE_TOKENS.includes(addr.toLowerCase());
+}
+
+export function remapTokenIfWrappedNative(addr: string): string {
+    if (isWrappedNativeToken(addr)) {
+        return ZERO_ADDRESS;
+    }
+    return addr;
 }
 
 // No need to specify chain ID because token address is unique even across chains
@@ -83,6 +98,7 @@ export const STABLE_USD_TOKENS = [
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
+    scrollUSDE.address,
 ].map((x) => x.toLowerCase());
 
 export const USDC_TOKENS = [
@@ -93,6 +109,10 @@ export const USDC_TOKENS = [
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
 ].map((x) => x.toLowerCase());
+
+export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
+    x.toLowerCase(),
+);
 
 export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
     x.toLowerCase(),
@@ -105,14 +125,16 @@ export const STAKED_ETH_TOKENS = [
     scrollWrsETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
+    scrollWeETH.address,
     scrollPxETH.address,
     scrollPufETH.address,
     scrollRocketPoolETH.address,
     blastWrsETH.address,
     blastEzETH.address,
+    blastWEETH.address,
 ].map((x) => x.toLowerCase());
 
-export const WETH_TOKENS = [
+export const WRAPPED_NATIVE_TOKENS = [
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // Mainnet
     '0x5300000000000000000000000000000000000004', // Scroll (test and main)
     '0x863d7abb9c62d8bc69ea9ebc3e3583057d533e6f', // Scroll Sepolia

@@ -16,7 +16,7 @@ export interface ContractDetails {
 // !important:  ... as the point of entry for a token fetched from on-chain data
 
 export const fetchContractDetails = async (
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     address: string,
     _chainId: string,
     provenance: otherTokenSources,
@@ -37,21 +37,19 @@ export const fetchContractDetails = async (
 
     const contract = new Contract(address, ERC20_ABI, provider);
 
-    let decimals,
-        totalSupply,
-        symbol,
-        name = undefined;
+    let decimals, totalSupply, symbol, name;
 
     try {
-        decimals = await contract.decimals();
+        decimals = Number(await contract.decimals());
     } catch (error) {
-        console.warn({ error });
+        console.warn({ address, error });
+        decimals = 18;
     }
 
     try {
         totalSupply = await contract.totalSupply();
     } catch (error) {
-        console.warn({ error });
+        console.warn({ address, error });
     }
 
     try {
@@ -60,9 +58,9 @@ export const fetchContractDetails = async (
     } catch (error: any) {
         // attempt to parse data as bytes32 in case of a non-compliant token
         try {
-            symbol = ethers.utils.parseBytes32String(error.data);
+            symbol = ethers.decodeBytes32String(error.data);
         } catch (error) {
-            console.warn({ error });
+            console.warn({ address, error });
         }
     }
 
@@ -71,9 +69,9 @@ export const fetchContractDetails = async (
         /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
         try {
-            name = ethers.utils.parseBytes32String(error.data);
+            name = ethers.decodeBytes32String(error.data);
         } catch (error) {
-            console.warn({ error });
+            console.warn({ address, error });
         }
     }
 
@@ -90,7 +88,7 @@ export const fetchContractDetails = async (
 };
 
 export type FetchContractDetailsFn = (
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     address: string,
     chainId: string,
 ) => Promise<TokenIF | undefined>;

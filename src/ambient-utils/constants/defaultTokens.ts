@@ -20,6 +20,137 @@ export const mainnetUSDC: TokenIF = {
     symbol: 'USDC',
 };
 
+export const mainnetWBTC: TokenIF = {
+    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+    chainId: 1,
+    decimals: 8,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    name: 'Wrapped Bitcoin',
+    symbol: 'WBTC',
+};
+
+export const mainnetPEPE: TokenIF = {
+    address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+    chainId: 1,
+    decimals: 18,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725',
+    name: 'Pepe',
+    symbol: 'PEPE',
+};
+
+export const mainnetSWETH: TokenIF = {
+    address: '0xf951e335afb289353dc249e82926178eac7ded78',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
+    name: 'Swell Ethereum',
+    symbol: 'swETH',
+};
+
+export const mainnetLIDO: TokenIF = {
+    address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
+    name: 'Lido DAO',
+    symbol: 'LDO',
+};
+
+export const mainnetLUSD: TokenIF = {
+    address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/liquitylusd_32.png',
+    name: 'Liquity USD',
+    symbol: 'LUSD',
+};
+
+export const mainnetMKR: TokenIF = {
+    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
+    name: 'Maker',
+    symbol: 'MKR',
+};
+
+export const mainnetSYN: TokenIF = {
+    address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
+    chainId: 1,
+    decimals: 18,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
+    name: 'Synapse',
+    symbol: 'SYN',
+};
+
+export const mainnetDAI: TokenIF = {
+    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    chainId: 1,
+    decimals: 18,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+    name: 'Dai Stablecoin',
+    symbol: 'DAI',
+};
+
+export const mainnetRPL: TokenIF = {
+    address: '0xd33526068d116ce69f19a9ee46f0bd304f21a51f',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
+    name: 'Rocket Pool',
+    symbol: 'RPL',
+};
+
+export const mainnetWstETH: TokenIF = {
+    address: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
+    name: 'Wrapped liquid staked Ether 2.0',
+    symbol: 'wstETH',
+};
+
+export const mainnetMATIC: TokenIF = {
+    address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://assets.coingecko.com/coins/images/4713/thumb/polygon.png',
+    name: 'Matic Token',
+    symbol: 'MATIC',
+};
+
+export const mainnetFRAX: TokenIF = {
+    address: '0x853d955acef822db058eb8505911ed77f175b99e',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/fraxfinanceeth2_32.png',
+    name: 'Frax',
+    symbol: 'FRAX',
+};
+
+export const mainnetUSDT: TokenIF = {
+    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    chainId: 1,
+    decimals: 6,
+    logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
+    name: 'Tether',
+    symbol: 'USDT',
+};
+
+export const mainnetETHFI: TokenIF = {
+    address: '0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB',
+    chainId: 1,
+    decimals: 18,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/35958/thumb/etherfi.jpeg?1710254562',
+    name: 'ether.fi governance token',
+    symbol: 'ETHFI',
+};
+
 export const blastETH: TokenIF = {
     address: '0x0000000000000000000000000000000000000000',
     chainId: 81457,
@@ -38,6 +169,15 @@ export const blastUSDB: TokenIF = {
         'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
     name: 'USDB',
     symbol: 'USDB',
+};
+
+export const blastBLAST: TokenIF = {
+    address: '0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad',
+    chainId: 81457,
+    decimals: 18,
+    logoURI: '',
+    name: 'Blast',
+    symbol: 'BLAST',
 };
 
 export const blastUSDPLUS: TokenIF = {
@@ -140,13 +280,22 @@ export const blastESE: TokenIF = {
     logoURI: '',
 };
 
-export const blastYES: TokenIF = {
+export const blastYESv1: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
     decimals: 18,
-    name: 'YES Money',
+    name: 'YES Money v1',
+    symbol: 'YESv1',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png',
+};
+
+export const blastYES: TokenIF = {
+    address: '0x1a49351bdB4BE48C0009b661765D01ed58E8C2d8',
+    chainId: 81457,
+    decimals: 18,
+    name: 'YES Money v2',
     symbol: 'YES',
-    logoURI: '',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png',
 };
 
 export const blastPACM: TokenIF = {
@@ -165,6 +314,16 @@ export const blastWETH: TokenIF = {
     name: 'Wrapped Ether',
     symbol: 'wETH',
     logoURI: '',
+};
+
+export const blastWEETH: TokenIF = {
+    address: '0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A',
+    chainId: 81457,
+    decimals: 18,
+    name: 'Wrapped eETH',
+    symbol: 'weETH',
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const blastWrsETH: TokenIF = {
@@ -200,7 +359,7 @@ export const blastOLE: TokenIF = {
     decimals: 18,
     name: 'OpenLeverage',
     symbol: 'OLE',
-    logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
+    logoURI: '',
 };
 
 export const blastSepoliaETH: TokenIF = {
@@ -221,127 +380,6 @@ export const blastSepoliaUSDB: TokenIF = {
         'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
     name: 'USDB',
     symbol: 'USDB',
-};
-
-export const mainnetWBTC: TokenIF = {
-    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    chainId: 1,
-    decimals: 8,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    name: 'Wrapped Bitcoin',
-    symbol: 'WBTC',
-};
-
-export const mainnetPEPE: TokenIF = {
-    address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
-    chainId: 1,
-    decimals: 18,
-    logoURI:
-        'https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725',
-    name: 'Pepe',
-    symbol: 'PEPE',
-};
-
-export const mainnetSWETH: TokenIF = {
-    address: '0xf951e335afb289353dc249e82926178eac7ded78',
-    chainId: 1,
-    decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
-    name: 'Swell Ethereum',
-    symbol: 'swETH',
-};
-
-export const mainnetLIDO: TokenIF = {
-    address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
-    chainId: 1,
-    decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
-    name: 'Lido DAO',
-    symbol: 'LDO',
-};
-
-export const mainnetLUSD: TokenIF = {
-    address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
-    chainId: 1,
-    decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/liquitylusd_32.png',
-    name: 'Liquity USD',
-    symbol: 'LUSD',
-};
-
-export const mainnetMKR: TokenIF = {
-    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
-    chainId: 1,
-    decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
-    name: 'Maker',
-    symbol: 'MKR',
-};
-
-export const mainnetSYN: TokenIF = {
-    address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
-    chainId: 1,
-    decimals: 18,
-    logoURI:
-        'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
-    name: 'Synapse',
-    symbol: 'SYN',
-};
-
-export const mainnetDAI: TokenIF = {
-    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    chainId: 1,
-    decimals: 18,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
-    name: 'Dai Stablecoin',
-    symbol: 'DAI',
-};
-
-export const mainnetRPL: TokenIF = {
-    address: '0xd33526068d116ce69f19a9ee46f0bd304f21a51f',
-    chainId: 1,
-    decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
-    name: 'Rocket Pool',
-    symbol: 'RPL',
-};
-
-export const mainnetWstETH: TokenIF = {
-    address: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
-    chainId: 1,
-    decimals: 18,
-    logoURI: '',
-    name: 'Wrapped liquid staked Ether 2.0',
-    symbol: 'wstETH',
-};
-
-export const mainnetMATIC: TokenIF = {
-    address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
-    chainId: 1,
-    decimals: 18,
-    logoURI: '',
-    name: 'Matic Token',
-    symbol: 'MATIC',
-};
-
-export const mainnetFRAX: TokenIF = {
-    address: '0x853d955acef822db058eb8505911ed77f175b99e',
-    chainId: 1,
-    decimals: 18,
-    logoURI: 'https://etherscan.io/token/images/fraxfinanceeth2_32.png',
-    name: 'Frax',
-    symbol: 'FRAX',
-};
-
-export const mainnetUSDT: TokenIF = {
-    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-    chainId: 1,
-    decimals: 6,
-    logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
-    name: 'Tether',
-    symbol: 'USDT',
 };
 
 export const sepoliaETH: TokenIF = {
@@ -401,6 +439,15 @@ export const scrollWstETH: TokenIF = {
     decimals: 18,
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
+};
+export const scrollWeETH: TokenIF = {
+    name: 'Wrapped eETH',
+    address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
+    symbol: 'weETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const scrollWrsETH: TokenIF = {
@@ -505,6 +552,15 @@ export const scrollAxlUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const scrollUSDE: TokenIF = {
+    chainId: 534352,
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    name: 'Ethena USDe',
+    symbol: 'USDe',
+    decimals: 18,
+    logoURI: '',
+};
+
 export const scrollDAI: TokenIF = {
     name: 'Dai Stablecoin',
     address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
@@ -577,9 +633,11 @@ export const defaultTokens: TokenIF[] = [
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
+    mainnetETHFI,
     blastETH,
     blastWrsETH,
     blastUSDB,
+    blastBLAST,
     blastUSDPLUS,
     blastMIA,
     blastBIG,
@@ -592,9 +650,11 @@ export const defaultTokens: TokenIF[] = [
     blastALIEN,
     blastOLE,
     blastWETH,
+    blastWEETH,
     blastEzETH,
     blastPUMP,
     blastYES,
+    blastYESv1,
     blastPACM,
     blastSepoliaETH,
     blastSepoliaUSDB,
@@ -606,12 +666,14 @@ export const defaultTokens: TokenIF[] = [
     scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
+    scrollUSDE,
     scrollWBTC,
     scrollRocketPoolETH,
     scrollPxETH,
     scrollPufETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWeETH,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,

@@ -27,13 +27,15 @@ import XMON from './XMON.png';
 import MKR from './MKR.png';
 import SWETH from './SWETH.svg';
 import LINK from './LINK.svg';
-import SYN from './SYN.png';
+import OLE from './OLE.svg';
+import SYN from './SYN.svg';
 import LDO from './LDO.svg';
 import BLUR from './BLUR.png';
 import WRSETH from './WRSETH.png';
 import UNIETH from './UNIETH.png';
 import STONE from './STONE.png';
 import SCRIBES from './SCRIBES.png';
+import YOLO from './YOLO.png';
 import USDPLUS from './USD+.png';
 import PANDA from './PANDA.jpg';
 import YIELD from './YIELD.jpg';
@@ -41,6 +43,9 @@ import ESE from './ESE.jpg';
 import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
+import WEETH from './WEETH.svg';
+import BLAST from './BLAST.png';
+import USDE from './USDe-Black.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -73,6 +78,7 @@ export {
     MKR,
     SWETH,
     LINK,
+    OLE,
     SYN,
     LDO,
     BLUR,
@@ -80,6 +86,7 @@ export {
     UNIETH,
     STONE,
     SCRIBES,
+    YOLO,
     USDPLUS,
     PANDA,
     YIELD,
@@ -87,4 +94,7 @@ export {
     BIG,
     PUNKETH20,
     RSETH,
+    WEETH,
+    BLAST,
+    USDE,
 };

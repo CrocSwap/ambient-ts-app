@@ -18,7 +18,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { usePoolList2 } from '../../../App/hooks/usePoolList2';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { isWethToken } from '../../../ambient-utils/dataLayer';
+import { isWrappedNativeToken } from '../../../ambient-utils/dataLayer';
 
 export type columnSlugs =
     | 'token'
@@ -135,7 +135,7 @@ function DexTokens(props: propsIF) {
                             sortedTokens={sortedTokens}
                         />
                         <TableBody>
-                            {/* 
+                            {/*
                                 TODO:   change this logic to use React <Suspense />
                             */}
                             {sortedTokens.data.length ? (
@@ -156,10 +156,12 @@ function DexTokens(props: propsIF) {
                                         (p: GCServerPoolIF) =>
                                             (p.base.toLowerCase() ===
                                                 token.tokenAddr.toLowerCase() &&
-                                                !isWethToken(p.quote)) ||
+                                                !isWrappedNativeToken(
+                                                    p.quote,
+                                                )) ||
                                             (p.quote.toLowerCase() ===
                                                 token.tokenAddr.toLowerCase() &&
-                                                !isWethToken(p.base)),
+                                                !isWrappedNativeToken(p.base)),
                                     );
                                     if (
                                         !token.tokenMeta ||
@@ -168,7 +170,7 @@ function DexTokens(props: propsIF) {
                                         return null;
                                     return (
                                         <TokenRow
-                                            key={JSON.stringify(token)}
+                                            key={token.tokenAddr}
                                             token={token}
                                             tokenMeta={token.tokenMeta}
                                             samplePool={samplePool}

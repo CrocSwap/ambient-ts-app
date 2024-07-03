@@ -59,7 +59,9 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
 
     &::placeholder {
         color: var(--text2);
@@ -179,7 +181,7 @@ export const PortfolioBannerRectangleContainer = styled.div`
     position: relative;
 
     display: flex;
-    overflow: hidden;
+    /*overflow: hidden;*/
 
     background-color: var(--dark1);
 
@@ -301,4 +303,36 @@ export const MobileButton = styled.button<{ active: boolean }>`
         color: ${active ? 'black' : 'var(--text1)'};
         background: ${active ? 'var(--accent1)' : 'transparent'};
     `}
+`;
+
+export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 65px;
+    width: 65px;
+
+    ${({ placement }) => {
+        if (placement) {
+            return `
+            transform: translate(0%, 23%);
+            `;
+        }
+    }}
+`;
+
+export const UpdateProfileButton = styled.div`
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+    color: var(--text1);
+
+    border: none;
+    outline: none;
+
+    &:hover {
+        cursor: pointer;
+    }
 `;

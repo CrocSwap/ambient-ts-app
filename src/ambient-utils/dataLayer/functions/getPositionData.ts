@@ -1,8 +1,8 @@
 import {
     baseTokenForConcLiq,
-    bigNumToFloat,
+    bigIntToFloat,
     CrocEnv,
-    floatToBigNum,
+    floatToBigInt,
     quoteTokenForConcLiq,
     tickToPrice,
     toDisplayPrice,
@@ -11,7 +11,7 @@ import { PositionIF, PositionServerIF, TokenIF } from '../../types';
 import { FetchAddrFn, FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { getPositionHash } from './getPositionHash';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
@@ -236,37 +236,74 @@ export const getPositionData = async (
     newPosition.askTickPriceDecimalCorrected = upperPriceDisplayInQuote;
     newPosition.askTickInvPriceDecimalCorrected = upperPriceDisplayInBase;
 
-    if (position.positionType == 'ambient') {
-        newPosition.positionLiq = position.ambientLiq;
+    // uncomment below to test SDK call fallback when server is down
+    // newPosition.liqRefreshTime = 0;
 
+    if (position.positionType == 'ambient') {
+        if (newPosition.liqRefreshTime === 0) {
+            const pos = crocEnv.positions(
+                position.base,
+                position.quote,
+                position.user,
+            );
+            const liqBigNum = (await pos.queryAmbient()).seeds;
+            const liqNum = bigIntToFloat(liqBigNum);
+            newPosition.positionLiq = liqNum;
+        } else {
+            newPosition.positionLiq = position.ambientLiq;
+        }
         newPosition.positionLiqBase =
             newPosition.positionLiq * Math.sqrt(await poolPriceNonDisplay);
         newPosition.positionLiqQuote =
             newPosition.positionLiq / Math.sqrt(await poolPriceNonDisplay);
     } else if (position.positionType == 'concentrated') {
-        newPosition.positionLiq = position.concLiq;
+        if (newPosition.liqRefreshTime === 0) {
+            const pos = crocEnv.positions(
+                position.base,
+                position.quote,
+                position.user,
+            );
+            const positionRewards = await pos.queryRewards(
+                position.bidTick,
+                position.askTick,
+            );
+            newPosition.feesLiqBase = bigIntToFloat(
+                positionRewards.baseRewards,
+            );
+            newPosition.feesLiqQuote = bigIntToFloat(
+                positionRewards.quoteRewards,
+            );
 
-        newPosition.positionLiqBase = bigNumToFloat(
+            const liqBigNum = (
+                await pos.queryRangePos(position.bidTick, position.askTick)
+            ).liq;
+            const liqNum = bigIntToFloat(liqBigNum);
+
+            newPosition.positionLiq = liqNum;
+        } else {
+            newPosition.positionLiq = position.concLiq;
+
+            newPosition.feesLiqBase =
+                position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
+            newPosition.feesLiqQuote =
+                position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
+        }
+        newPosition.positionLiqBase = bigIntToFloat(
             baseTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(position.concLiq),
+                floatToBigInt(newPosition.positionLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),
         );
-        newPosition.positionLiqQuote = bigNumToFloat(
+        newPosition.positionLiqQuote = bigIntToFloat(
             quoteTokenForConcLiq(
                 await poolPriceNonDisplay,
-                floatToBigNum(position.concLiq),
+                floatToBigInt(newPosition.positionLiq),
                 tickToPrice(position.bidTick),
                 tickToPrice(position.askTick),
             ),
         );
-
-        newPosition.feesLiqBase =
-            position.rewardLiq * Math.sqrt(await poolPriceNonDisplay);
-        newPosition.feesLiqQuote =
-            position.rewardLiq / Math.sqrt(await poolPriceNonDisplay);
         newPosition.feesLiqBaseDecimalCorrected =
             newPosition.feesLiqBase / Math.pow(10, baseTokenDecimals);
         newPosition.feesLiqQuoteDecimalCorrected =

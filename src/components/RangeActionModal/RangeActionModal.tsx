@@ -9,7 +9,6 @@ import {
     PositionServerIF,
     RangeModalAction,
 } from '../../ambient-utils/types';
-import { BigNumber } from 'ethers';
 import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
@@ -158,11 +157,13 @@ function RangeActionModal(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
-        BigNumber | undefined
+        bigint | undefined
     >();
 
     const liquidityToBurn = useMemo(
-        () => currentLiquidity?.mul(removalPercentage).div(100),
+        () =>
+            ((currentLiquidity || BigInt(0)) * BigInt(removalPercentage)) /
+            BigInt(100),
         [currentLiquidity, removalPercentage],
     );
 
@@ -175,11 +176,11 @@ function RangeActionModal(props: propsIF) {
                 position.user,
             );
 
-            const liqBigNum = isAmbient
+            const liqBigInt = isAmbient
                 ? (await pos.queryAmbient()).seeds
                 : (await pos.queryRangePos(position.bidTick, position.askTick))
                       .liq;
-            setCurrentLiquidity(liqBigNum);
+            setCurrentLiquidity(liqBigInt);
         } catch (error) {
             console.error(error);
         }
@@ -444,7 +445,7 @@ function RangeActionModal(props: propsIF) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
         }
     };
 
@@ -546,7 +547,7 @@ function RangeActionModal(props: propsIF) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
         }
     };
 
@@ -628,8 +629,8 @@ function RangeActionModal(props: propsIF) {
                                 ? 'Reset'
                                 : 'Harvest'
                             : type === 'Remove'
-                            ? 'Remove'
-                            : 'Range'
+                              ? 'Remove'
+                              : 'Range'
                     }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
@@ -649,20 +650,20 @@ function RangeActionModal(props: propsIF) {
                         !(
                             (type === 'Remove'
                                 ? liquidityToBurn === undefined ||
-                                  liquidityToBurn.isZero()
+                                  liquidityToBurn == BigInt(0)
                                 : memoIsActionReset) || showSettings
                         )
                             ? type === 'Remove'
                                 ? 'Remove Liquidity'
                                 : 'Harvest Fees'
                             : type === 'Harvest'
-                            ? 'Reset'
-                            : '...'
+                              ? 'Reset'
+                              : '...'
                     }
                     disabled={
                         (type === 'Remove' &&
                             (liquidityToBurn === undefined ||
-                                liquidityToBurn.isZero())) ||
+                                liquidityToBurn == BigInt(0))) ||
                         showSettings
                     }
                     action={type === 'Remove' ? removeFn : harvestFn}
@@ -778,8 +779,8 @@ function RangeActionModal(props: propsIF) {
                               type === 'Remove' ? 'Remove Liquidity' : 'Harvest'
                           } Settings`
                         : type === 'Remove'
-                        ? 'Remove Liquidity'
-                        : 'Harvest Confirmation'
+                          ? 'Remove Liquidity'
+                          : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
                     resetConfirmation();

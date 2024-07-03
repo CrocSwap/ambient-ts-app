@@ -9,7 +9,7 @@ import {
     DexTokenAggServerIF,
     getChainStats,
     getFormattedNumber,
-    isWethToken,
+    isWrappedNativeToken,
 } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
@@ -48,7 +48,7 @@ export const useTokenStats = (
     cachedFetchTokenPrice: TokenPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     tokenMethods: tokenMethodsIF,
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
 ): useTokenStatsIF => {
     const [dexTokens, setDexTokens] = useState<dexTokenData[]>([]);
 
@@ -90,7 +90,7 @@ export const useTokenStats = (
                             (result) =>
                                 (result as { value: dexTokenData }).value,
                         )
-                        .filter((t) => !isWethToken(t.tokenAddr));
+                        .filter((t) => !isWrappedNativeToken(t.tokenAddr));
                     setDexTokens(fulfilledResults);
                 }
             } catch (error) {

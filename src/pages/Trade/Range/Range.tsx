@@ -46,7 +46,7 @@ import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_SCROLL,
+    RANGE_BUFFER_MULTIPLIER_L2,
 } from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
@@ -195,8 +195,8 @@ function Range() {
             ? getUnicodeCharacter(tokenB.symbol)
             : getUnicodeCharacter(tokenA.symbol)
         : !isTokenABase
-        ? getUnicodeCharacter(tokenB.symbol)
-        : getUnicodeCharacter(tokenA.symbol);
+          ? getUnicodeCharacter(tokenB.symbol)
+          : getUnicodeCharacter(tokenA.symbol);
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
@@ -823,10 +823,10 @@ function Range() {
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeePoolInGwei] = useState<number>(
-        isScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
+        isScroll ? 0.01 : isActiveNetworkBlast ? 0.15 : 0,
     );
 
     const amountToReduceNativeTokenQty =
@@ -859,12 +859,12 @@ function Range() {
             const costOfScrollPoolInETH =
                 l1CostOfScrollPoolInETH + l2CostOfScrollPoolInETH;
 
-            setAmountToReduceNativeTokenQtyL2(
-                RANGE_BUFFER_MULTIPLIER_MAINNET * costOfScrollPoolInETH,
+            setAmountToReduceNativeTokenQtyMainnet(
+                RANGE_BUFFER_MULTIPLIER_MAINNET * costOfMainnetPoolInETH,
             );
 
             setAmountToReduceNativeTokenQtyL2(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
+                RANGE_BUFFER_MULTIPLIER_L2 * costOfScrollPoolInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -945,7 +945,6 @@ function Range() {
         setTokenBInputQty('');
         setPrimaryQuantity('');
     };
-
     const {
         tokenAllowed: tokenAAllowed,
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
