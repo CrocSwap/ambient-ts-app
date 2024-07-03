@@ -1,3 +1,7 @@
+import {
+    getFormattedNumber,
+    getTimeRemainingAbbrev,
+} from '../../../../ambient-utils/dataLayer';
 import { scatterData, textColor } from './ScatterChart';
 
 interface propsIF {
@@ -13,11 +17,16 @@ export default function ScatterTooltip(props: propsIF) {
           : undefined;
 
     const formatTime = (time: number) => {
-        return time >= 60 ? `${Math.floor(time / 60)}h` : `${time}m`;
+        return getTimeRemainingAbbrev(time);
     };
 
     const formatPrice = (price: number) => {
-        return `$${price.toLocaleString()}`;
+        return getFormattedNumber({
+            value: price,
+            minFracDigits: 0,
+            maxFracDigits: 0,
+            isUSD: true,
+        });
     };
 
     return (

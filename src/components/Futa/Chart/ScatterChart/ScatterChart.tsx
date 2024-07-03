@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Xaxis from './Xaxis';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -9,6 +9,9 @@ import {
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import Yaxis from './Yaxis';
 import ScatterTooltip from './ScatterTooltip';
+import useScatterChartData from './useScatterChartData';
+import { useNavigate } from 'react-router-dom';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 
 export const axisColor = '#939C9E'; // text2
 export const textColor = '#939C9E'; // text2
@@ -35,19 +38,28 @@ export default function ScatterChart() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [pointSeries, setPointSeries] = useState<any>();
-    const data = [
-        { name: 'DOGE', timeRemaining: 40, price: 67316 },
-        { name: 'PEPE', timeRemaining: 900, price: 34466 },
-        { name: 'BODEN', timeRemaining: 1260, price: 27573 },
-        { name: 'APU', timeRemaining: 420, price: 979579 },
-        { name: 'BOME', timeRemaining: 40, price: 626930 },
-        { name: 'USA', timeRemaining: 300, price: 11294 },
-        { name: 'BITCOIN', timeRemaining: 60, price: 17647 },
-        { name: 'WIF', timeRemaining: 600, price: 5782 },
-        { name: 'TRUMP', timeRemaining: 420, price: 22058 },
-        { name: 'DEGEN', timeRemaining: 300, price: 5782 },
-        { name: 'LOCKIN', timeRemaining: 5, price: 27573 },
-    ];
+
+    const data = useScatterChartData();
+
+    const { selectedTicker } = useContext(AuctionsContext);
+    const navigate = useNavigate();
+
+    const navigateUrl = '/auctions/v1/';
+
+    useEffect(() => {
+        if (selectedTicker) {
+            const selectedCircleIndex = data.findIndex(
+                (i: scatterData) => i.name === selectedTicker,
+            );
+
+            if (selectedCircleIndex !== -1) {
+                const selectedCircleData = data[selectedCircleIndex];
+                const itemToMove = data.splice(selectedCircleIndex, 1)[0];
+                data.push(itemToMove);
+                setSelectedDot(selectedCircleData);
+            }
+        }
+    }, [selectedTicker]);
 
     useEffect(() => {
         if (data) {
@@ -99,7 +111,7 @@ export default function ScatterChart() {
                             .attr(
                                 'transform',
                                 'translate(' +
-                                    xScale(d[index].timeRemaining) +
+                                    xScale(d[index].timeRemaining / 60) +
                                     ',' +
                                     yScale(d[index].price) +
                                     ')',
@@ -193,7 +205,7 @@ export default function ScatterChart() {
             );
 
             const dataAtMouse = data.filter((d) => {
-                const x = xScale(d.timeRemaining);
+                const x = xScale(d.timeRemaining / 60);
                 const y = yScale(d.price);
                 return Math.abs(x - offsetX) < 5 && Math.abs(y - offsetY) < 5;
             });
@@ -215,12 +227,7 @@ export default function ScatterChart() {
                 })
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
-
-                    setSelectedDot(
-                        nearestData?.name === selectedDot?.name
-                            ? undefined
-                            : nearestData,
-                    );
+                    nearestData && navigate(navigateUrl + nearestData.name);
                 })
                 .on('mouseout', function () {
                     setHoveredDot(undefined);
