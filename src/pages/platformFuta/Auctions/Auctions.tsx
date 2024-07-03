@@ -5,8 +5,7 @@ import Divider from '../../../components/Futa/Divider/Divider';
 import { useContext, useEffect, useState } from 'react';
 import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
-import ConsoleComponent from '../../../components/Futa/ConsoleComponent/ConsoleComponent';
-import Chart from '../../../components/Futa/Chart/Chart';
+
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import Seperator from '../../../components/Futa/Seperator/Seperator';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -40,8 +39,7 @@ export default function Auctions(props: propsIF) {
     false && INPUT_DOM_ID;
 
     const desktopScreen: boolean = useMediaQuery('(min-width: 1280px)');
-    const [isFullLayoutActive, setIsFullLayoutActive] =
-        useState<boolean>(false);
+    const [_, setIsFullLayoutActive] = useState<boolean>(false);
 
     const cacheFrequency = Math.floor(Date.now() / 30000);
 
@@ -63,7 +61,15 @@ export default function Auctions(props: propsIF) {
                             : '1fr 4px 390px',
                     }}
                 >
-                    {isFullLayoutActive ? (
+                    <div style={{ height: 'calc(100vh - 200px)' }}>
+                        <SearchableTicker
+                            auctions={sorted}
+                            title='AUCTIONS'
+                            setIsFullLayoutActive={setIsFullLayoutActive}
+                            placeholderTicker={placeholderTicker}
+                        />
+                    </div>
+                    {/* {isFullLayoutActive ? (
                         <div className={styles.auctionChartContainer}>
                             <div style={{ height: '50vh' }}>
                                 <SearchableTicker
@@ -90,7 +96,7 @@ export default function Auctions(props: propsIF) {
                                 placeholderTicker={placeholderTicker}
                             />
                         </div>
-                    )}
+                    )} */}
 
                     <Seperator dots={100} />
                     <div className={styles.flexColumn}>
