@@ -1,21 +1,46 @@
-import styles from './ChatPanel.module.css';
-import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
-import DividerDark from '../Global/DividerDark/DividerDark';
-import MessageInput from './MessagePanel/InputBox/MessageInput';
-import Room from './MessagePanel/Room/Room';
-import { RiArrowDownSLine } from 'react-icons/ri';
-import { memo, useContext, useEffect, useRef, useState } from 'react';
-import useChatSocket from './Service/useChatSocket';
-import { PoolIF } from '../../ambient-utils/types';
-import useChatApi from './Service/ChatApi';
+import { useMediaQuery } from '@material-ui/core';
+import Picker, { IEmojiData } from 'emoji-picker-react';
+import React, { memo, useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
-import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
-import FullChat from './FullChat/FullChat';
+import { IoIosArrowDown, IoIosArrowUp, IoIosClose } from 'react-icons/io';
+import {
+    RiArrowDownDoubleLine,
+    RiArrowDownSLine,
+    RiArrowUpDoubleLine,
+} from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
 import NotFound from '../../pages/common/NotFound/NotFound';
+import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import DividerDark from '../Global/DividerDark/DividerDark';
+import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
+import {
+    ALLOW_AUTH,
+    ALLOW_MENTIONS,
+    LS_USER_VERIFY_TOKEN,
+} from './ChatConstants/ChatConstants';
+import { ChatVerificationTypes } from './ChatEnums';
+import { ChatGoToChatParamsIF } from './ChatIFs';
+import ChatNotificationBubble from './ChatNotification/ChatNotificationBubble';
+import styles from './ChatPanel.module.css';
+import ChatToaster from './ChatToaster/ChatToaster';
+import { setLS } from './ChatUtils';
+import DomDebugger from './DomDebugger/DomDebugger';
+import FullChat from './FullChat/FullChat';
+import MessageInput from './MessagePanel/InputBox/MessageInput';
+import Room from './MessagePanel/Room/Room';
+import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
+import UserSummary from './MessagePanel/UserSummary/UserSummary';
+import { Message } from './Model/MessageModel';
+import { UserSummaryModel } from './Model/UserSummaryModel';
+import useChatApi from './Service/ChatApi';
+import useChatSocket from './Service/useChatSocket';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -23,6 +48,9 @@ interface propsIF {
 }
 
 function ChatPanel(props: propsIF) {
+    const [isFocusMentions, setIsFocusMentions] = useState(
+        true && ALLOW_MENTIONS,
+    );
     const { isFullScreen } = props;
     const {
         chat: {
@@ -37,38 +65,204 @@ function ChatPanel(props: propsIF) {
 
     if (!isChatEnabled) return <NotFound />;
 
-    // eslint-disable-next-line
-    const messageEnd = useRef<any>(null);
-    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
+    const { selectedNetwork } = useContext(CrocEnvContext);
+
+    const messageListWrapper = useRef<HTMLDivElement>(null);
+    const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
-    const [moderator, setModerator] = useState(false);
+    const [isModerator, setIsModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
-    const { userAddress, ensName: ens } = useContext(UserDataContext);
+    const [isDeleteMessageButtonPressed, setIsDeleteMessageButtonPressed] =
+        useState(false);
+    const [showPopUp, setShowPopUp] = useState(false);
+    const [popUpText, setPopUpText] = useState('');
+    const {
+        userAddress,
+        ensName: ens,
+        isUserConnected,
+        resolvedAddressFromContext,
+        setCurrentUserID,
+    } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
     );
     const [scrollDirection, setScrollDirection] = useState(String);
-    const [notification, setNotification] = useState(0);
+    const [notificationCount, setNotificationCount] = useState(0);
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
+    const [showPreviousMessagesButton, setShowPreviousMessagesButton] =
+        useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
-    const { messages, getMsg, lastMessage, messageUser } = useChatSocket(
+    const [isReplyButtonPressed, setIsReplyButtonPressed] = useState(false);
+    const [selectedMessageforReply, setSelectedMessageForReply] = useState<
+        Message | undefined
+    >();
+    const [selectedMessageIdForDeletion, setSelectedMessageIdForDeletion] =
+        useState('');
+
+    const [page, setPage] = useState(0);
+    const [mentionIndex, setMentionIndex] = useState(-1);
+    // eslint-disable-next-line
+    const [notConnectedUserInterval, setNotConnectedUserInterval] =
+        useState<NodeJS.Timer>();
+
+    // that block toggled when message count limit is handled --------------------------------------------
+
+    // const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
+    const isInputDisabled = false;
+
+    const _cooldownVal = 12;
+    // const [sendMessageCooldown, setSendMessageCooldown] =
+    //     useState<number>(_cooldownVal);
+    const sendMessageCooldown = _cooldownVal;
+    // --------------------------------------------------------------------------------------------------
+
+    // CHAT_FEATURE_STATES - Feature : User Summary
+    const [userSummaryToBottom, setUserSummaryToBottom] = useState(false);
+    const [userSummaryVerticalPosition, setUserSummaryVerticalPosition] =
+        useState(0);
+    const [userSummaryActive, setUserSummaryActive] = useState(false);
+    const [selectedUserSummary, setSelectedUserSummary] =
+        useState<UserSummaryModel>();
+
+    const [showVerifyOldMessagesPanel, setShowVerifyOldMessagesPanel] =
+        useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+    const [
+        showVerifyWalletConfirmationInDelete,
+        setShowVerifyWalletConfirmationInDelete,
+    ] = useState(false);
+
+    // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
+    const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
+        useState(new Date(new Date().getTime() + 1000 * 60 * 60 * 100));
+
+    const [toastrActive, setToastrActive] = useState(false);
+    const [toastrType, setToastrType] = useState<
+        'success' | 'error' | 'warning' | 'info'
+    >('info');
+    const [toastrText, setToastrText] = useState('');
+
+    const verifyBtnRef = useRef<HTMLDivElement>(null);
+
+    const [goToChartParams, setGoToChartParams] = useState<
+        ChatGoToChatParamsIF | undefined
+    >();
+
+    const [showPrevMents, setShowPrevMents] = useState(false);
+    const [showNextMents, setShowNextMents] = useState(false);
+
+    const activateToastr = (
+        message: string,
+        type: 'success' | 'error' | 'warning' | 'info',
+    ) => {
+        setToastrActive(true);
+        setToastrText(message);
+        setToastrType(type);
+    };
+
+    const freezePanel = () => {
+        messageListWrapper.current?.style.setProperty('opacity', '0');
+    };
+
+    const scrollToVeryBottom = () => {
+        if (messageListWrapper.current) {
+            scrollToInstant(messageListWrapper.current.scrollHeight);
+        }
+    };
+
+    const scrollToInstant = (pos: number) => {
+        if (messageListWrapper.current) {
+            messageListWrapper.current.scrollTo({
+                left: 0,
+                top: pos,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    const activatePanel = () => {
+        messageListWrapper.current?.style.setProperty('opacity', '1');
+        scrollToVeryBottom();
+        setTimeout(() => {
+            scrollToVeryBottom();
+        }, 200);
+    };
+
+    const [scrollRevertTarget, setScrollRevertTarget] = useState('');
+
+    const isMobile = useMediaQuery('(max-width: 800px)');
+
+    const [messageForNotificationBubble, setMessageForNotificationBubble] =
+        useState<Message | undefined>(undefined);
+
+    const {
+        messages,
+        lastMessage,
+        messageUser,
+        sendMsg,
+        users,
+        getMsgWithRestWithPagination,
+        notifications,
+        updateLikeDislike,
+        isVerified,
+        verifyUser,
+        userMap,
+        updateUserCache,
+        getAllMessages,
+        setMessages,
+        addReaction,
+        deleteMsgFromList,
+        fetchForNotConnectedUser,
+        getUserSummaryDetails,
+        updateUnverifiedMessages,
+        isWsConnected,
+        // saveUserWithAvatarImage,
+    } = useChatSocket(
         room,
         isSubscriptionsEnabled,
         isChatOpen,
+        activateToastr,
+        // userAddress,
+        // ens,
+        currentUser,
+        freezePanel,
+        activatePanel,
+        setMessageForNotificationBubble,
     );
 
-    const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser } = useChatApi();
 
-    const { isUserConnected, resolvedAddressFromContext } =
-        useContext(UserDataContext);
+    const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
+    const [showPicker, setShowPicker] = useState(false);
+
+    const defaultEnsName = 'defaultValue';
+
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+
+    const [lastScrolledMessage, setLastScrolledMessage] = useState('');
+    const [lastScrollListenerActive, setLastScrollListenerActive] =
+        useState(false);
+    const lastScrollListenerRef = useRef<boolean>();
+    lastScrollListenerRef.current = lastScrollListenerActive;
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
-        if (e.code === 'Escape') setIsChatOpen(false);
+        if (e.code === 'Escape') {
+            if (showPicker) {
+                setShowPicker(false);
+                return;
+            }
+            if (isReplyButtonPressed) {
+                setIsReplyButtonPressed(false);
+                return;
+            }
+            setIsChatOpen(false);
+        }
     }
 
     function openChatPanel(e: KeyboardEvent) {
@@ -77,6 +271,60 @@ function ChatPanel(props: propsIF) {
         }
     }
 
+    async function mentionHoverListener(elementTop: number, walletID: string) {
+        // CHAT_FEATURES_WBO -  Feature : User Summary
+        const userDetails = await getUserSummaryDetails(walletID);
+        setSelectedUserSummary(userDetails);
+        if (!messageListWrapper.current) return;
+
+        const wrapperCenterPoint =
+            messageListWrapper.current.getBoundingClientRect().height / 2 +
+            messageListWrapper.current.getBoundingClientRect().top;
+        setUserSummaryActive(true);
+        setUserSummaryVerticalPosition(
+            elementTop - messageListWrapper.current.getBoundingClientRect().top,
+        );
+        if (elementTop >= wrapperCenterPoint) {
+            setUserSummaryToBottom(false);
+        } else {
+            setUserSummaryToBottom(true);
+        }
+    }
+
+    function summaryMouseLeaveListener() {
+        setUserSummaryActive(false);
+    }
+
+    function closePopUp() {
+        setShowPopUp(false);
+    }
+
+    const [isMentionPanelActive, setIsMentionPanelActive] = useState(false);
+    // eslint-disable-next-line
+    const [mentionPanelQuery, setMentionPanelQuery] = useState('');
+
+    const messageInputListener = (value: string) => {
+        if (value.indexOf('@') !== -1) {
+            setIsMentionPanelActive(true);
+            setMentionPanelQuery(value.split('@')[1]);
+        } else {
+            if (isMentionPanelActive) setIsMentionPanelActive(false);
+        }
+    };
+
+    const reactionBtnListener = (focusedMessage?: Message) => {
+        setFocusedMessage(focusedMessage);
+        setShowPicker(true);
+    };
+    const addReactionEmojiPickListener = (
+        event: React.MouseEvent,
+        data: IEmojiData,
+    ) => {
+        if (focusedMessage && currentUser) {
+            addReaction(focusedMessage._id, currentUser, data.emoji);
+            setShowPicker(false);
+        }
+    };
     useEffect(() => {
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
         document.body.addEventListener('keydown', openChatPanel);
@@ -86,55 +334,78 @@ function ChatPanel(props: propsIF) {
     });
 
     useEffect(() => {
+        if (room == undefined) {
+            return;
+        }
+
+        if (notConnectedUserInterval) {
+            clearInterval(notConnectedUserInterval);
+        }
+
+        if (userAddress == undefined) {
+            if (isChatOpen == false) return;
+            const interval = setInterval(() => {
+                fetchForNotConnectedUser();
+            }, 10000);
+            setNotConnectedUserInterval(interval);
+        }
+
+        return clearInterval(notConnectedUserInterval);
+    }, [userAddress, room, isChatOpen]);
+
+    useEffect(() => {
+        if (
+            lastScrolledMessage == undefined ||
+            lastScrolledMessage.length === 0
+        ) {
+            scrollToBottom();
+        }
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
-                    lastMessage?.mentionedName === userAddress
+                    (lastMessage?.mentionedName === userAddress &&
+                        userAddress !== undefined)
                 ) {
-                    setNotification((notification) => notification + 1);
+                    setNotificationCount(
+                        (notificationCount) => notificationCount + 1,
+                    );
                 }
             } else if (messageUser === currentUser) {
                 setIsScrollToBottomButtonPressed(true);
-                const timer = setTimeout(() => {
-                    messageEnd.current?.scrollTo(
-                        messageEnd.current?.scrollHeight,
-                        messageEnd.current?.scrollHeight,
-                    );
-                }, 100);
+                // scrollToBottom();
 
-                setNotification(0);
-                return () => clearTimeout(timer);
+                setNotificationCount(0);
             }
         } else {
-            messageEnd.current?.scrollTo(
-                messageEnd.current?.scrollHeight,
-                messageEnd.current?.scrollHeight,
-            );
+            // scrollToBottom();
         }
     }, [lastMessage]);
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-        if (userAddress) {
+        if (userAddress && isChatOpen) {
             if (ens === null || ens === undefined) {
-                setEnsName('defaultValue');
+                setEnsName(defaultEnsName);
             } else {
                 setEnsName(ens);
             }
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
-                if (result.status === 'Not OK') {
-                    // eslint-disable-next-line
-                    saveUser(userAddress, ensName).then((result: any) => {
-                        setCurrentUser(result.userData._id);
-                        return result;
-                    });
+                if (result && result.status === 'Not OK') {
+                    // this flow moved to backend due to triggering more than one
+                    // whole of initial data fetching process will be refactored
+                    // saveUser(address, ensName).then((result: any) => {
+                    //     setCurrentUser(result.userData._id);
+                    //     return result;
+                    // });
                 } else {
                     result.userData.isModerator === true
-                        ? setModerator(true)
-                        : setModerator(false);
+                        ? setIsModerator(true)
+                        : setIsModerator(false);
                     setCurrentUser(result.userData._id);
+                    setCurrentUserID(result.userData._id);
                     setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
                         updateUser(
@@ -144,7 +415,7 @@ function ChatPanel(props: propsIF) {
                         ).then(
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             (result: any) => {
-                                if (result.status === 'OK') {
+                                if (result && result.status === 'OK') {
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     updateMessageUser(
                                         currentUser as string,
@@ -168,71 +439,408 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
-        scrollToBottom();
-        setNotification(0);
-        getMsg();
-    }, [room, isChatOpen === false]);
+        // scrollToBottom();
+        setNotificationCount(0);
+        setShowPreviousMessagesButton(false);
+        setPage(0);
 
-    useEffect(() => {
-        if (isMessageDeleted === true) {
-            getMsg();
-            window.scrollTo(0, 0);
+        // handle reply for room change
+        resetReplyState();
+
+        // disable detecting last scroll for 2 seconds
+        setLastScrollListenerActive(false);
+        setTimeout(() => {
+            setLastScrollListenerActive(true);
+        }, 2000);
+    }, [room]);
+
+    // useEffect(() => {
+    //     if (isMessageDeleted) {
+    //         setIsMessageDeleted(false);
+    //         getMsg();
+    //         window.scrollTo(0, 0);
+    //     }
+    // }, [isMessageDeleted]);
+
+    const scrollToMessage = (messageId: string, flashAnimation?: boolean) => {
+        const msgEl = document.querySelector(
+            '.messageBubble[data-message-id="' + messageId + '"]',
+        );
+        if (msgEl && messageListWrapper.current) {
+            // messageListWrapper.current.scrollTop = messageListWrapper.current.scrollHeight - msgElOffsetTop + msgElHeight - messageListWrapper.current.getBoundingClientRect().height;
+            setTimeout(() => {
+                const target = calculateScrollTarget(messageId);
+                if (messageListWrapper && messageListWrapper.current) {
+                    messageListWrapper.current.scrollTop = target;
+                    if (flashAnimation) {
+                        setTimeout(() => {
+                            msgEl.classList.add(styles.purple_flashed);
+
+                            setTimeout(() => {
+                                msgEl.classList.remove(styles.purple_flashed);
+                            }, 1500);
+                        }, 500);
+                    }
+                }
+            }, 100);
         }
-    }, [isMessageDeleted]);
+    };
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
-        scrollToBottom();
-        setNotification(0);
+        scrollToBottom(true);
+        setNotificationCount(0);
+
+        if (isChatOpen) {
+            setTimeout(() => {
+                setLastScrollListenerActive(true);
+            }, 1000);
+            if (lastScrolledMessage && lastScrolledMessage.length > 0) {
+                setTimeout(() => {
+                    scrollToMessage(lastScrolledMessage);
+                }, 700);
+            }
+        } else {
+            setLastScrollListenerActive(false);
+        }
     }, [isChatOpen]);
+
+    useEffect(() => {
+        if (scrollRevertTarget.length > 0) {
+            const targetPos = calculateScrollTarget(scrollRevertTarget);
+            scrollToInstant(targetPos);
+            setScrollRevertTarget('');
+        }
+
+        const mentionsInScope = messages.filter((item) => {
+            return item && item.mentionedWalletID == userAddress;
+        });
+
+        if (mentionIndex == -1) {
+            setMentionIndex(mentionsInScope.length - 1);
+        }
+
+        if (messages.length == 0) return;
+    }, [messages, setMessages]);
 
     function handleCloseChatPanel() {
         setIsChatOpen(false);
     }
 
     const scrollToBottomButton = async () => {
-        setIsScrollToBottomButtonPressed(true);
-        messageEnd.current?.scrollTo(
-            messageEnd.current?.scrollHeight,
-            messageEnd.current?.scrollHeight,
+        if (!messageListWrapper.current) return;
+
+        messageListWrapper.current.scrollTo(
+            0,
+            messageListWrapper.current.scrollHeight,
         );
+        setTimeout(() => {
+            if (!messageListWrapper.current) return;
+
+            setIsScrollToBottomButtonPressed(true);
+            messageListWrapper.current.scrollTo(
+                0,
+                messageListWrapper.current.scrollHeight,
+            );
+        }, 101);
         setScrollDirection('Scroll Down');
     };
 
-    const scrollToBottom = async () => {
+    const getPreviousMessages = async () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+
+        if (messages.length > 0) {
+            setScrollRevertTarget(messages[0]._id);
+        }
+
+        const data =
+            room === 'Admins'
+                ? await getAllMessages(nextPage)
+                : await getMsgWithRestWithPagination(room, nextPage);
+        if (data.length === 0) {
+            setShowPreviousMessagesButton(false);
+        }
+    };
+
+    const scrollToBottom = async (
+        bypassInterval?: boolean,
+        bypassLastScrolled?: boolean,
+        overrideTimeout?: number,
+    ) => {
+        if (notConnectedUserInterval && !bypassInterval) return;
+        if (
+            lastScrolledMessage &&
+            lastScrolledMessage.length > 0 &&
+            !bypassLastScrolled
+        )
+            return;
+
+        const timeout = overrideTimeout ? overrideTimeout : 1000;
         const timer = setTimeout(() => {
-            messageEnd.current?.scrollTo(
-                messageEnd.current?.scrollHeight,
-                messageEnd.current?.scrollHeight,
+            if (!messageListWrapper.current) return;
+            messageListWrapper.current.scrollTo(
+                0,
+                messageListWrapper.current.scrollHeight,
             );
-        }, 1000);
+        }, timeout);
+        setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleScroll = (e: any) => {
-        if (0 <= e.target.scrollTop) {
-            setNotification(0);
-            setIsScrollToBottomButtonPressed(false);
-            setScrollDirection('Scroll Down');
-        } else {
-            setScrollDirection('Scroll Up');
+
+    const getChatBubbleYPos = (bubbleEl?: Element, containerEl?: Element) => {
+        if (bubbleEl === undefined || containerEl === undefined) return 0; // what is it?
+        const elTop =
+            bubbleEl?.getBoundingClientRect().top + containerEl?.scrollTop;
+        return elTop - containerEl?.getBoundingClientRect().top;
+    };
+
+    const calculateScrollTarget = (messageId: string) => {
+        if (
+            messageListWrapper &&
+            messageListWrapper.current &&
+            messageId &&
+            messageId.length > 0
+        ) {
+            const msgEl = document.querySelector(
+                '.messageBubble[data-message-id="' + messageId + '"]',
+            );
+            if (msgEl) {
+                const msgElOffsetTop = (msgEl as HTMLElement).offsetTop;
+                const target = msgElOffsetTop - 120;
+
+                return target;
+            }
+            return messageListWrapper.current.scrollHeight;
+        }
+        return 0;
+    };
+
+    const handleFocusedMessageOnScroll = () => {
+        if (
+            messageListWrapper &&
+            messageListWrapper.current &&
+            lastScrollListenerRef.current == true
+        ) {
+            const rect = messageListWrapper.current.getBoundingClientRect();
+            const bubbles = document.querySelectorAll('.messageBubble');
+            for (let i = 0; i < bubbles.length; i++) {
+                const el = bubbles[i];
+                if (el.getBoundingClientRect().top > rect.top) {
+                    const msgId = el.getAttribute('data-message-id');
+                    calculateScrollTarget(msgId ? msgId : '');
+                    setLastScrolledMessage(msgId ? msgId : '');
+                    break;
+                }
+            }
+        }
+    };
+
+    const goToChartAction = () => {
+        if (goToChartParams) {
+            linkGenMarket.navigate({
+                chain: goToChartParams?.chain,
+                tokenA: goToChartParams?.tokenA,
+                tokenB: goToChartParams?.tokenB,
+            });
+        }
+        setGoToChartParams(undefined);
+    };
+
+    const mentions = messages.filter((item) => {
+        return (
+            item &&
+            item.mentionedWalletID == userAddress &&
+            userAddress !== undefined
+        );
+    });
+
+    const checkMents = () => {
+        const mentionElements = document.querySelectorAll('.mentionedMessage');
+        if (
+            messageListWrapper.current &&
+            messageListWrapper.current.getBoundingClientRect() &&
+            mentionElements.length > 0
+        ) {
+            const listRect = messageListWrapper.current.getBoundingClientRect();
+
+            let showPrev = false;
+            let showNext = false;
+
+            for (let i = 0; i < mentionElements.length; i++) {
+                const mentRect = mentionElements[i].getBoundingClientRect();
+                if (mentRect.top < listRect.top) {
+                    showPrev = true;
+                }
+                if (mentRect.bottom > listRect.bottom + 20) {
+                    showNext = true;
+                }
+            }
+
+            setShowPrevMents(showPrev);
+            setShowNextMents(showNext);
         }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleWheel = (e: any) => {
-        if (
-            e.nativeEvent.wheelDelta > 0 &&
-            messageEnd.current?.scrollHeight !==
-                messageEnd.current?.scrollHeight
-        ) {
-            setScrollDirection('Scroll Up');
-            setIsScrollToBottomButtonPressed(false);
+    const handleScroll = (e: any) => {
+        if (lastScrollListenerRef.current === true) {
+            if (isChatOpen && messageListWrapper.current) {
+                const panelScrollHeight =
+                    messageListWrapper.current.scrollHeight;
+                const panelHeight =
+                    messageListWrapper.current.getBoundingClientRect().height;
+                const panelScrollTop = messageListWrapper.current.scrollTop;
+                if (panelScrollHeight - panelHeight - panelScrollTop > 40) {
+                    handleFocusedMessageOnScroll();
+                } else {
+                    setLastScrolledMessage('');
+
+                    // setLastScrolledMessage('');
+                }
+            }
         }
-        if (0 <= messageEnd.current?.scrollTop) {
+
+        const tolerance = 0.6;
+
+        if (
+            e.target.scrollTop + e.target.clientHeight + tolerance >=
+            e.target.scrollHeight
+        ) {
+            setNotificationCount(0);
+            setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
+        } else {
+            if (e.target.scrollTop === 0) {
+                setShowPreviousMessagesButton(true);
+            } else {
+                setShowPreviousMessagesButton(false);
+            }
+            setScrollDirection('Scroll Up');
+        }
+        setUserSummaryActive(false);
+        checkMents();
+    };
+
+    const handleMentionSkipper = (way: number) => {
+        if (
+            messageListWrapper.current &&
+            messageListWrapper.current.getBoundingClientRect()
+        ) {
+            let targetElement = null;
+            const wrapperRect =
+                messageListWrapper.current.getBoundingClientRect();
+            // down
+            const mentionElements =
+                document.querySelectorAll('.mentionedMessage');
+            if (way == 1) {
+                for (let i = 0; i < mentionElements.length; i++) {
+                    const mRect = mentionElements[i].getBoundingClientRect();
+                    if (mRect.bottom > wrapperRect.bottom) {
+                        targetElement = mentionElements[i];
+                        break;
+                    }
+                }
+            }
+            // up
+            else if (way === -1) {
+                for (let i = mentionElements.length - 1; i >= 0; i--) {
+                    const mRect = mentionElements[i].getBoundingClientRect();
+                    if (mRect.top < wrapperRect.top) {
+                        targetElement = mentionElements[i];
+                        break;
+                    }
+                }
+            }
+            // last
+            else {
+                targetElement = mentionElements.item(
+                    mentionElements.length - 1,
+                );
+            }
+
+            if (targetElement != null) {
+                messageListWrapper.current.scrollTop =
+                    getChatBubbleYPos(
+                        targetElement,
+                        messageListWrapper.current,
+                    ) - 40;
+            }
         }
     };
+
+    const verifyWallet = (
+        verificationType: ChatVerificationTypes,
+        verificationDate: Date,
+        // eslint-disable-next-line
+        e?: React.MouseEvent<HTMLDivElement>,
+    ) => {
+        if (e) e.stopPropagation();
+
+        if (isUserConnected == false)
+            activateToastr('Please connect your wallet first.', 'warning');
+
+        const message =
+            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
+            userAddress;
+        let verifyDate = new Date();
+
+        if (verificationType === ChatVerificationTypes.VerifyWallet) {
+            // verify wallet only
+            if (isVerified) return;
+        } else {
+            // verify wallet and old messages
+            verifyDate = verificationDate;
+        }
+
+        if (
+            window.ethereum &&
+            window.ethereum.request &&
+            typeof window.ethereum.request === 'function'
+        ) {
+            window.ethereum
+                .request({
+                    method: 'personal_sign',
+                    params: [
+                        message.substring(
+                            0,
+                            message.indexOf('Wallet address:'),
+                        ),
+                        userAddress,
+                        '',
+                    ],
+                })
+                // eslint-disable-next-line
+                .then((signedMessage: any) => {
+                    verifyUser(signedMessage, verifyDate);
+                    if (verificationType != 0) {
+                        setTimeout(() => {
+                            setShowVerifyOldMessagesPanel(false);
+                            updateUnverifiedMessages(
+                                verificationDate,
+                                new Date(),
+                            );
+                        }, 1000);
+                    }
+                    setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
+                    setTimeout(() => {
+                        updateUserCache();
+                        activateToastr('Your wallet is verified!', 'success');
+                    }, 500);
+                })
+                // eslint-disable-next-line
+                .catch((error: any) => {
+                    // Handle error
+                });
+        }
+    };
+
+    const resetReplyState = () => {
+        setIsReplyButtonPressed(false);
+        setSelectedMessageForReply(undefined);
+    };
+
+    domDebug('isUserConnected', isUserConnected);
 
     const header = (
         <div
@@ -243,13 +851,76 @@ function ChatPanel(props: propsIF) {
             }}
         >
             <h2 className={styles.chat_title}>Trollbox</h2>
+
+            {isChatOpen && ALLOW_AUTH && (
+                <div
+                    ref={verifyBtnRef}
+                    className={`${styles.verify_button} ${
+                        isVerified && isUserConnected ? styles.verified : ''
+                    } ${!isWsConnected ? styles.not_connected : ''}`}
+                    onClick={(e) => verifyWallet(0, new Date(), e)}
+                >
+                    {isModerator &&
+                        isVerified &&
+                        userAddress &&
+                        isUserConnected && (
+                            <AiOutlineUser
+                                className={`${styles.verify_button_icon} ${
+                                    styles.verify_button_mod_icon
+                                } ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
+                                color='var(--other-green)'
+                                size={14}
+                            ></AiOutlineUser>
+                        )}
+                    {isVerified && userAddress && isUserConnected ? (
+                        <>
+                            <AiOutlineCheck
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
+                                color='var(--other-green)'
+                                size={10}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <AiOutlineClose
+                                className={`${styles.verify_button_icon} ${
+                                    !isWsConnected ? styles.not_connected : ''
+                                }`}
+                                size={10}
+                            />
+                            <span> Not Verified </span>
+                        </>
+                    )}
+                </div>
+            )}
+
             <section style={{ paddingRight: '10px' }}>
+                {isFullScreen || !isChatOpen ? (
+                    <></>
+                ) : (
+                    // <<div
+                    //     className={styles.open_full_button}
+                    //     onClick={() =>
+                    //         window.open('/chat/' + convertCurreny(room))
+                    //     }
+                    //     aria-label='Open chat in full screen'
+                    // >
+                    //     <img
+                    //         src={ExpandChatIcon}
+                    //         alt='Open chat in full screen'
+                    //     />
+                    // </div>>
+                    <></>
+                )}
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
                     <IoIosArrowDown
                         size={22}
-                        className={styles.close_button}
                         onClick={() => handleCloseChatPanel()}
                         role='button'
                         tabIndex={0}
@@ -268,42 +939,132 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
+    let mentionIxdexPointer = 0;
     const messageList = (
         <div
-            ref={messageEnd}
+            ref={messageListWrapper}
             className={styles.scrollable_div}
             onScroll={handleScroll}
-            onWheel={handleWheel}
             id='chatmessage'
         >
             {messages &&
-                messages.map((item, i) => (
-                    <SentMessagePanel
-                        isUserLoggedIn={isUserConnected as boolean}
-                        message={item}
-                        ensName={ensName}
-                        isCurrentUser={item.sender === currentUser}
-                        currentUser={currentUser}
-                        resolvedAddress={resolvedAddressFromContext}
-                        connectedAccountActive={userAddress}
-                        moderator={moderator}
-                        room={room}
-                        isMessageDeleted={isMessageDeleted}
-                        setIsMessageDeleted={setIsMessageDeleted}
-                        previousMessage={
-                            i === messages.length - 1 ? null : messages[i + 1]
-                        }
-                        nextMessage={i === 0 ? null : messages[i - 1]}
-                        key={item._id}
-                    />
-                ))}
+                messages.map((item, i) => {
+                    if (!item) {
+                        return <></>;
+                    }
+                    if (item && item.mentionedWalletID === userAddress) {
+                        mentionIxdexPointer += 1;
+                    }
+                    return (
+                        <SentMessagePanel
+                            key={i}
+                            isUserLoggedIn={isUserConnected as boolean}
+                            message={item}
+                            ensName={ensName}
+                            isCurrentUser={item && item.sender === currentUser}
+                            currentUser={currentUser}
+                            resolvedAddress={resolvedAddressFromContext}
+                            connectedAccountActive={userAddress}
+                            room={room}
+                            isModerator={isModerator}
+                            isMessageDeleted={isMessageDeleted}
+                            setIsMessageDeleted={setIsMessageDeleted}
+                            nextMessage={
+                                i === messages.length - 1
+                                    ? null
+                                    : messages[i + 1]
+                            }
+                            previousMessage={i === 0 ? null : messages[i - 1]}
+                            mentionIndex={
+                                item && item.mentionedWalletID === userAddress
+                                    ? mentionIxdexPointer - 1
+                                    : undefined
+                            }
+                            updateLikeDislike={updateLikeDislike}
+                            userMap={userMap}
+                            verifyWallet={verifyWallet}
+                            isUserVerified={isVerified}
+                            showPopUp={showPopUp}
+                            setShowPopUp={setShowPopUp}
+                            popUpText={popUpText}
+                            setPopUpText={setPopUpText}
+                            isReplyButtonPressed={isReplyButtonPressed}
+                            setIsReplyButtonPressed={setIsReplyButtonPressed}
+                            setSelectedMessageForReply={
+                                setSelectedMessageForReply
+                            }
+                            isSubscriptionsEnabled={isSubscriptionsEnabled}
+                            isChatOpen={isChatOpen}
+                            address={userAddress}
+                            isDeleted={item && item.isDeleted}
+                            deletedMessageText={item && item.deletedMessageText}
+                            addReactionListener={reactionBtnListener}
+                            isDeleteMessageButtonPressed={
+                                isDeleteMessageButtonPressed
+                            }
+                            setIsDeleteMessageButtonPressed={
+                                setIsDeleteMessageButtonPressed
+                            }
+                            deleteMsgFromList={deleteMsgFromList}
+                            addReaction={addReaction}
+                            mentionHoverListener={mentionHoverListener}
+                            mentionMouseLeftListener={() => {
+                                setUserSummaryActive(false);
+                            }}
+                            showDeleteConfirmation={showDeleteConfirmation}
+                            setShowDeleteConfirmation={
+                                setShowDeleteConfirmation
+                            }
+                            selectedMessageIdForDeletion={
+                                selectedMessageIdForDeletion
+                            }
+                            setSelectedMessageIdForDeletion={
+                                setSelectedMessageIdForDeletion
+                            }
+                            showVerifyWalletConfirmationInDelete={
+                                showVerifyWalletConfirmationInDelete
+                            }
+                            setShowVerifyWalletConfirmationInDelete={
+                                setShowVerifyWalletConfirmationInDelete
+                            }
+                            scrollToMessage={scrollToMessage}
+                            setShowVerifyOldMessagesPanel={
+                                setShowVerifyOldMessagesPanel
+                            }
+                            setVerifyOldMessagesStartDate={
+                                setVerifyOldMessagesStartDate
+                            }
+                            isFocusMentions={isFocusMentions}
+                            isMobile={isMobile}
+                        />
+                    );
+                })}
+
+            {/* WBO - Feature : User Summary */}
+
+            <UserSummary
+                isActive={userSummaryActive}
+                // isActive={userSummaryActive && false}
+                toBottom={userSummaryToBottom}
+                user={selectedUserSummary}
+                mouseLeaveListener={summaryMouseLeaveListener}
+                mouseEnterListener={() => {
+                    setUserSummaryActive(true);
+                }}
+                verticalPosition={userSummaryVerticalPosition}
+                isCurrentUser={currentUser == selectedUserSummary?._id}
+                showExtendedSummary={
+                    isModerator || currentUser == selectedUserSummary?._id
+                }
+            />
         </div>
     );
 
     const chatNotification = (
         <div className={styles.chat_notification}>
-            {notification > 0 &&
+            {notificationCount > 0 &&
             scrollDirection === 'Scroll Up' &&
+            !isReplyButtonPressed &&
             !isScrollToBottomButtonPressed ? (
                 isFullScreen ? (
                     <div className={styles.chat_notification}>
@@ -313,20 +1074,24 @@ function ChatPanel(props: propsIF) {
                         >
                             <BsChatLeftFill
                                 size={25}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 style={{ cursor: 'pointer' }}
                             />
-                            <span className={styles.text}>{notification}</span>
+                            <span className={styles.text}>
+                                {notificationCount}
+                            </span>
                         </span>
                         <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
                             <RiArrowDownSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
-                                aria-label='Scroll to bottom button'
+                                aria-label='Scroll to bottom'
                                 style={{ cursor: 'pointer' }}
+                                title={'Scroll To Bottom'}
+                                className={styles.scroll_to_bottom_icon}
                             />
                         </span>
                     </div>
@@ -335,49 +1100,57 @@ function ChatPanel(props: propsIF) {
                         <span onClick={() => scrollToBottomButton()}>
                             <BsChatLeftFill
                                 size={25}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 style={{ cursor: 'pointer' }}
                             />
-                            <span className={styles.text}>{notification}</span>
+                            <span className={styles.text}>
+                                {notificationCount}
+                            </span>
                         </span>
                         <span>
                             <RiArrowDownSLine
                                 role='button'
                                 size={27}
-                                color='#7371fc'
+                                color='var(--accent1)'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
                                 style={{ cursor: 'pointer' }}
+                                title={'Scroll To Bottom'}
                             />
                         </span>
                     </div>
                 )
             ) : scrollDirection === 'Scroll Up' &&
-              notification <= 0 &&
+              notificationCount <= 0 &&
+              !isReplyButtonPressed &&
               !isScrollToBottomButtonPressed ? (
                 isFullScreen ? (
                     <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
                         <RiArrowDownSLine
                             role='button'
-                            size={27}
-                            color='#7371fc'
+                            size={32}
+                            color='var(--accent1)'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
-                            aria-label='Scroll to bottom button'
+                            aria-label='Scroll to bottom'
                             style={{ cursor: 'pointer' }}
+                            title={'Scroll To Bottom'}
+                            className={styles.scroll_to_icon}
                         />
                     </span>
                 ) : (
                     <span>
-                        <RiArrowDownSLine
+                        <RiArrowDownDoubleLine
                             role='button'
                             size={27}
-                            color='#7371fc'
+                            color='var(--accent1)'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
-                            aria-label='Scroll to bottom button'
+                            aria-label='Scroll to bottom zzzz'
                             style={{ cursor: 'pointer' }}
+                            title={'Scroll To Bottom'}
+                            className={styles.scroll_to_icon}
                         />
                     </span>
                 )
@@ -386,6 +1159,27 @@ function ChatPanel(props: propsIF) {
             )}
         </div>
     );
+
+    const sendingLink = (
+        <div className={styles.pop_up}>
+            <p>{popUpText}</p>
+            <div className={styles.close_button}>
+                <IoIosClose
+                    onClick={() => closePopUp()}
+                    size={20}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close information box.'
+                />
+            </div>
+        </div>
+    );
+
+    const sendMessageListener = () => {
+        if (isChatOpen) {
+            scrollToBottom(true, true, isMobile ? 700 : 400);
+        }
+    };
 
     const messageInput = (
         <MessageInput
@@ -398,49 +1192,203 @@ function ChatPanel(props: propsIF) {
             }
             ensName={ensName}
             appPage={props.appPage}
+            sendMsg={sendMsg}
+            inputListener={messageInputListener}
+            users={users}
+            showPopUp={showPopUp}
+            setShowPopUp={setShowPopUp}
+            popUpText={popUpText}
+            setPopUpText={setPopUpText}
+            isReplyButtonPressed={isReplyButtonPressed}
+            setIsReplyButtonPressed={setIsReplyButtonPressed}
+            isInputDisabled={isInputDisabled}
+            sendMessageCooldown={sendMessageCooldown}
+            selectedMessageForReply={selectedMessageforReply}
+            setSelectedMessageForReply={setSelectedMessageForReply}
+            sendMessageListener={sendMessageListener}
+            isChatOpen={isChatOpen}
+            isMobile={isMobile}
+            userMap={userMap}
+            chainId={selectedNetwork.chainId}
         />
     );
+
+    const mentSkipperComponent = () => {
+        if (mentions.length > 0 && isChatOpen && isFocusMentions) {
+            return (
+                <>
+                    {showPrevMents && (
+                        <div
+                            className={styles.ment_skip_button}
+                            onClick={() => {
+                                handleMentionSkipper(-1);
+                            }}
+                            title='Previous Mention'
+                        >
+                            <IoIosArrowUp size={22} />
+                        </div>
+                    )}
+                    {showNextMents && (
+                        <div
+                            className={styles.ment_skip_button_down}
+                            onClick={() => {
+                                handleMentionSkipper(1);
+                            }}
+                            title='Next Mention'
+                        >
+                            <IoIosArrowDown size={22} />
+                        </div>
+                    )}
+                    {showNextMents && (
+                        <div
+                            className={styles.ment_skip_button_last}
+                            onClick={() => {
+                                handleMentionSkipper(2);
+                            }}
+                            title='Last Mention'
+                        >
+                            <IoIosArrowDown size={22} />
+                            Last Mention
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        return <></>;
+    };
+
+    const handleConfirmDelete = async () => {
+        deleteMsgFromList(selectedMessageIdForDeletion);
+        setShowDeleteConfirmation(false);
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteConfirmation(false);
+    };
+
+    const rndPreviousMessagesButton = () => {
+        return (
+            <div className={styles.scroll_up}>
+                {showPreviousMessagesButton ? (
+                    <RiArrowUpDoubleLine
+                        role='button'
+                        size={27}
+                        color='var(--accent1)'
+                        onClick={() => getPreviousMessages()}
+                        tabIndex={0}
+                        aria-label='Show previous messages'
+                        style={{ cursor: 'pointer' }}
+                        title='Show previous messages'
+                        className={styles.scroll_to_icon}
+                    />
+                ) : (
+                    ''
+                )}
+            </div>
+        );
+    };
 
     const contentHeight = isChatOpen ? '479px' : '30px';
     if (props.appPage)
         return (
-            <FullChat
-                messageList={messageList}
-                setIsChatOpen={setIsChatOpen}
-                chatNotification={chatNotification}
-                messageInput={messageInput}
-                userName={
-                    userAddress && !ens
-                        ? trimString(userAddress as string, 6, 0, '…')
-                        : (ens as string)
-                }
-                setRoom={setRoom}
-                setIsCurrentPool={setIsCurrentPool}
-                showCurrentPoolButton={showCurrentPoolButton}
-                setShowCurrentPoolButton={setShowCurrentPoolButton}
-                userCurrentPool={userCurrentPool}
-                favoritePoolsArray={favoritePoolsArray}
-                setFavoritePoolsArray={setFavoritePoolsArray}
-            />
+            <>
+                <FullChat
+                    messageList={messageList}
+                    setIsChatOpen={setIsChatOpen}
+                    chatNotification={chatNotification}
+                    messageInput={messageInput}
+                    userName={
+                        userAddress && !ens
+                            ? trimString(userAddress as string, 6, 0, '…')
+                            : (ens as string)
+                    }
+                    setRoom={setRoom}
+                    setIsCurrentPool={setIsCurrentPool}
+                    showCurrentPoolButton={showCurrentPoolButton}
+                    setShowCurrentPoolButton={setShowCurrentPoolButton}
+                    userCurrentPool={userCurrentPool}
+                    favoritePools={favoritePools}
+                    setFavoritePools={setFavoritePools}
+                    isChatOpen={isChatOpen}
+                    isVerified={isVerified}
+                    isModerator={isModerator}
+                    verifyWallet={verifyWallet}
+                    toastrActive={toastrActive}
+                    toastrActivator={setToastrActive}
+                    toastrText={toastrText}
+                    toastrType={toastrType}
+                    showVerifyOldMessagesPanel={showVerifyOldMessagesPanel}
+                    activateToastr={activateToastr}
+                    updateUnverifiedMessages={updateUnverifiedMessages}
+                    verifyOldMessagesStartDate={verifyOldMessagesStartDate}
+                    setShowVerifyOldMessagesPanel={
+                        setShowVerifyOldMessagesPanel
+                    }
+                    showPicker={showPicker}
+                    setShowPicker={setShowPicker}
+                    addReactionEmojiPickListener={addReactionEmojiPickListener}
+                    showDeleteConfirmation={showDeleteConfirmation}
+                    handleConfirmDelete={handleConfirmDelete}
+                    handleCancelDelete={handleCancelDelete}
+                    rndShowPreviousMessages={rndPreviousMessagesButton}
+                    room={room}
+                    isFocusMentions={isFocusMentions}
+                    setIsFocusMentions={setIsFocusMentions}
+                    isCurrentPool={isCurrentPool}
+                    ensName={ensName}
+                    currentUser={currentUser}
+                    notifications={notifications}
+                    mentCount={mentions.length}
+                    mentionIndex={mentionIndex}
+                    setGoToChartParams={setGoToChartParams}
+                    setUserCurrentPool={setUserCurrentPool}
+                    rndMentSkipper={mentSkipperComponent}
+                    messageForNotificationBubble={messageForNotificationBubble}
+                    setMessageForNotificationBubble={
+                        setMessageForNotificationBubble
+                    }
+                    setSelectedMessageForReply={setSelectedMessageForReply}
+                    setIsReplyButtonPressed={setIsReplyButtonPressed}
+                />
+            </>
         );
 
     return (
         <div
-            className={styles.main_container}
+            className={`${styles.main_container} ${
+                isChatOpen ? styles.chat_open : ''
+            }`}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
+            <ChatNotificationBubble
+                message={messageForNotificationBubble}
+                setRoom={setRoom}
+                setSelectedMessageForReply={setSelectedMessageForReply}
+                setIsReplyButtonPressed={setIsReplyButtonPressed}
+                setMessageForNotificationBubble={
+                    setMessageForNotificationBubble
+                }
+            />
+
             <div
                 className={styles.modal_body}
                 style={{ height: contentHeight, width: '100%' }}
             >
                 <div className={styles.chat_body}>
+                    <div
+                        className={`${styles.btn_go_to_chart} ${
+                            goToChartParams != undefined ? styles.active : ''
+                        }`}
+                        onClick={goToChartAction}
+                    >
+                        Go to Chart
+                    </div>
                     {header}
-
                     <Room
                         selectedRoom={room}
                         setRoom={setRoom}
-                        isFullScreen={isFullScreen}
                         room={room}
                         setIsCurrentPool={setIsCurrentPool}
                         isCurrentPool={isCurrentPool}
@@ -450,20 +1398,99 @@ function ChatPanel(props: propsIF) {
                         setUserCurrentPool={setUserCurrentPool}
                         currentUser={currentUser}
                         ensName={ensName}
-                        setFavoritePoolsArray={setFavoritePoolsArray}
-                        favoritePoolsArray={favoritePoolsArray}
+                        setIsFocusMentions={setIsFocusMentions}
+                        notifications={notifications}
+                        mentCount={mentions.length}
+                        mentionIndex={mentionIndex}
+                        isModerator={isModerator}
+                        isFocusMentions={isFocusMentions}
+                        setGoToChartParams={setGoToChartParams}
+                        isChatOpen={isChatOpen}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
-
+                    {rndPreviousMessagesButton()}
                     {messageList}
-
+                    {showPopUp ? sendingLink : ''}
                     {chatNotification}
+
+                    {isChatOpen && showPicker && (
+                        <div
+                            id='chatReactionWrapper'
+                            className={styles.reaction_picker_wrapper}
+                        >
+                            <div
+                                className={styles.reaction_picker_close}
+                                onClick={() => {
+                                    setShowPicker(false);
+                                }}
+                            >
+                                {' '}
+                                X{' '}
+                            </div>
+                            <Picker
+                                onEmojiClick={addReactionEmojiPickListener}
+                                pickerStyle={{ width: '100%' }}
+                                disableSkinTonePicker={true}
+                            />
+                        </div>
+                    )}
 
                     {messageInput}
                     <div id='thelastmessage' />
                 </div>
             </div>
+
+            {mentSkipperComponent()}
+
+            <ChatConfirmationPanel
+                isActive={showDeleteConfirmation && isChatOpen}
+                title='Delete Message'
+                content='Are you sure you want to delete this message?'
+                confirmListener={handleConfirmDelete}
+                cancelListener={handleCancelDelete}
+            />
+
+            <ChatConfirmationPanel
+                isActive={showVerifyOldMessagesPanel && isChatOpen}
+                title='Verify Old Messages'
+                content='Old messages will be verified. Do you want to verify?'
+                cancelListener={() => {
+                    setShowVerifyOldMessagesPanel(false);
+                }}
+                confirmListener={async () => {
+                    setShowVerifyOldMessagesPanel(false);
+                    await updateUnverifiedMessages(
+                        verifyOldMessagesStartDate,
+                        new Date(),
+                    );
+                    activateToastr('Old messages are verified!', 'success');
+                }}
+            />
+            <ChatConfirmationPanel
+                isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
+                title='Verify Your Wallet'
+                content='You should verify your wallet to delete that message.Do you want to verify?'
+                cancelListener={() => {
+                    setShowVerifyWalletConfirmationInDelete(false);
+                }}
+                confirmListener={async (e) => {
+                    try {
+                        verifyWallet(0, new Date(), e);
+                        setShowVerifyWalletConfirmationInDelete(false);
+                    } catch (error) {
+                        console.error('Error in confirmListener:', error);
+                    }
+                }}
+            />
+            <ChatToaster
+                isActive={toastrActive && isChatOpen}
+                activator={setToastrActive}
+                text={toastrText}
+                type={toastrType}
+            />
+
+            <DomDebugger />
         </div>
     );
 }
