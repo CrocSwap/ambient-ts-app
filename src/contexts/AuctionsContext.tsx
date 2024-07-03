@@ -1,5 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-// import { fetchAuctionsData } from '../ambient-utils/api';
+import React, {
+    Dispatch,
+    ReactNode,
+    SetStateAction,
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { CrocEnvContext } from './CrocEnvContext';
 import {
     mockAuctionData,
@@ -8,7 +15,6 @@ import {
     mockAuctionDetailsServerResponseGenerator,
 } from '../pages/platformFuta/mockAuctionData';
 import {
-    tickerVersions,
     tickerWatchlistIF,
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
@@ -20,17 +26,23 @@ interface AuctionsContextIF {
     getAuctions(): void;
     getAuctionData(ticker: string): void;
     isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsLoading: Dispatch<SetStateAction<boolean>>;
     showComments: boolean;
-    setShowComments: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowComments: Dispatch<SetStateAction<boolean>>;
     tickerInput: string;
-    setTickerInput: React.Dispatch<React.SetStateAction<string>>;
+    setTickerInput: Dispatch<SetStateAction<string>>;
     auctionStatusData: AuctionStatusDataIF;
     selectedTicker: string | undefined;
-    setSelectedTicker: React.Dispatch<React.SetStateAction<string | undefined>>;
-    watchlists: Record<tickerVersions, tickerWatchlistIF>;
+    setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
+    watchlists: {
+        v1: tickerWatchlistIF;
+        shouldDisplay: boolean;
+        show: () => void;
+        unshow: () => void;
+        toggle: () => void;
+    };
     showComplete: boolean;
-    setShowComplete: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowComplete: Dispatch<SetStateAction<boolean>>;
 }
 
 // interface for auction data used to generate tables
@@ -98,20 +110,18 @@ export const AuctionsContext = createContext<AuctionsContextIF>(
     {} as AuctionsContextIF,
 );
 
-export const AuctionsContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
+export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const [auctionsData, setAuctionsData] = React.useState<AuctionsDataIF>({
+    const [auctionsData, setAuctionsData] = useState<AuctionsDataIF>({
         dataReceived: false,
         chainId: chainId,
         data: [],
     });
 
-    const [accountData, setAccountData] = React.useState<AccountDataIF>({
+    const [accountData, setAccountData] = useState<AccountDataIF>({
         dataReceived: false,
         chainId: chainId,
         userAddress: '',
@@ -119,7 +129,7 @@ export const AuctionsContextProvider = (props: {
     });
 
     const [auctionStatusData, setAuctionStatusData] =
-        React.useState<AuctionStatusDataIF>({
+        useState<AuctionStatusDataIF>({
             dataReceived: false,
             ticker: '',
             createdAt: 0,
@@ -216,6 +226,12 @@ export const AuctionsContextProvider = (props: {
     // hook managing ticker watchlists for each FUTA version
     const watchlistV1: tickerWatchlistIF = useTickerWatchlist('v1');
 
+    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
+
+    function displayWatchlist(show?: boolean): void {
+        setShowWatchlist(show ?? !showWatchlist);
+    }
+
     const auctionsContext: AuctionsContextIF = {
         auctionStatusData: auctionStatusData,
         auctions: auctionsData,
@@ -233,6 +249,10 @@ export const AuctionsContextProvider = (props: {
         setSelectedTicker: setSelectedTicker,
         watchlists: {
             v1: watchlistV1,
+            shouldDisplay: showWatchlist,
+            show: () => displayWatchlist(true),
+            unshow: () => displayWatchlist(false),
+            toggle: () => displayWatchlist(),
         },
         showComplete: showComplete,
         setShowComplete: setShowComplete,

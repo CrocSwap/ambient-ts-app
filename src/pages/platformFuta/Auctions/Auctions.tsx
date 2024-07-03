@@ -75,7 +75,7 @@ export default function Auctions(props: propsIF) {
                     <Seperator dots={100} />
                     <div className={styles.auction_detail}>
                         <Divider count={2} />
-                        {!hideTicker && (
+                        {hideTicker || (
                             <TickerComponent
                                 isAuctionPage
                                 placeholderTicker={placeholderTicker}

@@ -138,8 +138,6 @@ export default function SearchableTicker(props: propsIF) {
         }
     }, [incompleteAuctions.length, completeAuctions.length]);
 
-    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
-
     // choose data set to display and apply post-processing middleware
     const filteredData = useMemo<AuctionDataIF[]>(() => {
         // show the relevant data subset (complete vs incomplete)
@@ -154,7 +152,7 @@ export default function SearchableTicker(props: propsIF) {
         // filter data set to watchlisted tokens
         const watchlisted: AuctionDataIF[] = searchHits.filter(
             (auc: AuctionDataIF) =>
-                showWatchlist
+                watchlists.shouldDisplay
                     ? watchlists.v1.data.includes(auc.ticker.toUpperCase())
                     : true,
         );
@@ -167,7 +165,8 @@ export default function SearchableTicker(props: propsIF) {
         incompleteAuctions,
         completeAuctions,
         showComplete,
-        showWatchlist,
+        watchlists.v1,
+        watchlists.shouldDisplay,
     ]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
@@ -317,15 +316,23 @@ export default function SearchableTicker(props: propsIF) {
                             SHOW COMPLETE
                         </button>
                         <button
-                            onClick={() => setShowWatchlist(!showWatchlist)}
+                            onClick={() => watchlists.toggle()}
                             className={
-                                styles[showWatchlist ? 'buttonOn' : 'buttonOff']
+                                styles[
+                                    watchlists.shouldDisplay
+                                        ? 'buttonOn'
+                                        : 'buttonOff'
+                                ]
                             }
                         >
                             <FaEye
                                 size={17}
                                 className={
-                                    styles[showWatchlist ? 'eyeOn' : 'eyeOff']
+                                    styles[
+                                        watchlists.shouldDisplay
+                                            ? 'eyeOn'
+                                            : 'eyeOff'
+                                    ]
                                 }
                             />
                             WATCHLIST
