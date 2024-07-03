@@ -6,9 +6,9 @@ import {
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { GCGO_TESTNET_URL } from '../gcgo';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 const chain = {
     chainId: 84532,
@@ -45,6 +45,9 @@ export const baseSepolia: NetworkIF = {
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+        return (
+            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+            1e-9
+        );
     },
 };

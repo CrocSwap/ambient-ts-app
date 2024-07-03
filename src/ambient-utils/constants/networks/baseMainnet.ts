@@ -2,9 +2,9 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { scrollETH, scrollUSDC } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { GCGO_SCROLL_URL } from '../gcgo';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 export const BASE_RPC_URL =
     import.meta.env.VITE_BASE_RPC_URL !== undefined
@@ -32,6 +32,9 @@ export const baseMainnet: NetworkIF = {
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+        return (
+            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+            1e-9
+        );
     },
 };
