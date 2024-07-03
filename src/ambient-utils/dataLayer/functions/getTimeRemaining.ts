@@ -11,9 +11,9 @@ export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
         const elapsedSeconds = Math.abs(remainingTimeInSecondsNum);
         const elapsedTimeString =
             elapsedSeconds < 60
-                ? '< 1 minute ago'
+                ? '< 1 min. ago'
                 : elapsedSeconds < 120
-                  ? '1 minute ago'
+                  ? '1 min. ago'
                   : elapsedSeconds < 3600
                     ? `${Math.floor(elapsedSeconds / 60)} minutes ago `
                     : elapsedSeconds < 7200
@@ -35,7 +35,7 @@ export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
                       ? '24h:'
                       : `${String(days).padStart(2, '0') + 'd'}:`
                 : hours > 0
-                  ? `${hours}h:`
+                  ? `${String(hours).padStart(2, '0')}h:`
                   : '';
 
         const daysAndHoursAndMinutes = `${daysAndHours}${String(minutes).padStart(2, '0')}m`;
@@ -53,18 +53,18 @@ export function getTimeRemainingAbbrev(
             ? remainingTimeInSecondsNum < 0
                 ? 'COMPLETE'
                 : remainingTimeInSecondsNum < 60
-                  ? '< 1m'
+                  ? '< 01m'
                   : remainingTimeInSecondsNum < 120
-                    ? '1m'
+                    ? '01m'
                     : remainingTimeInSecondsNum < 3600
-                      ? `${Math.floor(remainingTimeInSecondsNum / 60)}m`
+                      ? `${String(Math.floor(remainingTimeInSecondsNum / 60)).padStart(2, '0')}m`
                       : remainingTimeInSecondsNum < 7200
-                        ? '1h'
+                        ? '01h'
                         : remainingTimeInSecondsNum < 86400
-                          ? `${Math.floor(remainingTimeInSecondsNum / 3600)}h`
+                          ? `${String(Math.floor(remainingTimeInSecondsNum / 3600)).padStart(2, '0')}h`
                           : remainingTimeInSecondsNum < 172800
-                            ? '1d'
-                            : `${Math.floor(remainingTimeInSecondsNum / 86400)}d`
+                            ? '01d'
+                            : `${String(Math.floor(remainingTimeInSecondsNum / 86400)).padStart(2, '0')}d`
             : 'Pending...';
 
     return remainingTimeString;
