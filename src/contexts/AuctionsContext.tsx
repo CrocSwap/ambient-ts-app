@@ -46,10 +46,6 @@ interface AuctionsContextIF {
     setShowComplete: Dispatch<SetStateAction<boolean>>;
 }
 
-// interface for auction data used to generate tables
-
-// interface for auction status data used to generate auction details view
-
 export interface AuctionStatusDataIF {
     dataReceived: boolean;
     chainId: string;

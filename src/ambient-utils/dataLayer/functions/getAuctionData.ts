@@ -10,6 +10,8 @@ export interface AuctionListServerDataIF {
     auctionList: AuctionDataIF[];
 }
 
+// interface for auction data used to generate auction list views
+// for both global and user specific lists
 export interface AuctionDataIF {
     ticker: string;
     chainId: string;
@@ -28,6 +30,7 @@ export interface AuctionDataIF {
     qtyReturnedToUserInNativeTokenWei?: string | undefined;
 }
 
+// interface for auction status data used to generate auction details view
 export interface AuctionStatusDataServerIF {
     ticker: string;
     chainId: string;
