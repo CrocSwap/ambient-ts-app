@@ -273,6 +273,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '250000000000000000',
         qtyBidByUserInNativeTokenWei: '120000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '40000000000000000',
         qtyUnclaimedByUserInAuctionedTokenWei: '50000000000000000000000',
     },
     {
@@ -284,6 +285,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '250000000000000000',
         qtyBidByUserInNativeTokenWei: '100000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '100000000000000000',
         qtyUnreturnedToUserInNativeTokenWei: '100000000000000000',
     },
     {
@@ -295,6 +297,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '762939500000000000',
         qtyBidByUserInNativeTokenWei: '150000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '150000000000000000',
         qtyUnclaimedByUserInAuctionedTokenWei: '168200000000000000000000',
     },
     {
@@ -306,6 +309,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '762939500000000000',
         qtyBidByUserInNativeTokenWei: '50000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '50000000000000000',
         qtyUnreturnedToUserInNativeTokenWei: '50000000000000000',
     },
     {
@@ -317,6 +321,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '21684042500000002000',
         qtyBidByUserInNativeTokenWei: '500000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '500000000000000000',
         qtyUnclaimedByUserInAuctionedTokenWei: '100000000000000000000000', // 100000 scaled
     },
     {
@@ -328,6 +333,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '3637980000000000000',
         qtyBidByUserInNativeTokenWei: '500000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '500000000000000000',
     },
     {
         ticker: 'PEPE1',
@@ -338,6 +344,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '250000000000000000',
         qtyBidByUserInNativeTokenWei: '100000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '50000000000000000',
     },
 
     {
@@ -349,6 +356,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '1490116000000000000',
         qtyBidByUserInNativeTokenWei: '50000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '50000000000000000',
     },
 
     {
@@ -360,6 +368,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '762939500000000000',
         qtyBidByUserInNativeTokenWei: '200000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '200000000000000000',
     },
 
     {
@@ -371,6 +380,7 @@ export const mockAccountData1: AuctionDataIF[] = [
         userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '1490116000000000000',
         qtyBidByUserInNativeTokenWei: '300000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '300000000000000000',
     },
 ];
 
@@ -381,9 +391,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1717125986,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '312500000000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '250000000000000000',
         qtyBidByUserInNativeTokenWei: '100000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '100000000000000000',
         qtyUnreturnedToUserInNativeTokenWei: '100000000000000000',
     },
     {
@@ -392,9 +403,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1718025986,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '762939500000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '762939500000000000',
         qtyBidByUserInNativeTokenWei: '150000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '150000000000000000',
         qtyUnclaimedByUserInAuctionedTokenWei: '168200000000000000000000',
     },
     {
@@ -403,9 +415,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1716125986,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '11102230000000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '762939500000000000',
         qtyBidByUserInNativeTokenWei: '50000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '50000000000000000',
         qtyUnreturnedToUserInNativeTokenWei: '50000000000000000',
     },
     {
@@ -414,9 +427,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1718225986,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '21684042500000002000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '21684042500000002000',
         qtyBidByUserInNativeTokenWei: '500000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '500000000000000000',
         qtyUnclaimedByUserInAuctionedTokenWei: '100000000000000000000000', // 100000 scaled
     },
     {
@@ -425,9 +439,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1719878980,
         auctionLength: 86400,
         filledClearingPriceInNativeTokenWei: '250000000000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '3637980000000000000',
         qtyBidByUserInNativeTokenWei: '500000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '500000000000000000',
     },
     {
         ticker: 'PEPE1',
@@ -435,9 +450,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1719548920,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '312500000000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '250000000000000000',
         qtyBidByUserInNativeTokenWei: '100000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '50000000000000000',
     },
 
     {
@@ -446,20 +462,22 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1719398920,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '1192093000000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '1490116000000000000',
         qtyBidByUserInNativeTokenWei: '50000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '50000000000000000',
     },
 
     {
         ticker: 'EMILY1',
         chainId: '0x2105',
-        createdAt: 1719248920,
+        createdAt: 1719458920,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '11102230000000000000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '762939500000000000',
         qtyBidByUserInNativeTokenWei: '200000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '200000000000000000',
     },
 
     {
@@ -468,9 +486,10 @@ export const mockAccountData2: AuctionDataIF[] = [
         createdAt: 1718225986,
         auctionLength: 604800,
         filledClearingPriceInNativeTokenWei: '21684042500000002000',
-        userAddress: '0xa86dabFBb529a4C8186BdD52bd226aC81757E090',
+        userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
         userBidClearingPriceInNativeTokenWei: '1490116000000000000',
         qtyBidByUserInNativeTokenWei: '300000000000000000',
+        qtyUserBidFilledInNativeTokenWei: '300000000000000000',
     },
 ];
 

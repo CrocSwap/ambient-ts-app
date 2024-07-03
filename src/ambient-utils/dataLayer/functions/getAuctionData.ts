@@ -88,6 +88,7 @@ export interface AuctionDataIF {
     userAddress?: string;
     userBidClearingPriceInNativeTokenWei?: string | undefined;
     qtyBidByUserInNativeTokenWei?: string | undefined;
+    qtyUserBidFilledInNativeTokenWei?: string | undefined;
     qtyUnclaimedByUserInAuctionedTokenWei?: string | undefined;
     qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
     qtyUnreturnedToUserInNativeTokenWei?: string | undefined;

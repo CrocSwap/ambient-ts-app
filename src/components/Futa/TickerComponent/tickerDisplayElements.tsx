@@ -184,7 +184,19 @@ export const tickerDisplayElements = (props: PropsIF) => {
               value: userBidMarketCapInEth,
               prefix: 'Ξ ',
           })
-        : '...';
+        : '-';
+
+    const userBidMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && userBidMarketCapInEth !== undefined
+            ? nativeTokenUsdPrice * userBidMarketCapInEth
+            : undefined;
+
+    const formattedUserBidMarketCapUsdValue = userBidMarketCapUsdValue
+        ? getFormattedNumber({
+              value: userBidMarketCapUsdValue,
+              prefix: '$',
+          })
+        : '-';
 
     const userBidSizeInEth =
         auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei
@@ -201,7 +213,24 @@ export const tickerDisplayElements = (props: PropsIF) => {
               value: userBidSizeInEth,
               prefix: 'Ξ ',
           })
-        : '...';
+        : '-';
+
+    const filledUserBidInEth =
+        auctionDetailsForConnectedUser?.qtyUserBidFilledInNativeTokenWei
+            ? parseFloat(
+                  toDisplayQty(
+                      auctionDetailsForConnectedUser?.qtyUserBidFilledInNativeTokenWei,
+                      18,
+                  ),
+              )
+            : undefined;
+
+    const formattedFilledBidEthValue = filledUserBidInEth
+        ? getFormattedNumber({
+              value: filledUserBidInEth,
+              prefix: 'Ξ ',
+          })
+        : '-';
 
     const currentOpenBidUsdValue =
         nativeTokenUsdPrice !== undefined && openBidMarketCapInEth !== undefined
@@ -291,8 +320,14 @@ export const tickerDisplayElements = (props: PropsIF) => {
     // Your bid data
     const yourBidData = [
         {
-            label: 'Max Market cap',
+            label: 'Max Market cap (ETH)',
             value: !placeholderTicker ? formattedUserBidMarketCapEthValue : '-',
+            color: 'var(--text1)',
+            tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
+        },
+        {
+            label: 'Max Market cap ($)',
+            value: !placeholderTicker ? formattedUserBidMarketCapUsdValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'THE MAX MARKET CAP YOUR CURRENT BID WILL BID UP TO',
         },
@@ -301,6 +336,12 @@ export const tickerDisplayElements = (props: PropsIF) => {
             value: !placeholderTicker ? formattedBidSizeEthValue : '-',
             color: 'var(--text1)',
             tooltipLabel: 'THE MAX BID SIZE YOU ARE WILLING TO GET FILLED',
+        },
+        {
+            label: 'Filled Amount',
+            value: !placeholderTicker ? formattedFilledBidEthValue : '-',
+            color: 'var(--text1)',
+            tooltipLabel: 'THE AMOUNT OF YOUR BID SIZE ALREADY FILLED',
         },
     ];
 

@@ -52,6 +52,7 @@ const useAuctionContexts = () => {
         accountData,
         getAuctionData,
         auctionStatusData,
+        setSelectedTicker,
     } = useContext(AuctionsContext);
     const {
         chainData: { chainId },
@@ -81,6 +82,7 @@ const useAuctionContexts = () => {
         gasPriceInGwei,
         isActiveNetworkL2,
         nativeTokenUsdPrice,
+        setSelectedTicker,
     };
 };
 
@@ -175,6 +177,7 @@ export default function TickerComponent(props: PropsIF) {
         nativeTokenUsdPrice,
         accountData,
         globalAuctionList,
+        setSelectedTicker,
     } = useAuctionContexts();
 
     const {
@@ -219,6 +222,7 @@ export default function TickerComponent(props: PropsIF) {
         Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
             // console.log('fetched data for ' + tickerFromParams);
         });
+        setSelectedTicker(tickerFromParams);
     }, [tickerFromParams]);
 
     const auctionedTokenQtyUnclaimedByUser =
@@ -326,7 +330,7 @@ export default function TickerComponent(props: PropsIF) {
         } else {
             setAuctionDetailsForConnectedUser(undefined);
         }
-    }, [tickerFromParams, userAddress]);
+    }, [tickerFromParams, userAddress, accountData]);
 
     const averageGasUnitsForBidTxInGasDrops = GAS_DROPS_ESTIMATE_RANGE_HARVEST;
 
