@@ -48,6 +48,7 @@ export default function SearchableTicker(props: propsIF) {
         setSelectedTicker,
         showComplete,
         setShowComplete,
+        watchlists,
     } = useContext(AuctionsContext);
 
     // shape of data to create filter dropdown menu options
@@ -146,11 +147,25 @@ export default function SearchableTicker(props: propsIF) {
             (auc: AuctionDataIF) =>
                 auc.ticker.includes(searchInputRaw.toUpperCase()),
         );
+        // filter data set to watchlisted tokens
+        const watchlisted: AuctionDataIF[] = searchHits.filter(
+            (auc: AuctionDataIF) =>
+                watchlists.shouldDisplay
+                    ? watchlists.v1.data.includes(auc.ticker.toUpperCase())
+                    : true,
+        );
         // return auctions from correct subset matching user search input
         return activeSortOption.label === 'timeRemaining'
-            ? searchHits.reverse()
-            : searchHits;
-    }, [searchInputRaw, incompleteAuctions, completeAuctions, showComplete]);
+            ? watchlisted.reverse()
+            : watchlisted;
+    }, [
+        searchInputRaw,
+        incompleteAuctions,
+        completeAuctions,
+        showComplete,
+        watchlists.v1,
+        watchlists.shouldDisplay,
+    ]);
 
     const timeDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -178,8 +193,6 @@ export default function SearchableTicker(props: propsIF) {
         }
         return output;
     }
-
-    const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
 
     return (
         <div className={styles.container}>
@@ -301,15 +314,23 @@ export default function SearchableTicker(props: propsIF) {
                             SHOW COMPLETE
                         </button>
                         <button
-                            onClick={() => setShowWatchlist(!showWatchlist)}
+                            onClick={() => watchlists.toggle()}
                             className={
-                                styles[showWatchlist ? 'buttonOn' : 'buttonOff']
+                                styles[
+                                    watchlists.shouldDisplay
+                                        ? 'buttonOn'
+                                        : 'buttonOff'
+                                ]
                             }
                         >
                             <FaEye
                                 size={17}
                                 className={
-                                    styles[showWatchlist ? 'eyeOn' : 'eyeOff']
+                                    styles[
+                                        watchlists.shouldDisplay
+                                            ? 'eyeOn'
+                                            : 'eyeOff'
+                                    ]
                                 }
                             />
                             WATCHLIST

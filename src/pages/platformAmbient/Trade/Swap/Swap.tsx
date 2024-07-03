@@ -46,7 +46,7 @@ import {
     GAS_DROPS_ESTIMATE_SWAP_TO_FROM_DEX,
     NUM_GWEI_IN_WEI,
     SWAP_BUFFER_MULTIPLIER_MAINNET,
-    SWAP_BUFFER_MULTIPLIER_SCROLL,
+    SWAP_BUFFER_MULTIPLIER_L2,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
@@ -377,10 +377,10 @@ function Swap(props: propsIF) {
     }, [baseToken.address + quoteToken.address]);
 
     const [l1GasFeeSwapInGwei, setL1GasFeeSwapInGwei] = useState<number>(
-        isActiveNetworkScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkScroll ? 1 : isActiveNetworkBlast ? 0.3 : 0,
+        isActiveNetworkBlast ? 0.1 : 0,
     );
 
     // calculate price of gas for swap
@@ -415,7 +415,7 @@ function Swap(props: propsIF) {
                 l1costOfScrollSwapInETH + l2costOfScrollSwapInETH;
 
             setAmountToReduceNativeTokenQtyL2(
-                SWAP_BUFFER_MULTIPLIER_SCROLL * costOfScrollSwapInETH,
+                SWAP_BUFFER_MULTIPLIER_L2 * costOfScrollSwapInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -473,14 +473,18 @@ function Swap(props: propsIF) {
                     : undefined;
             l1GasInGwei &&
                 setL1GasFeeSwapInGwei(bigIntToFloat(l1GasInGwei) || 0);
+
             const l1GasCents = l1GasInGwei
                 ? (l1GasInGwei * costOfEthInCents) / BigInt(NUM_GWEI_IN_ETH)
                 : undefined;
 
-            const l1GasDollarsNum = l1GasCents
-                ? bigIntToFloat(l1GasCents) / 100
-                : undefined;
-            if (l1GasDollarsNum) setExtraL1GasFeeSwap(l1GasDollarsNum);
+            const l1GasDollarsNum =
+                l1GasCents !== undefined
+                    ? bigIntToFloat(l1GasCents) / 100
+                    : undefined;
+            if (l1GasDollarsNum !== undefined) {
+                setExtraL1GasFeeSwap(l1GasDollarsNum + 0.01);
+            }
         })();
     }, [
         crocEnv,

@@ -20,7 +20,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ fillPercentage }) => {
                     key={idx}
                     className={`${styles.progressBar} ${idx < filledBars ? styles.filled : ''}`}
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: idx < filledBars ? 1 : 0.5 }}
+                    animate={{ opacity: idx < filledBars ? 1 : 0.3 }}
                     transition={{ duration: 0.5, delay: idx * 0.1 }}
                 />
             ))}

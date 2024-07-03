@@ -75,7 +75,7 @@ import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_SCROLL,
+    RANGE_BUFFER_MULTIPLIER_L2,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
     IS_LOCAL_ENV,
@@ -844,7 +844,7 @@ export default function InitPool() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyL2(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_L2,
             );
 
             const gasPriceInDollarsNum =
