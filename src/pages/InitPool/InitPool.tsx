@@ -76,7 +76,7 @@ import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_SCROLL,
+    RANGE_BUFFER_MULTIPLIER_L2,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
@@ -514,8 +514,8 @@ export default function InitPool() {
                 defaultPriceNumInBase < 0.0001
                     ? defaultPriceNumInBase.toExponential(2)
                     : defaultPriceNumInBase < 2
-                    ? defaultPriceNumInBase.toPrecision(3)
-                    : defaultPriceNumInBase.toFixed(2);
+                      ? defaultPriceNumInBase.toPrecision(3)
+                      : defaultPriceNumInBase.toFixed(2);
 
             if (
                 isReferencePriceFound &&
@@ -532,8 +532,8 @@ export default function InitPool() {
                 !isTokenPairDefault
                     ? setInitialPriceDisplay(defaultPriceTruncated)
                     : !initialPriceInBaseDenom
-                    ? setInitialPriceDisplay('')
-                    : undefined;
+                      ? setInitialPriceDisplay('')
+                      : undefined;
             } else {
                 const invertedPriceNum = 1 / defaultPriceNumInBase;
 
@@ -541,8 +541,8 @@ export default function InitPool() {
                     invertedPriceNum < 0.0001
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
-                        ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toFixed(2);
+                          ? invertedPriceNum.toPrecision(3)
+                          : invertedPriceNum.toFixed(2);
                 setEstimatedInitialPriceDisplay(invertedPriceTruncated);
 
                 isReferencePriceFound &&
@@ -551,8 +551,8 @@ export default function InitPool() {
                 !isTokenPairDefault
                     ? setInitialPriceDisplay(invertedPriceTruncated)
                     : !initialPriceInBaseDenom
-                    ? setInitialPriceDisplay('')
-                    : undefined;
+                      ? setInitialPriceDisplay('')
+                      : undefined;
             }
         }
     };
@@ -792,8 +792,8 @@ export default function InitPool() {
                     invertedPriceNum < 0.0001
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
-                        ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toFixed(2);
+                          ? invertedPriceNum.toPrecision(3)
+                          : invertedPriceNum.toFixed(2);
                 setInitialPriceDisplay(invertedPriceTruncated);
             }
         }
@@ -843,7 +843,7 @@ export default function InitPool() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyL2(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_L2,
             );
 
             const gasPriceInDollarsNum =
@@ -1156,8 +1156,8 @@ export default function InitPool() {
             ? getUnicodeCharacter(tokenB.symbol)
             : getUnicodeCharacter(tokenA.symbol)
         : !isTokenABase
-        ? getUnicodeCharacter(tokenB.symbol)
-        : getUnicodeCharacter(tokenA.symbol);
+          ? getUnicodeCharacter(tokenB.symbol)
+          : getUnicodeCharacter(tokenA.symbol);
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {

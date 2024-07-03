@@ -20,7 +20,7 @@ import {
     IS_LOCAL_ENV,
     NUM_WEI_IN_GWEI,
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
+    DEPOSIT_BUFFER_MULTIPLIER_L2,
     ZERO_ADDRESS,
     NUM_GWEI_IN_ETH,
 } from '../../../../ambient-utils/constants';
@@ -92,7 +92,7 @@ export default function Deposit(props: propsIF) {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
     const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.3 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.05 : 0,
     );
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
@@ -109,7 +109,7 @@ export default function Deposit(props: propsIF) {
         BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
         BigInt(NUM_WEI_IN_GWEI) *
         BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
-        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_L2);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2
@@ -177,7 +177,7 @@ export default function Deposit(props: propsIF) {
             return true;
         }
         return tokenWalletBalance
-            ? BigInt(tokenWalletBalance) >
+            ? BigInt(tokenWalletBalance) >=
                   amountToReduceNativeTokenQty + BigInt(depositQtyNonDisplay)
             : false;
     }, [
@@ -192,8 +192,8 @@ export default function Deposit(props: propsIF) {
                 ? BigInt(tokenWalletBalance) >=
                   BigInt(depositQtyNonDisplay || 0)
                 : tokenWalletBalance && BigInt(tokenWalletBalance) >= BigInt(0)
-                ? true
-                : false,
+                  ? true
+                  : false,
         [tokenWalletBalance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
@@ -218,6 +218,7 @@ export default function Deposit(props: propsIF) {
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
         } else if (!isWalletBalanceSufficientToCoverDeposit) {
+            console.log('setting button to disabled');
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage(
