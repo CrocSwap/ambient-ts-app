@@ -1,9 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import styles from './TickerComponent.module.css';
-import {
-    AuctionDataIF,
-    AuctionsContext,
-} from '../../../contexts/AuctionsContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -13,7 +10,7 @@ import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
+    DEPOSIT_BUFFER_MULTIPLIER_L2,
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     GAS_DROPS_ESTIMATE_RANGE_HARVEST,
     NUM_GWEI_IN_ETH,
@@ -22,6 +19,7 @@ import {
     supportedNetworks,
 } from '../../../ambient-utils/constants';
 import {
+    AuctionDataIF,
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
@@ -38,6 +36,7 @@ import {
     getFreshAuctionDetailsForAccount,
     marketCapMultiplier,
 } from '../../../pages/platformFuta/mockAuctionData';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -49,13 +48,14 @@ const useAuctionContexts = () => {
     const {
         showComments,
         setShowComments,
-        auctions,
+        globalAuctionList,
         accountData,
         getAuctionData,
         auctionStatusData,
     } = useContext(AuctionsContext);
-
-    const chainId = auctions.chainId;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const { isUserConnected } = useContext(UserDataContext);
     const {
@@ -70,7 +70,7 @@ const useAuctionContexts = () => {
         getAuctionData,
         auctionStatusData,
         accountData,
-        auctions,
+        globalAuctionList,
         chainId,
         showComments,
         setShowComments,
@@ -174,7 +174,7 @@ export default function TickerComponent(props: PropsIF) {
         isActiveNetworkL2,
         nativeTokenUsdPrice,
         accountData,
-        auctions,
+        globalAuctionList,
     } = useAuctionContexts();
 
     const {
@@ -205,9 +205,11 @@ export default function TickerComponent(props: PropsIF) {
 
     // Utility functions
     const getAuctionDetails = async (ticker: string) => {
-        return auctions.data.find(
-            (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
-        );
+        return globalAuctionList.data
+            ? globalAuctionList.data.find(
+                  (data) => data.ticker.toLowerCase() === ticker.toLowerCase(),
+              )
+            : undefined;
     };
 
     const { ticker: tickerFromParams } = useParams();
@@ -309,7 +311,7 @@ export default function TickerComponent(props: PropsIF) {
         Promise.resolve(getAuctionDetails(tickerFromParams)).then((details) => {
             setAuctionDetails(details);
         });
-    }, [tickerFromParams, auctions.data]);
+    }, [tickerFromParams, globalAuctionList.data]);
 
     useEffect(() => {
         if (!tickerFromParams) return;
@@ -420,7 +422,7 @@ export default function TickerComponent(props: PropsIF) {
         BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
         BigInt(NUM_WEI_IN_GWEI) *
         BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
-        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_L2);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2

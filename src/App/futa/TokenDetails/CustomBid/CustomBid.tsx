@@ -7,7 +7,7 @@ import {
     DEFAULT_MAINNET_GAS_PRICE_IN_GWEI,
     DEFAULT_SCROLL_GAS_PRICE_IN_GWEI,
     DEPOSIT_BUFFER_MULTIPLIER_MAINNET,
-    DEPOSIT_BUFFER_MULTIPLIER_SCROLL,
+    DEPOSIT_BUFFER_MULTIPLIER_L2,
     GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
@@ -61,7 +61,7 @@ export default function CustomBid(props: Props) {
         BigInt(Math.ceil(gasPriceInGwei || DEFAULT_SCROLL_GAS_PRICE_IN_GWEI)) *
         BigInt(NUM_WEI_IN_GWEI) *
         BigInt(GAS_DROPS_ESTIMATE_DEPOSIT_NATIVE) *
-        BigInt(DEPOSIT_BUFFER_MULTIPLIER_SCROLL);
+        BigInt(DEPOSIT_BUFFER_MULTIPLIER_L2);
 
     const amountToReduceNativeTokenQty = isActiveNetworkL2
         ? amountToReduceNativeTokenQtyL2

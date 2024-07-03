@@ -12,6 +12,7 @@ export * from './getLimitPrice';
 export * from './getLocalStorageItem';
 export * from './getMoneynessRank';
 export * from './getPoolStats';
+export * from './getAuctionData';
 export * from './getPositionData';
 export * from './getPriceImpactString';
 export * from './getPrecisionOfInput';

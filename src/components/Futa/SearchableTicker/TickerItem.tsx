@@ -2,15 +2,13 @@ import { Link } from 'react-router-dom';
 import styles from './SearchableTicker.module.css';
 import styles2 from './TickerItem.module.css';
 import {
+    AuctionDataIF,
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import {
-    AuctionDataIF,
-    AuctionsContext,
-} from '../../../contexts/AuctionsContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import {
     getRetrievedAuctionDetailsForAccount,
     marketCapMultiplier,
