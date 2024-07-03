@@ -781,7 +781,7 @@ function ChatPanel(props: propsIF) {
             activateToastr('Please connect your wallet first.', 'warning');
 
         const message =
-            'Welcome to Ambient Finance \n\nClick to sign in and accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
+            'Verify your wallet to delete your previous messages. You can update your avatar on https://ambient.finance/account \n\nBy continuing to use the trollbox you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
             userAddress;
         let verifyDate = new Date();
 
