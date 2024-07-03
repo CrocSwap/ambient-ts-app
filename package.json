@@ -43,11 +43,13 @@
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.8.1",
         "simplex-noise": "^4.0.1",
-        "socket.io-client": "^4.5.1",
         "styled-components": "6.0.3",
         "vite": "^5.3.1",
         "vite-plugin-babel-macros": "^1.0.6",
-        "web-vitals": "^2.1.0"
+        "web-vitals": "^2.1.0",
+        "react-blockies": "^1.4.1",
+        "@types/react-blockies": "^1.4.4",
+        "alchemy-sdk": "^3.2.0"
     },
     "resolutions": {
         "@coinbase/wallet-sdk": "npm:@coinbase/wallet-sdk@4.0.3"

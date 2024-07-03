@@ -24,7 +24,11 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from './UserDataContext';
-import { TokenBalanceContext } from './TokenBalanceContext';
+import {
+    NftDataIF,
+    NftListByChain,
+    TokenBalanceContext,
+} from './TokenBalanceContext';
 import {
     fetchBlastUserXpData,
     fetchBlockNumber,
@@ -32,6 +36,9 @@ import {
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
+import moment from 'moment';
+import { Network, Alchemy } from 'alchemy-sdk';
+import { fetchNFT } from '../ambient-utils/api/fetchNft';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -54,15 +61,27 @@ export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isUserIdle } = useContext(AppStateContext);
-    const { setTokenBalances } = useContext(TokenBalanceContext);
+    const {
+        setTokenBalances,
+        setNFTData,
+        NFTFetchSettings,
+        setNFTFetchSettings,
+    } = useContext(TokenBalanceContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails } =
+    const { cachedFetchTokenBalances, cachedTokenDetails, cachedFetchNFT } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const {
+        userAddress,
+        isUserConnected,
+        setIsfetchNftTriggered,
+        isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
+    } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
@@ -87,6 +106,13 @@ export const ChainDataContextProvider = (props: {
         '0x82750',
         '0x8274f',
     ];
+
+    const settings = {
+        apiKey: process.env.REACT_APP_ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
+        network: Network.ETH_MAINNET, // Replace with your network.
+    };
+
+    const alchemyClient = new Alchemy(settings);
 
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
@@ -188,6 +214,136 @@ export const ChainDataContextProvider = (props: {
 
     // used to trigger token balance refreshes every 5 minutes
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
+
+    useEffect(() => {
+        const nftLocalData = localStorage.getItem('user_nft_data');
+
+        const actionKey = userAddress;
+
+        const localNftDataParsed = nftLocalData
+            ? new Map(JSON.parse(nftLocalData))
+            : undefined;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nftDataMap = localNftDataParsed?.get(actionKey) as any;
+
+        const isOverTimeLimit =
+            nftDataMap &&
+            moment(Date.now()).diff(moment(nftDataMap.lastFetchTime), 'days') >=
+                7;
+
+        if (
+            isfetchNftTriggered ||
+            !nftLocalData ||
+            isOverTimeLimit ||
+            (localNftDataParsed && !localNftDataParsed.has(actionKey))
+        ) {
+            (async () => {
+                if (
+                    crocEnv &&
+                    isUserConnected &&
+                    userAddress &&
+                    chainData.chainId &&
+                    alchemyClient
+                ) {
+                    try {
+                        const fetchFunction = isfetchNftTriggered
+                            ? fetchNFT
+                            : cachedFetchNFT;
+
+                        const NFTResponse = await fetchFunction(
+                            nftTestWalletAddress !== ''
+                                ? nftTestWalletAddress
+                                : userAddress,
+                            crocEnv,
+                            alchemyClient,
+                            NFTFetchSettings.pageKey,
+                            NFTFetchSettings.pageSize,
+                        );
+
+                        if (NFTResponse !== undefined) {
+                            const NFTData = NFTResponse.NFTData;
+
+                            const pageKey = NFTResponse.pageKey;
+
+                            const userHasNFT = NFTResponse.userHasNFT;
+
+                            setNFTFetchSettings({
+                                pageSize: NFTFetchSettings.pageSize,
+                                pageKey: pageKey ? pageKey : '',
+                            });
+
+                            const nftImgArray: Array<NftDataIF> = [];
+
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            NFTData.map((nftData: any) => {
+                                if (
+                                    nftData.collection.name !==
+                                    'ENS: Ethereum Name Service'
+                                ) {
+                                    nftImgArray.push({
+                                        contractAddress:
+                                            nftData.contract.address,
+                                        contractName: nftData.contract.name,
+                                        thumbnailUrl:
+                                            nftData.image.thumbnailUrl,
+                                        cachedUrl: nftData.image.cachedUrl,
+                                    });
+                                }
+                            });
+
+                            const nftDataMap = localNftDataParsed
+                                ? localNftDataParsed
+                                : new Map<string, Array<NftListByChain>>();
+
+                            const mapValue: Array<NftListByChain> = [];
+
+                            mapValue.push({
+                                chainId: chainData.chainId,
+                                totalNFTCount: NFTResponse.totalNFTCount,
+                                userHasNFT: userHasNFT,
+                                data: nftImgArray,
+                            });
+
+                            const mapWithFetchTime = {
+                                lastFetchTime: Date.now(),
+                                mapValue: mapValue,
+                            };
+
+                            nftDataMap.set(actionKey, mapWithFetchTime);
+
+                            localStorage.setItem(
+                                'user_nft_data',
+                                JSON.stringify(Array.from(nftDataMap)),
+                            );
+
+                            setNFTData(mapValue);
+                            setIsfetchNftTriggered(() => false);
+                            setNftTestWalletAddress(() => '');
+                        }
+                    } catch (error) {
+                        console.error({ error });
+                        setIsfetchNftTriggered(() => false);
+                    }
+                }
+            })();
+        } else {
+            if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
+                if (nftDataMap) {
+                    setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
+                }
+            }
+        }
+    }, [
+        crocEnv,
+        isUserConnected,
+        userAddress,
+        chainData.chainId,
+        // everyFiveMinutes,
+        alchemyClient !== undefined,
+        activeNetwork.graphCacheUrl,
+        isfetchNftTriggered,
+    ]);
 
     useEffect(() => {
         (async () => {
