@@ -17,6 +17,52 @@
     position: relative;
     bottom: 0;
 }
+.message_input_field{
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+    border-color: transparent;
+    color: var(--text1);
+    background-color: transparent;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.message_input_field_limit_exceeded{
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+    border-color: transparent;
+    color: red;
+    background-color: transparent;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.remainingText {
+    position: absolute;
+    top: 50%;
+    left: 77%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80%;
+    text-align: center;
+}
 
 .input_box_not_allowed {
     display: flex;
@@ -87,6 +133,7 @@
     cursor: not-allowed;
 }
 
+
 .emojiPicker {
     width: 97%;
     padding: 0px 8px;
@@ -145,6 +192,10 @@
 .not_LoggedIn_svgButton {
     transition: fill 0.2s ease-in-out;
     cursor: not-allowed;
+}
+
+.not_LoggedIn_svgButton:hover{
+    fill: var(--text2);
 }
 
 .svgButton {
@@ -206,7 +257,7 @@
     flex: none;
     order: 0;
     flex-grow: 1;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
 }
 
 .input_text_position {
@@ -232,4 +283,76 @@
     flex: none;
     order: 0;
     flex-grow: 1;
+}
+
+
+.disabled_text{
+    text-align: center;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--accent1);
+    opacity: 1;
+    /* animation: opaToggle 2s ease-in-out infinite; */
+
+}
+
+.not_LoggedIn_send_message_button svg, .not_LoggedIn_svgButton, .not_LoggedIn_send_message_button svg path, .not_LoggedIn_svgButton path{
+    cursor: not-allowed !important;
+}
+
+@keyframes opaToggle{
+    from {
+        opacity: 1;
+    }
+    to{
+        opacity: 0;
+    }
+
+}
+
+@media only screen and (max-width: 600px){
+
+    .input, .input_not_allowed {
+        width: 100vw;
+            border-radius: 0;
+            bottom: 0;
+            padding: 1.6rem;
+            margin-bottom: 0;
+    }
+
+    .send_message_button, .not_LoggedIn_send_message_button{
+        box-shadow: 0px 0px 20px 0px rgba(115,113,252,1);
+        background: var(--accent1);
+        padding: .2rem;
+        border-radius: .4rem;
+        margin-left: .5rem;
+        margin-top: -0.2rem;
+    }
+    
+    .not_LoggedIn_send_message_button{
+        box-shadow: none;
+        background: #4a6081;
+        cursor: not-allowed !important;
+    }
+
+    .send_message_button svg, .not_LoggedIn_send_message_button svg{
+        width: 1.4rem;
+        height: 1.4rem;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    .send_message_button svg path, .not_LoggedIn_send_message_button svg path{
+        stroke: white;
+        stroke-opacity: 1;
+        cursor: not-allowed !important;
+    }
+    .send_message_button .svgButton {
+        color: white !important;
+    }
+    .not_LoggedIn_svgButton, .svgButton{
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
 }

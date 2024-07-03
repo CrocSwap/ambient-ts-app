@@ -128,14 +128,17 @@ export default function App() {
                 )}
                 <AppOverlay />
                 {platformName === 'futa' ? <Navbar /> : <PageHeader />}
-                {/* <PageHeader/> */}
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
                 />
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            {platformName === 'futa' ? <Footer /> : ambientFooter}
+            {platformName === 'futa' ? (
+                <Footer data-theme={skin} />
+            ) : (
+                ambientFooter
+            )}
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}

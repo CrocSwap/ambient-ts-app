@@ -1,3 +1,7 @@
+interface ReactionModel {
+    [key: string]: string[];
+}
+
 export interface Message {
     _id: string;
     message: string;
@@ -7,5 +11,15 @@ export interface Message {
     walletID: string;
     isMentionMessage: boolean;
     mentionedName: string;
+    mentionedWalletID: string;
     roomInfo: string;
+    repliedMessage: string | undefined;
+    likes?: [];
+    dislikes?: [];
+    isDeleted: boolean;
+    deletedMessageText: string;
+    reactions: ReactionModel;
+    isVerified?: boolean;
+    avatarImage: string;
+    chainId?: string;
 }
