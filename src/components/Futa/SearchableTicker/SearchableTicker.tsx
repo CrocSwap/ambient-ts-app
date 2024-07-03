@@ -333,12 +333,12 @@ export default function SearchableTicker(props: propsIF) {
             </div>
         </div>
     );
-
+    const fullScreenTable = false;
     return (
         <div
             className={styles.container}
             style={{
-                gridTemplateRows: placeholderTicker
+                gridTemplateRows: fullScreenTable
                     ? 'auto 100%'
                     : 'auto 70% 30%',
             }}
@@ -370,7 +370,7 @@ export default function SearchableTicker(props: propsIF) {
                     ))}
                 </div>
             </div>
-            {!placeholderTicker && <Chart />}
+            {!fullScreenTable && <Chart />}
         </div>
     );
 }
