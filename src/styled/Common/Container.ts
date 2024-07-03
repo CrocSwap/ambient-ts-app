@@ -62,7 +62,7 @@ export interface ContainerProps {
     boxShadow?: BoxShadows;
 
     // Flex Props
-    flexDirection?: 'row' | 'column';
+    flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     grow?: boolean;
 
     // Grid Props
@@ -139,15 +139,15 @@ export const ContainerStyles = (props: ContainerProps) => {
                 customCols
                     ? customCols
                     : numCols
-                    ? `repeat(${numCols}, 1fr)`
-                    : 'auto'
+                      ? `repeat(${numCols}, 1fr)`
+                      : 'auto'
             };
             grid-template-rows: ${
                 customRows
                     ? customRows
                     : numRows
-                    ? `repeat(${numRows}, 1fr)`
-                    : 'auto'
+                      ? `repeat(${numRows}, 1fr)`
+                      : 'auto'
             };   
             
             ${gap ? `gap: ${gap};` : 'gap: 4px;'}

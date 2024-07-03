@@ -28,6 +28,7 @@ import {
     UserAuctionListQueryFn,
     memoizeGetUserAuctionsList,
 } from '../ambient-utils/dataLayer';
+import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
 interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;
@@ -42,6 +43,7 @@ interface CachedDataIF {
     cachedEnsResolve: FetchAddrFn;
     cachedFetchTopPairedToken: FetchTopPairedTokenFn;
     cachedFetchBlockTime: FetchBlockTimeFn;
+    cachedFetchNFT: NFTQueryFn;
 }
 
 export const CachedDataContext = createContext<CachedDataIF>(
@@ -65,6 +67,7 @@ export const CachedDataContextProvider = (props: {
         cachedEnsResolve: memoizeFetchEnsAddress(),
         cachedFetchTopPairedToken: memoizeFetchTopPairedToken(),
         cachedFetchBlockTime: memoizeFetchBlockTime(),
+        cachedFetchNFT: memoizeFetchNFT(),
     };
 
     return (
