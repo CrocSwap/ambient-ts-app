@@ -14,7 +14,10 @@ import {
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
 import { UserDataContext } from './UserDataContext';
-import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
+import {
+    AuctionDataIF,
+    AuctionStatusDataServerIF,
+} from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 
 interface AuctionsContextIF {
@@ -46,17 +49,6 @@ interface AuctionsContextIF {
 // interface for auction data used to generate tables
 
 // interface for auction status data used to generate auction details view
-export interface AuctionStatusDataServerIF {
-    ticker: string;
-    chainId: string;
-    createdAt: number;
-    auctionLength: number;
-    filledClearingPriceInNativeTokenWei: string;
-
-    // open bid data
-    openBidClearingPriceInNativeTokenWei?: string | undefined;
-    openBidQtyFilledInNativeTokenWei?: string | undefined;
-}
 
 export interface AuctionStatusDataIF {
     dataReceived: boolean;

@@ -1,10 +1,44 @@
 import {
     mockAccountData1,
     mockAccountData2,
-    mockAuctionData,
+    mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
 // import { GCGO_OVERRIDE_URL } from '../../constants';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
+
+export interface AuctionListServerDataIF {
+    auctionList: AuctionDataIF[];
+}
+
+export interface AuctionDataIF {
+    ticker: string;
+    chainId: string;
+    createdAt: number;
+    auctionLength: number;
+    filledClearingPriceInNativeTokenWei: string;
+
+    // user specific data received for account queries
+    userAddress?: string;
+    userBidClearingPriceInNativeTokenWei?: string | undefined;
+    qtyBidByUserInNativeTokenWei?: string | undefined;
+    qtyUserBidFilledInNativeTokenWei?: string | undefined;
+    qtyUnclaimedByUserInAuctionedTokenWei?: string | undefined;
+    qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
+    qtyUnreturnedToUserInNativeTokenWei?: string | undefined;
+    qtyReturnedToUserInNativeTokenWei?: string | undefined;
+}
+
+export interface AuctionStatusDataServerIF {
+    ticker: string;
+    chainId: string;
+    createdAt: number;
+    auctionLength: number;
+    filledClearingPriceInNativeTokenWei: string;
+
+    // open bid data
+    openBidClearingPriceInNativeTokenWei?: string | undefined;
+    openBidQtyFilledInNativeTokenWei?: string | undefined;
+}
 
 const getGlobalAuctionsList = async (
     chainId: string,
@@ -15,7 +49,7 @@ const getGlobalAuctionsList = async (
     //     ? GCGO_OVERRIDE_URL + '/auctions?'
     //     : graphCacheUrl + '/auctions?';
     false && console.log({ chainId });
-    return mockAuctionData;
+    return mockGlobalAuctionData.auctionList;
     // return fetch(
     //     auctionsListEndpoint +
     //         new URLSearchParams({
@@ -50,9 +84,9 @@ const getUserAuctionsList = async (
         userAddress.toLowerCase() ===
         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
     ) {
-        return mockAccountData1;
+        return mockAccountData1.auctionList;
     }
-    return mockAccountData2;
+    return mockAccountData2.auctionList;
     // return fetch(
     //     auctionsListEndpoint +
     //         new URLSearchParams({
@@ -72,28 +106,6 @@ const getUserAuctionsList = async (
     //         return undefined;
     //     });
 };
-
-// interface AuctionListServerDataIF {
-//     auctionList: AuctionDataIF[];
-// }
-
-export interface AuctionDataIF {
-    ticker: string;
-    chainId: string;
-    createdAt: number;
-    auctionLength: number;
-    filledClearingPriceInNativeTokenWei: string;
-
-    // user specific data received for account queries
-    userAddress?: string;
-    userBidClearingPriceInNativeTokenWei?: string | undefined;
-    qtyBidByUserInNativeTokenWei?: string | undefined;
-    qtyUserBidFilledInNativeTokenWei?: string | undefined;
-    qtyUnclaimedByUserInAuctionedTokenWei?: string | undefined;
-    qtyClaimedByUserInAuctionedTokenWei?: string | undefined;
-    qtyUnreturnedToUserInNativeTokenWei?: string | undefined;
-    qtyReturnedToUserInNativeTokenWei?: string | undefined;
-}
 
 export type GlobalAuctionListQueryFn = (
     chainId: string,
