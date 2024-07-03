@@ -29,8 +29,8 @@ export default function UserSummary(props: propsIF) {
                 props.isCurrentUser
                     ? 'account'
                     : props.user?.ensName
-                    ? props.user?.ensName
-                    : props.user?.walletID,
+                      ? props.user?.ensName
+                      : props.user?.walletID,
             );
         }
     };
@@ -53,7 +53,7 @@ export default function UserSummary(props: propsIF) {
                         onClick={goToProfile}
                     >
                         <span className={styles.user_avatar}>
-                            {getAvatarForChat(props.user)}
+                            {getAvatarForChat(props.user.walletID, props.user)}
                         </span>
                         <span className={styles.user_name}>
                             {getUserLabelforSummary(props.user)}

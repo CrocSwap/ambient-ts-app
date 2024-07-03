@@ -222,18 +222,15 @@ export const getAvatarForProfilePage = (
 };
 
 export const getAvatarForChat = (
+    walletID?: string,
     user?: User | UserSummaryModel,
     size?: number,
 ) => {
     if (!user) {
-        return (
-            <div
-                className={styles.avatar_placeholder}
-                style={{
-                    width: size ? size + 'px' : '25px',
-                    height: size ? size + 'px' : '25px',
-                }}
-            ></div>
+        return getAvatarForType(
+            walletID ? walletID : '',
+            AVATAR_TYPES.JAZZ,
+            25,
         );
     }
     return getAvatar(
@@ -258,8 +255,8 @@ export const getAvatarComponent = (
         showThumb
             ? resp.avatarThumbnail
             : showCompressed
-            ? resp.avatarCompressed
-            : resp.avatarImage,
+              ? resp.avatarCompressed
+              : resp.avatarImage,
         size,
         false,
     );
