@@ -166,6 +166,9 @@
 }
 
 [data-theme='orange_dark'] {
+    /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
+--content-height: calc(100vh - 76px)
+--content-height-mobile: calc(100svh - 120px)
 
 
     /* font */
