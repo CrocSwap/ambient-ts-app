@@ -366,6 +366,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471"
         },
         {
+            "name": "Wrapped eETH",
+            "address": "0x01f0a31698c4d065659b9bdc21b3610292a1c506",
+            "symbol": "weETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg"
+        },
+        {
             "name": "StakeStone Ether",
             "address": "0x80137510979822322193FC997d400D5A6C747bf7",
             "symbol": "STONE",
@@ -425,6 +433,14 @@
             "name": "SCRIBES",
             "address": "0x750351a9F75F98f2c2E91D4eDb3BeB14e719557E",
             "symbol": "SCRIBES",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
+            "name": "Ethena USDe",
+            "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+            "symbol": "USDe",
             "decimals": 18,
             "chainId": 534352,
             "logoURI": ""
@@ -543,7 +559,7 @@
         },
         {
             "name": "Plume",
-            "address": "0x9C43568e50CaDd2e78942C1d4C66dF3489f65D6a",
+            "address": "0x88113DF3ce1AD0C06bC0f2757fB7BefFbBEb539a",
             "symbol": "P",
             "decimals": 18,
             "chainId": 161221135,
@@ -551,7 +567,7 @@
         },
         {
             "name": "Plume USD Stablecoin",
-            "address": "0x29582A0c01EC512Ad25F9B15d28495062007c28b",
+            "address": "0x592c5750312c9F692AC93EF81C12De0891577713",
             "symbol": "goonUSD",
             "decimals": 18,
             "chainId": 161221135,

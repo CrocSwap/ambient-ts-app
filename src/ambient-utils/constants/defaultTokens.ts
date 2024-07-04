@@ -322,7 +322,8 @@ export const blastWEETH: TokenIF = {
     decimals: 18,
     name: 'Wrapped eETH',
     symbol: 'weETH',
-    logoURI: 'https://scroll-tech.github.io/token-list/data/weETH/logo.svg',
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const blastWrsETH: TokenIF = {
@@ -439,6 +440,15 @@ export const scrollWstETH: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
+export const scrollWeETH: TokenIF = {
+    name: 'Wrapped eETH',
+    address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
+    symbol: 'weETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
+};
 
 export const scrollWrsETH: TokenIF = {
     name: 'Wrapped Kelp DAO Restaked ETH',
@@ -542,6 +552,15 @@ export const scrollAxlUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const scrollUSDE: TokenIF = {
+    chainId: 534352,
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    name: 'Ethena USDe',
+    symbol: 'USDe',
+    decimals: 18,
+    logoURI: '',
+};
+
 export const scrollDAI: TokenIF = {
     name: 'Dai Stablecoin',
     address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
@@ -639,7 +658,7 @@ export const plumeSepoliaDAI: TokenIF = {
 
 export const plumeSepoliaP: TokenIF = {
     name: 'Plume',
-    address: '0x9C43568e50CaDd2e78942C1d4C66dF3489f65D6a',
+    address: '0x88113DF3ce1AD0C06bC0f2757fB7BefFbBEb539a',
     symbol: 'P',
     decimals: 18,
     chainId: 161221135,
@@ -648,7 +667,7 @@ export const plumeSepoliaP: TokenIF = {
 
 export const plumeSepoliaGoonUSD: TokenIF = {
     name: 'Plume USD Stablecoin',
-    address: '0x29582A0c01EC512Ad25F9B15d28495062007c28b',
+    address: '0x592c5750312c9F692AC93EF81C12De0891577713',
     symbol: 'goonUSD',
     decimals: 18,
     chainId: 161221135,
@@ -704,12 +723,14 @@ export const defaultTokens: TokenIF[] = [
     scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
+    scrollUSDE,
     scrollWBTC,
     scrollRocketPoolETH,
     scrollPxETH,
     scrollPufETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWeETH,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,

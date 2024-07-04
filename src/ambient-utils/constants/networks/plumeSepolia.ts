@@ -28,7 +28,7 @@ export const plumeSepolia: NetworkIF = {
     chain: chain,
     shouldPollBlock: true,
     marketData: '0x1',
-    defaultPair: [plumeSepoliaETH, plumeSepoliaGoonUSD],
+    defaultPair: [plumeSepoliaP, plumeSepoliaGoonUSD],
     topPools: [
         new TopPool(
             plumeSepoliaETH,
