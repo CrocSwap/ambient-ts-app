@@ -43,6 +43,7 @@ export default function SearchableTicker(props: propsIF) {
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
     const customLoading = false;
+
     const {
         setIsLoading,
         selectedTicker,
@@ -338,9 +339,8 @@ export default function SearchableTicker(props: propsIF) {
         <div
             className={styles.container}
             style={{
-                gridTemplateRows: fullScreenTable
-                    ? 'auto 100%'
-                    : 'auto 70% 30%',
+                gridTemplateRows:
+                    fullScreenTable || isAccount ? 'auto 100%' : 'auto 70% 30%',
             }}
         >
             {headerDisplay}
@@ -370,7 +370,7 @@ export default function SearchableTicker(props: propsIF) {
                     ))}
                 </div>
             </div>
-            {!fullScreenTable && <Chart />}
+            {!fullScreenTable && !isAccount && <Chart />}
         </div>
     );
 }
