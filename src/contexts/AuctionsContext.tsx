@@ -16,7 +16,7 @@ import {
 import { UserDataContext } from './UserDataContext';
 import {
     AuctionDataIF,
-    AuctionStatusDataServerIF,
+    AuctionStatusResponseIF,
 } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 
@@ -141,7 +141,7 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
 
     const fetchAuctionStatusData = async (
         ticker: string,
-    ): Promise<AuctionStatusDataServerIF> => {
+    ): Promise<AuctionStatusResponseIF> => {
         return mockAuctionDetailsServerResponseGenerator(ticker, chainId);
     };
 

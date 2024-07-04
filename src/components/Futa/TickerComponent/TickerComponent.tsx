@@ -20,12 +20,13 @@ import {
 } from '../../../ambient-utils/constants';
 import {
     AuctionDataIF,
+    calcBidImpact,
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -56,6 +57,7 @@ const useAuctionContexts = () => {
     } = useContext(AuctionsContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const { isUserConnected } = useContext(UserDataContext);
@@ -64,10 +66,15 @@ const useAuctionContexts = () => {
     } = useContext(AppStateContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
     const { userAddress } = useContext(UserDataContext);
-    const { gasPriceInGwei, isActiveNetworkL2, nativeTokenUsdPrice } =
-        useContext(ChainDataContext);
+    const {
+        gasPriceInGwei,
+        isActiveNetworkL2,
+        nativeTokenUsdPrice,
+        lastBlockNumber,
+    } = useContext(ChainDataContext);
 
     return {
+        crocEnv,
         getAuctionData,
         auctionStatusData,
         accountData,
@@ -82,6 +89,7 @@ const useAuctionContexts = () => {
         gasPriceInGwei,
         isActiveNetworkL2,
         nativeTokenUsdPrice,
+        lastBlockNumber,
         setSelectedTicker,
     };
 };
@@ -167,6 +175,7 @@ export default function TickerComponent(props: PropsIF) {
         auctionStatusData,
         getAuctionData,
         chainId,
+        crocEnv,
         showComments,
         isUserConnected,
         openWalletModal,
@@ -175,6 +184,7 @@ export default function TickerComponent(props: PropsIF) {
         gasPriceInGwei,
         isActiveNetworkL2,
         nativeTokenUsdPrice,
+        lastBlockNumber,
         accountData,
         globalAuctionList,
         setSelectedTicker,
@@ -391,18 +401,31 @@ export default function TickerComponent(props: PropsIF) {
         }
     };
 
-    const getPriceImpact = async (bidQtyNonDisplay: string) => {
+    const getPriceImpact = async (
+        crocEnv: CrocEnv | undefined,
+        bidQtyNonDisplay: string,
+    ) => {
+        if (!crocEnv || !tickerFromParams) return undefined;
         const isNonZero =
             !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
 
         if (!isNonZero) return undefined;
 
-        const priceImpact = Math.random() * 0.1;
+        // TODO: add openBidClearingPriceInNativeTokenWei
+        const priceImpact = calcBidImpact(
+            crocEnv,
+            tickerFromParams,
+            '0',
+            bidQtyNonDisplay,
+        );
 
         return priceImpact;
     };
 
-    const debouncedBidInput = useDebounce(bidQtyNonDisplay, 500);
+    const debouncedBidInput: string | undefined = useDebounce(
+        bidQtyNonDisplay,
+        500,
+    );
 
     const nativeTokenWalletBalanceDisplay = nativeTokenWalletBalance
         ? toDisplayQty(nativeTokenWalletBalance, nativeTokenDecimals)
@@ -456,15 +479,20 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     useEffect(() => {
+        if (!debouncedBidInput) return;
         checkBidValidity(debouncedBidInput).then((isValid) => {
             setIsValidationInProgress(false);
             setIsValidated(isValid);
         });
-        getPriceImpact(debouncedBidInput).then((impact) => {
+        getPriceImpact(crocEnv, debouncedBidInput).then((impact) => {
             setIsPriceImpactQueryInProgress(false);
-            setPriceImpact(impact);
+            setPriceImpact(impact?.priceImpactPercentage);
         });
-    }, [debouncedBidInput, nativeTokenWalletBalanceAdjustedNonDisplayString]);
+    }, [
+        debouncedBidInput,
+        nativeTokenWalletBalanceAdjustedNonDisplayString,
+        lastBlockNumber,
+    ]);
 
     useEffect(() => {
         setIsValidationInProgress(true);
@@ -483,7 +511,7 @@ export default function TickerComponent(props: PropsIF) {
 
     const formattedPriceImpact =
         !priceImpact || isPriceImpactQueryInProgress
-            ? '...'
+            ? '-'
             : getFormattedNumber({
                   value: priceImpact * 100,
                   isPercentage: true,

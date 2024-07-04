@@ -12,6 +12,7 @@ import {
     checkTickerValidity,
 } from '../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
@@ -19,7 +20,9 @@ export default function Create() {
     const { isUserConnected } = useContext(UserDataContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -43,12 +46,18 @@ export default function Create() {
     const debouncedTickerInput = useDebounce(tickerInput, 500);
 
     useEffect(() => {
-        checkTickerValidity(chainId, debouncedTickerInput).then((response) => {
+        if (!lastBlockNumber || !crocEnv || !debouncedTickerInput) return;
+        checkTickerValidity(
+            crocEnv,
+            debouncedTickerInput,
+            chainId,
+            lastBlockNumber,
+        ).then((response) => {
             setIsValidationInProgress(false);
             setIsValidated(response.isValid);
             setInvalidReason(response.invalidReason);
         });
-    }, [debouncedTickerInput, chainId]);
+    }, [debouncedTickerInput, crocEnv === undefined, chainId, lastBlockNumber]);
 
     // name for the ticker input field, keeps `<input/>` and `<label/>` sync'd
     const TICKER_INPUT_ID = 'ticker_input';

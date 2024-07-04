@@ -1,10 +1,10 @@
 import {
-    AuctionListServerDataIF,
-    AuctionStatusDataServerIF,
+    AuctionListResponseIF,
+    AuctionStatusResponseIF,
 } from '../../ambient-utils/dataLayer';
 import { AccountDataIF } from '../../contexts/AuctionsContext';
 
-export const mockGlobalAuctionData: AuctionListServerDataIF = {
+export const mockGlobalAuctionData: AuctionListResponseIF = {
     auctionList: [
         {
             ticker: 'HELLO😊',
@@ -265,7 +265,7 @@ export const mockGlobalAuctionData: AuctionListServerDataIF = {
     ],
 };
 
-export const mockAccountData1: AuctionListServerDataIF = {
+export const mockAccountData1: AuctionListResponseIF = {
     auctionList: [
         {
             ticker: 'HELLO😊',
@@ -388,7 +388,7 @@ export const mockAccountData1: AuctionListServerDataIF = {
     ],
 };
 
-export const mockAccountData2: AuctionListServerDataIF = {
+export const mockAccountData2: AuctionListResponseIF = {
     auctionList: [
         {
             ticker: 'PEPE',
@@ -502,7 +502,7 @@ export const mockAccountData2: AuctionListServerDataIF = {
 export const mockAuctionDetailsServerResponseGenerator = (
     ticker: string,
     chainId: string,
-): AuctionStatusDataServerIF => {
+): AuctionStatusResponseIF => {
     false && console.log({ ticker, chainId });
     switch (ticker.slice(0, 4)) {
         case 'HELLO😊':
