@@ -215,6 +215,7 @@ export default function Room(props: propsIF) {
     useEffect(() => {
         processRoomList();
     }, [
+        props.isChatOpen,
         props.isModerator,
         favePools,
         props.selectedRoom,
