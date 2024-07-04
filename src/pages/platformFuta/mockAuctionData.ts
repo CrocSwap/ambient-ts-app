@@ -7,49 +7,49 @@ import { AccountDataIF } from '../../contexts/AuctionsContext';
 export const mockGlobalAuctionData: AuctionListServerDataIF = {
     auctionList: [
         {
-            ticker: 'DOGE',
+            ticker: 'HELLO😊',
             chainId: '0x2105',
             createdAt: 1718125986,
             auctionLength: 86400,
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'DOGE1',
+            ticker: 'HELLO😊1',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'DOGE2',
+            ticker: 'HELLO😊2',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'DOGE3',
+            ticker: 'HELLO😊3',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'DOGE4',
+            ticker: 'HELLO😊4',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'DOGE5',
+            ticker: 'HELLO😊5',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
             filledClearingPriceInNativeTokenWei: '250000000000000000',
         },
         {
-            ticker: 'DOGE6',
+            ticker: 'HELLO😊6',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
@@ -268,7 +268,7 @@ export const mockGlobalAuctionData: AuctionListServerDataIF = {
 export const mockAccountData1: AuctionListServerDataIF = {
     auctionList: [
         {
-            ticker: 'DOGE',
+            ticker: 'HELLO😊',
             chainId: '0x2105',
             createdAt: 1718125986,
             auctionLength: 86400,
@@ -328,7 +328,7 @@ export const mockAccountData1: AuctionListServerDataIF = {
             qtyUnclaimedByUserInAuctionedTokenWei: '100000000000000000000000', // 100000 scaled
         },
         {
-            ticker: 'DOGE1',
+            ticker: 'HELLO😊1',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
@@ -439,7 +439,7 @@ export const mockAccountData2: AuctionListServerDataIF = {
             qtyUnclaimedByUserInAuctionedTokenWei: '100000000000000000000000', // 100000 scaled
         },
         {
-            ticker: 'DOGE1',
+            ticker: 'HELLO😊1',
             chainId: '0x2105',
             createdAt: 1720106720,
             auctionLength: 86400,
@@ -505,7 +505,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
 ): AuctionStatusDataServerIF => {
     false && console.log({ ticker, chainId });
     switch (ticker.slice(0, 4)) {
-        case 'DOGE':
+        case 'HELLO😊':
             return {
                 ticker: ticker,
                 chainId: '0x2105',
