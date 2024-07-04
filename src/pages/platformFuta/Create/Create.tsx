@@ -7,12 +7,19 @@ import BreadCrumb from '../../../components/Futa/Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
+import {
+    checkTickerPattern,
+    checkTickerValidity,
+} from '../../../ambient-utils/dataLayer';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
     const { isUserConnected } = useContext(UserDataContext);
-
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -23,43 +30,7 @@ export default function Create() {
         useState<boolean>(false);
 
     const [isValidated, setIsValidated] = useState<boolean>(false);
-
-    const excludedTickers = [
-        'ambi',
-        'amb',
-        'futa',
-        'nft',
-        'eth',
-        'btc',
-        'usdc',
-        'usdt',
-        'dai',
-        'weth',
-    ];
-
-    // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
-    const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
-    /* 
-        Example usage of the pattern
-        console.log(isValidString("Hello123")); // true (Latin alphanumeric)
-        console.log(isValidString("Hello😊123")); // true (Latin alphanumeric + Extended Pictographic)
-        console.log(isValidString("こんにちは")); // false (Non-Latin characters)
-        console.log(isValidString("1234😊😊")); // true (Digits + Extended Pictographic)
-        console.log(isValidString("Hello!")); // false (Special character '!')
-    */
-
-    const checkTickerPattern = (ticker: string) => {
-        if (ticker.length === 0) return true;
-        return validTickerPattern.test(ticker);
-    };
-
-    const checkTickerValidity = async (ticker: string) => {
-        // check if the ticker is in the excluded list
-        const isExcluded = excludedTickers.includes(ticker.toLowerCase());
-        const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
-        const tickerPatternValid = checkTickerPattern(ticker);
-        return !isExcluded && tickerPatternValid && lengthIsValid;
-    };
+    const [invalidReason, setInvalidReason] = useState<string | undefined>();
 
     function handleChange(text: string) {
         const sanitized = text.trim();
@@ -72,11 +43,12 @@ export default function Create() {
     const debouncedTickerInput = useDebounce(tickerInput, 500);
 
     useEffect(() => {
-        checkTickerValidity(debouncedTickerInput).then((isValid) => {
+        checkTickerValidity(chainId, debouncedTickerInput).then((response) => {
             setIsValidationInProgress(false);
-            setIsValidated(isValid);
+            setIsValidated(response.isValid);
+            setInvalidReason(response.invalidReason);
         });
-    }, [debouncedTickerInput]);
+    }, [debouncedTickerInput, chainId]);
 
     // name for the ticker input field, keeps `<input/>` and `<label/>` sync'd
     const TICKER_INPUT_ID = 'ticker_input';
@@ -184,7 +156,7 @@ export default function Create() {
                         ? 'Validating Ticker...'
                         : isValidated
                           ? 'Create Auction'
-                          : `Invalid Ticker: ${tickerInput}`}
+                          : `${invalidReason}: ${tickerInput}`}
             </button>
         </footer>
     );
