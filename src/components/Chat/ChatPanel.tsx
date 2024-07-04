@@ -1454,7 +1454,7 @@ function ChatPanel(props: propsIF) {
             <ChatConfirmationPanel
                 isActive={showVerifyOldMessagesPanel && isChatOpen}
                 title='Verify Old Messages'
-                content='Old messages will be verified. Do you want to verify?'
+                content='Please verify your wallet address in order to authenticate previous messages.'
                 cancelListener={() => {
                     setShowVerifyOldMessagesPanel(false);
                 }}
@@ -1470,7 +1470,7 @@ function ChatPanel(props: propsIF) {
             <ChatConfirmationPanel
                 isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
                 title='Verify Your Wallet'
-                content='You should verify your wallet to delete that message.Do you want to verify?'
+                content='Please verify your wallet address in order to delete this message.'
                 cancelListener={() => {
                     setShowVerifyWalletConfirmationInDelete(false);
                 }}
