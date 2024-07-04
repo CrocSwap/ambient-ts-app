@@ -45,6 +45,8 @@ export default function ScatterChart() {
 
     const data = useScatterChartData();
 
+    const afterOneWeek = false;
+
     const { selectedTicker } = useContext(AuctionsContext);
     const navigate = useNavigate();
 
@@ -86,8 +88,8 @@ export default function ScatterChart() {
                     Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
                     100000;
 
-                const minXValue = -60;
-                const maxXValue = 1440 + 60;
+                const minXValue = afterOneWeek ? -60 : 0;
+                const maxXValue = afterOneWeek ? 1440 + 60 : 1440 * 7 + 60;
                 const xScale = d3
                     .scaleLinear()
                     .domain([maxXValue, minXValue])
@@ -143,8 +145,14 @@ export default function ScatterChart() {
                 .on('draw', (event) => {
                     const svg = d3.select(event.target).select('svg');
 
-                    const xTicks = d3.range(0, 1441, 60);
-                    const yTicks = yScale.ticks();
+                    const xTicks = afterOneWeek
+                        ? d3.range(0, 1441, 60)
+                        : d3.range(0, 1441 * 8, 1441 / 4);
+                    const yTicks = d3.range(
+                        0,
+                        Number(d3.max(data, (d) => d.price)) + 100000,
+                        100000,
+                    );
                     svg.select('#gridCircles').remove();
                     svg.select('.circleJoin').remove();
 
@@ -284,7 +292,11 @@ export default function ScatterChart() {
                     width: '100%',
                 }}
             ></d3fc-svg>
-            <Xaxis data={data.map((i) => i.timeRemaining)} scale={xScale} />
+            <Xaxis
+                data={data.map((i) => i.timeRemaining)}
+                scale={xScale}
+                afterOneWeek={afterOneWeek}
+            />
             <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
         </div>
     );

@@ -7,19 +7,28 @@ import { axisColor, textColor } from './ScatterChart';
 interface AxisIF {
     data: number[];
     scale: d3.ScaleLinear<number, number> | undefined;
+    afterOneWeek: boolean;
 }
 export default function Xaxis(props: AxisIF) {
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale } = props;
+    const { data, scale, afterOneWeek } = props;
 
     useEffect(() => {
         if (scale) {
             const xAxis = d3
                 .axisBottom(scale)
-                .tickValues(d3.range(0, 1441, 60))
+                .tickValues(
+                    afterOneWeek
+                        ? d3.range(0, 1441, 60)
+                        : d3.range(1441, 1441 * 8, 1441 / 2),
+                )
                 .tickFormat((d) => {
-                    const hour = d.valueOf() / 60;
-                    return hour.toString();
+                    const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
+                    if (Number.isInteger(d)) {
+                        return hour.toString();
+                    }
+
+                    return '12:00';
                 });
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
