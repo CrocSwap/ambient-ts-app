@@ -33,12 +33,12 @@ const useScatterChartData = () => {
             };
         });
 
-        if (localData) {
+        if (localData && nativeTokenUsdPrice) {
             return localData;
         }
 
         return [];
-    }, [globalAuctionList]);
+    }, [globalAuctionList, nativeTokenUsdPrice]);
 
     return data;
 };

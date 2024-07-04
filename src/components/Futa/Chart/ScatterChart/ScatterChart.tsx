@@ -65,7 +65,7 @@ export default function ScatterChart() {
     }, [selectedTicker]);
 
     useEffect(() => {
-        if (data) {
+        if (data && data.length) {
             const scatterChartDiv = d3.select(d3MainDiv.current).node();
 
             if (scatterChartDiv) {
@@ -90,7 +90,7 @@ export default function ScatterChart() {
                 const yScale = d3
                     .scaleLinear()
                     .domain([-50000, maxYValue])
-                    .range([height, 0]);
+                    .range([height, 15]);
 
                 setYscale(() => yScale);
             }
@@ -103,26 +103,16 @@ export default function ScatterChart() {
                 .seriesSvgPoint()
                 .xScale(xScale)
                 .yScale(yScale)
-                .crossValue((d: scatterData) => d.timeRemaining)
+                .crossValue((d: scatterData) =>
+                    d.timeRemaining / 60 > 1440 ? 1440 : d.timeRemaining / 60,
+                )
                 .mainValue((d: scatterData) => d.price)
                 .size((d: scatterData) => d.size)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .decorate((context: any, d: any) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     context.nodes().forEach((selection: any, index: number) => {
-                        const time =
-                            d[index].timeRemaining / 60 > 1440
-                                ? 1440
-                                : d[index].timeRemaining / 60;
                         d3.select(selection)
-                            .attr(
-                                'transform',
-                                'translate(' +
-                                    xScale(time) +
-                                    ',' +
-                                    yScale(d[index].price) +
-                                    ')',
-                            )
                             .style(
                                 'fill',
                                 d[index].size > scatterDotDefaultSize
@@ -135,7 +125,7 @@ export default function ScatterChart() {
 
             setPointSeries(() => pointSeries);
         }
-    }, [xScale, yScale, selectedDot, hoveredDot]);
+    }, [xScale, yScale, selectedDot, hoveredDot, chartSize]);
 
     useEffect(() => {
         if (xScale && yScale && pointSeries) {
@@ -197,6 +187,7 @@ export default function ScatterChart() {
             if (svgDiv) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const resizeObserver = new ResizeObserver((result: any) => {
+                    renderCanvasArray([d3Chart]);
                     setChartSize(result);
                 });
 
