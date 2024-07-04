@@ -40,7 +40,9 @@ export default function ChatConfirmationPanel(props: propsIF) {
                         }
                     }}
                 >
-                    Confirm
+                    {props.title.toLowerCase().includes('verify')
+                        ? 'Verify'
+                        : 'Confirm'}
                 </div>
             </div>
         </div>
