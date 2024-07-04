@@ -781,19 +781,18 @@ function ChatPanel(props: propsIF) {
         if (isUserConnected == false)
             activateToastr('Please connect your wallet first.', 'warning');
 
-        const verificationMessage = await getVerificationMessage();
-
         // this assignment will be deleted after backend deployment
-
-        const defaultText =
+        let verificationText =
             'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
 
-        const message =
-            (verificationMessage.length > 0
-                ? verificationMessage
-                : defaultText) +
-            'Wallet address:\n' +
-            userAddress;
+        try {
+            const serverSideText = await getVerificationMessage();
+            verificationText = serverSideText;
+        } catch (err) {
+            console.error(err);
+        }
+
+        const message = verificationText + 'Wallet address:\n' + userAddress;
 
         let verifyDate = new Date();
 
