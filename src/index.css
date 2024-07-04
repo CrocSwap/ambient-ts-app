@@ -67,6 +67,7 @@
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
+    --navbar-bg: #0D1117;
 
         /* font weight */
         --fw-bold: 300;
