@@ -48,21 +48,22 @@ export default function ScatterChart() {
     const { selectedTicker } = useContext(AuctionsContext);
     const navigate = useNavigate();
 
-    const navigateUrl = '/auctions/v1/';
-
+    const navigateUrlBase = '/auctions';
+    const navigateUrl = navigateUrlBase + '/v1/';
     useEffect(() => {
         if (selectedTicker) {
             const selectedCircleData = data.find(
                 (i: scatterData) => i.name === selectedTicker,
             );
-
             setSelectedDot(
                 selectedCircleData
                     ? { ...selectedCircleData, size: scatterDotSelectedSize }
                     : selectedCircleData,
             );
+        } else {
+            setSelectedDot(undefined);
         }
-    }, [selectedTicker]);
+    }, [selectedTicker, data]);
 
     useEffect(() => {
         if (data && data.length) {
@@ -82,7 +83,7 @@ export default function ScatterChart() {
                 const maxXValue = 1440 + 60;
                 const xScale = d3
                     .scaleLinear()
-                    .domain([minXValue, maxXValue])
+                    .domain([maxXValue, minXValue])
                     .range([0, width]);
 
                 setXscale(() => xScale);
@@ -125,7 +126,7 @@ export default function ScatterChart() {
 
             setPointSeries(() => pointSeries);
         }
-    }, [xScale, yScale, selectedDot, hoveredDot, chartSize]);
+    }, [xScale, yScale, chartSize]);
 
     useEffect(() => {
         if (xScale && yScale && pointSeries) {
@@ -153,13 +154,15 @@ export default function ScatterChart() {
                         });
                     });
 
-                    circleJoin(svg, [
-                        [
-                            ...data,
-                            selectedDot ? selectedDot : [],
-                            hoveredDot ? hoveredDot : [],
-                        ],
-                    ]).call(pointSeries);
+                    const dataWithSelected = selectedDot
+                        ? [...data, selectedDot]
+                        : data;
+
+                    const dataWithHovered = hoveredDot
+                        ? [...dataWithSelected, hoveredDot]
+                        : dataWithSelected;
+
+                    circleJoin(svg, [dataWithHovered]).call(pointSeries);
                 })
 
                 .on('measure', (event: CustomEvent) => {
@@ -236,14 +239,18 @@ export default function ScatterChart() {
                 .on('mousemove', (event: any) => {
                     const nearestData = findNearestCircle(event);
                     setHoveredDot(
-                        nearestData
+                        nearestData && nearestData.name !== selectedDot?.name
                             ? { ...nearestData, size: scatterDotSelectedSize }
-                            : nearestData,
+                            : undefined,
                     );
                 })
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
-                    nearestData && navigate(navigateUrl + nearestData.name);
+                    if (nearestData) {
+                        nearestData.name !== selectedDot?.name
+                            ? navigate(navigateUrl + nearestData.name)
+                            : navigate(navigateUrlBase);
+                    }
                 })
                 .on('mouseout', function () {
                     setHoveredDot(undefined);
