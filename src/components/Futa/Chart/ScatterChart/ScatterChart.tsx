@@ -251,6 +251,10 @@ export default function ScatterChart() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .on('mousemove', (event: any) => {
                     const nearestData = findNearestCircle(event);
+
+                    d3.select(d3Chart.current)
+                        .select('svg')
+                        .style('cursor', nearestData ? 'pointer' : 'default');
                     setHoveredDot(
                         nearestData && nearestData.name !== selectedDot?.name
                             ? { ...nearestData, size: scatterDotSelectedSize }
