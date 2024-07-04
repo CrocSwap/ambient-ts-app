@@ -32,6 +32,9 @@ import {
     scrollRocketPoolETH,
     scrollPufETH,
     blastWEETH,
+    blastBLAST,
+    scrollUSDE,
+    scrollWeETH,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -48,6 +51,10 @@ export function isStableToken(addr: string): boolean {
 
 export function isUsdcToken(addr: string): boolean {
     return USDC_TOKENS.includes(addr.toLowerCase());
+}
+
+export function isBlastRewardToken(addr: string): boolean {
+    return BLAST_REWARD_TOKENS.includes(addr.toLowerCase());
 }
 
 export function isETHorStakedEthToken(addr: string): boolean {
@@ -91,6 +98,7 @@ export const STABLE_USD_TOKENS = [
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
+    scrollUSDE.address,
 ].map((x) => x.toLowerCase());
 
 export const USDC_TOKENS = [
@@ -101,6 +109,10 @@ export const USDC_TOKENS = [
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
 ].map((x) => x.toLowerCase());
+
+export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>
+    x.toLowerCase(),
+);
 
 export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
     x.toLowerCase(),
@@ -113,6 +125,7 @@ export const STAKED_ETH_TOKENS = [
     scrollWrsETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
+    scrollWeETH.address,
     scrollPxETH.address,
     scrollPufETH.address,
     scrollRocketPoolETH.address,

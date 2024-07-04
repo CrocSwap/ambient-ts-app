@@ -781,7 +781,7 @@ function ChatPanel(props: propsIF) {
             activateToastr('Please connect your wallet first.', 'warning');
 
         const message =
-            'Welcome to Ambient Finance \n\nClick to sign in and accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
+            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
             userAddress;
         let verifyDate = new Date();
 
@@ -1454,7 +1454,7 @@ function ChatPanel(props: propsIF) {
             <ChatConfirmationPanel
                 isActive={showVerifyOldMessagesPanel && isChatOpen}
                 title='Verify Old Messages'
-                content='Old messages will be verified. Do you want to verify?'
+                content='Please verify your wallet address in order to authenticate previous messages.'
                 cancelListener={() => {
                     setShowVerifyOldMessagesPanel(false);
                 }}
@@ -1470,7 +1470,7 @@ function ChatPanel(props: propsIF) {
             <ChatConfirmationPanel
                 isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
                 title='Verify Your Wallet'
-                content='You should verify your wallet to delete that message.Do you want to verify?'
+                content='Please verify your wallet address in order to delete this message.'
                 cancelListener={() => {
                     setShowVerifyWalletConfirmationInDelete(false);
                 }}

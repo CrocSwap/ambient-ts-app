@@ -109,7 +109,7 @@ export const mainnetWstETH: TokenIF = {
     address: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',
     chainId: 1,
     decimals: 18,
-    logoURI: '',
+    logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
     name: 'Wrapped liquid staked Ether 2.0',
     symbol: 'wstETH',
 };
@@ -118,7 +118,7 @@ export const mainnetMATIC: TokenIF = {
     address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
     chainId: 1,
     decimals: 18,
-    logoURI: '',
+    logoURI: 'https://assets.coingecko.com/coins/images/4713/thumb/polygon.png',
     name: 'Matic Token',
     symbol: 'MATIC',
 };
@@ -169,6 +169,15 @@ export const blastUSDB: TokenIF = {
         'https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png',
     name: 'USDB',
     symbol: 'USDB',
+};
+
+export const blastBLAST: TokenIF = {
+    address: '0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad',
+    chainId: 81457,
+    decimals: 18,
+    logoURI: '',
+    name: 'Blast',
+    symbol: 'BLAST',
 };
 
 export const blastUSDPLUS: TokenIF = {
@@ -313,7 +322,8 @@ export const blastWEETH: TokenIF = {
     decimals: 18,
     name: 'Wrapped eETH',
     symbol: 'weETH',
-    logoURI: 'https://scroll-tech.github.io/token-list/data/weETH/logo.svg',
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const blastWrsETH: TokenIF = {
@@ -430,6 +440,15 @@ export const scrollWstETH: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
+export const scrollWeETH: TokenIF = {
+    name: 'Wrapped eETH',
+    address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
+    symbol: 'weETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
+};
 
 export const scrollWrsETH: TokenIF = {
     name: 'Wrapped Kelp DAO Restaked ETH',
@@ -533,6 +552,15 @@ export const scrollAxlUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const scrollUSDE: TokenIF = {
+    chainId: 534352,
+    address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
+    name: 'Ethena USDe',
+    symbol: 'USDe',
+    decimals: 18,
+    logoURI: '',
+};
+
 export const scrollDAI: TokenIF = {
     name: 'Dai Stablecoin',
     address: '0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97',
@@ -609,6 +637,7 @@ export const defaultTokens: TokenIF[] = [
     blastETH,
     blastWrsETH,
     blastUSDB,
+    blastBLAST,
     blastUSDPLUS,
     blastMIA,
     blastBIG,
@@ -637,12 +666,14 @@ export const defaultTokens: TokenIF[] = [
     scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
+    scrollUSDE,
     scrollWBTC,
     scrollRocketPoolETH,
     scrollPxETH,
     scrollPufETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWeETH,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,

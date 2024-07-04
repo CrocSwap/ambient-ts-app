@@ -2,19 +2,19 @@ import { ethers } from 'ethers';
 import { memoizeProviderFn } from '../dataLayer/functions/memoizePromiseFn';
 
 export async function fetchBlockTime(
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     blockNumber: number,
 ): Promise<number | undefined> {
     try {
         const block = provider.getBlock(blockNumber);
-        return (await block).timestamp;
+        return Number((await block)?.timestamp);
     } catch (error) {
         return undefined;
     }
 }
 
 export type FetchBlockTimeFn = (
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     blockNumber: number,
 ) => Promise<number | undefined>;
 

@@ -95,7 +95,6 @@ export const TokenBalanceContextProvider = (props: {
                     return newTokenBalances;
                 }
             }
-
             return prev;
         });
     };

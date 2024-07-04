@@ -28,6 +28,7 @@ export default function ReplyMessage(props: propsIF) {
     }
 
     const replyJazzIcon = getAvatarForChat(
+        props.messageObj?.walletID,
         props.userMap?.get(
             props.messageObj?.sender ? props.messageObj.sender : '',
         ),

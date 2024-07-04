@@ -808,6 +808,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 ></img>
                                             )}
                                         {getAvatarForChat(
+                                            props.message.walletID,
                                             props.userMap?.get(
                                                 props.message.sender,
                                             ),
@@ -824,6 +825,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         <div className={styles.nft_container}>
                                             {/* {myJazzicon} */}
                                             {getAvatarForChat(
+                                                props.message.walletID,
                                                 props.userMap?.get(
                                                     props.message.sender,
                                                 ),

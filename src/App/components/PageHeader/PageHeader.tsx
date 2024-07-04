@@ -20,10 +20,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import {
-    useWeb3ModalAccount,
-    useSwitchNetwork,
-} from '@web3modal/ethers5/react';
+import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {

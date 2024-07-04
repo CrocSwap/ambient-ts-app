@@ -4,14 +4,14 @@ import {
     mainnetUSDC,
     mainnetWBTC,
     mainnetRPL,
-    mainnetLIDO,
+    mainnetUSDT,
     mainnetSWETH,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { GCGO_ETHEREUM_URL } from '../gcgo';
-import { Provider } from '@ethersproject/providers';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { Provider } from 'ethers';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 const PROVIDER_KEY =
     import.meta.env.NODE_ENV === 'test'
@@ -38,11 +38,14 @@ export const ethereumMainnet: NetworkIF = {
         new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetRPL, lookupChain('0x1').poolIndex),
-        new TopPool(mainnetETH, mainnetLIDO, lookupChain('0x1').poolIndex),
+        new TopPool(mainnetETH, mainnetUSDT, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetSWETH, lookupChain('0x1').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+        return (
+            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+            1e-9
+        );
     },
 };

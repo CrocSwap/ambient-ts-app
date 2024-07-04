@@ -99,6 +99,14 @@
             "logoURI": "https://assets-global.website-files.com/65a6baa1a3f8ed336f415cb4/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png"
         },
         {
+            "name": "Blast",
+            "address": "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad",
+            "symbol": "BLAST",
+            "decimals": 18,
+            "chainId": 81457,
+            "logoURI": ""
+        },
+        {
             "name": "USD+",
             "address": "0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd",
             "symbol": "USD+",
@@ -136,7 +144,7 @@
             "name": "Wrapped eETH",
             "symbol": "weETH",
             "decimals": 18,
-            "logoURI": "https://scroll-tech.github.io/token-list/data/weETH/logo.svg"
+            "logoURI": "https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg"
         },
         {
             "address": "0xA4C7aA67189EC5623121c6C94Ec757DfeD932D4B",
@@ -358,6 +366,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471"
         },
         {
+            "name": "Wrapped eETH",
+            "address": "0x01f0a31698c4d065659b9bdc21b3610292a1c506",
+            "symbol": "weETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg"
+        },
+        {
             "name": "StakeStone Ether",
             "address": "0x80137510979822322193FC997d400D5A6C747bf7",
             "symbol": "STONE",
@@ -417,6 +433,14 @@
             "name": "SCRIBES",
             "address": "0x750351a9F75F98f2c2E91D4eDb3BeB14e719557E",
             "symbol": "SCRIBES",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
+            "name": "Ethena USDe",
+            "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+            "symbol": "USDe",
             "decimals": 18,
             "chainId": 534352,
             "logoURI": ""
