@@ -236,7 +236,8 @@ function ChatPanel(props: propsIF) {
         setMessageForNotificationBubble,
     );
 
-    const { getID, updateUser, updateMessageUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser, getVerificationMessage } =
+        useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
@@ -769,7 +770,7 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const verifyWallet = (
+    const verifyWallet = async (
         verificationType: ChatVerificationTypes,
         verificationDate: Date,
         // eslint-disable-next-line
@@ -780,9 +781,20 @@ function ChatPanel(props: propsIF) {
         if (isUserConnected == false)
             activateToastr('Please connect your wallet first.', 'warning');
 
+        const verificationMessage = await getVerificationMessage();
+
+        // this assignment will be deleted after backend deployment
+
+        const defaultText =
+            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
+
         const message =
-            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
+            (verificationMessage.length > 0
+                ? verificationMessage
+                : defaultText) +
+            'Wallet address:\n' +
             userAddress;
+
         let verifyDate = new Date();
 
         if (verificationType === ChatVerificationTypes.VerifyWallet) {
