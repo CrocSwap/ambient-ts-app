@@ -3,6 +3,7 @@ import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { marketCapMultiplier } from '../../../../pages/platformFuta/mockAuctionData';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { scatterDotDefaultSize } from './ScatterChart';
 
 const useScatterChartData = () => {
     const { globalAuctionList } = useContext(AuctionsContext);
@@ -28,6 +29,7 @@ const useScatterChartData = () => {
                 name: element.ticker,
                 price: marketCapUsdValue ? marketCapUsdValue : 0,
                 timeRemaining: timeRemainingInSec,
+                size: scatterDotDefaultSize,
             };
         });
 

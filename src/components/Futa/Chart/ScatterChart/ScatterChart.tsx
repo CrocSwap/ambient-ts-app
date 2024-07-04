@@ -23,7 +23,11 @@ export type scatterData = {
     name: string;
     timeRemaining: number;
     price: number;
+    size: number;
 };
+
+export const scatterDotDefaultSize = 90;
+export const scatterDotSelectedSize = 150;
 
 export default function ScatterChart() {
     const d3Chart = useRef<HTMLDivElement | null>(null);
@@ -48,16 +52,15 @@ export default function ScatterChart() {
 
     useEffect(() => {
         if (selectedTicker) {
-            const selectedCircleIndex = data.findIndex(
+            const selectedCircleData = data.find(
                 (i: scatterData) => i.name === selectedTicker,
             );
 
-            if (selectedCircleIndex !== -1) {
-                const selectedCircleData = data[selectedCircleIndex];
-                const itemToMove = data.splice(selectedCircleIndex, 1)[0];
-                data.push(itemToMove);
-                setSelectedDot(selectedCircleData);
-            }
+            setSelectedDot(
+                selectedCircleData
+                    ? { ...selectedCircleData, size: scatterDotSelectedSize }
+                    : selectedCircleData,
+            );
         }
     }, [selectedTicker]);
 
@@ -102,7 +105,7 @@ export default function ScatterChart() {
                 .yScale(yScale)
                 .crossValue((d: scatterData) => d.timeRemaining)
                 .mainValue((d: scatterData) => d.price)
-                .size(60)
+                .size((d: scatterData) => d.size)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .decorate((context: any, d: any) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,9 +125,7 @@ export default function ScatterChart() {
                             )
                             .style(
                                 'fill',
-                                selectedDot?.name === d[index].name ||
-                                    (hoveredDot?.name === d[index].name &&
-                                        selectedDot?.name !== d[index].name)
+                                d[index].size > scatterDotDefaultSize
                                     ? accentColor
                                     : fillColor,
                             )
@@ -162,7 +163,13 @@ export default function ScatterChart() {
                         });
                     });
 
-                    circleJoin(svg, [data]).call(pointSeries);
+                    circleJoin(svg, [
+                        [
+                            ...data,
+                            selectedDot ? selectedDot : [],
+                            hoveredDot ? hoveredDot : [],
+                        ],
+                    ]).call(pointSeries);
                 })
 
                 .on('measure', (event: CustomEvent) => {
@@ -172,7 +179,15 @@ export default function ScatterChart() {
 
             renderCanvasArray([d3Chart]);
         }
-    }, [diffHashSig(data), xScale, yScale, chartSize, pointSeries]);
+    }, [
+        diffHashSig(data),
+        xScale,
+        yScale,
+        chartSize,
+        pointSeries,
+        selectedDot,
+        hoveredDot,
+    ]);
 
     useEffect(() => {
         if (d3Chart) {
@@ -229,7 +244,11 @@ export default function ScatterChart() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .on('mousemove', (event: any) => {
                     const nearestData = findNearestCircle(event);
-                    setHoveredDot(nearestData);
+                    setHoveredDot(
+                        nearestData
+                            ? { ...nearestData, size: scatterDotSelectedSize }
+                            : nearestData,
+                    );
                 })
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
