@@ -45,6 +45,7 @@
     padding: 1px;
     border-radius: var(--border-radius);
     box-shadow: var(--swap-box-shadow);
+    background: var(--swap-border);
 }
 
 /* media queries */

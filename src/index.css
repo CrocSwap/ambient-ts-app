@@ -63,7 +63,7 @@
     --color-border: var(--accent1);
     --border: var(--dark2);
     --border-radius: 4px;
-    --swap-border: var(--title-gradient);
+    --swap-border: var(--accent1);
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
@@ -215,7 +215,7 @@
     --color-border: 1px solid var(--accent1);
     --border: var(--dark2);
     --border-radius: 4px;
-    --swap-border: var(--title-gradient);
+    --swap-border: transparent;
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
@@ -353,7 +353,7 @@
 
     --swap-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16),
         0 3px 6px rgba(0, 0, 0, 0.23);
-    --swap-border: none;
+    --swap-border: transparent;
     --navbar-border: #cacbcd;
     --dark-border: 0.2px solid #fefefe;
     --border: #cacbcd;
