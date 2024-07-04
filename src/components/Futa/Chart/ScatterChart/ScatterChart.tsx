@@ -48,6 +48,13 @@ export default function ScatterChart() {
     const { selectedTicker } = useContext(AuctionsContext);
     const navigate = useNavigate();
 
+    const getTimeRemainingValue = (timeRemaining: number) => {
+        return timeRemaining / 60 > 86400 / 60 &&
+            timeRemaining / 60 < 172800 / 60
+            ? 1440
+            : timeRemaining / 60;
+    };
+
     const navigateUrlBase = '/auctions';
     const navigateUrl = navigateUrlBase + '/v1/';
     useEffect(() => {
@@ -105,7 +112,7 @@ export default function ScatterChart() {
                 .xScale(xScale)
                 .yScale(yScale)
                 .crossValue((d: scatterData) =>
-                    d.timeRemaining / 60 > 1440 ? 1440 : d.timeRemaining / 60,
+                    getTimeRemainingValue(d.timeRemaining),
                 )
                 .mainValue((d: scatterData) => d.price)
                 .size((d: scatterData) => d.size)
@@ -218,9 +225,7 @@ export default function ScatterChart() {
             );
 
             const dataAtMouse = data.filter((d) => {
-                const x = xScale(
-                    d.timeRemaining / 60 > 1440 ? 1440 : d.timeRemaining / 60,
-                );
+                const x = xScale(getTimeRemainingValue(d.timeRemaining));
                 const y = yScale(d.price);
                 return Math.abs(x - offsetX) < 5 && Math.abs(y - offsetY) < 5;
             });
