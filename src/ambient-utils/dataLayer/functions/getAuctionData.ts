@@ -196,7 +196,7 @@ export const checkTickerValidity = async (
     try {
         //     const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
 
-        //    const isTickerAvailable = await auctionPlan.isTickerUninitialized();
+        //    const isTickerAvailable = await !auctionPlan.isInitialized();
 
         const mockIsTickerAvailable = !ticker.toLowerCase().includes('test');
 
