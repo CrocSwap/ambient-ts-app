@@ -11,6 +11,7 @@ import {
     getTopRoomsEndpoint,
     getUserAvatarEndpoint,
     getUserAvatarImageByAccountEndpoint,
+    getVerificationMessageEndpoint,
     updateUserWithAvatarImageEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
@@ -229,6 +230,18 @@ const useChatApi = () => {
         return data;
     }
 
+    async function getVerificationMessage() {
+        const response = await fetch(
+            CHAT_BACKEND_URL + getVerificationMessageEndpoint,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+
+        return data && data.verificationMessage ? data.verificationMessage : '';
+    }
+
     return {
         getStatus,
         getID,
@@ -245,6 +258,7 @@ const useChatApi = () => {
         getUserAvatar,
         getIDByUserAddress,
         getTopRooms,
+        getVerificationMessage,
     };
 };
 export default useChatApi;
