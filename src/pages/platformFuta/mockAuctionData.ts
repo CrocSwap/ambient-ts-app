@@ -164,14 +164,14 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
         {
             ticker: 'PEPE1',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '212500000000000000',
         },
         {
             ticker: 'PEPE2',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
         },
@@ -179,7 +179,7 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
         {
             ticker: 'PEPE3',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
         },
@@ -187,7 +187,7 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
         {
             ticker: 'PEPE4',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
         },
@@ -195,7 +195,7 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
         {
             ticker: 'PEPE5',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
         },
@@ -203,7 +203,7 @@ export const mockGlobalAuctionData: AuctionListResponseIF = {
         {
             ticker: 'PEPE6',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
         },
@@ -274,7 +274,7 @@ export const mockAccountData1: AuctionListResponseIF = {
         {
             ticker: 'PEPE1',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
             userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
@@ -362,7 +362,7 @@ export const mockAccountData2: AuctionListResponseIF = {
         {
             ticker: 'PEPE1',
             chainId: '0x2105',
-            createdAt: 1719589720,
+            createdAt: 1719609720,
             auctionLength: 604800,
             filledClearingPriceInNativeTokenWei: '312500000000000000',
             userAddress: '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc',
@@ -417,7 +417,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
             return {
                 ticker: ticker,
                 chainId: '0x2105',
-                createdAt: 1719589720,
+                createdAt: 1719609720,
                 auctionLength: 604800,
                 filledClearingPriceInNativeTokenWei: '312500000000000000',
                 openBidClearingPriceInNativeTokenWei: '390625000000000000',
