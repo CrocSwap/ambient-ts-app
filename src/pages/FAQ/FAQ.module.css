@@ -1,0 +1,111 @@
+.background {
+    background: url(../../assets/images/backgrounds/background.png) no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    height: calc(100svh - 60px);
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    height: 95%;
+
+    overflow: auto;
+    margin: 1% auto;
+
+    background: rgba(23, 29, 39, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.content {
+    height: 100%;
+    width: 100%;
+    padding: 2rem;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: var(--header2-size);
+    line-height: 22px;
+    letter-spacing: -0.02em;
+
+    color: var(--text1);
+
+    position: relative;
+}
+
+.header_container {
+    display: flex;
+    flex-direction: column;
+    height: 76px;
+}
+.header {
+    color: var(--accent1);
+    font-family: 'Lexend Exa';
+    font-weight: 100;
+    font-size: 30px;
+    line-height: 38px;
+}
+
+.sub_header {
+    font-family: 'Lexend Deca';
+    font-weight: 300;
+    font-size: var(--header2-size);
+    line-height: 30px;
+    color: var(--text2);
+
+    margin-top: 10px !important;
+}
+
+.question {
+    display: flex;
+    flex-direction: row;
+    font-family: 'Lexend Deca';
+    font-weight: 300;
+    font-size: var(--header1-size);
+    line-height: 30px;
+    margin-top: 2rem !important;
+    cursor: pointer;
+}
+
+.link_icon {
+    display: none;
+    margin-top: 6px;
+    margin-left: 10px;
+}
+
+.question:hover > .link_icon {
+    display: flex !important;
+}
+
+.answer {
+    font-family: 'Lexend Deca';
+    font-weight: 300;
+    font-size: var(--header2-size);
+    line-height: 30px;
+    color: var(--text2);
+
+    margin-top: 1rem !important;
+}
+
+.content p {
+    margin-top: 1rem;
+}
+
+.content a {
+    text-decoration: underline;
+    color: var(--accent1);
+}
+
+.content ul,
+.styled_element {
+    margin-left: 1rem;
+}

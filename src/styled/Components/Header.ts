@@ -312,6 +312,7 @@ export const WalletWrapper = styled(FlexContainer)`
         right: -50px;
     }
 `;
+
 export const LevelWrapper = styled(FlexContainer)`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);

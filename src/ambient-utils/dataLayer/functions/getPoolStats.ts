@@ -1,8 +1,9 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_OVERRIDE_URL } from '../../constants';
-import { TokenPriceFn } from '../../api';
+import { CrocEnv, bigNumToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../../constants';
+import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { TokenIF } from '../../types';
+import { PoolQueryFn } from './querySpotPrice';
 
 const getLiquidityFee = async (
     base: string,
@@ -15,7 +16,6 @@ const getLiquidityFee = async (
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
-
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -45,63 +45,142 @@ const fetchPoolStats = async (
     quote: string,
     poolIdx: number,
     _cacheTimeTag: number | string,
-    crocEnv: CrocEnv,
     graphCacheUrl: string,
-    cachedFetchTokenPrice: TokenPriceFn,
-): Promise<PoolStatsIF | undefined> => {
+    histTime?: number,
+): Promise<PoolStatsServerIF | undefined> => {
     const poolStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_stats?'
         : graphCacheUrl + '/pool_stats?';
 
-    return fetch(
-        poolStatsFreshEndpoint +
-            new URLSearchParams({
-                chainId: chainId,
-                base: base,
-                quote: quote,
-                poolIdx: poolIdx.toString(),
-            }),
-    )
-        .then((response) => response.json())
-        .then((json) => {
-            if (!json?.data) {
-                return;
-            }
-            const payload = json.data as PoolStatsServerIF;
-
-            return expandPoolStats(
-                payload,
-                base,
-                quote,
-                poolIdx,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-            );
-        });
+    if (histTime) {
+        return fetch(
+            poolStatsFreshEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    base: base,
+                    quote: quote,
+                    poolIdx: poolIdx.toString(),
+                    histTime: histTime.toString(),
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+                payload.isHistorical = true;
+                return payload;
+            });
+    } else {
+        return fetch(
+            poolStatsFreshEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    base: base,
+                    quote: quote,
+                    poolIdx: poolIdx.toString(),
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+                payload.isHistorical = false;
+                return payload;
+            });
+    }
 };
 
-async function expandPoolStats(
+export async function expandPoolStats(
     payload: PoolStatsServerIF,
     base: string,
     quote: string,
-    poolIdx: number,
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedTokenDetails: FetchContractDetailsFn,
+    cachedQuerySpotPrice: PoolQueryFn,
+    tokenList: TokenIF[],
 ): Promise<PoolStatsIF> {
-    const pool = crocEnv.pool(base, quote);
+    const provider = (await crocEnv.context).provider;
 
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
 
-    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
-    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
+    const baseUsdPrice = (await basePricePromise)?.usdPrice;
+    const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
+
+    const baseTokenListedDecimals = tokenList.find(
+        (token) => token.address.toLowerCase() === base.toLowerCase(),
+    )?.decimals;
+    const quoteTokenListedDecimals = tokenList.find(
+        (token) => token.address.toLowerCase() === quote.toLowerCase(),
+    )?.decimals;
+
+    const DEFAULT_DECIMALS = 18;
+
+    const baseDecimals =
+        (baseTokenListedDecimals ||
+            (await cachedTokenDetails(provider, base, chainId))?.decimals) ??
+        DEFAULT_DECIMALS;
+
+    const quoteDecimals =
+        (quoteTokenListedDecimals ||
+            (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
+        DEFAULT_DECIMALS;
+
+    const baseTotalSupplyBigNum = (
+        await cachedTokenDetails(provider, base, chainId)
+    )?.totalSupply;
+
+    const quoteTotalSupplyBigNum = (
+        await cachedTokenDetails(provider, quote, chainId)
+    )?.totalSupply;
+
+    const baseTotalSupplyNum = baseTotalSupplyBigNum
+        ? bigNumToFloat(baseTotalSupplyBigNum)
+        : undefined;
+
+    const quoteTotalSupplyNum = quoteTotalSupplyBigNum
+        ? bigNumToFloat(quoteTotalSupplyBigNum)
+        : undefined;
+
+    const getSpotPrice = async () => {
+        const spotPrice = await cachedQuerySpotPrice(
+            crocEnv,
+            base,
+            quote,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+        const displayPoolPrice = toDisplayPrice(
+            spotPrice,
+            baseDecimals,
+            quoteDecimals,
+        );
+        return displayPoolPrice;
+    };
+
+    const basePrice = baseUsdPrice
+        ? baseUsdPrice
+        : quoteUsdPrice
+        ? quoteUsdPrice / (await getSpotPrice())
+        : 0.0;
+    const quotePrice = quoteUsdPrice
+        ? quoteUsdPrice
+        : baseUsdPrice
+        ? baseUsdPrice * (await getSpotPrice())
+        : 0.0;
 
     return decoratePoolStats(
         payload,
-        await pool.baseDecimals,
-        await pool.quoteDecimals,
+        baseDecimals,
+        quoteDecimals,
+        baseTotalSupplyNum,
+        quoteTotalSupplyNum,
         basePrice,
         quotePrice,
     );
@@ -111,11 +190,12 @@ function decoratePoolStats(
     payload: PoolStatsServerIF,
     baseDecimals: number,
     quoteDecimals: number,
+    baseTotalSupplyNum: number | undefined,
+    quoteTotalSupplyNum: number | undefined,
     basePrice: number,
     quotePrice: number,
 ): PoolStatsIF {
     const stats = Object.assign({}, payload) as PoolStatsIF;
-
     stats.baseTvlDecimal = payload.baseTvl / Math.pow(10, baseDecimals);
     stats.quoteTvlDecimal = payload.quoteTvl / Math.pow(10, quoteDecimals);
     stats.baseVolumeDecimal = payload.baseVolume / Math.pow(10, baseDecimals);
@@ -123,6 +203,13 @@ function decoratePoolStats(
         payload.quoteVolume / Math.pow(10, quoteDecimals);
     stats.baseFeeDecimal = payload.baseFees / Math.pow(10, baseDecimals);
     stats.quoteFeeDecimal = payload.quoteFees / Math.pow(10, quoteDecimals);
+
+    stats.baseFdvUsd = baseTotalSupplyNum
+        ? (baseTotalSupplyNum / Math.pow(10, baseDecimals)) * basePrice
+        : undefined;
+    stats.quoteFdvUsd = quoteTotalSupplyNum
+        ? (quoteTotalSupplyNum / Math.pow(10, quoteDecimals)) * quotePrice
+        : undefined;
 
     stats.baseTvlUsd = stats.baseTvlDecimal * basePrice;
     stats.quoteTvlUsd = stats.quoteTvlDecimal * quotePrice;
@@ -148,6 +235,7 @@ interface PoolStatsServerIF {
     quoteFees: number;
     lastPriceIndic: number;
     feeRate: number;
+    isHistorical: boolean;
 }
 
 type PoolStatsIF = PoolStatsServerIF & {
@@ -169,6 +257,8 @@ type PoolStatsIF = PoolStatsServerIF & {
     tvlTotalUsd: number;
     volumeTotalUsd: number;
     feesTotalUsd: number;
+    baseFdvUsd?: number;
+    quoteFdvUsd?: number;
 };
 
 const get24hChange = async (
@@ -240,22 +330,46 @@ interface DexAggStatsIF {
     feesTotalUsd: number;
 }
 
-interface DexTokenAggServerIF {
+export interface DexTokenAggServerIF {
     tokenAddr: string;
     dexVolume: number;
     dexTvl: number;
     dexFees: number;
+    latestTime: number;
 }
 
+// fn signature to return chain stats in cumulative form
 export async function getChainStats(
+    returnAs: 'cumulative',
     chainId: string,
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
     allDefaultTokens?: TokenIF[],
-): Promise<DexAggStatsIF | undefined> {
-    const N_TOKEN_CHAIN_SUMM = 10;
+): Promise<DexAggStatsIF | undefined>;
 
+// fn signature to return chain stats as individual data points
+export async function getChainStats(
+    returnAs: 'expanded',
+    chainId: string,
+    crocEnv: CrocEnv,
+    graphCacheUrl: string,
+    cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
+    allDefaultTokens?: TokenIF[],
+): Promise<DexTokenAggServerIF[] | undefined>;
+
+// overloaded fn to return chain stats in expanded or cumulative form
+export async function getChainStats(
+    returnAs: 'cumulative' | 'expanded',
+    chainId: string,
+    crocEnv: CrocEnv,
+    graphCacheUrl: string,
+    cachedFetchTokenPrice: TokenPriceFn,
+    tokenCount: number,
+    allDefaultTokens?: TokenIF[],
+): Promise<DexAggStatsIF | DexTokenAggServerIF[] | undefined> {
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
@@ -263,7 +377,7 @@ export async function getChainStats(
         chainStatsFreshEndpoint +
             new URLSearchParams({
                 chainId: chainId,
-                n: N_TOKEN_CHAIN_SUMM.toString(),
+                n: tokenCount.toString(),
             }),
     )
         .then((response) => response?.json())
@@ -271,14 +385,18 @@ export async function getChainStats(
             if (!json?.data) {
                 return undefined;
             }
-            const payload = json.data as DexTokenAggServerIF[];
-            return expandChainStats(
-                payload,
-                chainId,
-                crocEnv,
-                cachedFetchTokenPrice,
-                allDefaultTokens,
-            );
+            if (returnAs === 'expanded') {
+                return json.data;
+            } else if (returnAs === 'cumulative') {
+                const payload = json.data as DexTokenAggServerIF[];
+                return expandChainStats(
+                    payload,
+                    chainId,
+                    crocEnv,
+                    cachedFetchTokenPrice,
+                    allDefaultTokens,
+                );
+            }
         })
         .catch((e) => {
             console.warn(e);
@@ -314,7 +432,6 @@ async function expandChainStats(
     subAggs.forEach((s) => {
         accum.tvlTotalUsd += s.tvlTotalUsd;
         accum.feesTotalUsd += s.feesTotalUsd;
-
         /* Because each trade has two sides and we're summing each token's
          * volume divide by two. This may undercount volume from long tail pairs,
          * because we're only 10 most recent tokens. */
@@ -355,11 +472,9 @@ export type PoolStatsFn = (
     quoteToken: string,
     poolIdx: number,
     _cacheTimeTag: number | string,
-    crocEnv: CrocEnv,
     graphCacheUrl: string,
-    cachedFetchTokenPrice: TokenPriceFn,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-) => Promise<PoolStatsIF>;
+    histTime?: number,
+) => Promise<PoolStatsServerIF>;
 
 export type Change24Fn = (
     chainId: string,

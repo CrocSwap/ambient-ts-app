@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px;
+    padding-left: 4px;
 }
 
 .main_time_frame_container {
@@ -10,10 +10,6 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
-}
-
-.main_time_frame_container:not(:last-child) {
-    border-right: var(--grey-light-border);
 }
 
 .active_selected_button,

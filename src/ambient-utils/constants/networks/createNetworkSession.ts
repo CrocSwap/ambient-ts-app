@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ethers } from 'ethers';
-import { fetchBlockNumber } from '../../api/fetchBlockNumber';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { NetworkSessionIF, TokenIF } from '../../types';
 import { Provider } from '@ethersproject/providers';
@@ -19,7 +18,6 @@ export const createNetworkSession = async ({
     infuraUrl,
     provider,
     crocEnv,
-    lastBlockNumber,
 }: {
     chainId: string;
     tokenUniv?: TokenIF[];
@@ -27,7 +25,6 @@ export const createNetworkSession = async ({
     infuraUrl?: string;
     provider?: Provider;
     crocEnv?: CrocEnv;
-    lastBlockNumber?: number;
 }): Promise<NetworkSessionIF> => {
     if (chainId.length === 0) {
         throw new Error('Chain ID is a required parameter');
@@ -64,18 +61,12 @@ export const createNetworkSession = async ({
         crocEnv,
         async () => new CrocEnv(provider as Provider, defaultSigner),
     );
-    lastBlockNumber = await assertExists(lastBlockNumber, async () =>
-        fetchBlockNumber(
-            (provider as ethers.providers.JsonRpcProvider).connection.url,
-        ),
-    );
 
     return {
         tokenUniv: tokenUniv!,
         infuraUrl: infuraUrl!,
         provider: provider!,
         chainId: chainId,
-        lastBlockNumber: lastBlockNumber!,
         signer: undefined,
         gcUrl: gcUrl!,
         crocEnv: crocEnv!,

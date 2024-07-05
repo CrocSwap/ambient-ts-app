@@ -1,5 +1,10 @@
 import { defaultTokens } from '../../constants/defaultTokens';
 
+export const getTranslatedSymbol = (tokenSymbol: string) =>
+    tokenSymbol.toUpperCase() === 'USD+'
+        ? 'USDPLUS'
+        : tokenSymbol.toUpperCase();
+
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
         This 'moneyness' rank is intended to reflect an average user's expectation 
@@ -18,15 +23,27 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     const moneynessRank = {
         USDC: 100,
         USDB: 100,
+        AXLUSDC: 95,
+        LUSD: 95,
+        USDPLUS: 95,
         DAI: 90,
         USDT: 80,
         FRAX: 70,
         WBTC: 60,
         ETH: 50,
+        WSTETH: 45,
+        WRSETH: 45,
+        EZETH: 45,
+        RETH: 45,
+        SWETH: 45,
+        PXETH: 45,
+        STONE: 40,
+        UNIETH: 40,
         PEPE: 0,
     };
-
-    const rank = moneynessRank[tokenSymbol as keyof typeof moneynessRank] ?? 0;
+    const translatedSymbol = getTranslatedSymbol(tokenSymbol);
+    const rank =
+        moneynessRank[translatedSymbol as keyof typeof moneynessRank] ?? 0;
     return rank;
 };
 
@@ -34,7 +51,9 @@ export const getMoneynessRankByAddr = (tokenAddress: string): number => {
     let moneynessRank = 0;
     defaultTokens.forEach((token) => {
         if (token.address.toLowerCase() === tokenAddress.toLowerCase()) {
-            moneynessRank = getMoneynessRank(token.symbol);
+            const translatedSymbol = getTranslatedSymbol(token.symbol);
+
+            moneynessRank = getMoneynessRank(translatedSymbol);
         }
     });
     return moneynessRank;

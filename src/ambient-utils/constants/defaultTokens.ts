@@ -44,6 +44,16 @@ export const blastUSDB: TokenIF = {
     symbol: 'USDB',
 };
 
+export const blastUSDPLUS: TokenIF = {
+    address: '0x4fee793d435c6d2c10c135983bb9d6d4fc7b9bbd',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI: '',
+    name: 'USD+',
+    symbol: 'USD+',
+};
+
 export const blastORBIT: TokenIF = {
     address: '0x42E12D42b3d6C4A74a88A61063856756Ea2DB357',
     chainId: 81457,
@@ -51,8 +61,7 @@ export const blastORBIT: TokenIF = {
     fromList: '/ambient-token-list.json',
     name: 'Orbit Protocol',
     symbol: 'ORBIT',
-    logoURI:
-        'https://dashboard-assets.dappradar.com/document/47902/orbitprotocol-project-defi-47902-logo-166x166_1e74c8301cbe3d05a57a80147dd2607d.png',
+    logoURI: 'https://blastscan.io/token/images/orbit_32.png',
 };
 
 export const blastMIA: TokenIF = {
@@ -63,6 +72,26 @@ export const blastMIA: TokenIF = {
     name: 'Mia',
     symbol: 'MIA',
     logoURI: 'https://miablastsoff.com/images/logo.png',
+};
+
+export const blastJUICE: TokenIF = {
+    address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Juice',
+    symbol: 'JUICE',
+    logoURI: 'https://miablastsoff.com/images/logo.png',
+};
+
+export const blastMIM: TokenIF = {
+    address: '0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Magic Internet Money',
+    symbol: 'MIM',
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/162.png',
 };
 
 export const blastBAG: TokenIF = {
@@ -106,6 +135,16 @@ export const blastBAJA: TokenIF = {
     logoURI: '',
 };
 
+export const blastESE: TokenIF = {
+    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'eesee',
+    symbol: 'ESE',
+    logoURI: '',
+};
+
 export const blastYES: TokenIF = {
     address: '0x20fE91f17ec9080E3caC2d688b4EcB48C5aC3a9C',
     chainId: 81457,
@@ -136,6 +175,24 @@ export const blastWETH: TokenIF = {
     logoURI: '',
 };
 
+export const blastWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
+};
+
+export const blastEzETH: TokenIF = {
+    name: 'Renzo Restaked ETH',
+    address: '0x2416092f143378750bb29b79eD961ab195CcEea5',
+    symbol: 'ezETH',
+    decimals: 18,
+    chainId: 81457,
+    logoURI: '',
+};
+
 export const blastPUMP: TokenIF = {
     address: '0x216A5a1135A9dab49FA9Ad865E0f22FE22b5630A',
     chainId: 81457,
@@ -146,24 +203,25 @@ export const blastPUMP: TokenIF = {
     logoURI: '',
 };
 
+export const blastSSS: TokenIF = {
+    address: '0xfd4D19F9FBb9F730C3C88a21755832BD2455144e',
+    chainId: 81457,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    name: 'Super Sushi Samurai',
+    symbol: 'SSS',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/36139/standard/sss.jpeg',
+};
+
 export const blastOLE: TokenIF = {
     address: '0x73c369f61c90f03eb0dd172e95c90208a28dc5bc',
     chainId: 81457,
     decimals: 18,
-    fromList: '',
-    name: 'OLE',
+    fromList: '/ambient-token-list.json',
+    name: 'OpenLeverage',
     symbol: 'OLE',
-    logoURI: '',
-};
-
-export const blastVROOM: TokenIF = {
-    address: '0x891c9B37177Bdf8Edc891119C9d8aEefDa9A5246',
-    chainId: 81457,
-    decimals: 18,
-    fromList: '',
-    name: 'VROOM',
-    symbol: 'VROOM',
-    logoURI: '',
+    logoURI: 'https://blastscan.io/token/images/openleverageole_32.png',
 };
 
 export const blastSepoliaETH: TokenIF = {
@@ -210,6 +268,46 @@ export const mainnetPEPE: TokenIF = {
     symbol: 'PEPE',
 };
 
+export const mainnetSWETH: TokenIF = {
+    address: '0xf951e335afb289353dc249e82926178eac7ded78',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/swellnetwork_32.png',
+    name: 'Swell Staked Ether',
+    symbol: 'swETH',
+};
+
+export const mainnetLIDO: TokenIF = {
+    address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/lido-dao_32.png',
+    name: 'Lido DAO Token',
+    symbol: 'LDO',
+};
+
+export const mainnetLUSD: TokenIF = {
+    address: '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/liquitylusd_32.png',
+    name: 'Liquity USD',
+    symbol: 'LUSD',
+};
+
+export const mainnetMKR: TokenIF = {
+    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+    chainId: 1,
+    decimals: 18,
+    fromList: '',
+    logoURI: 'https://etherscan.io/token/images/mkr-etherscan-35.png',
+    name: 'Maker',
+    symbol: 'MKR',
+};
+
 export const mainnetSYN: TokenIF = {
     address: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
     chainId: 1,
@@ -237,7 +335,7 @@ export const mainnetRPL: TokenIF = {
     chainId: 1,
     decimals: 18,
     fromList: '',
-    logoURI: '',
+    logoURI: 'https://etherscan.io/token/images/Rocketpool_32.png',
     name: 'Rocket Pool',
     symbol: 'RPL',
 };
@@ -280,28 +378,6 @@ export const mainnetUSDT: TokenIF = {
     logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
     name: 'Tether',
     symbol: 'USDT',
-};
-
-export const goerliETH: TokenIF = {
-    name: 'Native Ether',
-    address: '0x0000000000000000000000000000000000000000',
-    symbol: 'ETH',
-    decimals: 18,
-    chainId: 5,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    fromList: '/ambient-token-list.json',
-};
-
-export const goerliUSDC: TokenIF = {
-    name: 'USDCoin',
-    address: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-    symbol: 'USDC',
-    decimals: 6,
-    chainId: 5,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-    fromList: '/ambient-token-list.json',
 };
 
 export const sepoliaETH: TokenIF = {
@@ -348,78 +424,6 @@ export const scrollSepoliaWBTC: TokenIF = {
     fromList: '/ambient-token-list.json',
 };
 
-export const goerliDAI: TokenIF = {
-    name: 'Dai Stablecoin',
-    address: '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60',
-    symbol: 'DAI',
-    decimals: 18,
-    chainId: 5,
-    logoURI:
-        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
-    fromList: '/ambient-token-list.json',
-};
-
-export const goerliUSDT: TokenIF = {
-    name: 'Tether',
-    address: '0x509ee0d083ddf8ac028f2a56731412edd63223b9',
-    symbol: 'USDT',
-    decimals: 6,
-    chainId: 5,
-    logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
-    fromList: '',
-};
-
-export const goerliWBTC: TokenIF = {
-    name: 'Wrapped BTC',
-    address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
-    symbol: 'WBTC',
-    decimals: 8,
-    chainId: 5,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-    fromList: '/ambient-token-list.json',
-};
-
-export const arbGoerliETH: TokenIF = {
-    name: 'Native Ether',
-    address: '0x0000000000000000000000000000000000000000',
-    symbol: 'ETH',
-    decimals: 18,
-    chainId: 421613,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-};
-
-export const arbGoerliUSDC: TokenIF = {
-    name: 'USDCoin',
-    address: '0xc944b73fba33a773a4a07340333a3184a70af1ae',
-    symbol: 'USDC',
-    decimals: 6,
-    chainId: 421613,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-};
-
-export const arbGoerliWBTC: TokenIF = {
-    name: 'Wrapped BTC',
-    address: '0x5263e9d82352b8098cc811164c38915812bfc1e3',
-    symbol: 'WBTC',
-    decimals: 8,
-    chainId: 421613,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-};
-
-export const arbGoerliDAI: TokenIF = {
-    name: 'Dai Stablecoin',
-    address: '0xc52f941486978a25fad837bb701d3025679780e4',
-    symbol: 'DAI',
-    decimals: 18,
-    chainId: 421613,
-    logoURI:
-        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
-};
-
 export const scrollETH: TokenIF = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -430,8 +434,8 @@ export const scrollETH: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
 };
 
-export const scrollwstETH: TokenIF = {
-    name: 'Wrapped stETH',
+export const scrollWstETH: TokenIF = {
+    name: 'Wrapped liquid staked Ether 2.0',
     address: '0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32',
     symbol: 'wstETH',
     decimals: 18,
@@ -439,10 +443,47 @@ export const scrollwstETH: TokenIF = {
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
 
+export const scrollWrsETH: TokenIF = {
+    name: 'Wrapped Kelp DAO Restaked ETH',
+    address: '0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f',
+    symbol: 'wrsETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29242.png',
+};
+
+export const scrollSTONE: TokenIF = {
+    name: 'StakeStone Ether',
+    address: '0x80137510979822322193FC997d400D5A6C747bf7',
+    symbol: 'STONE',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollUniETH: TokenIF = {
+    name: 'Universal ETH',
+    address: '0x15eefe5b297136b8712291b632404b66a8ef4d25',
+    symbol: 'uniETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471',
+};
+
 export const scrollRocketPoolETH: TokenIF = {
     name: 'Rocket Pool ETH',
     address: '0x53878B874283351D26d206FA512aEcE1Bef6C0dD',
     symbol: 'rETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollPxETH: TokenIF = {
+    name: 'Pirex Ether OFT',
+    address: '0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb',
+    symbol: 'pxETH',
     decimals: 18,
     chainId: 534352,
     logoURI: '',
@@ -466,6 +507,16 @@ export const scrollBalancer: TokenIF = {
     logoURI: '',
 };
 
+export const scrollDODO: TokenIF = {
+    name: 'DODO bird',
+    address: '0x912aB742e1ab30ffa87038C425F9Bc8ED12B3EF4',
+    symbol: 'DODO',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/12651/standard/dodo_logo.png?1696512458',
+};
+
 export const scrollUSDC: TokenIF = {
     name: 'USDCoin',
     address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
@@ -477,13 +528,12 @@ export const scrollUSDC: TokenIF = {
 };
 
 export const scrollAxlUSDC: TokenIF = {
-    name: 'Axelar USDC',
+    name: 'Axelar Wrapped USDC',
     address: '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
     symbol: 'axlUSDC',
     decimals: 6,
     chainId: 534352,
-    logoURI:
-        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+    logoURI: '',
 };
 
 export const scrollDAI: TokenIF = {
@@ -494,6 +544,14 @@ export const scrollDAI: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+};
+export const scrollKNC: TokenIF = {
+    name: 'Kyber Network Crystal v2',
+    address: '0x608ef9a3bffe206b86c3108218003b3cfbf99c84',
+    symbol: 'KNC',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
 
 export const scrollUSDT: TokenIF = {
@@ -546,41 +604,46 @@ export const defaultTokens: TokenIF[] = [
     mainnetRPL,
     mainnetWstETH,
     mainnetMATIC,
+    mainnetSWETH,
+    mainnetMKR,
+    mainnetLIDO,
+    mainnetLUSD,
     blastETH,
+    blastWrsETH,
     blastUSDB,
+    blastUSDPLUS,
     blastMIA,
+    blastMIM,
     blastORBIT,
     blastBAG,
     blastBAJA,
+    blastESE,
     blastBEPE,
     blastALIEN,
     blastOLE,
     blastWETH,
+    blastEzETH,
     blastPUMP,
     blastYES,
     blastPACM,
-    blastVROOM,
+    blastSSS,
     blastSepoliaETH,
     blastSepoliaUSDB,
-    goerliETH,
-    goerliUSDC,
-    goerliWBTC,
-    goerliDAI,
-    arbGoerliETH,
-    arbGoerliUSDC,
-    arbGoerliDAI,
-    arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
+    scrollDODO,
     scrollDAI,
     scrollUSDT,
-    scrollDAI,
+    scrollKNC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollWBTC,
     scrollRocketPoolETH,
     scrollWrappedETH,
-    scrollwstETH,
+    scrollWstETH,
+    scrollWrsETH,
+    scrollSTONE,
+    scrollUniETH,
     sepoliaETH,
     sepoliaUSDC,
     sepoliaWBTC,

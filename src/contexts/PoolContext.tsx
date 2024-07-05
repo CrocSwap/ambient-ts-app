@@ -7,21 +7,21 @@ import React, {
     useState,
 } from 'react';
 import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
-import { usePoolPricing } from '../App/hooks/usePoolPricing';
-import { AppStateContext } from './AppStateContext';
-import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF, PoolStatIF } from '../ambient-utils/types';
+import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
-import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
-import { ReceiptContext } from './ReceiptContext';
+import { getFormattedNumber, isWethToken } from '../ambient-utils/dataLayer';
 
 interface PoolContextIF {
     poolList: PoolIF[];
+    findPool: (
+        tkn1: TokenIF | string,
+        tkn2?: TokenIF | string,
+    ) => PoolIF | undefined;
     pool: CrocPoolView | undefined;
     isPoolInitialized: boolean | undefined;
     poolPriceDisplay: number | undefined;
@@ -30,33 +30,92 @@ interface PoolContextIF {
     ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;
+    usdPrice: number | undefined;
+    usdPriceInverse: number | undefined;
+    isTradeDollarizationEnabled: boolean;
+    setIsTradeDollarizationEnabled: React.Dispatch<
+        React.SetStateAction<boolean>
+    >;
+    fdvOfDenomTokenDisplay: string | undefined;
+    baseTokenFdvDisplay: string | undefined;
+    quoteTokenFdvDisplay: string | undefined;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { crocEnv, provider, chainData, activeNetwork } =
         useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
-        baseToken: { address: baseTokenAddress, decimals: baseTokenDecimals },
-        quoteToken: {
-            address: quoteTokenAddress,
-            decimals: quoteTokenDecimals,
-        },
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const { sessionReceipts } = useContext(ReceiptContext);
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
-    const { isUserConnected } = useContext(UserDataContext);
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+
+    const [isTradeDollarizationEnabled, setIsTradeDollarizationEnabled] =
+        useState(
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true',
+        );
+
+    useEffect(() => {
+        const savedTradeDollarizationPreference =
+            localStorage.getItem('isTradeDollarizationEnabled') === 'true';
+        if (isTradeDollarizationEnabled !== savedTradeDollarizationPreference) {
+            localStorage.setItem(
+                'isTradeDollarizationEnabled',
+                isTradeDollarizationEnabled.toString(),
+            );
+        }
+    }, [isTradeDollarizationEnabled]);
+
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
         crocEnv,
     );
+
+    // fn to determine if a given token pair exists in `poolList`
+    function findPool(
+        tkn1: TokenIF | string,
+        tkn2?: TokenIF | string,
+    ): PoolIF | undefined {
+        // handle multiple input types
+        function fixAddress(t: TokenIF | string): string {
+            const addr: string = typeof t === 'string' ? t : t.address;
+            return addr.toLowerCase();
+        }
+        const tkn1Addr: string = fixAddress(tkn1);
+        // output variable
+        let pool: PoolIF | undefined;
+        // if called on two tokens, find first pool with both addresses
+        // if called on one token, find first pool including that token
+        if (tkn2) {
+            // fix capitalization on input addresses
+            const tkn2Addr: string = fixAddress(tkn2);
+            // search `poolList` for a pool with the both tokens from params
+            pool = poolList.find((p: PoolIF) => {
+                const baseAddr: string = p.base.address.toLowerCase();
+                const quoteAddr: string = p.quote.address.toLowerCase();
+                const isMatch: boolean =
+                    (baseAddr === tkn1Addr && quoteAddr === tkn2Addr) ||
+                    (baseAddr === tkn2Addr && quoteAddr === tkn1Addr);
+                return isMatch;
+            });
+        } else {
+            // search `poolList` for a pool with the token from params
+            pool = poolList.find((p: PoolIF) => {
+                const baseAddr: string = p.base.address.toLowerCase();
+                const quoteAddr: string = p.quote.address.toLowerCase();
+                const isMatch: boolean =
+                    (baseAddr === tkn1Addr && !isWethToken(quoteAddr)) ||
+                    (quoteAddr === tkn1Addr && !isWethToken(baseAddr));
+                return isMatch;
+            });
+        }
+        // return output variable
+        return pool;
+    }
 
     const pool = useMemo(
         () => crocEnv?.pool(baseToken.address, quoteToken.address),
@@ -70,42 +129,53 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg);
+    const poolData = useFetchPoolStats(poolArg, true);
 
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
 
     const {
-        isPoolInitialized,
         poolPriceDisplay,
-        isPoolPriceChangePositive,
         poolPriceChangePercent,
-    } = usePoolPricing({
-        crocEnv,
-        pathname: location.pathname,
-        baseTokenAddress,
-        quoteTokenAddress,
-        baseTokenDecimals,
-        quoteTokenDecimals,
-        chainData,
-        receiptCount: sessionReceipts.length,
-        isUserLoggedIn: !!isUserConnected,
-        lastBlockNumber,
-        isServerEnabled,
-        cachedQuerySpotPrice,
-    });
+        isPoolPriceChangePositive,
+        basePrice,
+        quotePrice,
+        isPoolInitialized,
+        baseFdvUsd,
+        quoteFdvUsd,
+    } = poolData;
 
-    const poolContext = {
-        poolList,
-        pool,
-        isPoolInitialized,
-        poolPriceDisplay,
-        isPoolPriceChangePositive,
-        poolPriceChangePercent,
-        ambientApy,
-        dailyVol,
-        poolData,
-    };
+    const baseTokenFdvDisplay = baseFdvUsd
+        ? getFormattedNumber({ value: baseFdvUsd, prefix: '$' })
+        : undefined;
+
+    const quoteTokenFdvDisplay = quoteFdvUsd
+        ? getFormattedNumber({ value: quoteFdvUsd, prefix: '$' })
+        : undefined;
+
+    const fdvOfDenomTokenDisplay = isDenomBase
+        ? baseTokenFdvDisplay
+        : quoteTokenFdvDisplay;
+
+    const usdPrice = poolPriceDisplay
+        ? isDenomBase
+            ? quotePrice
+                ? (1 / poolPriceDisplay) * quotePrice
+                : undefined
+            : basePrice
+            ? poolPriceDisplay * basePrice
+            : undefined
+        : undefined;
+
+    const usdPriceInverse = poolPriceDisplay
+        ? isDenomBase
+            ? basePrice
+                ? poolPriceDisplay * basePrice
+                : undefined
+            : quotePrice
+            ? (1 / poolPriceDisplay) * quotePrice
+            : undefined
+        : undefined;
 
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
@@ -137,6 +207,26 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         !!crocEnv,
         !!provider,
     ]);
+
+    const poolContext = {
+        poolList,
+        findPool,
+        pool,
+        isPoolInitialized,
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
+        ambientApy,
+        dailyVol,
+        fdvOfDenomTokenDisplay,
+        baseTokenFdvDisplay,
+        quoteTokenFdvDisplay,
+        poolData,
+        usdPrice,
+        usdPriceInverse,
+        isTradeDollarizationEnabled,
+        setIsTradeDollarizationEnabled,
+    };
 
     return (
         <PoolContext.Provider value={poolContext}>

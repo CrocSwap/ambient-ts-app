@@ -1,5 +1,4 @@
 import { TokenIF } from '../../../ambient-utils/types';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Form/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -55,8 +54,7 @@ export default function SoloTokenImport(props: propsIF) {
             justifyContent='center'
             alignItems='center'
         >
-            <p>Cound not find matching token</p>
-            <AiOutlineQuestionCircle />
+            <p>Could not find matching token</p>
         </FlexContainer>
     );
 

@@ -1,14 +1,15 @@
 import { PositionIF } from '../../../../ambient-utils/types';
 import {
     getFormattedNumber,
+    getMoneynessRankByAddr,
     getSymbols,
     getUnicodeCharacter,
 } from '../../../../ambient-utils/dataLayer';
 import { RangeItemContainer } from '../../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../../styled/Common';
 import { Status } from '../../../../styled/Components/Range';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useContext } from 'react';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     position: PositionIF;
@@ -17,7 +18,12 @@ interface propsIF {
 
 export default function SidebarRangePositionsCard(props: propsIF) {
     const { position, handleClick } = props;
-    const { isDenomBase } = useContext(TradeDataContext);
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
+
+    const baseTokenMoneyness = getMoneynessRankByAddr(position.base);
+    const quoteTokenMoneyness = getMoneynessRankByAddr(position.quote);
+
+    const isDenomBase = baseTokenMoneyness < quoteTokenMoneyness;
 
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(
@@ -34,12 +40,51 @@ export default function SidebarRangePositionsCard(props: propsIF) {
         ? getUnicodeCharacter(position?.quoteSymbol)
         : '';
 
-    const rangeDisplay =
-        position?.positionType === 'ambient'
-            ? 'ambient'
-            : isDenomBase
-            ? `${quoteTokenCharacter}${position?.lowRangeDisplayInBase}-${quoteTokenCharacter}${position?.highRangeDisplayInBase}`
-            : `${baseTokenCharacter}${position?.lowRangeDisplayInQuote}-${baseTokenCharacter}${position?.highRangeDisplayInQuote}`;
+    const formattedLowUsdPrice = position.isBaseTokenMoneynessGreaterOrEqual
+        ? position.baseUsdPrice
+            ? getFormattedNumber({
+                  value:
+                      position.bidTickPriceDecimalCorrected *
+                      position.baseUsdPrice,
+                  prefix: '$',
+              })
+            : '...'
+        : position.quoteUsdPrice
+        ? getFormattedNumber({
+              value:
+                  position.bidTickInvPriceDecimalCorrected *
+                  position.quoteUsdPrice,
+              prefix: '$',
+          })
+        : '...';
+
+    const formattedHighUsdPrice = position.isBaseTokenMoneynessGreaterOrEqual
+        ? position.baseUsdPrice
+            ? getFormattedNumber({
+                  value:
+                      position.askTickPriceDecimalCorrected *
+                      position.baseUsdPrice,
+                  prefix: '$',
+              })
+            : '...'
+        : position.quoteUsdPrice
+        ? getFormattedNumber({
+              value:
+                  position.askTickInvPriceDecimalCorrected *
+                  position.quoteUsdPrice,
+              prefix: '$',
+          })
+        : '...';
+
+    const rangeDisplayUsd = `${formattedLowUsdPrice}-${formattedHighUsdPrice}`;
+
+    const rangeDisplay = isTradeDollarizationEnabled
+        ? rangeDisplayUsd
+        : position?.positionType === 'ambient'
+        ? 'ambient'
+        : isDenomBase
+        ? `${quoteTokenCharacter}${position?.lowRangeDisplayInBase}-${quoteTokenCharacter}${position?.highRangeDisplayInBase}`
+        : `${baseTokenCharacter}${position?.lowRangeDisplayInQuote}-${baseTokenCharacter}${position?.highRangeDisplayInQuote}`;
 
     // human-readable string showing total value of the position
     const value = getFormattedNumber({
@@ -48,11 +93,7 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     });
 
     return (
-        <RangeItemContainer
-            numCols={4}
-            color='text2'
-            onClick={() => handleClick(position)}
-        >
+        <RangeItemContainer color='text2' onClick={() => handleClick(position)}>
             {[pair, rangeDisplay, value].map((item) => (
                 <FlexContainer
                     key={item}

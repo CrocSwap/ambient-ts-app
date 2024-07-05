@@ -353,7 +353,7 @@ export const ConfirmationQuantityContainer = styled.div`
     grid-template-columns: auto 140px;
     align-items: center;
     background: var(--dark2);
-    padding: 0 2rem;
+    padding: 0 1rem 0 1rem;
     border-radius: var(--border-radius);
 `;
 

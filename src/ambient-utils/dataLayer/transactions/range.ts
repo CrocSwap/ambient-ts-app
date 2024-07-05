@@ -12,7 +12,7 @@ export interface CreateRangePositionParams {
     slippageTolerancePercentage: number;
     tokenA: RangePositionTokenInfo;
     tokenB: RangePositionTokenInfo;
-    isTokenAPrimaryRange: boolean; // TODO: better name for this variable
+    isTokenAPrimary: boolean; // TODO: better name for this variable
     tick: { low: number; high: number };
 }
 
@@ -23,7 +23,7 @@ export async function createRangePositionTx(params: CreateRangePositionParams) {
         slippageTolerancePercentage,
         tokenA,
         tokenB,
-        isTokenAPrimaryRange,
+        isTokenAPrimary,
         tick,
     } = params;
 
@@ -78,8 +78,8 @@ export async function createRangePositionTx(params: CreateRangePositionParams) {
         );
 
     const tx = isAmbient
-        ? await (isTokenAPrimaryRange ? mintAmbientQuote() : mintAmbientBase())
-        : await (isTokenAPrimaryRange ? mintRangeQuote() : mintRangeBase());
+        ? await (isTokenAPrimary ? mintAmbientQuote() : mintAmbientBase())
+        : await (isTokenAPrimary ? mintRangeQuote() : mintRangeBase());
 
     return tx;
 }

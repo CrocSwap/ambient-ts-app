@@ -16,6 +16,8 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -32,6 +34,8 @@ interface propsIF {
     ownerId: string;
     ambientOrMin: string;
     ambientOrMax: string;
+    lowDisplayPriceInUsd: string;
+    highDisplayPriceInUsd: string;
     apyClassname: string | undefined;
     apyString: string | undefined;
     minRangeDenomByMoneyness: string | undefined;
@@ -49,6 +53,7 @@ interface propsIF {
     position: PositionIF;
     baseTokenAddress: string;
     quoteTokenAddress: string;
+    isBaseTokenMoneynessGreaterOrEqual: boolean;
 }
 
 export default function rangeRowConstants(props: propsIF) {
@@ -73,6 +78,8 @@ export default function rangeRowConstants(props: propsIF) {
         rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
+        lowDisplayPriceInUsd,
+        highDisplayPriceInUsd,
         isAccountView,
         isAmbient,
         minRangeDenomByMoneyness,
@@ -84,7 +91,10 @@ export default function rangeRowConstants(props: propsIF) {
         isPositionInRange,
         baseTokenAddress,
         quoteTokenAddress,
+        isBaseTokenMoneynessGreaterOrEqual,
     } = props;
+
+    const { isTradeDollarizationEnabled } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
     const baseToken: TokenIF | undefined =
@@ -256,24 +266,43 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
             onClick={(event) => event.stopPropagation()}
         >
-            <RowItem hover>
-                <a
-                    href={linkGenPool.getFullURL(poolLinkParams)}
-                    target='_blank'
-                    rel='noreferrer'
-                >
-                    <div>
-                        <span>
-                            {baseTokenSymbol} / {quoteTokenSymbol}
+            {isOwnerActiveAccount ? (
+                <RowItem hover>
+                    <Link to={linkGenPool.getFullURL(poolLinkParams)}>
+                        <span style={{ textTransform: 'none' }}>
+                            {isBaseTokenMoneynessGreaterOrEqual
+                                ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
                         </span>
                         <FiExternalLink
                             size={10}
                             color='white'
                             style={{ marginLeft: '.5rem' }}
                         />
-                    </div>
-                </a>
-            </RowItem>
+                    </Link>
+                </RowItem>
+            ) : (
+                <RowItem hover>
+                    <a
+                        href={linkGenPool.getFullURL(poolLinkParams)}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <div>
+                            <span style={{ textTransform: 'none' }}>
+                                {isBaseTokenMoneynessGreaterOrEqual
+                                    ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
+                                    : `${baseTokenSymbol} / ${quoteTokenSymbol}`}
+                            </span>
+                            <FiExternalLink
+                                size={10}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </div>
+                    </a>
+                </RowItem>
+            )}
         </div>
     );
 
@@ -372,10 +401,14 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='min price'
             className='base_color'
         >
-            <span>{sideCharacter}</span>
+            <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
             <span>
                 {isAccountView && !isAmbient
-                    ? minRangeDenomByMoneyness || '…'
+                    ? isTradeDollarizationEnabled
+                        ? lowDisplayPriceInUsd
+                        : minRangeDenomByMoneyness || '…'
+                    : isTradeDollarizationEnabled
+                    ? lowDisplayPriceInUsd
                     : ambientOrMin || '…'}
             </span>
         </FlexContainer>
@@ -401,10 +434,14 @@ export default function rangeRowConstants(props: propsIF) {
             data-label='max price'
             className='base_color'
         >
-            <span>{sideCharacter}</span>
+            <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
             <span>
                 {isAccountView
-                    ? maxRangeDenomByMoneyness || '…'
+                    ? isTradeDollarizationEnabled
+                        ? highDisplayPriceInUsd
+                        : maxRangeDenomByMoneyness || '…'
+                    : isTradeDollarizationEnabled
+                    ? highDisplayPriceInUsd
                     : ambientOrMax || '…'}
             </span>
         </FlexContainer>
@@ -418,18 +455,26 @@ export default function rangeRowConstants(props: propsIF) {
             className='base_color'
         >
             <p>
-                <span>{sideCharacter}</span>
+                <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView && !isAmbient
-                        ? minRangeDenomByMoneyness || '…'
+                        ? isTradeDollarizationEnabled
+                            ? lowDisplayPriceInUsd
+                            : minRangeDenomByMoneyness || '…'
+                        : isTradeDollarizationEnabled
+                        ? lowDisplayPriceInUsd
                         : ambientOrMin || '…'}
                 </span>
             </p>
             <p>
-                <span>{sideCharacter}</span>
+                <span>{!isTradeDollarizationEnabled && sideCharacter}</span>
                 <span>
                     {isAccountView
-                        ? maxRangeDenomByMoneyness || '…'
+                        ? isTradeDollarizationEnabled
+                            ? highDisplayPriceInUsd
+                            : maxRangeDenomByMoneyness || '…'
+                        : isTradeDollarizationEnabled
+                        ? highDisplayPriceInUsd
                         : ambientOrMax || '…'}
                 </span>
             </p>

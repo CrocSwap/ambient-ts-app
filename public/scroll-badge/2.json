@@ -1,0 +1,10 @@
+{
+  "name": "Ambient Providoor",
+  "description": "Providoor! You have minted an LP position on Ambient Finance valued over $1000. (Art by @ShizzyAizawa)",
+  "attributes": [
+    { "trait_type": "Variant", "value": "LP" },
+    { "trait_type": "Amount", "value": "1000" },
+    { "trait_type": "Artist", "value": "@ShizzyAizawa" }
+  ],
+  "image": "https://ambient.finance/scroll-badge/2.png"
+}

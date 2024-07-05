@@ -1,11 +1,14 @@
 import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import { TokenIF } from '../../../ambient-utils/types';
 import processLogoSrc from './processLogoSrc';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { useLocation } from 'react-router-dom';
+import fixCase, {
+    letterCasings,
+} from '../../../ambient-utils/functions/fixCase';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
@@ -82,8 +85,75 @@ function TokenIcon(props: propsIF) {
         setFetchError(false);
     }, [src]);
 
+    // fn to get a character to use in the `<NoTokenIcon />` element
+    function getTokenCharacter(tkn: TokenIF | undefined): string {
+        const DEFAULT_OUTPUT = '';
+        // early return if no token data object is available
+        if (!tkn) return DEFAULT_OUTPUT;
+        // regex to identify whether a character is alphanumeric (case-insensitive)
+        const alphanumericRegex = /[a-zA-Z0-9]/;
+        // array of strings to use to isolate a character in order of preference
+        const characterSources: string[] = [tkn.symbol, tkn.name];
+        // join sources into a string for easier processing
+        const characterSourcesAsStr: string = characterSources.join('');
+        // iterate over characters in string to find the first alphanumeric
+        let outputCharacter = DEFAULT_OUTPUT;
+        for (let i = 0; i < characterSourcesAsStr.length; i++) {
+            const char: string = characterSourcesAsStr.charAt(i);
+            if (alphanumericRegex.test(char)) {
+                outputCharacter = char;
+                break;
+            }
+        }
+
+        // logic to specify overrides for casing rules on certain tokens
+        type casingException = [string, string, letterCasings];
+        const casingExceptionsMap = new Map();
+        const casingExceptions: casingException[] = [
+            ['0x1', ZERO_ADDRESS, 'upper'],
+        ];
+        function makeMapKey(c: string, a: string): string {
+            const key: string = c + '_' + a;
+            return key.toLowerCase();
+        }
+        casingExceptions.forEach((ex: casingException) => {
+            const [chn, addr, casing]: casingException = ex;
+            casingExceptionsMap.set(makeMapKey(chn, addr), casing);
+        });
+
+        // fn to determine whether the given token has a casing exception
+        function checkForCasingException(
+            t: TokenIF | undefined,
+        ): letterCasings | undefined {
+            if (!t) return;
+            const lookupKey: string = makeMapKey(
+                '0x' + t.chainId.toString(16),
+                t.address,
+            );
+            const casingOverride: letterCasings | undefined =
+                casingExceptionsMap.get(lookupKey);
+            return casingOverride;
+        }
+
+        // default case to use if no override is found
+        const DEFAULT_CASE: letterCasings = 'upper';
+
+        // return the relevant character in the appropriate casing
+        return fixCase(
+            outputCharacter,
+            checkForCasingException(token) ?? DEFAULT_CASE,
+        );
+    }
+
     const noTokenIcon: JSX.Element = (
-        <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
+        <NoTokenIcon
+            tokenInitial={
+                token
+                    ? getTokenCharacter(token)
+                    : alt?.charAt(0).toUpperCase() || ''
+            }
+            width={getIconWidth(size)}
+        />
     );
 
     // TODO: not great practice to use the same item for both loader and error fallback
@@ -107,7 +177,11 @@ function TokenIcon(props: propsIF) {
                                 width: getIconWidth(size),
                                 height: getIconWidth(size),
                             }}
-                            src={processLogoSrc(token)}
+                            src={processLogoSrc({
+                                token: token,
+                                symbol: alt,
+                                sourceURI: src,
+                            })}
                             alt={alt}
                             onError={handleFetchError}
                         />

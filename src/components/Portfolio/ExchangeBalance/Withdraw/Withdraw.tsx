@@ -65,7 +65,8 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, ethMainnetUsdPrice, provider } =
+        useContext(CrocEnvContext);
     const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
 
@@ -109,6 +110,19 @@ export default function Withdraw(props: propsIF) {
     const [isSendToAddressChecked, setIsSendToAddressChecked] =
         useState<boolean>(false);
 
+    const [isAddressContract, setIsAddressContract] = useState<
+        boolean | undefined
+    >();
+
+    useEffect(() => {
+        if (!resolvedAddress) return;
+        checkIfContract(resolvedAddress);
+        async function checkIfContract(address: string) {
+            const code = await provider?.getCode(address);
+            setIsAddressContract(code !== '0x');
+        }
+    }, [resolvedAddress]);
+
     const isResolvedAddressValid = useMemo(() => {
         if (!resolvedAddress) return false;
 
@@ -116,10 +130,12 @@ export default function Withdraw(props: propsIF) {
 
         return (
             !isResolvedAddressBlacklisted &&
+            !isAddressContract &&
             resolvedAddress?.length === 42 &&
-            resolvedAddress.startsWith('0x')
+            resolvedAddress.startsWith('0x') &&
+            resolvedAddress !== ZERO_ADDRESS
         );
-    }, [resolvedAddress]);
+    }, [resolvedAddress, isAddressContract]);
 
     const isDexBalanceSufficient = useMemo(
         () =>
@@ -400,6 +416,7 @@ export default function Withdraw(props: propsIF) {
             {secondaryEnsOrNull}
             <Button
                 idForDOM='withdraw_tokens_button'
+                style={{ textTransform: 'none' }}
                 title={buttonMessage}
                 action={withdrawFn}
                 disabled={isButtonDisabled}

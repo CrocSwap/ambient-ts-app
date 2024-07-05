@@ -17,7 +17,8 @@ const useKeyboardShortcuts = (keyCombo: KeyCombo, callback: () => void) => {
             const focusedElementTagName = document.activeElement?.tagName;
             const isTextInputFocused =
                 focusedElementTagName === 'INPUT' ||
-                focusedElementTagName === 'TEXTAREA';
+                focusedElementTagName === 'TEXTAREA' ||
+                focusedElementTagName === 'W3M-MODAL';
 
             if (
                 !isTextInputFocused &&

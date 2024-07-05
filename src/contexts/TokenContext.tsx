@@ -27,7 +27,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
     // TODO: possible option to merge TokenBalanceContext with TokenContext
     const { tokenBalances } = useContext(TokenBalanceContext);
-    const tokens: tokenMethodsIF = useTokens(chainData.chainId);
+    const tokens: tokenMethodsIF = useTokens(chainData.chainId, tokenBalances);
     const { addRecentToken, getRecentTokens } = useRecentTokens(
         chainData.chainId,
     );

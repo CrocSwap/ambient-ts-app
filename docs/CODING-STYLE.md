@@ -31,6 +31,7 @@ Please follow these items as close to as possible for your PR. Please add a desc
 - [ ] Are React functional components declared as a default export?
 
 #### Data Management
+- [ ] Are data fetches described with an interface for the incoming data shape and an extended interface for the internal post-decorating specification?
 - [ ] Are data and relevant methods packaged together in objects?
 - [ ] Are objects instantiated through a centralized process when made in parallel? (factory function, class constructor, etc)
 - [ ] Are classes checked against an interface via the `implements` keyword?

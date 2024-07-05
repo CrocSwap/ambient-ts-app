@@ -21,6 +21,7 @@ import {
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
@@ -30,6 +31,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const { mostRecentTransactions } = props;
 
     const { isUserConnected } = useContext(UserDataContext);
+
+    const { tokenA } = useContext(TradeDataContext);
 
     const {
         chainData: { chainId },
@@ -67,7 +70,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
         linkGenMarket.navigate(
-            tx.isBuy
+            tokenA.address.toLowerCase() === tx.base.toLowerCase()
                 ? {
                       chain: chainId,
                       tokenA: tx.base,
@@ -90,8 +93,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' fontSize='body' fullHeight>
-            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
-                {['Pool', 'Type', 'Value'].map((item) => (
+            <HeaderGrid color='text2' padding='4px 0'>
+                {['Pair', 'Type', 'Value'].map((item) => (
                     <FlexContainer key={item} justifyContent='center'>
                         {item}
                     </FlexContainer>

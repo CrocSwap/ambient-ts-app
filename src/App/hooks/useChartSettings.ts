@@ -1,12 +1,9 @@
 import { useEffect, useState, Dispatch, SetStateAction, useMemo } from 'react';
-import {
-    IS_BLAST_SITE,
-    LS_KEY_CHART_SETTINGS,
-} from '../../ambient-utils/constants';
+import { LS_KEY_CHART_SETTINGS } from '../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../ambient-utils/dataLayer';
 
 // interface for shape of data held in local storage
-interface chartSettingsIF {
+export interface chartSettingsIF {
     marketOverlay: string;
     poolOverlay: string;
     candleTimeGlobal: number;
@@ -31,7 +28,7 @@ interface DefaultTimeIF {
 }
 
 export interface candleTimeIF {
-    time: TimeInSecondsType;
+    time: TimeInSecondsType | undefined;
     changeTime: (val: TimeInSecondsType) => void;
     defaults: DefaultTimeIF[];
     readableTime: ReadableTimeType;
@@ -45,14 +42,15 @@ export interface chartSettingsMethodsIF {
     poolOverlay: overlayIF;
     candleTime: {
         global: candleTimeIF;
-        market: candleTimeIF;
-        pool: candleTimeIF;
+        // market: candleTimeIF;
+        // pool: candleTimeIF;
     };
 }
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (
-    isActiveNetworkBlast: boolean,
+    numCandlesFetched: number | undefined,
+    currentPoolString: string,
 ): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
     // will return `undefined` if the value does not exist yet
@@ -63,6 +61,7 @@ export const useChartSettings = (
         const chartSettings: chartSettingsIF | null = JSON.parse(
             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
         );
+
         // declare an output variable to be assigned in switch router
         let output: string | undefined;
         // logic router to assign a value to output
@@ -81,44 +80,62 @@ export const useChartSettings = (
         return output as OverlayType;
     };
 
-    const getCandleTime = (
-        timeFor: 'global' | 'market' | 'limit' | 'pool',
-    ): TimeInSecondsType | undefined => {
-        const chartSettings: chartSettingsIF | null = JSON.parse(
-            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
-        );
+    const [maxDuration, setMaxDuration] = useState<TimeInSecondsType>(86400);
 
-        let time: number | undefined;
-        if (isActiveNetworkBlast) {
-            switch (timeFor) {
-                case 'global':
-                case 'market':
-                case 'limit':
-                case 'pool':
-                    time = chartSettings?.candleTimeGlobal
-                        ? chartSettings?.candleTimeGlobal > 3600
-                            ? 900
-                            : chartSettings?.candleTimeGlobal
-                        : 900;
-                    break;
-                default:
-                    return;
+    useEffect(() => {
+        setMaxDuration(86400);
+    }, [currentPoolString]);
+
+    const getCandleTime = (
+        currentCandleTimeGlobal: TimeInSecondsType | undefined,
+    ): TimeInSecondsType | undefined => {
+        if (numCandlesFetched === undefined) {
+            return undefined;
+        }
+
+        let newCandleDuration;
+        if (currentCandleTimeGlobal === undefined) {
+            if (numCandlesFetched >= 7) {
+                newCandleDuration = 3600;
+            } else {
+                newCandleDuration = 900;
             }
         } else {
-            switch (timeFor) {
-                case 'global':
-                case 'market':
-                case 'limit':
-                case 'pool':
-                    time = chartSettings?.candleTimeGlobal;
-                    break;
-                default:
-                    return;
+            if (numCandlesFetched >= 7) {
+                newCandleDuration = currentCandleTimeGlobal;
+            } else {
+                if (currentCandleTimeGlobal === 86400) {
+                    newCandleDuration = 14400;
+                    setMaxDuration(14400);
+                } else if (currentCandleTimeGlobal === 14400) {
+                    newCandleDuration = 3600;
+                    setMaxDuration(3600);
+                } else if (currentCandleTimeGlobal === 3600) {
+                    newCandleDuration = 900;
+                    setMaxDuration(900);
+                } else if (currentCandleTimeGlobal === 900) {
+                    newCandleDuration = 300;
+                    setMaxDuration(300);
+                } else {
+                    newCandleDuration = 60;
+                    setMaxDuration(60);
+                }
             }
         }
 
-        return time as TimeInSecondsType;
+        return newCandleDuration as TimeInSecondsType;
     };
+
+    useEffect(() => {
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
+        );
+        const currentCandleTimeGlobal = chartSettings?.candleTimeGlobal as
+            | TimeInSecondsType
+            | undefined;
+
+        setCandleTimeGlobal(() => getCandleTime(currentCandleTimeGlobal));
+    }, [numCandlesFetched]);
 
     const [marketOverlay, setMarketOverlay] = useState<OverlayType>(
         getOverlay('market') ?? 'depth',
@@ -126,35 +143,46 @@ export const useChartSettings = (
     const [poolOverlay, setPoolOverlay] = useState<OverlayType>(
         getOverlay('pool') ?? 'curve',
     );
-    const [candleTimeGlobal, setCandleTimeGlobal] = useState<TimeInSecondsType>(
-        getCandleTime('global') ?? (IS_BLAST_SITE ? 300 : 3600), // 5 min for blast, 1 hr default elsewhere
-    );
-    const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
-        getCandleTime('market') ?? 900,
-    );
-    const [candleTimePool, setCandleTimePool] = useState<TimeInSecondsType>(
-        getCandleTime('pool') ?? 900, // switched from 86400 (1 day)
-    );
+
+    const [candleTimeGlobal, setCandleTimeGlobal] = useState<
+        TimeInSecondsType | undefined
+    >();
+
+    // const [candleTimeMarket, setCandleTimeMarket] = useState<TimeInSecondsType>(
+    //     getCandleTime('market') ?? 900,
+    // );
+    // const [candleTimePool, setCandleTimePool] = useState<TimeInSecondsType>(
+    //     getCandleTime('pool') ?? 900, // switched from 86400 (1 day)
+    // );
 
     // hook to update local storage any time one of the preference primitives changes
     // this must be implemented as a response to change, not in Subchart methods
     useEffect(() => {
+        const chartSettings: chartSettingsIF | null = JSON.parse(
+            getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
+        );
+        const currentCandleTimeGlobal = chartSettings?.candleTimeGlobal as
+            | TimeInSecondsType
+            | undefined;
+
+        const candleTimeToSave = candleTimeGlobal || currentCandleTimeGlobal;
         localStorage.setItem(
             LS_KEY_CHART_SETTINGS,
             JSON.stringify({
                 marketOverlay,
                 poolOverlay,
-                candleTimeGlobal,
-                candleTimeMarket,
-                candleTimePool,
+                candleTimeGlobal: candleTimeToSave,
+                // candleTimeMarket,
+                // candleTimePool,
             }),
         );
     }, [
         marketOverlay,
         poolOverlay,
-        candleTimeMarket,
-        candleTimePool,
+        // candleTimeMarket,
+        // candleTimePool,
         candleTimeGlobal,
+        getLocalStorageItem,
     ]);
 
     // class definition for overlay setting and methods
@@ -179,33 +207,53 @@ export const useChartSettings = (
     }
 
     class CandleTime implements candleTimeIF {
-        time: TimeInSecondsType;
+        time: TimeInSecondsType | undefined;
         // eslint-disable-next-line
         changeTime: (_val: TimeInSecondsType) => void;
-        defaults: DefaultTimeIF[] = isActiveNetworkBlast
-            ? [
-                  { readable: '1m', seconds: 60 },
-                  { readable: '5m', seconds: 300 },
-                  { readable: '15m', seconds: 900 },
-                  { readable: '1h', seconds: 3600 },
-                  //   { readable: '4h', seconds: 14400 },
-                  //   { readable: '1d', seconds: 86400 },
-              ]
-            : [
-                  { readable: '1m', seconds: 60 },
-                  { readable: '5m', seconds: 300 },
-                  { readable: '15m', seconds: 900 },
-                  { readable: '1h', seconds: 3600 },
-                  { readable: '4h', seconds: 14400 },
-                  { readable: '1d', seconds: 86400 },
-              ];
+        defaults: DefaultTimeIF[] =
+            maxDuration === 86400
+                ? [
+                      { readable: '1m', seconds: 60 },
+                      { readable: '5m', seconds: 300 },
+                      { readable: '15m', seconds: 900 },
+                      { readable: '1h', seconds: 3600 },
+                      { readable: '4h', seconds: 14400 },
+                      { readable: '1d', seconds: 86400 },
+                  ]
+                : maxDuration === 14400
+                ? [
+                      { readable: '1m', seconds: 60 },
+                      { readable: '5m', seconds: 300 },
+                      { readable: '15m', seconds: 900 },
+                      { readable: '1h', seconds: 3600 },
+                      { readable: '4h', seconds: 14400 },
+                  ]
+                : maxDuration === 3600
+                ? [
+                      { readable: '1m', seconds: 60 },
+                      { readable: '5m', seconds: 300 },
+                      { readable: '15m', seconds: 900 },
+                      { readable: '1h', seconds: 3600 },
+                  ]
+                : maxDuration === 900
+                ? [
+                      { readable: '1m', seconds: 60 },
+                      { readable: '5m', seconds: 300 },
+                      { readable: '15m', seconds: 900 },
+                  ]
+                : maxDuration === 300
+                ? [
+                      { readable: '1m', seconds: 60 },
+                      { readable: '5m', seconds: 300 },
+                  ]
+                : [{ readable: '1m', seconds: 60 }];
         readableTime =
             this.defaults.find(
                 (pair: DefaultTimeIF) => pair.seconds === this.time,
             )?.readable ?? '15m';
         constructor(
-            t: TimeInSecondsType,
-            setterFn: Dispatch<SetStateAction<TimeInSecondsType>>,
+            t: TimeInSecondsType | undefined,
+            setterFn: Dispatch<SetStateAction<TimeInSecondsType | undefined>>,
         ) {
             this.time = t;
             this.changeTime = (val: TimeInSecondsType) => {
@@ -220,16 +268,17 @@ export const useChartSettings = (
             poolOverlay: new Overlay(poolOverlay, setPoolOverlay),
             candleTime: {
                 global: new CandleTime(candleTimeGlobal, setCandleTimeGlobal),
-                market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
-                pool: new CandleTime(candleTimePool, setCandleTimePool),
+                // market: new CandleTime(candleTimeMarket, setCandleTimeMarket),
+                // pool: new CandleTime(candleTimePool, setCandleTimePool),
             },
         };
     }, [
-        candleTimeMarket,
-        candleTimePool,
+        // candleTimeMarket,
+        // candleTimePool,
         candleTimeGlobal,
         marketOverlay,
         poolOverlay,
+        maxDuration,
     ]);
 
     return chartSettings;

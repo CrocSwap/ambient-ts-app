@@ -16,6 +16,7 @@ interface propsIF {
     resetConfirmation: () => void;
     txErrorCode: string;
     txErrorMessage: string;
+    txErrorJSON: string;
     minPriceDisplay: string;
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
@@ -46,6 +47,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
         resetConfirmation,
         txErrorCode,
         txErrorMessage,
+        txErrorJSON,
         currentBaseQtyDisplayTruncated,
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
@@ -183,6 +185,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
             transactionHash={newRepositionTransactionHash}
             txErrorCode={txErrorCode}
             txErrorMessage={txErrorMessage}
+            txErrorJSON={txErrorJSON}
             showConfirmation={showConfirmation}
             statusText={
                 !showConfirmation

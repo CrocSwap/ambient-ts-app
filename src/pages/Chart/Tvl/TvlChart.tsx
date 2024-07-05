@@ -14,6 +14,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface TvlData {
     tvlData: Array<CandleDataIF>;
@@ -39,6 +40,7 @@ interface TvlData {
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     toolbarWidth: number;
+    chartThemeColors: ChartThemeIF | undefined;
 }
 
 function TvlChart(props: TvlData) {
@@ -65,6 +67,7 @@ function TvlChart(props: TvlData) {
         render,
         isToolbarOpen,
         toolbarWidth,
+        chartThemeColors,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -243,7 +246,13 @@ function TvlChart(props: TvlData) {
                 .select('canvas')
                 .node() as any;
 
-            if (canvas !== null && buffer && !isNaN(buffer) && resizeHeight) {
+            if (
+                canvas !== null &&
+                buffer &&
+                !isNaN(buffer) &&
+                resizeHeight &&
+                chartThemeColors
+            ) {
                 const ctx = canvas.getContext('2d');
                 const startPoint =
                     buffer === 0
@@ -263,8 +272,24 @@ function TvlChart(props: TvlData) {
                     0,
                     resizeHeight,
                 );
-                tvlGradient.addColorStop(1, 'rgba(115, 113, 252, 0)');
-                tvlGradient.addColorStop(colorStop, 'rgba(115, 113, 252, 0.7)');
+
+                const d3TvlGradientStart =
+                    chartThemeColors.darkStrokeColor?.copy();
+                const d3TvlGradient = chartThemeColors.darkStrokeColor?.copy();
+
+                if (d3TvlGradientStart) d3TvlGradientStart.opacity = 0;
+                if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
+
+                tvlGradient.addColorStop(
+                    1,
+                    d3TvlGradientStart
+                        ? d3TvlGradientStart
+                        : 'rgba(115, 113, 252, 0)',
+                );
+                tvlGradient.addColorStop(
+                    colorStop,
+                    d3TvlGradient ? d3TvlGradient : 'rgba(115, 113, 252, 0.7)',
+                );
 
                 setTvlGradient(() => {
                     return tvlGradient;
@@ -291,7 +316,8 @@ function TvlChart(props: TvlData) {
         if (
             scaleData !== undefined &&
             tvlyScale !== undefined &&
-            tvlGradient !== undefined
+            tvlGradient !== undefined &&
+            chartThemeColors
         ) {
             const areaSeries = d3fc
                 .seriesCanvasArea()
@@ -308,6 +334,10 @@ function TvlChart(props: TvlData) {
                 return areaSeries;
             });
 
+            const d3TvlGradient = chartThemeColors.darkStrokeColor?.copy();
+
+            if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
+
             const lineSeries = d3fc
                 .seriesCanvasLine()
                 .xScale(scaleData?.xScale)
@@ -315,7 +345,9 @@ function TvlChart(props: TvlData) {
                 .mainValue((d: any) => d.tvlData.tvl)
                 .crossValue((d: any) => d.time * 1000)
                 .decorate((selection: any) => {
-                    selection.strokeStyle = 'rgba(115, 113, 252, 0.7)';
+                    selection.strokeStyle = d3TvlGradient
+                        ? d3TvlGradient
+                        : 'rgba(115, 113, 252, 0.7)';
                     selection.strokeWidth = 2;
                 });
 

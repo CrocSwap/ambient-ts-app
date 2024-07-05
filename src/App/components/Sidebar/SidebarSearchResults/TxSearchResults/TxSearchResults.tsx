@@ -13,6 +13,7 @@ import {
     Text,
 } from '../../../../../styled/Common';
 import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
 
 interface propsIF {
     searchedTxs: TransactionIF[];
@@ -23,6 +24,8 @@ export default function TxSearchResults(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
+        useContext(SidebarContext);
 
     const {
         setCurrentTxActiveInTransactions,
@@ -35,6 +38,9 @@ export default function TxSearchResults(props: propsIF) {
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const handleClick = (tx: TransactionIF): void => {
+        if (isPoolDropdownOpen) {
+            setIsPoolDropdownOpen(false);
+        }
         setOutsideControl(true);
         setSelectedOutsideTab(0);
         setShowAllData(false);

@@ -5,12 +5,8 @@ import * as d3fc from 'd3fc';
 
 export const selectedCircleSize = 80;
 
-const circleStrokeColor = '#7371fc';
-const circleFillColor = '#8A8AFF';
 const selectedCircleFillColor = 'wheat';
 
-const circleOrderSellStrokeColor = '#8A8AFF';
-const circleOrderBuyStrokeColor = '#CDC1FF';
 const circleOrderSellFillColor = 'rgba(115, 113, 252, 0.3)';
 const circleOrderBuyFillColor = 'rgba(205, 193, 255, 0.3)';
 // const howeredCircleFillColor = 'wheat';
@@ -36,11 +32,40 @@ export function createCircle(
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {
+            const style = getComputedStyle(context.canvas);
+
+            const circleStrokeColor = style.getPropertyValue('--accent1');
+            const circleBuyStrokeColor = style.getPropertyValue('--accent5');
+
+            const circleStrokeColorBackground =
+                style.getPropertyValue('--accent1');
+            const circleBuyStrokeColorBackground =
+                style.getPropertyValue('--accent5');
+
+            const d3BuyStrokeColorBacground = d3.color(
+                circleBuyStrokeColorBackground,
+            );
+            const d3SellStrokeColorBacground = d3.color(
+                circleStrokeColorBackground,
+            );
+
+            if (d3BuyStrokeColorBacground)
+                d3BuyStrokeColorBacground.opacity = 0.3;
+            if (d3SellStrokeColorBacground)
+                d3SellStrokeColorBacground.opacity = 0.3;
+
+            const buyFill = d3BuyStrokeColorBacground
+                ? d3BuyStrokeColorBacground.toString()
+                : circleOrderBuyFillColor;
+            const sellFill = d3SellStrokeColorBacground
+                ? d3SellStrokeColorBacground.toString()
+                : circleOrderSellFillColor;
+
             context.strokeStyle =
                 isBuy !== undefined
                     ? isBuy
-                        ? circleOrderBuyStrokeColor
-                        : circleOrderSellStrokeColor
+                        ? circleBuyStrokeColor
+                        : circleStrokeColor
                     : circleStrokeColor;
 
             context.fillStyle = isTransparent
@@ -49,9 +74,9 @@ export function createCircle(
                 ? selectedCircleFillColor
                 : isBuy !== undefined
                 ? isBuy
-                    ? circleOrderBuyFillColor
-                    : circleOrderSellFillColor
-                : circleFillColor;
+                    ? buyFill
+                    : sellFill
+                : circleStrokeColor;
 
             context.lineWidth = lineWidth;
         });

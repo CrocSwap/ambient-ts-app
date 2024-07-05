@@ -67,10 +67,6 @@ function Range() {
         advancedMode,
         setAdvancedHighTick,
         setAdvancedLowTick,
-        isTokenAPrimaryRange,
-        primaryQuantityRange,
-        setPrimaryQuantityRange,
-        setIsTokenAPrimaryRange,
         isLinesSwitched,
 
         simpleRangeWidth,
@@ -112,14 +108,18 @@ function Range() {
         baseToken,
         quoteToken,
         poolPriceNonDisplay,
+        isTokenAPrimary,
+        primaryQuantity,
+        setPrimaryQuantity,
+        setIsTokenAPrimary,
     } = useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        isTokenAPrimaryRange ? primaryQuantityRange : '',
+        isTokenAPrimary ? primaryQuantity : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !isTokenAPrimaryRange ? primaryQuantityRange : '',
+        !isTokenAPrimary ? primaryQuantity : '',
     );
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -173,6 +173,7 @@ function Range() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorJSON, setTxErrorJSON] = useState('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -465,6 +466,7 @@ function Range() {
             defaultHighTick,
             isDenomBase,
         );
+
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
@@ -524,8 +526,12 @@ function Range() {
     ]);
 
     useEffect(() => {
-        if (isTokenAInputDisabled) setIsTokenAPrimaryRange(false);
-        if (isTokenBInputDisabled) setIsTokenAPrimaryRange(true);
+        resetConfirmation();
+    }, [isTokenAPrimary]);
+
+    useEffect(() => {
+        if (isTokenAInputDisabled) setIsTokenAPrimary(false);
+        if (isTokenBInputDisabled) setIsTokenAPrimary(true);
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
@@ -806,22 +812,20 @@ function Range() {
         amountToReduceNativeTokenQtyMainnet,
         setAmountToReduceNativeTokenQtyMainnet,
     ] = useState<number>(0.01);
-    const [
-        amountToReduceNativeTokenQtyScroll,
-        setAmountToReduceNativeTokenQtyScroll,
-    ] = useState<number>(0.0007);
+    const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
+        useState<number>(0.0005);
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeePoolInGwei] = useState<number>(
-        isScroll ? 0.0004 * 1e9 : isActiveNetworkBlast ? 0.00025 * 1e9 : 0,
+        isScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
     );
     const [extraL1GasFeePool] = useState(
         isScroll ? 1.5 : isActiveNetworkBlast ? 0.5 : 0,
     );
 
     const amountToReduceNativeTokenQty =
-        chainId === '0x82750' || chainId === '0x8274f'
-            ? amountToReduceNativeTokenQtyScroll
+        chainId === '0x82750' || chainId === '0x8274f' || chainId === '0x13e31'
+            ? amountToReduceNativeTokenQtyL2
             : amountToReduceNativeTokenQtyMainnet;
 
     const activeRangeTxHash = useRef<string>('');
@@ -829,7 +833,7 @@ function Range() {
     // reset activeTxHash when the pair changes or user updates quantity
     useEffect(() => {
         activeRangeTxHash.current = '';
-    }, [tokenA.address + tokenB.address, primaryQuantityRange]);
+    }, [tokenA.address + tokenB.address, primaryQuantity]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -849,11 +853,11 @@ function Range() {
             const costOfScrollPoolInETH =
                 l1CostOfScrollPoolInETH + l2CostOfScrollPoolInETH;
 
-            setAmountToReduceNativeTokenQtyScroll(
+            setAmountToReduceNativeTokenQtyL2(
                 RANGE_BUFFER_MULTIPLIER_MAINNET * costOfScrollPoolInETH,
             );
 
-            setAmountToReduceNativeTokenQtyScroll(
+            setAmountToReduceNativeTokenQtyL2(
                 costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
             );
 
@@ -864,15 +868,10 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                isActiveNetworkBlast
-                    ? getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeePool,
-                          prefix: '$',
-                      })
-                    : getFormattedNumber({
-                          value: gasPriceInDollarsNum + extraL1GasFeePool,
-                          isUSD: true,
-                      }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum + extraL1GasFeePool,
+                    isUSD: true,
+                }),
             );
         }
     }, [
@@ -886,6 +885,7 @@ function Range() {
         setShowConfirmation(false);
         setTxErrorCode('');
         setTxErrorMessage('');
+        setTxErrorJSON('');
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -910,6 +910,7 @@ function Range() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             setTxErrorMessage,
+            setTxErrorJSON,
             resetConfirmation,
             activeRangeTxHash,
         });
@@ -936,7 +937,7 @@ function Range() {
     const clearTokenInputs = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const {
@@ -1101,6 +1102,7 @@ function Range() {
                         showConfirmation={showConfirmation}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1124,6 +1126,7 @@ function Range() {
             button={
                 <Button
                     idForDOM='submit_range_position_button'
+                    style={{ textTransform: 'none' }}
                     title={
                         areBothAckd
                             ? tokenAAllowed && tokenBAllowed
@@ -1163,6 +1166,7 @@ function Range() {
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         txErrorMessage={txErrorMessage}
+                        txErrorJSON={txErrorJSON}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={
@@ -1194,6 +1198,7 @@ function Range() {
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -1211,6 +1216,7 @@ function Range() {
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         idForDOM='approve_token_for_range'
+                        style={{ textTransform: 'none' }}
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenB.symbol}`

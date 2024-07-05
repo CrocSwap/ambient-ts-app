@@ -24,13 +24,13 @@ export default function PointSystemPopup(props: PropsIF) {
         ? '/xp'
         : location.pathname;
     const {
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
     const { isUserConnected } = useContext(UserDataContext);
     const isEnabledLocally =
-        process.env.REACT_APP_POINT_SYSTEM_POPUP_ENABLED !== undefined
-            ? process.env.REACT_APP_POINT_SYSTEM_POPUP_ENABLED === 'true'
+        import.meta.env.VITE_POINT_SYSTEM_POPUP_ENABLED !== undefined
+            ? import.meta.env.VITE_POINT_SYSTEM_POPUP_ENABLED === 'true'
             : true;
 
     const escFunction = useCallback((event: KeyboardEvent) => {
@@ -52,7 +52,7 @@ export default function PointSystemPopup(props: PropsIF) {
     );
 
     const handleConnectButtonClick = () => {
-        openWagmiModal();
+        openWalletModal();
         dismissPointSystemPopup({ ctaId: 'points_modal_cta' });
     };
     // Any location we won't to exclude the popup from goes here
@@ -60,6 +60,7 @@ export default function PointSystemPopup(props: PropsIF) {
 
     if (
         excludedLocations.includes(currentLocation) ||
+        currentLocation.includes('/faq') ||
         !isEnabledLocally ||
         isSmallScreen
     )

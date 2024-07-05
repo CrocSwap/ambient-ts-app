@@ -84,6 +84,7 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                                 ? 'center'
                                 : 'left'
                         }
+                        style={{ textTransform: 'none' }}
                     >
                         {name} {arrow}
                     </Text>

@@ -53,7 +53,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const {
         tutorial: { isActive: isTutorialActive },
-        wagmiModal: { open: openWagmiModal },
+        walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
     const {
         chainData: { blockExplorer },
@@ -93,7 +93,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             text = '';
         }
         return text;
-    }, [needConfirmTokenA, needConfirmTokenB]);
+    }, [needConfirmTokenA, needConfirmTokenB, tokenA.symbol, tokenB.symbol]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
         /\b(not)\b/g,
@@ -208,7 +208,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     ) : (
                         <Button
                             idForDOM='connect_wallet_button_in_trade_configurator'
-                            action={openWagmiModal}
+                            action={openWalletModal}
                             title='Connect Wallet'
                             flat
                         />

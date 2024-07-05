@@ -4,7 +4,7 @@ import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 // START: Import Local Files
 import { Pagination } from '@mui/material';
 import { useSortedPositions } from '../useSortedPositions';
-import { PositionIF } from '../../../../ambient-utils/types';
+import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import NoTableData from '../NoTableData/NoTableData';
@@ -29,9 +29,18 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
-
-const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
-// NOTE: this is done to improve rendering speed for this page.
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import {
+    bigNumToFloat,
+    baseTokenForConcLiq,
+    tickToPrice,
+    quoteTokenForConcLiq,
+    priceToTick,
+} from '@crocswap-libs/sdk';
+import { getPositionData } from '../../../../ambient-utils/dataLayer';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 
 // interface for props
 interface propsIF {
@@ -47,14 +56,26 @@ function Ranges(props: propsIF) {
 
     const { showAllData: showAllDataSelection, toggleTradeTable } =
         useContext(TradeTableContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
     const { tradeTableState } = useContext(ChartContext);
     const {
-        chainData: { poolIndex },
+        crocEnv,
+        provider,
+        chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
+
+    const {
+        cachedFetchTokenPrice,
+        cachedQuerySpotPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -90,10 +111,10 @@ function Ranges(props: propsIF) {
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                ? userPositionsByPool?.positions.filter(
+                ? userPositionsByPool?.positions
+                : positionsByPool.positions.filter(
                       (position) => position.positionLiq != 0,
-                  )
-                : positionsByPool.positions,
+                  ),
         [
             showAllData,
             isAccountView,
@@ -179,6 +200,12 @@ function Ranges(props: propsIF) {
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
+        const element = document.getElementById('current_row_scroll');
+        element?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'start',
+        });
     };
 
     const handleChangeRowsPerPage = (
@@ -200,7 +227,7 @@ function Ranges(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? 'auto' : '16px auto'}
+                margin={isSmallScreen ? '40px auto' : '16px auto'}
                 background='dark1'
                 flexDirection={isSmallScreen ? 'column' : 'row'}
             >
@@ -244,7 +271,7 @@ function Ranges(props: propsIF) {
             <p>Max</p>
         </>
     );
-    const tokens = isAccountView ? (
+    const tokensDisplay = isAccountView ? (
         <>Tokens</>
     ) : (
         <>
@@ -334,7 +361,7 @@ function Ranges(props: propsIF) {
             alignRight: true,
         },
         {
-            name: tokens,
+            name: tokensDisplay,
             className: 'tokens',
             show: tableView === 'medium',
             slug: 'tokens',
@@ -405,42 +432,345 @@ function Ranges(props: propsIF) {
             tx.txDetails?.poolIdx === poolIndex,
     );
 
+    const [unindexedUpdatedPositions, setUnindexedUpdatedPositions] = useState<
+        PositionIF[]
+    >([]);
+
+    useEffect(() => {
+        (async () => {
+            if (relevantTransactionsByType.length === 0) {
+                setUnindexedUpdatedPositions([]);
+            }
+            const pendingPositionUpdates = relevantTransactionsByType.filter(
+                (tx) => {
+                    return (
+                        tx.txAction === 'Add' ||
+                        tx.txAction === 'Reposition' ||
+                        tx.txAction === 'Remove' ||
+                        tx.txAction === 'Harvest'
+                    );
+                },
+            );
+            const newlyUpdatedPositions = await Promise.all(
+                pendingPositionUpdates.map(async (pendingPositionUpdate) => {
+                    if (!crocEnv || !pendingPositionUpdate.txDetails)
+                        return {} as PositionIF;
+                    const pos = crocEnv.positions(
+                        pendingPositionUpdate.txDetails.baseAddress,
+                        pendingPositionUpdate.txDetails.quoteAddress,
+                        pendingPositionUpdate.userAddress,
+                    );
+
+                    const poolPriceNonDisplay = await cachedQuerySpotPrice(
+                        crocEnv,
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        chainId,
+                        lastBlockNumber,
+                    );
+
+                    const position = pendingPositionUpdate.txDetails.isAmbient
+                        ? await pos.queryAmbient()
+                        : await pos.queryRangePos(
+                              pendingPositionUpdate.txDetails.lowTick || 0,
+                              pendingPositionUpdate.txDetails.highTick || 0,
+                          );
+                    const poolPriceInTicks = priceToTick(poolPriceNonDisplay);
+
+                    let positionLiqBase, positionLiqQuote;
+
+                    if (!pendingPositionUpdate.txDetails)
+                        return {} as PositionIF;
+                    const liqBigNum = pendingPositionUpdate.txDetails.isAmbient
+                        ? position.seeds
+                        : position.liq;
+                    const liqNum = bigNumToFloat(liqBigNum);
+                    if (pendingPositionUpdate.txDetails.isAmbient) {
+                        positionLiqBase =
+                            liqNum * Math.sqrt(poolPriceNonDisplay);
+                        positionLiqQuote =
+                            liqNum / Math.sqrt(poolPriceNonDisplay);
+                    } else {
+                        positionLiqBase = bigNumToFloat(
+                            baseTokenForConcLiq(
+                                poolPriceNonDisplay,
+                                liqBigNum,
+                                tickToPrice(
+                                    pendingPositionUpdate.txDetails.lowTick ||
+                                        0,
+                                ),
+                                tickToPrice(
+                                    pendingPositionUpdate.txDetails.highTick ||
+                                        0,
+                                ),
+                            ),
+                        );
+                        positionLiqQuote = bigNumToFloat(
+                            quoteTokenForConcLiq(
+                                poolPriceNonDisplay,
+                                liqBigNum,
+                                tickToPrice(
+                                    pendingPositionUpdate.txDetails.lowTick ||
+                                        0,
+                                ),
+                                tickToPrice(
+                                    pendingPositionUpdate.txDetails.highTick ||
+                                        0,
+                                ),
+                            ),
+                        );
+                    }
+
+                    const currentTime = Math.floor(Date.now() / 1000);
+
+                    const posHash = getPositionHash(undefined, {
+                        isPositionTypeAmbient:
+                            pendingPositionUpdate.txDetails.isAmbient || false,
+                        user: pendingPositionUpdate.userAddress,
+                        baseAddress:
+                            pendingPositionUpdate.txDetails.baseAddress,
+                        quoteAddress:
+                            pendingPositionUpdate.txDetails.quoteAddress,
+                        poolIdx: pendingPositionUpdate.txDetails.poolIdx,
+                        bidTick: pendingPositionUpdate.txDetails.lowTick || 0,
+                        askTick: pendingPositionUpdate.txDetails.highTick || 0,
+                    });
+
+                    const mockServerPosition: PositionServerIF = {
+                        positionId: posHash,
+                        chainId: chainId,
+                        askTick: pendingPositionUpdate.txDetails.highTick || 0,
+                        bidTick: pendingPositionUpdate.txDetails.lowTick || 0,
+                        poolIdx: pendingPositionUpdate.txDetails.poolIdx,
+                        base: pendingPositionUpdate.txDetails.baseAddress,
+                        quote: pendingPositionUpdate.txDetails.quoteAddress,
+                        user: pendingPositionUpdate.userAddress,
+                        ambientLiq: pendingPositionUpdate.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        concLiq: !pendingPositionUpdate.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        rewardLiq: 0, // unknown
+                        positionType: pendingPositionUpdate.txDetails.isAmbient
+                            ? 'ambient'
+                            : 'concentrated',
+                        timeFirstMint: currentTime, // unknown
+                        lastMintTx: '', // unknown
+                        firstMintTx: '', // unknown
+                        aprEst: 0, // unknown
+                    };
+                    const positionData = await getPositionData(
+                        mockServerPosition,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        provider,
+                        chainId,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                        true,
+                    );
+                    const onChainPosition: PositionIF = {
+                        chainId: chainId,
+                        base: pendingPositionUpdate.txDetails.baseAddress,
+                        quote: pendingPositionUpdate.txDetails.quoteAddress,
+                        poolIdx: pendingPositionUpdate.txDetails.poolIdx,
+                        bidTick: pendingPositionUpdate.txDetails.lowTick,
+                        askTick: pendingPositionUpdate.txDetails.highTick,
+                        isBid: pendingPositionUpdate.txDetails.isBid,
+                        user: pendingPositionUpdate.userAddress,
+                        timeFirstMint: position.timestamp, // from on-chain call (not updated for removes?)
+                        latestUpdateTime: position.timestamp, // from on-chain call (not updated for removes?)
+                        lastMintTx: '', // unknown
+                        firstMintTx: '', // unknown
+                        positionType: pendingPositionUpdate.txDetails.isAmbient
+                            ? 'ambient'
+                            : 'concentrated',
+                        ambientLiq: pendingPositionUpdate.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        concLiq: !pendingPositionUpdate.txDetails.isAmbient
+                            ? liqNum
+                            : 0,
+                        rewardLiq: 0, // unknown
+                        liqRefreshTime: currentTime, // unknown
+                        aprDuration: 0, // unknown
+                        aprPostLiq: 0,
+                        aprContributedLiq: 0,
+                        // aprEst: 0,
+                        poolPriceInTicks: poolPriceInTicks,
+                        isPositionInRange: true, // unknown
+                        baseDecimals:
+                            pendingPositionUpdate.txDetails.baseTokenDecimals,
+                        quoteDecimals:
+                            pendingPositionUpdate.txDetails.quoteTokenDecimals,
+                        baseSymbol: pendingPositionUpdate.txDetails.baseSymbol,
+                        quoteSymbol:
+                            pendingPositionUpdate.txDetails.quoteSymbol,
+                        baseName: '',
+                        quoteName: '',
+                        lowRangeDisplayInBase:
+                            positionData.lowRangeDisplayInBase,
+                        highRangeDisplayInBase:
+                            positionData.highRangeDisplayInBase,
+                        lowRangeDisplayInQuote:
+                            positionData.lowRangeDisplayInQuote,
+                        highRangeDisplayInQuote:
+                            positionData.highRangeDisplayInQuote,
+                        lowRangeShortDisplayInBase:
+                            positionData.lowRangeShortDisplayInBase,
+                        lowRangeShortDisplayInQuote:
+                            positionData.lowRangeShortDisplayInQuote,
+                        highRangeShortDisplayInBase:
+                            positionData.highRangeShortDisplayInBase,
+                        highRangeShortDisplayInQuote:
+                            positionData.highRangeShortDisplayInQuote,
+                        bidTickPriceDecimalCorrected:
+                            positionData.bidTickPriceDecimalCorrected,
+                        bidTickInvPriceDecimalCorrected:
+                            positionData.bidTickInvPriceDecimalCorrected,
+                        askTickPriceDecimalCorrected:
+                            positionData.askTickPriceDecimalCorrected,
+                        askTickInvPriceDecimalCorrected:
+                            positionData.askTickInvPriceDecimalCorrected,
+                        positionLiq: liqNum,
+                        positionLiqBase: positionLiqBase,
+                        positionLiqQuote: positionLiqQuote,
+                        feesLiqBase: positionData.feesLiqBase,
+                        feesLiqQuote: positionData.feesLiqQuote,
+                        feesLiqBaseDecimalCorrected:
+                            positionData.feesLiqBaseDecimalCorrected,
+                        feesLiqQuoteDecimalCorrected:
+                            positionData.feesLiqQuoteDecimalCorrected,
+                        positionLiqBaseDecimalCorrected:
+                            positionData.positionLiqBaseDecimalCorrected,
+                        positionLiqQuoteDecimalCorrected:
+                            positionData.positionLiqQuoteDecimalCorrected,
+                        positionLiqBaseTruncated:
+                            positionData.positionLiqBaseTruncated,
+                        positionLiqQuoteTruncated:
+                            positionData.positionLiqQuoteTruncated,
+                        totalValueUSD: positionData.totalValueUSD,
+                        apy: positionData.apy,
+                        positionId: positionData.positionId,
+                        onChainConstructedPosition: true,
+                    } as PositionIF;
+
+                    if (
+                        onChainPosition.positionLiqBaseDecimalCorrected !== 0 ||
+                        onChainPosition.positionLiqQuoteDecimalCorrected !== 0
+                    ) {
+                        return onChainPosition;
+                    } else {
+                        return undefined;
+                    }
+                }),
+            );
+
+            const definedUpdatedPositions: PositionIF[] =
+                newlyUpdatedPositions.filter(
+                    (position) => position !== undefined,
+                ) as PositionIF[];
+            if (definedUpdatedPositions.length)
+                setUnindexedUpdatedPositions(definedUpdatedPositions);
+        })();
+    }, [JSON.stringify(relevantTransactionsByType), lastBlockNumber]);
+
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
         unindexedNonFailedSessionPositionUpdates.length === 0;
 
+    const unindexedUpdatedPositionHashes = unindexedUpdatedPositions.map(
+        (pos) => pos.positionId,
+    );
+
+    const pendingPositionsToDisplayPlaceholder =
+        relevantTransactionsByType.filter((pos) => {
+            const pendingPosHash = getPositionHash(undefined, {
+                isPositionTypeAmbient: pos.txDetails?.isAmbient || false,
+                user: pos.userAddress,
+                baseAddress: pos.txDetails?.baseAddress || '',
+                quoteAddress: pos.txDetails?.quoteAddress || '',
+                poolIdx: pos.txDetails?.poolIdx || 0,
+                bidTick: pos.txDetails?.lowTick || 0,
+                askTick: pos.txDetails?.highTick || 0,
+            });
+            const matchingPosition = unindexedUpdatedPositions.find(
+                (unindexedPosition) => {
+                    return pendingPosHash === unindexedPosition.positionId;
+                },
+            );
+            const matchingPositionUpdatedInLastMinute =
+                (matchingPosition?.liqRefreshTime || 0) -
+                    (matchingPosition?.latestUpdateTime || 0) <
+                60;
+            // identify completed adds when update time in last minute (does not work for removes)
+            return (
+                !unindexedUpdatedPositionHashes.includes(pendingPosHash) ||
+                (matchingPosition && !matchingPositionUpdatedInLastMinute)
+                // show pulsing placeholder until existing position is updated
+            );
+        });
+
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef} id='current_row_scroll'>
+            <ul
+                ref={listRef}
+                id='current_row_scroll'
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { height: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 380px)' }
+                        : undefined
+                }
+            >
                 {!isAccountView &&
-                    relevantTransactionsByType.length > 0 &&
-                    relevantTransactionsByType.reverse().map((tx, idx) => (
-                        <RangesRowPlaceholder
-                            key={idx}
-                            transaction={{
-                                hash: tx.txHash,
-                                side: tx.txAction,
-                                type: tx.txType,
-                                details: tx.txDetails,
-                            }}
-                            tableView={tableView}
-                        />
-                    ))}
+                    pendingPositionsToDisplayPlaceholder.length > 0 &&
+                    pendingPositionsToDisplayPlaceholder
+                        .reverse()
+                        .map((tx, idx) => (
+                            <RangesRowPlaceholder
+                                key={idx}
+                                transaction={{
+                                    hash: tx.txHash,
+                                    side: tx.txAction,
+                                    type: tx.txType,
+                                    details: tx.txDetails,
+                                }}
+                                tableView={tableView}
+                            />
+                        ))}
+
                 <TableRows
                     type='Range'
-                    data={_DATA.currentData}
-                    fullData={fullData}
+                    data={unindexedUpdatedPositions.concat(
+                        _DATA.currentData
+                            .filter(
+                                (pos) =>
+                                    // remove existing row for adds
+                                    !unindexedUpdatedPositionHashes.includes(
+                                        pos.positionId,
+                                    ),
+                            )
+                            // only show empty positions on account view
+                            .filter(
+                                (pos) => isAccountView || pos.positionLiq !== 0,
+                            ),
+                    )}
+                    fullData={unindexedUpdatedPositions.concat(fullData)}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
-                    sortedPositions.length > NUM_RANGES_WHEN_COLLAPSED && (
+                    sortedPositions.length > rowsPerPage && (
                         <FlexContainer
                             justifyContent='center'
                             alignItems='center'
@@ -458,7 +788,10 @@ function Ranges(props: propsIF) {
     );
 
     return (
-        <FlexContainer flexDirection='column' fullHeight={!isSmallScreen}>
+        <FlexContainer
+            flexDirection='column'
+            style={{ height: isSmallScreen ? '95%' : '100%' }}
+        >
             <div>{headerColumnsDisplay}</div>
 
             <div style={{ flex: 1, overflow: 'auto' }}>

@@ -18,15 +18,15 @@ export default function ConfirmationModalControl(props: propsIF) {
     const compKey = useId();
 
     const moduleName = pathname.includes('swap')
-        ? 'Swaps'
+        ? 'swaps'
         : pathname.includes('market')
-        ? 'Swaps'
+        ? 'swaps'
         : pathname.includes('pool')
-        ? 'Pool Orders'
+        ? 'pool orders'
         : pathname.includes('reposition')
-        ? 'Repositions'
+        ? 'repositions'
         : pathname.includes('limit')
-        ? 'Limit Orders'
+        ? 'limit orders'
         : 'unhandled';
 
     const toggleAriaLabel = `${
@@ -38,9 +38,9 @@ export default function ConfirmationModalControl(props: propsIF) {
             {displayInSettings ? (
                 <p
                     tabIndex={0}
-                >{`Skip the Confirmation Step for ${moduleName}`}</p>
+                >{`Skip the confirmation step for ${moduleName}`}</p>
             ) : (
-                <p tabIndex={0}>Skip this confirmation step in the future.</p>
+                <p tabIndex={0}>Skip this confirmation step in the future</p>
             )}
             <Toggle
                 key={compKey}

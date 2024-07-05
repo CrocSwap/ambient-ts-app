@@ -2,10 +2,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { lineData } from '../../ChartUtils/chartUtils';
-import {
-    drawnShapeDefaultColor,
-    drawnShapeDefaultLineWidth,
-} from '../../ChartUtils/drawConstants';
 
 export function createLinearLineSeries(
     xScale: d3.ScaleLinear<number, number>,
@@ -48,11 +44,7 @@ export function createAnnotationLineSeries(
         .value((d: lineData) => (denomInBase === d.denomInBase ? d.y : 1 / d.y))
         .xScale(xScale)
         .yScale(yScale)
-        .label('')
-        .decorate((context: CanvasRenderingContext2D) => {
-            context.strokeStyle = drawnShapeDefaultColor;
-            context.lineWidth = drawnShapeDefaultLineWidth;
-        });
+        .label('');
 }
 
 export function distanceToLine(

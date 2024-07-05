@@ -1,6 +1,7 @@
 import numbro from 'numbro';
 import { getFormattedNumber } from '../ambient-utils/dataLayer';
 import { TokenIF } from '../ambient-utils/types';
+import { BigNumber } from 'ethers';
 
 // using a currency library here in case we want to add more in future
 export const formatDollarAmount = (
@@ -187,8 +188,20 @@ export const formatTokenInput = (
             nullDisplay: '',
         });
     // remove trailing zeros
-    return (+inputStr)
-        .toFixed(token.decimals)
-        .replace(/0+$/, '')
-        .replace(/\.$/, '');
+    return inputStr.replace(/0+$/, '').replace(/\.$/, '');
 };
+
+export function stringToBigNumber(tokenString: string, decimals: number) {
+    // Split the token string into integer and decimal parts
+    // eslint-disable-next-line prefer-const
+    let [integerPart, decimalPart = ''] = tokenString.split('.');
+    // Ensure the decimal part is 18 digits long by appending zeros or truncating
+    decimalPart = decimalPart.padEnd(decimals, '0').substring(0, decimals);
+
+    // Combine the integer and decimal parts into one string
+    const combined = `${integerPart}${decimalPart}`;
+    // Convert to a BigNumber
+    const tokenQuantity = BigNumber.from(combined);
+    // Return the BigNumber representation
+    return tokenQuantity;
+}

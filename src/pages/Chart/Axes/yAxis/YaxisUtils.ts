@@ -8,6 +8,7 @@ export function createRectLabel(
     stroke: string | undefined = undefined,
     yAxisWidth: number | undefined = 70,
     subString: number | undefined = undefined,
+    isUSD: boolean,
 ) {
     context.beginPath();
     context.fillStyle = color;
@@ -17,14 +18,15 @@ export function createRectLabel(
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     if (subString) {
+        const tempText = isUSD ? '$0.0' : '0.0';
         const textHeight =
-            context.measureText('0.0').actualBoundingBoxAscent +
-            context.measureText('0.0').actualBoundingBoxDescent;
+            context.measureText(tempText).actualBoundingBoxAscent +
+            context.measureText(tempText).actualBoundingBoxDescent;
 
         context.fillText(
-            '0.0',
+            tempText,
             x -
-                context.measureText('0.0').width / 2 -
+                context.measureText(tempText).width / 2 -
                 context.measureText(subString.toString()).width / 2,
             y,
         );

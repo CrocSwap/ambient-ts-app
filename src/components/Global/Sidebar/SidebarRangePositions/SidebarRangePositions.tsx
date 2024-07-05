@@ -17,6 +17,7 @@ import {
     ViewMoreFlex,
 } from '../../../../styled/Components/Sidebar';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -38,6 +39,8 @@ export default function SidebarRangePositions(props: propsIF) {
         sidebar: { close: closeSidebar },
     } = useContext(SidebarContext);
     const { isUserConnected } = useContext(UserDataContext);
+
+    const { tokenA } = useContext(TradeDataContext);
 
     const location = useLocation();
 
@@ -63,8 +66,14 @@ export default function SidebarRangePositions(props: propsIF) {
         // URL params for link to pool page
         const poolLinkParams: poolParamsIF = {
             chain: chainId,
-            tokenA: pos.base,
-            tokenB: pos.quote,
+            tokenA:
+                tokenA.address.toLowerCase() === pos.base.toLowerCase()
+                    ? pos.base
+                    : pos.quote,
+            tokenB:
+                tokenA.address.toLowerCase() === pos.base.toLowerCase()
+                    ? pos.quote
+                    : pos.base,
         };
         // navigate user to pool page with URL params defined above
         linkGenPool.navigate(poolLinkParams);

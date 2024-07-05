@@ -12,13 +12,13 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
-import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { InputDisabledText } from '../../../../styled/Components/TradeModules';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -74,20 +74,20 @@ function RangeTokenInput(props: propsIF) {
         isTokenBEth,
     } = useContext(TradeTokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
-    const {
-        isTokenAPrimaryRange,
-        rangeTicksCopied,
-        setIsTokenAPrimaryRange,
-        setPrimaryQuantityRange,
-        setRangeTicksCopied,
-    } = useContext(RangeContext);
+    const { poolData } = useContext(PoolContext);
+    const { rangeTicksCopied, setRangeTicksCopied } = useContext(RangeContext);
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+        setPrimaryQuantity,
+    } = useContext(TradeDataContext);
     useEffect(() => {
         if (poolPriceNonDisplay) {
             updateTokenQty();
@@ -97,7 +97,7 @@ function RangeTokenInput(props: propsIF) {
     const resetTokenQuantities = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
-        setPrimaryQuantityRange('');
+        setPrimaryQuantity('');
     };
 
     const setTokenQtyValue = (inputValue: string, primaryToken: 'A' | 'B') => {
@@ -136,7 +136,7 @@ function RangeTokenInput(props: propsIF) {
         ? reverseTokens
         : (): void => {
               resetTokenQuantities();
-              setIsTokenAPrimaryRange(!isTokenAPrimaryRange);
+              setIsTokenAPrimary(!isTokenAPrimary);
               setIsTokenAPrimary(!isTokenAPrimary);
               if (!rangeTicksCopied && !isInitPage) {
                   // URL params for link to pool page
@@ -154,22 +154,22 @@ function RangeTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenA);
 
-        setIsTokenAPrimaryRange(true);
-        setPrimaryQuantityRange(inputStr);
+        setIsTokenAPrimary(true);
+        setPrimaryQuantity(inputStr);
         setTokenQtyValue(value, 'A');
     };
 
     const handleTokenBChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenB);
 
-        setIsTokenAPrimaryRange(false);
-        setPrimaryQuantityRange(inputStr);
+        setIsTokenAPrimary(false);
+        setPrimaryQuantity(inputStr);
         setTokenQtyValue(value, 'B');
     };
 
     const updateTokenQty = () => {
         if (!isOutOfRange) {
-            isTokenAPrimaryRange
+            isTokenAPrimary
                 ? setTokenQtyValue(tokenAInputQty, 'A')
                 : setTokenQtyValue(tokenBInputQty, 'B');
         }
@@ -187,6 +187,13 @@ function RangeTokenInput(props: propsIF) {
             <Text color='accent1'>Single-asset deposit only.</Text>
         </InputDisabledText>
     );
+
+    const usdValueTokenA = isTokenABase
+        ? poolData.basePrice
+        : poolData.quotePrice;
+    const usdValueTokenB = isTokenABase
+        ? poolData.quotePrice
+        : poolData.basePrice;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
@@ -214,7 +221,7 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenA.decimals}
+                usdValue={usdValueTokenA}
             />
             {!hidePlus && (
                 <FlexContainer
@@ -222,12 +229,81 @@ function RangeTokenInput(props: propsIF) {
                     justifyContent='center'
                     alignItems='center'
                 >
-                    <img
-                        style={{ cursor: 'default !important' }}
-                        src={tokenArrow}
-                        height={28}
-                        alt='plus sign'
-                    />
+                    <svg
+                        width='28'
+                        height='28'
+                        viewBox='0 0 28 28'
+                        fill='#000000'
+                        xmlns='http://www.w3.org/2000/svg'
+                    >
+                        <g
+                            clipPath='url(#clip0_4245_78460)'
+                            filter='url(#filter0_d_4245_78460)'
+                        >
+                            <path
+                                d='M14 0V20'
+                                stroke='var(--accent1)'
+                                strokeWidth='3'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                            />
+                            <path
+                                d='M4 10H24'
+                                stroke='var(--accent1)'
+                                strokeWidth='3'
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                            />
+                        </g>
+                        <defs>
+                            <filter
+                                id='filter0_d_4245_78460'
+                                x='0'
+                                y='0'
+                                width='28'
+                                height='28'
+                                filterUnits='userSpaceOnUse'
+                                colorInterpolationFilters='sRGB'
+                            >
+                                <feFlood
+                                    floodOpacity='0'
+                                    result='BackgroundImageFix'
+                                />
+                                <feColorMatrix
+                                    in='SourceAlpha'
+                                    type='matrix'
+                                    values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0'
+                                    result='hardAlpha'
+                                />
+                                <feOffset dy='4' />
+                                <feGaussianBlur stdDeviation='2' />
+                                <feComposite in2='hardAlpha' operator='out' />
+                                <feColorMatrix
+                                    type='matrix'
+                                    values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0'
+                                />
+                                <feBlend
+                                    mode='normal'
+                                    in2='BackgroundImageFix'
+                                    result='effect1_dropShadow_4245_78460'
+                                />
+                                <feBlend
+                                    mode='normal'
+                                    in='SourceGraphic'
+                                    in2='effect1_dropShadow_4245_78460'
+                                    result='shape'
+                                />
+                            </filter>
+                            <clipPath id='clip0_4245_78460'>
+                                <rect
+                                    width='20'
+                                    height='20'
+                                    fill='#000000'
+                                    transform='translate(4)'
+                                />
+                            </clipPath>
+                        </defs>
+                    </svg>
                 </FlexContainer>
             )}
             <TokenInputWithWalletBalance
@@ -254,8 +330,8 @@ function RangeTokenInput(props: propsIF) {
                 }
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 isInitPage={isInitPage}
-                tokenDecimals={tokenB.decimals}
                 isWithdraw
+                usdValue={usdValueTokenB}
             />
         </FlexContainer>
     );

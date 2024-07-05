@@ -54,6 +54,7 @@ export interface ContainerProps {
     maxHeight?: string;
     overlay?: 'blur' | null | undefined | boolean;
     margin?: string;
+    marginLeft?: string;
     padding?: string;
     display?: Displays;
     colSpan?: string;
@@ -106,6 +107,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         overlay,
         grow,
         margin,
+        marginLeft,
         boxShadow,
         padding,
         colSpan,
@@ -206,6 +208,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${overlayStyles}
         ${padding ? `padding: ${padding};` : ''}
         ${margin ? `margin: ${margin};` : ''}
+        ${marginLeft ? `margin-left: ${marginLeft};` : ''}
         ${boxShadow ? `box-shadow: var(--${boxShadow}-box-shadow);` : ''}
         ${displayStyling}
         ${font ? `font-family: var(--${font});` : ''}

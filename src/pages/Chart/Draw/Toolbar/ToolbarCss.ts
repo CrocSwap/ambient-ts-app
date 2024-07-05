@@ -10,7 +10,7 @@ const ToolbarContainer = styled.div<{
         if (isActive) {
             return `
             width: 38px;
-            margin-left:5px;
+            padding-left:5px;
 
             margin-top: ${marginTopValue}px;
             &::-webkit-scrollbar {
@@ -94,14 +94,17 @@ const IconActiveContainer = styled.div`
 `;
 
 // ? img
-const IconFillContainer = styled.div<{ isActive: boolean }>`
-    ${({ isActive }) => {
+const IconFillContainer = styled.div<{ isActive: boolean; fill: string }>`
+    ${({ isActive, fill }) => {
         if (isActive) {
-            return `
-        background-color: rgba(115, 113, 252, 0.7);
-        grid-gap: 10px;
-        cursor: pointer;
-    `;
+            return (
+                `
+        background-color:` +
+                fill +
+                `;
+        max-width : 23px;
+    `
+            );
         }
     }}
 
@@ -109,7 +112,8 @@ const IconFillContainer = styled.div<{ isActive: boolean }>`
     display: flex;
     width: Fixed (24px);
     height: Fixed (24px);
-    padding: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     border-radius: 4px;
     gap: 10px;
 

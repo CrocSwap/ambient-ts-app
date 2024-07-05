@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
-import useDebounce from '../App/hooks/useDebounce';
 import {
     TokenIF,
     PositionIF,
@@ -11,7 +10,6 @@ import {
 } from '../ambient-utils/types';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
@@ -162,6 +160,7 @@ export const GraphDataContextProvider = (props: {
     const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
     const {
         server: { isEnabled: isServerEnabled },
+        isUserIdle,
     } = useContext(AppStateContext);
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
@@ -178,7 +177,6 @@ export const GraphDataContextProvider = (props: {
     } = useContext(CachedDataContext);
     const { crocEnv, provider, chainData, activeNetwork } =
         useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { userAddress: userDefaultAddress, isUserConnected } =
@@ -372,7 +370,7 @@ export const GraphDataContextProvider = (props: {
                     (userPositionIndexUpdate) =>
                         userPositionIndexUpdate.positionID ===
                             positionUpdate.positionID &&
-                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >=
                             (positionUpdate.unixTimeAdded || 0),
                 ),
         );
@@ -391,14 +389,12 @@ export const GraphDataContextProvider = (props: {
                     (userPositionIndexUpdate) =>
                         userPositionIndexUpdate.positionID ===
                             positionUpdate.positionID &&
-                        (userPositionIndexUpdate.unixTimeIndexed || 0) >
+                        (userPositionIndexUpdate.unixTimeIndexed || 0) >=
                             (positionUpdate.unixTimeAdded || 0),
                 ),
         );
 
-    // Wait 2 seconds before refreshing to give cache server time to sync from
-    // last block
-    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+    const onAccountRoute = location.pathname.includes('account');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -424,7 +420,6 @@ export const GraphDataContextProvider = (props: {
                         chainId: chainData.chainId,
                         gcUrl: activeNetwork.graphCacheUrl,
                         provider,
-                        lastBlockNumber,
                         tokenUniv: tokens.tokenUniv,
                         crocEnv,
                         cachedFetchTokenPrice,
@@ -471,8 +466,7 @@ export const GraphDataContextProvider = (props: {
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
-                    lastBlockNumber: lastBlockNumber,
-                    n: 100, // fetch last 100 changes,
+                    n: 200, // fetch last 200 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
@@ -555,7 +549,9 @@ export const GraphDataContextProvider = (props: {
         isUserConnected,
         userAddress,
         chainData.chainId,
-        lastBlockNumWait,
+        isUserIdle
+            ? Math.floor(Date.now() / (onAccountRoute ? 60000 : 120000))
+            : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
         !!crocEnv,
         !!provider,
     ]);

@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useNetwork, useSwitchNetwork } from 'wagmi';
+import {
+    useWeb3ModalAccount,
+    useSwitchNetwork,
+} from '@web3modal/ethers5/react';
 import {
     getDefaultChainId,
     validateChainId,
@@ -14,12 +17,11 @@ import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
-    isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
-    const { chain: chainNetwork, chains: chns } = useNetwork();
+    const { chainId: chainNetwork } = useWeb3ModalAccount();
     const { switchNetwork } = useSwitchNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -62,7 +64,7 @@ export const useAppChain = (): {
     function getChainFromWallet(): string | null {
         let output: string | null = null;
         if (chainNetwork) {
-            const chainAsString: string = chainNumToString(chainNetwork.id);
+            const chainAsString: string = chainNumToString(chainNetwork);
             const isValid: boolean = validateChainId(chainAsString);
             if (isValid) output = chainAsString;
         }
@@ -121,6 +123,9 @@ export const useAppChain = (): {
                         const isPathUserAddress = isPathENS || isPathHex;
                         const isPathUserXpOrLeaderboard =
                             pathname.includes('/xp');
+                        const isPathPointsTabOnAccount =
+                            pathname.includes('/points');
+                        const isPathOnExplore = pathname.includes('/explore');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -146,14 +151,23 @@ export const useAppChain = (): {
                                 );
                             } else if (
                                 isPathUserAddress ||
-                                isPathUserXpOrLeaderboard
+                                isPathUserXpOrLeaderboard ||
+                                isPathPointsTabOnAccount ||
+                                isPathOnExplore
                             ) {
-                                window.location.reload();
+                                if (
+                                    activeNetwork.chainId !=
+                                    incomingChainFromWallet
+                                ) {
+                                    window.location.reload();
+                                }
                             } else {
                                 linkGenCurrent.navigate();
                             }
                         }
-                        window.location.reload();
+                        if (activeNetwork.chainId != incomingChainFromWallet) {
+                            window.location.reload();
+                        }
                         // update state with new validated wallet network
                         chainInWalletValidated.current =
                             incomingChainFromWallet;
@@ -164,36 +178,16 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork?.id, chainInWalletValidated.current]);
+    }, [chainNetwork, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
-
-    // boolean showing if the current chain in connected wallet is supported
-    // this is used to launch the network switcher automatically
-    const isWalletChainSupported = useMemo<boolean>(() => {
-        // output variable, true by default (when no wallet is connected)
-        let isSupported = true;
-        // if a wallet is connected, try to validate network
-        if (chns.length && chainNetwork) {
-            // array of supported chains (number)
-            const supportedChains: number[] = chns.map((chn) => chn.id);
-            // chain Id of connected network in wallet
-            const walletChain: number = chainNetwork.id;
-            // determine if connected wallet has a supported chain
-            isSupported = supportedChains.includes(walletChain);
-        }
-        // return output variable
-        return isSupported;
-    }, [chainNetwork]);
 
     // metadata about the active network in the app
     const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
         findNetworkData(
             chainInURLValidated
                 ? chainInURLValidated
-                : isWalletChainSupported
-                ? localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain
-                : defaultChain,
+                : localStorage.getItem(CHAIN_LS_KEY) ?? defaultChain,
         ) || findNetworkData(defaultChain),
     );
 
@@ -227,6 +221,7 @@ export const useAppChain = (): {
             pathname.slice(1)?.length == 42;
         const isPathUserAddress = isPathENS || isPathHex;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
+        const isPathOnExplore = pathname.includes('/explore');
         if (
             linkGenCurrent.currentPage === 'initpool' ||
             linkGenCurrent.currentPage === 'reposition'
@@ -236,7 +231,11 @@ export const useAppChain = (): {
             linkGenSwap.navigate(`chain=${network.chainId}`);
         } else if (pathname.includes('chain')) {
             linkGenCurrent.navigate(`chain=${network.chainId}`);
-        } else if (isPathUserAddress || isPathUserXpOrLeaderboard) {
+        } else if (
+            isPathUserAddress ||
+            isPathUserXpOrLeaderboard ||
+            isPathOnExplore
+        ) {
             window.location.reload();
         } else {
             linkGenCurrent.navigate();
@@ -255,7 +254,6 @@ export const useAppChain = (): {
 
     return {
         chainData,
-        isWalletChainSupported,
         activeNetwork,
         chooseNetwork,
     };

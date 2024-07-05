@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
@@ -7,6 +7,7 @@ import { PositionIF } from '../../../../ambient-utils/types';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 
 interface IRepositionPriceInfoProps {
     position: PositionIF;
@@ -23,6 +24,10 @@ interface IRepositionPriceInfoProps {
     rangeGasPriceinDollars: string | undefined;
     currentMinPrice: string;
     currentMaxPrice: string;
+    newValueString: string;
+    valueImpactString: string;
+    valueLossExceedsThreshold: boolean;
+    isCurrentPositionEmpty: boolean;
 }
 
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
@@ -41,6 +46,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         rangeGasPriceinDollars,
         currentMinPrice,
         currentMaxPrice,
+        newValueString,
+        // valueImpactString,
+        valueLossExceedsThreshold,
+        isCurrentPositionEmpty,
     } = props;
 
     const { repoSlippage } = useContext(UserPreferenceContext);
@@ -51,20 +60,32 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
 
     const { isDenomBase } = useContext(TradeDataContext);
 
+    const usdRemovalValue = useMemo(
+        () =>
+            getFormattedNumber({
+                value: position.totalValueUSD,
+                prefix: '$',
+            }),
+        [position],
+    );
+
     // JSX frag for estimated APR of position
     interface RowDisplayPropsIF {
         item1: string | number;
         item2: string | number;
         item3: string | number;
+        negative?: boolean;
     }
     function RowDisplay(props: RowDisplayPropsIF) {
-        const { item1, item2, item3 } = props;
+        const { item1, item2, item3, negative } = props;
 
         return (
             <div className={styles.row_display}>
                 <p>{item1 ? item1 : ''}</p>
                 <p>{item2 ? item2 : ''}</p>
-                <p>{item3 ? item3 : ''}</p>
+                <p style={negative ? { color: 'var(--other-red)' } : undefined}>
+                    {item3 ? item3 : ''}
+                </p>
             </div>
         );
     }
@@ -140,6 +161,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         </section>
     );
 
+    const isLoading =
+        newBaseQtyDisplay === '...' || newQuoteQtyDisplay === '...';
+
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
@@ -152,25 +176,59 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
                 <RowDisplay
                     item1={position?.baseSymbol}
                     item2={currentBaseQtyDisplayTruncated}
-                    item3={newBaseQtyDisplay}
+                    item3={isCurrentPositionEmpty ? '...' : newBaseQtyDisplay}
                 />
                 <RowDisplay
                     item1={position?.quoteSymbol}
                     item2={currentQuoteQtyDisplayTruncated}
-                    item3={newQuoteQtyDisplay}
+                    item3={isCurrentPositionEmpty ? '...' : newQuoteQtyDisplay}
                 />
                 <aside className={styles.divider} />
 
                 <RowDisplay
                     item1='Min Price'
                     item2={currentMinPrice}
-                    item3={rangeWidthPercentage === 100 ? '0' : minPriceDisplay}
+                    item3={
+                        isCurrentPositionEmpty
+                            ? '...'
+                            : rangeWidthPercentage === 100
+                            ? '0'
+                            : minPriceDisplay
+                    }
                 />
                 <RowDisplay
                     item1='Max Price'
                     item2={currentMaxPrice}
-                    item3={rangeWidthPercentage === 100 ? '∞' : maxPriceDisplay}
+                    item3={
+                        isCurrentPositionEmpty
+                            ? '...'
+                            : rangeWidthPercentage === 100
+                            ? '∞'
+                            : maxPriceDisplay
+                    }
                 />
+                <aside className={styles.divider} />
+
+                <RowDisplay
+                    item1='Value'
+                    item2={usdRemovalValue}
+                    item3={
+                        isCurrentPositionEmpty || isLoading
+                            ? '...'
+                            : newValueString
+                    }
+                    negative={!isLoading && valueLossExceedsThreshold}
+                />
+                {/* <RowDisplay
+                    item1='Impact'
+                    item2={''}
+                    item3={
+                        isCurrentPositionEmpty || isLoading
+                            ? '...'
+                            : valueImpactString
+                    }
+                    negative={!isLoading && valueLossExceedsThreshold}
+                /> */}
             </div>
             {gasPriceDropdown}
         </div>

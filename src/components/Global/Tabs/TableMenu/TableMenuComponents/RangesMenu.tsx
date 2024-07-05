@@ -33,7 +33,6 @@ interface propsIF {
     rangeDetailsProps: any;
     position: PositionIF;
     isPositionEmpty: boolean;
-    isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
     isAccountView: boolean;
@@ -48,7 +47,6 @@ function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
-        isEmpty,
         isPositionEmpty,
         userMatchesConnectedAccount,
         rangeDetailsProps,
@@ -105,6 +103,9 @@ function RangesMenu(props: propsIF) {
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
 
+    const feesAvailableForHarvest =
+        (position.feesLiqBase || 0) + (position.feesLiqQuote || 0) > 0;
+
     const showAbbreviatedCopyTradeButton = isAccountView
         ? sidebar.isOpen
             ? useMediaQuery('(max-width: 1300px)')
@@ -137,20 +138,22 @@ function RangesMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
 
+    const shouldCopyQuoteToTokenA =
+        tokenAAddress.toLowerCase() === position.quote.toLowerCase() ||
+        tokenBAddress.toLowerCase() === position.base.toLowerCase();
+
     const repositionButton = (
         <Link
             id={`reposition_button_${position.positionId}`}
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
-                tokenA:
-                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
-                        ? position.quote
-                        : position.base,
-                tokenB:
-                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
-                        ? position.base
-                        : position.quote,
+                tokenA: shouldCopyQuoteToTokenA
+                    ? position.quote
+                    : position.base,
+                tokenB: shouldCopyQuoteToTokenA
+                    ? position.base
+                    : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
@@ -241,7 +244,10 @@ function RangesMenu(props: propsIF) {
 
     const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
-        !isAmbient && positionMatchesLoggedInUser ? (
+        !isAmbient &&
+        positionMatchesLoggedInUser &&
+        // show harvest button if fees are available for harvest or if on mainnet
+        (feesAvailableForHarvest || chainId === '0x1') ? (
             <Chip
                 id={`harvest_position_${position.positionId}`}
                 onClick={() => openActionModal('Harvest')}
@@ -272,9 +278,9 @@ function RangesMenu(props: propsIF) {
                 addButton}
             {(tableView === 'large' ||
                 (!showRepositionButton && tableView !== 'small')) &&
-                !isEmpty &&
+                !isPositionEmpty &&
                 removeButton}
-            {tableView === 'large' && !isEmpty && harvestButton}
+            {tableView === 'large' && !isPositionEmpty && harvestButton}
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
@@ -287,10 +293,10 @@ function RangesMenu(props: propsIF) {
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {tableView !== 'large' && !isEmpty && harvestButton}
+            {tableView !== 'large' && !isPositionEmpty && harvestButton}
             {(tableView === 'small' ||
                 (showRepositionButton && tableView !== 'large')) &&
-                !isEmpty &&
+                !isPositionEmpty &&
                 removeButton}
             {detailsButton}
             {!isAccountView && walletButton}

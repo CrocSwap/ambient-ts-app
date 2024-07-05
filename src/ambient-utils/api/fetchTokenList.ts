@@ -12,7 +12,7 @@ import testnetTokenList from '../constants/testnet-token-list.json';
 // fn to fetch a token list asynchronously... this function creates and
 // ... returns a promise but allows the parent file to determine how to
 // ... best resolve it (multiple fetches may be dispatched in parallel)
-export default function fetchTokenList(
+export default async function fetchTokenList(
     uri: string,
     isUserImported = false,
 ): Promise<TokenListIF> {

@@ -8,7 +8,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 export interface NetworkIF {
     chainId: string;
     graphCacheUrl: string;
-    wagmiChain: any;
+    chain: any;
     evmRpcUrl: string;
     shouldPollBlock: boolean;
     marketData: string;
@@ -22,7 +22,6 @@ export interface NetworkSessionIF {
     infuraUrl: string;
     provider: Provider;
     chainId: string;
-    lastBlockNumber: number;
     signer?: Signer;
     gcUrl: string;
     crocEnv: CrocEnv;

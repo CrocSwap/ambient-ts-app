@@ -32,8 +32,8 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
         useContext(UserDataContext);
     const blockExplorer = getChainExplorer(chainId);
     const link = resolvedAddressFromContext
-        ? `/account/${resolvedAddressFromContext}`
-        : `/account/${userAddress}`;
+        ? `/${resolvedAddressFromContext}`
+        : `/${userAddress}`;
 
     return (
         <NameDisplayContainer gap={4} alignItems='center'>

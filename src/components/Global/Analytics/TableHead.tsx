@@ -1,5 +1,4 @@
 import { SortedPoolMethodsIF, sortType } from './useSortedPools';
-import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { HeaderItem } from './TopPools';
 import {
     LabelWrapper,
@@ -7,61 +6,58 @@ import {
     TableHeadRow,
     TableHeadWrapper,
 } from '../../../styled/Components/Analytics';
+import AssignSort from './AssignSort';
 
-const TableHead = ({
-    headerItems,
-    sortedPools,
-}: {
+interface propsIF {
     headerItems: HeaderItem[];
     sortedPools: SortedPoolMethodsIF;
-}) => {
-    const AssignSort: React.FC<{ label: string }> = ({ label }) => {
-        const isCurrentSort = sortedPools.current === label.toLowerCase();
-        const sortedArrow =
-            sortedPools.direction === 'ascending' ? (
-                <BsSortDown />
-            ) : (
-                <BsSortUpAlt />
-            );
-        const showArrow = isCurrentSort ? sortedArrow : null;
+}
 
-        return showArrow;
-    };
+const TableHead = (props: propsIF) => {
+    const { headerItems, sortedPools } = props;
 
     return (
         <TableHeadWrapper>
             <TableHeadRow>
-                {headerItems.map((item, index) => (
-                    <TableHeaderCell
-                        key={index}
-                        align={item.align}
-                        sortable={item.sortable}
-                        pxValue={item.pxValue}
-                        responsive={item.responsive}
-                        label={item.label}
-                        hidden={item.hidden}
-                        onClick={() => {
-                            item.sortable &&
-                                sortedPools.updateSort(
-                                    (item.label
-                                        ? item.label.toLowerCase()
-                                        : '') as sortType,
-                                );
-                        }}
-                    >
-                        <LabelWrapper
+                {headerItems.map((item: HeaderItem) => {
+                    const isActiveSort: boolean =
+                        sortedPools.current === item.label.toLowerCase();
+                    return (
+                        <TableHeaderCell
+                            key={JSON.stringify(item)}
                             align={item.align}
-                            label={item.label}
                             sortable={item.sortable}
-                            currentSortedLabel={
-                                sortedPools.current ?? undefined
-                            }
+                            pxValue={item.pxValue}
+                            responsive={item.responsive}
+                            label={item.label}
+                            hidden={item.hidden}
+                            onClick={() => {
+                                item.sortable &&
+                                    sortedPools.updateSort(
+                                        (item.label
+                                            ? item.label.toLowerCase()
+                                            : '') as sortType,
+                                    );
+                            }}
                         >
-                            {item.label}
-                            <AssignSort label={item.label} />
-                        </LabelWrapper>
-                    </TableHeaderCell>
-                ))}
+                            <LabelWrapper
+                                align={item.align}
+                                label={item.label}
+                                sortable={item.sortable}
+                                currentSortedLabel={
+                                    sortedPools.current ?? undefined
+                                }
+                            >
+                                {item.label}
+                                {isActiveSort && (
+                                    <AssignSort
+                                        direction={sortedPools.direction}
+                                    />
+                                )}
+                            </LabelWrapper>
+                        </TableHeaderCell>
+                    );
+                })}
             </TableHeadRow>
         </TableHeadWrapper>
     );

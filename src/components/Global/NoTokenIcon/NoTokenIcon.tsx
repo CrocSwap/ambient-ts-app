@@ -1,20 +1,23 @@
 import styles from './NoTokenIcon.module.css';
 
-interface NoTokenIconPropsIF {
-    tokenInitial: string;
+interface propsIF {
+    tokenInitial: string | null;
     width?: string;
 }
-export default function NoTokenIcon(props: NoTokenIconPropsIF) {
+export default function NoTokenIcon(props: propsIF) {
     const { tokenInitial, width } = props;
 
     const widthStyle = width ? width : '30px';
-
     return (
         <div
             className={styles.no_token_icon}
-            style={{ width: widthStyle, height: widthStyle }}
+            style={{
+                width: widthStyle,
+                height: widthStyle,
+                textTransform: 'none',
+            }}
         >
-            <p>{tokenInitial}</p>
+            <p>{tokenInitial ?? ''}</p>
         </div>
     );
 }

@@ -84,6 +84,7 @@ function OrderHeader(props: propsIF) {
                                 ? 'center'
                                 : 'left'
                         }
+                        style={{ textTransform: 'none' }}
                     >
                         {name} {arrow}
                     </Text>

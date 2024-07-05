@@ -1,0 +1,10 @@
+{
+  "name": "Ambient Yeet",
+  "description": "Yeet! You are providing a modest amount of liquidity in a single position. You will be rewarded accordingly to the size! For now, enjoy having a differently colored croc. (Art by @ShizzyAizawa)",
+  "attributes": [
+    { "trait_type": "Variant", "value": "Big LP" },
+    { "trait_type": "Amount", "value": "100000" },
+    { "trait_type": "Artist", "value": "@ShizzyAizawa" }
+  ],
+  "image": "https://ambient.finance/scroll-badge/4.png"
+}

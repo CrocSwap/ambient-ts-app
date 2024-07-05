@@ -13,6 +13,7 @@ import Apy from '../../Tabs/Apy/Apy';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 type ItemIF = {
     slug: string;
@@ -24,11 +25,13 @@ interface propsIF {
     tx: TransactionIF;
     controlItems: ItemIF[];
     positionApy: number | undefined;
+    isAccountView: boolean;
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { tx, controlItems, positionApy } = props;
+    const { tx, controlItems, positionApy, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -54,7 +57,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         quoteTokenCharacter,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessTransaction(tx, userAddress);
+    } = useProcessTransaction(tx, userAddress, crocEnv);
 
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
@@ -67,25 +70,37 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
+    const baseIcon = (
+        <TokenIcon
+            token={baseToken}
+            src={uriToHttp(baseTokenLogo)}
+            alt={baseTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const quoteIcon = (
+        <TokenIcon
+            token={quoteToken}
+            src={uriToHttp(quoteTokenLogo)}
+            alt={quoteTokenSymbol}
+            size='2xl'
+        />
+    );
+
+    const isDenomBaseLocal = isAccountView
+        ? !isBaseTokenMoneynessGreaterOrEqual
+        : isDenomBase;
+
     const tokenPairDetails = (
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                <TokenIcon
-                    token={baseToken}
-                    src={uriToHttp(baseTokenLogo)}
-                    alt={baseTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={quoteToken}
-                    src={uriToHttp(quoteTokenLogo)}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
+                {isDenomBaseLocal ? baseIcon : quoteIcon}
+                {isDenomBaseLocal ? quoteIcon : baseIcon}
             </div>
             <p>
-                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                {isDenomBaseLocal ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBaseLocal ? quoteTokenSymbol : baseTokenSymbol}
             </p>
         </div>
     );
@@ -301,13 +316,13 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             ) : isOnTradeRoute ? (
                 <span className={styles.min_price}>
                     {truncatedDisplayPrice
-                        ? isDenomBase
+                        ? isDenomBaseLocal
                             ? quoteTokenCharacter + truncatedDisplayPrice
                             : baseTokenCharacter + truncatedDisplayPrice
                         : null}
 
                     {truncatedLowDisplayPrice
-                        ? isDenomBase
+                        ? isDenomBaseLocal
                             ? quoteTokenCharacter + truncatedLowDisplayPrice
                             : baseTokenCharacter + truncatedLowDisplayPrice
                         : null}
@@ -315,7 +330,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         <AiOutlineLine style={{ paddingTop: '6px' }} />
                     ) : null}
                     {truncatedHighDisplayPrice
-                        ? isDenomBase
+                        ? isDenomBaseLocal
                             ? quoteTokenCharacter + truncatedHighDisplayPrice
                             : baseTokenCharacter + truncatedHighDisplayPrice
                         : null}
@@ -367,14 +382,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
-                {isDenomBase
+                {isDenomBaseLocal
                     ? isBuy
                         ? sellBaseRow
                         : buyBaseRow
                     : isBuy
                     ? buyQuoteRow
                     : sellQuoteRow}
-                {isDenomBase
+                {isDenomBaseLocal
                     ? isBuy
                         ? buyQuoteRow
                         : sellQuoteRow

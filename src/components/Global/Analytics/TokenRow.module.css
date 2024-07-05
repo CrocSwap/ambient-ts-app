@@ -1,0 +1,11 @@
+.token_row > * {
+    height: 100%;
+}
+
+.trade_btn_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+}

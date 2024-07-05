@@ -2,6 +2,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../constants';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { IDepositedTokenBalance } from './fetchTokenBalances';
+import { TokenIF } from '../types';
 
 interface IFetchDepositBalancesProps {
     chainId: string;
@@ -9,6 +10,7 @@ interface IFetchDepositBalancesProps {
     crocEnv: CrocEnv;
     graphCacheUrl: string;
     cachedTokenDetails: FetchContractDetailsFn;
+    tokenList: TokenIF[];
 }
 
 export async function fetchDepositBalances(
@@ -47,13 +49,29 @@ async function expandTokenBalance(
     token: string,
     props: IFetchDepositBalancesProps,
 ): Promise<IDepositedTokenBalance> {
-    const details = props.cachedTokenDetails(
-        (await props.crocEnv.context).provider,
-        token,
-        props.chainId,
-    );
-    const symbol = details.then((d) => d?.symbol || '');
-    const decimals = props.crocEnv.token(token).decimals;
+    const tokenListedSymbol = props.tokenList.find(
+        (listedToken) =>
+            listedToken.address.toLowerCase() === token.toLowerCase(),
+    )?.symbol;
+
+    const tokenListedDecimals = props.tokenList.find(
+        (listedToken) =>
+            listedToken.address.toLowerCase() === token.toLowerCase(),
+    )?.decimals;
+
+    const symbol = tokenListedSymbol
+        ? tokenListedSymbol
+        : props
+              .cachedTokenDetails(
+                  (await props.crocEnv.context).provider,
+                  token,
+                  props.chainId,
+              )
+              .then((d) => d?.symbol || '');
+
+    const decimals = tokenListedDecimals
+        ? tokenListedDecimals
+        : props.crocEnv.token(token).decimals;
     const balance = props.crocEnv.token(token).balance(props.user);
 
     return {

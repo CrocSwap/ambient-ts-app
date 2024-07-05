@@ -17,7 +17,8 @@ export function useRangeInputDisable(
     useEffect(() => {
         if (
             currentPoolPriceTick === Infinity ||
-            currentPoolPriceTick === -Infinity
+            currentPoolPriceTick === -Infinity ||
+            (defaultLowTick === 0 && defaultHighTick === 0)
         )
             return;
         if (!isMintLiqEnabled) {

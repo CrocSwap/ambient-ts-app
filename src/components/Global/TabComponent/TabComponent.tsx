@@ -31,7 +31,6 @@ type tabData = {
 
 interface TabPropsIF {
     data: tabData[];
-    setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
@@ -43,7 +42,6 @@ interface TabPropsIF {
 export default function TabComponent(props: TabPropsIF) {
     const {
         data,
-        setSelectedInsideTab,
         rightTabOptions,
         isModalView = false,
         shouldSyncWithTradeModules = true,
@@ -54,28 +52,26 @@ export default function TabComponent(props: TabPropsIF) {
         setOutsideControl,
         selectedOutsideTab,
         toggleTradeTable,
+        setCurrentTxActiveInTransactions,
+        setCurrentLimitOrderActive,
+        setCurrentPositionActive,
     } = useContext(TradeTableContext);
 
     const { tradeTableState } = useContext(ChartContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
+    const resetActiveRow = () => {
+        setCurrentTxActiveInTransactions('');
+        setCurrentLimitOrderActive('');
+        setCurrentPositionActive('');
+    };
+
+    useEffect(() => {
+        resetActiveRow();
+    }, [selectedTab.label]);
+
     function handleSelectedTab(item: tabData) {
-        if (setSelectedInsideTab) {
-            switch (item.label) {
-                case 'Transactions':
-                    setSelectedInsideTab(0);
-                    break;
-                case 'Limit Orders':
-                    setSelectedInsideTab(1);
-                    break;
-                case 'Ranges':
-                    setSelectedInsideTab(2);
-                    break;
-                default:
-                    break;
-            }
-        }
         setOutsideControl(false);
         setSelectedTab(item);
 
@@ -112,7 +108,7 @@ export default function TabComponent(props: TabPropsIF) {
         shouldSyncWithTradeModules,
     ]);
 
-    function handleMobileMenuIcon(icon: string, label: string) {
+    function handleMobileMenuIcon(icon: string, label: string): JSX.Element {
         return (
             <div className={styles.tab_icon_container}>
                 <DefaultTooltip

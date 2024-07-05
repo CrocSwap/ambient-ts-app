@@ -18,7 +18,7 @@ class AnalyticsBatchRequestManager {
         string,
         RequestData<keyof RequestResponseMap>
     > = {};
-    static sendFrequency = 4250;
+    static sendFrequency = 1000;
     static sentBatches = 0;
     static parsedBatches = 0;
     static intervalHandle: ReturnType<typeof setInterval> | null = null;
@@ -57,7 +57,7 @@ class AnalyticsBatchRequestManager {
     }
 
     static async send(nonces: string[]): Promise<void> {
-        const queryBody = JSON.stringify({
+        const queryObject = {
             service: 'run',
             config_path: 'batch_requests',
             include_data: '0',
@@ -72,7 +72,7 @@ class AnalyticsBatchRequestManager {
                     };
                 }),
             },
-        });
+        };
 
         const requests = AnalyticsBatchRequestManager.pendingRequests;
 
@@ -80,6 +80,8 @@ class AnalyticsBatchRequestManager {
             AnalyticsBatchRequestManager.sentBatches =
                 AnalyticsBatchRequestManager.sentBatches + 1;
 
+            const isPriceQuery =
+                queryObject.data.req[0].config_path === 'price';
             const response = await fetchTimeout(
                 AnalyticsBatchRequestManager.BATCH_ANALYTICS_URL,
                 {
@@ -88,9 +90,10 @@ class AnalyticsBatchRequestManager {
                         Accept: 'application/json',
                         'Content-Type': 'application/json',
                     },
-                    body: queryBody,
+                    body: JSON.stringify(queryObject),
                 },
-                AnalyticsBatchRequestManager.sendFrequency + 3500,
+                AnalyticsBatchRequestManager.sendFrequency +
+                    (isPriceQuery ? 2200 : 4500),
             );
 
             if (!response.ok) {

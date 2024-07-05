@@ -1,6 +1,7 @@
 export function isNetworkAccessDisabled() {
-    console.log(process.env.NETWORK_ACCESS);
+    console.log(import.meta.env.NETWORK_ACCESS);
     return (
-        !process.env.NETWORK_ACCESS || process.env.NETWORK_ACCESS === 'disabled'
+        !import.meta.env.NETWORK_ACCESS ||
+        import.meta.env.NETWORK_ACCESS === 'disabled'
     );
 }

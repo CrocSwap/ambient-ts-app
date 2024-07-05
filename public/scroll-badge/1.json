@@ -1,0 +1,10 @@
+{
+  "name": "Ambient Swapooor",
+  "description": "Swapooor! You have made a swap on Ambient Finance for over $500. (Art by @ShizzyAizawa)",
+  "attributes": [
+    { "trait_type": "Variant", "value": "Swap" },
+    { "trait_type": "Amount", "value": "500" },
+    { "trait_type": "Artist", "value": "@ShizzyAizawa" }
+  ],
+  "image": "https://ambient.finance/scroll-badge/1.png"
+}

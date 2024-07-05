@@ -131,7 +131,7 @@ export default function WalletCard(props: propsIF) {
             <p className={styles.value}>
                 {getFormattedNumber({
                     value: tokenUsdPrice * (walletBalanceDisplayNum ?? 0),
-                    isUSD: true,
+                    prefix: '$',
                 })}
             </p>
             <p className={styles.amount}>{walletBalanceTruncated}</p>

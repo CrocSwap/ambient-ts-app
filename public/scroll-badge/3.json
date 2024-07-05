@@ -1,0 +1,10 @@
+{
+  "name": "Ambient Filloor",
+  "description": "Filloor! You have filled a limit on Ambient Finance valued over $500. (Art by @ShizzyAizawa)",
+  "attributes": [
+    { "trait_type": "Variant", "value": "Limit Order" },
+    { "trait_type": "Amount", "value": "500" },
+    { "trait_type": "Artist", "value": "@ShizzyAizawa" }
+  ],
+  "image": "https://ambient.finance/scroll-badge/3.png"
+}
