@@ -845,6 +845,7 @@ function ChatPanel(props: propsIF) {
     const header = (
         <div
             className={styles.chat_header}
+            id='chat-header'
             onClick={() => {
                 setIsChatOpen(!isChatOpen);
                 // dismissSideBannerPopup && dismissSideBannerPopup();
@@ -898,7 +899,7 @@ function ChatPanel(props: propsIF) {
                 </div>
             )}
 
-            <section style={{ paddingRight: '10px' }}>
+            <section id='open-close-trollbox' style={{ paddingRight: '10px' }}>
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
@@ -1140,19 +1141,21 @@ function ChatPanel(props: propsIF) {
                         />
                     </span>
                 ) : (
-                    <span>
+                    <div
+                        id='scroll-bottom'
+                        role='button'
+                        tabIndex={0}
+                        onClick={scrollToBottomButton}
+                        style={{ cursor: 'pointer' }}
+                        title='Scroll To Bottom'
+                    >
                         <RiArrowDownDoubleLine
-                            role='button'
                             size={27}
                             color='var(--accent1)'
-                            onClick={() => scrollToBottomButton()}
-                            tabIndex={0}
-                            aria-label='Scroll to bottom zzzz'
-                            style={{ cursor: 'pointer' }}
-                            title={'Scroll To Bottom'}
+                            aria-label='Scroll to bottom'
                             className={styles.scroll_to_icon}
                         />
-                    </span>
+                    </div>
                 )
             ) : (
                 ''
@@ -1269,23 +1272,27 @@ function ChatPanel(props: propsIF) {
 
     const rndPreviousMessagesButton = () => {
         return (
-            <div className={styles.scroll_up}>
+            <span
+                id='previous-messages'
+                className={styles.scroll_up}
+                role='button'
+                tabIndex={0}
+                onClick={() => getPreviousMessages()}
+                style={{ cursor: 'pointer' }}
+                title='Show previous messages'
+            >
                 {showPreviousMessagesButton ? (
                     <RiArrowUpDoubleLine
                         role='button'
                         size={27}
                         color='var(--accent1)'
-                        onClick={() => getPreviousMessages()}
-                        tabIndex={0}
                         aria-label='Show previous messages'
-                        style={{ cursor: 'pointer' }}
-                        title='Show previous messages'
                         className={styles.scroll_to_icon}
                     />
                 ) : (
                     ''
                 )}
-            </div>
+            </span>
         );
     };
 
@@ -1378,6 +1385,7 @@ function ChatPanel(props: propsIF) {
             >
                 <div className={styles.chat_body}>
                     <div
+                        id='go-to-chart-button'
                         className={`${styles.btn_go_to_chart} ${
                             goToChartParams != undefined ? styles.active : ''
                         }`}

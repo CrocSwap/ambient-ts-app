@@ -346,6 +346,7 @@ export default function Room(props: propsIF) {
                         onMouseOut={handleMouseOut}
                     >
                         <div
+                            id='currentpool-button'
                             className={
                                 isHovering
                                     ? styles.bgsalmon
@@ -359,11 +360,10 @@ export default function Room(props: propsIF) {
                     ''
                 )}
                 <div onClick={() => handleDropdownMenu()}> </div>
-                <div onClick={() => handleDropdownMenu()}>
+                <div id='room-dropdown' onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine
                         className={styles.star_icon + ' ' + styles.m_hidden}
                         size={22}
-                        id='room dropdown'
                     />
                 </div>
             </div>
@@ -377,6 +377,7 @@ export default function Room(props: propsIF) {
                                     className={styles.dropdown_item}
                                     key={i}
                                     data-value={pool.name}
+                                    id={pool.name}
                                     data-icon='glyphicon glyphicon-eye-open'
                                     onClick={(event: any) =>
                                         handleRoomClick(event, pool.name)
