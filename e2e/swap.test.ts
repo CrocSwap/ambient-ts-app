@@ -1,3 +1,5 @@
+/* eslint-disable quotes */
+/* eslint-disable camelcase */
 import { chromium, Page, BrowserContext, Browser } from 'playwright';
 import { test, expect } from 'playwright/test';
 import {
@@ -14,6 +16,7 @@ import {
     assertTransactionsTransactionTab,
     assertValLimitPriceShareableChart,
     assertWalletBalances,
+    assertWalletonnectivity,
     clickAccountPage,
     clickAddLiquidity,
     clickBalancedToggle,
@@ -69,6 +72,10 @@ import {
     goto,
     gotoHomepage,
     gotoSwap,
+    click_Open_Chat,
+    click_Chat_Room_Dropdown,
+    click_Select_Chat_Room,
+    gotoChat,
 } from './pages/meta_page';
 
 import {
@@ -134,7 +141,8 @@ test('test_CS_1132_Swap_Wallet', async () => {
 test('Make swap', async () => {
     await testMeta(browser);
 });
-
+// no more in scope, interface changed
+/*
 test('test_CS_1300_Sidebar_Liq_Position', async () => {
     const context: BrowserContext = browser;
     // connect to metamask
@@ -147,7 +155,9 @@ test('test_CS_1300_Sidebar_Liq_Position', async () => {
     await clickLiqPosition(page);
     // need to add open transaction problem on görli not visible at the moment
 });
-
+*/
+// no more in scope, interface changed
+/*
 test('test_CS_1299_Sidebar_Limit_Order', async () => {
     const context: BrowserContext = browser;
     // connect to metamask
@@ -160,7 +170,9 @@ test('test_CS_1299_Sidebar_Limit_Order', async () => {
     await clickLimitOrder(page);
     // need to add open transaction problem on görli not visible at the moment
 });
-
+*/
+// no more in scope, interface changed
+/*
 test('test_CS_1293_Sidebar_Transaction', async () => {
     const context: BrowserContext = browser;
     // connect to metamask
@@ -173,7 +185,7 @@ test('test_CS_1293_Sidebar_Transaction', async () => {
     await clickTransactions(page);
     // need to add open transaction problem on görli not visible at the moment
 });
-
+*/
 test('test_CS_1042_Account', async () => {
     const context: BrowserContext = browser;
     // connect to metamask
@@ -661,3 +673,96 @@ test('test_CS_1309_Change_Wallet', async () => {
 
 });
 */
+
+test('test_CS_1124_Swap_Wallet', async () => {
+    const context: BrowserContext = browser;
+    // connect to metamask
+    await initWallet(browser);
+    // open ambient finance page
+    const page: Page = await context.newPage();
+    await gotoSwap(page);
+    await page.bringToFront();
+    // assert if wallet is connected
+    await assertWalletonnectivity(page);
+});
+
+test('test_CS_199_Trade_Wallet', async () => {
+    const context: BrowserContext = browser;
+    // connect to metamask
+    await initWallet(browser);
+    // open ambient finance page
+    const page: Page = await context.newPage();
+    await goto(page);
+    await page.bringToFront();
+    // assert if wallet is connected
+    await assertWalletonnectivity(page);
+});
+
+test('test_CS_1659_Scroll_to_Bottom', async () => {
+    const context: BrowserContext = browser;
+    // connect to metamask
+    await initWallet(browser);
+    // open ambient finance page
+    const page: Page = await context.newPage();
+    test.setTimeout(9000000);
+    await gotoChat(page);
+    await page.bringToFront();
+    // open chat panel
+    await click_Open_Chat(page);
+
+    await page.evaluate(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // Add a delay to ensure the page has time to load additional content if needed
+    await page.waitForTimeout(2000);
+
+    // Scroll back up to the top of the page
+    await page.evaluate(() => {
+        window.scrollTo(0, 0);
+    });
+
+    // Add a delay to ensure the page has time to settle after scrolling
+    await page.waitForTimeout(2000);
+});
+
+test('test_deneme', async () => {
+    const context: BrowserContext = browser;
+    // connect to metamask
+    await initWallet(browser);
+    // open ambient finance page
+    const page: Page = await context.newPage();
+    await goto(page);
+    await page.bringToFront();
+
+    const context2: BrowserContext = browser;
+    // connect to metamask
+    await initWallet(browser);
+    // open ambient finance page
+    const page2: Page = await context2.newPage();
+});
+
+test('test_deneme2', async () => {
+    const context1 = await prepareBrowser('context1');
+    const page1: Page = await context1.newPage();
+
+    await initWallet(context1);
+    await page1.goto('https://ambient.finance');
+    await page1.bringToFront();
+
+    const context2 = await prepareBrowser('context2');
+    const page2: Page = await context2.newPage();
+
+    await initWallet(context2);
+    await page2.goto('https://ambient.finance');
+    await page2.bringToFront();
+
+    // await page2.waitForTimeout(10000);
+
+    await click('#trade_button', page2);
+    await click('#chat_room_dropdown', page2);
+    await click('#select_chat_room', page2);
+
+    await context1.close();
+    await context2.close();
+});

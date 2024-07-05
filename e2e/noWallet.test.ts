@@ -3,7 +3,7 @@ import { test, expect } from 'playwright/test';
 import HomePage from './pages/home_page';
 import TradePage from './pages/trade_page';
 
-test('test_cs_187_toppool', async ({ page }) => {
+test('test_CS_187_Toppool', async ({ page }) => {
     const test_page = new HomePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -11,7 +11,7 @@ test('test_cs_187_toppool', async ({ page }) => {
     await test_page.assertTradepair();
 });
 
-test('test_cs_183_tradebutton', async ({ page }) => {
+test('test_CS_183_Tradebutton', async ({ page }) => {
     const test_page = new HomePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -20,7 +20,7 @@ test('test_cs_183_tradebutton', async ({ page }) => {
     await test_page.assertTradepage();
 });
 
-test('test_cs_1301_af_stats', async ({ page }) => {
+test('test_CS_1301_AF_Stats', async ({ page }) => {
     const test_page = new HomePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -29,7 +29,7 @@ test('test_cs_1301_af_stats', async ({ page }) => {
     await test_page.assertTotalValue();
 });
 
-test('test_cs_269_denom', async ({ page }) => {
+test('test_CS_269_Denom', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -40,7 +40,7 @@ test('test_cs_269_denom', async ({ page }) => {
     await test_page.assert_denom();
 });
 
-test('test_cs_1291_toppools', async ({ page }) => {
+test('test_CS_1291_Toppools', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -52,7 +52,7 @@ test('test_cs_1291_toppools', async ({ page }) => {
     await test_page.assert_token();
 });
 
-test('test_CS_1292_recentpools', async ({ page }) => {
+test('test_CS_1292_Recentpools', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -64,7 +64,7 @@ test('test_CS_1292_recentpools', async ({ page }) => {
     await test_page.assert_token();
 });
 
-test('test_cs_1310_back', async ({ page }) => {
+test('test_CS_1310_Back', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -75,7 +75,9 @@ test('test_cs_1310_back', async ({ page }) => {
     // test_page.assert_homepage()
 });
 
-test('test_cs_1311_sidebarlock', async ({ page }) => {
+// no more in scope, interface changed
+/*
+test('test_CS_1311_Sidebarlock', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -86,8 +88,11 @@ test('test_cs_1311_sidebarlock', async ({ page }) => {
     await test_page.click_lock_sidebar();
     await test_page.assert_lock_sidebar();
 });
+*/
 
-test('test_cs_1312_collapse', async ({ page }) => {
+// no more in scope, interface changed
+/*
+test('test_CS_1312_Collapse', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -104,8 +109,9 @@ test('test_cs_1312_collapse', async ({ page }) => {
     await test_page.assert_fav_pools();
     await test_page.assert_top_pools();
 });
+*/
 
-test('test_cs_1303_search', async ({ page }) => {
+test('test_CS_1303_Search', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -118,7 +124,7 @@ test('test_cs_1303_search', async ({ page }) => {
     await test_page.assertSearchToken();
 });
 
-test('test_cs_1378_searchneg', async ({ page }) => {
+test('test_CS_1378_Searchneg', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -130,7 +136,7 @@ test('test_cs_1378_searchneg', async ({ page }) => {
     await test_page.assert_searchneg();
 });
 
-test('test_cs_800_tradereverse', async ({ page }) => {
+test('test_CS_800_Trade_Reverse', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -140,7 +146,7 @@ test('test_cs_800_tradereverse', async ({ page }) => {
     await test_page.assert_swap_reverse();
 });
 
-test('test_cs_801_limitreverse', async ({ page }) => {
+test('test_CS_801_Limit_Reverse', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -151,7 +157,7 @@ test('test_cs_801_limitreverse', async ({ page }) => {
     await test_page.assert_limit_reverse();
 });
 
-test('test_cs_802_swapreverse', async ({ page }) => {
+test('test_CS_802_Swap_Reverse', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -161,7 +167,7 @@ test('test_cs_802_swapreverse', async ({ page }) => {
     await test_page.assert_reverse();
 });
 
-test('test_cs_734_denomswap', async ({ page }) => {
+test('test_CS_734_Denomswap', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -171,18 +177,19 @@ test('test_cs_734_denomswap', async ({ page }) => {
     await test_page.assert_denom();
 });
 
-test('test_cs_214_favpool', async ({ page }) => {
+test('test_CS_214_Favpool', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
     // Click on swap page
     await test_page.click_trade_btn();
+    await test_page.click_toppools();
     await test_page.click_add_fav();
     await test_page.click_favpools();
     await test_page.assert_fav_pool_added();
 });
 
-test('test_cs_252_balanceranges_5to10', async ({ page }) => {
+test('test_CS_252_Balanceranges_5to10', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -200,7 +207,7 @@ test('test_cs_252_balanceranges_5to10', async ({ page }) => {
     expect(actualValue).toBeGreaterThan(newValue);
 });
 
-test('test_cs_252_balanceranges_10to25', async ({ page }) => {
+test('test_CS_252_Balanceranges_10to25', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -218,7 +225,7 @@ test('test_cs_252_balanceranges_10to25', async ({ page }) => {
     expect(actualValue).toBeGreaterThan(newValue);
 });
 
-test('test_cs_252_balanceranges_25to50', async ({ page }) => {
+test('test_CS_252_Balanceranges_25to50', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -236,7 +243,7 @@ test('test_cs_252_balanceranges_25to50', async ({ page }) => {
     expect(actualValue).toBeGreaterThan(newValue);
 });
 
-test('test_cs_252_balanceranges_ambient', async ({ page }) => {
+test('test_CS_252_Balanceranges_Ambient', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -251,7 +258,7 @@ test('test_cs_252_balanceranges_ambient', async ({ page }) => {
     await expect(actualValue).toBe(0);
 });
 
-test('test_cs_251_plusminus_min', async ({ page }) => {
+test('test_CS_251_Plusminus_Min', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -264,6 +271,18 @@ test('test_cs_251_plusminus_min', async ({ page }) => {
     await test_page.click_decrease();
     await test_page.click_decrease();
     await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
+    await test_page.click_decrease();
     const value_new = test_page.get_min_percentage();
     // value and value_new are Promises resolving to numbers
     const actualValue = await value;
@@ -271,7 +290,7 @@ test('test_cs_251_plusminus_min', async ({ page }) => {
     await expect(newValue).toBeGreaterThan(await actualValue);
 });
 
-test('test_cs_251_plusminus_max', async ({ page }) => {
+test('test_CS_251_Plusminus_Max', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -281,10 +300,9 @@ test('test_cs_251_plusminus_max', async ({ page }) => {
     await test_page.click_balanced();
     // max percentage increase test
     const value = test_page.get_max_percentage();
-    await test_page.click_increase();
-    await test_page.click_increase();
-    await test_page.click_increase();
-    await test_page.click_increase();
+    for (let i = 0; i < 4; i++) {
+        await test_page.click_increase();
+    }
     const value_new = test_page.get_max_percentage();
     // value and value_new are Promises resolving to numbers
     const actualValue = await value;
@@ -292,7 +310,7 @@ test('test_cs_251_plusminus_max', async ({ page }) => {
     await expect(newValue).toBeGreaterThan(await actualValue);
 });
 
-test('test_cs_342_pooldisplay', async ({ page }) => {
+test('test_CS_342_Pooldisplay', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -302,7 +320,7 @@ test('test_cs_342_pooldisplay', async ({ page }) => {
     await test_page.assert_balanced_enabled();
 });
 // id needed ---fail
-/* test('test_cs_693_leadboard', async ({ page }) => {
+test('test_CS_693_Leadboard', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -313,10 +331,10 @@ test('test_cs_342_pooldisplay', async ({ page }) => {
     const value = test_page.get_leaderboard();
     // open detail of row
     await test_page.click_leaderboard_row();
-   // await test_page.assert_leaderboard();
+    // await test_page.assert_leaderboard();
 });
-*/
-test('test_cs_769_slippage', async ({ page }) => {
+
+test('test_CS_769_Slippage', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -343,7 +361,7 @@ test('test_cs_769_slippage', async ({ page }) => {
     await expect(actualValue5).toBe(0.5);
 });
 
-test('test_cs_774_clipboard', async ({ page }) => {
+test('test_CS_774_Clipboard', async ({ page }) => {
     const test_page = new TradePage(page);
     await test_page.goto();
     await test_page.home_btn();
@@ -351,4 +369,164 @@ test('test_cs_774_clipboard', async ({ page }) => {
     await test_page.click_trade_btn();
     await test_page.click_clipboard();
     await test_page.assert_clipboard();
+});
+
+test('test_CS_231_Full_Screen', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_Full_Screen();
+    await test_page.assert_Modules_Not_Visible();
+});
+
+test('test_CS_609_Pool_Denom_5', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_pool_btn();
+    await test_page.click_5percent();
+    const value = test_page.get_min_price();
+    await test_page.denom();
+    const value_new = test_page.get_Min_Price_Denom();
+    // value and value_new are Promises resolving to numbers
+    const actualValue = await value;
+    const newValue = await value_new;
+    expect(actualValue).not.toEqual(newValue);
+});
+
+test('test_CS_609_Pool_Denom_10', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_pool_btn();
+    await test_page.click_10percent();
+    const value = test_page.get_min_price();
+    await test_page.denom();
+    const value_new = test_page.get_Min_Price_Denom();
+    // value and value_new are Promises resolving to numbers
+    const actualValue = await value;
+    const newValue = await value_new;
+    expect(actualValue).not.toEqual(newValue);
+});
+
+test('test_CS_609_Pool_Denom_25', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_pool_btn();
+    await test_page.click_25percent();
+    const value = test_page.get_min_price();
+    await test_page.denom();
+    const value_new = test_page.get_Min_Price_Denom();
+    // value and value_new are Promises resolving to numbers
+    const actualValue = await value;
+    const newValue = await value_new;
+    expect(actualValue).not.toEqual(newValue);
+});
+
+test('test_CS_609_Pool_Denom_50', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_pool_btn();
+    await test_page.click_50percent();
+    const value = test_page.get_min_price();
+    await test_page.denom();
+    const value_new = test_page.get_Min_Price_Denom();
+    // value and value_new are Promises resolving to numbers
+    const actualValue = await value;
+    const newValue = await value_new;
+    expect(actualValue).not.toEqual(newValue);
+});
+
+test('test_CS_2089_USD_Price_Toggle', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_USD_Toggle();
+    await test_page.assert_USD_Toggle();
+});
+
+test('test_CS_1305_ESC', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_Transaction_Row();
+    await test_page.assert_Transaction_Popup();
+    await test_page.click_ESC();
+    await test_page.page.waitForTimeout(10000);
+    await test_page.assert_Popup();
+});
+
+test('test_CS_353_Chat_Unlogged', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_Open_Chat();
+    await test_page.assert_Chat_Unable();
+});
+// not clicking on chat room maybe need for id
+test('test_CS_351_Message_Display', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.goto();
+    await test_page.home_btn();
+    // Click on trade button on homepage
+    await test_page.click_trade_btn();
+    await test_page.click_Open_Chat();
+    await test_page.click_Chat_Room_Dropdown();
+    await test_page.click_Select_Chat_Room();
+    await test_page.assert_Chat_Room();
+});
+
+test('test_CS_1659_Scroll_to_Bottom', async ({ page }) => {
+    const test_page = new TradePage(page);
+    await test_page.gotoChat();
+    await test_page.click_Open_Chat();
+    // Wait for the chat container to be visible
+    await page.waitForSelector('#chatmessage');
+
+    // Scroll to the top of the chat message element
+    await page.evaluate(() => {
+        const chatElement = document.getElementById('chatmessage'); // Ensure the correct ID is used
+        if (chatElement) {
+            chatElement.scrollTop = 0; // Scroll to the top
+        } else {
+            console.error('Chat message element not found!');
+        }
+    });
+    // click the last button to scroll back to the bottom
+    await test_page.click_Last_Button();
+
+    // Assert that the last message is in the viewport
+    const isLastMessageInView = await page.evaluate(() => {
+        const lastMessage = document.getElementById('thelastmessage');
+        if (!lastMessage) return false;
+        const rect = lastMessage.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <=
+                (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <=
+                (window.innerWidth || document.documentElement.clientWidth)
+        );
+    });
+
+    expect(isLastMessageInView).toBe(true);
 });

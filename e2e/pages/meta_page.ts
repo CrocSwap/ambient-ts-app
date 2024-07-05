@@ -1,3 +1,5 @@
+/* eslint-disable quotes */
+/* eslint-disable camelcase */
 import { chromium, Page, BrowserContext, Browser } from 'playwright';
 import * as path from 'path';
 import { click, clickmmask, waiter } from '../helpers/utils';
@@ -16,6 +18,12 @@ export async function goto(page: Page) {
 // go to swap page
 export async function gotoSwap(page: Page) {
     await page.goto(locators.gotoSwap);
+    return page;
+}
+
+// go to Chat link
+export async function gotoChat(page: Page) {
+    await page.goto(locators.gotoChat);
     return page;
 }
 
@@ -101,11 +109,11 @@ export async function clickTransferTab(page: Page) {
     return page;
 }
 
-// click on change token button oon account page
+// click on change token button on account page
 export async function clickChangeTokenAccount(page: Page) {
     await page.locator(locators.clickChangeTokenAccount).click();
     await page.locator(locators.clickSelectChangeToken).fill('USDC');
-    await page.locator('button').filter({ hasText: 'USDCUSDCoin' }).click();
+    await page.locator('button').filter({ hasText: 'USDC' }).click();
     return page;
 }
 
@@ -326,6 +334,36 @@ export async function clickChangeWallet(page: Page) {
     return page;
 }
 
+// id missing
+export async function click_Open_Chat(page: Page) {
+    await this.page.locator(locators.chatOpenTrollbox).click();
+    return page;
+}
+
+export async function click_Chat_Room_Dropdown(page: Page) {
+    await this.page.locator(locators.chatRoomDropdown).click();
+    return page;
+}
+
+// id needed
+export async function click_Select_Chat_Room(page: Page) {
+    await this.page.waitForSelector(
+        'div._dropdown_item_1p5ax_277[data-value="ETH / USDC"]',
+        { timeout: 60000 },
+    );
+    const elementHandle = await this.page.$(
+        'div._dropdown_item_1p5ax_277[data-value="ETH / USDC"]',
+    );
+
+    if (!elementHandle) {
+        throw new Error('Element not found.');
+    }
+
+    await elementHandle.click();
+    // await this.page.getByText('ETH / WBTC').click();
+    return page;
+}
+
 // ---------------------------------------assert-----------------------------------
 
 // id needed
@@ -456,6 +494,13 @@ export async function assertChangeNetwork(page: Page) {
 // assert Balanced Toggel active
 export async function assertBalancedToggle(page: Page) {
     const locator = await page.locator(locators.clickBalancedToggle);
+    await expect(locator).toBeEnabled();
+    return page;
+}
+
+// assert Wallet conectivity SawpPage
+export async function assertWalletonnectivity(page: Page) {
+    const locator = await page.locator(locators.getWalletConnectivity);
     await expect(locator).toBeEnabled();
     return page;
 }

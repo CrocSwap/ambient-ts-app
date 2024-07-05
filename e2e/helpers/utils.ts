@@ -51,7 +51,9 @@ export async function waiter(delay: number) {
         );
     });
 }
-
+// for 2 context used
+// export async function prepareBrowser(userDataDirSuffix: string) {
+// const userDataDir = path.join(__dirname, `UserData_${userDataDirSuffix}`);
 export async function prepareBrowser() {
     const userDataDir = path.join(__dirname, 'UserData');
     const pathToExtension = path.join(__dirname, 'metamask');
@@ -74,17 +76,10 @@ export async function prepareBrowser() {
 export async function initWallet(context: BrowserContext) {
     await waiter(5);
 
-    // console.log('.............................');
-    // console.log(process.env);
-    // console.log(process.env.local);
-    // console.log('.............................');
-
     const seedEnv = process.env.TEST_METAMASK_SEED
         ? process.env.TEST_METAMASK_SEED
         : '';
     const seed = seedEnv.split(',');
-
-    console.log(seed);
 
     async function processWallet(page) {
         const elementHandle = await page.$('#onboarding__terms-checkbox');

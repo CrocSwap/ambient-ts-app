@@ -13,6 +13,10 @@ export class BasePage {
     async goto() {
         await this.page.goto(locators.tradepage);
     }
+
+    async gotoChat() {
+        await this.page.goto(locators.chatLink);
+    }
     // id needed
     async home_btn() {
         await this.page.getByLabel('Home').click();

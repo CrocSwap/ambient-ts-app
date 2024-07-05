@@ -1,8 +1,10 @@
 export const locators = {
     gotoTradePage:
-        'http://localhost:3000/trade/market/chain=0xaa36a7&tokenA=0x0000000000000000000000000000000000000000&tokenB=0x60bBA138A74C5e7326885De5090700626950d509',
+        'https://dev-ambi.netlify.app/trade/market/chain=0xaa36a7&tokenA=0x60bBA138A74C5e7326885De5090700626950d509&tokenB=0x0000000000000000000000000000000000000000',
     gotoSwap:
         'http://localhost:3000/swap/chain=0xaa36a7&tokenA=0x0000000000000000000000000000000000000000&tokenB=0x60bBA138A74C5e7326885De5090700626950d509',
+    gotoChat:
+        'https://proven-chat-test.netlify.app/trade/market/chain=0x1&tokenA=0x0000000000000000000000000000000000000000&tokenB=0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
     gotoHomepage: 'http://localhost:3000',
     clickLiqPosition: '[id=\'sidebar_header_liquidity_positions\']',
     clickLimitOrder: '[id=\'sidebar_header_limit_orders\']',
@@ -21,8 +23,7 @@ export const locators = {
         '#subcont > div > div.TabComponent_tab_window__3P7DO > div > div > div > button',
     clickWithdrawTab: '[id=\'withdraw_tab_clickable\']',
     clickDifferentAddress: '[id=\'withdraw_to_different_addressswitch\']',
-    clickWithdraw:
-        '#subcont > div > div.TabComponent_tab_window__3P7DO > div > div > div > button',
+    clickWithdraw: '[id=\'withdraw_tokens_button\']',
     clickDeposit: '#deposit_tokens_button',
     clickAddLiquidity: 'Add',
     enterAmountRemove: '[id=\'remove_liq_preset_10%\']',
@@ -73,4 +74,8 @@ export const locators = {
     getIdLiquidity: '//*[@id="current_row_scroll"]/div[1]/div[1]/div[1]',
     getValLimitPrice:
         'xpath=//*[@id="current_row_scroll"]/div[1]/div[2]/p/span[2]',
+    chatRoomDropdown: '[id=\'room dropdown\']',
+    getWalletConnectivity:
+        'xpath=//*[@id="root"]/div[1]/header/div[2]/div/div/div[2]/section[1]',
+    chatOpenTrollbox: '[id=\'open-close-trollbox\']',
 };

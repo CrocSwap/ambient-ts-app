@@ -20,7 +20,7 @@ export default class HomePage extends BasePage {
         // compare the trade paris are the same on the homepage and the trade page
         const token = await this.page.locator(locators.tokenPairTradePage);
         const tokentext = await token.textContent();
-        await expect(tokentext).toBe('ETH / USDC');
+        await expect(tokentext).toBe('ETH / WBTC');
     }
 
     public async assertTradepage() {

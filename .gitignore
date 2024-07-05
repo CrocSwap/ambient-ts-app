@@ -31,5 +31,6 @@ yarn-error.log*
 
 #test
 /e2e/helpers/UserData
+/e2e/UserData*
 /e2e/helpers/metamask
 /e2e/helpers/metamask.zip
