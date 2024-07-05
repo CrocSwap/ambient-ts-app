@@ -163,7 +163,9 @@ export default function TickerItem(props: PropsIF) {
                     : ''
             } 
             ${
-                auction?.ticker === hoveredTicker && !isAccount
+                auction?.ticker === hoveredTicker &&
+                hoveredTicker !== selectedTicker &&
+                !isAccount
                     ? styles.hoverActive
                     : ''
             }
