@@ -20,7 +20,7 @@ export interface PriceImpactIF {
     ticker: string;
     version: number;
     chainId: string;
-    openBidClearingPriceInNativeTokenWei: string;
+    selectedMaxMarketCapInWei: string;
     bidQtyInNativeTokenWei: string;
     priceImpactPercentage: number;
 }
@@ -218,7 +218,7 @@ export const checkTickerValidity = async (
 export const calcBidImpact = async (
     env: CrocEnv,
     ticker: string,
-    openBidClearingPriceInNativeTokenWei: string,
+    selectedMaxMarketCapInWei: string,
     bidQtyInNativeTokenWei: string,
 ): Promise<PriceImpactIF | undefined> => {
     if (!env) return undefined;
@@ -228,12 +228,11 @@ export const calcBidImpact = async (
         //     .bid(openBidClearingPriceInNativeTokenWei, bidQtyInNativeTokenWei);
 
         // const priceImpact = await bidPlan.impact;
-
         const mockPriceImpact = {
             ticker,
             version: CURRENT_AUCTION_VERSION,
             chainId: '1',
-            openBidClearingPriceInNativeTokenWei,
+            selectedMaxMarketCapInWei,
             bidQtyInNativeTokenWei,
             priceImpactPercentage: Math.random() * 0.1,
         };

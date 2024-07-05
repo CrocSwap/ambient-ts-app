@@ -35,7 +35,7 @@ import { tickerDisplayElements } from './tickerDisplayElements';
 import moment from 'moment';
 import {
     getFreshAuctionDetailsForAccount,
-    marketCapMultiplier,
+    MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
@@ -116,29 +116,30 @@ const useAuctionStates = () => {
         useState<boolean>(false);
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [priceImpact, setPriceImpact] = useState<number | undefined>();
-    const [selectedMaxValue, setSelectedMaxValue] = useState<
-        number | undefined
-    >();
+    const [
+        selectedMaxMarketCapInWeiBigInt,
+        setSelectedMaxMarketCapInWeiBigInt,
+    ] = useState<bigint | undefined>();
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
 
-    const openBidClearingPriceInEth =
+    const openBidClearingPriceInWeiBigInt =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? parseFloat(
-                  toDisplayQty(
-                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
-                      18,
-                  ),
-              )
+            ? BigInt(auctionStatusData.openBidClearingPriceInNativeTokenWei)
             : undefined;
 
+    const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
+        ? openBidClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
+        : undefined;
+
+    //   const openBidMarketCapInEth = openBidMarketCapInWeiBigInt
+    //       ? toDisplayQty(openBidMarketCapInWeiBigInt, 18)
+    //       : undefined;
+
     useEffect(() => {
-        const openBidMarketCap = openBidClearingPriceInEth
-            ? openBidClearingPriceInEth * marketCapMultiplier
-            : 0;
-        setSelectedMaxValue(openBidMarketCap);
-    }, [openBidClearingPriceInEth]);
+        setSelectedMaxMarketCapInWeiBigInt(openBidMarketCapInWeiBigInt);
+    }, [openBidMarketCapInWeiBigInt]);
 
     return {
         isMaxDropdownOpen,
@@ -161,9 +162,10 @@ const useAuctionStates = () => {
         setIsValidated,
         priceImpact,
         setPriceImpact,
-        selectedMaxValue,
-        setSelectedMaxValue,
+        selectedMaxMarketCapInWeiBigInt,
+        setSelectedMaxMarketCapInWeiBigInt,
         l1GasFeeLimitInGwei,
+        openBidClearingPriceInWeiBigInt,
     };
 };
 
@@ -211,9 +213,10 @@ export default function TickerComponent(props: PropsIF) {
         setIsValidated,
         priceImpact,
         setPriceImpact,
-        selectedMaxValue,
-        setSelectedMaxValue,
+        selectedMaxMarketCapInWeiBigInt,
+        setSelectedMaxMarketCapInWeiBigInt,
         l1GasFeeLimitInGwei,
+        openBidClearingPriceInWeiBigInt,
     } = useAuctionStates();
 
     // Utility functions
@@ -274,13 +277,18 @@ export default function TickerComponent(props: PropsIF) {
         }) +
         ' ' +
         'ETH';
-    const marketCapEthValue = auctionDetails
-        ? parseFloat(
-              toDisplayQty(
-                  auctionDetails.filledClearingPriceInNativeTokenWei,
-                  18,
-              ),
-          ) * marketCapMultiplier
+
+    const filledClearingPriceInWeiBigInt =
+        auctionStatusData.filledClearingPriceInNativeTokenWei
+            ? BigInt(auctionStatusData.filledClearingPriceInNativeTokenWei)
+            : undefined;
+
+    const filledMarketCapInWeiBigInt = filledClearingPriceInWeiBigInt
+        ? filledClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
+        : undefined;
+
+    const filledMarketCapInEth = filledMarketCapInWeiBigInt
+        ? toDisplayQty(filledMarketCapInWeiBigInt, 18)
         : undefined;
 
     const timeRemainingAbbrev = auctionDetails
@@ -405,17 +413,18 @@ export default function TickerComponent(props: PropsIF) {
         crocEnv: CrocEnv | undefined,
         bidQtyNonDisplay: string,
     ) => {
-        if (!crocEnv || !tickerFromParams) return undefined;
+        if (!crocEnv || !tickerFromParams || !selectedMaxMarketCapInWeiBigInt)
+            return undefined;
         const isNonZero =
             !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
 
-        if (!isNonZero) return undefined;
+        if (!isNonZero || !openBidClearingPriceInWeiBigInt) return undefined;
 
         // TODO: add openBidClearingPriceInNativeTokenWei
         const priceImpact = calcBidImpact(
             crocEnv,
             tickerFromParams,
-            '0',
+            selectedMaxMarketCapInWeiBigInt.toString(),
             bidQtyNonDisplay,
         );
 
@@ -492,6 +501,7 @@ export default function TickerComponent(props: PropsIF) {
         debouncedBidInput,
         nativeTokenWalletBalanceAdjustedNonDisplayString,
         lastBlockNumber,
+        selectedMaxMarketCapInWeiBigInt,
     ]);
 
     useEffect(() => {
@@ -517,14 +527,9 @@ export default function TickerComponent(props: PropsIF) {
                   isPercentage: true,
               }) + '%';
 
-    const fdvUsdValue =
-        nativeTokenUsdPrice !== undefined && selectedMaxValue
-            ? nativeTokenUsdPrice * selectedMaxValue
-            : undefined;
-
-    const currentMarketCapUsdValue =
-        nativeTokenUsdPrice !== undefined && marketCapEthValue !== undefined
-            ? nativeTokenUsdPrice * marketCapEthValue
+    const filledMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && filledMarketCapInEth !== undefined
+            ? nativeTokenUsdPrice * parseFloat(filledMarketCapInEth)
             : undefined;
 
     const isAllocationAvailableToClaim =
@@ -598,8 +603,8 @@ export default function TickerComponent(props: PropsIF) {
     const tickerDisplayElementsProps = {
         auctionStatusData,
         auctionDetailsForConnectedUser,
-        marketCapEthValue,
-        currentMarketCapUsdValue,
+        filledMarketCapInEth,
+        filledMarketCapUsdValue,
         timeRemainingInSeconds,
         isAuctionCompleted,
         placeholderTicker,
@@ -609,9 +614,8 @@ export default function TickerComponent(props: PropsIF) {
         isAuctionPage,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
-        selectedMaxValue,
-        setSelectedMaxValue,
-        fdvUsdValue,
+        selectedMaxMarketCapInWeiBigInt,
+        setSelectedMaxMarketCapInWeiBigInt,
         bidUsdValue,
         handleBalanceClick,
         nativeTokenWalletBalanceTruncated,
@@ -652,7 +656,7 @@ export default function TickerComponent(props: PropsIF) {
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
-    }, [bidQtyInputField, selectedMaxValue, inputValue]);
+    }, [bidQtyInputField, selectedMaxMarketCapInWeiBigInt, inputValue]);
 
     return (
         <div className={styles.container}>
