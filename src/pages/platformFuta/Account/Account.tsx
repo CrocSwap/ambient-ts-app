@@ -42,8 +42,9 @@ export default function Account() {
         undefined,
     );
 
-    if (addressFromParams && !isAddressEns && !isAddressHex)
+    if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
+    }
 
     useEffect(() => {
         (async () => {
@@ -113,7 +114,7 @@ export default function Account() {
     );
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
-    if (!isUserConnected) {
+    if (!isUserConnected && !addressFromParams) {
         return connectWalletContent;
     }
 

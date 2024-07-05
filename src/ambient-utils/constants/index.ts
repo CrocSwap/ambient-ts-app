@@ -156,3 +156,5 @@ export const CROCODILE_LABS_LINKS = [
 
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
+
+export const CURRENT_AUCTION_VERSION = 1;
