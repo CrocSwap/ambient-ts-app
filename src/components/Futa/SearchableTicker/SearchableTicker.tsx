@@ -42,11 +42,14 @@ export default function SearchableTicker(props: propsIF) {
     } = props;
     const [isSortDropdownOpen, setIsSortDropdownOpen] =
         useState<boolean>(false);
+    // scrolling is disabled when hover on table
+    const [isMouseEnter, setIsMouseEnter] = useState(false);
     const customLoading = false;
 
     const {
         setIsLoading,
         selectedTicker,
+        hoveredTicker,
         setSelectedTicker,
         setHoveredTicker,
         showComplete,
@@ -183,6 +186,20 @@ export default function SearchableTicker(props: propsIF) {
     useEffect(() => {
         if (placeholderTicker) setSelectedTicker(undefined);
     }, [placeholderTicker]);
+
+    const tickerItemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+    useEffect(() => {
+        if (
+            hoveredTicker &&
+            tickerItemRefs.current[hoveredTicker] &&
+            !isMouseEnter
+        ) {
+            tickerItemRefs.current[hoveredTicker]?.scrollIntoView({
+                behavior: 'smooth',
+            });
+        }
+    }, [hoveredTicker, isMouseEnter]);
 
     if (customLoading) return <AuctionLoader setIsLoading={setIsLoading} />;
 
@@ -357,7 +374,11 @@ export default function SearchableTicker(props: propsIF) {
                 </header>
                 <div
                     className={styles.tickerTableContent}
-                    onMouseLeave={() => setHoveredTicker(undefined)}
+                    onMouseEnter={() => setIsMouseEnter(true)}
+                    onMouseLeave={() => {
+                        setIsMouseEnter(false);
+                        setHoveredTicker(undefined);
+                    }}
                 >
                     {(showComplete && auctions.active === 'timeLeft'
                         ? [...filteredData].reverse()
@@ -370,6 +391,7 @@ export default function SearchableTicker(props: propsIF) {
                             selectedTicker={selectedTicker}
                             setSelectedTicker={setSelectedTicker}
                             setShowComplete={setShowComplete}
+                            useRefTicker={tickerItemRefs}
                         />
                     ))}
                 </div>
