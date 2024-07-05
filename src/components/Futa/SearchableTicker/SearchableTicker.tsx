@@ -48,6 +48,7 @@ export default function SearchableTicker(props: propsIF) {
         setIsLoading,
         selectedTicker,
         setSelectedTicker,
+        setHoveredTicker,
         showComplete,
         setShowComplete,
         watchlists,
@@ -354,7 +355,10 @@ export default function SearchableTicker(props: propsIF) {
                         {/* <span /> */}
                     </div>
                 </header>
-                <div className={styles.tickerTableContent}>
+                <div
+                    className={styles.tickerTableContent}
+                    onMouseLeave={() => setHoveredTicker(undefined)}
+                >
                     {(showComplete && auctions.active === 'timeLeft'
                         ? [...filteredData].reverse()
                         : [...filteredData]

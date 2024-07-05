@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Xaxis from './Xaxis';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -37,17 +37,16 @@ export default function ScatterChart() {
     const [yScale, setYscale] = useState<d3.ScaleLinear<number, number>>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [chartSize, setChartSize] = useState<any>();
-    const [hoveredDot, setHoveredDot] = useState<scatterData | undefined>();
-    const [selectedDot, setSelectedDot] = useState<scatterData | undefined>();
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [pointSeries, setPointSeries] = useState<any>();
+
+    const { hoveredTicker, setHoveredTicker, selectedTicker } =
+        useContext(AuctionsContext);
 
     const data = useScatterChartData();
 
     const afterOneWeek = false;
 
-    const { selectedTicker } = useContext(AuctionsContext);
     const navigate = useNavigate();
 
     const getTimeRemainingValue = (timeRemaining: number) => {
@@ -59,20 +58,26 @@ export default function ScatterChart() {
 
     const navigateUrlBase = '/auctions';
     const navigateUrl = navigateUrlBase + '/v1/';
-    useEffect(() => {
-        if (selectedTicker) {
-            const selectedCircleData = data.find(
-                (i: scatterData) => i.name === selectedTicker,
-            );
-            setSelectedDot(
-                selectedCircleData
-                    ? { ...selectedCircleData, size: scatterDotSelectedSize }
-                    : selectedCircleData,
-            );
-        } else {
-            setSelectedDot(undefined);
+
+    const selectedDot = useMemo(() => {
+        const selectedDotData = data.find((i) => i.name === selectedTicker);
+
+        if (selectedDotData) {
+            return { ...selectedDotData, size: scatterDotSelectedSize };
         }
-    }, [selectedTicker, data]);
+
+        return undefined;
+    }, [data, hoveredTicker, selectedTicker]);
+
+    const hoveredDot = useMemo(() => {
+        const hoveredDotData = data.find((i) => i.name === hoveredTicker);
+
+        if (hoveredDotData) {
+            return { ...hoveredDotData, size: scatterDotSelectedSize };
+        }
+
+        return undefined;
+    }, [data, hoveredTicker, selectedDot]);
 
     useEffect(() => {
         if (data && data.length) {
@@ -255,9 +260,9 @@ export default function ScatterChart() {
                     d3.select(d3Chart.current)
                         .select('svg')
                         .style('cursor', nearestData ? 'pointer' : 'default');
-                    setHoveredDot(
+                    setHoveredTicker(
                         nearestData && nearestData.name !== selectedDot?.name
-                            ? { ...nearestData, size: scatterDotSelectedSize }
+                            ? nearestData.name
                             : undefined,
                     );
                 })
@@ -270,7 +275,7 @@ export default function ScatterChart() {
                     }
                 })
                 .on('mouseout', function () {
-                    setHoveredDot(undefined);
+                    setHoveredTicker(undefined);
                 });
         }
     }, [xScale, yScale, selectedDot]);

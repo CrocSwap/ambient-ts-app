@@ -31,7 +31,8 @@ export default function TickerItem(props: PropsIF) {
         setShowComplete,
     } = props;
 
-    const { accountData } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -156,13 +157,23 @@ export default function TickerItem(props: PropsIF) {
                 auction?.ticker === selectedTicker && !isAccount
                     ? styles.active
                     : ''
-            }`}
+            } 
+            ${
+                auction?.ticker === hoveredTicker && !isAccount
+                    ? styles.hoverActive
+                    : ''
+            }
+            `}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);
+                setHoveredTicker(undefined);
                 const shouldSetShowComplete =
                     timeRemainingInSec < 0 ? true : false;
                 setShowComplete(shouldSetShowComplete);
+            }}
+            onMouseMove={() => {
+                setHoveredTicker(ticker);
             }}
         >
             <p className={styles2.ticker_name}>{ticker}</p>
