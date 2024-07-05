@@ -243,6 +243,22 @@ export default function ScatterChart() {
                 return Math.abs(x - offsetX) < 5 && Math.abs(y - offsetY) < 5;
             });
             if (dataAtMouse.length > 0) {
+                const isSelectedDotIncluded = dataAtMouse.some(
+                    (dot) => dot.name === selectedDot?.name,
+                );
+
+                const isHoveredDotIncluded = dataAtMouse.some(
+                    (dot) => dot.name === hoveredDot?.name,
+                );
+
+                if (hoveredDot && isHoveredDotIncluded) {
+                    return hoveredDot;
+                }
+
+                if (selectedDot && isSelectedDotIncluded) {
+                    return selectedDot;
+                }
+
                 return dataAtMouse[dataAtMouse.length - 1];
             }
         }
