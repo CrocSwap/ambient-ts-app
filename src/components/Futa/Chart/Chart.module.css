@@ -4,6 +4,13 @@
     gap: 8px;
     height: 100%;
 }
+
+
+
+.container svg:hover {
+    cursor: default;
+}
+
 .content{
     width: 100%;
     height: 100%;

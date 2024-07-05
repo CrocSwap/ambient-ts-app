@@ -6,7 +6,7 @@ import {
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import {
@@ -21,6 +21,8 @@ interface PropsIF {
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    useRefTicker: MutableRefObject<any>;
 }
 export default function TickerItem(props: PropsIF) {
     const {
@@ -29,9 +31,11 @@ export default function TickerItem(props: PropsIF) {
         setSelectedTicker,
         isAccount,
         setShowComplete,
+        useRefTicker,
     } = props;
 
-    const { accountData } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -152,17 +156,30 @@ export default function TickerItem(props: PropsIF) {
 
     return (
         <Link
+            ref={(el) => (useRefTicker.current[ticker] = el)}
             className={`${styles.tickerItemContainer} ${
                 auction?.ticker === selectedTicker && !isAccount
                     ? styles.active
                     : ''
-            }`}
+            } 
+            ${
+                auction?.ticker === hoveredTicker &&
+                hoveredTicker !== selectedTicker &&
+                !isAccount
+                    ? styles.hoverActive
+                    : ''
+            }
+            `}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);
+                setHoveredTicker(undefined);
                 const shouldSetShowComplete =
                     timeRemainingInSec < 0 ? true : false;
                 setShowComplete(shouldSetShowComplete);
+            }}
+            onMouseMove={() => {
+                setHoveredTicker(ticker);
             }}
         >
             <p className={styles2.ticker_name}>{ticker}</p>

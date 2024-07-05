@@ -34,6 +34,8 @@ interface AuctionsContextIF {
     setTickerInput: Dispatch<SetStateAction<string>>;
     auctionStatusData: AuctionStatusDataIF;
     selectedTicker: string | undefined;
+    hoveredTicker: string | undefined;
+    setHoveredTicker: Dispatch<SetStateAction<string | undefined>>;
     setSelectedTicker: Dispatch<SetStateAction<string | undefined>>;
     watchlists: {
         v1: tickerWatchlistIF;
@@ -120,6 +122,7 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     const [showComplete, setShowComplete] = useState<boolean>(false);
 
     const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
+    const [hoveredTicker, setHoveredTicker] = useState<string | undefined>();
 
     // const fetchAccountData = async (
     //     address: string,
@@ -227,6 +230,8 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         setShowComments: setShowComments,
         selectedTicker: selectedTicker,
         setSelectedTicker: setSelectedTicker,
+        hoveredTicker: hoveredTicker,
+        setHoveredTicker: setHoveredTicker,
         watchlists: {
             v1: watchlistV1,
             shouldDisplay: showWatchlist,
