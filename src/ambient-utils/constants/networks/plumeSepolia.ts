@@ -3,7 +3,7 @@ import {
     plumeSepoliaDAI,
     plumeSepoliaETH,
     plumeSepoliaGoonUSD,
-    plumeSepoliaP,
+    plumeSepoliaGoon,
     plumeSepoliaUSDC,
     plumeSepoliaUSDT,
 } from '../defaultTokens';
@@ -28,11 +28,11 @@ export const plumeSepolia: NetworkIF = {
     chain: chain,
     shouldPollBlock: true,
     marketData: '0x1',
-    defaultPair: [plumeSepoliaP, plumeSepoliaGoonUSD],
+    defaultPair: [plumeSepoliaGoon, plumeSepoliaGoonUSD],
     topPools: [
         new TopPool(
             plumeSepoliaETH,
-            plumeSepoliaP,
+            plumeSepoliaGoon,
             lookupChain('0x99c0a0f').poolIndex,
         ),
         new TopPool(

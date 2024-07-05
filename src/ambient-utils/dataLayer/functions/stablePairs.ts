@@ -34,7 +34,6 @@ import {
     blastWEETH,
     plumeSepoliaUSDC,
     plumeSepoliaGoonUSD,
-    plumeSepoliaP,
     blastBLAST,
     plumeSepoliaUSDT,
     plumeSepoliaDAI,
@@ -107,7 +106,6 @@ export const STABLE_USD_TOKENS = [
     plumeSepoliaUSDT.address,
     plumeSepoliaDAI.address,
     plumeSepoliaGoonUSD.address,
-    plumeSepoliaP.address,
     scrollUSDE.address,
 ].map((x) => x.toLowerCase());
 

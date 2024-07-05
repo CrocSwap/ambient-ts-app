@@ -44,8 +44,8 @@ import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
 import WEETH from './WEETH.svg';
-import P from './P.svg';
 import BLAST from './BLAST.png';
+import GOON from './GOON.svg';
 import GOONUSD from './goonUSD.svg';
 import USDE from './USDe-Black.svg';
 
@@ -97,8 +97,8 @@ export {
     PUNKETH20,
     RSETH,
     WEETH,
-    P,
     BLAST,
+    GOON,
     GOONUSD,
     USDE,
 };

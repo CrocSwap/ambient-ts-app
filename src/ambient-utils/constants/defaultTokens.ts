@@ -656,10 +656,10 @@ export const plumeSepoliaDAI: TokenIF = {
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };
 
-export const plumeSepoliaP: TokenIF = {
-    name: 'Plume',
-    address: '0x88113DF3ce1AD0C06bC0f2757fB7BefFbBEb539a',
-    symbol: 'P',
+export const plumeSepoliaGoon: TokenIF = {
+    name: 'Goon Testnet Token',
+    address: '0xba22114ec75f0d55c34a5e5a3cf384484ad9e733',
+    symbol: 'GOON',
     decimals: 18,
     chainId: 161221135,
     logoURI: '',
@@ -667,7 +667,7 @@ export const plumeSepoliaP: TokenIF = {
 
 export const plumeSepoliaGoonUSD: TokenIF = {
     name: 'Plume USD Stablecoin',
-    address: '0x592c5750312c9F692AC93EF81C12De0891577713',
+    address: '0x5c1409a46cd113b3a667db6df0a8d7be37ed3bb3',
     symbol: 'goonUSD',
     decimals: 18,
     chainId: 161221135,
@@ -744,6 +744,6 @@ export const defaultTokens: TokenIF[] = [
     plumeSepoliaUSDC,
     plumeSepoliaUSDT,
     plumeSepoliaDAI,
-    plumeSepoliaP,
+    plumeSepoliaGoon,
     plumeSepoliaGoonUSD,
 ];

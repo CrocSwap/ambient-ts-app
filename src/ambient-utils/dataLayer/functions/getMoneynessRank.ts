@@ -23,7 +23,6 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     const moneynessRank = {
         USDC: 100,
         USDB: 100,
-        P: 95,
         USD: 95,
         AXLUSDC: 95,
         LUSD: 95,
@@ -49,6 +48,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
     const translatedSymbol = getTranslatedSymbol(tokenSymbol);
     const rank =
         moneynessRank[translatedSymbol as keyof typeof moneynessRank] ?? 0;
+
     return rank;
 };
 

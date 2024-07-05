@@ -800,6 +800,7 @@ function Swap(props: propsIF) {
                         parseFloat(primaryQuantity) > 0
                     }
                     showWarning={showWarning}
+                    isSwapPage={!isOnTradeRoute}
                 />
             }
             modal={
