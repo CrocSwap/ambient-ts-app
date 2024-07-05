@@ -1,5 +1,5 @@
 // Imports
-import { useCallback, useContext, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -93,6 +93,45 @@ export default function Navbar() {
     } = useContext(AppStateContext);
 
     const { selectedTicker } = useContext(AuctionsContext);
+
+    // set page title
+    useEffect(() => {
+        const path = location.pathname;
+        const pathNoLeadingSlash = path.slice(1);
+        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+        const isAddressHex =
+            (pathNoLeadingSlash?.startsWith('0x') &&
+                pathNoLeadingSlash?.length == 42) ||
+            (pathNoLeadingSlash?.startsWith('account/0x') &&
+                pathNoLeadingSlash?.length == 50);
+        const isPathValidAddress = path && (isAddressEns || isAddressHex);
+        if (pathNoLeadingSlash === '') {
+            document.title = 'FUTA | Fully Universal Ticker Auction';
+        } else if (pathNoLeadingSlash === 'account') {
+            document.title = 'FUTA | My Account';
+        } else if (isPathValidAddress) {
+            const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
+            const ensNameOrAddressTruncated = isAddressEns
+                ? pathNoPrefixDecoded.length > 15
+                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
+                    : pathNoPrefixDecoded
+                : trimString(pathNoPrefixDecoded, 6, 0, '…');
+            document.title = `FUTA | ${ensNameOrAddressTruncated}`;
+        } else if (location.pathname.includes('create')) {
+            document.title = 'FUTA | Create Ticker';
+        } else if (pathNoLeadingSlash === 'auctions') {
+            document.title = 'FUTA | Auctions';
+        } else if (location.pathname.includes('auctions/v')) {
+            document.title = `FUTA | ${selectedTicker}`;
+        } else if (location.pathname.includes('404')) {
+            document.title = 'FUTA | 404';
+        } else if (location.pathname.includes('swap')) {
+            document.title = 'FUTA | Swap';
+        } else {
+            document.title = 'FUTA | Fully Universal Ticker Auction';
+        }
+    }, [location.pathname, selectedTicker]);
 
     // Refs
     const dropdownRef = useRef<HTMLDivElement>(null);
