@@ -20,7 +20,7 @@ export default function Xaxis(props: AxisIF) {
                 .tickValues(
                     afterOneWeek
                         ? d3.range(0, 1441, 60)
-                        : d3.range(1441, 1441 * 8, 1441 / 2),
+                        : d3.range(0, 1441 * 8, 1441 / 2),
                 )
                 .tickFormat((d) => {
                     const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
@@ -28,7 +28,7 @@ export default function Xaxis(props: AxisIF) {
                         return hour.toString();
                     }
 
-                    return '12:00';
+                    return '12h';
                 });
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
