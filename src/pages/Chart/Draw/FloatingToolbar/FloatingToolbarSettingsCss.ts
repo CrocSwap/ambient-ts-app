@@ -155,7 +155,7 @@ const LineSettings = styled.div`
     gap: 10px;
 
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 48% 50%;
 `;
 
 const LineSettingsLeft = styled.div`
