@@ -42,8 +42,9 @@ export default function Account() {
         undefined,
     );
 
-    if (addressFromParams && !isAddressEns && !isAddressHex)
+    if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
+    }
 
     useEffect(() => {
         (async () => {

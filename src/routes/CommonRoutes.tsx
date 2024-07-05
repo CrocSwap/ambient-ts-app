@@ -11,8 +11,8 @@ import { IS_LOCAL_ENV } from '../ambient-utils/constants';
 const CommonRoutes: React.FC = () => (
     <Routes>
         <Route path='/accessibility' element={<Accessibility />} />
-        <Route path='terms' element={<TermsOfService />} />
-        <Route path='privacy' element={<PrivacyPolicy />} />
+        <Route path='/terms' element={<TermsOfService />} />
+        <Route path='/privacy' element={<PrivacyPolicy />} />
         <Route path='/faq' element={<Navigate to='/faq/points' replace />} />
         <Route path='/faq/points' element={<FAQPoints />} />
         <Route path='/faq/points/:params' element={<FAQPoints />} />
