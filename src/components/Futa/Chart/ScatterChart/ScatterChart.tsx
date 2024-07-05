@@ -283,6 +283,9 @@ export default function ScatterChart() {
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
                     if (nearestData) {
+                        if (nearestData.name === selectedDot?.name) {
+                            setHoveredTicker(undefined);
+                        }
                         nearestData.name !== selectedDot?.name
                             ? navigate(navigateUrl + nearestData.name)
                             : navigate(navigateUrlBase);
