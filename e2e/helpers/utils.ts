@@ -28,6 +28,7 @@ export async function fill(selector: string, page: Page, value: string) {
         await el.fill(value);
     }
 }
+
 export async function clickmmask(selector: string, page: Page) {
     return click('[data-testid="' + selector + '"]', page);
 }
@@ -39,6 +40,7 @@ export async function checkAndClickMMask(selector: string, page: Page) {
 export async function fillmmask(selector: string, page: Page, value: string) {
     return fill('[data-testid="' + selector + '"]', page, value);
 }
+
 export async function waiter(delay: number) {
     return new Promise((resolve, reject) => {
         setTimeout(
@@ -49,7 +51,9 @@ export async function waiter(delay: number) {
         );
     });
 }
-
+// for 2 context used
+// export async function prepareBrowser(userDataDirSuffix: string) {
+// const userDataDir = path.join(__dirname, `UserData_${userDataDirSuffix}`);
 export async function prepareBrowser() {
     const userDataDir = path.join(__dirname, 'UserData');
     const pathToExtension = path.join(__dirname, 'metamask');
@@ -70,19 +74,12 @@ export async function prepareBrowser() {
 }
 
 export async function initWallet(context: BrowserContext) {
-    await waiter(2);
-
-    console.log('.............................');
-    console.log(process.env);
-    console.log(process.env.local);
-    console.log('.............................');
+    await waiter(5);
 
     const seedEnv = process.env.TEST_METAMASK_SEED
         ? process.env.TEST_METAMASK_SEED
         : '';
     const seed = seedEnv.split(',');
-
-    console.log(seed);
 
     async function processWallet(page) {
         const elementHandle = await page.$('#onboarding__terms-checkbox');
@@ -144,14 +141,14 @@ export async function initWallet(context: BrowserContext) {
         setTimeout(async () => {
             const spanElement = await page
                 .locator(
-                    '.multichain-network-list-menu-content-wrapper span:text("Goerli")',
+                    '.multichain-network-list-menu-content-wrapper span:text("Sepolia")',
                 )
                 .first();
             if (spanElement) {
                 spanElement.click();
             }
             setTimeout(async () => {
-                page.close();
+                // page.close();
             }, 300);
         }, 500);
     }

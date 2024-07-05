@@ -13,16 +13,21 @@ console.log('downloadPath', downloadPath);
 console.log('extractPath', extractPath);
 
 export async function downloadMMask() {
-    return new Promise((resolve, reject) => {
-        superagent
-            .get(mmaskURL)
-            .pipe(fs.createWriteStream(downloadPath))
-            .on('finish', function () {
-                console.log('downloaded');
+    return new Promise(
+        (
+            resolve,
+            //  reject
+        ) => {
+            superagent
+                .get(mmaskURL)
+                .pipe(fs.createWriteStream(downloadPath))
+                .on('finish', function () {
+                    console.log('downloaded');
 
-                const zip = new admZip(downloadPath);
-                zip.extractAllTo(extractPath, true);
-                resolve(true);
-            });
-    });
+                    const zip = new admZip(downloadPath);
+                    zip.extractAllTo(extractPath, true);
+                    resolve(true);
+                });
+        },
+    );
 }
