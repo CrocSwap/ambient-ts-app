@@ -236,7 +236,8 @@ function ChatPanel(props: propsIF) {
         setMessageForNotificationBubble,
     );
 
-    const { getID, updateUser, updateMessageUser } = useChatApi();
+    const { getID, updateUser, updateMessageUser, getVerificationMessage } =
+        useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
     const [showPicker, setShowPicker] = useState(false);
@@ -769,7 +770,7 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const verifyWallet = (
+    const verifyWallet = async (
         verificationType: ChatVerificationTypes,
         verificationDate: Date,
         // eslint-disable-next-line
@@ -780,9 +781,19 @@ function ChatPanel(props: propsIF) {
         if (isUserConnected == false)
             activateToastr('Please connect your wallet first.', 'warning');
 
-        const message =
-            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\nWallet address:\n' +
-            userAddress;
+        // this assignment will be deleted after backend deployment
+        let verificationText =
+            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
+
+        try {
+            const serverSideText = await getVerificationMessage();
+            verificationText = serverSideText;
+        } catch (err) {
+            console.error(err);
+        }
+
+        const message = verificationText + 'Wallet address:\n' + userAddress;
+
         let verifyDate = new Date();
 
         if (verificationType === ChatVerificationTypes.VerifyWallet) {
@@ -1454,7 +1465,7 @@ function ChatPanel(props: propsIF) {
             <ChatConfirmationPanel
                 isActive={showVerifyOldMessagesPanel && isChatOpen}
                 title='Verify Old Messages'
-                content='Old messages will be verified. Do you want to verify?'
+                content='Please verify your wallet address in order to authenticate previous messages.'
                 cancelListener={() => {
                     setShowVerifyOldMessagesPanel(false);
                 }}
@@ -1470,7 +1481,7 @@ function ChatPanel(props: propsIF) {
             <ChatConfirmationPanel
                 isActive={showVerifyWalletConfirmationInDelete && isChatOpen}
                 title='Verify Your Wallet'
-                content='You should verify your wallet to delete that message.Do you want to verify?'
+                content='Please verify your wallet address in order to delete this message.'
                 cancelListener={() => {
                     setShowVerifyWalletConfirmationInDelete(false);
                 }}

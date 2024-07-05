@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useTokens } from '../../../../App/hooks/useTokens';
-import { PoolIF } from '../../../../ambient-utils/types';
+import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
@@ -28,6 +28,10 @@ import {
 } from '../../ChatUtils';
 import useChatApi from '../../Service/ChatApi';
 import styles from './Room.module.css';
+import {
+    getDefaultPairForChain,
+    ZERO_ADDRESS,
+} from '../../../../ambient-utils/constants';
 
 interface propsIF {
     selectedRoom: string;
@@ -95,7 +99,10 @@ export default function Room(props: propsIF) {
         topPools,
     } = useContext(CrocEnvContext);
 
-    const { getTokensByNameOrSymbol } = useTokens(chainId, undefined);
+    const { getTokensByNameOrSymbol, getTokenByAddress } = useTokens(
+        chainId,
+        undefined,
+    );
 
     const processRoomList = async () => {
         if (!props.isChatOpen) return;
@@ -208,6 +215,7 @@ export default function Room(props: propsIF) {
     useEffect(() => {
         processRoomList();
     }, [
+        props.isChatOpen,
         props.isModerator,
         favePools,
         props.selectedRoom,
@@ -240,11 +248,16 @@ export default function Room(props: propsIF) {
         setIsActive(!isActive);
     }
 
+    const [dfltTokenA]: [TokenIF, TokenIF] = getDefaultPairForChain(chainId);
+
     const handlePoolRedirect = async (roomName: string) => {
         const room = roomList.find((room) => room.name === roomName);
 
         if (room && room.base && room.quote) {
-            const foundBase = getTokensByNameOrSymbol(room.base, true);
+            const foundBase =
+                room.base === 'ETH'
+                    ? [getTokenByAddress(ZERO_ADDRESS) || dfltTokenA]
+                    : getTokensByNameOrSymbol(room.base, true);
             const foundQuote = getTokensByNameOrSymbol(room.quote, true);
 
             if (foundBase.length > 0 && foundQuote.length > 0) {
