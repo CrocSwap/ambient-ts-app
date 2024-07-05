@@ -21,9 +21,8 @@ import { LuChevronDown } from 'react-icons/lu';
 import TooltipLabel from '../TooltipLabel/TooltipLabel';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import {
-    bidSizeMultipliers,
-    marketCapMultiplier,
-    minBidSizeInEth,
+    MARKET_CAP_MULTIPLIER_BIG_INT,
+    maxMarketCapWeiValues,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -32,8 +31,8 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 export interface PropsIF {
     auctionStatusData: AuctionStatusDataIF;
     auctionDetailsForConnectedUser: AuctionDataIF | undefined;
-    marketCapEthValue: number | undefined;
-    currentMarketCapUsdValue: number | undefined;
+    filledMarketCapInEth: string | undefined;
+    filledMarketCapUsdValue: number | undefined;
     timeRemainingInSeconds: number | undefined;
     isAuctionCompleted?: boolean;
     placeholderTicker?: boolean;
@@ -43,9 +42,10 @@ export interface PropsIF {
     isAuctionPage?: boolean;
     isMaxDropdownOpen: boolean;
     setIsMaxDropdownOpen: Dispatch<SetStateAction<boolean>>;
-    selectedMaxValue: number | undefined;
-    setSelectedMaxValue: Dispatch<SetStateAction<number | undefined>>;
-    fdvUsdValue: number | undefined;
+    selectedMaxMarketCapInWeiBigInt: bigint | undefined;
+    setSelectedMaxMarketCapInWeiBigInt: Dispatch<
+        SetStateAction<bigint | undefined>
+    >;
     bidUsdValue: number | undefined;
     handleBalanceClick: () => void;
     nativeTokenWalletBalanceTruncated: string;
@@ -61,8 +61,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
     const {
         auctionStatusData,
         auctionDetailsForConnectedUser,
-        marketCapEthValue,
-        currentMarketCapUsdValue,
+        filledMarketCapInEth,
+        filledMarketCapUsdValue,
         timeRemainingInSeconds,
         isAuctionCompleted,
         placeholderTicker,
@@ -71,9 +71,8 @@ export const tickerDisplayElements = (props: PropsIF) => {
         isAuctionPage,
         isMaxDropdownOpen,
         setIsMaxDropdownOpen,
-        selectedMaxValue,
-        setSelectedMaxValue,
-        fdvUsdValue,
+        selectedMaxMarketCapInWeiBigInt,
+        setSelectedMaxMarketCapInWeiBigInt,
         bidUsdValue,
         handleBalanceClick,
         nativeTokenWalletBalanceTruncated,
@@ -92,15 +91,15 @@ export const tickerDisplayElements = (props: PropsIF) => {
         useContext(AuctionsContext);
 
     const currentMarketCapUsdFormatted =
-        currentMarketCapUsdValue !== undefined
+        filledMarketCapUsdValue !== undefined
             ? getFormattedNumber({
-                  value: currentMarketCapUsdValue,
+                  value: filledMarketCapUsdValue,
                   isUSD: true,
               })
             : '...';
 
     const formattedMarketCapEthValue = getFormattedNumber({
-        value: marketCapEthValue,
+        value: parseFloat(filledMarketCapInEth ?? '0'),
         prefix: 'Ξ ',
     });
 
@@ -148,47 +147,52 @@ export const tickerDisplayElements = (props: PropsIF) => {
         },
     ];
 
-    const openBidMarketCapInEth =
+    const openBidClearingPriceInWeiBigInt =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? parseFloat(
-                  toDisplayQty(
-                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
-                      18,
-                  ),
-              ) * marketCapMultiplier
+            ? BigInt(auctionStatusData.openBidClearingPriceInNativeTokenWei)
             : undefined;
+
+    const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
+        ? openBidClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
+        : undefined;
+
+    const openBidMarketCapInEth = openBidMarketCapInWeiBigInt
+        ? toDisplayQty(openBidMarketCapInWeiBigInt, 18)
+        : undefined;
 
     const formattedOpenBidMarketCapEthValue = openBidMarketCapInEth
         ? getFormattedNumber({
-              value: openBidMarketCapInEth,
+              value: parseFloat(openBidMarketCapInEth),
               prefix: 'Ξ ',
           })
         : '...';
 
-    const userBidClearingPriceInEth =
+    const userBidClearingPriceInWeiBigInt =
         auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei
-            ? parseFloat(
-                  toDisplayQty(
-                      auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei,
-                      18,
-                  ),
+            ? BigInt(
+                  auctionDetailsForConnectedUser?.userBidClearingPriceInNativeTokenWei,
               )
             : undefined;
 
-    const userBidMarketCapInEth = userBidClearingPriceInEth
-        ? userBidClearingPriceInEth * marketCapMultiplier
+    const userBidMarketCapInWeiBigInt = userBidClearingPriceInWeiBigInt
+        ? userBidClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
         : undefined;
 
-    const formattedUserBidMarketCapEthValue = userBidMarketCapInEth
+    const userBidMarketCapInEthNum = userBidMarketCapInWeiBigInt
+        ? parseFloat(toDisplayQty(userBidMarketCapInWeiBigInt, 18))
+        : undefined;
+
+    const formattedUserBidMarketCapEthValue = userBidMarketCapInEthNum
         ? getFormattedNumber({
-              value: userBidMarketCapInEth,
+              value: userBidMarketCapInEthNum,
               prefix: 'Ξ ',
           })
         : '-';
 
     const userBidMarketCapUsdValue =
-        nativeTokenUsdPrice !== undefined && userBidMarketCapInEth !== undefined
-            ? nativeTokenUsdPrice * userBidMarketCapInEth
+        nativeTokenUsdPrice !== undefined &&
+        userBidMarketCapInEthNum !== undefined
+            ? nativeTokenUsdPrice * userBidMarketCapInEthNum
             : undefined;
 
     const formattedUserBidMarketCapUsdValue = userBidMarketCapUsdValue
@@ -198,43 +202,45 @@ export const tickerDisplayElements = (props: PropsIF) => {
           })
         : '-';
 
-    const userBidSizeInEth =
+    const qtyBidByUserInWeiBigInt =
         auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei
-            ? parseFloat(
-                  toDisplayQty(
-                      auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei,
-                      18,
-                  ),
+            ? BigInt(
+                  auctionDetailsForConnectedUser?.qtyBidByUserInNativeTokenWei,
               )
             : undefined;
 
-    const formattedBidSizeEthValue = userBidSizeInEth
+    const qtyBidByUserInEthNum = qtyBidByUserInWeiBigInt
+        ? parseFloat(toDisplayQty(qtyBidByUserInWeiBigInt, 18))
+        : undefined;
+
+    const formattedBidSizeEthValue = qtyBidByUserInEthNum
         ? getFormattedNumber({
-              value: userBidSizeInEth,
+              value: qtyBidByUserInEthNum,
               prefix: 'Ξ ',
           })
         : '-';
 
-    const filledUserBidInEth =
+    const qtyUserBidFilledInWeiBigInt =
         auctionDetailsForConnectedUser?.qtyUserBidFilledInNativeTokenWei
-            ? parseFloat(
-                  toDisplayQty(
-                      auctionDetailsForConnectedUser?.qtyUserBidFilledInNativeTokenWei,
-                      18,
-                  ),
+            ? BigInt(
+                  auctionDetailsForConnectedUser?.qtyUserBidFilledInNativeTokenWei,
               )
             : undefined;
 
-    const formattedFilledBidEthValue = filledUserBidInEth
+    const qtyUserBidFilledInEthNum = qtyUserBidFilledInWeiBigInt
+        ? parseFloat(toDisplayQty(qtyUserBidFilledInWeiBigInt, 18))
+        : undefined;
+
+    const formattedFilledBidEthValue = qtyUserBidFilledInEthNum
         ? getFormattedNumber({
-              value: filledUserBidInEth,
+              value: qtyUserBidFilledInEthNum,
               prefix: 'Ξ ',
           })
         : '-';
 
     const currentOpenBidUsdValue =
         nativeTokenUsdPrice !== undefined && openBidMarketCapInEth !== undefined
-            ? nativeTokenUsdPrice * openBidMarketCapInEth
+            ? nativeTokenUsdPrice * parseFloat(openBidMarketCapInEth)
             : undefined;
 
     const currentOpenBidUsdValueFormatted =
@@ -245,27 +251,17 @@ export const tickerDisplayElements = (props: PropsIF) => {
               })
             : '...';
 
-    const maxMarketCapEthValues = bidSizeMultipliers.map((item) => {
-        return item * minBidSizeInEth * marketCapMultiplier;
-    });
-
-    const openBidMarketCapIndex = openBidMarketCapInEth
-        ? maxMarketCapEthValues.findIndex(
-              (item) => item.toFixed(2) === openBidMarketCapInEth.toFixed(2),
+    const openBidMarketCapIndex = openBidMarketCapInWeiBigInt
+        ? maxMarketCapWeiValues.findIndex(
+              (item) => item === openBidMarketCapInWeiBigInt,
           )
         : -1;
 
-    const openBidClearingPriceInEth =
-        auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? parseFloat(
-                  toDisplayQty(
-                      auctionStatusData.openBidClearingPriceInNativeTokenWei,
-                      18,
-                  ),
-              )
-            : undefined;
+    const openBidClearingPriceInEthNum = openBidClearingPriceInWeiBigInt
+        ? parseFloat(toDisplayQty(openBidClearingPriceInWeiBigInt, 18))
+        : undefined;
 
-    const openBidQtyFilledInEth =
+    const openBidQtyFilledInEthNum =
         auctionStatusData.openBidQtyFilledInNativeTokenWei
             ? parseFloat(
                   toDisplayQty(
@@ -276,19 +272,19 @@ export const tickerDisplayElements = (props: PropsIF) => {
             : undefined;
 
     const formattedOpenBidClearingPriceInEth = getFormattedNumber({
-        value: openBidClearingPriceInEth,
+        value: openBidClearingPriceInEthNum,
         prefix: 'Ξ ',
     });
     const formattedOpenBidQtyFilledInEth = getFormattedNumber({
-        value: openBidQtyFilledInEth,
+        value: openBidQtyFilledInEthNum,
         prefix: 'Ξ ',
     });
 
     const formattedOpenBidStatus = `${formattedOpenBidQtyFilledInEth} / ${formattedOpenBidClearingPriceInEth}`;
 
     const fillPercentage =
-        openBidQtyFilledInEth && openBidClearingPriceInEth
-            ? openBidQtyFilledInEth / openBidClearingPriceInEth
+        openBidQtyFilledInEthNum && openBidClearingPriceInEthNum
+            ? openBidQtyFilledInEthNum / openBidClearingPriceInEthNum
             : 0.0;
 
     const fillPercentageFormatted = getFormattedNumber({
@@ -459,10 +455,19 @@ export const tickerDisplayElements = (props: PropsIF) => {
         </div>
     );
 
+    const selectedMaxMarketCapInEthNum = selectedMaxMarketCapInWeiBigInt
+        ? parseFloat(toDisplayQty(selectedMaxMarketCapInWeiBigInt, 18))
+        : undefined;
+
     // Max FDV display component
     const tickerDropdownRef = useRef<HTMLDivElement>(null);
     const clickOutsideWalletHandler = () => setIsMaxDropdownOpen(false);
     useOnClickOutside(tickerDropdownRef, clickOutsideWalletHandler);
+
+    const fdvUsdValue =
+        nativeTokenUsdPrice !== undefined && selectedMaxMarketCapInEthNum
+            ? nativeTokenUsdPrice * selectedMaxMarketCapInEthNum
+            : undefined;
 
     const selectedFdvUsdMaxValue =
         fdvUsdValue !== undefined
@@ -474,17 +479,17 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 : '$0.00'
             : '...';
 
-    const handleSelectItem = (item: number) => {
-        setSelectedMaxValue(item);
+    const handleSelectItem = (item: bigint) => {
+        setSelectedMaxMarketCapInWeiBigInt(item);
         setIsMaxDropdownOpen(false);
     };
 
     const formattedSelectedFdvValue = getFormattedNumber({
-        value: selectedMaxValue,
+        value: selectedMaxMarketCapInEthNum ?? 0,
         prefix: 'Ξ ',
     });
 
-    const maxFdvData = maxMarketCapEthValues.slice(openBidMarketCapIndex);
+    const maxFdvData = maxMarketCapWeiValues.slice(openBidMarketCapIndex);
 
     const maxFdvDisplay = (
         <div
@@ -525,10 +530,13 @@ export const tickerDisplayElements = (props: PropsIF) => {
                         ref={tickerDropdownRef}
                     >
                         {maxFdvData.map((item, idx) => {
+                            const maxFdvInEth = toDisplayQty(item, 18);
+
                             const fdvUsdValue =
                                 nativeTokenUsdPrice !== undefined &&
                                 item !== undefined
-                                    ? nativeTokenUsdPrice * item
+                                    ? nativeTokenUsdPrice *
+                                      parseFloat(maxFdvInEth)
                                     : undefined;
 
                             const fdvUsdValueTruncated =
@@ -542,7 +550,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
                                     : undefined;
 
                             const formattedFdvValue = getFormattedNumber({
-                                value: item,
+                                value: parseFloat(maxFdvInEth),
                                 prefix: 'Ξ ',
                             });
 

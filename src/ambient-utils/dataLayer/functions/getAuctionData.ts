@@ -4,9 +4,33 @@ import {
     mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
 // import { GCGO_OVERRIDE_URL } from '../../constants';
-import { memoizeCacheQueryFn } from './memoizePromiseFn';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import {
+    //  memoizeCrocEnvFn,
+    memoizeCacheQueryFn,
+} from './memoizePromiseFn';
+import { CURRENT_AUCTION_VERSION } from '../../constants';
 
-export interface AuctionListServerDataIF {
+export interface AuctionPlanIF {
+    ticker: string;
+    version: number;
+}
+
+export interface PriceImpactIF {
+    ticker: string;
+    version: number;
+    chainId: string;
+    selectedMaxMarketCapInWei: string;
+    bidQtyInNativeTokenWei: string;
+    priceImpactPercentage: number;
+}
+
+export interface TickerValidityIF {
+    isValid: boolean;
+    invalidReason?: string;
+}
+
+export interface AuctionListResponseIF {
     auctionList: AuctionDataIF[];
 }
 
@@ -31,7 +55,7 @@ export interface AuctionDataIF {
 }
 
 // interface for auction status data used to generate auction details view
-export interface AuctionStatusDataServerIF {
+export interface AuctionStatusResponseIF {
     ticker: string;
     chainId: string;
     createdAt: number;
@@ -65,7 +89,7 @@ const getGlobalAuctionsList = async (
     //             return undefined;
     //         }
 
-    //         const payload = json.data as AuctionListServerDataIF;
+    //         const payload = json.data as AuctionListResponseIF;
     //         return payload.auctionList;
     //     })
     //     .catch(() => {
@@ -102,12 +126,123 @@ const getUserAuctionsList = async (
     //             return undefined;
     //         }
 
-    //         const payload = json.data as AuctionListServerDataIF;
+    //         const payload = json.data as AuctionListResponseIF;
     //         return payload.auctionList;
     //     })
     //     .catch(() => {
     //         return undefined;
     //     });
+};
+
+const excludedTickers = [
+    'ambi',
+    'amb',
+    'futa',
+    'nft',
+    'eth',
+    'weth',
+    'btc',
+    'wbtc',
+    'usd',
+    'usdc',
+    'usdt',
+    'dai',
+];
+
+// Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
+const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
+/* 
+        Example usage of the pattern
+        console.log(isValidString("Hello123")); // true (Latin alphanumeric)
+        console.log(isValidString("Hello😊123")); // true (Latin alphanumeric + Extended Pictographic)
+        console.log(isValidString("こんにちは")); // false (Non-Latin characters)
+        console.log(isValidString("1234😊😊")); // true (Digits + Extended Pictographic)
+        console.log(isValidString("Hello!")); // false (Special character '!')
+*/
+
+export const checkTickerPattern = (ticker: string) => {
+    if (ticker.length === 0) return true;
+    return validTickerPattern.test(ticker);
+};
+
+export const checkTickerValidity = async (
+    env: CrocEnv,
+    ticker: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _chainId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _lastBlockNumber: number,
+): Promise<TickerValidityIF> => {
+    const isExcluded = excludedTickers.includes(ticker.toLowerCase());
+    const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
+    const isTickerPatternValid = checkTickerPattern(ticker);
+
+    let isTickerValid = true;
+
+    if (isExcluded || !isTickerPatternValid || !lengthIsValid)
+        isTickerValid = false;
+
+    if (!isTickerValid)
+        console.log('checking ticker validity', {
+            ticker,
+            _chainId,
+            isTickerValid,
+        });
+    const invalidReason = isExcluded ? 'Excluded ticker' : 'Invalid ticker';
+    if (!isTickerValid) return { isValid: false, invalidReason: invalidReason };
+
+    if (!env) return { isValid: false, invalidReason: 'Invalid CrocEnv' };
+
+    try {
+        //     const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+
+        //    const isTickerAvailable = await !auctionPlan.isInitialized();
+
+        const mockIsTickerAvailable = !ticker.toLowerCase().includes('test');
+
+        console.log('checking ticker validity', {
+            ticker,
+            _chainId,
+            mockIsTickerAvailable,
+        });
+
+        return {
+            isValid: mockIsTickerAvailable,
+            invalidReason: 'Unavailable ticker',
+        };
+    } catch (error) {
+        return { isValid: false, invalidReason: 'Unknown Error' };
+    }
+};
+
+export const calcBidImpact = async (
+    env: CrocEnv,
+    ticker: string,
+    selectedMaxMarketCapInWei: string,
+    bidQtyInNativeTokenWei: string,
+): Promise<PriceImpactIF | undefined> => {
+    if (!env) return undefined;
+    try {
+        // const bidPlan = env
+        //     .auction(ticker, CURRENT_AUCTION_VERSION)
+        //     .bid(openBidClearingPriceInNativeTokenWei, bidQtyInNativeTokenWei);
+
+        // const priceImpact = await bidPlan.impact;
+        const mockPriceImpact = {
+            ticker,
+            version: CURRENT_AUCTION_VERSION,
+            chainId: '1',
+            selectedMaxMarketCapInWei,
+            bidQtyInNativeTokenWei,
+            priceImpactPercentage: Math.random() * 0.1,
+        };
+
+        console.log('price impact: ', { mockPriceImpact });
+
+        return mockPriceImpact;
+    } catch (error) {
+        return undefined;
+    }
 };
 
 export type GlobalAuctionListQueryFn = (

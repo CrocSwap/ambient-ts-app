@@ -11,7 +11,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import {
     getRetrievedAuctionDetailsForAccount,
-    marketCapMultiplier,
+    MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
@@ -88,6 +88,19 @@ export default function TickerItem(props: PropsIF) {
     const filledClearingPriceInEth = parseFloat(
         toDisplayQty(filledClearingPriceInNativeTokenWei, 18),
     );
+
+    const filledClearingPriceInWeiBigInt = filledClearingPriceInNativeTokenWei
+        ? BigInt(filledClearingPriceInNativeTokenWei)
+        : undefined;
+
+    const filledMarketCapInWeiBigInt = filledClearingPriceInWeiBigInt
+        ? filledClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
+        : undefined;
+
+    const filledMarketCapInEth = filledMarketCapInWeiBigInt
+        ? toDisplayQty(filledMarketCapInWeiBigInt, 18)
+        : undefined;
+
     const isUserInTheMoney = isAuctionOpen
         ? userBidClearingPriceInEth !== undefined &&
           userBidClearingPriceInEth >= filledClearingPriceInEth
@@ -120,18 +133,16 @@ export default function TickerItem(props: PropsIF) {
             ? 'var(--accent2)'
             : undefined;
 
-    const marketCap = filledClearingPriceInEth * marketCapMultiplier;
-
-    const marketCapUsdValue =
-        nativeTokenUsdPrice !== undefined && marketCap !== undefined
-            ? nativeTokenUsdPrice * marketCap
+    const filledMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && filledMarketCapInEth !== undefined
+            ? nativeTokenUsdPrice * parseFloat(filledMarketCapInEth)
             : undefined;
 
     const formattedMarketCap =
-        marketCapUsdValue !== undefined
-            ? marketCapUsdValue
+        filledMarketCapUsdValue !== undefined
+            ? filledMarketCapUsdValue
                 ? getFormattedNumber({
-                      value: marketCapUsdValue,
+                      value: filledMarketCapUsdValue,
                       minFracDigits: 0,
                       maxFracDigits: 0,
                       isUSD: true,
