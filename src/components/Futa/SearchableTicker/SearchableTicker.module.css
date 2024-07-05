@@ -12,6 +12,7 @@
     flex-direction: column;
     gap: 8px;
     width: 100%;
+   
 }
 
 .header > h3 {
@@ -244,7 +245,9 @@
     height: 100%;
 }
 .active{ background: #28585D; }
-
+.hoverActive {
+    background: var(--dark4);
+}
 .marketCap {
     text-align: end;
 }
@@ -254,47 +257,26 @@
     padding: 0 12px;
 }
 
-@media (min-width: 780px) {
-    .tickerTableContent {
-     
-       
-        /* height: calc(100vh - 200px);
-        overflow-y: scroll; */
-        height: 100%;
-        overflow-y: scroll;
-    
-
-       
+@media (min-width: 780px){
+    .container{
+        display: grid;
     }
 
+    .tickerTableContainer{
+      height: 100%;
+    }
+    .tickerTableContent{
+        height: 100%;
+        overflow-y: scroll;
+    }
 }
 
 @media (min-width: 1280px) {
-    .content {
-        display: grid;
-        align-items: center;
-    }
-
     .content h2 {
         color: var(--text1, #ceffff);
         font-size: 36px;
         text-transform: uppercase;
     }
-}
-@media (max-width: 1280px) {
-    .tickerTableContent{
-    
-        max-height: 60svh;
-        overflow-y: scroll;
-    }
-}
-
-@media (max-width: 780px) {
-    .container {
-        margin-bottom: 70px;
-        
-    }
-
 }
 
 @media (max-width: 800px) {

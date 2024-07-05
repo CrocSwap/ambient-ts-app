@@ -6,12 +6,12 @@ import {
     getFormattedNumber,
     getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { Dispatch, MutableRefObject, SetStateAction, useContext } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import {
     getRetrievedAuctionDetailsForAccount,
-    marketCapMultiplier,
+    MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
@@ -21,6 +21,8 @@ interface PropsIF {
     selectedTicker: string | undefined;
     isAccount: boolean | undefined;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    useRefTicker: MutableRefObject<any>;
 }
 export default function TickerItem(props: PropsIF) {
     const {
@@ -29,9 +31,11 @@ export default function TickerItem(props: PropsIF) {
         setSelectedTicker,
         isAccount,
         setShowComplete,
+        useRefTicker,
     } = props;
 
-    const { accountData } = useContext(AuctionsContext);
+    const { accountData, hoveredTicker, setHoveredTicker } =
+        useContext(AuctionsContext);
 
     const {
         ticker,
@@ -88,6 +92,19 @@ export default function TickerItem(props: PropsIF) {
     const filledClearingPriceInEth = parseFloat(
         toDisplayQty(filledClearingPriceInNativeTokenWei, 18),
     );
+
+    const filledClearingPriceInWeiBigInt = filledClearingPriceInNativeTokenWei
+        ? BigInt(filledClearingPriceInNativeTokenWei)
+        : undefined;
+
+    const filledMarketCapInWeiBigInt = filledClearingPriceInWeiBigInt
+        ? filledClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
+        : undefined;
+
+    const filledMarketCapInEth = filledMarketCapInWeiBigInt
+        ? toDisplayQty(filledMarketCapInWeiBigInt, 18)
+        : undefined;
+
     const isUserInTheMoney = isAuctionOpen
         ? userBidClearingPriceInEth !== undefined &&
           userBidClearingPriceInEth >= filledClearingPriceInEth
@@ -120,18 +137,16 @@ export default function TickerItem(props: PropsIF) {
             ? 'var(--accent2)'
             : undefined;
 
-    const marketCap = filledClearingPriceInEth * marketCapMultiplier;
-
-    const marketCapUsdValue =
-        nativeTokenUsdPrice !== undefined && marketCap !== undefined
-            ? nativeTokenUsdPrice * marketCap
+    const filledMarketCapUsdValue =
+        nativeTokenUsdPrice !== undefined && filledMarketCapInEth !== undefined
+            ? nativeTokenUsdPrice * parseFloat(filledMarketCapInEth)
             : undefined;
 
     const formattedMarketCap =
-        marketCapUsdValue !== undefined
-            ? marketCapUsdValue
+        filledMarketCapUsdValue !== undefined
+            ? filledMarketCapUsdValue
                 ? getFormattedNumber({
-                      value: marketCapUsdValue,
+                      value: filledMarketCapUsdValue,
                       minFracDigits: 0,
                       maxFracDigits: 0,
                       isUSD: true,
@@ -141,17 +156,30 @@ export default function TickerItem(props: PropsIF) {
 
     return (
         <Link
+            ref={(el) => (useRefTicker.current[ticker] = el)}
             className={`${styles.tickerItemContainer} ${
                 auction?.ticker === selectedTicker && !isAccount
                     ? styles.active
                     : ''
-            }`}
+            } 
+            ${
+                auction?.ticker === hoveredTicker &&
+                hoveredTicker !== selectedTicker &&
+                !isAccount
+                    ? styles.hoverActive
+                    : ''
+            }
+            `}
             to={'/auctions/v1/' + ticker}
             onClick={() => {
                 setSelectedTicker(ticker);
+                setHoveredTicker(undefined);
                 const shouldSetShowComplete =
                     timeRemainingInSec < 0 ? true : false;
                 setShowComplete(shouldSetShowComplete);
+            }}
+            onMouseMove={() => {
+                setHoveredTicker(ticker);
             }}
         >
             <p className={styles2.ticker_name}>{ticker}</p>
