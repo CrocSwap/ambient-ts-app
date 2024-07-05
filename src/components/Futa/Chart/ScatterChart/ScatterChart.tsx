@@ -130,7 +130,9 @@ export default function ScatterChart() {
                         d3.select(selection)
                             .style(
                                 'fill',
-                                d[index].size > scatterDotDefaultSize
+                                d[index].price === selectedDot?.price &&
+                                    d[index].timeRemaining ===
+                                        selectedDot?.timeRemaining
                                     ? accentColor
                                     : fillColor,
                             )
@@ -140,7 +142,7 @@ export default function ScatterChart() {
 
             setPointSeries(() => pointSeries);
         }
-    }, [xScale, yScale, chartSize]);
+    }, [xScale, yScale, chartSize, selectedDot]);
 
     useEffect(() => {
         if (xScale && yScale && pointSeries) {
@@ -283,9 +285,6 @@ export default function ScatterChart() {
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
                     if (nearestData) {
-                        if (nearestData.name === selectedDot?.name) {
-                            setHoveredTicker(undefined);
-                        }
                         nearestData.name !== selectedDot?.name
                             ? navigate(navigateUrl + nearestData.name)
                             : navigate(navigateUrlBase);
