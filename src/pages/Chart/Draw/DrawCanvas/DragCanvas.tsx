@@ -114,13 +114,15 @@ export default function DragCanvas(props: DragCanvasProps) {
         }
     }, [diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
 
-    function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
+    function getXandYvalueOfDrawnShape(
+        offsetX: number,
+        offsetY: number,
+        includeY = true,
+    ) {
         let valueY = scaleData?.yScale.invert(offsetY);
         const nearest = snapForCandle(offsetX, visibleCandleData);
 
-        console.log({ nearest }, new Date(nearest.time * 1000));
-
-        if (nearest) {
+        if (nearest && includeY) {
             const high = denomInBase
                 ? nearest?.invMinPriceExclMEVDecimalCorrected
                 : nearest?.minPriceExclMEVDecimalCorrected;
@@ -207,8 +209,9 @@ export default function DragCanvas(props: DragCanvasProps) {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dragLine = (movemementX: number, movemementY: number) => {
+    const dragLine = (movementX: number, movemementY: number) => {
         if (hoveredDrawnShape) {
+            let isSnapped = true;
             const index = drawnShapeHistory.findIndex(
                 (item) => item === hoveredDrawnShape?.data,
             );
@@ -234,25 +237,22 @@ export default function DragCanvas(props: DragCanvasProps) {
             if (firstPoint > 0 && secondPoint > 0) {
                 const calPoint0 =
                     scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
-                    movemementX;
+                    movementX;
 
                 const calPoint1 =
                     scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
-                    movemementX;
+                    movementX;
 
-                const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1);
-                const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1);
+                const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1, false);
+                const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1, false);
 
-                console.log(
-                    '**********************',
-                    snap0.valueX,
-                    snap1.valueX,
-                    movemementX,
-                );
+                isSnapped =
+                    snap0.valueX !== hoveredDrawnShape?.data?.data[0].x &&
+                    snap1.valueX !== hoveredDrawnShape?.data?.data[1].x;
 
                 const lastData = [
                     {
-                        x: snap0.valueX, // scaleData.xScale.invert(calPoint0),
+                        x: snap0.valueX,
                         y: isPointInDenom
                             ? reversedFirstPoint
                             : 1 / reversedFirstPoint,
@@ -260,7 +260,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             hoveredDrawnShape.data?.data[0].denomInBase,
                     },
                     {
-                        x: snap1.valueX, // scaleData.xScale.invert(calPoint1),
+                        x: snap1.valueX,
                         y: isPointInDenom
                             ? reversedSecondPoint
                             : 1 / reversedSecondPoint,
@@ -274,6 +274,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             }
 
             render();
+            return isSnapped;
         }
     };
 
@@ -430,10 +431,11 @@ export default function DragCanvas(props: DragCanvasProps) {
 
         let offsetY = 0;
         let offsetX = 0;
-        let movemementX = 0;
+        let movementX = 0;
+        let stackedMovementX = 0;
         let movemementY = 0;
 
-        let tempMovemementX = 0;
+        let tempmovementX = 0;
         let tempMovemementY = 0;
         let rectDragDirection = '';
         let isDragging = false;
@@ -461,7 +463,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - canvasRect?.top;
-                    tempMovemementX =
+                    tempmovementX =
                         event.sourceEvent.touches[0].clientX - canvasRect?.left;
                 }
 
@@ -528,7 +530,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             offsetX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
-                            movemementX = offsetX - tempMovemementX;
+                            movementX = offsetX - tempmovementX;
                             movemementY = offsetY - tempMovemementY;
                         } else {
                             offsetY =
@@ -536,14 +538,21 @@ export default function DragCanvas(props: DragCanvasProps) {
                             offsetX =
                                 event.sourceEvent.clientX - canvasRect?.left;
 
-                            movemementX = event.sourceEvent.movementX;
+                            movementX =
+                                stackedMovementX + event.sourceEvent.movementX;
                             movemementY = event.sourceEvent.movementY;
                         }
 
                         const { valueX } = getXandYvalueOfDrawnShape(
                             offsetX,
                             offsetY,
+                            false,
                         );
+
+                        const shouldSnap =
+                            movementX < 0
+                                ? valueX > scaleData.xScale.invert(offsetX)
+                                : valueX < scaleData.xScale.invert(offsetX);
 
                         setCrossHairDataFunc(valueX, offsetY);
 
@@ -557,7 +566,15 @@ export default function DragCanvas(props: DragCanvasProps) {
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
                                 setIsUpdatingShape(true);
-                                dragLine(movemementX, movemementY);
+                                const isSnapped = dragLine(
+                                    movementX,
+                                    movemementY,
+                                );
+                                if (!isSnapped && shouldSnap) {
+                                    stackedMovementX = movementX;
+                                } else {
+                                    stackedMovementX = 0;
+                                }
                             } else {
                                 setIsUpdatingShape(true);
                                 updateDrawLine(offsetX, offsetY, denomInBase);
@@ -571,7 +588,15 @@ export default function DragCanvas(props: DragCanvasProps) {
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
                                 setIsUpdatingShape(true);
-                                dragLine(movemementX, movemementY);
+                                const isSnapped = dragLine(
+                                    movementX,
+                                    movemementY,
+                                );
+                                if (!isSnapped && shouldSnap) {
+                                    stackedMovementX = movementX;
+                                } else {
+                                    stackedMovementX = 0;
+                                }
                             } else {
                                 setIsUpdatingShape(true);
                                 updateDrawRect(
@@ -589,7 +614,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             typeof TouchEvent !== 'undefined' &&
                             event.sourceEvent instanceof TouchEvent
                         ) {
-                            tempMovemementX =
+                            tempmovementX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
                             tempMovemementY =
@@ -607,7 +632,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 }
             })
             .on('end', (event) => {
-                tempMovemementX = 0;
+                tempmovementX = 0;
                 tempMovemementY = 0;
                 setIsUpdatingShape(false);
 
