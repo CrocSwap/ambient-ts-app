@@ -1,7 +1,7 @@
+import { MARKET_CAP_MULTIPLIER_BIG_INT } from './../../../../pages/platformFuta/mockAuctionData';
 import { useContext, useMemo } from 'react';
 import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { marketCapMultiplier } from '../../../../pages/platformFuta/mockAuctionData';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { scatterDotDefaultSize } from './ScatterChart';
 
@@ -11,14 +11,20 @@ const useScatterChartData = () => {
 
     const data = useMemo(() => {
         const localData = globalAuctionList.data?.map((element) => {
-            const filledClearingPriceInEth = parseFloat(
-                toDisplayQty(element.filledClearingPriceInNativeTokenWei, 18),
-            );
-
-            const marketCap = filledClearingPriceInEth * marketCapMultiplier;
-            const marketCapUsdValue =
-                nativeTokenUsdPrice !== undefined && marketCap !== undefined
-                    ? nativeTokenUsdPrice * marketCap
+            const filledClearingPriceInWeiBigInt =
+                element.filledClearingPriceInNativeTokenWei
+                    ? BigInt(element.filledClearingPriceInNativeTokenWei)
+                    : undefined;
+            const filledMarketCapInWeiBigInt = filledClearingPriceInWeiBigInt
+                ? filledClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
+                : undefined;
+            const filledMarketCapInEth = filledMarketCapInWeiBigInt
+                ? toDisplayQty(filledMarketCapInWeiBigInt, 18)
+                : undefined;
+            const filledMarketCapUsdValue =
+                nativeTokenUsdPrice !== undefined &&
+                filledMarketCapInEth !== undefined
+                    ? nativeTokenUsdPrice * parseFloat(filledMarketCapInEth)
                     : undefined;
 
             const currentTimeInSeconds = Math.floor(Date.now() / 1000);
@@ -27,7 +33,7 @@ const useScatterChartData = () => {
 
             return {
                 name: element.ticker,
-                price: marketCapUsdValue ? marketCapUsdValue : 0,
+                price: filledMarketCapUsdValue ? filledMarketCapUsdValue : 0,
                 timeRemaining: timeRemainingInSec,
                 size: scatterDotDefaultSize,
             };
