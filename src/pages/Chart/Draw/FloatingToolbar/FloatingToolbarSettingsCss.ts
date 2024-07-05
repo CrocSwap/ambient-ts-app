@@ -2,13 +2,14 @@ import styled from 'styled-components';
 
 const FloatingToolbarSettingsContainer = styled.div`
     background: #242f3f;
-    margin: 4px;
     border-radius: 3px;
     box-shadow: 4px 4px 6px #0d1117;
 
     padding: 4px;
 
     width: 100%;
+
+    transform: translateX(-9%);
 
     min-width: 310px;
 `;
@@ -161,7 +162,7 @@ const LineSettingsLeft = styled.div`
     align-items: center;
     justify-content: center;
     display: grid;
-    grid-template-columns: 30% 70%;
+    grid-template-columns: repeat(3, 1fr);
 
     gap: 10px;
 `;
@@ -169,7 +170,7 @@ const LineSettingsLeft = styled.div`
 const LineSettingsRight = styled.div`
     align-items: center;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr 1fr;
 
     gap: 10px;
 `;
@@ -177,16 +178,14 @@ const LineSettingsRight = styled.div`
 const ExtendSettings = styled.div`
     align-items: center;
     display: grid;
-    grid-template-columns: 25% 70%;
-
-    gap: 10px;
+    grid-template-columns: 28% 72%;
 `;
 
 const FibLineSettings = styled.div`
     background: #242f3f;
     align-items: center;
 
-    padding: 5px 5px 0 5px;
+    padding: 4px;
     gap: 10px;
 
     display: grid;
@@ -204,7 +203,6 @@ const FibLineOptions = styled.div`
 
 const StyledLabel = styled.div`
     color: rgba(204, 204, 204);
-    padding-left: 7px;
     padding-top: 2px;
     font-size: 13px;
 `;

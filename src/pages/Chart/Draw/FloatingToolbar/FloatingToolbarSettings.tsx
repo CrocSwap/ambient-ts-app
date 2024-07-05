@@ -1038,7 +1038,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    paddingLeft: '8px',
+                                    paddingLeft: '18px',
                                     // justifyContent: 'center',
                                 }}
                             >
@@ -1187,7 +1187,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    paddingLeft: '8px',
+                                    paddingLeft: '18px',
                                     // justifyContent: 'center',
                                 }}
                             >
