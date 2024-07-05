@@ -114,7 +114,7 @@ export default function Account() {
     );
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
 
-    if (!isUserConnected) {
+    if (!isUserConnected && !addressFromParams) {
         return connectWalletContent;
     }
 
