@@ -277,9 +277,7 @@ export default function ScatterChart() {
                         .select('svg')
                         .style('cursor', nearestData ? 'pointer' : 'default');
                     setHoveredTicker(
-                        nearestData && nearestData.name !== selectedDot?.name
-                            ? nearestData.name
-                            : undefined,
+                        nearestData ? nearestData.name : undefined,
                     );
                 })
                 .on('click', function (event) {
