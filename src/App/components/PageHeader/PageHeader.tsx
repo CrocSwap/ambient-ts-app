@@ -179,9 +179,10 @@ const PageHeader = function () {
                 pathNoLeadingSlash?.length == 50);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
-
         if (pathNoLeadingSlash === 'account') {
             document.title = 'My Account ~ Ambient';
+        } else if (pathNoLeadingSlash === 'account/points') {
+            document.title = 'My Points ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
