@@ -31,7 +31,7 @@ function Swap() {
                 {/* <img src={plumeLogo} alt='plume logo' width='50px' /> */}
                 <h2>SWAP</h2>
                 <p className={styles.swap_text}>
-                    Swap testnet tokens & earn Miles daily
+                    Swap testnet tokens & earn Plume Miles daily
                 </p>
                 <SwapComponent />
             </div>
