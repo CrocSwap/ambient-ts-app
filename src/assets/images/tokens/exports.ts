@@ -46,6 +46,7 @@ import RSETH from './RSETH.webp';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import USDE from './USDe-Black.svg';
+import SUSDE from './SUSDE.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -97,4 +98,5 @@ export {
     WEETH,
     BLAST,
     USDE,
+    SUSDE,
 };
