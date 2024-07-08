@@ -9,6 +9,7 @@
 
 .container svg:hover {
     cursor: default;
+    color: var(--text2);
 }
 
 .content{
