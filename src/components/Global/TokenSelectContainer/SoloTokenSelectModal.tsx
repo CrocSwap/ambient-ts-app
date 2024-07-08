@@ -31,7 +31,6 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
-
     noModal?: boolean;
 }
 
