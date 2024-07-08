@@ -8,7 +8,7 @@ import {
     sortedAuctionsIF,
     useSortedAuctions,
 } from '../Auctions/useSortedAuctions';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
@@ -74,6 +74,21 @@ export default function Account() {
         }
     }, [resolvedAddress, userAddress, chainId, cacheFrequency]);
 
+    const connectedAccountActive: boolean = useMemo(
+        () =>
+            userAddress
+                ? addressFromParams
+                    ? resolvedAddress
+                        ? resolvedAddress?.toLowerCase() ===
+                          userAddress.toLowerCase()
+                            ? true
+                            : false
+                        : true
+                    : true
+                : false,
+        [addressFromParams, resolvedAddress, userAddress],
+    );
+
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
             <h3>CLAIM ALL</h3>
@@ -122,7 +137,7 @@ export default function Account() {
         return noAuctionsContent;
     }
 
-    return desktopScreen ? (
+    const desktopVersionWithClaimAll = (
         <div className={styles.desktopContainer}>
             <div className={styles.content}>
                 <SearchableTicker
@@ -140,7 +155,21 @@ export default function Account() {
                 {claimAllContainer}
             </div>
         </div>
-    ) : (
+    );
+
+    const desktopVersionWithoutClaimAll = (
+        <div className={styles.container}>
+            <div className={styles.content}>
+                <SearchableTicker
+                    auctions={sorted}
+                    title='account'
+                    isAccount={true}
+                />
+            </div>
+        </div>
+    );
+
+    const mobileVersionWithClaimAll = (
         <div className={styles.container}>
             <div className={styles.content}>
                 <BreadCrumb />
@@ -150,4 +179,22 @@ export default function Account() {
             {claimAllContainer}
         </div>
     );
+
+    const mobileVersionWithoutClaimAll = (
+        <div className={styles.container}>
+            <div className={styles.content}>
+                <BreadCrumb />
+                <h2>Account</h2>
+                <SearchableTicker auctions={sorted} isAccount={true} />
+            </div>
+        </div>
+    );
+
+    return desktopScreen
+        ? connectedAccountActive
+            ? desktopVersionWithClaimAll
+            : desktopVersionWithoutClaimAll
+        : connectedAccountActive
+          ? mobileVersionWithClaimAll
+          : mobileVersionWithoutClaimAll;
 }
