@@ -238,7 +238,7 @@ export const TokenQuantityContainer = styled.div<AnimationProps>`
     min-height: 40px;
 
     display: grid;
-    grid-template-columns: 1fr 145px;
+    grid-template-columns: 1fr 165px;
     ${Animations};
 `;
 
