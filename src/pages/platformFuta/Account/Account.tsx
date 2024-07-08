@@ -106,7 +106,11 @@ export default function Account() {
                     </p>
                 </div>
             </div>
-            <button className={styles.claimButton}>CLAIM ALL</button>
+            <button
+                className={`${styles.claimButton} ${styles.disabledButton}`}
+            >
+                CLAIM ALL
+            </button>
         </div>
     );
 
