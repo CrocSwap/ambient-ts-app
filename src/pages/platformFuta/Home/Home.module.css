@@ -4,12 +4,38 @@
 
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 100vw;
     height: calc(100vh - 64px);
     padding: 8px;
     overflow: hidden;
 
+    /* background: #040309; */
+    background: #0A0B0D
+}
+
+.backgroundVideo {
+    /* position: fixed;
+    left: 6px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 100vh;
+    margin-top: 25%;
+
+    object-fit: fill; */
+    height: 100vh;
+    width: 100vw;
+    object-fit: cover;
+
+    top: 90px;
   
+    position: fixed;
+
+  
+
 }
 
 
@@ -20,9 +46,6 @@
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
     gap: 8px;
 }
 
@@ -48,11 +71,6 @@
     border: none;
 }
 
-
-
-
-
-
 .exploreButton {
     background: var(--accent1, #0CCDFF);
     color: var(--dark1, #06060C);
@@ -74,7 +92,53 @@
     border: 1px solid var(--accent1);
 }
 
+.container h1 {
+    font-family: "Roboto Mono";
+    font-size: 256px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-align: center;
+    margin-bottom: 20%;
+    text-shadow: 0px 0px 70px rgba(12, 205, 255, 0.60);
+    color: var(--accent1, #0CCDFF);
+    
+    display: none;
+}
 
+/* @media (min-width: 768px) {
+    .container {
+        background: url('../../../assets/futa/images/futaCover.svg') no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+
+    .container h1 {
+        display: flex;
+    }
+
+    .backgroundVideo {
+        display: none;
+    }
+} */
+
+@media (max-width: 560px){
+.backgroundVideo{
+      position: fixed;
+    left: 6px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 100vw;
+    height: 100vh;
+    margin-top: 25%;
+
+    /* object-fit: fill; */
+}
+}
 @media (max-width: 768px){
     .content {
        
