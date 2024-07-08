@@ -11,17 +11,17 @@ import { GCGO_TESTNET_URL } from '../gcgo';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 const chain = {
-    chainId: 534351,
-    name: 'Scroll Sepolia',
+    chainId: 84532,
+    name: 'Base Sepolia',
     currency: 'ETH',
-    rpcUrl: 'https://sepolia-rpc.scroll.io/',
-    explorerUrl: 'https://sepolia.scrollscan.dev',
+    rpcUrl: 'https://sepolia.base.org/',
+    explorerUrl: 'https://sepolia.basescan.org',
 };
 
-export const scrollSepolia: NetworkIF = {
-    chainId: '0x8274f',
+export const baseSepolia: NetworkIF = {
+    chainId: '0x14a34',
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://sepolia-rpc.scroll.io/',
+    evmRpcUrl: 'https://sepolia.base.org/',
     chain: chain,
     shouldPollBlock: true,
     marketData: '0x1',
@@ -30,17 +30,17 @@ export const scrollSepolia: NetworkIF = {
         new TopPool(
             scrollSepoliaETH,
             scrollSepoliaUSDC,
-            lookupChain('0x8274f').poolIndex,
+            lookupChain('0x14a34').poolIndex,
         ),
         new TopPool(
             scrollSepoliaETH,
             scrollSepoliaWBTC,
-            lookupChain('0x8274f').poolIndex,
+            lookupChain('0x14a34').poolIndex,
         ),
         new TopPool(
             scrollSepoliaUSDC,
             scrollSepoliaWBTC,
-            lookupChain('0x8274f').poolIndex,
+            lookupChain('0x14a34').poolIndex,
         ),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {

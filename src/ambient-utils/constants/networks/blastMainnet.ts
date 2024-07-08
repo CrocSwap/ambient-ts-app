@@ -19,7 +19,7 @@ const chain = {
     explorerUrl: 'https://blastscan.io',
 };
 
-export const blast: NetworkIF = {
+export const blastMainnet: NetworkIF = {
     chainId: '0x13e31',
     graphCacheUrl: GCGO_BLAST_URL,
     evmRpcUrl: BLAST_RPC_URL,

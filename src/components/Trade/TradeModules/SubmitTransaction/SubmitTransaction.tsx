@@ -128,19 +128,19 @@ export default function SubmitTransaction(props: propsIF) {
     const confirmationDisplay = isTransactionException
         ? transactionException
         : isTransactionDenied
-        ? transactionDenied
-        : isTransactionApproved
-        ? transactionSubmitted
-        : isTransactionFailed
-        ? transactionFailed
-        : confirmSendMessage;
+          ? transactionDenied
+          : isTransactionApproved
+            ? transactionSubmitted
+            : isTransactionFailed
+              ? transactionFailed
+              : confirmSendMessage;
 
     const buttonColor =
         isTransactionException || isTransactionDenied || isTransactionFailed
             ? 'var(--negative)'
             : isTransactionApproved
-            ? 'var(--positive)'
-            : 'var(--accent1)';
+              ? 'var(--positive)'
+              : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
@@ -157,14 +157,14 @@ export default function SubmitTransaction(props: propsIF) {
             ? 'Wallet Balance Insufficient to Cover Gas'
             : 'Transaction Exception'
         : isTransactionDenied
-        ? 'Transaction Denied'
-        : isTransactionFailed
-        ? 'Transaction Failed'
-        : isTransactionConfirmed
-        ? 'Transaction Confirmed'
-        : isTransactionApproved
-        ? 'Transaction Submitted'
-        : transactionPendingDisplayString;
+          ? 'Transaction Denied'
+          : isTransactionFailed
+            ? 'Transaction Failed'
+            : isTransactionConfirmed
+              ? 'Transaction Confirmed'
+              : isTransactionApproved
+                ? 'Transaction Submitted'
+                : transactionPendingDisplayString;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 

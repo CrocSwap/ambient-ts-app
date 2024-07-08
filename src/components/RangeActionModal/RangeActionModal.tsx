@@ -629,8 +629,8 @@ function RangeActionModal(props: propsIF) {
                                 ? 'Reset'
                                 : 'Harvest'
                             : type === 'Remove'
-                            ? 'Remove'
-                            : 'Range'
+                              ? 'Remove'
+                              : 'Range'
                     }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
@@ -657,8 +657,8 @@ function RangeActionModal(props: propsIF) {
                                 ? 'Remove Liquidity'
                                 : 'Harvest Fees'
                             : type === 'Harvest'
-                            ? 'Reset'
-                            : '...'
+                              ? 'Reset'
+                              : '...'
                     }
                     disabled={
                         (type === 'Remove' &&
@@ -779,8 +779,8 @@ function RangeActionModal(props: propsIF) {
                               type === 'Remove' ? 'Remove Liquidity' : 'Harvest'
                           } Settings`
                         : type === 'Remove'
-                        ? 'Remove Liquidity'
-                        : 'Harvest Confirmation'
+                          ? 'Remove Liquidity'
+                          : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
                     resetConfirmation();

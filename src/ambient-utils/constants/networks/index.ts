@@ -3,14 +3,17 @@ import { ethereumSepolia } from './ethereumSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
+// import { baseMainnet } from './baseMainnet';
+import { baseSepolia } from './baseSepolia';
 import { blastSepolia } from './blastSepolia';
-import { blast } from './blastNetwork';
+import { blastMainnet } from './blastMainnet';
 import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
     defaultBrandAssets,
     blastBrandAssets,
     scrollBrandAssets,
+    baseBrandAssets,
     futaBrandAssets,
 } from '../../../assets/branding';
 
@@ -22,8 +25,10 @@ const networks: NetworkIF[] = [
     ethereumMainnet,
     scrollMainnet,
     scrollSepolia,
+    blastMainnet,
     blastSepolia,
-    blast,
+    // baseMainnet,
+    baseSepolia,
 ];
 
 function getNetworks(chns: (string | chainIds)[]): {
@@ -47,6 +52,8 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
         ? getNetworks(Object.keys(blastBrandAssets.networks))
         : brand === 'scroll'
         ? getNetworks(Object.keys(scrollBrandAssets.networks))
+        : brand === 'base'
+        ? getNetworks(Object.keys(baseBrandAssets.networks))
         : brand === 'futa'
         ? getNetworks(Object.keys(futaBrandAssets.networks))
         : brand === 'ambientProduction'
@@ -66,5 +73,7 @@ export { ethereumSepolia };
 export { ethereumMainnet };
 export { scrollMainnet };
 export { scrollSepolia };
+export { blastMainnet };
 export { blastSepolia };
-export { blast };
+// export { baseMainnet };
+export { baseSepolia };

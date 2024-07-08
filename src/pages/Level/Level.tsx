@@ -51,8 +51,8 @@ export default function Level(props: propsIF) {
             const walletID = resolvedAddress
                 ? resolvedAddress
                 : userAddress
-                ? userAddress
-                : '';
+                  ? userAddress
+                  : '';
             const avatarData = await getAvatarRest(walletID);
             setShownAvatar(
                 getAvatarComponent(walletID, avatarData, 50, false, true),
@@ -84,22 +84,22 @@ export default function Level(props: propsIF) {
                     ? elapsedTimeInSecondsNum < 60
                         ? '< 1 minute ago'
                         : elapsedTimeInSecondsNum < 120
-                        ? '1 minute ago'
-                        : elapsedTimeInSecondsNum < 3600
-                        ? `${Math.floor(
-                              elapsedTimeInSecondsNum / 60,
-                          )} minutes ago `
-                        : elapsedTimeInSecondsNum < 7200
-                        ? '1 hour ago'
-                        : elapsedTimeInSecondsNum < 86400
-                        ? `${Math.floor(
-                              elapsedTimeInSecondsNum / 3600,
-                          )} hours ago `
-                        : elapsedTimeInSecondsNum < 172800
-                        ? '1 day ago'
-                        : `${Math.floor(
-                              elapsedTimeInSecondsNum / 86400,
-                          )} days ago `
+                          ? '1 minute ago'
+                          : elapsedTimeInSecondsNum < 3600
+                            ? `${Math.floor(
+                                  elapsedTimeInSecondsNum / 60,
+                              )} minutes ago `
+                            : elapsedTimeInSecondsNum < 7200
+                              ? '1 hour ago'
+                              : elapsedTimeInSecondsNum < 86400
+                                ? `${Math.floor(
+                                      elapsedTimeInSecondsNum / 3600,
+                                  )} hours ago `
+                                : elapsedTimeInSecondsNum < 172800
+                                  ? '1 day ago'
+                                  : `${Math.floor(
+                                        elapsedTimeInSecondsNum / 86400,
+                                    )} days ago `
                     : 'Pending...';
             return {
                 date: elapsedTimeString,

@@ -116,8 +116,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isTokenEth
             ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
             : isInitPage
-            ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
-            : balance;
+              ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
+              : balance;
 
     const balanceWithBuffer = balance
         ? subtractBuffer(balBigIntStringScaled)

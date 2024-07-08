@@ -145,9 +145,8 @@ export default function ExchangeBalance(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(
-                    sendToAddress,
-                );
+                const newResolvedAddress =
+                    await mainnetProvider.resolveName(sendToAddress);
 
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);

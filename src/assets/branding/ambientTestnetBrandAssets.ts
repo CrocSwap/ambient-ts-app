@@ -2,6 +2,7 @@ import { brandIF } from './types';
 import large from '../images/logos/large.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
+import baseLogo from '../../assets/images/logos/base_logo.svg';
 
 export const ambientTestnetBrandAssets: brandIF = {
     networks: {
@@ -26,6 +27,15 @@ export const ambientTestnetBrandAssets: brandIF = {
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
                 { content: blastLogo, processAs: 'image' },
+            ],
+        },
+        // base sepolia
+        '0x14a34': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: baseLogo, processAs: 'image' },
             ],
         },
     },

@@ -114,8 +114,7 @@ export default function DropdownMenu2(props: propsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia' ||
-                            title === 'Blast Sepolia'
+                            {title.toLowerCase().includes('sepolia')
                                 ? 'Sepolia'
                                 : title}
                         </Icon>
