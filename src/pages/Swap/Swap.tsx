@@ -26,7 +26,10 @@ function Swap() {
         );
     return (
         <div className={styles.swap_page_container}>
-            <div className={styles.swap_page_content}>
+            <div
+                className={styles.swap_page_content}
+                style={{ marginTop: '24px' }}
+            >
                 {arrowDisplay}
                 {/* <img src={plumeLogo} alt='plume logo' width='50px' /> */}
                 <h2>SWAP</h2>
