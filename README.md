@@ -19,7 +19,7 @@ Clone the repo and use `yarn start` to run the Ambient UI in development mode.
 
 Open [http://localhost:3000](http://localhost:3000) to view it in a browser.
 
-Note: Node v16+ is required
+Note: Node v18+ is required
 
 ### Environmental Variables
 
