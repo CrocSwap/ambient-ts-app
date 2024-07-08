@@ -48,6 +48,7 @@ import BLAST from './BLAST.png';
 import GOON from './GOON.svg';
 import GOONUSD from './goonUSD.svg';
 import USDE from './USDe-Black.svg';
+import SUSDE from './SUSDE.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -101,4 +102,5 @@ export {
     GOON,
     GOONUSD,
     USDE,
+    SUSDE,
 };

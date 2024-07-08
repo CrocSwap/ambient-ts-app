@@ -29,7 +29,7 @@
         <meta name="msapplication-TileColor" content="#0d1117" />
         <meta name="theme-color" content="#7371fc" />
 
-        <meta name="title" content="Ambient Finance" />
+        <meta name="title" content="%VITE_SITE_TITLE%" />
         <title>%VITE_SITE_TITLE%</title>
 
         <!-- Meta tags using environment variables -->
@@ -49,11 +49,11 @@
         <meta property="og:url" content="%VITE_OG_URL%" />
         <meta property="og:title" content="%VITE_OG_TITLE%">
         <meta property="og:description" content="%VITE_OG_DESCRIPTION%">
-        <meta property="og:image" content="/previewImage.png" />
+        <meta property="og:image" content="%VITE_OG_IMAGE%" />
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@crocswap" />
+        <meta name="twitter:site" content="%VITE_TWITTER_SITE%" />
 
         <meta property="twitter:url" content="%VITE_OG_URL%" />
         <meta property="twitter:title" content="%VITE_OG_TITLE%" />
@@ -63,9 +63,8 @@
         />
         <meta
             property="twitter:image"
-            content="/previewImage.png"
+            content="%VITE_OG_IMAGE%"
         />
-        <meta property="og:image" content="/previewImage.png" />
     </head>
     <body>
         <script type="text/javascript">
