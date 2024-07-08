@@ -8,17 +8,16 @@
   }
 
   .mainContainer{
-    height: calc(100svh - 100px);
+    height: calc(100svh - 170px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: relative;
   }
 
   .container {
     width: 100%;
-    padding: 20px;
-    overflow-y: scroll;
-   
+    padding: 20px; 
   }
   
   .shimmer {
@@ -41,4 +40,28 @@
 
   .commentsWrapper{
     display: block;
+    width: 100%;
+    overflow-y: auto;
+    max-height: calc(94svh - 170px);
+    position: absolute;
+    bottom: 4rem;
+    }
+    
+  .comments_content{
+    }
+
+
+
+    @media only screen and (max-width: 600px){
+
+      
+  .mainContainer{
+    height: calc(100svh - 250px);
   }
+
+  
+  .commentsWrapper{
+    max-height: 65vh;
+  }
+
+    }

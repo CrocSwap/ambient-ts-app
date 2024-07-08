@@ -6,12 +6,37 @@
     margin-bottom: .4rem;
     padding-bottom: .4rem;
     border-bottom: 1px solid rgba(255,255,255, .1);
+    position: relative;
 }
 
 .comment_top_info{
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: .5rem;
+    text-align: center;
+    opacity: .3;
+    
+}
+.comment_sender_info{
+    color: var(--accent1);
+}
 
+.comment_sender_info.is_user{
+
+    color: var(--orange);
 }
 
 .comment_text{
     
+    max-width: 85%;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.comment_bottom_info{
+    position: absolute;
+    bottom: .3rem;
+    right: .5rem;
+    font-size: .8rem;
+    opacity: .3;
 }

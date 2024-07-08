@@ -299,3 +299,15 @@ export const isChainNameTestnet = (chainName: string) => {
         chainName.indexOf('Sepolia') > -1 || chainName.indexOf('Testnet') > -1
     );
 };
+
+export const getDateLabelInfo = (date: Date) => {
+    const today = new Date();
+    if (
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+    ) {
+        return 'Today';
+    }
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+};
