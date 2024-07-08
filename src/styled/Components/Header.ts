@@ -223,6 +223,7 @@ export const TokenContainer = styled.section`
 `;
 
 export const LogoName = styled(FlexContainer)`
+    color: var(--text2);
     img {
         width: 25px;
         height: 25px;
@@ -277,6 +278,10 @@ export const AccountLink = styled(NavLink)`
     background: var(--dark3);
     text-decoration: none;
     color: var(--text2);
+
+    &:hover {
+        color: var(--text1) !important;
+    }
 `;
 
 export const WalletContent = styled.section`
