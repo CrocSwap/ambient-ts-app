@@ -552,6 +552,15 @@ export const scrollAxlUSDC: TokenIF = {
     logoURI: '',
 };
 
+export const scrollsUSDe: TokenIF = {
+    name: 'Staked USDe',
+    address: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+    symbol: 'sUSDe',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
 export const scrollUSDE: TokenIF = {
     chainId: 534352,
     address: '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34',
@@ -683,4 +692,5 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaETH,
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
+    scrollsUSDe,
 ];
