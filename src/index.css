@@ -379,9 +379,9 @@
     /* colors */
     --blur-bg: #ebebed;
 
-    --text1: black;
-    --text2: #19222d;
-    --text3: #0e131a;
+    --text1: #282828;
+    --text2: #555555;
+    --text3: #585757;
 
     --dark1: #f9f9f9;
     --dark2: #ffffff;

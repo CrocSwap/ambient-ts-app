@@ -45,9 +45,9 @@ export default function Button(props: propsIF) {
                 ...style, // Merge with style prop
                 ...(isActiveNetworkPlume
                     ? {
-                          border: '3px solid #000',
+                          border: '2px solid #000',
                           boxShadow:
-                              'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 6px 5px #000',
+                              'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 3px 5px #000',
                           borderRadius: '0.6rem',
                       }
                     : {}),
