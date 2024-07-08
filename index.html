@@ -3,10 +3,6 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-            name="description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
-        />
         <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -33,12 +29,14 @@
         <meta name="msapplication-TileColor" content="#0d1117" />
         <meta name="theme-color" content="#7371fc" />
 
-        <title>Ambient</title>
         <meta name="title" content="Ambient Finance" />
-        <meta
-            name="description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
-        />
+        <title>%VITE_SITE_TITLE%</title>
+
+        <!-- Meta tags using environment variables -->
+        <meta name="description" content="%VITE_META_DESCRIPTION%">
+        <meta name="keywords" content="%VITE_META_KEYWORDS%">
+    
+    
 
         <!-- Loadforge declaration of ownership -->
         <meta
@@ -48,13 +46,9 @@
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://ambient.finance" />
-        <meta property="og:title" content="Ambient Finance" />
-        <meta
-            property="og:description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
-        />
-        <meta property="og:image" content="/previewImage.png" />
+        <meta property="og:url" content="%VITE_OG_URL%" />
+        <meta property="og:title" content="%VITE_OG_TITLE%">
+        <meta property="og:description" content="%VITE_OG_DESCRIPTION%">
         <meta property="og:image" content="/previewImage.png" />
 
         <!-- Twitter -->
