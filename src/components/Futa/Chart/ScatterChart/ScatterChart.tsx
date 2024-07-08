@@ -50,10 +50,7 @@ export default function ScatterChart() {
     const navigate = useNavigate();
 
     const getTimeRemainingValue = (timeRemaining: number) => {
-        return timeRemaining / 60 > 86400 / 60 &&
-            timeRemaining / 60 < 172800 / 60
-            ? 1440
-            : timeRemaining / 60;
+        return timeRemaining / 60;
     };
 
     const navigateUrlBase = '/auctions';
