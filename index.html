@@ -3,10 +3,6 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta
-            name="description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
-        />
         <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -33,12 +29,14 @@
         <meta name="msapplication-TileColor" content="#0d1117" />
         <meta name="theme-color" content="#7371fc" />
 
-        <title>Ambient</title>
-        <meta name="title" content="Ambient Finance" />
-        <meta
-            name="description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
-        />
+        <meta name="title" content="%VITE_SITE_TITLE%" />
+        <title>%VITE_SITE_TITLE%</title>
+
+        <!-- Meta tags using environment variables -->
+        <meta name="description" content="%VITE_META_DESCRIPTION%">
+        <meta name="keywords" content="%VITE_META_KEYWORDS%">
+    
+    
 
         <!-- Loadforge declaration of ownership -->
         <meta
@@ -48,30 +46,26 @@
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://ambient.finance" />
-        <meta property="og:title" content="Ambient Finance" />
-        <meta
-            property="og:description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
-        />
-        <meta property="og:image" content="/previewImage.png" />
-        <meta property="og:image" content="/previewImage.png" />
+        <meta property="og:url" content="%VITE_OG_URL%" />
+        <meta property="og:title" content="%VITE_OG_TITLE%">
+        <meta property="og:description" content="%VITE_OG_DESCRIPTION%">
+        <meta property="og:image" content="%VITE_OG_IMAGE%" />
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@crocswap" />
+        <meta name="twitter:site" content="%VITE_TWITTER_SITE%" />
 
-        <meta property="twitter:url" content="https://ambient.finance" />
-        <meta property="twitter:title" content="Ambient Finance" />
+        <meta property="twitter:url" content="%VITE_OG_URL%" />
+        <meta property="twitter:title" content="%VITE_OG_TITLE%" />
         <meta
             property="twitter:description"
-            content="Swap cryptocurrencies like a pro with Ambient. Decentralized trading is now better than ever."
+            content="%VITE_OG_DESCRIPTION%"
         />
         <meta
             property="twitter:image"
-            content="/previewImage.png"
+            content="%VITE_OG_IMAGE%"
         />
-        <meta property="og:image" content="/previewImage.png" />
+        <meta property="og:image" content="%VITE_OG_IMAGE%" />
     </head>
     <body>
         <script type="text/javascript">
