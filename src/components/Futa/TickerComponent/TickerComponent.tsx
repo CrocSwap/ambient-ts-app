@@ -26,7 +26,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -114,7 +114,10 @@ const useAuctionStates = () => {
         useState<boolean>(false);
     const [isPriceImpactQueryInProgress, setIsPriceImpactQueryInProgress] =
         useState<boolean>(false);
-    const [isValidated, setIsValidated] = useState<boolean>(false);
+    const [bidValidityStatus, setBidValidityStatus] = useState<{
+        isValid: boolean;
+        reason?: string;
+    }>({ isValid: false });
     const [priceImpact, setPriceImpact] = useState<number | undefined>();
     const [
         selectedMaxMarketCapInWeiBigInt,
@@ -158,8 +161,8 @@ const useAuctionStates = () => {
         setIsValidationInProgress,
         isPriceImpactQueryInProgress,
         setIsPriceImpactQueryInProgress,
-        isValidated,
-        setIsValidated,
+        bidValidityStatus,
+        setBidValidityStatus,
         priceImpact,
         setPriceImpact,
         selectedMaxMarketCapInWeiBigInt,
@@ -209,8 +212,8 @@ export default function TickerComponent(props: PropsIF) {
         setIsValidationInProgress,
         isPriceImpactQueryInProgress,
         setIsPriceImpactQueryInProgress,
-        isValidated,
-        setIsValidated,
+        bidValidityStatus,
+        setBidValidityStatus,
         priceImpact,
         setPriceImpact,
         selectedMaxMarketCapInWeiBigInt,
@@ -390,22 +393,44 @@ export default function TickerComponent(props: PropsIF) {
 
     const nativeTokenDecimals = nativeToken.decimals;
 
-    const checkBidValidity = async (bidQtyNonDisplay: string) => {
+    const checkBidValidity = async (
+        bidQtyNonDisplay: string,
+    ): Promise<{ isValid: boolean; reason?: string }> => {
         const isNonZero =
             !!bidQtyNonDisplay && parseFloat(bidQtyNonDisplay) > 0;
 
-        if (!isNonZero) return false;
+        if (!isNonZero)
+            return {
+                isValid: false,
+                reason: 'Bid size must be greater than 0',
+            };
+
+        const inputValueInWei = fromDisplayQty(inputValue, 18);
+        const inputValueGreaterThanSelectedClearingPrice =
+            inputValueInWei >
+            (selectedMaxMarketCapInWeiBigInt ?? 0n) /
+                MARKET_CAP_MULTIPLIER_BIG_INT;
+
+        if (inputValueGreaterThanSelectedClearingPrice)
+            return {
+                isValid: false,
+                reason: 'Increase max market cap',
+            };
 
         if (!isUserConnected) {
-            return true;
+            return { isValid: true };
         } else {
-            if (!nativeTokenWalletBalanceAdjustedNonDisplayString) return false;
+            if (!nativeTokenWalletBalanceAdjustedNonDisplayString)
+                return { isValid: false, reason: 'No balance' };
 
             const bidSizeLessThanAdjustedBalance =
                 BigInt(nativeTokenWalletBalanceAdjustedNonDisplayString) >
                 BigInt(bidQtyNonDisplay);
 
-            return bidSizeLessThanAdjustedBalance;
+            return {
+                isValid: bidSizeLessThanAdjustedBalance,
+                reason: 'Insufficient balance',
+            };
         }
     };
 
@@ -420,7 +445,6 @@ export default function TickerComponent(props: PropsIF) {
 
         if (!isNonZero || !openBidClearingPriceInWeiBigInt) return undefined;
 
-        // TODO: add openBidClearingPriceInNativeTokenWei
         const priceImpact = calcBidImpact(
             crocEnv,
             tickerFromParams,
@@ -489,9 +513,9 @@ export default function TickerComponent(props: PropsIF) {
 
     useEffect(() => {
         if (!debouncedBidInput) return;
-        checkBidValidity(debouncedBidInput).then((isValid) => {
+        checkBidValidity(debouncedBidInput).then((result) => {
             setIsValidationInProgress(false);
-            setIsValidated(isValid);
+            setBidValidityStatus(result);
         });
         getPriceImpact(crocEnv, debouncedBidInput).then((impact) => {
             setIsPriceImpactQueryInProgress(false);
@@ -549,7 +573,7 @@ export default function TickerComponent(props: PropsIF) {
     const isButtonDisabled =
         isUserConnected &&
         !isAuctionCompleted &&
-        (isValidationInProgress || !isValidated);
+        (isValidationInProgress || !bidValidityStatus.isValid);
 
     const buttonLabel =
         !tickerFromParams && isUserConnected
@@ -566,9 +590,9 @@ export default function TickerComponent(props: PropsIF) {
                       ? 'Enter a Bid Size'
                       : isValidationInProgress
                         ? 'Validating Bid...'
-                        : isValidated
+                        : bidValidityStatus.isValid
                           ? 'Bid'
-                          : 'Invalid Bid';
+                          : bidValidityStatus.reason || 'Invalid Bid';
 
     const bidButton = (
         <button
@@ -655,6 +679,7 @@ export default function TickerComponent(props: PropsIF) {
         /* auto-focus the bid qty input field on first load
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
+        // could be improved by first checking if the field is visible, rather than auto scrolling
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxMarketCapInWeiBigInt, inputValue]);
 
