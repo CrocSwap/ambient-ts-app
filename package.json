@@ -39,7 +39,7 @@
         "react-jazzicon": "^1.0.4",
         "react-lottie-player": "^2.0.0",
         "react-reveal": "^1.2.2",
-        "react-router-dom": "^6.3.0",
+        "react-router-dom": "^6.24.1",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.8.1",
         "simplex-noise": "^4.0.1",
