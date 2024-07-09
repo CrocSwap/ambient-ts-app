@@ -1336,7 +1336,10 @@ export default function Chart(props: propsIF) {
                                 setCursorStyleTrigger(true);
 
                                 if (rescale) {
-                                    changeScale(true);
+                                    if (!isCondensedModeEnabled) {
+                                        changeScale(true);
+                                    }
+                                    render();
                                 } else {
                                     let domain = undefined;
                                     if (
@@ -4226,20 +4229,30 @@ export default function Chart(props: propsIF) {
                 (!isTriggeredByZoom || visibleCandleData.length > 10) &&
                 poolPriceWithoutDenom
             ) {
+                const isLine = ['futa'].includes(platformName);
+
                 const placeHolderPrice = denomInBase
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
                 const filteredMin = d3.min(visibleCandleData, (d) =>
                     denomInBase
-                        ? d.invMaxPriceExclMEVDecimalCorrected
-                        : d.minPriceExclMEVDecimalCorrected,
+                        ? isLine
+                            ? d.invPriceCloseExclMEVDecimalCorrected
+                            : d.invMaxPriceExclMEVDecimalCorrected
+                        : isLine
+                          ? d.priceCloseExclMEVDecimalCorrected
+                          : d.minPriceExclMEVDecimalCorrected,
                 );
 
                 const filteredMax = d3.max(visibleCandleData, (d) =>
                     denomInBase
-                        ? d.invMinPriceExclMEVDecimalCorrected
-                        : d.maxPriceExclMEVDecimalCorrected,
+                        ? isLine
+                            ? d.invPriceCloseExclMEVDecimalCorrected
+                            : d.invMinPriceExclMEVDecimalCorrected
+                        : isLine
+                          ? d.priceCloseExclMEVDecimalCorrected
+                          : d.maxPriceExclMEVDecimalCorrected,
                 );
 
                 if (filteredMin && filteredMax) {
