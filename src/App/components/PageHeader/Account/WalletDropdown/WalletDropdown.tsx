@@ -50,7 +50,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast, isActiveNetworkPlume } =
+        useContext(ChainDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
@@ -250,34 +251,43 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}
                 accountAddressFull={props.accountAddressFull}
+                isPlume={isActiveNetworkPlume}
             />
-            <WalletContent>
-                {tokensData.map((tokenData) => (
-                    <TokenAmountDisplay
-                        amount={
-                            tokenData.amount !== undefined
-                                ? tokenData.amount
-                                : '…'
-                        }
-                        value={tokenData.value}
-                        symbol={tokenData.symbol}
-                        logo={tokenData.logo}
-                        key={JSON.stringify(tokenData)}
-                    />
-                ))}
-            </WalletContent>
-            <ActionsContainer numCols={2} gap={16} fullWidth={true}>
-                <AccountLink
-                    to={'/account'}
-                    aria-label='Go to the account page '
-                    tabIndex={0}
-                    onClick={clickOutsideHandler}
-                >
-                    <CgProfile />
-                    My Account
-                </AccountLink>
-                <LogoutButton onClick={clickLogout} />
-            </ActionsContainer>
+            {!isActiveNetworkPlume && (
+                <WalletContent>
+                    {tokensData.map((tokenData) => (
+                        <TokenAmountDisplay
+                            amount={
+                                tokenData.amount !== undefined
+                                    ? tokenData.amount
+                                    : '…'
+                            }
+                            value={tokenData.value}
+                            symbol={tokenData.symbol}
+                            logo={tokenData.logo}
+                            key={JSON.stringify(tokenData)}
+                        />
+                    ))}
+                </WalletContent>
+            )}
+            {!isActiveNetworkPlume ? (
+                <ActionsContainer numCols={2} gap={16} fullWidth={true}>
+                    <AccountLink
+                        to={'/account'}
+                        aria-label='Go to the account page '
+                        tabIndex={0}
+                        onClick={clickOutsideHandler}
+                    >
+                        <CgProfile />
+                        My Account
+                    </AccountLink>
+                    <LogoutButton onClick={clickLogout} />
+                </ActionsContainer>
+            ) : (
+                <ActionsContainer numCols={1} gap={16} fullWidth={true}>
+                    <LogoutButton onClick={clickLogout} />
+                </ActionsContainer>
+            )}
         </WalletWrapper>
     );
 }
