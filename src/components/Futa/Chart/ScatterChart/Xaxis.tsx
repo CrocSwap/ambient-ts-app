@@ -42,6 +42,23 @@ export default function Xaxis(props: AxisIF) {
                     .selectAll('text')
                     .attr('fill', textColor)
                     .style('font-family', 'Roboto Mono');
+
+                svg.on('mouseover', function () {
+                    d3.select(this)
+                        .selectAll('path, line')
+                        .attr('stroke', 'var(--accent1)');
+
+                    d3.select(this)
+                        .selectAll('text')
+                        .attr('fill', 'var(--accent1)');
+                }).on('mouseout', function () {
+                    d3.select(this)
+                        .selectAll('path, line')
+                        .attr('stroke', axisColor);
+
+                    d3.select(this).selectAll('text').attr('fill', textColor);
+                });
+
                 d3LinearAxisJoin(svg, [data]).call(xAxis);
             });
         }

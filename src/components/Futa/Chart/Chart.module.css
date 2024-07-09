@@ -9,7 +9,6 @@
 
 .container svg:hover {
     cursor: default;
-    color: var(--text2);
 }
 
 .content{
@@ -27,6 +26,10 @@
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite; */
 
+}
+
+.scatterAxis :hover {
+    color: var(--accent1);
 }
 
 .chartHeader{
