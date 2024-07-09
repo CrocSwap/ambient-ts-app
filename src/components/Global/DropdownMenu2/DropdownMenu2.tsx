@@ -108,7 +108,7 @@ export default function DropdownMenu2(props: propsIF) {
                                     title.includes('Scroll') ||
                                     title.includes('Blast')
                                         ? '20px'
-                                        : '15px'
+                                        : '20px'
                                 }
                                 height='20px'
                                 style={{
