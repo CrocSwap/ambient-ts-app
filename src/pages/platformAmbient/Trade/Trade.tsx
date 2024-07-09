@@ -88,6 +88,8 @@ function Trade() {
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
+    const { platformName } = useContext(BrandContext);
+
     const [transactionFilter, setTransactionFilter] = useState<CandleDataIF>();
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
@@ -295,7 +297,7 @@ function Trade() {
                                 !isCandleDataNull && !isChartFullScreen
                             }
                             enable={{
-                                bottom: !isChartFullScreen,
+                                bottom: false,
                                 top: false,
                                 left: false,
                                 topLeft: false,
@@ -374,7 +376,7 @@ function Trade() {
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
-                        {!isChartFullScreen && (
+                        {!isChartFullScreen && platformName !== 'futa' && (
                             <FlexContainer
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}
@@ -385,21 +387,23 @@ function Trade() {
                         )}
                     </FlexContainer>
                 </FlexContainer>
-                <FlexContainer
-                    flexDirection='column'
-                    fullHeight
-                    fullWidth
-                    background='dark1'
-                    overflow='auto'
-                >
-                    <Outlet
-                        context={{
-                            urlParamMap: urlParamMap,
-                            limitTick: limitTick,
-                            updateURL: updateURL,
-                        }}
-                    />
-                </FlexContainer>
+                {platformName !== 'futa' && (
+                    <FlexContainer
+                        flexDirection='column'
+                        fullHeight
+                        fullWidth
+                        background='dark1'
+                        overflow='auto'
+                    >
+                        <Outlet
+                            context={{
+                                urlParamMap: urlParamMap,
+                                limitTick: limitTick,
+                                updateURL: updateURL,
+                            }}
+                        />
+                    </FlexContainer>
+                )}
                 {!isChartHeightMinimum && <ChartToolbar />}
             </MainSection>
         </>

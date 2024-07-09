@@ -90,8 +90,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     const { setAdvancedLowTick, setAdvancedHighTick, setAdvancedMode } =
         useContext(RangeContext);
-    const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
-    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
+    const [baseTokenAddress, setBaseTokenAddress] = useState<string>(
+        '0x0000000000000000000000000000000000000000',
+    );
+    const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>(
+        '0x60bBA138A74C5e7326885De5090700626950d509',
+    );
 
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);

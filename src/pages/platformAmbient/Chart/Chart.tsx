@@ -123,6 +123,8 @@ import {
     pinTickToTickUpper,
 } from '../../../ambient-utils/dataLayer/functions/pinTick';
 import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
+import { BrandContext } from '../../../contexts/BrandContext';
+import CandleLineChart from './LineChart/LineChart';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -256,6 +258,8 @@ export default function Chart(props: propsIF) {
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
+
+    const { platformName } = useContext(BrandContext);
 
     const [localCandleDomains, setLocalCandleDomains] =
         useState<CandleDomainIF>({
@@ -5914,22 +5918,38 @@ export default function Chart(props: propsIF) {
                                 'px auto 1fr auto minmax(1em, max-content)',
                         }}
                     >
-                        <CandleChart
-                            chartItemStates={props.chartItemStates}
-                            data={visibleCandleData}
-                            denomInBase={denomInBase}
-                            lastCandleData={lastCandleData}
-                            period={period}
-                            scaleData={scaleData}
-                            selectedDate={selectedDate}
-                            showLatest={showLatest}
-                            setBandwidth={setBandwidth}
-                            prevlastCandleTime={prevlastCandleTime}
-                            setPrevLastCandleTime={setPrevLastCandleTime}
-                            isDiscontinuityScaleEnabled={isCondensedModeEnabled}
-                            visibleDateForCandle={visibleDateForCandle}
-                            chartThemeColors={chartThemeColors}
-                        />
+                        {platformName !== 'futa' ? (
+                            <CandleChart
+                                chartItemStates={props.chartItemStates}
+                                data={visibleCandleData}
+                                denomInBase={denomInBase}
+                                lastCandleData={lastCandleData}
+                                period={period}
+                                scaleData={scaleData}
+                                selectedDate={selectedDate}
+                                showLatest={showLatest}
+                                setBandwidth={setBandwidth}
+                                prevlastCandleTime={prevlastCandleTime}
+                                setPrevLastCandleTime={setPrevLastCandleTime}
+                                isDiscontinuityScaleEnabled={
+                                    isCondensedModeEnabled
+                                }
+                                visibleDateForCandle={visibleDateForCandle}
+                                chartThemeColors={chartThemeColors}
+                            />
+                        ) : (
+                            <CandleLineChart
+                                period={period}
+                                scaleData={scaleData}
+                                denomInBase={denomInBase}
+                                data={visibleCandleData}
+                                showLatest={showLatest}
+                                lastCandleData={lastCandleData}
+                                prevlastCandleTime={prevlastCandleTime}
+                                setPrevLastCandleTime={setPrevLastCandleTime}
+                                chartThemeColors={chartThemeColors}
+                            />
+                        )}
 
                         <VolumeBarCanvas
                             scaleData={scaleData}
@@ -5941,7 +5961,7 @@ export default function Chart(props: propsIF) {
                             chartThemeColors={chartThemeColors}
                         />
 
-                        {liquidityData && (
+                        {liquidityData && platformName !== 'futa' && (
                             <LiquidityChart
                                 liqMode={liqMode}
                                 liquidityData={liquidityData}
