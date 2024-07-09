@@ -6,6 +6,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { StyledExchangeBalanceDropdown } from '../../../../styled/Components/Header';
 import { BsCurrencyExchange } from 'react-icons/bs';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import coins from '../../../../assets/images/coins.svg';
 
 export const ExchangeBalanceDropdown = () => {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
@@ -24,12 +25,18 @@ export const ExchangeBalanceDropdown = () => {
     return (
         <NavItem
             icon={
-                <BsCurrencyExchange
-                    size={16}
-                    color={
-                        isActiveNetworkPlume ? 'var(--text2)' : 'var(--accent5)'
-                    }
-                />
+                isActiveNetworkPlume ? (
+                    <BsCurrencyExchange
+                        size={16}
+                        color={
+                            isActiveNetworkPlume
+                                ? 'var(--text2)'
+                                : 'var(--accent5)'
+                        }
+                    />
+                ) : (
+                    <img src={coins} />
+                )
             }
             open={fullLayoutActive}
             setOpen={setFullLayoutActive}
