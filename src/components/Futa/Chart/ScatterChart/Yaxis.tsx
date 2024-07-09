@@ -2,16 +2,17 @@ import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { axisColor, textColor } from './ScatterChart';
 
 interface AxisIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any;
     scale: d3.ScaleLinear<number, number> | undefined;
+    axisColor: string;
+    textColor: string;
 }
 export default function Yaxis(props: AxisIF) {
     const d3YaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale } = props;
+    const { data, scale, axisColor, textColor } = props;
 
     useEffect(() => {
         if (scale) {
@@ -34,6 +35,22 @@ export default function Yaxis(props: AxisIF) {
                     .selectAll('text')
                     .attr('fill', textColor)
                     .style('font-family', 'Roboto Mono');
+
+                svg.on('mouseover', function () {
+                    d3.select(this)
+                        .selectAll('path, line')
+                        .attr('stroke', 'var(--accent1)');
+
+                    d3.select(this)
+                        .selectAll('text')
+                        .attr('fill', 'var(--accent1)');
+                }).on('mouseout', function () {
+                    d3.select(this)
+                        .selectAll('path, line')
+                        .attr('stroke', axisColor);
+
+                    d3.select(this).selectAll('text').attr('fill', textColor);
+                });
                 d3LinearAxisJoin(svg, [data]).call(yAxis);
             });
         }
