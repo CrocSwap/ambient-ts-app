@@ -67,12 +67,6 @@ function NavbarDropdownMenu(props: propsIF) {
 
     const navData: navDataIF[] = [
         {
-            icon: <img src={plumeNetworkLogoBlackAndWhite} width='20px' />,
-            // icon: <SiGitbook size={20} />,
-            resource: 'https://plumenetwork.xyz/',
-            text: 'About Plume',
-        },
-        {
             icon: <SiGitbook size={20} />,
             resource: DOCS_LINK,
             text: 'Docs',
@@ -102,12 +96,21 @@ function NavbarDropdownMenu(props: propsIF) {
             resource: `${window.location.origin}/${termsUrls.tos}`,
             text: 'Terms of Service',
         },
-        {
+    ];
+
+    if (isActiveNetworkPlume) {
+        navData.unshift({
+            icon: <img src={plumeNetworkLogoBlackAndWhite} width='20px' />,
+            resource: 'https://plumenetwork.xyz/',
+            text: 'About Plume',
+        });
+    } else {
+        navData.push({
             icon: <FaQuestion size={20} />,
             resource: `${window.location.origin}/faq`,
             text: 'FAQ',
-        },
-    ];
+        });
+    }
 
     return (
         <NavbarDropdown
