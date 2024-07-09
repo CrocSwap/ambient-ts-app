@@ -347,7 +347,7 @@ export default function Withdraw(props: propsIF) {
         }
     };
     const [extraL1GasFeeWithdraw] = useState(
-        isActiveNetworkScroll ? 1.2 : isActiveNetworkBlast ? 0.25 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.06 : 0,
     );
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
