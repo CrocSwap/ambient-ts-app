@@ -381,8 +381,11 @@ export default function Room(props: propsIF) {
                 </div>
             </div>
             {isActive && (
-                <div className={styles.dropdow_content}>
-                    <div className={styles.item}>
+                <div
+                    id='chat-dropdown-content'
+                    className={styles.dropdow_content}
+                >
+                    <div id='chat-rooms' className={styles.item}>
                         {roomList
                             .filter((e) => e.name !== props.selectedRoom)
                             .map((pool, i) => (
