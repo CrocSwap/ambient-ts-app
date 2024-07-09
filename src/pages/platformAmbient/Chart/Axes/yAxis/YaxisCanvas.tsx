@@ -35,6 +35,7 @@ import {
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -133,6 +134,8 @@ function YAxisCanvas(props: yAxisIF) {
     const location = useLocation();
 
     const getDollarPrice = useDollarPrice();
+
+    const { platformName } = useContext(BrandContext);
 
     useEffect(() => {
         if (scaleData) {
@@ -563,7 +566,9 @@ function YAxisCanvas(props: yAxisIF) {
                         darkFillColor
                             ? darkFillColor
                             : 'rgba(115, 113, 252, 1)',
-                        'white',
+                        ['futa'].includes(platformName)
+                            ? 'black'
+                            : 'rgb(214, 214, 214)',
                         shapePoint,
                         undefined,
                         yAxisCanvasWidth,

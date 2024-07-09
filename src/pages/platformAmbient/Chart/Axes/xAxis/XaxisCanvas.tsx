@@ -22,6 +22,7 @@ import { CandleDataIF } from '../../../../../ambient-utils/types';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -104,6 +105,8 @@ function XAxisCanvas(props: xAxisIF) {
     const location = useLocation();
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+
+    const { platformName } = useContext(BrandContext);
 
     useEffect(() => {
         if (scaleData) {
@@ -431,7 +434,11 @@ function XAxisCanvas(props: xAxisIF) {
                                     textWidth,
                                     height * 0.65,
                                 );
-                                context.fillStyle = 'rgb(214, 214, 214)';
+                                context.fillStyle = ['futa'].includes(
+                                    platformName,
+                                )
+                                    ? 'black'
+                                    : 'rgb(214, 214, 214)';
                                 context.font = '800 13px Lexend Deca';
                                 context.textAlign = 'center';
                                 context.textBaseline = 'middle';
