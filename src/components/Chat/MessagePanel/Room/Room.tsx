@@ -338,6 +338,7 @@ export default function Room(props: propsIF) {
                 }
             >
                 <div
+                    id='chat-open-close-room-dropdown'
                     className={styles.room_name_wrapper}
                     onClick={() => handleDropdownMenu()}
                     style={{ flexGrow: '1' }}
@@ -373,7 +374,10 @@ export default function Room(props: propsIF) {
                     ''
                 )}
                 <div onClick={() => handleDropdownMenu()}> </div>
-                <div id='room-dropdown' onClick={() => handleDropdownMenu()}>
+                <div
+                    id='chat-open-close-room-dropdown-button'
+                    onClick={() => handleDropdownMenu()}
+                >
                     <RiArrowDownSLine
                         className={styles.star_icon + ' ' + styles.m_hidden}
                         size={22}
