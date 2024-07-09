@@ -18,6 +18,7 @@
     scrollbar-width: none;
 }
 
+
 body::-webkit-scrollbar {
     display: none;
 }
@@ -37,6 +38,8 @@ body::-webkit-scrollbar-thumb {
 }
 body {
     background: var(--dark1);
+
+   
 }
 
 html {
@@ -242,6 +245,8 @@ input[type='number'] {
     -moz-appearance: textfield;
 }
 
+
+
 @media only screen and (max-width: 600px) {
     .app_blur {
         width: 100vw;
@@ -259,6 +264,8 @@ input[type='number'] {
 
         max-height: calc(100vh - 7.5rem);
     }
+
+   
 }
 
 @media only screen and (min-width: 1280px) {

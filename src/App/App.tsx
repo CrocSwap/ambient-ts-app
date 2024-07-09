@@ -76,7 +76,9 @@ export default function App() {
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle =
-        currentLocation.startsWith('/swap') && !smallScreen
+        currentLocation.startsWith('/swap') &&
+        !smallScreen &&
+        !isActiveNetworkPlume
             ? 'swap-body'
             : null;
 
@@ -148,7 +150,7 @@ export default function App() {
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
                 />
-                <section className={`${swapBodyStyle}`}>
+                <section className={`${swapBodyStyle} `}>
                     {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
                         sidebarRender} */}
                     <Routes>
