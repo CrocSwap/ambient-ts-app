@@ -1,23 +1,23 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PlatformAmbientRoutes from './PlatformAmbient';
 import PlatformFutaRoutes from './PlatformFuta';
-import CommonRoutes from './CommonRoutes';
-
-const getRoutes = (platformName: string) => {
-    if (platformName === 'futa') {
-        return <PlatformFutaRoutes />;
-    } else return <PlatformAmbientRoutes />;
-};
+// import CommonRoutes from './CommonRoutes';
 
 export const RouteRenderer: React.FC<{ platformName: string }> = ({
     platformName,
 }) => {
+    const platformRoutes = useMemo(() => {
+        if (platformName === 'futa') {
+            return <PlatformFutaRoutes />;
+        } else return <PlatformAmbientRoutes />;
+    }, [platformName]);
+
     return (
         <>
-            {getRoutes(platformName)}
-            <CommonRoutes />
+            {/* <CommonRoutes /> */}
+            {platformRoutes}
         </>
     );
 };
 
-export default getRoutes;
+// export default getRoutes;

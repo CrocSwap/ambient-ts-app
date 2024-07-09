@@ -33,7 +33,7 @@ export function getTimeRemaining(remainingTimeInSecondsNum: number): string {
                     ? `${String(days).padStart(2, '0') + 'd'}:${String(hoursMinusDays).padStart(2, '0') + 'h'}:`
                     : days === 1
                       ? '24h:'
-                      : `${String(days).padStart(2, '0') + 'd'}:`
+                      : `${String(days).padStart(2, '0') + 'd'}:00h:`
                 : hours > 0
                   ? `${String(hours).padStart(2, '0')}h:`
                   : '';

@@ -16,6 +16,11 @@ import Limit from '../pages/platformAmbient/Trade/Limit/Limit';
 import Range from '../pages/platformAmbient/Trade/Range/Range';
 import Reposition from '../pages/platformAmbient/Trade/Reposition/Reposition';
 import TradeSwap from '../pages/platformAmbient/Trade/Swap/Swap';
+import Accessibility from '../pages/common/Accessibility/Accessibility';
+import FAQPoints from '../pages/common/FAQ/FAQPoints';
+import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
+import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
+import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -107,6 +112,21 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route
                 path='/template/form'
                 element={IS_LOCAL_ENV ? <ExampleForm /> : <NotFound />}
+            />
+            <Route path='/accessibility' element={<Accessibility />} />
+            <Route path='/terms' element={<TermsOfService />} />
+            <Route path='/privacy' element={<PrivacyPolicy />} />
+            <Route
+                path='/faq'
+                element={<Navigate to='/faq/points' replace />}
+            />
+            <Route path='/faq/points' element={<FAQPoints />} />
+            <Route path='/faq/points/:params' element={<FAQPoints />} />
+            <Route path='/404' element={<NotFound />} />
+            {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
+            <Route
+                path='/testpage'
+                element={IS_LOCAL_ENV ? <TestPage /> : <NotFound />}
             />
             <Route path='/:address' element={<Portfolio />} />
             <Route path='/:address/xp' element={<Portfolio isLevelsPage />} />

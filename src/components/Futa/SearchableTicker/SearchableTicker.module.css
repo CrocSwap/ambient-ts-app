@@ -245,7 +245,9 @@
     height: 100%;
 }
 .active{ background: #28585D; }
-
+.hoverActive {
+    background: var(--dark4);
+}
 .marketCap {
     text-align: end;
 }
