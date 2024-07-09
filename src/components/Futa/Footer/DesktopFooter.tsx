@@ -14,6 +14,17 @@ export default function DesktopFooter() {
         value: nativeTokenUsdPrice,
         isUSD: true,
     });
+    console.log({ rpcNodeStatus });
+
+    const rpcStatusStyle = rpcNodeStatus
+        ? rpcNodeStatus === 'active'
+            ? styles.active_status
+            : rpcNodeStatus === 'inactive'
+              ? styles.inactive_status
+              : styles.unknown_status
+        : styles.unknown_status;
+
+    console.log({ rpcStatusStyle });
 
     return (
         <footer data-theme='orange_dark' className={styles.desktopContainer}>
@@ -24,8 +35,11 @@ export default function DesktopFooter() {
                 <p className={styles.price}>
                     ETH PRICE: {nativeTokenPriceFormatted}
                 </p>
-                <p className={styles.price}>
-                    RPC STATUS: {rpcNodeStatus.toString().toUpperCase()}
+                <p className={styles.rpc_container}>
+                    RPC STATUS:
+                    <span
+                        className={`${styles.rpc_status} ${rpcStatusStyle}`}
+                    />
                 </p>
                 <p className={styles.blockNumber}>{lastBlockNumber}</p>
             </div>

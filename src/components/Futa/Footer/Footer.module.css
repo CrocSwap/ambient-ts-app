@@ -77,6 +77,30 @@
     height: 10px;
     border-radius: 50%;
 }
+
+.rpc_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+.rpc_status{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.active_status{
+    background: var(--green);
+    border: 1px solid var(--green);
+}
+.inactive_status{
+    background: var(--red);
+    border: 1px solid var(--red);
+}
+.unknown_status{
+    border: 1px solid var(--text2);
+    background-color: transparent;
+}
 @media (min-width: 768px) {
     .container {
         width: 100%;
