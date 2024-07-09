@@ -71,6 +71,11 @@ export default function App() {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
+    useEffect(() => {
+        if (isActiveNetworkPlume) {
+            document.documentElement.setAttribute('data-theme', 'plume_light');
+        }
+    }, []);
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
@@ -82,9 +87,17 @@ export default function App() {
             ? 'swap-body'
             : null;
 
-    const containerStyle = currentLocation.includes('trade')
+    const containerStylePlume = currentLocation.includes('trade')
+        ? 'content-container-trade-plume'
+        : 'content-container-plume';
+
+    const containerStyleDefault = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
+
+    const containerStyle = isActiveNetworkPlume
+        ? containerStylePlume
+        : containerStyleDefault;
 
     // CONTEXT: investigate
     // KEYBOARD SHORTCUTS ROUTES

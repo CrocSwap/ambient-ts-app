@@ -158,6 +158,9 @@
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
+
+        --content-container-bg: var(--dark1)
+        --page-bg: var(--dark1)
 }
 
 [data-theme='orange_dark'] {
@@ -413,7 +416,8 @@
     --border-radius: 8px;
     --extra-info-bg: #f7f7f7;
     --color-border: transparent;
-    --page-bg: #f9f9f9;
+    --page-bg: #eef1f6;
+    --content-container-bg: url('./assets/images/backgrounds/swap_bg_sepolia.jpg');
    
 }
 

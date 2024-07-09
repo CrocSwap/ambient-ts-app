@@ -43,10 +43,15 @@ body {
 }
 
 html {
-    background: var(--dark1);
     scrollbar-width: none;
     color: var(--text1);
     height: 100%;
+    width: 100%;
+    /* background: var(--page-bg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover; */
 }
 
 svg {
@@ -278,5 +283,23 @@ input[type='number'] {
     }
     .content-container-trade {
         background: var(--dark1);
+    }
+
+    .content-container-plume{
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 100vh;
+
+        background: var(--content-container-bg);
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: fixed;
+    }
+
+    .content-container-trade-plume{
+        background: var(--content-container-bg);
     }
 }

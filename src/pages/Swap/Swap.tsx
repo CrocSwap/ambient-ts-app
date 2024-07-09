@@ -27,11 +27,11 @@ function Swap() {
     return (
         <div
             className={styles.swap_page_container}
-            style={{ paddingBottom: '2rem' }}
+            style={{ paddingBottom: '2rem', height: 'calc(100vh - 56px)' }}
         >
             <div
                 className={styles.swap_page_content}
-                style={{ marginTop: '24px' }}
+                style={{ margin: '24px 0' }}
             >
                 {arrowDisplay}
                 {/* <img src={plumeLogo} alt='plume logo' width='50px' /> */}
