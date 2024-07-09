@@ -52,7 +52,11 @@ type ChatSocketListener = {
     componentId: string;
 };
 
-const useCommentsWS = (room: string, currentUserID?: string) => {
+const useCommentsWS = (
+    room: string,
+    fetchListener: () => void,
+    currentUserID?: string,
+) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
@@ -73,6 +77,11 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
 
     const { userAddress: address, ensName } = useContext(UserDataContext);
     const { isUserIdle } = useContext(AppStateContext);
+
+    const offlineFetcherMS = 1000;
+    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timer>();
+    const offlineFetcherRef = useRef<NodeJS.Timer>();
+    offlineFetcherRef.current = offlineFetcher;
 
     if (address) {
         domDebug('usechatsocket', address?.substring(0, 4) + '|' + ensName);
@@ -97,7 +106,7 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
         readyState,
-    } = useWebSocket(!isUserIdle ? url : null, {
+    } = useWebSocket(!isUserIdle && address ? url : null, {
         queryParams: {
             roomId: qp.roomId,
             address: qp.address ? qp.address : '',
@@ -138,7 +147,22 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
 
     useEffect(() => {
         doHandshake();
-    }, [address, ensName, room, isUserIdle]);
+    }, [address, ensName, room, isUserIdle, offlineFetcher]);
+
+    useEffect(() => {
+        if (!address) {
+            setOfflineFetcher(
+                setInterval(() => {
+                    fetchForNotConnectedUser();
+                }, offlineFetcherMS),
+            );
+        }
+        return clearInterval(offlineFetcher);
+    }, [address, offlineFetcherRef.current == undefined]);
+
+    useEffect(() => {
+        clearInterval(offlineFetcher);
+    }, [address != undefined, offlineFetcherRef.current != undefined]);
 
     useEffect(() => {
         if (socketLastMessage == null || socketLastMessage.data == null) return;
@@ -186,7 +210,7 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
     }
 
     async function fetchForNotConnectedUser() {
-        const encodedRoomInfo = encodeURIComponent(room);
+        const encodedRoomInfo = encodeURIComponent(roomRef.current);
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
             method: 'GET',
@@ -314,6 +338,29 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
         return data;
     }
 
+    async function fetchMessages() {
+        if (room == '') return;
+        setIsLoading(true);
+        const data = await getMsgWithRest(room);
+        assignMessages(data.reverse());
+        if (data.length > 0) {
+            if (data[data.length - 1]) {
+                setLastMessage(data[data.length - 1]);
+                setMessageUser(data[data.length - 1].sender);
+            }
+        }
+
+        const userListData = await getUserListWithRest();
+        const usmp = new Map<string, User>();
+        userListData.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setUsers(userListData);
+        setIsLoading(false);
+        processFetchListener();
+    }
+
     useEffect(() => {
         async function checkVerified() {
             const data = await isUserVerified();
@@ -323,30 +370,10 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
 
         checkVerified();
 
-        async function getRest() {
-            if (room == '') return;
-            setIsLoading(true);
-            const data = await getMsgWithRest(room);
-            assignMessages(data.reverse());
-            if (data.length > 0) {
-                if (data[data.length - 1]) {
-                    setLastMessage(data[data.length - 1]);
-                    setMessageUser(data[data.length - 1].sender);
-                }
-            }
-
-            const userListData = await getUserListWithRest();
-            const usmp = new Map<string, User>();
-            userListData.forEach((user: User) => {
-                usmp.set(user._id, user);
-            });
-            setUserMap(usmp);
-            setUsers(userListData);
-            setIsLoading(false);
+        if (isUserIdle == false) {
+            fetchMessages();
         }
-
-        getRest();
-    }, [room, address]);
+    }, [room, address, isUserIdle]);
 
     useEffect(() => {
         if (roomRef.current == room) return;
@@ -504,6 +531,14 @@ const useCommentsWS = (room: string, currentUserID?: string) => {
 
     const assignMessages = (messages: Message[]) => {
         setMessages(messages.filter((m) => m != null));
+    };
+
+    const processFetchListener = () => {
+        if (fetchListener != undefined) {
+            setTimeout(() => {
+                fetchListener();
+            }, 5);
+        }
     };
 
     return {

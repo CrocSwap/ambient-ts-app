@@ -25,14 +25,26 @@ const ShimmerList: React.FC<ShimmerListProps> = ({ count }) => {
 function Comments() {
     const { ticker: room } = useParams();
 
-    const { messages, isLoading, sendMsg } = useCommentsWS(
+    const messageListRef = useRef<HTMLDivElement | null>(null);
+
+    const fetchListener = () => {
+        if (messageListRef && messageListRef.current) {
+            messageListRef.current.scrollTo({
+                top: messageListRef.current.scrollHeight,
+                left: 0,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    const { messages, isLoading, sendMsg, isWsConnected } = useCommentsWS(
         room ? room + ' / ETH' : '',
+        fetchListener,
         '',
     );
     const [userId, setUserId] = useState('');
     const { userAddress, ensName } = useContext(UserDataContext);
     const { selectedNetwork } = useContext(CrocEnvContext);
-    const messageListRef = useRef<HTMLDivElement | null>(null);
     const { saveUser } = useChatApi();
 
     const autoScrollTreshold = 100;
@@ -101,13 +113,35 @@ function Comments() {
                 <ShimmerList count={25} />
             ) : (
                 <>
+                    <div className={styles.connection_status}>
+                        {isWsConnected ? (
+                            <>
+                                <div className={styles.connection_dot}></div>
+                                <div
+                                    className={styles.connection_dot_anim}
+                                ></div>
+                            </>
+                        ) : (
+                            <>
+                                <div className={styles.loading_dots_wrapper}>
+                                    <div className={styles.loading_dot}></div>
+                                    <div className={styles.loading_dot}></div>
+                                    <div className={styles.loading_dot}></div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+
                     <div
                         ref={messageListRef}
-                        className={styles.commentsWrapper}
+                        className={`${styles.commentsWrapper} ${messages.length == 0 ? styles.no_comments_wrapper : ''} `}
                         // onScroll={_handleScroll}
                     >
                         {messages.length == 0 ? (
-                            <span> No comment for this ticker</span>
+                            <span className={styles.no_comment_section}>
+                                {' '}
+                                No comment for this ticker
+                            </span>
                         ) : (
                             <>
                                 <div className={styles.comments_content}>
