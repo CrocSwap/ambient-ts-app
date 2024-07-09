@@ -42,7 +42,10 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
 
     return (
         <NameDisplayContainer gap={4} alignItems='center'>
-            <Link to={!isPlume ? link : '#'}>
+            <Link
+                to={!isPlume ? link : '#'}
+                style={{ pointerEvents: isPlume ? 'none' : '' }}
+            >
                 {userAddress &&
                     userAvatarData &&
                     getAvatarComponent(userAddress, userAvatarData, 50)}
