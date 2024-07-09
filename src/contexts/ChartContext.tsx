@@ -105,6 +105,10 @@ export interface ChartThemeIF {
     lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
     darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    text2: d3.RGBColor | d3.HSLColor | null;
+    accent1: d3.RGBColor | d3.HSLColor | null;
+    accent3: d3.RGBColor | d3.HSLColor | null;
+    dark1: d3.RGBColor | d3.HSLColor | null;
     textColor: string;
 }
 
@@ -332,6 +336,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const lightStrokeColor = getCssVariable(skin, '--accent5');
         const selectedDateStrokeColor = getCssVariable(skin, '--accent2');
 
+        const text2 = getCssVariable(skin, '--text2');
+        const accent3 = getCssVariable(skin, '--accent3');
+        const accent1 = getCssVariable(skin, '--accent1');
+        const dark1 = getCssVariable(skin, '--dark1');
+
         const chartThemeColors = {
             lightFillColor: lightFillColor,
             darkFillColor: darFillColor,
@@ -340,6 +349,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             lightStrokeColor: lightStrokeColor,
             darkStrokeColor: darkStrokeColor,
             selectedDateStrokeColor: selectedDateStrokeColor,
+            text2: text2,
+            accent1: accent1,
+            accent3: accent3,
+            dark1: dark1,
             textColor: '',
         };
 
