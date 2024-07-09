@@ -22,7 +22,7 @@ import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import plumeLogo from '../../../../assets/images/networks/plume.png';
-import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
+import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
@@ -85,13 +85,13 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='ethereum mainnet network'
-                    width='17px'
-                    height='22px'
-                    style={{ borderRadius: '50%', marginLeft: '2px' }}
+                    width='25px'
+                    height='25px'
+                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
                 />
                 <Text
                     color={chainId === '0x1' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '4px' }}
+                    style={{ marginLeft: '1px' }}
                 >
                     Ethereum
                 </Text>
@@ -194,16 +194,16 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='sepolia network'
-                    width='17px'
-                    height='22px'
+                    width='25px'
+                    height='25px'
                     style={{
                         borderRadius: '50%',
-                        marginLeft: '2px',
+                        marginLeft: '-2px',
                     }}
                 />
                 <Text
                     color={chainId === '0xaa36a7' ? 'accent1' : 'white'}
-                    marginLeft='5px'
+                    marginLeft='1px'
                 >
                     Sepolia
                 </Text>
@@ -233,7 +233,7 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0xa0c71fd' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '3px' }}
+                    style={{ marginLeft: '1px' }}
                 >
                     {'Sepolia'}
                 </Text>
@@ -264,7 +264,7 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0x8274f' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '4px' }}
+                    style={{ marginLeft: '1px' }}
                 >
                     Sepolia
                 </Text>
