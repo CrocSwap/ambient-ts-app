@@ -25,6 +25,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
+   
 }
 
 .swap_text{
@@ -53,4 +55,19 @@
     font-size: 1.3rem;
     border-radius: 8px;
 
+}
+
+@media screen and ( max-width: 780px) {
+    .arrow_container, .swap_text{
+        display: none;
+    }
+
+    .swap_page_content h2{
+        font-size: 30px;
+    }
+
+  
+    
+
+  
 }

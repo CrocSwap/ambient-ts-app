@@ -9,9 +9,11 @@ import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 function SidebarFooter() {
     const location = useLocation();
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const currentLocation = location.pathname;
 
@@ -23,12 +25,12 @@ function SidebarFooter() {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/pool')
-        ? '/trade/pool/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/pool')
+            ? '/trade/pool/'
+            : location.pathname.includes('trade/edit')
+              ? '/trade/edit/'
+              : '/trade/market/';
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
@@ -64,6 +66,8 @@ function SidebarFooter() {
         { title: 'Account', destination: '/account/', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
+
+    if (isActiveNetworkPlume) return null;
     return (
         <div
             className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}
