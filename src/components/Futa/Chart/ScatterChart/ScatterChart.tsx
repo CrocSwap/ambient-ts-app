@@ -99,7 +99,7 @@ export default function ScatterChart() {
                     Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
                     100000;
 
-                const minXValue = afterOneWeek ? -60 : 0;
+                const minXValue = -120;
                 const maxXValue = afterOneWeek ? 1440 + 60 : 1440 * 7 + 60;
                 const xScale = d3
                     .scaleLinear()
