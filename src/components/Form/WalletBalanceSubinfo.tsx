@@ -12,6 +12,7 @@ import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { LuWallet } from 'react-icons/lu';
 interface PropsIF {
     usdValueForDom: string;
     showWallet: boolean | undefined;
@@ -61,10 +62,24 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
                     }
                     onClick={!isWithdraw ? undefined : onToggleDex}
                 >
-                    <img
-                        src={!isDexSelected ? walletEnabledIcon : walletIcon}
-                        width='20'
-                    />
+                    {isActiveNetworkPlume ? (
+                        <LuWallet
+                            size={20}
+                            color={'var(--accent1)'}
+                            style={{
+                                filter: !isDexSelected
+                                    ? 'none'
+                                    : 'grayscale(100%)',
+                            }}
+                        />
+                    ) : (
+                        <img
+                            src={
+                                !isDexSelected ? walletEnabledIcon : walletIcon
+                            }
+                            width='20'
+                        />
+                    )}
                 </div>
             </IconWithTooltip>
         ) : null;

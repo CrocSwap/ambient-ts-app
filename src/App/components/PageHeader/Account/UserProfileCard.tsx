@@ -44,7 +44,7 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
         <NameDisplayContainer gap={4} alignItems='center'>
             <Link
                 to={!isPlume ? link : '#'}
-                style={{ pointerEvents: isPlume ? 'none' : '' }}
+                style={{ pointerEvents: isPlume ? 'none' : 'auto' }}
             >
                 {userAddress &&
                     userAvatarData &&
