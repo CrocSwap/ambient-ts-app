@@ -12,6 +12,7 @@ import ScatterTooltip from './ScatterTooltip';
 import useScatterChartData from './useScatterChartData';
 import { useNavigate } from 'react-router-dom';
 import { AuctionsContext } from '../../../../contexts/AuctionsContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 export const axisColor = '#939C9E'; // text2
 export const textColor = '#939C9E'; // text2
@@ -42,6 +43,14 @@ export default function ScatterChart() {
 
     const { hoveredTicker, setHoveredTicker, selectedTicker } =
         useContext(AuctionsContext);
+
+    const { chartThemeColors } = useContext(ChartContext);
+
+    const axisColor = chartThemeColors?.text2?.toString() || '#939C9E';
+    const textColor = chartThemeColors?.text2?.toString() || '#939C9E';
+    const dotGridColor = chartThemeColors?.accent3?.toString() || '#29585D';
+    const fillColor = chartThemeColors?.dark1?.toString() || '#0D0F13';
+    const accentColor = chartThemeColors?.accent1?.toString() || '#62EBF1';
 
     const data = useScatterChartData();
 
@@ -90,7 +99,7 @@ export default function ScatterChart() {
                     Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
                     100000;
 
-                const minXValue = afterOneWeek ? -60 : 0;
+                const minXValue = -120;
                 const maxXValue = afterOneWeek ? 1440 + 60 : 1440 * 7 + 60;
                 const xScale = d3
                     .scaleLinear()
@@ -304,7 +313,12 @@ export default function ScatterChart() {
                 gridTemplateColumns: '50px 1fr 155px',
             }}
         >
-            <Yaxis data={data.map((i) => i.price)} scale={yScale} />
+            <Yaxis
+                data={data.map((i) => i.price)}
+                scale={yScale}
+                axisColor={axisColor}
+                textColor={textColor}
+            />
             <d3fc-svg
                 ref={d3Chart}
                 style={{
@@ -318,6 +332,8 @@ export default function ScatterChart() {
                 data={data.map((i) => i.timeRemaining)}
                 scale={xScale}
                 afterOneWeek={afterOneWeek}
+                axisColor={axisColor}
+                textColor={textColor}
             />
             <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
         </div>

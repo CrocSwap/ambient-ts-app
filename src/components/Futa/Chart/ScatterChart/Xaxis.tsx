@@ -2,16 +2,17 @@ import { useEffect, useRef /* useState */ } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
-import { axisColor, textColor } from './ScatterChart';
 
 interface AxisIF {
     data: number[];
     scale: d3.ScaleLinear<number, number> | undefined;
     afterOneWeek: boolean;
+    axisColor: string;
+    textColor: string;
 }
 export default function Xaxis(props: AxisIF) {
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale, afterOneWeek } = props;
+    const { data, scale, afterOneWeek, axisColor, textColor } = props;
 
     useEffect(() => {
         if (scale) {
@@ -41,6 +42,23 @@ export default function Xaxis(props: AxisIF) {
                     .selectAll('text')
                     .attr('fill', textColor)
                     .style('font-family', 'Roboto Mono');
+
+                svg.on('mouseover', function () {
+                    d3.select(this)
+                        .selectAll('path, line')
+                        .attr('stroke', 'var(--accent1)');
+
+                    d3.select(this)
+                        .selectAll('text')
+                        .attr('fill', 'var(--accent1)');
+                }).on('mouseout', function () {
+                    d3.select(this)
+                        .selectAll('path, line')
+                        .attr('stroke', axisColor);
+
+                    d3.select(this).selectAll('text').attr('fill', textColor);
+                });
+
                 d3LinearAxisJoin(svg, [data]).call(xAxis);
             });
         }
