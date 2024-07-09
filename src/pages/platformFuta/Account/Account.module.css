@@ -94,6 +94,12 @@ transition: all var(--animation-speed) ease-in-out;
     color: var(--dark1);
 }
 
+.disabledButton{
+    background: var(--dark4);
+    color: var(--text2);
+    pointer-events: none;
+}
+
 /* desktop */
 .desktopContainer {
     background: var(--dark1);
