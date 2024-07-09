@@ -29,7 +29,6 @@ function SwapExtraInfo(props: propsIF) {
         swapGasPriceinDollars,
         showExtraInfoDropdown,
         showWarning,
-        isSwapPage,
     } = props;
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
@@ -132,10 +131,9 @@ function SwapExtraInfo(props: propsIF) {
         ? `1 ${baseTokenSymbol} ≈ ${usdPriceDisplay} USD`
         : `1 ${quoteTokenSymbol} ≈ ${usdPriceDisplay} USD`;
 
-    const conversionRate =
-        isTradeDollarizationEnabled && !isSwapPage
-            ? conversionRateUsd
-            : conversionRateNonUsd;
+    const conversionRate = isTradeDollarizationEnabled
+        ? conversionRateUsd
+        : conversionRateNonUsd;
 
     return (
         <ExtraInfo
