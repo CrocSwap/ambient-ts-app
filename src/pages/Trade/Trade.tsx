@@ -210,9 +210,12 @@ function Trade() {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedNumber({
-        value: displayPriceWithDenom,
-    });
+    const displayPriceString = displayPriceWithDenom
+        ? getFormattedNumber({
+              value: displayPriceWithDenom,
+          })
+        : '…';
+
     const conversionRate = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;

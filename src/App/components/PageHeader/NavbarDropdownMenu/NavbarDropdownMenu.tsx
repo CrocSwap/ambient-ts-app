@@ -80,7 +80,7 @@ function NavbarDropdownMenu(props: propsIF) {
         {
             icon: <AiFillTwitterCircle size={20} />,
             resource: TWITTER_LINK,
-            text: 'Twitter',
+            text: 'X/Twitter',
         },
         {
             icon: <FaDiscord size={20} />,
