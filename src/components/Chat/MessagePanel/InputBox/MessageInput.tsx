@@ -657,21 +657,24 @@ export default function MessageInput(props: MessageInputProps) {
                     </div>
                     {showEmojiPicker && (
                         <div className={styles.emojiPicker}>
-                            <span className={styles.emoji_close_button}>
+                            <span
+                                id='chat-close-emoji-panel-button'
+                                className={styles.emoji_close_button}
+                                onClick={() => setShowEmojiPicker(false)}
+                            >
                                 <RiCloseFill
                                     size={20}
                                     title='Close Emoji Picker'
-                                    onClick={() => setShowEmojiPicker(false)}
-                                    id='close emoji panel button'
                                     style={{ cursor: 'pointer' }}
                                 />
                             </span>
                             <span
+                                id='chat-info-button'
                                 className={styles.emoji_close_button}
                                 onClick={() => setIsInfoPressed(!isInfoPressed)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <RiInformationLine title='Info' id='info' />
+                                <RiInformationLine title='Info' />
                             </span>
                             {isInfoPressed ? (
                                 <ul>

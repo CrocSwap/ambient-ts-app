@@ -343,16 +343,24 @@ function ChatPanel(props: propsIF) {
             clearInterval(notConnectedUserInterval);
         }
 
-        if (userAddress == undefined) {
-            if (isChatOpen == false) return;
+        if (userAddress === undefined) {
+            if (!isChatOpen) {
+                return;
+            }
+
+            if (page > 0) {
+                return;
+            }
+
             const interval = setInterval(() => {
                 fetchForNotConnectedUser();
             }, 10000);
+
             setNotConnectedUserInterval(interval);
         }
 
         return clearInterval(notConnectedUserInterval);
-    }, [userAddress, room, isChatOpen]);
+    }, [userAddress, room, isChatOpen, page]);
 
     useEffect(() => {
         if (
@@ -384,6 +392,7 @@ function ChatPanel(props: propsIF) {
     }, [lastMessage]);
 
     useEffect(() => {
+        setPage(0);
         setScrollDirection('Scroll Down');
         if (userAddress && isChatOpen) {
             if (ens === null || ens === undefined) {
@@ -910,7 +919,10 @@ function ChatPanel(props: propsIF) {
                 </div>
             )}
 
-            <section id='open-close-trollbox' style={{ paddingRight: '10px' }}>
+            <section
+                id='chat-open-close-trollbox'
+                style={{ paddingRight: '10px' }}
+            >
                 {isFullScreen || !isChatOpen ? (
                     <></>
                 ) : (
@@ -1153,7 +1165,7 @@ function ChatPanel(props: propsIF) {
                     </span>
                 ) : (
                     <div
-                        id='scroll-bottom'
+                        id='chat-scroll-bottom'
                         role='button'
                         tabIndex={0}
                         onClick={scrollToBottomButton}
@@ -1284,7 +1296,7 @@ function ChatPanel(props: propsIF) {
     const rndPreviousMessagesButton = () => {
         return (
             <span
-                id='previous-messages'
+                id='chat-previous-messages'
                 className={styles.scroll_up}
                 role='button'
                 tabIndex={0}
@@ -1396,7 +1408,7 @@ function ChatPanel(props: propsIF) {
             >
                 <div className={styles.chat_body}>
                     <div
-                        id='go-to-chart-button'
+                        id='chat-go-to-chart-button'
                         className={`${styles.btn_go_to_chart} ${
                             goToChartParams != undefined ? styles.active : ''
                         }`}
@@ -1456,7 +1468,7 @@ function ChatPanel(props: propsIF) {
                     )}
 
                     {messageInput}
-                    <div id='thelastmessage' />
+                    <div id='chat-thelastmessage' />
                 </div>
             </div>
 
