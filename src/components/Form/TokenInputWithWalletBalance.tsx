@@ -32,6 +32,7 @@ interface propsIF {
     isInitPage?: boolean | undefined;
     tokenDecimals?: number;
     percentDiffUsdValue?: number;
+    noClick?: boolean;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -59,6 +60,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isInitPage,
         usdValue,
         percentDiffUsdValue,
+        noClick,
     } = props;
 
     const usdValueForDom =
@@ -194,6 +196,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                noClick={noClick ?? false}
             />
             {handleRefresh && (
                 <RefreshButton

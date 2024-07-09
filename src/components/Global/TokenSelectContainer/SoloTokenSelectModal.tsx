@@ -32,6 +32,7 @@ interface propsIF {
     reverseTokens?: () => void;
     onClose: () => void;
     noModal?: boolean;
+    platform?: 'ambient' | 'futa';
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -42,7 +43,59 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
+        platform = 'ambient',
     } = props;
+
+    const mockFutaTickers = [
+        {
+            name: 'Native Ether',
+            address: '0x0000000000000000000000000000000000000000',
+            symbol: 'ETH',
+            decimals: 18,
+            chainId: 11155111,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+        },
+        // {
+        //     "name": "PEPE",
+        //     "address": "0x1230000000000000000000000000000000000000",
+        //     "symbol": "PEPE",
+        //     "decimals": 18,
+        //     "chainId": 11155111,
+        //     "logoURI": ""
+        // },
+        // {
+        //     "name": "JUNIOR",
+        //     "address": "0x2340000000000000000000000000000000000000",
+        //     "symbol": "JUNIOR",
+        //     "decimals": 18,
+        //     "chainId": 11155111,
+        //     "logoURI": ""
+        // },
+        // {
+        //     "name": "HELLO😊",
+        //     "address": "0x3450000000000000000000000000000000000000",
+        //     "symbol": "HELLO😊",
+        //     "decimals": 18,
+        //     "chainId": 11155111,
+        //     "logoURI": ""
+        // },
+        // {
+        //     "name": "EMILY",
+        //     "address": "0x4560000000000000000000000000000000000000",
+        //     "symbol": "EMILY",
+        //     "decimals": 18,
+        //     "chainId": 11155111,
+        //     "logoURI": ""
+        // }
+    ];
+
+    const [ticker, setTicker] = useState<TokenIF>(mockFutaTickers[0]);
+    false && ticker;
+    function chooseTicker(t: TokenIF) {
+        setTicker(t);
+        onClose();
+    }
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
@@ -260,7 +313,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     {validatedInput && (
                         <button
                             className={styles.clearButton}
-                            onClick={() => setInput('')}
+                            onClick={() => {
+                                setInput('');
+                            }}
                             aria-label='Clear input'
                             tabIndex={0}
                         >
@@ -297,39 +352,54 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         />
                     )}
                 </div>
-                {isWrappedNativeToken(validatedInput) &&
-                    [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
-                        (token: TokenIF) => (
-                            <TokenSelect
-                                key={JSON.stringify(token)}
-                                token={token}
+                {platform === 'ambient' && (
+                    <>
+                        {isWrappedNativeToken(validatedInput) &&
+                            [
+                                tokens.getTokenByAddress(
+                                    ZERO_ADDRESS,
+                                ) as TokenIF,
+                            ].map((token: TokenIF) => (
+                                <TokenSelect
+                                    key={JSON.stringify(token)}
+                                    token={token}
+                                    chooseToken={chooseToken}
+                                    fromListsText=''
+                                />
+                            ))}
+                        {showSoloSelectTokenButtons ? (
+                            <div className={styles.scrollable_container}>
+                                {removeWrappedNative(chainId, outputTokens)
+                                    .slice(0, MAX_TOKEN_COUNT)
+                                    .map((token: TokenIF) => {
+                                        return (
+                                            <TokenSelect
+                                                key={JSON.stringify(token)}
+                                                token={token}
+                                                chooseToken={chooseToken}
+                                                fromListsText=''
+                                            />
+                                        );
+                                    })}
+                            </div>
+                        ) : (
+                            <SoloTokenImport
+                                customToken={customToken}
                                 chooseToken={chooseToken}
-                                fromListsText=''
+                                chainId={chainId}
                             />
-                        ),
-                    )}
-                {showSoloSelectTokenButtons ? (
-                    <div className={styles.scrollable_container}>
-                        {removeWrappedNative(chainId, outputTokens)
-                            .slice(0, MAX_TOKEN_COUNT)
-                            .map((token: TokenIF) => {
-                                return (
-                                    <TokenSelect
-                                        key={JSON.stringify(token)}
-                                        token={token}
-                                        chooseToken={chooseToken}
-                                        fromListsText=''
-                                    />
-                                );
-                            })}
-                    </div>
-                ) : (
-                    <SoloTokenImport
-                        customToken={customToken}
-                        chooseToken={chooseToken}
-                        chainId={chainId}
-                    />
+                        )}
+                    </>
                 )}
+                {platform === 'futa' &&
+                    mockFutaTickers.map((ticker: TokenIF) => (
+                        <TokenSelect
+                            key={JSON.stringify(ticker)}
+                            token={ticker}
+                            chooseToken={() => chooseTicker(ticker)}
+                            fromListsText=''
+                        />
+                    ))}
             </section>
         </Modal>
     );

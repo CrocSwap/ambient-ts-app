@@ -46,6 +46,7 @@ interface propsIF {
     usdValue?: string | undefined;
     walletBalance?: string;
     handleBalanceClick?: () => void;
+    noClick?: boolean;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -68,6 +69,7 @@ function TokenInputQuantity(props: propsIF) {
         noModals,
         walletBalance,
         // handleBalanceClick,
+        noClick,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -232,6 +234,8 @@ function TokenInputQuantity(props: propsIF) {
         </button>
     );
 
+    const [isTickerModalOpen, setIsTickerModalOpen] = useState<boolean>(false);
+
     const futaLayout = (
         <section className={styles.futaLayout}>
             <div className={styles.futaLayoutLeft}>
@@ -239,10 +243,13 @@ function TokenInputQuantity(props: propsIF) {
                 <p>{usdValue}</p>
             </div>
             <div className={styles.futaLayoutRight}>
-                {/* {tokenSelectButton} */}
                 <button
                     className={styles.tokenButton}
                     style={{ cursor: 'default' }}
+                    onClick={() => {
+                        console.log({ noClick });
+                        noClick || setIsTickerModalOpen(true);
+                    }}
                 >
                     <TokenIcon
                         token={token}
@@ -259,6 +266,19 @@ function TokenInputQuantity(props: propsIF) {
                     {walletBalance}
                 </button>
             </div>
+            {isTickerModalOpen && (
+                <SoloTokenSelectModal
+                    onClose={() => setIsTickerModalOpen(false)}
+                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                    setShowSoloSelectTokenButtons={
+                        setShowSoloSelectTokenButtons
+                    }
+                    isSingleToken={!tokenAorB}
+                    tokenAorB={tokenAorB}
+                    reverseTokens={reverseTokens}
+                    platform='futa'
+                />
+            )}
         </section>
     );
 

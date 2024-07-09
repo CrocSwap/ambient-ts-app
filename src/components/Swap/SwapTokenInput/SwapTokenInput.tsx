@@ -23,6 +23,7 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -76,6 +77,7 @@ function SwapTokenInput(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
@@ -350,6 +352,7 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 usdValue={usdValueTokenA}
+                noClick={platformName === 'futa'}
             />
             <FlexContainer
                 fullWidth
