@@ -24,9 +24,9 @@ export default function DollarizationModalControl(props: propsIF) {
     return (
         <div className={styles.main_container}>
             {displayInSettings ? (
-                <p tabIndex={0}>{'Display Prices in USD'}</p>
+                <p tabIndex={0}>{'Display prices in USD'}</p>
             ) : (
-                <p tabIndex={0}>Display Prices in USD</p>
+                <p tabIndex={0}>Display prices in USD</p>
             )}
             <Toggle
                 key={compKey}
