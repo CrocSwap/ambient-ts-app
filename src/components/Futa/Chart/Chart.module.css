@@ -28,6 +28,10 @@
 
 }
 
+.scatterAxis :hover {
+    color: var(--accent1);
+}
+
 .chartHeader{
     width: 100%;
     display: flex;
