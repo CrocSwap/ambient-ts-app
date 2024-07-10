@@ -11,6 +11,7 @@ export const tokenListURIs = {
     uniswap: 'https://tokens.uniswap.org',
     ambient: '/ambient-token-list.json',
     futa: '/futa-token-list.json',
+    baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
 };
 
 export type TokenListURITypes = keyof typeof tokenListURIs;

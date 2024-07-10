@@ -127,7 +127,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 noPadding={smallScreen && !isSwapPage}
             >
                 {header}
-                {isSwapPage || (
+                {!isSwapPage && !isFuta && (
                     <TradeLinks
                         chainId={chainId}
                         tokenA={tokenA}

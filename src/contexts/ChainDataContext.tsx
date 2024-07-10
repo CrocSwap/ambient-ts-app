@@ -35,6 +35,7 @@ import {
     fetchBlastUserXpData,
     fetchBlockNumber,
     fetchUserXpData,
+    RpcNodeStatus,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
@@ -47,6 +48,7 @@ interface ChainDataContextIF {
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
+    rpcNodeStatus: RpcNodeStatus;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
@@ -92,6 +94,9 @@ export const ChainDataContextProvider = (props: {
     } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
+    const [rpcNodeStatus, setRpcNodeStatus] =
+        useState<RpcNodeStatus>('unknown');
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
@@ -139,11 +144,20 @@ export const ChainDataContextProvider = (props: {
                   : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
                     ? SCROLL_RPC_URL
                     : blockPollingUrl;
+        // false && console.log({ nodeUrl });
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
-            if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
+            // const lastBlockNumber = await fetchBlockNumber(
+            //     'http://scroll-sepolia-rpc.01no.de:8545',
+            // );
+            if (lastBlockNumber > 0) {
+                setLastBlockNumber(lastBlockNumber);
+                setRpcNodeStatus('active');
+            } else {
+                setRpcNodeStatus('inactive');
+            }
         } catch (error) {
-            console.error({ error });
+            setRpcNodeStatus('inactive');
         }
     }
 
@@ -487,6 +501,7 @@ export const ChainDataContextProvider = (props: {
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
+        rpcNodeStatus,
         gasPriceInGwei,
         connectedUserXp,
         connectedUserBlastXp,
