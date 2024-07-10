@@ -22,7 +22,11 @@ export function getTimeDifference(remainingTimeInSecondsNum: number): string {
                         ? `${Math.floor(elapsedSeconds / 3600)} hours ago `
                         : elapsedSeconds < 172800
                           ? '1 day ago'
-                          : `${Math.floor(elapsedSeconds / 86400)} days ago `;
+                          : elapsedSeconds < 604800 // less than 1 week
+                            ? `${Math.floor(elapsedSeconds / 86400)} days ago`
+                            : elapsedSeconds < 1209600 // less than 2 weeks
+                              ? '1 week ago'
+                              : `${Math.floor(elapsedSeconds / 604800)} weeks ago `;
         return elapsedTimeString;
     } else {
         const hoursMinusDays = hours - days * 24;
