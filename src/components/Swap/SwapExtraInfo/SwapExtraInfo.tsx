@@ -7,6 +7,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     priceImpact: CrocImpact | undefined;
@@ -33,6 +34,7 @@ function SwapExtraInfo(props: propsIF) {
 
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -111,7 +113,10 @@ function SwapExtraInfo(props: propsIF) {
             tooltipTitle: 'This can be changed in settings.',
             data: `${slippageTolerance} %`,
         },
-        {
+    ];
+
+    if (!isActiveNetworkPlume) {
+        extraInfo.push({
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${
                 isDenomBase ? baseTokenSymbol : quoteTokenSymbol
@@ -120,8 +125,8 @@ function SwapExtraInfo(props: propsIF) {
             } liquidity providers.`,
             data: `${liquidityProviderFeeString} %`,
             placement: 'bottom',
-        },
-    ];
+        });
+    }
 
     const conversionRateNonUsd = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
