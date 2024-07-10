@@ -23,6 +23,7 @@ export const accentColor = '#62EBF1'; // accent1
 export type scatterData = {
     name: string;
     timeRemaining: number;
+    userBidSize: string;
     price: number;
     size: number;
 };

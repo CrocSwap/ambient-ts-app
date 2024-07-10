@@ -1,8 +1,10 @@
+import { useContext } from 'react';
 import {
     getFormattedNumber,
     getTimeDifferenceAbbrev,
     getTimeRemainingAbbrev,
 } from '../../../../ambient-utils/dataLayer';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { scatterData, textColor } from './ScatterChart';
 
 interface propsIF {
@@ -10,6 +12,8 @@ interface propsIF {
     selectedDot: scatterData | undefined;
 }
 export default function ScatterTooltip(props: propsIF) {
+    const { isUserConnected } = useContext(UserDataContext);
+
     const { hoveredDot, selectedDot } = props;
     const displayData = hoveredDot
         ? hoveredDot
@@ -64,6 +68,14 @@ export default function ScatterTooltip(props: propsIF) {
                     {displayData ? formatPrice(displayData.price) : '-'}
                 </span>
             </p>
+            {isUserConnected && (
+                <p style={{ textAlign: 'left', margin: '2px 0' }}>
+                    YOUR BID:
+                    <span style={{ float: 'right', marginLeft: '5px' }}>
+                        {displayData ? displayData.userBidSize : '-'}
+                    </span>
+                </p>
+            )}
         </div>
     );
 }
