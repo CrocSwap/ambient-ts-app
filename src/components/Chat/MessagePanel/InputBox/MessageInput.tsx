@@ -194,6 +194,14 @@ export default function MessageInput(props: MessageInputProps) {
         if (message === '') {
             return;
         }
+        if (message.length > 140) {
+            props.setShowPopUp(true);
+            props.setPopUpText(
+                'Maximum length exceeded (140 characters limit).',
+            );
+
+            return;
+        }
         const parts = message.split(/\s+/);
 
         const containsBlockedLink = parts.some((part) => {
@@ -603,6 +611,7 @@ export default function MessageInput(props: MessageInputProps) {
                                 style={{
                                     fontSize:
                                         inputLength > 240 ? '10px' : '12px',
+                                    position: 'relative',
                                 }}
                             >
                                 <CircularProgressBarForChat
