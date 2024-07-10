@@ -156,6 +156,16 @@ const useCommentsWS = (
     }, [address, readyState == ReadyState.OPEN]);
 
     useEffect(() => {
+        if (address) {
+            fetchMessages();
+        }
+    }, [address, readyState == ReadyState.OPEN]);
+
+    useEffect(() => {
+        fetchMessages();
+    }, [address == undefined, room]);
+
+    useEffect(() => {
         if (!address) {
             setOfflineFetcher(
                 setInterval(() => {
