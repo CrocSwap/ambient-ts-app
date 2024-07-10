@@ -41,7 +41,7 @@ export default function ScatterChart() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [pointSeries, setPointSeries] = useState<any>();
 
-    const { hoveredTicker, setHoveredTicker, selectedTicker } =
+    const { hoveredTicker, setHoveredTicker, selectedTicker, showComplete } =
         useContext(AuctionsContext);
 
     const { chartThemeColors } = useContext(ChartContext);
@@ -344,7 +344,11 @@ export default function ScatterChart() {
                 axisColor={axisColor}
                 textColor={textColor}
             />
-            <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
+            <ScatterTooltip
+                hoveredDot={hoveredDot}
+                selectedDot={selectedDot}
+                showComplete={showComplete}
+            />
         </div>
     );
 }

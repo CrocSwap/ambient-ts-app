@@ -12,7 +12,7 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import {
     AuctionDataIF,
     getFormattedNumber,
-    getTimeRemaining,
+    getTimeDifference,
 } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
 
@@ -104,7 +104,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     });
 
     const timeRemainingString = timeRemainingInSeconds
-        ? getTimeRemaining(timeRemainingInSeconds)
+        ? getTimeDifference(timeRemainingInSeconds)
         : '-';
 
     // Status data

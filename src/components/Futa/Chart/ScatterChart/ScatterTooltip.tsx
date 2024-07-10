@@ -1,5 +1,6 @@
 import {
     getFormattedNumber,
+    getTimeDifferenceAbbrev,
     getTimeRemainingAbbrev,
 } from '../../../../ambient-utils/dataLayer';
 import { scatterData, textColor } from './ScatterChart';
@@ -7,9 +8,10 @@ import { scatterData, textColor } from './ScatterChart';
 interface propsIF {
     hoveredDot: scatterData | undefined;
     selectedDot: scatterData | undefined;
+    showComplete: boolean;
 }
 export default function ScatterTooltip(props: propsIF) {
-    const { hoveredDot, selectedDot } = props;
+    const { hoveredDot, selectedDot, showComplete } = props;
     const displayData = hoveredDot
         ? hoveredDot
         : selectedDot
@@ -17,7 +19,9 @@ export default function ScatterTooltip(props: propsIF) {
           : undefined;
 
     const formatTime = (time: number) => {
-        return getTimeRemainingAbbrev(time);
+        return showComplete
+            ? getTimeDifferenceAbbrev(time)
+            : getTimeRemainingAbbrev(time).replace(/\s+/g, ''); // remove spaces between strings like "< 01m" to prevent line wrap
     };
 
     const formatPrice = (price: number) => {
@@ -48,7 +52,7 @@ export default function ScatterTooltip(props: propsIF) {
                 </span>
             </p>
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
-                TIME REMAINING:{' '}
+                {showComplete ? 'COMPLETED:' : 'TIME REMAINING:'}
                 <span style={{ float: 'right', marginLeft: '10px' }}>
                     {displayData ? formatTime(displayData.timeRemaining) : '-'}
                 </span>
