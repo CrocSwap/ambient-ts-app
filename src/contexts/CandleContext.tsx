@@ -215,13 +215,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
-        console.log(
-            isServerEnabled,
-            isUserOnline,
-            baseTokenAddress,
-            quoteTokenAddress,
-            crocEnv,
-        );
         if (
             isServerEnabled &&
             isUserOnline &&
