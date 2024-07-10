@@ -22,7 +22,6 @@ import {
     AuctionDataIF,
     calcBidImpact,
     getFormattedNumber,
-    getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -294,19 +293,9 @@ export default function TickerComponent(props: PropsIF) {
         ? toDisplayQty(filledMarketCapInWeiBigInt, 18)
         : undefined;
 
-    const timeRemainingAbbrev = auctionDetails
-        ? getTimeRemainingAbbrev(
-              moment(auctionDetails.createdAt * 1000).diff(
-                  Date.now() - auctionDetails.auctionLength * 1000,
-                  'seconds',
-              ),
-          )
-        : undefined;
-
     const [timeRemainingInSeconds, setTimeRemainingInSeconds] = useState<
         number | undefined
     >();
-    // const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
 
     const refreshTimeRemaining = () => {
         if (auctionDetails) {
@@ -315,7 +304,6 @@ export default function TickerComponent(props: PropsIF) {
             ).diff(Date.now() - auctionDetails.auctionLength * 1000, 'seconds');
 
             setTimeRemainingInSeconds(timeRemainingInSeconds);
-            // setTimeRemaining(timeRemainingString);
         }
     };
 
@@ -329,7 +317,9 @@ export default function TickerComponent(props: PropsIF) {
     }, [tickerFromParams, auctionDetails]);
 
     const isAuctionCompleted =
-        timeRemainingAbbrev?.toLowerCase() === 'complete';
+        timeRemainingInSeconds !== undefined
+            ? timeRemainingInSeconds <= 0
+            : undefined;
 
     useEffect(() => {
         if (!tickerFromParams) return;
