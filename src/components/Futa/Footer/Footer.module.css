@@ -68,7 +68,8 @@
 }
 
 .price,
-.network {
+.network,
+.rpc_container {
     padding: 0 8px;
 }
 
@@ -83,6 +84,7 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
+    border-left: 1px solid #424649;
 }
 .rpc_status{
     width: 10px;
