@@ -8,20 +8,21 @@ import { scatterData, textColor } from './ScatterChart';
 interface propsIF {
     hoveredDot: scatterData | undefined;
     selectedDot: scatterData | undefined;
-    showComplete: boolean;
 }
 export default function ScatterTooltip(props: propsIF) {
-    const { hoveredDot, selectedDot, showComplete } = props;
+    const { hoveredDot, selectedDot } = props;
     const displayData = hoveredDot
         ? hoveredDot
         : selectedDot
           ? selectedDot
           : undefined;
 
+    const showComplete = displayData ? displayData.timeRemaining <= 0 : false;
+
     const formatTime = (time: number) => {
         return showComplete
             ? getTimeDifferenceAbbrev(time)
-            : getTimeRemainingAbbrev(time).replace(/\s+/g, ''); // remove spaces between strings like "< 01m" to prevent line wrap
+            : getTimeRemainingAbbrev(time);
     };
 
     const formatPrice = (price: number) => {
@@ -47,19 +48,19 @@ export default function ScatterTooltip(props: propsIF) {
         >
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
                 TICKER:{' '}
-                <span style={{ float: 'right', marginLeft: '10px' }}>
+                <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? displayData.name : '-'}
                 </span>
             </p>
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
                 {showComplete ? 'COMPLETED:' : 'TIME REMAINING:'}
-                <span style={{ float: 'right', marginLeft: '10px' }}>
+                <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? formatTime(displayData.timeRemaining) : '-'}
                 </span>
             </p>
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
                 MARKET CAP:{' '}
-                <span style={{ float: 'right', marginLeft: '10px' }}>
+                <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? formatPrice(displayData.price) : '-'}
                 </span>
             </p>

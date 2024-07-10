@@ -39,8 +39,8 @@ const useScatterChartData = () => {
                 timeRemaining: timeRemainingInSec,
                 size: scatterDotDefaultSize,
                 isShow: filteredAuctionList
-                    ? filteredAuctionList.some((val: AuctionDataIF) =>
-                          val.ticker.includes(element.ticker),
+                    ? filteredAuctionList.some(
+                          (val: AuctionDataIF) => val.ticker === element.ticker,
                       )
                     : true,
             };
