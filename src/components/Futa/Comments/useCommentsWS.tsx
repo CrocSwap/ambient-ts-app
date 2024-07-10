@@ -78,7 +78,7 @@ const useCommentsWS = (
     const { userAddress: address, ensName } = useContext(UserDataContext);
     const { isUserIdle } = useContext(AppStateContext);
 
-    const offlineFetcherMS = 1000;
+    const offlineFetcherMS = 10000;
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timer>();
     const offlineFetcherRef = useRef<NodeJS.Timer>();
     offlineFetcherRef.current = offlineFetcher;
@@ -150,6 +150,12 @@ const useCommentsWS = (
     }, [address, ensName, room, isUserIdle, offlineFetcher]);
 
     useEffect(() => {
+        if (address) {
+            fetchMessages();
+        }
+    }, [address, readyState == ReadyState.OPEN]);
+
+    useEffect(() => {
         if (!address) {
             setOfflineFetcher(
                 setInterval(() => {
@@ -161,7 +167,7 @@ const useCommentsWS = (
     }, [address, offlineFetcherRef.current == undefined]);
 
     useEffect(() => {
-        clearInterval(offlineFetcher);
+        clearInterval(offlineFetcherRef.current);
     }, [address != undefined, offlineFetcherRef.current != undefined]);
 
     useEffect(() => {
@@ -350,13 +356,14 @@ const useCommentsWS = (
             }
         }
 
-        const userListData = await getUserListWithRest();
-        const usmp = new Map<string, User>();
-        userListData.forEach((user: User) => {
-            usmp.set(user._id, user);
-        });
-        setUserMap(usmp);
-        setUsers(userListData);
+        // const userListData = await getUserListWithRest();
+        // const usmp = new Map<string, User>();
+        // userListData.forEach((user: User) => {
+        //     usmp.set(user._id, user);
+        // });
+        // setUserMap(usmp);
+        // setUsers(userListData);
+
         setIsLoading(false);
         processFetchListener();
     }
@@ -370,9 +377,9 @@ const useCommentsWS = (
 
         checkVerified();
 
-        if (isUserIdle == false) {
-            fetchMessages();
-        }
+        // if (isUserIdle == false) {
+        //     fetchMessages();
+        // }
     }, [room, address, isUserIdle]);
 
     useEffect(() => {
@@ -381,9 +388,9 @@ const useCommentsWS = (
         roomRef.current = room;
     }, [room]);
 
-    useEffect(() => {
-        updateUserCache();
-    }, [messages]);
+    // useEffect(() => {
+    //     updateUserCache();
+    // }, [messages]);
 
     async function deleteMsgFromList(msgId: string) {
         const payload = {

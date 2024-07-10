@@ -2,12 +2,28 @@
 
 
 .comment_card_wrapper{
-
-    margin-bottom: .4rem;
-    padding-bottom: .4rem;
-    border-bottom: 1px solid rgba(255,255,255, .1);
+    margin-top: .6rem;
+    padding-top: .6rem;
     position: relative;
-}
+    border-top: 1px solid rgba(255,255,255, .1);
+    }
+    
+  
+
+    .comment_card_wrapper:first-child{
+        border-top: none;
+    }
+
+    .comment_card_wrapper.basic_card{
+        border: none;
+        margin: 0;
+        padding: .2rem 0;
+    }
+    .comment_card_wrapper:last-child{
+        border-bottom: 1px solid rgba(255,255,255, .1);
+        padding-bottom: .4rem;
+    }
+
 
 .comment_top_info{
     width: 100%;
@@ -19,6 +35,7 @@
 }
 .comment_sender_info{
     color: var(--accent1);
+    margin-bottom: .3rem;
 }
 
 .comment_sender_info.is_user{
@@ -28,7 +45,7 @@
 
 .comment_text{
     
-    max-width: 85%;
+    max-width: 80%;
     overflow-wrap: break-word;
     white-space: normal;
 }
@@ -39,4 +56,16 @@
     right: .5rem;
     font-size: .8rem;
     opacity: .3;
+}
+
+.comment_content_token{
+    margin-right: .2rem;
+}
+
+.link_token{
+    color: var(--accent1);
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
 }

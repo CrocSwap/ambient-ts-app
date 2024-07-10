@@ -12,6 +12,8 @@ import {
 } from './ChatIFs';
 import { Message } from './Model/MessageModel';
 
+export const minToMS = 60 * 1000;
+
 export const getLS = (key: string, personalize?: string) => {
     if (personalize) {
         return localStorage.getItem(`${key}_${personalize}`);
@@ -310,4 +312,17 @@ export const getDateLabelInfo = (date: Date) => {
         return 'Today';
     }
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+};
+
+export const handleOpenExplorerAddHttp = (url: string) => {
+    if (!url.includes('https')) {
+        window.open(convertToFullUrl(url));
+    } else {
+        window.open(url);
+    }
+};
+
+export const convertToFullUrl = (domain: string) => {
+    const protocol = 'https://';
+    return protocol + domain;
 };

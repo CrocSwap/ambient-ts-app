@@ -95,7 +95,7 @@
       height: .4rem;
       border-radius: 100vw;
       background-color: var(--positive);
-      animation: kf_dot_pulse 1s ease-in-out infinite;
+      animation: kf_dot_pulse 1s ease-in-out 3;
       position: absolute;
       opacity: .7;
       top: 0;
