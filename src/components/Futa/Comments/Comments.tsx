@@ -49,16 +49,15 @@ function Comments() {
 
     const autoScrollTreshold = 100;
 
+    const initialSave = async () => {
+        if (userAddress && userAddress.length > 0) {
+            const data = await saveUser(userAddress, ensName ? ensName : '');
+            setUserId(data.userData._id);
+        } else {
+            setUserId('');
+        }
+    };
     useEffect(() => {
-        const initialSave = async () => {
-            if (userAddress && userAddress.length > 0) {
-                const data = await saveUser(
-                    userAddress,
-                    ensName ? ensName : '',
-                );
-                setUserId(data.userData._id);
-            }
-        };
         initialSave();
     }, []);
 
@@ -77,6 +76,10 @@ function Comments() {
             }
         }
     }, [messages]);
+
+    useEffect(() => {
+        initialSave();
+    }, [userAddress]);
 
     const scrollToBottom = () => {
         if (messageListRef && messageListRef.current) {
