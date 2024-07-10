@@ -47,7 +47,6 @@ export interface PropsIF {
         SetStateAction<bigint | undefined>
     >;
     bidUsdValue: number | undefined;
-    handleBalanceClick: () => void;
     nativeTokenWalletBalanceTruncated: string;
     bidQtyNonDisplay: string | undefined;
     setBidQtyNonDisplay: Dispatch<SetStateAction<string | undefined>>;
@@ -74,7 +73,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
         selectedMaxMarketCapInWeiBigInt,
         setSelectedMaxMarketCapInWeiBigInt,
         bidUsdValue,
-        handleBalanceClick,
         nativeTokenWalletBalanceTruncated,
         setBidQtyNonDisplay,
         inputValue,
@@ -604,7 +602,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 noModals
                 usdValue={bidUsdValueTruncated}
                 walletBalance={nativeTokenWalletBalanceTruncated}
-                handleBalanceClick={handleBalanceClick}
             />
         </div>
     );
