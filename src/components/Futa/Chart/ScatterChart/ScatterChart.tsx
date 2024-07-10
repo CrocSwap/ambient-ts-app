@@ -27,8 +27,8 @@ export type scatterData = {
     size: number;
 };
 
-export const scatterDotDefaultSize = 90;
-export const scatterDotSelectedSize = 150;
+export const scatterDotDefaultSize = 144;
+export const scatterDotSelectedSize = 196;
 
 export default function ScatterChart() {
     const d3Chart = useRef<HTMLDivElement | null>(null);
