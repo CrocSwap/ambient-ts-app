@@ -1,6 +1,5 @@
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
-import FlashingSvg from '../Home/Animations/FlashingSvg';
-import TerminalAnimation from '../Home/Animations/TerminalAnimation';
+
 import styles from './SwapFuta.module.css';
 
 import logo from '../../../assets/futa/logos/homeLogo.svg';
