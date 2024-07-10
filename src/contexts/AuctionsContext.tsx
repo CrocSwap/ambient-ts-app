@@ -22,6 +22,10 @@ import { CachedDataContext } from './CachedDataContext';
 
 interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
+    setFilteredAuctionList: Dispatch<
+        SetStateAction<AuctionDataIF[] | undefined>
+    >;
+    filteredAuctionList: AuctionDataIF[] | undefined;
     accountData: AccountDataIF;
     updateUserAuctionsList(address: string): void;
     updateGlobalAuctionsList(): void;
@@ -97,6 +101,10 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
             data: [],
         });
 
+    const [filteredAuctionList, setFilteredAuctionList] = React.useState<
+        AuctionDataIF[] | undefined
+    >([]);
+
     const [accountData, setAccountData] = useState<AccountDataIF>({
         dataReceived: false,
         chainId: chainId,
@@ -153,11 +161,12 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
             chainId,
             Math.floor(Date.now() / 30000),
         ).then((data) => {
-            setGlobalAuctionList({
+            const res = {
                 dataReceived: true,
                 chainId: chainId,
                 data: data,
-            });
+            };
+            setGlobalAuctionList(res);
         });
     }
 
@@ -218,6 +227,8 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     const auctionsContext: AuctionsContextIF = {
         auctionStatusData: auctionStatusData,
         globalAuctionList: globalAuctionList,
+        filteredAuctionList: filteredAuctionList,
+        setFilteredAuctionList: setFilteredAuctionList,
         accountData: accountData,
         updateUserAuctionsList: updateUserAuctionsList,
         updateGlobalAuctionsList: updateGlobalAuctionsList,
