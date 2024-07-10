@@ -6,6 +6,7 @@ import {
 } from '../../../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { scatterData, textColor } from './ScatterChart';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 
 interface propsIF {
     hoveredDot: scatterData | undefined;
@@ -14,6 +15,8 @@ interface propsIF {
 export default function ScatterTooltip(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
+    const { showComplete } = useContext(AuctionsContext);
+
     const { hoveredDot, selectedDot } = props;
     const displayData = hoveredDot
         ? hoveredDot
@@ -21,10 +24,14 @@ export default function ScatterTooltip(props: propsIF) {
           ? selectedDot
           : undefined;
 
-    const showComplete = displayData ? displayData.timeRemaining <= 0 : false;
+    const displayCompletedAuctionInfo = showComplete
+        ? true
+        : displayData
+          ? displayData.timeRemaining <= 0
+          : false;
 
     const formatTime = (time: number) => {
-        return showComplete
+        return displayCompletedAuctionInfo
             ? getTimeDifferenceAbbrev(time)
             : getTimeRemainingAbbrev(time);
     };
@@ -57,7 +64,7 @@ export default function ScatterTooltip(props: propsIF) {
                 </span>
             </p>
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
-                {showComplete ? 'COMPLETED:' : 'TIME REMAINING:'}
+                {displayCompletedAuctionInfo ? 'COMPLETED:' : 'TIME REMAINING:'}
                 <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? formatTime(displayData.timeRemaining) : '-'}
                 </span>
