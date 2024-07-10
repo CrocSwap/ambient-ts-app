@@ -171,18 +171,27 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     }
 
     function updateUserAuctionsList(address: string) {
-        cachedGetUserAuctionsList(
-            chainId,
-            address,
-            Math.floor(Date.now() / 30000),
-        ).then((data) => {
-            setAccountData({
-                dataReceived: true,
-                chainId: chainId,
-                userAddress: address,
-                auctions: data,
+        if (address !== '') {
+            cachedGetUserAuctionsList(
+                chainId,
+                address,
+                Math.floor(Date.now() / 30000),
+            ).then((data) => {
+                setAccountData({
+                    dataReceived: true,
+                    chainId: chainId,
+                    userAddress: address,
+                    auctions: data,
+                });
             });
-        });
+        } else {
+            setAccountData({
+                dataReceived: false,
+                chainId: chainId,
+                userAddress: '',
+                auctions: [],
+            });
+        }
     }
 
     function getAuctionData(ticker: string) {
