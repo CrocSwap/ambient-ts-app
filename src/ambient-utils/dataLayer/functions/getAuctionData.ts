@@ -30,6 +30,11 @@ export interface TickerValidityIF {
     invalidReason?: string;
 }
 
+export interface TickerCreationResponseIF {
+    isSuccess: boolean;
+    failureReason?: string;
+}
+
 export interface AuctionListResponseIF {
     auctionList: AuctionDataIF[];
 }
@@ -169,9 +174,7 @@ export const checkTickerValidity = async (
     env: CrocEnv,
     ticker: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _chainId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _lastBlockNumber: number,
+    _lastBlockNumber?: number,
 ): Promise<TickerValidityIF> => {
     const isExcluded = excludedTickers.includes(ticker.toLowerCase());
     const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
@@ -185,7 +188,6 @@ export const checkTickerValidity = async (
     if (!isTickerValid)
         console.log('checking ticker validity', {
             ticker,
-            _chainId,
             isTickerValid,
         });
     const invalidReason = isExcluded ? 'Excluded ticker' : 'Invalid ticker';
@@ -202,7 +204,6 @@ export const checkTickerValidity = async (
 
         console.log('checking ticker validity', {
             ticker,
-            _chainId,
             mockIsTickerAvailable,
         });
 
@@ -212,6 +213,37 @@ export const checkTickerValidity = async (
         };
     } catch (error) {
         return { isValid: false, invalidReason: 'Unknown Error' };
+    }
+};
+
+export const createAuction = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+): Promise<TickerCreationResponseIF> => {
+    if (!env) return { isSuccess: false, failureReason: 'Invalid CrocEnv' };
+    try {
+        console.log(`clicked Create Auction for ${ticker}`);
+        const isTickerAvailableAndValid = (
+            await checkTickerValidity(env, ticker)
+        ).isValid;
+
+        if (isTickerAvailableAndValid) {
+            // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+            // const isAuctionCreated: TickerCreationResponseIF = await auctionPlan.create();
+
+            // 2 second timeout to simulate transaction
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            const mockIsAuctionCreated: TickerCreationResponseIF = {
+                isSuccess: !ticker.toLowerCase().includes('fail'),
+            };
+
+            return mockIsAuctionCreated;
+        } else {
+            return { isSuccess: false, failureReason: 'Invalid Ticker' };
+        }
+    } catch (error) {
+        return { isSuccess: false, failureReason: 'Unknown Error' };
     }
 };
 
