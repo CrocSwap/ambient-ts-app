@@ -24,7 +24,11 @@ import { useModal } from '../Global/Modal/useModal';
 import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
-import { brand } from '../../ambient-utils/constants';
+import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
+import {
+    AuctionsContext,
+    AuctionsContextIF,
+} from '../../contexts/AuctionsContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -69,6 +73,9 @@ function TokenInputQuantity(props: propsIF) {
         walletBalance,
         // handleBalanceClick,
     } = props;
+
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const { activeTickers } = useContext<AuctionsContextIF>(AuctionsContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -271,14 +278,18 @@ function TokenInputQuantity(props: propsIF) {
                     }
                     isSingleToken={!tokenAorB}
                     tokenAorB={tokenAorB}
-                    reverseTokens={reverseTokens}
+                    reverseTokens={
+                        platformName === 'futa'
+                            ? activeTickers.reverse
+                            : reverseTokens
+                    }
                     platform='futa'
                 />
             )}
         </section>
     );
 
-    if (brand === 'futa') return futaLayout;
+    if (platformName.toLowerCase() === 'futa') return futaLayout;
 
     return (
         <div

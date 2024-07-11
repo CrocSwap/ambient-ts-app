@@ -21,7 +21,7 @@ import {
 import { CachedDataContext } from './CachedDataContext';
 import { TokenIF } from '../ambient-utils/types';
 
-interface AuctionsContextIF {
+export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
     setFilteredAuctionList: Dispatch<
         SetStateAction<AuctionDataIF[] | undefined>
