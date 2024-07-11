@@ -7,6 +7,7 @@ import {
 import SwapComponent from '../Trade/Swap/Swap';
 import styles from './Swap.module.css';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { useMediaQuery } from '@material-ui/core';
 // import plumeLogo from '../../assets/images/networks/plume.png';
 
 const arrowDisplay = (
@@ -17,6 +18,7 @@ const arrowDisplay = (
 
 function Swap() {
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
+    const smallScreen = useMediaQuery('(max-height: 750px)');
 
     if (!isActiveNetworkPlume)
         return (
@@ -35,7 +37,9 @@ function Swap() {
             >
                 {arrowDisplay}
                 {/* <img src={plumeLogo} alt='plume logo' width='50px' /> */}
-                <h2>SWAP</h2>
+                <h2 style={smallScreen ? { fontSize: '4rem' } : undefined}>
+                    SWAP
+                </h2>
                 <p className={styles.swap_text}>
                     Swap testnet tokens & earn Plume Miles daily
                 </p>
