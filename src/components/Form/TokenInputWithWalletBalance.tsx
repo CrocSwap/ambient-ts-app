@@ -63,7 +63,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         percentDiffUsdValue,
         ticker,
     } = props;
-    false && ticker;
+
     const usdValueForDom =
         usdValue && parseFloat(tokenInput) > 0
             ? getFormattedNumber({

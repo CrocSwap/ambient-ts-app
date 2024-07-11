@@ -69,6 +69,7 @@ function TokenInputQuantity(props: propsIF) {
         walletBalance,
         // handleBalanceClick,
     } = props;
+
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
 
@@ -232,6 +233,8 @@ function TokenInputQuantity(props: propsIF) {
         </button>
     );
 
+    const [isTickerModalOpen, setIsTickerModalOpen] = useState<boolean>(false);
+
     const futaLayout = (
         <section className={styles.futaLayout}>
             <div className={styles.futaLayoutLeft}>
@@ -242,6 +245,7 @@ function TokenInputQuantity(props: propsIF) {
                 <button
                     className={styles.tokenButton}
                     style={{ cursor: 'default' }}
+                    onClick={() => setIsTickerModalOpen(true)}
                 >
                     <TokenIcon
                         token={token}
@@ -258,6 +262,19 @@ function TokenInputQuantity(props: propsIF) {
                     {walletBalance}
                 </button>
             </div>
+            {isTickerModalOpen && (
+                <SoloTokenSelectModal
+                    onClose={() => setIsTickerModalOpen(false)}
+                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                    setShowSoloSelectTokenButtons={
+                        setShowSoloSelectTokenButtons
+                    }
+                    isSingleToken={!tokenAorB}
+                    tokenAorB={tokenAorB}
+                    reverseTokens={reverseTokens}
+                    platform='futa'
+                />
+            )}
         </section>
     );
 
