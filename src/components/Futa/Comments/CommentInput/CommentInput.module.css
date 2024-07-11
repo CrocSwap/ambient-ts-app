@@ -1,0 +1,18 @@
+
+.comment_input_wrapper{
+    background-color: var(--dark2);
+    position: absolute;
+    width: calc(100% - 18px);
+    bottom: 0;
+    }
+    
+    .comment_input_wrapper input{
+        
+        background: transparent;
+        border: none;
+        outline: none;
+        color: white;
+        padding: .5rem 1rem;
+        width: 90%;
+    
+    }
