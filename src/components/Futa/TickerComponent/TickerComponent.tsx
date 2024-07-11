@@ -20,7 +20,9 @@ import {
 } from '../../../ambient-utils/constants';
 import {
     AuctionDataIF,
+    AuctionTxResponseIF,
     calcBidImpact,
+    createBid,
     getFormattedNumber,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
@@ -125,6 +127,10 @@ const useAuctionStates = () => {
     const [l1GasFeeLimitInGwei] = useState<number>(
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
+    const [txCreationResponse, setTxCreationResponse] = useState<
+        AuctionTxResponseIF | undefined
+    >();
+    const [isTxPending, setIsTxPending] = useState<boolean>(false);
 
     const openBidClearingPriceInWeiBigInt =
         auctionStatusData.openBidClearingPriceInNativeTokenWei
@@ -142,6 +148,11 @@ const useAuctionStates = () => {
     useEffect(() => {
         setSelectedMaxMarketCapInWeiBigInt(openBidMarketCapInWeiBigInt);
     }, [openBidMarketCapInWeiBigInt]);
+
+    useEffect(() => {
+        setTxCreationResponse(undefined);
+        setIsTxPending(false);
+    }, [inputValue, auctionDetails?.ticker, selectedMaxMarketCapInWeiBigInt]);
 
     return {
         isMaxDropdownOpen,
@@ -168,6 +179,10 @@ const useAuctionStates = () => {
         setSelectedMaxMarketCapInWeiBigInt,
         l1GasFeeLimitInGwei,
         openBidClearingPriceInWeiBigInt,
+        txCreationResponse,
+        setTxCreationResponse,
+        isTxPending,
+        setIsTxPending,
     };
 };
 
@@ -219,6 +234,10 @@ export default function TickerComponent(props: PropsIF) {
         setSelectedMaxMarketCapInWeiBigInt,
         l1GasFeeLimitInGwei,
         openBidClearingPriceInWeiBigInt,
+        txCreationResponse,
+        setTxCreationResponse,
+        isTxPending,
+        setIsTxPending,
     } = useAuctionStates();
 
     // Utility functions
@@ -534,10 +553,30 @@ export default function TickerComponent(props: PropsIF) {
             !isAllocationAvailableToClaim &&
             !isNativeTokenAvailableToReturn);
 
+    const txFailed =
+        txCreationResponse?.isSuccess !== undefined
+            ? txCreationResponse.isSuccess === false
+            : false;
+
+    const txSucceeded =
+        txCreationResponse?.isSuccess !== undefined
+            ? txCreationResponse.isSuccess === true
+            : false;
+
+    const displayPendingTxMessage =
+        isTxPending && txCreationResponse === undefined;
+
     const isButtonDisabled =
         isUserConnected &&
-        !isAuctionCompleted &&
-        (isValidationInProgress || !bidValidityStatus.isValid);
+        (displayPendingTxMessage ||
+            txCreationResponse !== undefined ||
+            (!isAuctionCompleted &&
+                (isValidationInProgress || !bidValidityStatus.isValid)));
+
+    const failMessage =
+        txCreationResponse?.failureReason !== undefined
+            ? txCreationResponse?.failureReason
+            : undefined;
 
     const buttonLabel =
         !tickerFromParams && isUserConnected
@@ -554,9 +593,35 @@ export default function TickerComponent(props: PropsIF) {
                       ? 'Enter a Bid Size'
                       : isValidationInProgress
                         ? 'Validating Bid...'
-                        : bidValidityStatus.isValid
-                          ? 'Bid'
-                          : bidValidityStatus.reason || 'Invalid Bid';
+                        : txFailed
+                          ? failMessage
+                          : txSucceeded
+                            ? 'Transaction Succeeded!'
+                            : displayPendingTxMessage
+                              ? 'Transaction Pending...'
+                              : bidValidityStatus.isValid
+                                ? 'Bid'
+                                : bidValidityStatus.reason || 'Invalid Bid';
+
+    const sendBidTransaction = async () => {
+        if (
+            !bidQtyNonDisplay ||
+            !tickerFromParams ||
+            !selectedMaxMarketCapInWeiBigInt
+        )
+            return;
+
+        setIsTxPending(true);
+
+        setTxCreationResponse(
+            await createBid(
+                crocEnv,
+                tickerFromParams,
+                bidQtyNonDisplay,
+                selectedMaxMarketCapInWeiBigInt?.toString(),
+            ),
+        );
+    };
 
     const bidButton = (
         <button
@@ -578,9 +643,7 @@ export default function TickerComponent(props: PropsIF) {
                           )
                         : !isUserConnected
                           ? openWalletModal()
-                          : console.log(
-                                `clicked Bid for display qty: ${bidQtyNonDisplay}`,
-                            )
+                          : sendBidTransaction()
             }
             disabled={isButtonDisabled}
         >
