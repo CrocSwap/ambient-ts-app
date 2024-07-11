@@ -23,18 +23,22 @@ export default function Xaxis(props: AxisIF) {
                 .tickValues(
                     afterOneWeek
                         ? d3.range(0, 1441, 60)
-                        : d3.range(
-                              0,
-                              scale.domain()[0],
-                              showDayCount > 7 ? 1441 : 1441 / 2,
-                          ),
+                        : showDayCount > 30
+                          ? d3.range(0, scale.domain()[0], 1441 * 7)
+                          : d3.range(
+                                0,
+                                scale.domain()[0],
+                                showDayCount > 7 ? 1441 : 1441 / 2,
+                            ),
                 )
                 .tickFormat((d) => {
-                    const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
-                    if (
-                        Number.isInteger(d) &&
-                        (showDayCount > 7 ? hour % 2 === 0 : true)
-                    ) {
+                    if (Number.isInteger(d)) {
+                        if (showDayCount > 30) {
+                            const week = d.valueOf() / (1441 * 7);
+                            return week.toString() + 'w';
+                        }
+
+                        const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
                         return hour.toString() + 'd';
                     }
 
