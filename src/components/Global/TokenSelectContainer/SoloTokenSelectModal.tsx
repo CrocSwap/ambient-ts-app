@@ -46,56 +46,49 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         platform = 'ambient',
     } = props;
 
-    const mockFutaTickers = [
-        {
-            name: 'Native Ether',
-            address: '0x0000000000000000000000000000000000000000',
-            symbol: 'ETH',
-            decimals: 18,
-            chainId: 11155111,
-            logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-        },
-        // {
-        //     "name": "PEPE",
-        //     "address": "0x1230000000000000000000000000000000000000",
-        //     "symbol": "PEPE",
-        //     "decimals": 18,
-        //     "chainId": 11155111,
-        //     "logoURI": ""
-        // },
-        // {
-        //     "name": "JUNIOR",
-        //     "address": "0x2340000000000000000000000000000000000000",
-        //     "symbol": "JUNIOR",
-        //     "decimals": 18,
-        //     "chainId": 11155111,
-        //     "logoURI": ""
-        // },
-        // {
-        //     "name": "HELLO😊",
-        //     "address": "0x3450000000000000000000000000000000000000",
-        //     "symbol": "HELLO😊",
-        //     "decimals": 18,
-        //     "chainId": 11155111,
-        //     "logoURI": ""
-        // },
-        // {
-        //     "name": "EMILY",
-        //     "address": "0x4560000000000000000000000000000000000000",
-        //     "symbol": "EMILY",
-        //     "decimals": 18,
-        //     "chainId": 11155111,
-        //     "logoURI": ""
-        // }
-    ];
-
-    const [ticker, setTicker] = useState<TokenIF>(mockFutaTickers[0]);
-    false && ticker;
-    function chooseTicker(t: TokenIF) {
-        setTicker(t);
-        onClose();
-    }
+    // const mockFutaTickers = [
+    //     {
+    //         name: 'Native Ether',
+    //         address: '0x0000000000000000000000000000000000000000',
+    //         symbol: 'ETH',
+    //         decimals: 18,
+    //         chainId: 11155111,
+    //         logoURI:
+    //             'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+    //     },
+    //     // {
+    //     //     "name": "PEPE",
+    //     //     "address": "0x1230000000000000000000000000000000000000",
+    //     //     "symbol": "PEPE",
+    //     //     "decimals": 18,
+    //     //     "chainId": 11155111,
+    //     //     "logoURI": ""
+    //     // },
+    //     // {
+    //     //     "name": "JUNIOR",
+    //     //     "address": "0x2340000000000000000000000000000000000000",
+    //     //     "symbol": "JUNIOR",
+    //     //     "decimals": 18,
+    //     //     "chainId": 11155111,
+    //     //     "logoURI": ""
+    //     // },
+    //     // {
+    //     //     "name": "HELLO😊",
+    //     //     "address": "0x3450000000000000000000000000000000000000",
+    //     //     "symbol": "HELLO😊",
+    //     //     "decimals": 18,
+    //     //     "chainId": 11155111,
+    //     //     "logoURI": ""
+    //     // },
+    //     // {
+    //     //     "name": "EMILY",
+    //     //     "address": "0x4560000000000000000000000000000000000000",
+    //     //     "symbol": "EMILY",
+    //     //     "decimals": 18,
+    //     //     "chainId": 11155111,
+    //     //     "logoURI": ""
+    //     // }
+    // ];
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
@@ -392,14 +385,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     </>
                 )}
                 {platform === 'futa' &&
-                    mockFutaTickers.map((ticker: TokenIF) => (
-                        <TokenSelect
-                            key={JSON.stringify(ticker)}
-                            token={ticker}
-                            chooseToken={() => chooseTicker(ticker)}
-                            fromListsText=''
-                        />
-                    ))}
+                    tokens
+                        .getTokensFromList('/futa-token-list.json')
+                        .map((ticker: TokenIF) => (
+                            <TokenSelect
+                                key={JSON.stringify(ticker)}
+                                token={ticker}
+                                chooseToken={() => null}
+                                fromListsText=''
+                            />
+                        ))}
             </section>
         </Modal>
     );

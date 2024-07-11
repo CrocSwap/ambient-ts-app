@@ -29,6 +29,7 @@ import {
     AuctionsContext,
     AuctionsContextIF,
 } from '../../contexts/AuctionsContext';
+import { TokenContext } from '../../contexts/TokenContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -76,6 +77,7 @@ function TokenInputQuantity(props: propsIF) {
 
     const { platformName } = useContext<BrandContextIF>(BrandContext);
     const { activeTickers } = useContext<AuctionsContextIF>(AuctionsContext);
+    const { tokens } = useContext(TokenContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
