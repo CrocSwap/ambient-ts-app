@@ -118,7 +118,7 @@ const useChatSocket = (
         lastMessage: socketLastMessage,
         sendMessage: socketSendMessage,
         readyState,
-    } = useWebSocket(isChatOpen && !isUserIdle ? url : null, {
+    } = useWebSocket(isChatOpen && !isUserIdle && address ? url : null, {
         queryParams: {
             roomId: qp.roomId,
             address: qp.address ? qp.address : '',
