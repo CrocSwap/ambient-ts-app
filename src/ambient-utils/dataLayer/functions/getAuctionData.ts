@@ -30,7 +30,8 @@ export interface TickerValidityIF {
     invalidReason?: string;
 }
 
-export interface TickerCreationResponseIF {
+export interface AuctionTxResponseIF {
+    txType: 'create' | 'bid';
     isSuccess: boolean;
     failureReason?: string;
 }
@@ -219,8 +220,13 @@ export const checkTickerValidity = async (
 export const createAuction = async (
     env: CrocEnv | undefined,
     ticker: string,
-): Promise<TickerCreationResponseIF> => {
-    if (!env) return { isSuccess: false, failureReason: 'Invalid CrocEnv' };
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'create',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
     try {
         console.log(`clicked Create Auction for ${ticker}`);
         const isTickerAvailableAndValid = (
@@ -234,16 +240,25 @@ export const createAuction = async (
             // 2 second timeout to simulate transaction
             await new Promise((resolve) => setTimeout(resolve, 2000));
 
-            const mockIsAuctionCreated: TickerCreationResponseIF = {
+            const mockIsAuctionCreated: AuctionTxResponseIF = {
+                txType: 'create',
                 isSuccess: !ticker.toLowerCase().includes('fail'),
             };
 
             return mockIsAuctionCreated;
         } else {
-            return { isSuccess: false, failureReason: 'Invalid Ticker' };
+            return {
+                txType: 'create',
+                isSuccess: false,
+                failureReason: 'Invalid Ticker',
+            };
         }
     } catch (error) {
-        return { isSuccess: false, failureReason: 'Unknown Error' };
+        return {
+            txType: 'create',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
     }
 };
 
@@ -274,6 +289,52 @@ export const calcBidImpact = async (
         return mockPriceImpact;
     } catch (error) {
         return undefined;
+    }
+};
+
+export const createBid = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    bidQtyInNativeTokenWei: string,
+    selectedMaxMarketCapInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'bid',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(
+            `clicked Bid for ${ticker} in the amount of ${bidQtyInNativeTokenWei} at max market cap ${selectedMaxMarketCapInWei}`,
+        );
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+        // const bidParams = {
+        //     bidQtyInWei: bidQtyInNativeTokenWei,
+        //     maxMarketCapInWei: selectedMaxMarketCapInWei,
+        // };
+        // const isBidCreated: AuctionTxResponseIF =
+        //     await auctionPlan.bid(bidParams);
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockIsBidCreated: AuctionTxResponseIF = {
+            txType: 'bid',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Failed'
+                : undefined,
+        };
+
+        return mockIsBidCreated;
+    } catch (error) {
+        return {
+            txType: 'bid',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
     }
 };
 

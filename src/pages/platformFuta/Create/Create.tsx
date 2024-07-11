@@ -11,7 +11,7 @@ import {
     checkTickerPattern,
     checkTickerValidity,
     createAuction,
-    TickerCreationResponseIF,
+    AuctionTxResponseIF,
 } from '../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -37,7 +37,7 @@ export default function Create() {
 
     const [isValidated, setIsValidated] = useState<boolean>(false);
     const [tickerCreationResponse, setTickerCreationResponse] = useState<
-        TickerCreationResponseIF | undefined
+        AuctionTxResponseIF | undefined
     >();
     const [isTxPending, setIsTxPending] = useState<boolean>(false);
     const [invalidReason, setInvalidReason] = useState<string | undefined>();
