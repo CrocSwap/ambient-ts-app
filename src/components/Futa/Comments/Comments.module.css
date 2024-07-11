@@ -82,6 +82,16 @@
       }
     }
 
+
+    @keyframes kf_scroll_btn_anim {
+      from{
+        right: -3rem;
+        }
+        to{
+          right: 1.7rem
+      }
+    }
+
     .connection_dot{
       display: block;
       width: .4rem;
@@ -104,6 +114,33 @@
     .loading_dots_wrapper{
 
       margin-top: -.5rem;
+    }
+
+
+    .floating_scroll_btn{
+      transition: all .2s ease-in-out;
+      position: absolute;
+      padding: .3rem;
+      right: -3rem;
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid rgba(255,255,255, .3);
+      background: rgba(0,0,0, .3);
+      backdrop-filter: blur(5px);
+      animation: kf_scroll_btn_anim .2s ease-in-out forwards;
+    }
+
+    .floating_scroll_btn:hover{
+      border-color: var(--accent1);
+    }
+
+    .show_previous_comments_btn{
+      top: .5rem;
+    }
+
+    .scroll_to_bottom_btn{
+      top: auto;
+      bottom: 4rem;
     }
 
     .loading_dot{

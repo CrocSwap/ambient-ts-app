@@ -38,10 +38,6 @@ import {
     LS_USER_VERIFY_TOKEN,
 } from '../../Chat/ChatConstants/ChatConstants';
 import { ChatWsQueryParams } from '../../Chat/ChatIFs';
-import {
-    domDebug,
-    getTimeForLog,
-} from '../../Chat/DomDebugger/DomDebuggerUtils';
 import { Message } from '../../Chat/Model/MessageModel';
 import { User } from '../../Chat/Model/UserModel';
 
@@ -83,10 +79,6 @@ const useCommentsWS = (
     const offlineFetcherRef = useRef<NodeJS.Timer>();
     offlineFetcherRef.current = offlineFetcher;
 
-    if (address) {
-        domDebug('usechatsocket', address?.substring(0, 4) + '|' + ensName);
-    }
-
     const url = CHAT_BACKEND_URL + '/chat/api/subscribe/';
 
     // handle query params
@@ -99,8 +91,6 @@ const useCommentsWS = (
     if (ensName && ensName.length > 0) {
         qp.ensName = ensName;
     }
-
-    domDebug('room', qp.roomId);
 
     const {
         lastMessage: socketLastMessage,
@@ -119,31 +109,22 @@ const useCommentsWS = (
             Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
         share: true,
         onOpen: () => {
-            domDebug('connected', getTimeForLog(new Date()));
+            // domDebug('connected', getTimeForLog(new Date()));
             doHandshake();
         },
-        onClose: () => {
-            domDebug('disconnected', getTimeForLog(new Date()));
-        },
-        onError: () => {
-            domDebug('ERR_error_time', getTimeForLog(new Date()));
-        },
+        // onClose: () => {
+        //     domDebug('disconnected', getTimeForLog(new Date()));
+        // },
+        // onError: () => {
+        //     domDebug('ERR_error_time', getTimeForLog(new Date()));
+        // },
         heartbeat: {
             interval: 60000,
             timeout: 55000,
         },
     });
 
-    const connectionStatus = {
-        [ReadyState.CONNECTING]: 'Connecting',
-        [ReadyState.OPEN]: 'Open',
-        [ReadyState.CLOSING]: 'Closing',
-        [ReadyState.CLOSED]: 'Closed',
-        [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-    }[readyState];
-
     const isWsConnected = readyState == ReadyState.OPEN;
-    domDebug('connection status', connectionStatus);
 
     useEffect(() => {
         doHandshake();
@@ -235,7 +216,6 @@ const useCommentsWS = (
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const queryParams = 'p=' + p;
         const url = `${CHAT_BACKEND_URL}${getMessageWithRestWithPaginationEndpoint}${encodedRoomInfo}?${queryParams}`;
-        domDebug('get prevs ', url);
         const response = await fetch(url, {
             method: 'GET',
         });

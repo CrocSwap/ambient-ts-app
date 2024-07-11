@@ -7,6 +7,10 @@ import CommentInput from './CommentInput/CommentInput';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import useChatApi from '../../Chat/Service/ChatApi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
+// import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 
 type ShimmerListProps = {
     count: number;
@@ -23,9 +27,17 @@ const ShimmerList: React.FC<ShimmerListProps> = ({ count }) => {
 };
 
 function Comments() {
-    const { ticker: room } = useParams();
+    const { ticker } = useParams();
+    const room = ticker + ' / ETH';
 
     const messageListRef = useRef<HTMLDivElement | null>(null);
+
+    const [page, setPage] = useState(0);
+    const [showPrevButton, setShowPrevButton] = useState(false);
+    const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+    const [scrollBackTarget, setScrollBackTarget] = useState('');
+    const [panelScrollTop, setPanelScrollTop] = useState(0);
+    const [panelScrollToBottomDist, setPanelScrollToBottomDist] = useState(0);
 
     const fetchListener = () => {
         if (messageListRef && messageListRef.current) {
@@ -36,12 +48,13 @@ function Comments() {
             });
         }
     };
-
-    const { messages, isLoading, sendMsg, isWsConnected } = useCommentsWS(
-        room ? room + ' / ETH' : '',
-        fetchListener,
-        '',
-    );
+    const {
+        messages,
+        isLoading,
+        sendMsg,
+        isWsConnected,
+        getMsgWithRestWithPagination,
+    } = useCommentsWS(room ? room : '', fetchListener, '');
     const [userId, setUserId] = useState('');
     const { userAddress, ensName } = useContext(UserDataContext);
     const { selectedNetwork } = useContext(CrocEnvContext);
@@ -62,16 +75,22 @@ function Comments() {
     }, []);
 
     useEffect(() => {
+        if (scrollBackTarget.length > 0) {
+            console.log(scrollBackTarget);
+        }
+
+        // handle auto scroll to bottom
         if (
             messageListRef &&
             messageListRef.current
             // && messageListRef.current.scrollTop - messageListRef.current.scrollHeight <= autoScrollTreshold
         ) {
-            const scrollTop = messageListRef.current.scrollTop;
-            const scrollHeight = messageListRef.current.scrollHeight;
-            const clientHeight = messageListRef.current.clientHeight;
-            const scrollToBottomDist = scrollHeight - scrollTop - clientHeight;
-            if (scrollToBottomDist < autoScrollTreshold) {
+            // const scrollTop = messageListRef.current.scrollTop;
+            // const scrollHeight = messageListRef.current.scrollHeight;
+            // const clientHeight = messageListRef.current.clientHeight;
+            // const scrollToBottomDist = scrollHeight - scrollTop - clientHeight;
+            const diff = assignPanelScrollDistances();
+            if (diff < autoScrollTreshold) {
                 scrollToBottom();
             }
         }
@@ -80,6 +99,35 @@ function Comments() {
     useEffect(() => {
         initialSave();
     }, [userAddress]);
+
+    useEffect(() => {
+        setShowPrevButton(false);
+        setPage(0);
+    }, [room]);
+
+    useEffect(() => {
+        assignScrollButtonVisibility();
+    }, [panelScrollToBottomDist, panelScrollTop]);
+
+    const assignScrollButtonVisibility = () => {
+        setShowPrevButton(panelScrollTop < 20);
+        setShowScrollToBottom(panelScrollToBottomDist > 50);
+    };
+
+    const assignPanelScrollDistances = () => {
+        if (messageListRef && messageListRef.current) {
+            const scrollTop = messageListRef.current.scrollTop;
+            const scrollHeight = messageListRef.current.scrollHeight;
+            const clientHeight = messageListRef.current.clientHeight;
+            const scrollToBottomDist = scrollHeight - scrollTop - clientHeight;
+            setPanelScrollToBottomDist(scrollToBottomDist);
+            setPanelScrollTop(scrollTop);
+            domDebug('to bottom dist', scrollToBottomDist);
+            domDebug('scroll top ', scrollTop);
+        }
+
+        return panelScrollToBottomDist;
+    };
 
     const scrollToBottom = () => {
         if (messageListRef && messageListRef.current) {
@@ -93,7 +141,7 @@ function Comments() {
             sendMsg(
                 userId,
                 msg,
-                room + ' / ETH',
+                room,
                 ensName ? ensName : '',
                 userAddress,
                 null,
@@ -106,9 +154,18 @@ function Comments() {
         }
     };
 
-    // const _handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    //     console.log(e.currentTarget.scrollTop);
-    // }
+    const fetchPrevious = async () => {
+        const data = await getMsgWithRestWithPagination(room, page + 1);
+        setPage(page + 1);
+        if (data.length == 0) {
+            setShowPrevButton(false);
+        }
+        setScrollBackTarget('');
+    };
+
+    const _handleScroll = () => {
+        assignPanelScrollDistances();
+    };
 
     return (
         <div className={styles.mainContainer}>
@@ -138,7 +195,7 @@ function Comments() {
                     <div
                         ref={messageListRef}
                         className={`${styles.commentsWrapper} ${messages.length == 0 ? styles.no_comments_wrapper : ''} `}
-                        // onScroll={_handleScroll}
+                        onScroll={_handleScroll}
                     >
                         {messages.length == 0 ? (
                             <span className={styles.no_comment_section}>
@@ -166,12 +223,31 @@ function Comments() {
                             </>
                         )}
                     </div>
+
+                    {showPrevButton && (
+                        <IoIosArrowUp
+                            title='Get Previous Messages'
+                            className={`${styles.floating_scroll_btn} ${styles.show_previous_comments_btn}`}
+                            onClick={fetchPrevious}
+                        />
+                    )}
+
+                    {showScrollToBottom && (
+                        <IoIosArrowDown
+                            title='Scroll to Bottom'
+                            className={`${styles.floating_scroll_btn} ${styles.scroll_to_bottom_btn}`}
+                            onClick={scrollToBottom}
+                        />
+                    )}
+
+                    {/* </div> */}
                     <CommentInput
                         commentInputDispatch={commentInputDispatch}
                         currentUserID={userId}
                     />
                 </>
             )}
+            <DomDebugger />
         </div>
     );
 }

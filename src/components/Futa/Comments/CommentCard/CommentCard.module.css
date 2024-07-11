@@ -36,6 +36,7 @@
 .comment_sender_info{
     color: var(--accent1);
     margin-bottom: .3rem;
+    cursor: pointer;
 }
 
 .comment_sender_info.is_user{

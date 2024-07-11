@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import styles from './CommentInput.module.css';
 import { AiOutlineSend } from 'react-icons/ai';
+import { isLinkInCrocodileLabsLinksForInput } from '../../../Chat/ChatUtils';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 
 interface CommentInputProps {
     commentInputDispatch: (message: string) => void;
@@ -9,7 +11,7 @@ interface CommentInputProps {
 
 export default function CommentInput(props: CommentInputProps) {
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const _characterLimit = 140;
+    const _characterLimit = 180;
     const [message, setMessage] = useState('');
     const _onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
         const inputVal = e.currentTarget.value;
@@ -19,6 +21,8 @@ export default function CommentInput(props: CommentInputProps) {
             sendAction(inputVal);
         }
 
+        const result = isLinkInCrocodileLabsLinksForInput(inputVal);
+        domDebug('islinkincrocodilelabs', result);
         setMessage(inputVal);
     };
 

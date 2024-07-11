@@ -1,6 +1,7 @@
 import { PoolIF } from '../../ambient-utils/types';
 import {
     AVATAR_TYPES_SET,
+    CHAT_WHITELISTED_REGEX,
     CROCODILE_LABS_LINKS,
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
@@ -10,6 +11,7 @@ import {
     ChatWsDecodedMessage,
     GetTopRoomsResponseIF,
 } from './ChatIFs';
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import { Message } from './Model/MessageModel';
 
 export const minToMS = 60 * 1000;
@@ -158,6 +160,7 @@ export function isLinkInCrocodileLabsLinks(input: string) {
 
 export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
     try {
+        let ret = false;
         const normalizedWord = word.startsWith('http')
             ? word
             : `https://${word}`;
@@ -165,13 +168,25 @@ export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
         const wordUrl = new URL(normalizedWord);
         const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase();
 
-        return CROCODILE_LABS_LINKS.some((link) => {
+        domDebug('wordUrl', wordUrl);
+        domDebug('wordDomain', wordDomain);
+
+        ret = CROCODILE_LABS_LINKS.some((link) => {
             const linkUrl = new URL(link);
             const linkDomain = linkUrl.hostname
                 .replace(/^www\./, '')
                 .toLowerCase();
             return wordDomain === linkDomain;
         });
+
+        // check regexes for subdomains
+        if (!ret) {
+            ret = CHAT_WHITELISTED_REGEX.some((regex) => {
+                return regex.test(wordDomain);
+            });
+        }
+
+        return ret;
     } catch (error) {
         return false;
     }
@@ -325,4 +340,12 @@ export const handleOpenExplorerAddHttp = (url: string) => {
 export const convertToFullUrl = (domain: string) => {
     const protocol = 'https://';
     return protocol + domain;
+};
+
+export const getRedirectTargetFromMessage = (message: Message) => {
+    if (message.ensName && message.ensName.length > 0) {
+        return message.ensName;
+    } else {
+        return message.walletID;
+    }
 };

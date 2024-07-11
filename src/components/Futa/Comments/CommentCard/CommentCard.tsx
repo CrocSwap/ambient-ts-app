@@ -4,12 +4,14 @@ import { Message } from '../../../Chat/Model/MessageModel';
 import {
     formatMessageTime,
     getDateLabelInfo,
+    getRedirectTargetFromMessage,
     getShownName,
     handleOpenExplorerAddHttp,
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
     minToMS,
 } from '../../../Chat/ChatUtils';
+import { useNavigate } from 'react-router-dom';
 
 interface CommentCardProps {
     message: Message;
@@ -18,6 +20,8 @@ interface CommentCardProps {
 }
 
 function CommentCard(props: CommentCardProps) {
+    const navigate = useNavigate();
+
     const assignDayInfo = () => {
         let hasDayInfo = false;
         const messageDate = new Date(props.message.createdAt);
@@ -75,12 +79,21 @@ function CommentCard(props: CommentCardProps) {
         return ret;
     };
 
+    const handleProfileRedirection = () => {
+        if (props.message.sender === props.currentUserID) {
+            navigate('/account');
+        } else {
+            navigate(`/${getRedirectTargetFromMessage(props.message)}`);
+        }
+    };
+
     const dayInfo = assignDayInfo();
     const isBasic = isBasicCard();
 
     return (
         <>
             <div
+                id={`comment_${props.message._id}`}
                 className={`${styles.comment_card_wrapper} ${isBasic ? styles.basic_card : ' '}`}
             >
                 {dayInfo && dayInfo.length > 0 && (
@@ -88,6 +101,7 @@ function CommentCard(props: CommentCardProps) {
                 )}
                 {!isBasic && (
                     <div
+                        onClick={handleProfileRedirection}
                         className={`${styles.comment_sender_info} ${props.message.sender === props.currentUserID ? styles.is_user : ' '}`}
                     >
                         {getShownName(props.message)}
