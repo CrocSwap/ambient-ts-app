@@ -123,7 +123,11 @@ export default function Navbar() {
         } else if (pathNoLeadingSlash === 'auctions') {
             document.title = 'FUTA | Auctions';
         } else if (location.pathname.includes('auctions/v')) {
-            document.title = `FUTA | ${selectedTicker}`;
+            if (selectedTicker !== undefined) {
+                document.title = `FUTA | ${selectedTicker}`;
+            } else {
+                document.title = 'FUTA | Auctions';
+            }
         } else if (location.pathname.includes('404')) {
             document.title = 'FUTA | 404';
         } else if (location.pathname.includes('swap')) {

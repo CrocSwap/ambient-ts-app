@@ -26,10 +26,10 @@ export default function Xaxis(props: AxisIF) {
                 .tickFormat((d) => {
                     const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
                     if (Number.isInteger(d)) {
-                        return hour.toString();
+                        return hour.toString() + 'd';
                     }
 
-                    return '12h';
+                    return '';
                 });
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');

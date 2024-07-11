@@ -22,11 +22,10 @@ import {
     AuctionDataIF,
     calcBidImpact,
     getFormattedNumber,
-    getTimeRemainingAbbrev,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { CrocEnv, fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -294,19 +293,9 @@ export default function TickerComponent(props: PropsIF) {
         ? toDisplayQty(filledMarketCapInWeiBigInt, 18)
         : undefined;
 
-    const timeRemainingAbbrev = auctionDetails
-        ? getTimeRemainingAbbrev(
-              moment(auctionDetails.createdAt * 1000).diff(
-                  Date.now() - auctionDetails.auctionLength * 1000,
-                  'seconds',
-              ),
-          )
-        : undefined;
-
     const [timeRemainingInSeconds, setTimeRemainingInSeconds] = useState<
         number | undefined
     >();
-    // const [timeRemaining, setTimeRemaining] = useState<string | undefined>();
 
     const refreshTimeRemaining = () => {
         if (auctionDetails) {
@@ -315,7 +304,6 @@ export default function TickerComponent(props: PropsIF) {
             ).diff(Date.now() - auctionDetails.auctionLength * 1000, 'seconds');
 
             setTimeRemainingInSeconds(timeRemainingInSeconds);
-            // setTimeRemaining(timeRemainingString);
         }
     };
 
@@ -329,7 +317,9 @@ export default function TickerComponent(props: PropsIF) {
     }, [tickerFromParams, auctionDetails]);
 
     const isAuctionCompleted =
-        timeRemainingAbbrev?.toLowerCase() === 'complete';
+        timeRemainingInSeconds !== undefined
+            ? timeRemainingInSeconds <= 0
+            : undefined;
 
     useEffect(() => {
         if (!tickerFromParams) return;
@@ -382,8 +372,8 @@ export default function TickerComponent(props: PropsIF) {
 
     const nativeTokenWalletBalance = nativeData?.walletBalance;
 
-    const bidDisplayNum = inputValue
-        ? parseFloat(inputValue ?? '0')
+    const bidDisplayNum = bidQtyNonDisplay
+        ? parseFloat(toDisplayQty(bidQtyNonDisplay, nativeToken.decimals))
         : undefined;
 
     const bidUsdValue =
@@ -405,9 +395,8 @@ export default function TickerComponent(props: PropsIF) {
                 reason: 'Bid size must be greater than 0',
             };
 
-        const inputValueInWei = fromDisplayQty(inputValue, 18);
         const inputValueGreaterThanSelectedClearingPrice =
-            inputValueInWei >
+            BigInt(bidQtyNonDisplay) >
             (selectedMaxMarketCapInWeiBigInt ?? 0n) /
                 MARKET_CAP_MULTIPLIER_BIG_INT;
 
@@ -488,10 +477,6 @@ export default function TickerComponent(props: PropsIF) {
         ? amountToReduceNativeTokenQtyL2
         : amountToReduceNativeTokenQtyMainnet;
 
-    const isTokenWalletBalanceGreaterThanZero = nativeTokenWalletBalance
-        ? parseFloat(nativeTokenWalletBalance) > 0
-        : false;
-
     const nativeTokenWalletBalanceAdjustedNonDisplayString =
         nativeTokenWalletBalance
             ? (
@@ -500,16 +485,6 @@ export default function TickerComponent(props: PropsIF) {
                   BigInt(l1GasFeeLimitInGwei * NUM_GWEI_IN_ETH)
               ).toString()
             : nativeTokenWalletBalance;
-
-    const adjustedTokenWalletBalanceDisplay = useDebounce(
-        nativeTokenWalletBalanceAdjustedNonDisplayString
-            ? toDisplayQty(
-                  nativeTokenWalletBalanceAdjustedNonDisplayString,
-                  nativeTokenDecimals,
-              )
-            : undefined,
-        500,
-    );
 
     useEffect(() => {
         if (!debouncedBidInput) return;
@@ -531,17 +506,6 @@ export default function TickerComponent(props: PropsIF) {
     useEffect(() => {
         setIsValidationInProgress(true);
     }, [bidQtyNonDisplay]);
-
-    const handleBalanceClick = () => {
-        if (isTokenWalletBalanceGreaterThanZero) {
-            setBidQtyNonDisplay(
-                nativeTokenWalletBalanceAdjustedNonDisplayString,
-            );
-
-            if (adjustedTokenWalletBalanceDisplay)
-                setInputValue(adjustedTokenWalletBalanceDisplay);
-        }
-    };
 
     const formattedPriceImpact =
         !priceImpact || isPriceImpactQueryInProgress
@@ -615,7 +579,7 @@ export default function TickerComponent(props: PropsIF) {
                         : !isUserConnected
                           ? openWalletModal()
                           : console.log(
-                                `clicked Bid for display qty: ${inputValue}`,
+                                `clicked Bid for display qty: ${bidQtyNonDisplay}`,
                             )
             }
             disabled={isButtonDisabled}
@@ -641,7 +605,6 @@ export default function TickerComponent(props: PropsIF) {
         selectedMaxMarketCapInWeiBigInt,
         setSelectedMaxMarketCapInWeiBigInt,
         bidUsdValue,
-        handleBalanceClick,
         nativeTokenWalletBalanceTruncated,
         bidQtyNonDisplay,
         setBidQtyNonDisplay,

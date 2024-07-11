@@ -1,7 +1,12 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import styles from './Animations.module.css';
 import logo from '../../../../assets/futa/logos/homeLogo.svg';
-export default function FlashingSvg() {
+
+interface Props {
+    customWidth?: string;
+}
+export default function FlashingSvg(props: Props) {
+    const { customWidth } = props;
     const [visible, setVisible] = useState<boolean>(false);
     const [flash, setFlash] = useState<boolean>(false);
 
@@ -31,7 +36,7 @@ export default function FlashingSvg() {
     // Define the styles with animations
     const terminalStyle: CSSProperties = {
         textAlign: 'center',
-        width: '100vw',
+        width: customWidth ?? '100vw',
 
         display: 'flex',
         flexDirection: 'column',
