@@ -77,7 +77,7 @@ export default function DropdownMenu2(props: propsIF) {
     );
 
     const desktopScreen = isActiveNetworkPlume
-        ? useMediaQuery('(min-width: 1200px)')
+        ? useMediaQuery('(min-width: 400px)')
         : useMediaQuery('(min-width: 1020px)');
     return (
         <div ref={dropdownRefItem}>

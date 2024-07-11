@@ -12,9 +12,16 @@ export const Menu = styled(FlexContainer)`
     @media only screen and (min-width: 1020px) {
         gap: 0;
     }
+
+    @media only screen and (max-width: 1200px) {
+        width: auto;
+        white-space: no-wrap;
+        text-wrap: none;
+    }
 `;
 
 export const MenuItem = styled(FlexContainer)`
+    width: 100%;
     cursor: pointer;
     z-index: 999;
 `;
@@ -32,6 +39,8 @@ export const Icon = styled(FlexContainer)<MenuProps>`
         !expandable &&
         css`
             cursor: default;
+            text-wrap: none;
+            min-width: 150px;
         `}
     img {
         margin-right: 0.5em;
