@@ -12,7 +12,7 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import {
     AuctionDataIF,
     getFormattedNumber,
-    getTimeRemaining,
+    getTimeDifference,
 } from '../../../ambient-utils/dataLayer';
 import { supportedNetworks } from '../../../ambient-utils/constants';
 
@@ -47,7 +47,6 @@ export interface PropsIF {
         SetStateAction<bigint | undefined>
     >;
     bidUsdValue: number | undefined;
-    handleBalanceClick: () => void;
     nativeTokenWalletBalanceTruncated: string;
     bidQtyNonDisplay: string | undefined;
     setBidQtyNonDisplay: Dispatch<SetStateAction<string | undefined>>;
@@ -74,7 +73,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
         selectedMaxMarketCapInWeiBigInt,
         setSelectedMaxMarketCapInWeiBigInt,
         bidUsdValue,
-        handleBalanceClick,
         nativeTokenWalletBalanceTruncated,
         setBidQtyNonDisplay,
         inputValue,
@@ -104,7 +102,7 @@ export const tickerDisplayElements = (props: PropsIF) => {
     });
 
     const timeRemainingString = timeRemainingInSeconds
-        ? getTimeRemaining(timeRemainingInSeconds)
+        ? getTimeDifference(timeRemainingInSeconds)
         : '-';
 
     // Status data
@@ -123,27 +121,30 @@ export const tickerDisplayElements = (props: PropsIF) => {
             label: isAuctionCompleted ? 'time completed' : 'time remaining',
             value: !placeholderTicker ? timeRemainingString : '-',
             // set color to orange if time remaining is less than 2 hours
-            color:
-                timeRemainingInSeconds && timeRemainingInSeconds <= 0
-                    ? 'var(--text1)'
-                    : timeRemainingInSeconds && timeRemainingInSeconds <= 7200
-                      ? 'var(--orange)'
-                      : 'var(--text1)',
-            tooltipLabel: 'The total time remaining in the auction',
+            color: isAuctionCompleted
+                ? 'var(--text1)'
+                : timeRemainingInSeconds && timeRemainingInSeconds <= 7200
+                  ? 'var(--orange)'
+                  : 'var(--text1)',
+            tooltipLabel: isAuctionCompleted
+                ? 'Time elapsed since the auction completed'
+                : 'Total time remaining in the auction',
         },
         {
             label: 'market cap (ETH)',
             value: !placeholderTicker ? formattedMarketCapEthValue : '-',
             color: 'var(--text1)',
-            tooltipLabel:
-                'CURRENT FILLED MARKET CAP OF THE AUCTION IN ETH TERMS',
+            tooltipLabel: isAuctionCompleted
+                ? 'Filled market cap at the end of the auction in ETH'
+                : 'CURRENT FILLED MARKET CAP OF THE AUCTION IN ETH',
         },
         {
             label: 'market cap ($)',
             value: !placeholderTicker ? currentMarketCapUsdFormatted : '-',
             color: 'var(--text1)',
-            tooltipLabel:
-                'Current filled market cap in dollars based on the current price of eth',
+            tooltipLabel: isAuctionCompleted
+                ? 'Filled market cap at the end of the auction in dollars based on the current price of eth'
+                : 'Current filled market cap in dollars based on the current price of eth',
         },
     ];
 
@@ -601,7 +602,6 @@ export const tickerDisplayElements = (props: PropsIF) => {
                 noModals
                 usdValue={bidUsdValueTruncated}
                 walletBalance={nativeTokenWalletBalanceTruncated}
-                handleBalanceClick={handleBalanceClick}
             />
         </div>
     );

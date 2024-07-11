@@ -47,6 +47,8 @@ export default function Auctions(props: propsIF) {
         updateGlobalAuctionsList();
         if (userAddress) {
             updateUserAuctionsList(userAddress);
+        } else {
+            updateUserAuctionsList('');
         }
     }, [userAddress, chainId, cacheFrequency]);
 

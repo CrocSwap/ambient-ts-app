@@ -21,7 +21,7 @@ import {
     sortedAuctionsIF,
 } from '../../../pages/platformFuta/Auctions/useSortedAuctions';
 import { FaEye } from 'react-icons/fa';
-import { AuctionDataIF } from '../../../ambient-utils/dataLayer';
+import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import Chart from '../Chart/Chart';
 import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
 import { ResizableContainer } from '../../../styled/Components/Trade';
@@ -60,6 +60,7 @@ export default function SearchableTicker(props: propsIF) {
         showComplete,
         setShowComplete,
         watchlists,
+        setFilteredAuctionList,
     } = useContext(AuctionsContext);
 
     const {
@@ -200,6 +201,10 @@ export default function SearchableTicker(props: propsIF) {
     useEffect(() => {
         if (placeholderTicker) setSelectedTicker(undefined);
     }, [placeholderTicker]);
+
+    useEffect(() => {
+        setFilteredAuctionList(filteredData);
+    }, [diffHashSig(filteredData)]);
 
     const tickerItemRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
