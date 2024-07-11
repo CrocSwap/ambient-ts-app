@@ -17,6 +17,7 @@ import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { Link } from 'react-router-dom';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
 
 interface propsIF {
     txHashTruncated: string;
@@ -115,7 +116,8 @@ export const txRowConstants = (props: propsIF) => {
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
+    const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';
+    const smallScreen = useMediaQuery(SMALL_SCREEN_BP);
 
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
@@ -300,8 +302,8 @@ export const txRowConstants = (props: propsIF) => {
         (tx.entityType.toLowerCase() === 'limitorder'
             ? '/trade/limit/'
             : tx.entityType.toLowerCase() === 'liqchange'
-            ? '/trade/pool/'
-            : '/trade/market/') +
+              ? '/trade/pool/'
+              : '/trade/market/') +
         formSlugForPairParams({
             chain: tx.chainId,
             tokenA: tx.quote,
@@ -449,16 +451,16 @@ export const txRowConstants = (props: propsIF) => {
                         ? baseQuantityDisplay
                         : quoteQuantityDisplay
                     : isOrderRemove
-                    ? quoteQuantityDisplay
-                    : baseQuantityDisplay}
+                      ? quoteQuantityDisplay
+                      : baseQuantityDisplay}
                 {valueArrows ? positiveArrow : ' '}
                 {isBuy
                     ? isOrderRemove
                         ? baseTokenLogoComponent
                         : quoteTokenLogoComponent
                     : isOrderRemove
-                    ? quoteTokenLogoComponent
-                    : baseTokenLogoComponent}
+                      ? quoteTokenLogoComponent
+                      : baseTokenLogoComponent}
             </FlexContainer>
 
             <FlexContainer
@@ -486,8 +488,8 @@ export const txRowConstants = (props: propsIF) => {
                         ? quoteTokenLogoComponent
                         : baseTokenLogoComponent
                     : isOrderRemove
-                    ? baseTokenLogoComponent
-                    : quoteTokenLogoComponent}
+                      ? baseTokenLogoComponent
+                      : quoteTokenLogoComponent}
             </FlexContainer>
         </div>
     );
@@ -549,8 +551,8 @@ export const txRowConstants = (props: propsIF) => {
                     {truncatedLowDisplayPrice && !isTradeDollarizationEnabled
                         ? priceCharacter
                         : isTradeDollarizationEnabled
-                        ? ''
-                        : '…'}
+                          ? ''
+                          : '…'}
                 </span>
                 <span>
                     {isAccountView
@@ -558,8 +560,8 @@ export const txRowConstants = (props: propsIF) => {
                             ? formattedLowUsdPrice
                             : truncatedLowDisplayPriceDenomByMoneyness
                         : isTradeDollarizationEnabled
-                        ? formattedLowUsdPrice
-                        : truncatedLowDisplayPrice}
+                          ? formattedLowUsdPrice
+                          : truncatedLowDisplayPrice}
                 </span>
             </p>
             <p>
@@ -567,8 +569,8 @@ export const txRowConstants = (props: propsIF) => {
                     {truncatedHighDisplayPrice && !isTradeDollarizationEnabled
                         ? priceCharacter
                         : isTradeDollarizationEnabled
-                        ? ''
-                        : '…'}
+                          ? ''
+                          : '…'}
                 </span>
                 <span>
                     {isAccountView
@@ -576,8 +578,8 @@ export const txRowConstants = (props: propsIF) => {
                             ? formattedHighUsdPrice
                             : truncatedHighDisplayPriceDenomByMoneyness
                         : isTradeDollarizationEnabled
-                        ? formattedHighUsdPrice
-                        : truncatedHighDisplayPrice}
+                          ? formattedHighUsdPrice
+                          : truncatedHighDisplayPrice}
                 </span>
             </p>
         </RowItem>
@@ -611,8 +613,8 @@ export const txRowConstants = (props: propsIF) => {
                         )
                             ? priceCharacter
                             : isTradeDollarizationEnabled
-                            ? ''
-                            : '…'}
+                              ? ''
+                              : '…'}
                     </span>
                     <span>
                         {isAccountView
@@ -620,8 +622,8 @@ export const txRowConstants = (props: propsIF) => {
                                 ? formattedUsdPrice
                                 : truncatedDisplayPriceDenomByMoneyness
                             : isTradeDollarizationEnabled
-                            ? formattedUsdPrice
-                            : truncatedDisplayPrice}
+                              ? formattedUsdPrice
+                              : truncatedDisplayPrice}
                     </span>
                 </p>
             ) || '…'}

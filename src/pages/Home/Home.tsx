@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { BrandContext } from '../../contexts/BrandContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { minWidth } from '../../ambient-utils/types/mediaQueries';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -60,6 +61,8 @@ export default function Home() {
         }
     }, [isUserConnected]);
 
+    const BREAKPOINT: minWidth = '(min-width: 720px)';
+
     const PointSystemContainer = styled.section`
         margin: 0 auto;
         display: flex;
@@ -72,7 +75,7 @@ export default function Home() {
         border-radius: 4px;
         gap: 1rem;
 
-        @media (min-width: 720px) {
+        @media ${BREAKPOINT} {
             height: 127px;
             width: 842px;
         }

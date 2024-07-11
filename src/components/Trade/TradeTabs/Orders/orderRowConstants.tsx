@@ -16,6 +16,7 @@ import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { Link } from 'react-router-dom';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
 
 interface propsIF {
     posHashTruncated: string;
@@ -105,7 +106,8 @@ export const orderRowConstants = (props: propsIF) => {
         tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
+    const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';
+    const smallScreen = useMediaQuery(SMALL_SCREEN_BP);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -398,8 +400,8 @@ export const orderRowConstants = (props: propsIF) => {
                                 ? displayPriceInUsd
                                 : truncatedDisplayPriceDenomByMoneyness
                             : isTradeDollarizationEnabled
-                            ? displayPriceInUsd
-                            : truncatedDisplayPrice}
+                              ? displayPriceInUsd
+                              : truncatedDisplayPrice}
                     </span>
                 </p>
             ) || '…'}
