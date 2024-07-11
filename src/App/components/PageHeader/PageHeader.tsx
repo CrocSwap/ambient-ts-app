@@ -119,7 +119,9 @@ const PageHeader = function () {
         isUserLoggedIn: isUserConnected,
         clickLogout: clickLogout,
     };
-    const desktopScreen = useMediaQuery('(min-width: 1020px)');
+    const desktopScreen = isActiveNetworkPlume
+        ? useMediaQuery('(min-width: 1200px)')
+        : useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
         <Button

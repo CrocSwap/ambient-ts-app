@@ -6,6 +6,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 // Interface for React functional components
 interface propsIF {
@@ -30,6 +31,7 @@ export default function DropdownMenu2(props: propsIF) {
         right,
         expandable,
     } = props;
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
@@ -74,7 +76,9 @@ export default function DropdownMenu2(props: propsIF) {
         </MenuContainer>
     );
 
-    const desktopScreen = useMediaQuery('(min-width: 1020px)');
+    const desktopScreen = isActiveNetworkPlume
+        ? useMediaQuery('(min-width: 1200px)')
+        : useMediaQuery('(min-width: 1020px)');
     return (
         <div ref={dropdownRefItem}>
             <Menu
