@@ -23,6 +23,7 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -87,6 +88,8 @@ function SwapTokenInput(props: propsIF) {
         isTokenBEth: isBuyTokenEth,
         contextMatchesParams,
     } = useContext(TradeTokenContext);
+
+    const { activeTickers } = useContext(AuctionsContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
     const { isUserConnected } = useContext(UserDataContext);
@@ -350,6 +353,7 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 usdValue={usdValueTokenA}
+                ticker={activeTickers.pair[0]}
             />
             <FlexContainer
                 fullWidth
@@ -408,6 +412,7 @@ function SwapTokenInput(props: propsIF) {
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
                 percentDiffUsdValue={percentDiffUsdValue}
+                ticker={activeTickers.pair[1]}
             />
         </FlexContainer>
     );

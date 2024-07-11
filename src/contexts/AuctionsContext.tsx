@@ -19,6 +19,7 @@ import {
     AuctionStatusResponseIF,
 } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
+import { TokenIF } from '../ambient-utils/types';
 
 interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
@@ -50,6 +51,11 @@ interface AuctionsContextIF {
     };
     showComplete: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
+    activeTickers: {
+        pair: [TokenIF, TokenIF];
+        update: (tickerA: TokenIF, tickerB: TokenIF) => void;
+        reverse: () => void;
+    };
 }
 
 export interface AuctionStatusDataIF {
@@ -233,6 +239,35 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         setShowWatchlist(show ?? !showWatchlist);
     }
 
+    const [tickerPair, setTickerPair] = useState<[TokenIF, TokenIF]>([
+        {
+            name: 'Native Ether',
+            address: '0x0000000000000000000000000000000000000000',
+            symbol: 'ETH',
+            decimals: 18,
+            chainId: 11155111,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+        },
+        {
+            address: '0x60bBA138A74C5e7326885De5090700626950d509',
+            chainId: 11155111,
+            decimals: 6,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+            name: 'USDC',
+            symbol: 'USDC',
+        },
+    ]);
+
+    function changeTickers(tickerA: TokenIF, tickerB: TokenIF): void {
+        setTickerPair([tickerA, tickerB]);
+    }
+
+    function reverseTickers(): void {
+        setTickerPair([tickerPair[1], tickerPair[0]]);
+    }
+
     const auctionsContext: AuctionsContextIF = {
         auctionStatusData: auctionStatusData,
         globalAuctionList: globalAuctionList,
@@ -261,6 +296,11 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         },
         showComplete: showComplete,
         setShowComplete: setShowComplete,
+        activeTickers: {
+            pair: tickerPair,
+            update: changeTickers,
+            reverse: reverseTickers,
+        },
     };
 
     return (
