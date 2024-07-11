@@ -42,7 +42,7 @@ export default function ScatterChart() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [pointSeries, setPointSeries] = useState<any>();
 
-    const { hoveredTicker, setHoveredTicker, selectedTicker } =
+    const { hoveredTicker, setHoveredTicker, selectedTicker, showComplete } =
         useContext(AuctionsContext);
 
     const { chartThemeColors } = useContext(ChartContext);
@@ -60,6 +60,9 @@ export default function ScatterChart() {
     const navigate = useNavigate();
 
     const getTimeRemainingValue = (timeRemaining: number) => {
+        if (timeRemaining < 0) {
+            return Math.abs(timeRemaining / 60);
+        }
         return timeRemaining / 60;
     };
 
@@ -70,6 +73,21 @@ export default function ScatterChart() {
         const res = data.filter((i) => i.isShow);
         return res;
     }, [diffHashSig(data)]);
+
+    const showDayCount = useMemo(() => {
+        const showDataMinTimeRemaining = Math.ceil(
+            d3.max(showDotsData, (d) => Math.abs(d.timeRemaining / 86400)) || 0,
+        );
+
+        const maxDayCount =
+            showComplete &&
+            showDataMinTimeRemaining &&
+            showDataMinTimeRemaining > 7
+                ? showDataMinTimeRemaining
+                : 7;
+
+        return maxDayCount;
+    }, [diffHashSig(showDotsData)]);
 
     const selectedDot = useMemo(() => {
         const selectedDotData = showDotsData.find(
@@ -109,8 +127,15 @@ export default function ScatterChart() {
                     Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
                     100000;
 
-                const minXValue = -120;
-                const maxXValue = afterOneWeek ? 1440 + 60 : 1440 * 7 + 60;
+                const maxDomBuffer = showDayCount > 7 ? 1440 : 60;
+                const oneDayMinutes = 1440;
+
+                const maxXValue =
+                    (afterOneWeek
+                        ? oneDayMinutes
+                        : showDayCount * oneDayMinutes) + maxDomBuffer;
+                const minXValue = showDayCount > 7 ? -1441 : -120;
+
                 const xScale = d3
                     .scaleLinear()
                     .domain([maxXValue, minXValue])
@@ -126,7 +151,7 @@ export default function ScatterChart() {
                 setYscale(() => yScale);
             }
         }
-    }, [diffHashSig(data), chartSize]);
+    }, [diffHashSig(data), chartSize, showDayCount]);
 
     useEffect(() => {
         if (xScale && yScale) {
@@ -170,7 +195,11 @@ export default function ScatterChart() {
 
                     const xTicks = afterOneWeek
                         ? d3.range(0, 1441, 60)
-                        : d3.range(0, 1441 * 8, 1441 / 4);
+                        : d3.range(
+                              0,
+                              xScale.domain()[0],
+                              showDayCount > 7 ? 1441 : 1441 / 4,
+                          );
                     const yTicks = d3.range(
                         0,
                         Number(d3.max(data, (d) => d.price)) + 100000,
@@ -344,6 +373,7 @@ export default function ScatterChart() {
                 afterOneWeek={afterOneWeek}
                 axisColor={axisColor}
                 textColor={textColor}
+                showDayCount={showDayCount}
             />
             <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
         </div>
