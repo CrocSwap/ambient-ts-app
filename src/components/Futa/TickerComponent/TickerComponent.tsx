@@ -658,7 +658,7 @@ export default function TickerComponent(props: PropsIF) {
                 {!showComments && (
                     <>
                         {!isAuctionCompleted && openedBidDisplay}
-                        {!isAuctionCompleted && yourBidDisplay}
+                        {yourBidDisplay}
                         <div className={styles.flexColumn}>
                             {!isAuctionCompleted && maxFdvDisplay}
                             {!isAuctionCompleted && bidSizeDisplay}
