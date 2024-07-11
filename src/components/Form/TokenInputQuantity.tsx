@@ -239,7 +239,6 @@ function TokenInputQuantity(props: propsIF) {
                 <p>{usdValue}</p>
             </div>
             <div className={styles.futaLayoutRight}>
-                {/* {tokenSelectButton} */}
                 <button
                     className={styles.tokenButton}
                     style={{ cursor: 'default' }}
@@ -280,7 +279,6 @@ function TokenInputQuantity(props: propsIF) {
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
                 {inputDisplay}
-
                 {tokenSelectButton}
             </div>
             {includeWallet && includeWallet}
