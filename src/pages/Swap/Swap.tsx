@@ -27,7 +27,7 @@ function Swap() {
     return (
         <div
             className={styles.swap_page_container}
-            style={{ paddingBottom: '2rem', height: 'calc(100vh - 56px)' }}
+            style={{ paddingBottom: '2rem', height: 'auto', marginTop: '3rem' }}
         >
             <div
                 className={styles.swap_page_content}

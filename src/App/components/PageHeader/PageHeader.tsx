@@ -119,9 +119,7 @@ const PageHeader = function () {
         isUserLoggedIn: isUserConnected,
         clickLogout: clickLogout,
     };
-    const desktopScreen = isActiveNetworkPlume
-        ? useMediaQuery('(min-width: 1200px)')
-        : useMediaQuery('(min-width: 1020px)');
+    const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
         <Button
@@ -372,7 +370,7 @@ const PageHeader = function () {
     return (
         <PrimaryHeader
             data-testid={'page-header'}
-            fixed={location.pathname === '/'}
+            fixed={location.pathname === '/' || isActiveNetworkPlume}
         >
             <div
                 onClick={(event: React.MouseEvent) => {
@@ -405,6 +403,7 @@ const PageHeader = function () {
                             alignItems='center'
                             gap={8}
                             overflow='visible'
+                            justifyContent='flex-end'
                         >
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}

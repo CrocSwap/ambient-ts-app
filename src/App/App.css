@@ -266,6 +266,21 @@ input[type='number'] {
     }
 }
 
+
+.content-container-plume{
+    overflow-y: auto;
+        overflow-x: hidden;
+        height: 100vh;
+
+        background: var(--content-container-bg);
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: fixed;
+
+}
 @media only screen and (min-width: 1280px) {
     .content-container {
         overflow-y: auto;
@@ -281,7 +296,7 @@ input[type='number'] {
     .content-container-plume {
         overflow-y: auto;
         overflow-x: hidden;
-        height: 120vh;
+        height: 100vh;
 
         background: var(--content-container-bg);
         -webkit-background-size: cover;
@@ -292,7 +307,5 @@ input[type='number'] {
         background-position: fixed;
     }
 
-    .content-container-trade-plume {
-        background: var(--content-container-bg);
-    }
+    
 }
