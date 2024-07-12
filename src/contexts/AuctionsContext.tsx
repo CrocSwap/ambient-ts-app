@@ -202,7 +202,8 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
             ticker,
             CURRENT_AUCTION_VERSION,
             chainId,
-        ).then((data) => {
+        ).then((response) => {
+            const data = response.data;
             setFreshAuctionStatusData({
                 dataReceived: true,
                 ticker: data.ticker,

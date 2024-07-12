@@ -63,19 +63,21 @@ export interface AuctionDataIF {
 
 // interface for auction status data used to generate auction details view
 export interface AuctionStatusResponseIF {
-    ticker: string;
-    version: number;
-    chainId: string;
-    createdAt: number;
-    auctionLength: number;
-    filledClearingPriceInNativeTokenWei: string;
+    data: {
+        ticker: string;
+        version: number;
+        chainId: string;
+        createdAt: number;
+        auctionLength: number;
+        filledClearingPriceInNativeTokenWei: string;
 
-    // open bid data
-    openBidClearingPriceInNativeTokenWei?: string | undefined;
-    openBidQtyFilledInNativeTokenWei?: string | undefined;
+        // open bid data
+        openBidClearingPriceInNativeTokenWei?: string | undefined;
+        openBidQtyFilledInNativeTokenWei?: string | undefined;
 
-    // closed auction data
-    tokenAddress?: string | undefined;
+        // closed auction data
+        tokenAddress?: string | undefined;
+    };
 }
 
 const getGlobalAuctionsList = async (
@@ -482,7 +484,30 @@ export const fetchFreshAuctionStatusData = async (
     version: number,
     chainId: string,
 ): Promise<AuctionStatusResponseIF> => {
+    // const auctionsStatusEndpoint = GCGO_OVERRIDE_URL
+    //     ? GCGO_OVERRIDE_URL + '/auctionStatus?'
+    //     : graphCacheUrl + '/auctionStatus?';
     return mockAuctionDetailsServerResponseGenerator(ticker, version, chainId);
+    // return fetch(
+    //     auctionsStatusEndpoint +
+    //         new URLSearchParams({
+    //             ticker: ticker,
+    //             version: version.toString(),
+    //             chainId: chainId,
+    //         }),
+    // )
+    //     .then((response) => response?.json())
+    //     .then((json) => {
+    //         if (!json?.data) {
+    //             return undefined;
+    //         }
+
+    //         const payload = json.data as AuctionListResponseIF;
+    //         return payload;
+    //     })
+    //     .catch(() => {
+    //         return undefined;
+    //     });
 };
 
 export type GlobalAuctionListQueryFn = (
