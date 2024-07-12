@@ -2,10 +2,10 @@
 .comment_input_wrapper{
     background-color: var(--dark2);
     position: absolute;
-    width: calc(100% - 18px);
+    width: calc(100% - 1rem);
     bottom: 0;
     }
-    
+
     .comment_input_wrapper input{
         
         background: transparent;
@@ -14,5 +14,31 @@
         color: white;
         padding: .5rem 1rem;
         width: 90%;
+    }
+    .comment_input_wrapper input.about_filled{
+        width: 75%;
+        margin-left: 15%;
+    }
+
+
+
+    .progress_wrapper{
+        position: absolute;    
+        left: .5rem;
+        top: .5rem;
+
+    }
+    .circular_progress{
+        top: .3rem;
+        left: .5rem;
+        display: inline-block;
+    }
     
+    .character_limit{
+        display: inline-block;
+        font-size: .6rem;
+        opacity: .5;
+        margin-left: .3rem;
+        vertical-align: middle;
+        margin-top: -.1rem;
     }

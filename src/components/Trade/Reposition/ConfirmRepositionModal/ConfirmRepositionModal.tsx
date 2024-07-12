@@ -14,9 +14,7 @@ interface propsIF {
     onSend: () => Promise<void>;
     showConfirmation: boolean;
     resetConfirmation: () => void;
-    txErrorCode: string;
-    txErrorMessage: string;
-    txErrorJSON: string;
+    txError: Error | undefined;
     minPriceDisplay: string;
     maxPriceDisplay: string;
     currentBaseQtyDisplayTruncated: string;
@@ -45,9 +43,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
         showConfirmation,
         newRepositionTransactionHash,
         resetConfirmation,
-        txErrorCode,
-        txErrorMessage,
-        txErrorJSON,
+        txError,
         currentBaseQtyDisplayTruncated,
         currentQuoteQtyDisplayTruncated,
         newBaseQtyDisplay,
@@ -183,9 +179,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenA={{ token: tokenA }}
             tokenB={{ token: tokenB }}
             transactionHash={newRepositionTransactionHash}
-            txErrorCode={txErrorCode}
-            txErrorMessage={txErrorMessage}
-            txErrorJSON={txErrorJSON}
+            txError={txError}
             showConfirmation={showConfirmation}
             statusText={
                 !showConfirmation

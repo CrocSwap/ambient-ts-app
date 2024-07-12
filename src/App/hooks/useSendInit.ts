@@ -5,7 +5,6 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
-    parseErrorMessage,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -17,9 +16,7 @@ export function useSendInit(
     >,
     setIsInitPending: React.Dispatch<React.SetStateAction<boolean>>,
     setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
-    setTxErrorCode: React.Dispatch<React.SetStateAction<string>>,
-    setTxErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-    setTxErrorJSON: React.Dispatch<React.SetStateAction<string>>,
+    setTxError: React.Dispatch<React.SetStateAction<Error | undefined>>,
     resetConfirmation: () => void, // Include resetConfirmation as an argument
 ) {
     const { crocEnv } = useContext(CrocEnvContext);
@@ -88,15 +85,8 @@ export function useSendInit(
                     setIsTxCompletedInit(true);
                 }
             } catch (error) {
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
+                setTxError(error);
             } finally {
                 setIsInitPending(false);
             }

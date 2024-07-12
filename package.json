@@ -1,10 +1,10 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.6.9",
+    "version": "2.6.11",
     "private": true,
     "type": "module",
     "dependencies": {
-        "@crocswap-libs/sdk": "^1.0.0-1",
+        "@crocswap-libs/sdk": "^1.0.2",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/babel-plugin": "^11.11.0",
         "@emotion/is-prop-valid": "^1.2.1",
@@ -59,7 +59,9 @@
     "scripts": {
         "start": "yarn install && vite",
         "start-only": "vite",
+        "force": "yarn start --force",
         "build": "tsc && vite build",
+        "preview": "vite preview",
         "dev": "vite --host",
         "test": "vitest",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
