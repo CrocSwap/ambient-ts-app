@@ -50,6 +50,7 @@ interface propsIF {
     usdValue?: string | undefined;
     walletBalance?: string;
     handleBalanceClick?: () => void;
+    updateTickerPair?: (t: TokenIF) => void;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -72,6 +73,7 @@ function TokenInputQuantity(props: propsIF) {
         noModals,
         walletBalance,
         // handleBalanceClick,
+        updateTickerPair,
     } = props;
 
     const { platformName } = useContext<BrandContextIF>(BrandContext);
@@ -284,6 +286,7 @@ function TokenInputQuantity(props: propsIF) {
                             : reverseTokens
                     }
                     platform='futa'
+                    updateTickerPair={updateTickerPair}
                 />
             )}
         </section>

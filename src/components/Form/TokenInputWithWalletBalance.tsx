@@ -34,6 +34,7 @@ interface propsIF {
     tokenDecimals?: number;
     percentDiffUsdValue?: number;
     ticker?: TokenIF;
+    updateTickerPair?: (t: TokenIF) => void;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -62,6 +63,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         usdValue,
         percentDiffUsdValue,
         ticker,
+        updateTickerPair,
     } = props;
 
     const usdValueForDom =
@@ -199,6 +201,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                updateTickerPair={updateTickerPair}
             />
             {handleRefresh && (
                 <RefreshButton

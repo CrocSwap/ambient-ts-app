@@ -25,6 +25,8 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+import { TokenIF } from '../../../ambient-utils/types';
+import { sepoliaETH, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -375,6 +377,18 @@ function SwapTokenInput(props: propsIF) {
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 usdValue={usdValueTokenA}
                 ticker={activeTickers.pair[0]}
+                updateTickerPair={(t: TokenIF) => {
+                    if (activeTickers.pair[0].address === ZERO_ADDRESS) {
+                        activeTickers.update(t, sepoliaETH);
+                    } else if (
+                        activeTickers.pair[1].address.toUpperCase() ===
+                        t.address.toUpperCase()
+                    ) {
+                        activeTickers.reverse();
+                    } else {
+                        activeTickers.update(t, activeTickers.pair[1]);
+                    }
+                }}
             />
             <FlexContainer
                 fullWidth
@@ -419,6 +433,18 @@ function SwapTokenInput(props: propsIF) {
                 usdValue={usdValueTokenB}
                 percentDiffUsdValue={percentDiffUsdValue}
                 ticker={activeTickers.pair[1]}
+                updateTickerPair={(t: TokenIF) => {
+                    if (activeTickers.pair[0].address === ZERO_ADDRESS) {
+                        activeTickers.update(t, sepoliaETH);
+                    } else if (
+                        activeTickers.pair[0].address.toUpperCase() ===
+                        t.address.toUpperCase()
+                    ) {
+                        activeTickers.reverse();
+                    } else {
+                        activeTickers.update(activeTickers.pair[0], t);
+                    }
+                }}
             />
         </FlexContainer>
     );
