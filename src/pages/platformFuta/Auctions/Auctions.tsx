@@ -1,7 +1,7 @@
 import styles from './Auctions.module.css';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Futa/Divider/Divider';
+import Divider from '../../../components/Futa/Divider/FutaDivider';
 import { useContext, useEffect, useState } from 'react';
 import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
@@ -63,7 +63,7 @@ export default function Auctions(props: propsIF) {
                             : '1fr 4px 390px',
                     }}
                 >
-                    <div style={{ height: 'calc(100vh - 200px)' }}>
+                    <div style={{ height: 'calc(100vh - 50px)' }}>
                         <SearchableTicker
                             auctions={sorted}
                             title='AUCTIONS'

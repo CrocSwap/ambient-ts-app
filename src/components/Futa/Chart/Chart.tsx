@@ -1,11 +1,11 @@
-import Divider from '../Divider/Divider';
+// import Divider from '../Divider/Divider';
 import styles from './Chart.module.css';
 import ScatterChart from './ScatterChart/ScatterChart';
 
 export default function Chart() {
     return (
         <div className={styles.container}>
-            <Divider count={2} />
+            {/* <Divider count={2} /> */}
             <h3>CHART</h3>
             <ScatterChart />
         </div>
