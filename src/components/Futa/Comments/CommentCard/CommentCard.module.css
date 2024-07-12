@@ -1,11 +1,33 @@
 
 
+@keyframes kf_comment_card_anim {
+    from{
+        opacity: 0;
+        margin-left: 2rem;
+    }
+    to{
+        opacity: 1;
+        margin-left: 0;
+    }
+}
+
+@keyframes kf_comment_bottom_info_anim {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: .3;
+    }
+}
 
 .comment_card_wrapper{
     margin-top: .6rem;
     padding-top: .6rem;
     position: relative;
     border-top: 1px solid rgba(255,255,255, .1);
+    opacity: 0;
+    animation: kf_comment_card_anim .5s ease-in-out 1 forwards;
+    width: 100%;
     }
     
   
@@ -56,7 +78,7 @@
     bottom: .3rem;
     right: .5rem;
     font-size: .8rem;
-    opacity: .3;
+    animation: kf_comment_bottom_info_anim .9s ease-in-out 1 forwards;
 }
 
 .comment_content_token{

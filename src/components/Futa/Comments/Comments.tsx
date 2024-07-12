@@ -8,8 +8,9 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import useChatApi from '../../Chat/Service/ChatApi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import DomDebugger from '../../Chat/DomDebugger/DomDebugger';
-// import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 
 type ShimmerListProps = {
@@ -80,15 +81,7 @@ function Comments() {
         }
 
         // handle auto scroll to bottom
-        if (
-            messageListRef &&
-            messageListRef.current
-            // && messageListRef.current.scrollTop - messageListRef.current.scrollHeight <= autoScrollTreshold
-        ) {
-            // const scrollTop = messageListRef.current.scrollTop;
-            // const scrollHeight = messageListRef.current.scrollHeight;
-            // const clientHeight = messageListRef.current.clientHeight;
-            // const scrollToBottomDist = scrollHeight - scrollTop - clientHeight;
+        if (messageListRef && messageListRef.current) {
             const diff = assignPanelScrollDistances();
             if (diff < autoScrollTreshold) {
                 scrollToBottom();
@@ -110,8 +103,70 @@ function Comments() {
     }, [panelScrollToBottomDist, panelScrollTop]);
 
     const assignScrollButtonVisibility = () => {
-        setShowPrevButton(panelScrollTop < 20);
         setShowScrollToBottom(panelScrollToBottomDist > 50);
+        setShowPrevButton(panelScrollTop < 20 && panelScrollToBottomDist > 50);
+    };
+
+    const calculateScrollTarget = (messageId: string) => {
+        if (
+            messageListRef &&
+            messageListRef.current &&
+            messageId &&
+            messageId.length > 0
+        ) {
+            const msgEl = document.querySelector(
+                '.commentBubble[data-message-id="' + messageId + '"]',
+            );
+            if (msgEl) {
+                const msgElOffsetTop = (msgEl as HTMLElement).offsetTop;
+                const target = msgElOffsetTop;
+
+                return target;
+            }
+            return messageListRef.current.scrollHeight;
+        }
+        return 0;
+    };
+
+    const scrollToMessage = (messageId: string, instant: boolean) => {
+        const scrollTopPadding = -100;
+        const msgEl = document.querySelector(
+            '.commentBubble[data-message-id="' + messageId + '"]',
+        );
+        if (msgEl && messageListRef.current) {
+            // messageListWrapper.current.scrollTop = messageListWrapper.current.scrollHeight - msgElOffsetTop + msgElHeight - messageListWrapper.current.getBoundingClientRect().height;
+            setTimeout(() => {
+                const target = calculateScrollTarget(messageId);
+                console.log(target);
+                if (messageListRef && messageListRef.current) {
+                    if (instant) {
+                        messageListRef.current.scrollTo({
+                            top: target + scrollTopPadding,
+                            left: 0,
+                            behavior: 'instant' as ScrollBehavior,
+                        });
+                    } else {
+                        messageListRef.current.scrollTop =
+                            target + scrollTopPadding;
+                    }
+                }
+            }, 100);
+        }
+    };
+
+    const assignLastSeenMessage = () => {
+        if (messageListRef && messageListRef.current) {
+            const rect = messageListRef.current.getBoundingClientRect();
+            const bubbles = document.querySelectorAll('.commentBubble');
+            for (let i = 0; i < bubbles.length; i++) {
+                const el = bubbles[i];
+                if (el.getBoundingClientRect().top > rect.top) {
+                    const msgId = el.getAttribute('data-message-id');
+                    setScrollBackTarget(msgId ? msgId : '');
+                    break;
+                }
+            }
+        }
     };
 
     const assignPanelScrollDistances = () => {
@@ -122,8 +177,6 @@ function Comments() {
             const scrollToBottomDist = scrollHeight - scrollTop - clientHeight;
             setPanelScrollToBottomDist(scrollToBottomDist);
             setPanelScrollTop(scrollTop);
-            domDebug('to bottom dist', scrollToBottomDist);
-            domDebug('scroll top ', scrollTop);
         }
 
         return panelScrollToBottomDist;
@@ -160,11 +213,13 @@ function Comments() {
         if (data.length == 0) {
             setShowPrevButton(false);
         }
+        scrollToMessage(scrollBackTarget, true);
         setScrollBackTarget('');
     };
 
     const _handleScroll = () => {
         assignPanelScrollDistances();
+        assignLastSeenMessage();
     };
 
     return (
@@ -239,6 +294,8 @@ function Comments() {
                             onClick={scrollToBottom}
                         />
                     )}
+
+                    {/* <div className={styles.debug_btn} onClick={() => {scrollToMessage('669112bc1ce48e351edddd2d')}}></div> */}
 
                     {/* </div> */}
                     <CommentInput

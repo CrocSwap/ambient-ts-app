@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import styles from './CommentInput.module.css';
 import { AiOutlineSend } from 'react-icons/ai';
-import { isLinkInCrocodileLabsLinksForInput } from '../../../Chat/ChatUtils';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 
 interface CommentInputProps {
@@ -20,9 +20,6 @@ export default function CommentInput(props: CommentInputProps) {
         if (pressedKey == 'Enter' && inputVal.trim().length > 0) {
             sendAction(inputVal);
         }
-
-        const result = isLinkInCrocodileLabsLinksForInput(inputVal);
-        domDebug('islinkincrocodilelabs', result);
         setMessage(inputVal);
     };
 

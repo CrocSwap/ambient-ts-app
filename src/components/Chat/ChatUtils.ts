@@ -11,7 +11,10 @@ import {
     ChatWsDecodedMessage,
     GetTopRoomsResponseIF,
 } from './ChatIFs';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
+
 import { Message } from './Model/MessageModel';
 
 export const minToMS = 60 * 1000;
@@ -167,9 +170,6 @@ export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
         normalizedWord.toLowerCase();
         const wordUrl = new URL(normalizedWord);
         const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase();
-
-        domDebug('wordUrl', wordUrl);
-        domDebug('wordDomain', wordDomain);
 
         ret = CROCODILE_LABS_LINKS.some((link) => {
             const linkUrl = new URL(link);
