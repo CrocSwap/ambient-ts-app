@@ -15,7 +15,7 @@ import {
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
-import scrollLogo from './assets/images/networks/scroll.png';
+import scrollLogo from './assets/images/networks/scroll_network_logo.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
 import sepoliaLogo from './assets/images/networks/sepolia_network_logo.png';
 
