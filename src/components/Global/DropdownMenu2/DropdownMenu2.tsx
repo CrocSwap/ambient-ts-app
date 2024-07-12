@@ -88,8 +88,8 @@ export default function DropdownMenu2(props: propsIF) {
                     minWidth: !desktopScreen
                         ? ''
                         : titleWidth
-                        ? titleWidth
-                        : '100px',
+                          ? titleWidth
+                          : '100px',
                 }}
             >
                 <MenuItem gap={4}>
@@ -106,7 +106,7 @@ export default function DropdownMenu2(props: propsIF) {
                                     title.includes('Scroll') ||
                                     title.includes('Blast')
                                         ? '20px'
-                                        : '15px'
+                                        : '20px'
                                 }
                                 height='20px'
                                 style={{
