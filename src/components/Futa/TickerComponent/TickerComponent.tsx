@@ -642,7 +642,7 @@ export default function TickerComponent(props: PropsIF) {
             await claimAllocation(
                 crocEnv,
                 tickerFromParams,
-                auctionedTokenQtyUnclaimedByUserInWei,
+                // auctionedTokenQtyUnclaimedByUserInWei,
             ),
         );
     };
@@ -657,7 +657,11 @@ export default function TickerComponent(props: PropsIF) {
         setIsTxPending(true);
 
         setTxCreationResponse(
-            await returnBid(crocEnv, tickerFromParams, qtyUnreturnedToUser),
+            await returnBid(
+                crocEnv,
+                tickerFromParams,
+                // qtyUnreturnedToUser
+            ),
         );
     };
 

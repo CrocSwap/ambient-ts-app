@@ -346,7 +346,7 @@ export const createBid = async (
 export const claimAllocation = async (
     env: CrocEnv | undefined,
     ticker: string,
-    qtyInWei: string,
+    // qtyInWei: string,
 ): Promise<AuctionTxResponseIF> => {
     if (!env)
         return {
@@ -355,16 +355,18 @@ export const claimAllocation = async (
             failureReason: 'Invalid CrocEnv',
         };
     try {
-        console.log(
-            `clicked Claim for ${ticker} in the amount of ${qtyInWei} `,
-        );
+        console.log(`clicked Claim for ${ticker}`);
 
         // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+
+        // // if qtyInWei is needed
         // const claimParams = {
         //     claimQtyInWei: qtyInWei,
         // };
+
+        // // if qtyInWei is not needed
         // const claimResponse: AuctionTxResponseIF =
-        //     await auctionPlan.claim(claimParams);
+        //     await auctionPlan.claim();
 
         // 2 second timeout to simulate transaction
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -381,6 +383,54 @@ export const claimAllocation = async (
     } catch (error) {
         return {
             txType: 'claim',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const returnBid = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    // qtyInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'return',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(`clicked Return for ${ticker} `);
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+
+        // // if qtyInWei is needed
+        // const returnParams = {
+        //     returnQtyInWei: qtyInWei,
+        // };
+        // const returnResponse: AuctionTxResponseIF =
+        //     await auctionPlan.return(returnParams);
+
+        // // if qtyInWei is not needed
+        // const returnResponse: AuctionTxResponseIF =
+        //     await auctionPlan.return();
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockReturnResponse: AuctionTxResponseIF = {
+            txType: 'return',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Return Failed'
+                : undefined,
+        };
+
+        return mockReturnResponse;
+    } catch (error) {
+        return {
+            txType: 'return',
             isSuccess: false,
             failureReason: 'Unknown Error',
         };
@@ -421,50 +471,6 @@ export const claimAndReturnAll = async (
     } catch (error) {
         return {
             txType: 'claimAll',
-            isSuccess: false,
-            failureReason: 'Unknown Error',
-        };
-    }
-};
-
-export const returnBid = async (
-    env: CrocEnv | undefined,
-    ticker: string,
-    qtyInWei: string,
-): Promise<AuctionTxResponseIF> => {
-    if (!env)
-        return {
-            txType: 'return',
-            isSuccess: false,
-            failureReason: 'Invalid CrocEnv',
-        };
-    try {
-        console.log(
-            `clicked Return for ${ticker} in the amount of ${qtyInWei} `,
-        );
-
-        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
-        // const returnParams = {
-        //     returnQtyInWei: qtyInWei,
-        // };
-        // const returnResponse: AuctionTxResponseIF =
-        //     await auctionPlan.return(returnParams);
-
-        // 2 second timeout to simulate transaction
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        const mockReturnResponse: AuctionTxResponseIF = {
-            txType: 'return',
-            isSuccess: !ticker.toLowerCase().includes('fail'),
-            failureReason: ticker.toLowerCase().includes('fail')
-                ? 'Return Failed'
-                : undefined,
-        };
-
-        return mockReturnResponse;
-    } catch (error) {
-        return {
-            txType: 'return',
             isSuccess: false,
             failureReason: 'Unknown Error',
         };
