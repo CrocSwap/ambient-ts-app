@@ -709,30 +709,44 @@ export default function TickerComponent(props: PropsIF) {
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxMarketCapInWeiBigInt, inputValue]);
 
+    const completedDisplay = (
+        <div className={styles.justifyBetween}>
+            <div className={styles.flexColumn}>
+                {!isAuctionPage && <BreadCrumb />}
+                {tickerDisplay}
+                {!showComments && yourBidDisplay}
+                {showComments && <Comments />}
+            </div>
+            {isUserConnected && !showTradeButton && allocationOrReturnDisplay}
+        </div>
+    );
+
+    const unCompletedDisplay = (
+        <div className={styles.content}>
+            <div className={styles.flexColumn}>
+                {!isAuctionPage && <BreadCrumb />}
+                {tickerDisplay}
+                {showComments && <Comments />}
+            </div>
+
+            {!showComments && (
+                <>
+                    {openedBidDisplay}
+                    {yourBidDisplay}
+                    <div className={styles.flexColumn}>
+                        {maxFdvDisplay}
+                        {bidSizeDisplay}
+                        {extraInfoDisplay}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <div className={styles.flexColumn}>
-                    {!isAuctionPage && <BreadCrumb />}
-                    {tickerDisplay}
-                    {showComments && <Comments />}
-                </div>
-
-                {!showComments && (
-                    <>
-                        {!isAuctionCompleted && openedBidDisplay}
-                        {yourBidDisplay}
-                        <div className={styles.flexColumn}>
-                            {!isAuctionCompleted && maxFdvDisplay}
-                            {!isAuctionCompleted && bidSizeDisplay}
-                            {isUserConnected &&
-                                isAuctionCompleted &&
-                                !showTradeButton &&
-                                allocationOrReturnDisplay}
-                            {!isAuctionCompleted && extraInfoDisplay}
-                        </div>
-                    </>
-                )}
+                {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
             </div>
             {!showComments && bidButton}
         </div>
