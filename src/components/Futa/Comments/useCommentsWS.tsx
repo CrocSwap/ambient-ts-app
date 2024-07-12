@@ -55,6 +55,7 @@ const useCommentsWS = (
 ) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [messages, setMessages] = useState<Message[]>([]);
+    const [unreadMessages, setUnreadMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
     const [messageUser, setMessageUser] = useState<string>();
@@ -74,7 +75,7 @@ const useCommentsWS = (
     const { userAddress: address, ensName } = useContext(UserDataContext);
     const { isUserIdle } = useContext(AppStateContext);
 
-    const offlineFetcherMS = 10000;
+    const offlineFetcherMS = 3000;
     const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timer>();
     const offlineFetcherRef = useRef<NodeJS.Timer>();
     offlineFetcherRef.current = offlineFetcher;
@@ -127,33 +128,37 @@ const useCommentsWS = (
     const isWsConnected = readyState == ReadyState.OPEN;
 
     useEffect(() => {
+        return () => {
+            clearInterval(offlineFetcherRef.current);
+        };
+    }, []);
+
+    useEffect(() => {
         doHandshake();
     }, [address, ensName, room, isUserIdle, offlineFetcher]);
 
     useEffect(() => {
-        if (address) {
-            fetchMessages();
-        }
-    }, [address, readyState == ReadyState.OPEN]);
-
-    useEffect(() => {
         fetchMessages();
-    }, [address == undefined, room]);
 
-    useEffect(() => {
+        // set up a trigger to fetch messages for offline users
         if (!address) {
-            setOfflineFetcher(
-                setInterval(() => {
+            const newInt = setInterval(() => {
+                if (offlineFetcherRef.current) {
                     fetchForNotConnectedUser();
-                }, offlineFetcherMS),
-            );
-        }
-        return clearInterval(offlineFetcher);
-    }, [address, offlineFetcherRef.current == undefined]);
+                }
+            }, offlineFetcherMS);
 
-    useEffect(() => {
-        clearInterval(offlineFetcherRef.current);
-    }, [address != undefined, offlineFetcherRef.current != undefined]);
+            offlineFetcherRef.current = newInt;
+            setOfflineFetcher(newInt);
+        } else {
+            // clear trigger once user is connected
+            clearInterval(offlineFetcherRef.current);
+        }
+
+        return () => {
+            clearInterval(offlineFetcherRef.current);
+        };
+    }, [room, address]);
 
     useEffect(() => {
         if (socketLastMessage == null || socketLastMessage.data == null) return;
@@ -207,9 +212,23 @@ const useCommentsWS = (
             method: 'GET',
         });
         const data = await response.json();
-        assignMessages(data.reverse());
-        setLastMessage(data);
-        setMessageUser(data.sender);
+
+        const unreads: Message[] = [];
+        data.reverse().forEach((msg: Message) => {
+            if (!messagesRef.current.some((m2) => m2._id == msg._id)) {
+                unreads.push(msg);
+            } else {
+                return;
+            }
+        });
+        if (unreads.length > 0) {
+            console.log('unreads', unreads);
+            assignMessages([...messagesRef.current, ...unreads]);
+            setUnreadMessages(unreads);
+        } else {
+            console.log('no new msgs');
+            return;
+        }
     }
 
     async function getMsgWithRestWithPagination(roomInfo: string, p?: number) {
@@ -552,6 +571,7 @@ const useCommentsWS = (
         addListener,
         isWsConnected,
         isLoading,
+        unreadMessages,
     };
 };
 
