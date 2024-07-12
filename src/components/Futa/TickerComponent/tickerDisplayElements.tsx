@@ -29,7 +29,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 // Props interface
 export interface PropsIF {
-    auctionStatusData: AuctionStatusDataIF;
+    freshAuctionStatusData: AuctionStatusDataIF;
     auctionDetailsForConnectedUser: AuctionDataIF | undefined;
     filledMarketCapInEth: string | undefined;
     filledMarketCapUsdValue: number | undefined;
@@ -58,7 +58,7 @@ export interface PropsIF {
 export const tickerDisplayElements = (props: PropsIF) => {
     // Destructure props
     const {
-        auctionStatusData,
+        freshAuctionStatusData,
         auctionDetailsForConnectedUser,
         filledMarketCapInEth,
         filledMarketCapUsdValue,
@@ -149,8 +149,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
     ];
 
     const openBidClearingPriceInWeiBigInt =
-        auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? BigInt(auctionStatusData.openBidClearingPriceInNativeTokenWei)
+        freshAuctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? BigInt(
+                  freshAuctionStatusData.openBidClearingPriceInNativeTokenWei,
+              )
             : undefined;
 
     const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
@@ -263,10 +265,10 @@ export const tickerDisplayElements = (props: PropsIF) => {
         : undefined;
 
     const openBidQtyFilledInEthNum =
-        auctionStatusData.openBidQtyFilledInNativeTokenWei
+        freshAuctionStatusData.openBidQtyFilledInNativeTokenWei
             ? parseFloat(
                   toDisplayQty(
-                      auctionStatusData.openBidQtyFilledInNativeTokenWei,
+                      freshAuctionStatusData.openBidQtyFilledInNativeTokenWei,
                       18,
                   ),
               )
