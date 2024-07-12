@@ -19,10 +19,12 @@ import {
 import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
-import scrollLogo from '../../../../assets/images/networks/scroll.png';
+import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
+import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
-import sepoliaLogo from '../../../../assets/images/networks/sepolia_dolphin_zoomed.webp';
+import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
@@ -225,7 +227,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0xa0c71fd'}>
                 <img
-                    src={blastLogo}
+                    src={blastSepoliaLogo}
                     alt='blast network'
                     width='25px'
                     height='25px'
@@ -256,7 +258,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
                 <img
-                    src={scrollLogo}
+                    src={scrollSepoliaLogo}
                     alt='scroll sepolia network'
                     width='22px'
                     height='22px'
@@ -290,17 +292,25 @@ export default function NetworkSelector(props: propsIF) {
                     logo={
                         lookupChain(chainId)
                             .displayName.toLowerCase()
-                            .includes('scroll')
-                            ? scrollLogo
+                            .includes('blast sepolia')
+                            ? blastSepoliaLogo
                             : lookupChain(chainId)
                                     .displayName.toLowerCase()
-                                    .includes('blast')
-                              ? blastLogo
+                                    .includes('scroll sepolia')
+                              ? scrollSepoliaLogo
                               : lookupChain(chainId)
                                       .displayName.toLowerCase()
-                                      .includes('sepolia')
-                                ? sepoliaLogo
-                                : ETH
+                                      .includes('scroll')
+                                ? scrollLogo
+                                : lookupChain(chainId)
+                                        .displayName.toLowerCase()
+                                        .includes('blast')
+                                  ? blastLogo
+                                  : lookupChain(chainId)
+                                          .displayName.toLowerCase()
+                                          .includes('sepolia')
+                                    ? sepoliaLogo
+                                    : ETH
                     }
                 >
                     <MenuContent
