@@ -209,7 +209,7 @@ function Comments() {
             );
             setTimeout(() => {
                 scrollToBottom();
-            }, 100);
+            }, 200);
         }
     };
 
