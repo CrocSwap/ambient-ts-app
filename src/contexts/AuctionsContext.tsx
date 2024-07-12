@@ -13,10 +13,7 @@ import {
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
 import { UserDataContext } from './UserDataContext';
-import {
-    AuctionDataIF,
-    fetchFreshAuctionStatusData,
-} from '../ambient-utils/dataLayer/functions/getAuctionData';
+import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 import { TokenIF } from '../ambient-utils/types';
 import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
@@ -100,8 +97,11 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { cachedGetGlobalAuctionsList, cachedGetUserAuctionsList } =
-        useContext(CachedDataContext);
+    const {
+        cachedGetGlobalAuctionsList,
+        cachedGetUserAuctionsList,
+        cachedGetAuctionStatus,
+    } = useContext(CachedDataContext);
 
     const [globalAuctionList, setGlobalAuctionList] =
         React.useState<AuctionsDataIF>({
@@ -198,26 +198,41 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     }
 
     function getFreshAuctionData(ticker: string) {
-        fetchFreshAuctionStatusData(
+        cachedGetAuctionStatus(
             ticker,
             CURRENT_AUCTION_VERSION,
             chainId,
+            Math.floor(Date.now() / 30000),
         ).then((response) => {
-            const data = response.data;
-            setFreshAuctionStatusData({
-                dataReceived: true,
-                ticker: data.ticker,
-                createdAt: data.createdAt,
-                auctionLength: data.auctionLength,
-                chainId: chainId,
-                filledClearingPriceInNativeTokenWei:
-                    data.filledClearingPriceInNativeTokenWei,
-                openBidClearingPriceInNativeTokenWei:
-                    data.openBidClearingPriceInNativeTokenWei,
-                openBidQtyFilledInNativeTokenWei:
-                    data.openBidQtyFilledInNativeTokenWei,
-                tokenAddress: data.tokenAddress,
-            });
+            const data = response?.data;
+            if (!data) {
+                setFreshAuctionStatusData({
+                    dataReceived: false,
+                    ticker: '',
+                    createdAt: 0,
+                    auctionLength: 0,
+                    chainId: '',
+                    filledClearingPriceInNativeTokenWei: '',
+                    openBidClearingPriceInNativeTokenWei: '',
+                    openBidQtyFilledInNativeTokenWei: '',
+                    tokenAddress: '',
+                });
+            } else {
+                setFreshAuctionStatusData({
+                    dataReceived: true,
+                    ticker: data.ticker,
+                    createdAt: data.createdAt,
+                    auctionLength: data.auctionLength,
+                    chainId: chainId,
+                    filledClearingPriceInNativeTokenWei:
+                        data.filledClearingPriceInNativeTokenWei,
+                    openBidClearingPriceInNativeTokenWei:
+                        data.openBidClearingPriceInNativeTokenWei,
+                    openBidQtyFilledInNativeTokenWei:
+                        data.openBidQtyFilledInNativeTokenWei,
+                    tokenAddress: data.tokenAddress,
+                });
+            }
         });
     }
 

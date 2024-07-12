@@ -262,7 +262,7 @@ export default function TickerComponent(props: PropsIF) {
             // console.log('fetched data for ' + tickerFromParams);
         });
         setSelectedTicker(tickerFromParams);
-    }, [tickerFromParams]);
+    }, [tickerFromParams, lastBlockNumber]);
 
     const auctionedTokenQtyUnclaimedByUserInWei =
         auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei;

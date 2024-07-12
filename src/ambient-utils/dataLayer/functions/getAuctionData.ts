@@ -12,11 +12,6 @@ import {
 } from './memoizePromiseFn';
 import { CURRENT_AUCTION_VERSION } from '../../constants';
 
-export interface AuctionPlanIF {
-    ticker: string;
-    version: number;
-}
-
 export interface PriceImpactIF {
     ticker: string;
     version: number;
@@ -523,10 +518,24 @@ export type UserAuctionListQueryFn = (
     _cacheTimeTag: number | string,
 ) => Promise<AuctionDataIF[] | undefined>;
 
+export type AuctionStatusQueryFn = (
+    ticker: string,
+    version: number,
+    chainId: string,
+    // graphCacheUrl: string,
+    _cacheTimeTag: number | string,
+) => Promise<AuctionStatusResponseIF | undefined>;
+
 export function memoizeGetGlobalAuctionsList(): GlobalAuctionListQueryFn {
     return memoizeCacheQueryFn(
         getGlobalAuctionsList,
     ) as GlobalAuctionListQueryFn;
+}
+
+export function memoizeGetAuctionStatus(): AuctionStatusQueryFn {
+    return memoizeCacheQueryFn(
+        fetchFreshAuctionStatusData,
+    ) as AuctionStatusQueryFn;
 }
 
 export function memoizeGetUserAuctionsList(): UserAuctionListQueryFn {
