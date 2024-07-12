@@ -42,6 +42,7 @@
     display: block;
     width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     max-height: calc(94svh - 170px);
     position: absolute;
     bottom: 4rem;
@@ -159,6 +160,17 @@
       }
       .loading_dot:nth-child(3){
         animation-delay: 600ms;
+    }
+
+    .debug_btn{
+      position: absolute;
+      top: 0;
+      right: 50%;
+      padding: 1rem;
+      background: var(--accent1);
+      color: var(--text1);
+      border-radius: .3rem;
+      cursor: pointer;
     }
 
     .no_comments_wrapper{

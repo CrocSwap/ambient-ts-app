@@ -12,11 +12,13 @@ import {
     minToMS,
 } from '../../../Chat/ChatUtils';
 import { useNavigate } from 'react-router-dom';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 interface CommentCardProps {
     message: Message;
     previousMessage?: Message;
     currentUserID: string;
+    style?: CSSProperties;
 }
 
 function CommentCard(props: CommentCardProps) {
@@ -57,10 +59,11 @@ function CommentCard(props: CommentCardProps) {
     const renderContent = () => {
         const ret = [<></>];
 
-        props.message.message.split(' ').map((e) => {
+        props.message.message.split(' ').map((e, index) => {
             if (isLinkInCrocodileLabsLinksForInput(e) && isValidUrl(e)) {
                 ret.push(
                     <span
+                        key={props.message._id + index}
                         onClick={() => {
                             handleOpenExplorerAddHttp(e);
                         }}
@@ -71,7 +74,12 @@ function CommentCard(props: CommentCardProps) {
                 );
             } else {
                 ret.push(
-                    <span className={styles.comment_content_token}>{e}</span>,
+                    <span
+                        key={props.message._id + index}
+                        className={styles.comment_content_token}
+                    >
+                        {e}
+                    </span>,
                 );
             }
         });
@@ -94,7 +102,10 @@ function CommentCard(props: CommentCardProps) {
         <>
             <div
                 id={`comment_${props.message._id}`}
-                className={`${styles.comment_card_wrapper} ${isBasic ? styles.basic_card : ' '}`}
+                key={`comment_key_${props.message._id}`}
+                className={`commentBubble ${styles.comment_card_wrapper} ${isBasic ? styles.basic_card : ' '}`}
+                data-message-id={props.message._id}
+                style={props.style ? props.style : {}}
             >
                 {dayInfo && dayInfo.length > 0 && (
                     <div className={styles.comment_top_info}>{dayInfo}</div>
@@ -107,7 +118,12 @@ function CommentCard(props: CommentCardProps) {
                         {getShownName(props.message)}
                     </div>
                 )}
-                <div className={styles.comment_text}>{renderContent()}</div>
+                <div
+                    key={props.message._id + 'renderedContent'}
+                    className={styles.comment_text}
+                >
+                    {renderContent()}
+                </div>
                 <div className={styles.comment_bottom_info}>
                     {formatMessageTime(props.message.createdAt)}
                 </div>
