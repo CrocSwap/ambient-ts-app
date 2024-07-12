@@ -171,9 +171,7 @@ function Range() {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -889,9 +887,7 @@ function Range() {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -914,9 +910,7 @@ function Range() {
             defaultHighTick,
             isAdd,
             setNewRangeTransactionHash,
-            setTxErrorCode,
-            setTxErrorMessage,
-            setTxErrorJSON,
+            setTxError,
             resetConfirmation,
             activeRangeTxHash,
         });
@@ -1105,9 +1099,7 @@ function Range() {
                         newRangeTransactionHash={newRangeTransactionHash}
                         resetConfirmation={resetConfirmation}
                         showConfirmation={showConfirmation}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1169,9 +1161,7 @@ function Range() {
                     <SubmitTransaction
                         type='Range'
                         newTransactionHash={newRangeTransactionHash}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={
