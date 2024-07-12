@@ -22,8 +22,10 @@ import {
     AuctionDataIF,
     AuctionTxResponseIF,
     calcBidImpact,
+    claimAllocation,
     createBid,
     getFormattedNumber,
+    returnBid,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -39,6 +41,7 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ZeroAddress } from 'ethers';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -52,8 +55,8 @@ const useAuctionContexts = () => {
         setShowComments,
         globalAuctionList,
         accountData,
-        getAuctionData,
-        auctionStatusData,
+        getFreshAuctionData,
+        freshAuctionStatusData,
         setSelectedTicker,
     } = useContext(AuctionsContext);
     const {
@@ -76,8 +79,8 @@ const useAuctionContexts = () => {
 
     return {
         crocEnv,
-        getAuctionData,
-        auctionStatusData,
+        getFreshAuctionData,
+        freshAuctionStatusData,
         accountData,
         globalAuctionList,
         chainId,
@@ -97,7 +100,7 @@ const useAuctionContexts = () => {
 
 // States
 const useAuctionStates = () => {
-    const { isActiveNetworkL2, auctionStatusData } = useAuctionContexts();
+    const { isActiveNetworkL2, freshAuctionStatusData } = useAuctionContexts();
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
@@ -133,8 +136,10 @@ const useAuctionStates = () => {
     const [isTxPending, setIsTxPending] = useState<boolean>(false);
 
     const openBidClearingPriceInWeiBigInt =
-        auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? BigInt(auctionStatusData.openBidClearingPriceInNativeTokenWei)
+        freshAuctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? BigInt(
+                  freshAuctionStatusData.openBidClearingPriceInNativeTokenWei,
+              )
             : undefined;
 
     const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
@@ -191,8 +196,8 @@ export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const {
-        auctionStatusData,
-        getAuctionData,
+        freshAuctionStatusData,
+        getFreshAuctionData,
         chainId,
         crocEnv,
         showComments,
@@ -253,18 +258,18 @@ export default function TickerComponent(props: PropsIF) {
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
+        Promise.resolve(getFreshAuctionData(tickerFromParams)).then(() => {
             // console.log('fetched data for ' + tickerFromParams);
         });
         setSelectedTicker(tickerFromParams);
     }, [tickerFromParams]);
 
+    const auctionedTokenQtyUnclaimedByUserInWei =
+        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei;
+
     const auctionedTokenQtyUnclaimedByUser =
-        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei
-            ? toDisplayQty(
-                  auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei,
-                  18,
-              )
+        auctionedTokenQtyUnclaimedByUserInWei
+            ? toDisplayQty(auctionedTokenQtyUnclaimedByUserInWei, 18)
             : undefined;
 
     const unclaimedTokenNum = auctionedTokenQtyUnclaimedByUser
@@ -300,8 +305,8 @@ export default function TickerComponent(props: PropsIF) {
         'ETH';
 
     const filledClearingPriceInWeiBigInt =
-        auctionStatusData.filledClearingPriceInNativeTokenWei
-            ? BigInt(auctionStatusData.filledClearingPriceInNativeTokenWei)
+        freshAuctionStatusData.filledClearingPriceInNativeTokenWei
+            ? BigInt(freshAuctionStatusData.filledClearingPriceInNativeTokenWei)
             : undefined;
 
     const filledMarketCapInWeiBigInt = filledClearingPriceInWeiBigInt
@@ -576,29 +581,30 @@ export default function TickerComponent(props: PropsIF) {
     const failMessage =
         txCreationResponse?.failureReason !== undefined
             ? txCreationResponse?.failureReason
-            : undefined;
+            : 'Transaction Failed';
 
     const buttonLabel =
         !tickerFromParams && isUserConnected
             ? 'Select an Auction'
-            : isAllocationAvailableToClaim
-              ? 'Claim'
-              : isNativeTokenAvailableToReturn
-                ? 'Return'
-                : showTradeButton
-                  ? 'Trade'
-                  : !isUserConnected
-                    ? 'Connect Wallet'
-                    : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-                      ? 'Enter a Bid Size'
-                      : isValidationInProgress
-                        ? 'Validating Bid...'
-                        : txFailed
-                          ? failMessage
-                          : txSucceeded
-                            ? 'Transaction Succeeded!'
-                            : displayPendingTxMessage
-                              ? 'Transaction Pending...'
+            : displayPendingTxMessage
+              ? 'Transaction Pending...'
+              : txFailed
+                ? failMessage
+                : txSucceeded
+                  ? `${txCreationResponse?.txType} Succeeded!`
+                  : isAllocationAvailableToClaim
+                    ? 'Claim'
+                    : isNativeTokenAvailableToReturn
+                      ? 'Return'
+                      : showTradeButton
+                        ? 'Trade'
+                        : !isUserConnected
+                          ? 'Connect Wallet'
+                          : !bidQtyNonDisplay ||
+                              parseFloat(bidQtyNonDisplay) === 0
+                            ? 'Enter a Bid Size'
+                            : isValidationInProgress
+                              ? 'Validating Bid...'
                               : bidValidityStatus.isValid
                                 ? 'Bid'
                                 : bidValidityStatus.reason || 'Invalid Bid';
@@ -623,6 +629,45 @@ export default function TickerComponent(props: PropsIF) {
         );
     };
 
+    const sendClaimTransaction = async () => {
+        if (!auctionedTokenQtyUnclaimedByUserInWei || !tickerFromParams) return;
+
+        console.log(
+            `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
+        );
+
+        setIsTxPending(true);
+
+        setTxCreationResponse(
+            await claimAllocation(
+                crocEnv,
+                tickerFromParams,
+                auctionedTokenQtyUnclaimedByUserInWei,
+            ),
+        );
+    };
+
+    const sendReturnTransaction = async () => {
+        if (!qtyUnreturnedToUser || !tickerFromParams) return;
+
+        console.log(
+            `clicked return for amount: ${formattedQtyUnreturnedToUser}`,
+        );
+
+        setIsTxPending(true);
+
+        setTxCreationResponse(
+            await returnBid(crocEnv, tickerFromParams, qtyUnreturnedToUser),
+        );
+    };
+
+    const navigateToTrade = () => {
+        console.log(`clicked Trade for ticker: ${tickerFromParams}`);
+        const tokenAddress = freshAuctionStatusData.tokenAddress;
+        const targetStr = `https://dev-ambi.netlify.app/trade/market/chain=${chainId}&tokenA=${ZeroAddress}&tokenB=${tokenAddress}`;
+        window.open(targetStr, '_blank');
+    };
+
     const bidButton = (
         <button
             className={`${styles.bidButton} ${
@@ -630,17 +675,11 @@ export default function TickerComponent(props: PropsIF) {
             } ${desktopScreen ? styles.bidButtonDesktop : ''}`}
             onClick={() =>
                 isAllocationAvailableToClaim
-                    ? console.log(
-                          `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
-                      )
+                    ? sendClaimTransaction()
                     : isNativeTokenAvailableToReturn
-                      ? console.log(
-                            `clicked return for amount: ${formattedQtyUnreturnedToUser}`,
-                        )
+                      ? sendReturnTransaction()
                       : showTradeButton
-                        ? console.log(
-                              `clicked Trade for ticker: ${tickerFromParams}`,
-                          )
+                        ? navigateToTrade()
                         : !isUserConnected
                           ? openWalletModal()
                           : sendBidTransaction()
@@ -652,7 +691,7 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const tickerDisplayElementsProps = {
-        auctionStatusData,
+        freshAuctionStatusData,
         auctionDetailsForConnectedUser,
         filledMarketCapInEth,
         filledMarketCapUsdValue,
@@ -709,30 +748,44 @@ export default function TickerComponent(props: PropsIF) {
         if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
     }, [bidQtyInputField, selectedMaxMarketCapInWeiBigInt, inputValue]);
 
+    const completedDisplay = (
+        <div className={styles.justifyBetween}>
+            <div className={styles.flexColumn}>
+                {!isAuctionPage && <BreadCrumb />}
+                {tickerDisplay}
+                {!showComments && yourBidDisplay}
+                {showComments && <Comments />}
+            </div>
+            {isUserConnected && !showTradeButton && allocationOrReturnDisplay}
+        </div>
+    );
+
+    const unCompletedDisplay = (
+        <div className={styles.content}>
+            <div className={styles.flexColumn}>
+                {!isAuctionPage && <BreadCrumb />}
+                {tickerDisplay}
+                {showComments && <Comments />}
+            </div>
+
+            {!showComments && (
+                <>
+                    {openedBidDisplay}
+                    {yourBidDisplay}
+                    <div className={styles.flexColumn}>
+                        {maxFdvDisplay}
+                        {bidSizeDisplay}
+                        {extraInfoDisplay}
+                    </div>
+                </>
+            )}
+        </div>
+    );
+
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <div className={styles.flexColumn}>
-                    {!isAuctionPage && <BreadCrumb />}
-                    {tickerDisplay}
-                    {showComments && <Comments />}
-                </div>
-
-                {!showComments && (
-                    <>
-                        {!isAuctionCompleted && openedBidDisplay}
-                        {yourBidDisplay}
-                        <div className={styles.flexColumn}>
-                            {!isAuctionCompleted && maxFdvDisplay}
-                            {!isAuctionCompleted && bidSizeDisplay}
-                            {isUserConnected &&
-                                isAuctionCompleted &&
-                                !showTradeButton &&
-                                allocationOrReturnDisplay}
-                            {!isAuctionCompleted && extraInfoDisplay}
-                        </div>
-                    </>
-                )}
+                {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
             </div>
             {!showComments && bidButton}
         </div>
