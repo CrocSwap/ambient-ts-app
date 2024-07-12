@@ -13,7 +13,7 @@ import {
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import Divider from '../Divider/Divider';
+import Divider from '../Divider/FutaDivider';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import {
