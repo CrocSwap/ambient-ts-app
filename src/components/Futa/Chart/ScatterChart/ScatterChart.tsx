@@ -151,7 +151,7 @@ export default function ScatterChart() {
                 setYscale(() => yScale);
             }
         }
-    }, [diffHashSig(data), chartSize, showDayCount]);
+    }, [diffHashSig(data), showDayCount]);
 
     useEffect(() => {
         if (xScale && yScale) {
@@ -183,7 +183,7 @@ export default function ScatterChart() {
 
             setPointSeries(() => pointSeries);
         }
-    }, [xScale, yScale, chartSize, selectedDot]);
+    }, [xScale, yScale, yScale?.range(), chartSize, selectedDot]);
 
     useEffect(() => {
         if (xScale && yScale && pointSeries) {
@@ -265,7 +265,7 @@ export default function ScatterChart() {
                 return () => resizeObserver.unobserve(svgDiv.node());
             }
         }
-    }, [xScale, yScale]);
+    }, []);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const findNearestCircle = (event: any) => {

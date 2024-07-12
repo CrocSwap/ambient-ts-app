@@ -59,7 +59,7 @@ export default function Yaxis(props: AxisIF) {
         }
 
         renderCanvasArray([d3YaxisRef]);
-    }, [scale, d3YaxisRef]);
+    }, [scale, scale?.range(), d3YaxisRef]);
 
     return (
         <d3fc-svg
