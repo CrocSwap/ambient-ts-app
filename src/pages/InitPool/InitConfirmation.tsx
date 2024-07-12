@@ -34,9 +34,7 @@ interface InitConfirmationProps {
     isTokenABase: boolean;
     isTxCompletedInit: boolean;
     isTxCompletedRange: boolean;
-    errorCode?: string;
-    txErrorMessage?: string;
-    txErrorJSON?: string;
+    txError?: Error;
     handleNavigation: () => void;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
@@ -223,8 +221,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         ? isTransactionDenied
             ? 'Transaction denied in wallet.'
             : isTransactionException
-            ? 'Pool initialization transaction failed simulation. Please refresh and try again.'
-            : ''
+              ? 'Pool initialization transaction failed simulation. Please refresh and try again.'
+              : ''
         : '';
 
     if (!isConfirmed) return poolTokenDisplay;
