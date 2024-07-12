@@ -41,6 +41,7 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ZeroAddress } from 'ethers';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -661,7 +662,7 @@ export default function TickerComponent(props: PropsIF) {
     const navigateToTrade = () => {
         console.log(`clicked Trade for ticker: ${tickerFromParams}`);
         const tokenAddress = '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328';
-        const targetStr = `https://dev-ambi.netlify.app/swap/chain=${chainId}&tokenB=${tokenAddress}`;
+        const targetStr = `https://dev-ambi.netlify.app/trade/market/chain=${chainId}&tokenA=${ZeroAddress}&tokenB=${tokenAddress}`;
         window.open(targetStr, '_blank');
     };
 
