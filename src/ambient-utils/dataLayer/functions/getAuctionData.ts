@@ -31,7 +31,7 @@ export interface TickerValidityIF {
 }
 
 export interface AuctionTxResponseIF {
-    txType: 'create' | 'bid';
+    txType: 'create' | 'bid' | 'claim' | 'return';
     isSuccess: boolean;
     failureReason?: string;
 }
@@ -156,7 +156,7 @@ const excludedTickers = [
 ];
 
 // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
-const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
+export const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
 /* 
         Example usage of the pattern
         console.log(isValidString("Hello123")); // true (Latin alphanumeric)
@@ -314,24 +314,112 @@ export const createBid = async (
         //     bidQtyInWei: bidQtyInNativeTokenWei,
         //     maxMarketCapInWei: selectedMaxMarketCapInWei,
         // };
-        // const isBidCreated: AuctionTxResponseIF =
+        // const bidResponse: AuctionTxResponseIF =
         //     await auctionPlan.bid(bidParams);
 
         // 2 second timeout to simulate transaction
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        const mockIsBidCreated: AuctionTxResponseIF = {
+        const mockBidResponse: AuctionTxResponseIF = {
             txType: 'bid',
             isSuccess: !ticker.toLowerCase().includes('fail'),
             failureReason: ticker.toLowerCase().includes('fail')
-                ? 'Failed'
+                ? 'Bid Failed'
                 : undefined,
         };
 
-        return mockIsBidCreated;
+        return mockBidResponse;
     } catch (error) {
         return {
             txType: 'bid',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const claimAllocation = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    qtyInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'claim',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(
+            `clicked Claim for ${ticker} in the amount of ${qtyInWei} `,
+        );
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+        // const claimParams = {
+        //     claimQtyInWei: qtyInWei,
+        // };
+        // const claimResponse: AuctionTxResponseIF =
+        //     await auctionPlan.claim(claimParams);
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockClaimResponse: AuctionTxResponseIF = {
+            txType: 'claim',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Claim Failed'
+                : undefined,
+        };
+
+        return mockClaimResponse;
+    } catch (error) {
+        return {
+            txType: 'claim',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const returnBid = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    qtyInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'return',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(
+            `clicked Return for ${ticker} in the amount of ${qtyInWei} `,
+        );
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+        // const returnParams = {
+        //     returnQtyInWei: qtyInWei,
+        // };
+        // const returnResponse: AuctionTxResponseIF =
+        //     await auctionPlan.return(returnParams);
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockReturnResponse: AuctionTxResponseIF = {
+            txType: 'return',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Return Failed'
+                : undefined,
+        };
+
+        return mockReturnResponse;
+    } catch (error) {
+        return {
+            txType: 'return',
             isSuccess: false,
             failureReason: 'Unknown Error',
         };

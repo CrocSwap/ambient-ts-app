@@ -22,8 +22,10 @@ import {
     AuctionDataIF,
     AuctionTxResponseIF,
     calcBidImpact,
+    claimAllocation,
     createBid,
     getFormattedNumber,
+    returnBid,
 } from '../../../ambient-utils/dataLayer';
 import { TokenIF } from '../../../ambient-utils/types';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -259,12 +261,12 @@ export default function TickerComponent(props: PropsIF) {
         setSelectedTicker(tickerFromParams);
     }, [tickerFromParams]);
 
+    const auctionedTokenQtyUnclaimedByUserInWei =
+        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei;
+
     const auctionedTokenQtyUnclaimedByUser =
-        auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei
-            ? toDisplayQty(
-                  auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei,
-                  18,
-              )
+        auctionedTokenQtyUnclaimedByUserInWei
+            ? toDisplayQty(auctionedTokenQtyUnclaimedByUserInWei, 18)
             : undefined;
 
     const unclaimedTokenNum = auctionedTokenQtyUnclaimedByUser
@@ -581,24 +583,25 @@ export default function TickerComponent(props: PropsIF) {
     const buttonLabel =
         !tickerFromParams && isUserConnected
             ? 'Select an Auction'
-            : isAllocationAvailableToClaim
-              ? 'Claim'
-              : isNativeTokenAvailableToReturn
-                ? 'Return'
-                : showTradeButton
-                  ? 'Trade'
-                  : !isUserConnected
-                    ? 'Connect Wallet'
-                    : !bidQtyNonDisplay || parseFloat(bidQtyNonDisplay) === 0
-                      ? 'Enter a Bid Size'
-                      : isValidationInProgress
-                        ? 'Validating Bid...'
-                        : txFailed
-                          ? failMessage
-                          : txSucceeded
-                            ? 'Transaction Succeeded!'
-                            : displayPendingTxMessage
-                              ? 'Transaction Pending...'
+            : displayPendingTxMessage
+              ? 'Transaction Pending...'
+              : txFailed
+                ? failMessage
+                : txSucceeded
+                  ? `${txCreationResponse?.txType} Succeeded!`
+                  : isAllocationAvailableToClaim
+                    ? 'Claim'
+                    : isNativeTokenAvailableToReturn
+                      ? 'Return'
+                      : showTradeButton
+                        ? 'Trade'
+                        : !isUserConnected
+                          ? 'Connect Wallet'
+                          : !bidQtyNonDisplay ||
+                              parseFloat(bidQtyNonDisplay) === 0
+                            ? 'Enter a Bid Size'
+                            : isValidationInProgress
+                              ? 'Validating Bid...'
                               : bidValidityStatus.isValid
                                 ? 'Bid'
                                 : bidValidityStatus.reason || 'Invalid Bid';
@@ -623,6 +626,38 @@ export default function TickerComponent(props: PropsIF) {
         );
     };
 
+    const sendClaimTransaction = async () => {
+        if (!auctionedTokenQtyUnclaimedByUserInWei || !tickerFromParams) return;
+
+        console.log(
+            `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
+        );
+
+        setIsTxPending(true);
+
+        setTxCreationResponse(
+            await claimAllocation(
+                crocEnv,
+                tickerFromParams,
+                auctionedTokenQtyUnclaimedByUserInWei,
+            ),
+        );
+    };
+
+    const sendReturnTransaction = async () => {
+        if (!qtyUnreturnedToUser || !tickerFromParams) return;
+
+        console.log(
+            `clicked return for amount: ${formattedQtyUnreturnedToUser}`,
+        );
+
+        setIsTxPending(true);
+
+        setTxCreationResponse(
+            await returnBid(crocEnv, tickerFromParams, qtyUnreturnedToUser),
+        );
+    };
+
     const bidButton = (
         <button
             className={`${styles.bidButton} ${
@@ -630,13 +665,9 @@ export default function TickerComponent(props: PropsIF) {
             } ${desktopScreen ? styles.bidButtonDesktop : ''}`}
             onClick={() =>
                 isAllocationAvailableToClaim
-                    ? console.log(
-                          `clicked claim for amount: ${formattedUnclaimedTokenAllocationForConnectedUser}`,
-                      )
+                    ? sendClaimTransaction()
                     : isNativeTokenAvailableToReturn
-                      ? console.log(
-                            `clicked return for amount: ${formattedQtyUnreturnedToUser}`,
-                        )
+                      ? sendReturnTransaction()
                       : showTradeButton
                         ? console.log(
                               `clicked Trade for ticker: ${tickerFromParams}`,
