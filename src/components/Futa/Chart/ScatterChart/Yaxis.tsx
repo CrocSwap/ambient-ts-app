@@ -16,9 +16,12 @@ export default function Yaxis(props: AxisIF) {
 
     useEffect(() => {
         if (scale) {
+            const heightYAxis = scale.range()[0] + scale.range()[1];
+            const tickCount = heightYAxis < 350 ? 5 : 10;
+
             const yAxis = d3
                 .axisLeft(scale)
-                .tickValues(d3.range(0, Number(d3.max(data)) + 100000, 100000))
+                .tickValues(scale.ticks(tickCount).filter((i) => i >= 0))
                 .tickFormat((d) => `${(Number(d) / 1000).toFixed(0)}k`);
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
