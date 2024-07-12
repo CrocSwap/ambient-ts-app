@@ -13,7 +13,7 @@
         "@material-ui/core": "^4.12.4",
         "@mui/material": "^5.8.2",
         "@types/react-blockies": "^1.4.4",
-        "@types/react-color": "^3.0.7",
+        "@types/react-color": "^3.0.12",
         "@vitejs/plugin-react": "^4.3.1",
         "@web3modal/ethers": "^4.2.3",
         "alchemy-sdk": "^3.2.0",
