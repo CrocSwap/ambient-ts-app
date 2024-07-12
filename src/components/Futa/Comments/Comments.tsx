@@ -60,6 +60,7 @@ function Comments() {
     const { userAddress, ensName } = useContext(UserDataContext);
     const { selectedNetwork } = useContext(CrocEnvContext);
     const { saveUser } = useChatApi();
+    const [fetchedMessageCount, setFetchedMessageCount] = useState(0);
 
     const autoScrollTreshold = 100;
 
@@ -96,7 +97,12 @@ function Comments() {
     useEffect(() => {
         setShowPrevButton(false);
         setPage(0);
+        setFetchedMessageCount(0);
     }, [room]);
+
+    useEffect(() => {
+        domDebug('fetchedMsgCount', fetchedMessageCount);
+    }, [fetchedMessageCount]);
 
     useEffect(() => {
         assignScrollButtonVisibility();
@@ -208,6 +214,7 @@ function Comments() {
     };
 
     const fetchPrevious = async () => {
+        setFetchedMessageCount(messages.length);
         const data = await getMsgWithRestWithPagination(room, page + 1);
         setPage(page + 1);
         if (data.length == 0) {
@@ -264,6 +271,9 @@ function Comments() {
                                         return (
                                             <CommentCard
                                                 key={msg._id}
+                                                style={{
+                                                    animationDelay: `${(messages.length - index - fetchedMessageCount) * 0.015}s`,
+                                                }}
                                                 message={msg}
                                                 previousMessage={
                                                     index > 0

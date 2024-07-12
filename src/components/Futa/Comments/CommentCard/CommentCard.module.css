@@ -3,7 +3,7 @@
 @keyframes kf_comment_card_anim {
     from{
         opacity: 0;
-        margin-left: 2rem;
+        /* margin-left: 100%; */
     }
     to{
         opacity: 1;

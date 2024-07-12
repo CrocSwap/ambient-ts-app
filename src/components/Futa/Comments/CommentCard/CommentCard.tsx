@@ -12,11 +12,13 @@ import {
     minToMS,
 } from '../../../Chat/ChatUtils';
 import { useNavigate } from 'react-router-dom';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 interface CommentCardProps {
     message: Message;
     previousMessage?: Message;
     currentUserID: string;
+    style?: CSSProperties;
 }
 
 function CommentCard(props: CommentCardProps) {
@@ -103,6 +105,7 @@ function CommentCard(props: CommentCardProps) {
                 key={`comment_key_${props.message._id}`}
                 className={`commentBubble ${styles.comment_card_wrapper} ${isBasic ? styles.basic_card : ' '}`}
                 data-message-id={props.message._id}
+                style={props.style ? props.style : {}}
             >
                 {dayInfo && dayInfo.length > 0 && (
                     <div className={styles.comment_top_info}>{dayInfo}</div>
