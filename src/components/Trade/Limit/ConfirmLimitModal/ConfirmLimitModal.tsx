@@ -11,9 +11,7 @@ interface propsIF {
     tokenBInputQty: string;
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
-    txErrorCode: string;
-    txErrorMessage: string;
-    txErrorJSON: string;
+    txError: Error | undefined;
     showConfirmation: boolean;
     resetConfirmation: () => void;
     startDisplayPrice: number;
@@ -29,9 +27,7 @@ export default function ConfirmLimitModal(props: propsIF) {
     const {
         initiateLimitOrderMethod,
         newLimitOrderTransactionHash,
-        txErrorCode,
-        txErrorMessage,
-        txErrorJSON,
+        txError,
         resetConfirmation,
         showConfirmation,
         startDisplayPrice,
@@ -121,7 +117,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const extraNotes = (
         <Text fontSize='body' color='accent2' style={{ textAlign: 'center' }}>
-            {`${tokenB.symbol} will be available for withdrawal after the limit order is filled. 
+            {`${tokenB.symbol} will be available for withdrawal after the limit order is filled.
         ${tokenA.symbol} can be withdrawn at any time before fill completion.`}
         </Text>
     );
@@ -136,9 +132,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             transactionDetails={transactionDetails}
             extraNotes={extraNotes}
             transactionHash={newLimitOrderTransactionHash}
-            txErrorCode={txErrorCode}
-            txErrorMessage={txErrorMessage}
-            txErrorJSON={txErrorJSON}
+            txError={txError}
             statusText={
                 !showConfirmation
                     ? limitAllowed

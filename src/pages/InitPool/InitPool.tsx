@@ -67,6 +67,7 @@ import Button from '../../components/Form/Button';
 
 import {
     TransactionError,
+    isTransactionDeniedError,
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
@@ -968,9 +969,7 @@ export default function InitPool() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState<
         undefined | string
     >('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
@@ -978,15 +977,14 @@ export default function InitPool() {
 
     const transactionApprovedInit = newInitTransactionHash !== '';
     const transactionApprovedRange = newRangeTransactionHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+    const isTransactionDenied = isTransactionDeniedError(txError);
+    const isTransactionException =
+        txError !== undefined && !isTransactionDenied;
 
     const [activeConfirmationStep, setActiveConfirmationStep] = useState(0);
 
     const resetConfirmation = () => {
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -1010,9 +1008,7 @@ export default function InitPool() {
         setNewInitTransactionHash,
         setIsInitPending,
         setIsTxCompletedInit,
-        setTxErrorCode,
-        setTxErrorMessage,
-        setTxErrorJSON,
+        setTxError,
         resetConfirmation,
     );
 
@@ -1094,9 +1090,7 @@ export default function InitPool() {
             defaultHighTick,
             isAdd: false, // Always false for init
             setNewRangeTransactionHash,
-            setTxErrorCode,
-            setTxErrorMessage,
-            setTxErrorJSON,
+            setTxError,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1777,9 +1771,7 @@ export default function InitPool() {
         tokenB,
         isAmbient,
         isTokenABase,
-        errorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
-        txErrorJSON: txErrorJSON,
+        txError: txError,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,
