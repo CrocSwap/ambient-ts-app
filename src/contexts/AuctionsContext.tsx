@@ -8,7 +8,6 @@ import React, {
     useState,
 } from 'react';
 import { CrocEnvContext } from './CrocEnvContext';
-import { mockAuctionDetailsServerResponseGenerator } from '../pages/platformFuta/mockAuctionData';
 import {
     tickerWatchlistIF,
     useTickerWatchlist,
@@ -16,10 +15,11 @@ import {
 import { UserDataContext } from './UserDataContext';
 import {
     AuctionDataIF,
-    AuctionStatusResponseIF,
+    fetchFreshAuctionStatusData,
 } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 import { TokenIF } from '../ambient-utils/types';
+import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
 
 export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
@@ -159,12 +159,6 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     //     return mockAccountData2;
     // };
 
-    const fetchFreshAuctionStatusData = async (
-        ticker: string,
-    ): Promise<AuctionStatusResponseIF> => {
-        return mockAuctionDetailsServerResponseGenerator(ticker, chainId);
-    };
-
     function updateGlobalAuctionsList() {
         cachedGetGlobalAuctionsList(
             chainId,
@@ -204,7 +198,11 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     }
 
     function getFreshAuctionData(ticker: string) {
-        fetchFreshAuctionStatusData(ticker).then((data) => {
+        fetchFreshAuctionStatusData(
+            ticker,
+            CURRENT_AUCTION_VERSION,
+            chainId,
+        ).then((data) => {
             setFreshAuctionStatusData({
                 dataReceived: true,
                 ticker: data.ticker,

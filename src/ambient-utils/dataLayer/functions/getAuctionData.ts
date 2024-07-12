@@ -1,6 +1,7 @@
 import {
     mockAccountData1,
     mockAccountData2,
+    mockAuctionDetailsServerResponseGenerator,
     mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
 // import { GCGO_OVERRIDE_URL } from '../../constants';
@@ -63,6 +64,7 @@ export interface AuctionDataIF {
 // interface for auction status data used to generate auction details view
 export interface AuctionStatusResponseIF {
     ticker: string;
+    version: number;
     chainId: string;
     createdAt: number;
     auctionLength: number;
@@ -467,6 +469,14 @@ export const returnBid = async (
             failureReason: 'Unknown Error',
         };
     }
+};
+
+export const fetchFreshAuctionStatusData = async (
+    ticker: string,
+    version: number,
+    chainId: string,
+): Promise<AuctionStatusResponseIF> => {
+    return mockAuctionDetailsServerResponseGenerator(ticker, version, chainId);
 };
 
 export type GlobalAuctionListQueryFn = (

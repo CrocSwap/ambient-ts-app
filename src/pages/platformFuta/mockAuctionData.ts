@@ -426,6 +426,7 @@ export const mockAccountData2: AuctionListResponseIF = {
 
 export const mockAuctionDetailsServerResponseGenerator = (
     ticker: string,
+    version: number,
     chainId: string,
 ): AuctionStatusResponseIF => {
     false && console.log({ ticker, chainId });
@@ -433,6 +434,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
         case 'HELL':
             return {
                 ticker: ticker,
+                version: version,
                 chainId: '0x2105',
                 createdAt: 1719438920,
                 auctionLength: 86400,
@@ -444,6 +446,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
         case 'PEPE':
             return {
                 ticker: ticker,
+                version: version,
                 chainId: '0x2105',
                 createdAt: nowMinus4days,
                 auctionLength: 604800,
@@ -454,6 +457,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
         case 'JUNI':
             return {
                 ticker: ticker,
+                version: version,
                 chainId: '0x2105',
                 createdAt: 1719148920,
                 auctionLength: 604800,
@@ -465,6 +469,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
         case 'EMIL':
             return {
                 ticker: ticker,
+                version: version,
                 chainId: '0x2105',
                 createdAt: 1719248920,
                 auctionLength: 604800,
@@ -476,6 +481,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
         default:
             return {
                 ticker: ticker,
+                version: version,
                 chainId: '0x2105',
                 createdAt: 1718235814,
                 auctionLength: 86400,
