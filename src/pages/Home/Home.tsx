@@ -14,6 +14,7 @@ import { Text } from '../../styled/Common';
 import styled from 'styled-components';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { BrandContext } from '../../contexts/BrandContext';
+import { minWidth } from '../../ambient-utils/types/mediaQueries';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -56,6 +57,8 @@ export default function Home() {
 
     const { showPoints, showDexStats } = useContext(BrandContext);
 
+    const BREAKPOINT: minWidth = '(min-width: 720px)';
+
     const PointSystemContainer = styled.section`
         margin: 0 auto;
         display: flex;
@@ -68,7 +71,7 @@ export default function Home() {
         border-radius: 4px;
         gap: 1rem;
 
-        @media (min-width: 720px) {
+        @media ${BREAKPOINT} {
             height: 127px;
             width: 842px;
         }
