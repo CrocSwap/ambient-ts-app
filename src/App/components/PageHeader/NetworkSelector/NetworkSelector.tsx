@@ -209,7 +209,7 @@ export default function NetworkSelector(props: propsIF) {
                 >
                     Sepolia
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='30px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -235,11 +235,11 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0xa0c71fd' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '1px' }}
+                    style={{ marginLeft: '2px' }}
                 >
-                    {'Sepolia'}
+                    Blast
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='50px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -266,11 +266,11 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0x8274f' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '1px' }}
+                    style={{ marginLeft: '3px' }}
                 >
-                    Sepolia
+                    Scroll
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='47px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
