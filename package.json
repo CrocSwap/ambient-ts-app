@@ -59,6 +59,7 @@
         "start-only": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
+        "dev": "vite --host",
         "test": "vitest",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
