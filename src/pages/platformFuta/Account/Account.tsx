@@ -17,6 +17,11 @@ import { Navigate, Link, useParams } from 'react-router-dom';
 import Seperator from '../../../components/Futa/Seperator/Seperator';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import {
+    AuctionDataIF,
+    AuctionTxResponseIF,
+    claimAndReturnAll,
+} from '../../../ambient-utils/dataLayer';
 
 export default function Account() {
     const { accountData } = useContext(AuctionsContext);
@@ -28,6 +33,7 @@ export default function Account() {
 
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
@@ -45,6 +51,38 @@ export default function Account() {
     if (addressFromParams && !isAddressEns && !isAddressHex) {
         return <Navigate to='/404' replace />;
     }
+
+    const sumUnclaimedAndUnreturned = useMemo(() => {
+        if (!accountData.auctions) return BigInt(0);
+        // return { totalUnclaimed: BigInt(0), totalUnreturned: BigInt(0) };
+        let sum = BigInt(0);
+        // let totalUnclaimed = BigInt(0);
+        // let totalUnreturned = BigInt(0);
+
+        accountData.auctions.forEach((auction: AuctionDataIF) => {
+            if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
+                sum += BigInt(auction.qtyUnclaimedByUserInAuctionedTokenWei);
+            }
+            if (auction.qtyUnreturnedToUserInNativeTokenWei) {
+                sum += BigInt(auction.qtyUnreturnedToUserInNativeTokenWei);
+            }
+            // if (auction.qtyUnclaimedByUserInAuctionedTokenWei) {
+            //     totalUnclaimed += BigInt(
+            //         auction.qtyUnclaimedByUserInAuctionedTokenWei,
+            //     );
+            // }
+            // if (auction.qtyUnreturnedToUserInNativeTokenWei) {
+            //     totalUnreturned += BigInt(
+            //         auction.qtyUnreturnedToUserInNativeTokenWei,
+            //     );
+            // }
+        });
+
+        return sum;
+    }, [accountData.auctions]);
+
+    const isUnclaimedAndUnreturnedZero =
+        sumUnclaimedAndUnreturned === BigInt(0);
 
     useEffect(() => {
         (async () => {
@@ -89,6 +127,50 @@ export default function Account() {
         [addressFromParams, resolvedAddress, userAddress],
     );
 
+    const [isTxPending, setIsTxPending] = useState(false);
+    const [txCreationResponse, setTxCreationResponse] = useState<
+        AuctionTxResponseIF | undefined
+    >();
+
+    const txFailed =
+        txCreationResponse?.isSuccess !== undefined
+            ? txCreationResponse.isSuccess === false
+            : false;
+
+    const txSucceeded =
+        txCreationResponse?.isSuccess !== undefined
+            ? txCreationResponse.isSuccess === true
+            : false;
+
+    const sendClaimAndReturnAllTransaction = async () => {
+        if (isUnclaimedAndUnreturnedZero) return;
+
+        setIsTxPending(true);
+
+        setTxCreationResponse(await claimAndReturnAll(crocEnv));
+    };
+
+    useEffect(() => {
+        setIsTxPending(false);
+        setTxCreationResponse(undefined);
+    }, [sumUnclaimedAndUnreturned]);
+
+    const failMessage =
+        txCreationResponse?.failureReason !== undefined
+            ? txCreationResponse?.failureReason
+            : 'Transaction Failed';
+
+    const isButtonDisabled =
+        isUnclaimedAndUnreturnedZero || isTxPending || txFailed || txSucceeded;
+
+    const buttonText = txFailed
+        ? failMessage
+        : txSucceeded
+          ? 'Claim All Succeeded!'
+          : isTxPending
+            ? 'Transaction Pending...'
+            : 'Claim All';
+
     const claimAllContainer = (
         <div className={styles.claimAllContainer}>
             <h3>CLAIM ALL</h3>
@@ -107,9 +189,14 @@ export default function Account() {
                 </div>
             </div>
             <button
-                className={`${styles.claimButton} ${styles.disabledButton}`}
+                className={
+                    isButtonDisabled
+                        ? `${styles.claimButton} ${styles.disabledButton}`
+                        : `${styles.claimButton}`
+                }
+                onClick={sendClaimAndReturnAllTransaction}
             >
-                CLAIM ALL
+                {buttonText.toUpperCase()}
             </button>
         </div>
     );

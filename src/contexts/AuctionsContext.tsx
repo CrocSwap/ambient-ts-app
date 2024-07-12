@@ -8,7 +8,6 @@ import React, {
     useState,
 } from 'react';
 import { CrocEnvContext } from './CrocEnvContext';
-import { mockAuctionDetailsServerResponseGenerator } from '../pages/platformFuta/mockAuctionData';
 import {
     tickerWatchlistIF,
     useTickerWatchlist,
@@ -16,11 +15,14 @@ import {
 import { UserDataContext } from './UserDataContext';
 import {
     AuctionDataIF,
-    AuctionStatusResponseIF,
+    fetchFreshAuctionStatusData,
 } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 import { TokenIF } from '../ambient-utils/types';
-import { sepoliaETH } from '../ambient-utils/constants';
+import {
+    sepoliaETH,
+    CURRENT_AUCTION_VERSION,
+} from '../ambient-utils/constants';
 
 export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
@@ -31,14 +33,14 @@ export interface AuctionsContextIF {
     accountData: AccountDataIF;
     updateUserAuctionsList(address: string): void;
     updateGlobalAuctionsList(): void;
-    getAuctionData(ticker: string): void;
+    getFreshAuctionData(ticker: string): void;
+    freshAuctionStatusData: AuctionStatusDataIF;
     isLoading: boolean;
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     showComments: boolean;
     setShowComments: Dispatch<SetStateAction<boolean>>;
     tickerInput: string;
     setTickerInput: Dispatch<SetStateAction<string>>;
-    auctionStatusData: AuctionStatusDataIF;
     selectedTicker: string | undefined;
     hoveredTicker: string | undefined;
     setHoveredTicker: Dispatch<SetStateAction<string | undefined>>;
@@ -68,8 +70,11 @@ export interface AuctionStatusDataIF {
     filledClearingPriceInNativeTokenWei: string;
 
     // open bid data
-    openBidClearingPriceInNativeTokenWei: string | undefined;
-    openBidQtyFilledInNativeTokenWei: string | undefined;
+    openBidClearingPriceInNativeTokenWei?: string | undefined;
+    openBidQtyFilledInNativeTokenWei?: string | undefined;
+
+    // closed auction data
+    tokenAddress?: string | undefined;
 }
 
 export interface AuctionsDataIF {
@@ -119,7 +124,7 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         auctions: [],
     });
 
-    const [auctionStatusData, setAuctionStatusData] =
+    const [freshAuctionStatusData, setFreshAuctionStatusData] =
         useState<AuctionStatusDataIF>({
             dataReceived: false,
             ticker: '',
@@ -156,12 +161,6 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     //     }
     //     return mockAccountData2;
     // };
-
-    const fetchAuctionStatusData = async (
-        ticker: string,
-    ): Promise<AuctionStatusResponseIF> => {
-        return mockAuctionDetailsServerResponseGenerator(ticker, chainId);
-    };
 
     function updateGlobalAuctionsList() {
         cachedGetGlobalAuctionsList(
@@ -201,9 +200,13 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         }
     }
 
-    function getAuctionData(ticker: string) {
-        fetchAuctionStatusData(ticker).then((data) => {
-            setAuctionStatusData({
+    function getFreshAuctionData(ticker: string) {
+        fetchFreshAuctionStatusData(
+            ticker,
+            CURRENT_AUCTION_VERSION,
+            chainId,
+        ).then((data) => {
+            setFreshAuctionStatusData({
                 dataReceived: true,
                 ticker: data.ticker,
                 createdAt: data.createdAt,
@@ -215,6 +218,7 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
                     data.openBidClearingPriceInNativeTokenWei,
                 openBidQtyFilledInNativeTokenWei:
                     data.openBidQtyFilledInNativeTokenWei,
+                tokenAddress: data.tokenAddress,
             });
         });
     }
@@ -262,14 +266,14 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     }
 
     const auctionsContext: AuctionsContextIF = {
-        auctionStatusData: auctionStatusData,
+        freshAuctionStatusData: freshAuctionStatusData,
         globalAuctionList: globalAuctionList,
         filteredAuctionList: filteredAuctionList,
         setFilteredAuctionList: setFilteredAuctionList,
         accountData: accountData,
         updateUserAuctionsList: updateUserAuctionsList,
         updateGlobalAuctionsList: updateGlobalAuctionsList,
-        getAuctionData: getAuctionData,
+        getFreshAuctionData: getFreshAuctionData,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
         tickerInput: tickerInput,

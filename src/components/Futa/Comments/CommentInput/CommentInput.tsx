@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
 import styles from './CommentInput.module.css';
 import { AiOutlineSend } from 'react-icons/ai';
-import { isLinkInCrocodileLabsLinksForInput } from '../../../Chat/ChatUtils';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
+import CircularProgressBarForComments from '../../../Global/OpenOrderStatus/CircularProgressBarForComments';
 
 interface CommentInputProps {
     commentInputDispatch: (message: string) => void;
@@ -20,11 +21,11 @@ export default function CommentInput(props: CommentInputProps) {
         if (pressedKey == 'Enter' && inputVal.trim().length > 0) {
             sendAction(inputVal);
         }
-
-        const result = isLinkInCrocodileLabsLinksForInput(inputVal);
-        domDebug('islinkincrocodilelabs', result);
         setMessage(inputVal);
     };
+
+    const limitFilledRate = message.length / _characterLimit;
+    const aboutFilled = limitFilledRate > 0.7;
 
     const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (
@@ -58,6 +59,7 @@ export default function CommentInput(props: CommentInputProps) {
                             placeholder='ENTER MESSAGE...'
                             onKeyUp={_onKeyUp}
                             onKeyDown={_onKeyDown}
+                            className={`${aboutFilled ? styles.about_filled : ''} `}
                         />
                         <AiOutlineSend
                             onClick={() => {
@@ -65,6 +67,23 @@ export default function CommentInput(props: CommentInputProps) {
                             }}
                             size={15}
                         />
+                        {aboutFilled && (
+                            <>
+                                <div className={styles.progress_wrapper}>
+                                    <div className={styles.circular_progress}>
+                                        <CircularProgressBarForComments
+                                            radius={6}
+                                            fillPercentage={
+                                                limitFilledRate * 100
+                                            }
+                                        />
+                                    </div>
+                                    <span className={styles.character_limit}>
+                                        {message.length}/{_characterLimit}
+                                    </span>
+                                </div>
+                            </>
+                        )}
                     </>
                 ) : (
                     <></>
