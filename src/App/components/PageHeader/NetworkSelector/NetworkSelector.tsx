@@ -22,6 +22,7 @@ import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll.png';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
+import sepoliaLogo from '../../../../assets/images/networks/sepolia_dolphin_zoomed.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
@@ -191,7 +192,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
                 <img
-                    src={ETH}
+                    src={sepoliaLogo}
                     alt='sepolia network'
                     width='25px'
                     height='25px'
@@ -295,7 +296,11 @@ export default function NetworkSelector(props: propsIF) {
                                     .displayName.toLowerCase()
                                     .includes('blast')
                               ? blastLogo
-                              : ETH
+                              : lookupChain(chainId)
+                                      .displayName.toLowerCase()
+                                      .includes('sepolia')
+                                ? sepoliaLogo
+                                : ETH
                     }
                 >
                     <MenuContent

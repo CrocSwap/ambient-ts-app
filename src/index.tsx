@@ -16,7 +16,8 @@ import {
 } from './ambient-utils/constants';
 import scrollLogo from './assets/images/networks/scroll_network_logo.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
-import sepoliaLogo from './assets/images/networks/sepolia_network_logo.png';
+import sepoliaLogo from './assets/images/networks/sepolia_dolphin_extra.webp';
+import ethLogo from './assets/images/networks/ethereum_logo.svg';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -59,6 +60,7 @@ const modal = createWeb3Modal({
     chains: Object.values(supportedNetworks).map((network) => network.chain),
     projectId: WALLETCONNECT_PROJECT_ID as string,
     chainImages: {
+        1: ethLogo,
         81457: blastLogo,
         168587773: blastLogo,
         534351: scrollLogo,
