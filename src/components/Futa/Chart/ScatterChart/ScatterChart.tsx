@@ -265,7 +265,7 @@ export default function ScatterChart() {
                 return () => resizeObserver.unobserve(svgDiv.node());
             }
         }
-    }, []);
+    }, [xScale, yScale]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const findNearestCircle = (event: any) => {
