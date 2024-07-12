@@ -439,6 +439,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
                 filledClearingPriceInNativeTokenWei: '250000000000000000',
                 openBidClearingPriceInNativeTokenWei: '312500000000000000',
                 openBidQtyFilledInNativeTokenWei: '56000000000000000',
+                tokenAddress: '0x60bBA138A74C5e7326885De5090700626950d509',
             };
         case 'PEPE':
             return {
@@ -459,6 +460,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
                 filledClearingPriceInNativeTokenWei: '1192093000000000000',
                 openBidClearingPriceInNativeTokenWei: '1490116119384765625',
                 openBidQtyFilledInNativeTokenWei: '1266000000000000000',
+                tokenAddress: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
             };
         case 'EMIL':
             return {
@@ -466,9 +468,10 @@ export const mockAuctionDetailsServerResponseGenerator = (
                 chainId: '0x2105',
                 createdAt: 1719248920,
                 auctionLength: 604800,
-                filledClearingPriceInNativeTokenWei: '11102230246251565404',
-                openBidClearingPriceInNativeTokenWei: '1490116119384765625',
-                openBidQtyFilledInNativeTokenWei: '1200000000000000000',
+                filledClearingPriceInNativeTokenWei: '610351500000000000',
+                openBidClearingPriceInNativeTokenWei: '762939500000000000',
+                openBidQtyFilledInNativeTokenWei: '560000000000000060',
+                tokenAddress: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
             };
         default:
             return {
@@ -479,6 +482,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
                 filledClearingPriceInNativeTokenWei: '610351500000000000',
                 openBidClearingPriceInNativeTokenWei: '762939500000000000',
                 openBidQtyFilledInNativeTokenWei: '560000000000000060',
+                tokenAddress: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
             };
     }
 };
@@ -505,9 +509,6 @@ export const maxClearingPricesInWei = Array.from(
 export const maxMarketCapWeiValues = maxClearingPricesInWei.map((item) => {
     return item * MARKET_CAP_MULTIPLIER_BIG_INT;
 });
-
-// export const minBidSizeInEth = 0.25;
-// export const marketCapMultiplier = 5;
 
 export const getFreshAuctionDetailsForAccount = async (
     ticker: string,

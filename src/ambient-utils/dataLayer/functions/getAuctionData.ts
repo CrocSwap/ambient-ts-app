@@ -71,6 +71,9 @@ export interface AuctionStatusResponseIF {
     // open bid data
     openBidClearingPriceInNativeTokenWei?: string | undefined;
     openBidQtyFilledInNativeTokenWei?: string | undefined;
+
+    // closed auction data
+    tokenAddress?: string | undefined;
 }
 
 const getGlobalAuctionsList = async (

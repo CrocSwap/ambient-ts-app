@@ -55,8 +55,8 @@ const useAuctionContexts = () => {
         setShowComments,
         globalAuctionList,
         accountData,
-        getAuctionData,
-        auctionStatusData,
+        getFreshAuctionData,
+        freshAuctionStatusData,
         setSelectedTicker,
     } = useContext(AuctionsContext);
     const {
@@ -79,8 +79,8 @@ const useAuctionContexts = () => {
 
     return {
         crocEnv,
-        getAuctionData,
-        auctionStatusData,
+        getFreshAuctionData,
+        freshAuctionStatusData,
         accountData,
         globalAuctionList,
         chainId,
@@ -100,7 +100,7 @@ const useAuctionContexts = () => {
 
 // States
 const useAuctionStates = () => {
-    const { isActiveNetworkL2, auctionStatusData } = useAuctionContexts();
+    const { isActiveNetworkL2, freshAuctionStatusData } = useAuctionContexts();
     const [isMaxDropdownOpen, setIsMaxDropdownOpen] = useState(false);
     const [bidQtyNonDisplay, setBidQtyNonDisplay] = useState<
         string | undefined
@@ -136,8 +136,10 @@ const useAuctionStates = () => {
     const [isTxPending, setIsTxPending] = useState<boolean>(false);
 
     const openBidClearingPriceInWeiBigInt =
-        auctionStatusData.openBidClearingPriceInNativeTokenWei
-            ? BigInt(auctionStatusData.openBidClearingPriceInNativeTokenWei)
+        freshAuctionStatusData.openBidClearingPriceInNativeTokenWei
+            ? BigInt(
+                  freshAuctionStatusData.openBidClearingPriceInNativeTokenWei,
+              )
             : undefined;
 
     const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
@@ -194,8 +196,8 @@ export default function TickerComponent(props: PropsIF) {
     const { isAuctionPage, placeholderTicker } = props;
     const desktopScreen = useMediaQuery('(min-width: 1280px)');
     const {
-        auctionStatusData,
-        getAuctionData,
+        freshAuctionStatusData,
+        getFreshAuctionData,
         chainId,
         crocEnv,
         showComments,
@@ -256,7 +258,7 @@ export default function TickerComponent(props: PropsIF) {
 
     useEffect(() => {
         if (!tickerFromParams) return;
-        Promise.resolve(getAuctionData(tickerFromParams)).then(() => {
+        Promise.resolve(getFreshAuctionData(tickerFromParams)).then(() => {
             // console.log('fetched data for ' + tickerFromParams);
         });
         setSelectedTicker(tickerFromParams);
@@ -303,8 +305,8 @@ export default function TickerComponent(props: PropsIF) {
         'ETH';
 
     const filledClearingPriceInWeiBigInt =
-        auctionStatusData.filledClearingPriceInNativeTokenWei
-            ? BigInt(auctionStatusData.filledClearingPriceInNativeTokenWei)
+        freshAuctionStatusData.filledClearingPriceInNativeTokenWei
+            ? BigInt(freshAuctionStatusData.filledClearingPriceInNativeTokenWei)
             : undefined;
 
     const filledMarketCapInWeiBigInt = filledClearingPriceInWeiBigInt
@@ -661,7 +663,7 @@ export default function TickerComponent(props: PropsIF) {
 
     const navigateToTrade = () => {
         console.log(`clicked Trade for ticker: ${tickerFromParams}`);
-        const tokenAddress = '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328';
+        const tokenAddress = freshAuctionStatusData.tokenAddress;
         const targetStr = `https://dev-ambi.netlify.app/trade/market/chain=${chainId}&tokenA=${ZeroAddress}&tokenB=${tokenAddress}`;
         window.open(targetStr, '_blank');
     };
@@ -689,7 +691,7 @@ export default function TickerComponent(props: PropsIF) {
     );
 
     const tickerDisplayElementsProps = {
-        auctionStatusData,
+        freshAuctionStatusData,
         auctionDetailsForConnectedUser,
         filledMarketCapInEth,
         filledMarketCapUsdValue,
