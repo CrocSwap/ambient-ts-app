@@ -784,9 +784,7 @@ export default function TickerComponent(props: PropsIF) {
 
     return (
         <div className={styles.container}>
-            <div className={styles.content}>
-                {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
-            </div>
+            {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
             {!showComments && bidButton}
         </div>
     );
