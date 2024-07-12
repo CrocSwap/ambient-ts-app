@@ -658,6 +658,13 @@ export default function TickerComponent(props: PropsIF) {
         );
     };
 
+    const navigateToTrade = () => {
+        console.log(`clicked Trade for ticker: ${tickerFromParams}`);
+        const tokenAddress = '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328';
+        const targetStr = `https://dev-ambi.netlify.app/swap/chain=${chainId}&tokenB=${tokenAddress}`;
+        window.open(targetStr, '_blank');
+    };
+
     const bidButton = (
         <button
             className={`${styles.bidButton} ${
@@ -669,9 +676,7 @@ export default function TickerComponent(props: PropsIF) {
                     : isNativeTokenAvailableToReturn
                       ? sendReturnTransaction()
                       : showTradeButton
-                        ? console.log(
-                              `clicked Trade for ticker: ${tickerFromParams}`,
-                          )
+                        ? navigateToTrade()
                         : !isUserConnected
                           ? openWalletModal()
                           : sendBidTransaction()
