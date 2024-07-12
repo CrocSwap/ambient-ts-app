@@ -7,10 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import {
-    useSwitchNetwork,
-    useWeb3ModalProvider,
-} from '@web3modal/ethers/react';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { CachedDataContext } from './CachedDataContext';
@@ -237,9 +234,9 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 // Since this is a weird case, it's best not to rush things - maybe this happens
                 // during the short moment while the network is switching already, idk.
                 await new Promise((resolve) => setTimeout(resolve, 1000));
-                await useSwitchNetwork().switchNetwork(
-                    Number(chainData.chainId),
-                );
+                // await useSwitchNetwork().switchNetwork(
+                //     Number(chainData.chainId),
+                // );
             }
         }
     };
