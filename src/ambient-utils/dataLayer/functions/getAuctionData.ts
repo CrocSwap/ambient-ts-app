@@ -31,7 +31,7 @@ export interface TickerValidityIF {
 }
 
 export interface AuctionTxResponseIF {
-    txType: 'create' | 'bid' | 'claim' | 'return';
+    txType: 'create' | 'bid' | 'claim' | 'return' | 'claimAll';
     isSuccess: boolean;
     failureReason?: string;
 }
@@ -379,6 +379,46 @@ export const claimAllocation = async (
     } catch (error) {
         return {
             txType: 'claim',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const claimAndReturnAll = async (
+    env: CrocEnv | undefined,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'claimAll',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log('clicked Claim All');
+
+        // const auctionAcccountPlan = env.auctionAcccount();
+
+        // const claimAllResponse: AuctionTxResponseIF =
+        //     await auctionAcccountPlan.claimAll();
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const senderAddr = (await env.context).senderAddr;
+
+        const mockClaimResponse: AuctionTxResponseIF = {
+            txType: 'claimAll',
+            isSuccess: !senderAddr?.toLowerCase().includes('0xe09d'),
+            failureReason: senderAddr?.toLowerCase().includes('0xe09d')
+                ? 'Claim All Transaction Failed'
+                : undefined,
+        };
+
+        return mockClaimResponse;
+    } catch (error) {
+        return {
+            txType: 'claimAll',
             isSuccess: false,
             failureReason: 'Unknown Error',
         };

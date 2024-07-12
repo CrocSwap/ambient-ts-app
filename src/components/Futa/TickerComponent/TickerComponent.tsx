@@ -581,7 +581,7 @@ export default function TickerComponent(props: PropsIF) {
     const failMessage =
         txCreationResponse?.failureReason !== undefined
             ? txCreationResponse?.failureReason
-            : undefined;
+            : 'Transaction Failed';
 
     const buttonLabel =
         !tickerFromParams && isUserConnected
