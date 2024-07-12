@@ -26,8 +26,8 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
-    switchNetwork: ((chainId_: number) => void) | undefined;
     customBR?: string;
+    switchNetwork: ((chainId_: number) => Promise<void>) | undefined;
 }
 
 export default function NetworkSelector(props: propsIF) {
@@ -52,9 +52,9 @@ export default function NetworkSelector(props: propsIF) {
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
 
     // click handler for network switching (does not handle Canto link)
-    function handleClick(chn: ChainSpec): void {
+    async function handleClick(chn: ChainSpec): Promise<void> {
         if (switchNetwork) {
-            switchNetwork(parseInt(chn.chainId));
+            await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();

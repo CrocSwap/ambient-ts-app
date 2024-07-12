@@ -223,17 +223,21 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             // If signer and provider are set to different chains (as can happen)
             // after a network switch, it causes a lot of performance killing timeouts
             // and errors
-            // if (
-            //     ((await signer?.provider?.getNetwork())?.chainId) ==
-            //     (await provider.getNetwork()).chainId
-            // ) {
-            const newCrocEnv = new CrocEnv(
-                provider,
-                signer ? signer : undefined,
-            );
-            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-            setCrocEnv(newCrocEnv);
-            // }
+            if (
+                (await signer?.provider?.getNetwork())?.chainId ==
+                (await provider.getNetwork()).chainId
+            ) {
+                const newCrocEnv = new CrocEnv(provider, signer);
+                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
+                setCrocEnv(newCrocEnv);
+            } else if (signer) {
+                // Since this is a weird case, it's best not to rush things - maybe this happens
+                // during the short moment while the network is switching already, idk.
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                // await useSwitchNetwork().switchNetwork(
+                //     Number(chainData.chainId),
+                // );
+            }
         }
     };
     useEffect(() => {

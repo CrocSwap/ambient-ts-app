@@ -43,6 +43,7 @@ export function CurrencySelector(props: propsIF) {
                   ).toString(),
         );
     };
+
     return (
         <TokenInputQuantity
             label={customBorderRadius ? '' : 'Select Token'}

@@ -36,6 +36,22 @@ export function isTransactionFailedError(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isTransactionDeniedError(error: any): boolean {
+    if (error?.code == 'ACTION_REJECTED' || error?.reason == 'rejected')
+        return true;
+
+    const msg = parseErrorMessage(error);
+    if (
+        msg.includes('rejected') ||
+        msg.includes('denied') ||
+        msg.includes('disapproved')
+    )
+        return true;
+
+    return false;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseErrorMessage(error: any): string {
     const errorMessage =
         error?.info?.error?.data?.message ||

@@ -8,7 +8,6 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
-    parseErrorMessage,
 } from '../../utils/TransactionError';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
@@ -80,9 +79,7 @@ export default function LimitActionModal(props: propsIF) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTxHash, setNewTxHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
     const [showSettings, setShowSettings] = useState(false);
     const [networkFee, setNetworkFee] = useState<string | undefined>(undefined);
 
@@ -93,16 +90,14 @@ export default function LimitActionModal(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTxHash('');
-        setTxErrorCode('');
-        setTxErrorJSON('');
-        setTxErrorMessage('');
+        setTxError(undefined);
     };
 
     useEffect(() => {
         if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txError]);
 
     const closeModal = () => {
         resetConfirmation();
@@ -250,14 +245,7 @@ export default function LimitActionModal(props: propsIF) {
                 }
             } catch (error) {
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
+                setTxError(error);
             }
 
             let receipt;
@@ -392,14 +380,7 @@ export default function LimitActionModal(props: propsIF) {
                 }
             } catch (error) {
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
+                setTxError(error);
             }
 
             let receipt;
@@ -536,9 +517,7 @@ export default function LimitActionModal(props: propsIF) {
                         <SubmitTransaction
                             type={type === 'Remove' ? 'Remove' : 'Claim'}
                             newTransactionHash={newTxHash}
-                            txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
-                            txErrorJSON={txErrorJSON}
+                            txError={txError}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={
                                 type === 'Remove' ? removeFn : claimFn

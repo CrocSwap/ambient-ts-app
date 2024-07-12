@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { maxWidth, minWidth } from '../../ambient-utils/types/mediaQueries';
 
-function useMediaQuery(query: string): boolean {
+type centralQueries = maxWidth | minWidth;
+
+function useMediaQuery(query: centralQueries | string): boolean {
     const getMatches = (query: string): boolean => {
         // Prevents SSR issues
         if (typeof window !== 'undefined') {

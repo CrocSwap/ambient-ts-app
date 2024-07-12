@@ -16,7 +16,6 @@ import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
-    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
@@ -266,23 +265,19 @@ function RangeActionModal(props: propsIF) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTransactionHash, setNewTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
     };
 
     useEffect(() => {
         if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txError]);
 
     const closeModal = () => {
         resetConfirmation();
@@ -322,16 +317,8 @@ function RangeActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
                     console.error({ error });
-                    setTxErrorCode(error?.code);
-                    setTxErrorMessage(parseErrorMessage(error));
-                    setTxErrorJSON(JSON.stringify(error));
+                    setTxError(error);
                 }
             } else {
                 try {
@@ -343,16 +330,8 @@ function RangeActionModal(props: propsIF) {
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
                     IS_LOCAL_ENV && console.debug({ error });
-                    setTxErrorCode(error?.code);
-                    setTxErrorMessage(parseErrorMessage(error));
-                    setTxErrorJSON(JSON.stringify(error));
+                    setTxError(error);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -367,15 +346,8 @@ function RangeActionModal(props: propsIF) {
                 addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
             } catch (error) {
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
+                setTxError(error);
             }
         } else {
             IS_LOCAL_ENV &&
@@ -502,14 +474,7 @@ function RangeActionModal(props: propsIF) {
                 }
             } catch (error) {
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
+                setTxError(error);
             }
         } else {
             console.error('unsupported position type for harvest');
@@ -633,9 +598,7 @@ function RangeActionModal(props: propsIF) {
                               : 'Range'
                     }
                     newTransactionHash={newTransactionHash}
-                    txErrorCode={txErrorCode}
-                    txErrorMessage={txErrorMessage}
-                    txErrorJSON={txErrorJSON}
+                    txError={txError}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={
