@@ -114,10 +114,13 @@ export default function DropdownMenu2(props: propsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia' ||
-                            title === 'Blast Sepolia'
-                                ? 'Sepolia'
-                                : title}
+                            {title === 'Scroll Sepolia'
+                                ? 'Scroll Testnet'
+                                : title === 'Blast Sepolia'
+                                  ? 'Blast Testnet'
+                                  : title === 'Sepolia'
+                                    ? 'Sepolia Testnet'
+                                    : title}
                         </Icon>
                     )}
                     {!desktopScreen && (
