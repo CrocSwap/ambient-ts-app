@@ -36,7 +36,6 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
-    parseErrorMessage,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
@@ -140,9 +139,7 @@ function Swap(props: propsIF) {
         );
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
         useState<string>('');
 
@@ -506,9 +503,7 @@ function Swap(props: propsIF) {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewSwapTransactionHash('');
     };
 
@@ -562,13 +557,7 @@ function Swap(props: propsIF) {
                 });
             }
         } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(parseErrorMessage(error));
-            setTxErrorJSON(JSON.stringify(error));
+            setTxError(error);
         }
 
         if (tx) {
@@ -811,9 +800,7 @@ function Swap(props: propsIF) {
                         quoteTokenSymbol={quoteToken.symbol}
                         initiateSwapMethod={initiateSwap}
                         newSwapTransactionHash={newSwapTransactionHash}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         slippageTolerancePercentage={
@@ -854,9 +841,7 @@ function Swap(props: propsIF) {
                     <SubmitTransaction
                         type='Swap'
                         newTransactionHash={newSwapTransactionHash}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={initiateSwap}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}

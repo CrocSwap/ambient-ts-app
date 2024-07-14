@@ -18,6 +18,7 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
 
 interface propsIF {
     posHashTruncated: string;
@@ -103,7 +104,8 @@ export default function rangeRowConstants(props: propsIF) {
         tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
+    const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';
+    const smallScreen = useMediaQuery(SMALL_SCREEN_BP);
 
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
@@ -408,8 +410,8 @@ export default function rangeRowConstants(props: propsIF) {
                         ? lowDisplayPriceInUsd
                         : minRangeDenomByMoneyness || '…'
                     : isTradeDollarizationEnabled
-                    ? lowDisplayPriceInUsd
-                    : ambientOrMin || '…'}
+                      ? lowDisplayPriceInUsd
+                      : ambientOrMin || '…'}
             </span>
         </FlexContainer>
     );
@@ -441,8 +443,8 @@ export default function rangeRowConstants(props: propsIF) {
                         ? highDisplayPriceInUsd
                         : maxRangeDenomByMoneyness || '…'
                     : isTradeDollarizationEnabled
-                    ? highDisplayPriceInUsd
-                    : ambientOrMax || '…'}
+                      ? highDisplayPriceInUsd
+                      : ambientOrMax || '…'}
             </span>
         </FlexContainer>
     );
@@ -462,8 +464,8 @@ export default function rangeRowConstants(props: propsIF) {
                             ? lowDisplayPriceInUsd
                             : minRangeDenomByMoneyness || '…'
                         : isTradeDollarizationEnabled
-                        ? lowDisplayPriceInUsd
-                        : ambientOrMin || '…'}
+                          ? lowDisplayPriceInUsd
+                          : ambientOrMin || '…'}
                 </span>
             </p>
             <p>
@@ -474,8 +476,8 @@ export default function rangeRowConstants(props: propsIF) {
                             ? highDisplayPriceInUsd
                             : maxRangeDenomByMoneyness || '…'
                         : isTradeDollarizationEnabled
-                        ? highDisplayPriceInUsd
-                        : ambientOrMax || '…'}
+                          ? highDisplayPriceInUsd
+                          : ambientOrMax || '…'}
                 </span>
             </p>
         </FlexContainer>
