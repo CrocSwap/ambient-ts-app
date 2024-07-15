@@ -1,10 +1,10 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.6.9",
+    "version": "2.6.12",
     "private": true,
     "type": "module",
     "dependencies": {
-        "@crocswap-libs/sdk": "^1.0.1",
+        "@crocswap-libs/sdk": "^1.0.2",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/babel-plugin": "^11.11.0",
         "@emotion/is-prop-valid": "^1.2.1",
@@ -12,9 +12,11 @@
         "@emotion/styled": "^11.10.5",
         "@material-ui/core": "^4.12.4",
         "@mui/material": "^5.8.2",
+        "@types/react-blockies": "^1.4.4",
         "@types/react-color": "^3.0.7",
         "@vitejs/plugin-react": "^4.3.1",
         "@web3modal/ethers": "^4.2.3",
+        "alchemy-sdk": "^3.2.0",
         "alea": "^1.0.1",
         "babel-plugin-styled-components": "^2.1.4",
         "d3": "^7.4.4",
@@ -31,6 +33,7 @@
         "numbro": "^2.5.0",
         "re-resizable": "^6.6.11",
         "react": "^18.3.1",
+        "react-blockies": "^1.4.1",
         "react-color": "^2.19.3",
         "react-dom": "^18.3.1",
         "react-i18next": "^12.3.1",
@@ -46,10 +49,7 @@
         "styled-components": "6.0.3",
         "vite": "^5.3.1",
         "vite-plugin-babel-macros": "^1.0.6",
-        "web-vitals": "^2.1.0",
-        "react-blockies": "^1.4.1",
-        "@types/react-blockies": "^1.4.4",
-        "alchemy-sdk": "^3.2.0"
+        "web-vitals": "^2.1.0"
     },
     "resolutions": {
         "@coinbase/wallet-sdk": "npm:@coinbase/wallet-sdk@4.0.3"
@@ -58,6 +58,8 @@
         "start": "yarn install && vite",
         "start-only": "vite",
         "build": "tsc && vite build",
+        "preview": "vite preview",
+        "dev": "vite --host",
         "test": "vitest",
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",

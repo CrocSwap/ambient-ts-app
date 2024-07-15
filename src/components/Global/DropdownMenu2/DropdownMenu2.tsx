@@ -119,11 +119,15 @@ export default function DropdownMenu2(props: propsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title.toLowerCase().includes('sepolia')
-                                ? title.toLowerCase().includes('plume')
+                            {title === 'Scroll Sepolia'
+                                ? 'Scroll Testnet'
+                                : title === 'Blast Sepolia'
+                                  ? 'Blast Testnet'
+                                  : title.toLowerCase().includes('plume')
                                     ? 'Plume Testnet'
-                                    : 'Sepolia'
-                                : title}
+                                    : title === 'Sepolia'
+                                      ? 'Sepolia Testnet'
+                                      : title}
                         </Icon>
                     )}
                     {!desktopScreen && (

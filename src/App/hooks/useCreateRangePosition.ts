@@ -4,7 +4,6 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
-    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
@@ -55,9 +54,7 @@ export function useCreateRangePosition() {
         defaultHighTick: number;
         isAdd: boolean;
         setNewRangeTransactionHash: (s: string) => void;
-        setTxErrorCode: (s: string) => void;
-        setTxErrorMessage: (s: string) => void;
-        setTxErrorJSON: (s: string) => void;
+        setTxError: (s: Error) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
         activeRangeTxHash: MutableRefObject<string>;
@@ -73,9 +70,7 @@ export function useCreateRangePosition() {
             defaultHighTick,
             isAdd,
             setNewRangeTransactionHash,
-            setTxErrorCode,
-            setTxErrorMessage,
-            setTxErrorJSON,
+            setTxError,
             setIsTxCompletedRange,
             activeRangeTxHash,
         } = params;
@@ -148,13 +143,8 @@ export function useCreateRangePosition() {
                 unixTimeAdded: Math.floor(Date.now() / 1000),
             });
         } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
             console.error({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(parseErrorMessage(error));
-            setTxErrorJSON(JSON.stringify(error));
+            setTxError(error);
         }
 
         let receipt;

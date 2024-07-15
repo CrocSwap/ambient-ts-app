@@ -19,15 +19,18 @@ import {
 import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
-import scrollLogo from '../../../../assets/images/networks/scroll.png';
+import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import plumeLogo from '../../../../assets/images/networks/plume.png';
+import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
+import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
 import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
+import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
-    switchNetwork: ((chainId_: number) => void) | undefined;
+    switchNetwork: ((chainId_: number) => Promise<void>) | undefined;
 }
 
 export default function NetworkSelector(props: propsIF) {
@@ -52,9 +55,9 @@ export default function NetworkSelector(props: propsIF) {
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
 
     // click handler for network switching (does not handle Canto link)
-    function handleClick(chn: ChainSpec): void {
+    async function handleClick(chn: ChainSpec): Promise<void> {
         if (switchNetwork) {
-            switchNetwork(parseInt(chn.chainId));
+            await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
@@ -192,7 +195,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
                 <img
-                    src={ETH}
+                    src={sepoliaLogo}
                     alt='sepolia network'
                     width='25px'
                     height='25px'
@@ -207,7 +210,7 @@ export default function NetworkSelector(props: propsIF) {
                 >
                     Sepolia
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='30px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -225,7 +228,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0xa0c71fd'}>
                 <img
-                    src={blastLogo}
+                    src={blastSepoliaLogo}
                     alt='blast network'
                     width='25px'
                     height='25px'
@@ -233,11 +236,11 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0xa0c71fd' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '1px' }}
+                    style={{ marginLeft: '2px' }}
                 >
-                    {'Sepolia'}
+                    Blast
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='50px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -256,7 +259,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
                 <img
-                    src={scrollLogo}
+                    src={scrollSepoliaLogo}
                     alt='scroll sepolia network'
                     width='22px'
                     height='22px'
@@ -264,11 +267,11 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0x8274f' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '1px' }}
+                    style={{ marginLeft: '3px' }}
                 >
-                    Sepolia
+                    Scroll
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='47px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -321,17 +324,29 @@ export default function NetworkSelector(props: propsIF) {
                     logo={
                         lookupChain(chainId)
                             .displayName.toLowerCase()
-                            .includes('scroll')
-                            ? scrollLogo
+                            .includes('blast sepolia')
+                            ? blastSepoliaLogo
                             : lookupChain(chainId)
                                     .displayName.toLowerCase()
-                                    .includes('blast')
-                              ? blastLogo
+                                    .includes('scroll sepolia')
+                              ? scrollSepoliaLogo
                               : lookupChain(chainId)
                                       .displayName.toLowerCase()
-                                      .includes('plume')
-                                ? plumeLogo
-                                : ETH
+                                      .includes('scroll')
+                                ? scrollLogo
+                                : lookupChain(chainId)
+                                        .displayName.toLowerCase()
+                                        .includes('blast')
+                                  ? blastLogo
+                                  : lookupChain(chainId)
+                                          .displayName.toLowerCase()
+                                          .includes('plume')
+                                    ? plumeLogo
+                                    : lookupChain(chainId)
+                                            .displayName.toLowerCase()
+                                            .includes('sepolia')
+                                      ? sepoliaLogo
+                                      : ETH
                     }
                 >
                     <MenuContent
