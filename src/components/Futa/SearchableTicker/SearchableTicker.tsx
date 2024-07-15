@@ -422,6 +422,9 @@ export default function SearchableTicker(props: propsIF) {
                 topRight: false,
                 bottomRight: false,
             }}
+            handleClasses={{
+                bottom: 'custom-resizable-handle-futa',
+            }}
             size={{
                 width: '100%',
                 height: searchableTickerHeights.current,

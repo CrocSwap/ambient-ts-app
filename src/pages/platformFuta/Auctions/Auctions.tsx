@@ -63,7 +63,7 @@ export default function Auctions(props: propsIF) {
                             : '1fr 4px 390px',
                     }}
                 >
-                    <div style={{ height: 'calc(100vh - 50px)' }}>
+                    <div style={{ height: 'calc(100vh - 100px)' }}>
                         <SearchableTicker
                             auctions={sorted}
                             title='AUCTIONS'
