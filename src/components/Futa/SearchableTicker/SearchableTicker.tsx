@@ -23,6 +23,7 @@ import {
 import { FaEye } from 'react-icons/fa';
 import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import Chart from '../Chart/Chart';
+import Typewriter from '../TypeWriter/TypeWriter';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -358,6 +359,24 @@ export default function SearchableTicker(props: propsIF) {
         </div>
     );
     const fullScreenTable = false;
+
+    const noAuctionsContent = (
+        <div className={styles.noAuctionsContent}>
+            <Typewriter
+                text={
+                    watchlists.shouldDisplay
+                        ? 'No tickers found in your watchlist'
+                        : 'No tickers to display'
+                }
+            />
+            {watchlists.shouldDisplay && <p>Consider viewing all tickers</p>}
+            {watchlists.shouldDisplay && (
+                <button onClick={() => watchlists.toggle()}>
+                    View all tickers
+                </button>
+            )}
+        </div>
+    );
     return (
         <div
             className={styles.container}
@@ -385,20 +404,22 @@ export default function SearchableTicker(props: propsIF) {
                         setHoveredTicker(undefined);
                     }}
                 >
-                    {(showComplete && auctions.active === 'timeLeft'
-                        ? [...filteredData].reverse()
-                        : [...filteredData]
-                    ).map((auction: AuctionDataIF) => (
-                        <TickerItem
-                            key={JSON.stringify(auction)}
-                            auction={auction}
-                            isAccount={isAccount}
-                            selectedTicker={selectedTicker}
-                            setSelectedTicker={setSelectedTicker}
-                            setShowComplete={setShowComplete}
-                            useRefTicker={tickerItemRefs}
-                        />
-                    ))}
+                    {filteredData.length
+                        ? (showComplete && auctions.active === 'timeLeft'
+                              ? [...filteredData].reverse()
+                              : [...filteredData]
+                          ).map((auction: AuctionDataIF) => (
+                              <TickerItem
+                                  key={JSON.stringify(auction)}
+                                  auction={auction}
+                                  isAccount={isAccount}
+                                  selectedTicker={selectedTicker}
+                                  setSelectedTicker={setSelectedTicker}
+                                  setShowComplete={setShowComplete}
+                                  useRefTicker={tickerItemRefs}
+                              />
+                          ))
+                        : noAuctionsContent}
                 </div>
             </div>
             {!fullScreenTable && !isAccount && <Chart />}
