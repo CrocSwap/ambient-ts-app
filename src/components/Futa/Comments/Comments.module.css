@@ -188,12 +188,12 @@
 
       
   .mainContainer{
-    height: calc(100dvh - 250px);
+    height: calc(100svh - 240px);
   }
 
   
   .commentsWrapper{
-    max-height: 65vh;
+    max-height: 63svh;
   }
 
     }
