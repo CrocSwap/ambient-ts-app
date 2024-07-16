@@ -266,6 +266,11 @@ input[type='number'] {
 
 }
 
+.custom-resizable-handle-futa{
+    background-color: red;
+    width: 200px;
+}
+
 @media only screen and (max-width: 600px) {
     .app_blur {
         width: 100vw;

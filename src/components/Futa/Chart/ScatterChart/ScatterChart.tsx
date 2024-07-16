@@ -145,13 +145,13 @@ export default function ScatterChart() {
 
                 const yScale = d3
                     .scaleLinear()
-                    .domain([-50000, maxYValue])
+                    .domain([-10000, maxYValue])
                     .range([height, 15]);
 
                 setYscale(() => yScale);
             }
         }
-    }, [diffHashSig(data), chartSize, showDayCount]);
+    }, [diffHashSig(data), showDayCount]);
 
     useEffect(() => {
         if (xScale && yScale) {
@@ -200,11 +200,10 @@ export default function ScatterChart() {
                               xScale.domain()[0],
                               showDayCount > 7 ? 1441 : 1441 / 4,
                           );
-                    const yTicks = d3.range(
-                        0,
-                        Number(d3.max(data, (d) => d.price)) + 100000,
-                        100000,
-                    );
+
+                    const heightYAxis = yScale.range()[0] + yScale.range()[1];
+                    const tickCount = heightYAxis < 350 ? 5 : 10;
+                    const yTicks = yScale.ticks(tickCount);
                     svg.select('#gridCircles').remove();
                     svg.select('.circleJoin').remove();
 

@@ -6,7 +6,7 @@ interface DividerProps {
     vertical?: boolean;
 }
 
-const Divider: React.FC<DividerProps> = ({ count, vertical }) => {
+const FutaDivider: React.FC<DividerProps> = ({ count, vertical }) => {
     const dividers = Array.from({ length: count }, (_, index) => (
         <motion.div
             key={index}
@@ -29,6 +29,7 @@ const Divider: React.FC<DividerProps> = ({ count, vertical }) => {
                 gap: '4px',
                 width: vertical ? 'auto' : '100%',
                 height: vertical ? '100%' : 'auto',
+                pointerEvents: 'none',
             }}
         >
             {dividers}
@@ -36,8 +37,8 @@ const Divider: React.FC<DividerProps> = ({ count, vertical }) => {
     );
 };
 
-Divider.defaultProps = {
+FutaDivider.defaultProps = {
     count: 1,
 };
 
-export default Divider;
+export default FutaDivider;
