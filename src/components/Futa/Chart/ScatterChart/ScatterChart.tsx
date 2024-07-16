@@ -183,7 +183,7 @@ export default function ScatterChart() {
 
             setPointSeries(() => pointSeries);
         }
-    }, [xScale, yScale, yScale?.range(), chartSize, selectedDot]);
+    }, [xScale, yScale, chartSize, selectedDot]);
 
     useEffect(() => {
         if (xScale && yScale && pointSeries) {
