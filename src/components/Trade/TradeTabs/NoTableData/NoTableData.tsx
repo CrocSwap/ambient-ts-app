@@ -44,7 +44,7 @@ function NoTableData(props: NoTableDataPropsIF) {
             >
                 {activeUserPositionsLength && activeUserPositionsLength > 0
                     ? `All My ${type}`
-                    : `All ${type}`}
+                    : `All Pool ${type}`}
             </button>
         </>
     );
