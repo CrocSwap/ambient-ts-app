@@ -13,6 +13,7 @@
     flex-direction: column;
     justify-content: space-between;
     position: relative;
+    overflow: hidden;
   }
 
   .container {
@@ -187,7 +188,7 @@
 
       
   .mainContainer{
-    height: calc(100svh - 250px);
+    height: calc(100dvh - 250px);
   }
 
   
