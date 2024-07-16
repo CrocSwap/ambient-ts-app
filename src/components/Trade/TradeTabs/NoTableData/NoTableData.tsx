@@ -25,8 +25,13 @@ function NoTableData(props: NoTableDataPropsIF) {
         setSelectedDate && setSelectedDate(undefined);
     };
 
-    const navigateToLiquidityTabOnAccount = () =>
-        navigate('/account/liquidity');
+    const navigateToLiquidityTabOnAccount = () => {
+        type === 'liquidity'
+            ? navigate('/account/liquidity')
+            : type === 'limits'
+              ? navigate('/account/limits')
+              : undefined;
+    };
 
     const toggleAllEnabledContentOrNull = isAccountView ? null : (
         <>
@@ -44,20 +49,22 @@ function NoTableData(props: NoTableDataPropsIF) {
             >
                 {activeUserPositionsLength && activeUserPositionsLength > 0
                     ? `All My ${type}`
-                    : `All Pool ${type}`}
+                    : `All ${type}`}
             </button>
         </>
     );
 
+    const message =
+        activeUserPositionsLength && activeUserPositionsLength > 0 ? (
+            `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POOLS' : 'POOL') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : 'TRANSACTIONS'} IN OTHER POOLS`
+        ) : (
+            <h2>NO {type.toUpperCase()} FOUND</h2>
+        );
+
     return (
         <div className={styles.container}>
             {/* <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} /> */}
-            {activeUserPositionsLength && activeUserPositionsLength > 0 ? (
-                `YOU HAVE ${activeUserPositionsLength} POSITIONS IN OTHER POOLS`
-            ) : (
-                <h2>NO {type.toUpperCase()} FOUND</h2>
-            )}
-
+            {message}
             {!showAllData && toggleAllEnabledContentOrNull}
         </div>
     );
