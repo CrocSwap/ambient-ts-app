@@ -42,8 +42,7 @@ interface PortfolioPropsIF {
     isLevelsPage?: boolean;
     isRanksPage?: boolean;
     isViewMoreActive?: boolean;
-    isPointsTab?: boolean;
-    isLiquidityTab?: boolean;
+    specificTab?: string;
 }
 
 function Portfolio(props: PortfolioPropsIF) {
@@ -53,13 +52,7 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
-    const {
-        isLevelsPage,
-        isRanksPage,
-        isViewMoreActive,
-        isPointsTab,
-        isLiquidityTab,
-    } = props;
+    const { isLevelsPage, isRanksPage, isViewMoreActive, specificTab } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -400,17 +393,23 @@ function Portfolio(props: PortfolioPropsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute
         ? 0
         : onAccountRoute || addressFromParams
-          ? isPointsTab
+          ? specificTab === 'points'
               ? 3
-              : 2
+              : specificTab === 'liquidity'
+                ? 2
+                : specificTab === 'limits'
+                  ? 1
+                  : specificTab === 'transactions'
+                    ? 0
+                    : 0
           : 0;
 
     useEffect(() => {
-        if (isPointsTab || isLiquidityTab) {
+        if (specificTab) {
             setOutsideControl(true);
             setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         }
-    }, [isPointsTab, isLiquidityTab]);
+    }, [specificTab]);
 
     // end of tab control on account from page header
 
