@@ -25,6 +25,7 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 8px;
+    overflow-y: scroll;
 }
 
 .tickerContainer {
