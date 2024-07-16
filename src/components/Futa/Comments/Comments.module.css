@@ -184,9 +184,20 @@
       opacity: .4;
     }
 
+    .all_fetched{
+      margin-top: 2svh;
+    width: 100%;
+    text-align: center;
+    opacity: 0.3;
+    }
+
     @media only screen and (max-width: 600px){
 
       
+    .all_fetched{
+      margin-top: 6svh;
+    }
+    
   .mainContainer{
     height: calc(100svh - 240px);
   }

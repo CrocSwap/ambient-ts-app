@@ -270,6 +270,12 @@ function Comments() {
                         ) : (
                             <>
                                 <div className={styles.comments_content}>
+                                    {fetchedAllPages && (
+                                        <div className={styles.all_fetched}>
+                                            {' '}
+                                            All comments fetched.
+                                        </div>
+                                    )}
                                     {messages.map((msg, index) => {
                                         return (
                                             <CommentCard
