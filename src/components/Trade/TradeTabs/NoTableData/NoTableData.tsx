@@ -42,7 +42,9 @@ function NoTableData(props: NoTableDataPropsIF) {
                         : toggleAllEnabled
                 }
             >
-                All {type}
+                {activeUserPositionsLength && activeUserPositionsLength > 0
+                    ? `All My ${type}`
+                    : `All ${type}`}
             </button>
         </>
     );
