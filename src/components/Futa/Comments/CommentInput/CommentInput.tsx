@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import styles from './CommentInput.module.css';
 import { AiOutlineSend } from 'react-icons/ai';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 import CircularProgressBarForComments from '../../../Global/OpenOrderStatus/CircularProgressBarForComments';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface CommentInputProps {
     commentInputDispatch: (message: string) => void;
@@ -26,6 +27,10 @@ export default function CommentInput(props: CommentInputProps) {
 
     const limitFilledRate = message.length / _characterLimit;
     const aboutFilled = limitFilledRate > 0.7;
+
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
 
     const _onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (
@@ -50,8 +55,8 @@ export default function CommentInput(props: CommentInputProps) {
     };
 
     return (
-        <>
-            <div className={styles.comment_input_wrapper}>
+        <div className={styles.comment_input_wrapper}>
+            <>
                 {props.currentUserID && props.currentUserID.length > 0 ? (
                     <>
                         <input
@@ -86,9 +91,17 @@ export default function CommentInput(props: CommentInputProps) {
                         )}
                     </>
                 ) : (
-                    <></>
+                    <>
+                        <div
+                            className={styles.connect_to_chat_placeholder}
+                            onClick={openWalletModal}
+                        >
+                            {' '}
+                            Please Connect Wallet to Chat
+                        </div>
+                    </>
                 )}
-            </div>
-        </>
+            </>
+        </div>
     );
 }
