@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useContext, useRef } from 'react';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useParams } from 'react-router-dom';
 import styles from './TickerComponent.module.css';
-import Divider from '../Divider/Divider';
+import Divider from '../Divider/FutaDivider';
 import { FaEye } from 'react-icons/fa';
 import {
     AuctionStatusDataIF,

@@ -262,7 +262,7 @@ export default function TickerComponent(props: PropsIF) {
             // console.log('fetched data for ' + tickerFromParams);
         });
         setSelectedTicker(tickerFromParams);
-    }, [tickerFromParams]);
+    }, [tickerFromParams, lastBlockNumber]);
 
     const auctionedTokenQtyUnclaimedByUserInWei =
         auctionDetailsForConnectedUser?.qtyUnclaimedByUserInAuctionedTokenWei;
@@ -642,7 +642,7 @@ export default function TickerComponent(props: PropsIF) {
             await claimAllocation(
                 crocEnv,
                 tickerFromParams,
-                auctionedTokenQtyUnclaimedByUserInWei,
+                // auctionedTokenQtyUnclaimedByUserInWei,
             ),
         );
     };
@@ -657,7 +657,11 @@ export default function TickerComponent(props: PropsIF) {
         setIsTxPending(true);
 
         setTxCreationResponse(
-            await returnBid(crocEnv, tickerFromParams, qtyUnreturnedToUser),
+            await returnBid(
+                crocEnv,
+                tickerFromParams,
+                // qtyUnreturnedToUser
+            ),
         );
     };
 
@@ -784,9 +788,7 @@ export default function TickerComponent(props: PropsIF) {
 
     return (
         <div className={styles.container}>
-            <div className={styles.content}>
-                {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
-            </div>
+            {isAuctionCompleted ? completedDisplay : unCompletedDisplay}
             {!showComments && bidButton}
         </div>
     );

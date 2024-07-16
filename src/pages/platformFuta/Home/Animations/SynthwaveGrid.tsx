@@ -1,11 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface PropsIF {
     hasVideoPlayedOnce: boolean;
 }
 export default function SynthwaveGrid(props: PropsIF) {
     const { hasVideoPlayedOnce } = props;
     const sketchRef = useRef<HTMLDivElement | null>(null);
+
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const width = '100vw';
     const height = 'calc(100vh - 86px)';
@@ -363,7 +366,11 @@ export default function SynthwaveGrid(props: PropsIF) {
             ref={sketchRef}
             style={{
                 position: 'absolute',
-                top: hasVideoPlayedOnce ? '100px' : '0',
+                top: showMobileVersion
+                    ? '-100px'
+                    : hasVideoPlayedOnce
+                      ? '100px'
+                      : '0',
                 left: '0',
                 width: width,
                 height: height,

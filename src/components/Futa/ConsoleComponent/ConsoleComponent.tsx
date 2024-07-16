@@ -1,4 +1,4 @@
-import Divider from '../Divider/Divider';
+import Divider from '../Divider/FutaDivider';
 import styles from './ConsoleComponent.module.css';
 import { motion } from 'framer-motion';
 export default function ConsoleComponent() {

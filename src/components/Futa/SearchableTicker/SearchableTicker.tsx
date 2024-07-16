@@ -13,7 +13,7 @@ import {
 import { BiSearch } from 'react-icons/bi';
 import styles from './SearchableTicker.module.css';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import Divider from '../Divider/Divider';
+import Divider from '../Divider/FutaDivider';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import AuctionLoader from '../AuctionLoader/AuctionLoader';
 import {
@@ -23,6 +23,12 @@ import {
 import { FaEye } from 'react-icons/fa';
 import { AuctionDataIF, diffHashSig } from '../../../ambient-utils/dataLayer';
 import Chart from '../Chart/Chart';
+import { FutaSearchableTickerContext } from '../../../contexts/Futa/FutaSearchableTickerContext';
+import { ResizableContainer } from '../../../styled/Components/Trade';
+import { Direction } from 're-resizable/lib/resizer';
+import { NumberSize } from 're-resizable';
+import { FlexContainer } from '../../../styled/Common';
+import Typewriter from '../TypeWriter/TypeWriter';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -57,6 +63,15 @@ export default function SearchableTicker(props: propsIF) {
         watchlists,
         setFilteredAuctionList,
     } = useContext(AuctionsContext);
+
+    const {
+        isFullScreen: isChartFullScreen,
+        searchableTickerHeights,
+        setSearchableTickerHeight,
+        canvasRef,
+        tradeTableState,
+        setIsSearchableTickerHeightMinimum,
+    } = useContext(FutaSearchableTickerContext);
 
     // shape of data to create filter dropdown menu options
     interface filterOptionIF {
@@ -358,50 +373,146 @@ export default function SearchableTicker(props: propsIF) {
         </div>
     );
     const fullScreenTable = false;
+
+    const CHART_MIN_HEIGHT = 175;
+
+    const noAuctionsContent = (
+        <div className={styles.noAuctionsContent}>
+            <Typewriter
+                text={
+                    watchlists.shouldDisplay
+                        ? 'No tickers found in your watchlist'
+                        : 'No tickers to display'
+                }
+            />
+            {watchlists.shouldDisplay && <p>Consider viewing all tickers</p>}
+            {watchlists.shouldDisplay && (
+                <button onClick={() => watchlists.toggle()}>
+                    View all tickers
+                </button>
+            )}
+        </div>
+    );
+
+    const searchableContent = (
+        <div className={styles.tickerTableContainer}>
+            <header className={styles.tickerHeader}>
+                <p>TICKER</p>
+                <p className={styles.marketCapHeader}>MARKET CAP</p>
+                <p>REMAINING</p>
+                <div className={styles.statusContainer}>{/* <span /> */}</div>
+            </header>
+            <div
+                className={styles.tickerTableContent}
+                onMouseEnter={() => setIsMouseEnter(true)}
+                onMouseLeave={() => {
+                    setIsMouseEnter(false);
+                    setHoveredTicker(undefined);
+                }}
+            >
+                {filteredData.length
+                    ? (showComplete && auctions.active === 'timeLeft'
+                          ? [...filteredData].reverse()
+                          : [...filteredData]
+                      ).map((auction: AuctionDataIF) => (
+                          <TickerItem
+                              key={JSON.stringify(auction)}
+                              auction={auction}
+                              isAccount={isAccount}
+                              selectedTicker={selectedTicker}
+                              setSelectedTicker={setSelectedTicker}
+                              setShowComplete={setShowComplete}
+                              useRefTicker={tickerItemRefs}
+                          />
+                      ))
+                    : noAuctionsContent}
+            </div>
+        </div>
+    );
+
+    const resizableChart = (
+        <ResizableContainer
+            showResizeable={!isAccount}
+            enable={{
+                bottom: !isChartFullScreen,
+                top: false,
+                left: false,
+                topLeft: false,
+                bottomLeft: false,
+                right: false,
+                topRight: false,
+                bottomRight: false,
+            }}
+            handleClasses={{
+                bottom: 'custom-resizable-handle-futa',
+            }}
+            size={{
+                width: '100%',
+                height: searchableTickerHeights.current,
+            }}
+            minHeight={4}
+            onResize={(
+                evt: MouseEvent | TouchEvent,
+                dir: Direction,
+                ref: HTMLElement,
+                d: NumberSize,
+            ) => {
+                if (
+                    searchableTickerHeights.current + d.height <
+                    CHART_MIN_HEIGHT
+                ) {
+                    setIsSearchableTickerHeightMinimum(true);
+                } else {
+                    setIsSearchableTickerHeightMinimum(false);
+                }
+            }}
+            onResizeStart={() => {
+                // may be useful later
+            }}
+            onResizeStop={(
+                evt: MouseEvent | TouchEvent,
+                dir: Direction,
+                ref: HTMLElement,
+                d: NumberSize,
+            ) => {
+                if (
+                    searchableTickerHeights.current + d.height <
+                    CHART_MIN_HEIGHT
+                ) {
+                    if (tradeTableState == 'Expanded') {
+                        setSearchableTickerHeight(
+                            searchableTickerHeights.default,
+                        );
+                    } else {
+                        setSearchableTickerHeight(searchableTickerHeights.min);
+                    }
+                } else {
+                    setSearchableTickerHeight(
+                        searchableTickerHeights.current + d.height,
+                    );
+                }
+            }}
+            bounds={'parent'}
+        >
+            {searchableContent}
+        </ResizableContainer>
+    );
+
     return (
         <div
             className={styles.container}
             style={{
                 gridTemplateRows:
-                    fullScreenTable || isAccount ? 'auto 100%' : 'auto 70% 30%',
+                    fullScreenTable || isAccount ? 'auto 100%' : '',
             }}
+            ref={canvasRef}
         >
             {headerDisplay}
 
-            <div className={styles.tickerTableContainer}>
-                <header className={styles.tickerHeader}>
-                    <p>TICKER</p>
-                    <p className={styles.marketCapHeader}>MARKET CAP</p>
-                    <p>REMAINING</p>
-                    <div className={styles.statusContainer}>
-                        {/* <span /> */}
-                    </div>
-                </header>
-                <div
-                    className={styles.tickerTableContent}
-                    onMouseEnter={() => setIsMouseEnter(true)}
-                    onMouseLeave={() => {
-                        setIsMouseEnter(false);
-                        setHoveredTicker(undefined);
-                    }}
-                >
-                    {(showComplete && auctions.active === 'timeLeft'
-                        ? [...filteredData].reverse()
-                        : [...filteredData]
-                    ).map((auction: AuctionDataIF) => (
-                        <TickerItem
-                            key={JSON.stringify(auction)}
-                            auction={auction}
-                            isAccount={isAccount}
-                            selectedTicker={selectedTicker}
-                            setSelectedTicker={setSelectedTicker}
-                            setShowComplete={setShowComplete}
-                            useRefTicker={tickerItemRefs}
-                        />
-                    ))}
-                </div>
-            </div>
-            {!fullScreenTable && !isAccount && <Chart />}
+            <FlexContainer flexDirection='column' fullHeight overflow='hidden'>
+                {resizableChart}
+                {!fullScreenTable && !isAccount && <Chart />}
+            </FlexContainer>
         </div>
     );
 }

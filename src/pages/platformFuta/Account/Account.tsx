@@ -3,7 +3,7 @@ import styles from './Account.module.css';
 
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Futa/Divider/Divider';
+import Divider from '../../../components/Futa/Divider/FutaDivider';
 import {
     sortedAuctionsIF,
     useSortedAuctions,
