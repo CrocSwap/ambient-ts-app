@@ -195,9 +195,9 @@
 
       
     .all_fetched{
-      margin-top: 6svh;
+      margin-top: calc(6svh + 2rem); 
     }
-    
+
   .mainContainer{
     height: calc(100svh - 240px);
   }
