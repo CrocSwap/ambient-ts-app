@@ -240,6 +240,10 @@ export default function App() {
                             element={<Portfolio isPointsTab />}
                         />
                         <Route
+                            path='account/liquidity'
+                            element={<Portfolio isLiquidityTab />}
+                        />
+                        <Route
                             path='account/:address/points'
                             element={<Portfolio isPointsTab />}
                         />

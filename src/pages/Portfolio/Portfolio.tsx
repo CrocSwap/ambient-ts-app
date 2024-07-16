@@ -43,6 +43,7 @@ interface PortfolioPropsIF {
     isRanksPage?: boolean;
     isViewMoreActive?: boolean;
     isPointsTab?: boolean;
+    isLiquidityTab?: boolean;
 }
 
 function Portfolio(props: PortfolioPropsIF) {
@@ -52,7 +53,13 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
-    const { isLevelsPage, isRanksPage, isViewMoreActive, isPointsTab } = props;
+    const {
+        isLevelsPage,
+        isRanksPage,
+        isViewMoreActive,
+        isPointsTab,
+        isLiquidityTab,
+    } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
 
@@ -341,8 +348,8 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName: connectedAccountActive
             ? ensName ?? ''
             : secondaryEnsName
-            ? secondaryEnsName
-            : '',
+              ? secondaryEnsName
+              : '',
         resolvedAddress: resolvedAddress ?? '',
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
@@ -354,8 +361,8 @@ function Portfolio(props: PortfolioPropsIF) {
             ? ensName
             : trimString(userAddress ?? '', 6, 6, '…')
         : secondaryEnsName
-        ? secondaryEnsName
-        : trimString(resolvedAddress ?? '', 6, 6, '…');
+          ? secondaryEnsName
+          : trimString(resolvedAddress ?? '', 6, 6, '…');
 
     const levelsProps = {
         resolvedAddress: resolvedAddress ?? '',
@@ -393,15 +400,17 @@ function Portfolio(props: PortfolioPropsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute
         ? 0
         : onAccountRoute || addressFromParams
-        ? 3
-        : 0;
+          ? isPointsTab
+              ? 3
+              : 2
+          : 0;
 
     useEffect(() => {
-        if (isPointsTab) {
+        if (isPointsTab || isLiquidityTab) {
             setOutsideControl(true);
             setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         }
-    }, [isPointsTab]);
+    }, [isPointsTab, isLiquidityTab]);
 
     // end of tab control on account from page header
 
@@ -448,8 +457,8 @@ function Portfolio(props: PortfolioPropsIF) {
                 {connectedAccountActive
                     ? exchangeBalanceComponent
                     : !isUserConnected && !addressFromParams
-                    ? notConnectedContent
-                    : undefined}
+                      ? notConnectedContent
+                      : undefined}
             </PortfolioTabsContainer>
             <PortfolioBanner {...portfolioBannerProps} />
         </PortfolioContainer>
