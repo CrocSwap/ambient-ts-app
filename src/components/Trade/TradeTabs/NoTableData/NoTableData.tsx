@@ -30,7 +30,7 @@ function NoTableData(props: NoTableDataPropsIF) {
             ? navigate('/account/liquidity')
             : type === 'limits'
               ? navigate('/account/limits')
-              : undefined;
+              : navigate('/account');
     };
 
     const toggleAllEnabledContentOrNull = isAccountView ? null : (
@@ -56,7 +56,7 @@ function NoTableData(props: NoTableDataPropsIF) {
 
     const message =
         activeUserPositionsLength && activeUserPositionsLength > 0 ? (
-            `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POOLS' : 'POOL') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : 'TRANSACTIONS'} IN OTHER POOLS`
+            `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POOLS' : 'POOL') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : activeUserPositionsLength > 1 ? 'TRANSACTIONS' : 'TRANSACTION'} IN OTHER POOLS`
         ) : (
             <h2>NO {type.toUpperCase()} FOUND</h2>
         );
