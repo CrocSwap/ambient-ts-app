@@ -87,6 +87,7 @@ export default function Xaxis(props: AxisIF) {
                 gridColumnEnd: 4,
                 gridRowStart: 2,
                 gridRowEnd: 4,
+                minHeight: '10px',
                 height: '100%',
                 width: '100%',
             }}
