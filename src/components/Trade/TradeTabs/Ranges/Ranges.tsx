@@ -85,6 +85,7 @@ function Ranges(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
 
     const {
+        positionsByUser,
         userPositionsByPool,
         positionsByPool,
         unindexedNonFailedSessionPositionUpdates,
@@ -106,12 +107,22 @@ function Ranges(props: propsIF) {
         setCurrentRangeInReposition('');
     }
 
+    const activeUserPositionsLength = useMemo(
+        () =>
+            positionsByUser.positions.filter(
+                (position) => position.positionLiq != 0,
+            ).length,
+        [positionsByUser.positions],
+    );
+
     const rangeData = useMemo(
         () =>
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                  ? userPositionsByPool?.positions
+                  ? userPositionsByPool?.positions.filter(
+                        (position) => position.positionLiq != 0,
+                    )
                   : positionsByPool.positions.filter(
                         (position) => position.positionLiq != 0,
                     ),
@@ -784,7 +795,11 @@ function Ranges(props: propsIF) {
             }
         </div>
     ) : (
-        <NoTableData type='liquidity' isAccountView={isAccountView} />
+        <NoTableData
+            type='liquidity'
+            isAccountView={isAccountView}
+            activeUserPositionsLength={activeUserPositionsLength}
+        />
     );
 
     return (
