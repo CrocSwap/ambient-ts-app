@@ -66,7 +66,14 @@ export default function CandleLineChart(props: LineChartIF) {
     }, [tradeTableState, lastCandleData?.time]);
 
     useEffect(() => {
-        if (scaleData !== undefined && chartThemeColors) {
+        if (scaleData !== undefined && chartThemeColors && d3CanvasArea) {
+            const canvas = d3
+                .select(d3CanvasArea.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const style = getComputedStyle(canvas);
+
             const candleLine = d3fc
                 .seriesCanvasLine()
                 .mainValue((d: CandleDataIF) =>
@@ -79,9 +86,9 @@ export default function CandleLineChart(props: LineChartIF) {
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale)
                 .decorate((context: CanvasRenderingContext2D) => {
-                    context.strokeStyle = '#62EBF1';
+                    context.strokeStyle = style.getPropertyValue('--accent1');
 
-                    context.shadowColor = '#62EBF1';
+                    context.shadowColor = style.getPropertyValue('--accent1');
                     context.shadowBlur = 7;
                     context.shadowOffsetX = 1;
                     context.shadowOffsetY = 1;

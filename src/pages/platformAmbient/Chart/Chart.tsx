@@ -247,7 +247,9 @@ export default function Chart(props: propsIF) {
         timeOfEndCandle,
         isCondensedModeEnabled,
         setCandleData,
+        showFutaCandles,
     } = useContext(CandleContext);
+
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
@@ -1535,6 +1537,11 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [diffHashSigScaleData(scaleData)]);
+
+    useEffect(() => {
+        renderCanvasArray([d3CanvasMain]);
+        render();
+    }, [diffHashSig(showFutaCandles)]);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('timeframe changed');
@@ -5931,7 +5938,7 @@ export default function Chart(props: propsIF) {
                                 'px auto 1fr auto minmax(1em, max-content)',
                         }}
                     >
-                        {platformName !== 'futa' ? (
+                        {platformName !== 'futa' || showFutaCandles ? (
                             <CandleChart
                                 chartItemStates={props.chartItemStates}
                                 data={visibleCandleData}

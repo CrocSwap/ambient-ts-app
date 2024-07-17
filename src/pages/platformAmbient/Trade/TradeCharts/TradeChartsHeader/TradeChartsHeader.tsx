@@ -9,11 +9,15 @@ import { FiCopy } from 'react-icons/fi';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../../styled/Common';
-import { HeaderButtons } from '../../../../../styled/Components/Chart';
+import {
+    HeaderButtons,
+    SwitchButton,
+} from '../../../../../styled/Components/Chart';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { CandleContext } from '../../../../../contexts/CandleContext';
 import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -29,8 +33,13 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
-    const { isCondensedModeEnabled, setIsCondensedModeEnabled } =
-        useContext(CandleContext);
+    const {
+        isCondensedModeEnabled,
+        setIsCondensedModeEnabled,
+        showFutaCandles,
+        setShowFutaCandles,
+    } = useContext(CandleContext);
+
     const {
         baseToken: { symbol: baseTokenSymbol },
         quoteToken: { symbol: quoteTokenSymbol },
@@ -41,6 +50,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+
+    const { platformName } = useContext(BrandContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
@@ -66,6 +77,22 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const graphSettingsContent = (
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
+            {['futa'].includes(platformName) && (
+                <DefaultTooltip
+                    interactive
+                    title={!showFutaCandles ? 'Candle Chart' : 'Line Chart'}
+                    enterDelay={500}
+                >
+                    <HeaderButtons
+                        onClick={() => setShowFutaCandles(!showFutaCandles)}
+                    >
+                        <SwitchButton isActive={!showFutaCandles}>
+                            CANDLES
+                        </SwitchButton>
+                    </HeaderButtons>
+                </DefaultTooltip>
+            )}
+
             <DefaultTooltip
                 interactive
                 title={
