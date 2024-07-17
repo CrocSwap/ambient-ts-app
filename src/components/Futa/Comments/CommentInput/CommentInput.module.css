@@ -42,3 +42,20 @@
         vertical-align: middle;
         margin-top: -.1rem;
     }
+
+    .connect_to_chat_placeholder{
+        color: rgba(255,255,255, .3);
+        padding: .5rem;
+        text-align: center;
+        background-color: var(--dark3);
+        cursor: pointer;
+    }
+
+    .connect_btn{
+        position: absolute;
+        right: 0;
+        padding: .5rem;
+        top: 0;
+        background: var(--accent1);
+        color: black;
+    }

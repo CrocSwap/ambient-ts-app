@@ -34,6 +34,7 @@ function Comments() {
     const messageListRef = useRef<HTMLDivElement | null>(null);
 
     const [page, setPage] = useState(0);
+    const [fetchedAllPages, setFetchedAllPages] = useState(false);
     const [showPrevButton, setShowPrevButton] = useState(false);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const [scrollBackTarget, setScrollBackTarget] = useState('');
@@ -98,6 +99,7 @@ function Comments() {
     useEffect(() => {
         setShowPrevButton(false);
         setPage(0);
+        setFetchedAllPages(false);
         setFetchedMessageCount(0);
     }, [room]);
 
@@ -220,6 +222,7 @@ function Comments() {
         setPage(page + 1);
         if (data.length == 0) {
             setShowPrevButton(false);
+            setFetchedAllPages(true);
         }
         scrollToMessage(scrollBackTarget, true);
         setScrollBackTarget('');
@@ -269,6 +272,12 @@ function Comments() {
                         ) : (
                             <>
                                 <div className={styles.comments_content}>
+                                    {fetchedAllPages && (
+                                        <div className={styles.all_fetched}>
+                                            {' '}
+                                            All comments fetched.
+                                        </div>
+                                    )}
                                     {messages.map((msg, index) => {
                                         return (
                                             <CommentCard
@@ -291,7 +300,7 @@ function Comments() {
                         )}
                     </div>
 
-                    {showPrevButton && (
+                    {showPrevButton && !fetchedAllPages && (
                         <IoIosArrowUp
                             title='Get Previous Messages'
                             className={`${styles.floating_scroll_btn} ${styles.show_previous_comments_btn}`}
