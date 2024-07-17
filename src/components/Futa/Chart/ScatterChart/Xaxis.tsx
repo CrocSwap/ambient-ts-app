@@ -12,6 +12,7 @@ interface AxisIF {
     showDayCount: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     chartSize: any;
+    showComplete: boolean;
 }
 export default function Xaxis(props: AxisIF) {
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
@@ -23,6 +24,7 @@ export default function Xaxis(props: AxisIF) {
         textColor,
         showDayCount,
         chartSize,
+        showComplete,
     } = props;
 
     useEffect(() => {
@@ -30,7 +32,7 @@ export default function Xaxis(props: AxisIF) {
             const xAxis = d3
                 .axisBottom(scale)
                 .tickValues(
-                    afterOneWeek
+                    afterOneWeek && !showComplete
                         ? d3.range(0, 1441, 60)
                         : showDayCount > 30
                           ? d3.range(0, scale.domain()[0], 1441 * 7)
@@ -42,13 +44,18 @@ export default function Xaxis(props: AxisIF) {
                 )
                 .tickFormat((d) => {
                     if (Number.isInteger(d)) {
+                        if (afterOneWeek && !showComplete) {
+                            const hour = d.valueOf() / 60;
+                            return hour.toString() + 'h';
+                        }
+
                         if (showDayCount > 30) {
                             const week = d.valueOf() / (1441 * 7);
                             return week.toString() + 'w';
                         }
 
-                        const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
-                        return hour.toString() + 'd';
+                        const day = d.valueOf() / 1441;
+                        return day.toString() + 'd';
                     }
 
                     return '';
@@ -86,7 +93,7 @@ export default function Xaxis(props: AxisIF) {
         }
 
         renderCanvasArray([d3XaxisRef]);
-    }, [scale, d3XaxisRef]);
+    }, [scale, d3XaxisRef, showComplete]);
 
     useEffect(() => {
         renderCanvasArray([d3XaxisRef]);

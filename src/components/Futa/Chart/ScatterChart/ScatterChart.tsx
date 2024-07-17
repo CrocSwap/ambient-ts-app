@@ -139,11 +139,14 @@ export default function ScatterChart() {
                 const maxDomBuffer = showDayCount > 7 ? 1440 : 120;
                 const oneDayMinutes = 1440;
 
-                const maxXValue =
-                    (afterOneWeek
-                        ? oneDayMinutes
-                        : showDayCount * oneDayMinutes) + maxDomBuffer;
-                const minXValue = showDayCount > 7 ? -1441 : -150;
+                let maxXValue = showDayCount * oneDayMinutes + maxDomBuffer;
+
+                let minXValue = showDayCount > 7 ? -1441 : -150;
+
+                if (afterOneWeek && !showComplete) {
+                    maxXValue = oneDayMinutes + 30;
+                    minXValue = -30;
+                }
 
                 const xScale = d3
                     .scaleLinear()
@@ -207,13 +210,14 @@ export default function ScatterChart() {
                     const yTicks = yScale.ticks(tickCount);
 
                     const dataPoint: scatterData[] = [];
-                    const xTicks = afterOneWeek
-                        ? d3.range(0, 1441, 60)
-                        : d3.range(
-                              0,
-                              xScale.domain()[0],
-                              showDayCount > 7 ? 1441 : 1441 / 4,
-                          );
+                    const xTicks =
+                        afterOneWeek && !showComplete
+                            ? d3.range(0, 1441, 60)
+                            : d3.range(
+                                  0,
+                                  xScale.domain()[0],
+                                  showDayCount > 7 ? 1441 : 1441 / 4,
+                              );
                     xTicks.forEach((x) => {
                         yTicks.forEach((y) => {
                             dataPoint.push({
@@ -253,6 +257,7 @@ export default function ScatterChart() {
         pointSeries,
         selectedDot,
         hoveredDot,
+        showComplete,
     ]);
 
     useEffect(() => {
@@ -380,6 +385,7 @@ export default function ScatterChart() {
                 textColor={textColor}
                 showDayCount={showDayCount}
                 chartSize={chartSize}
+                showComplete={showComplete}
             />
             <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
         </div>
