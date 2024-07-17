@@ -5114,9 +5114,9 @@ browser-process-hrtime@^1.0.0:
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
-"browser-serialport@git+https://github.com/noopkat/browser-serialport.git#c8628c41c11890d3058875994c15f83f2df8185b":
+"browser-serialport@https://github.com/noopkat/browser-serialport#c8628c41c11890d3058875994c15f83f2df8185b":
   version "2.0.3"
-  resolved "git+https://github.com/noopkat/browser-serialport.git#c8628c41c11890d3058875994c15f83f2df8185b"
+  resolved "https://github.com/noopkat/browser-serialport#c8628c41c11890d3058875994c15f83f2df8185b"
 
 browser-serialport@latest:
   version "2.1.0"
