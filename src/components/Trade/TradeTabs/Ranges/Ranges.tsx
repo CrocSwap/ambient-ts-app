@@ -109,10 +109,16 @@ function Ranges(props: propsIF) {
 
     const activeUserPositionsLength = useMemo(
         () =>
-            positionsByUser.positions.filter(
-                (position) => position.positionLiq != 0,
-            ).length,
-        [positionsByUser.positions],
+            isAccountView
+                ? activeAccountPositionData
+                    ? activeAccountPositionData.filter(
+                          (position) => position.positionLiq != 0,
+                      ).length
+                    : 0
+                : positionsByUser.positions.filter(
+                      (position) => position.positionLiq != 0,
+                  ).length,
+        [activeAccountPositionData, positionsByUser, isAccountView],
     );
 
     const rangeData = useMemo(
