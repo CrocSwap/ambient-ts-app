@@ -30,6 +30,10 @@
     width: 100%;
     }
     
+
+    .comment_card_wrapper.unread{
+        background: color-mix(in srgb, var(--accent1) 5%, transparent);
+    }
   
 
     .comment_card_wrapper:first-child{
