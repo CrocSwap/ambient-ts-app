@@ -99,10 +99,16 @@ function Orders(props: propsIF) {
 
     const activeUserPositionsLength = useMemo(
         () =>
-            limitOrdersByUser.limitOrders.filter(
-                (position) => position.positionLiq != 0,
-            ).length,
-        [limitOrdersByUser.limitOrders],
+            isAccountView
+                ? activeAccountLimitOrderData
+                    ? activeAccountLimitOrderData.filter(
+                          (position) => position.positionLiq != 0,
+                      ).length
+                    : 0
+                : limitOrdersByUser.limitOrders.filter(
+                      (position) => position.positionLiq != 0,
+                  ).length,
+        [activeAccountLimitOrderData, isAccountView, limitOrdersByUser],
     );
 
     const isLoading = useMemo(
