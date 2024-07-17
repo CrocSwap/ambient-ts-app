@@ -10,11 +10,20 @@ interface AxisIF {
     axisColor: string;
     textColor: string;
     showDayCount: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chartSize: any;
 }
 export default function Xaxis(props: AxisIF) {
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale, afterOneWeek, axisColor, textColor, showDayCount } =
-        props;
+    const {
+        data,
+        scale,
+        afterOneWeek,
+        axisColor,
+        textColor,
+        showDayCount,
+        chartSize,
+    } = props;
 
     useEffect(() => {
         if (scale) {
@@ -78,6 +87,10 @@ export default function Xaxis(props: AxisIF) {
 
         renderCanvasArray([d3XaxisRef]);
     }, [scale, d3XaxisRef]);
+
+    useEffect(() => {
+        renderCanvasArray([d3XaxisRef]);
+    }, [chartSize]);
 
     return (
         <d3fc-svg

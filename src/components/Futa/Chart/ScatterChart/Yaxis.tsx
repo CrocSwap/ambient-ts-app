@@ -4,15 +4,16 @@ import * as d3fc from 'd3fc';
 import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 
 interface AxisIF {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any;
+    data: number[];
     scale: d3.ScaleLinear<number, number> | undefined;
     axisColor: string;
     textColor: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chartSize: any;
 }
 export default function Yaxis(props: AxisIF) {
     const d3YaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale, axisColor, textColor } = props;
+    const { data, scale, axisColor, textColor, chartSize } = props;
 
     useEffect(() => {
         if (scale) {
@@ -59,7 +60,11 @@ export default function Yaxis(props: AxisIF) {
         }
 
         renderCanvasArray([d3YaxisRef]);
-    }, [scale, scale?.range(), d3YaxisRef]);
+    }, [scale, d3YaxisRef]);
+
+    useEffect(() => {
+        renderCanvasArray([d3YaxisRef]);
+    }, [chartSize]);
 
     return (
         <d3fc-svg
