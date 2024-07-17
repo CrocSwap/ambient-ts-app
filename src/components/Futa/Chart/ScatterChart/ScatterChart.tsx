@@ -136,14 +136,14 @@ export default function ScatterChart() {
                     Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
                     100000;
 
-                const maxDomBuffer = showDayCount > 7 ? 1440 : 60;
+                const maxDomBuffer = showDayCount > 7 ? 1440 : 120;
                 const oneDayMinutes = 1440;
 
                 const maxXValue =
                     (afterOneWeek
                         ? oneDayMinutes
                         : showDayCount * oneDayMinutes) + maxDomBuffer;
-                const minXValue = showDayCount > 7 ? -1441 : -120;
+                const minXValue = showDayCount > 7 ? -1441 : -150;
 
                 const xScale = d3
                     .scaleLinear()
@@ -160,7 +160,7 @@ export default function ScatterChart() {
                 setYscale(() => yScale);
             }
         }
-    }, [diffHashSig(data), showDayCount]);
+    }, [diffHashSig(data), showDayCount, afterOneWeek]);
 
     useEffect(() => {
         if (xScale && yScale) {
