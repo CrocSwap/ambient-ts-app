@@ -56,7 +56,7 @@ function NoTableData(props: NoTableDataPropsIF) {
 
     const message =
         activeUserPositionsLength && activeUserPositionsLength > 0 ? (
-            `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POOLS' : 'POOL') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : activeUserPositionsLength > 1 ? 'TRANSACTIONS' : 'TRANSACTION'} IN OTHER POOLS`
+            `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POSITIONS' : 'POSITION') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : activeUserPositionsLength > 1 ? 'TRANSACTIONS' : 'TRANSACTION'} IN OTHER POOLS`
         ) : (
             <h2>NO {type.toUpperCase()} FOUND</h2>
         );
