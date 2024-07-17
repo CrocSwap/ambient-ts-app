@@ -83,14 +83,8 @@ export default function PortfolioBannerAccount(
                       ? userAddress
                       : '',
             );
-            setUserProfileNFT(
-                avatar.avatarImage === '_jazz' ? '_jazz_' : avatar.avatarImage,
-            );
-            setUserThumbnailNFT(
-                avatar.avatarThumbnail === '_jazz'
-                    ? '_jazz_'
-                    : avatar.avatarThumbnail,
-            );
+            setUserProfileNFT(avatar.avatarImage);
+            setUserThumbnailNFT(avatar.avatarThumbnail);
         }
     };
 
