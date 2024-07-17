@@ -4,11 +4,17 @@ import styled from 'styled-components/macro';
 export const MainSection = styled.section<{
     isDropdown?: boolean;
     isSmallScreen?: boolean;
+    isFill: boolean;
 }>`
     display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
-    grid-template-columns: auto 380px;
+    ${({ isFill }) => {
+        if (!isFill) {
+            return 'grid-template-columns: auto 380px;';
+        }
+    }}
+
     height: ${(props) =>
         props.isDropdown && !props.isSmallScreen
             ? 'calc(100dvh - 85px)'
