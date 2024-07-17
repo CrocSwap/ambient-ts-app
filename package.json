@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.6.14",
+    "version": "2.6.15",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -92,7 +92,7 @@
         "eslint-import-resolver-typescript": "^2.7.1",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-prettier": "^4.0.0",
-        "eslint-plugin-react": "^7.29.4",
+        "eslint-plugin-react": "^7.34.4",
         "eslint-plugin-react-hooks": "^4.6.2",
         "husky": "^9.0.11",
         "lint-staged": "^15.2.5",
