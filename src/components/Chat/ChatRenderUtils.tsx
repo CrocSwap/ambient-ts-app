@@ -253,10 +253,10 @@ export const getAvatarComponent = (
     return getAvatar(
         walletID,
         showThumb
-            ? resp.avatarThumbnail.replace('_jazz', '_jazz_')
+            ? resp.avatarThumbnail
             : showCompressed
-              ? resp.avatarCompressed.replace('_jazz', '_jazz_')
-              : resp.avatarImage.replace('_jazz', '_jazz_'),
+              ? resp.avatarCompressed
+              : resp.avatarImage,
         size,
         false,
     );
