@@ -128,8 +128,13 @@ function Transactions(props: propsIF) {
     );
 
     const userTransacionsLength = useMemo(
-        () => transactionsByUser.changes.length,
-        [transactionsByUser.changes],
+        () =>
+            isAccountView
+                ? activeAccountTransactionData
+                    ? activeAccountTransactionData.length
+                    : 0
+                : transactionsByUser.changes.length,
+        [activeAccountTransactionData, transactionsByUser, isAccountView],
     );
 
     useEffect(() => {
