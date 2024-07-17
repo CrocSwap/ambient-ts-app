@@ -8,31 +8,33 @@ import React, {
     useState,
 } from 'react';
 import { CrocEnvContext } from './CrocEnvContext';
-import { mockAuctionDetailsServerResponseGenerator } from '../pages/platformFuta/mockAuctionData';
 import {
     tickerWatchlistIF,
     useTickerWatchlist,
 } from '../pages/platformFuta/useTickerWatchlist';
 import { UserDataContext } from './UserDataContext';
-import {
-    AuctionDataIF,
-    AuctionStatusResponseIF,
-} from '../ambient-utils/dataLayer/functions/getAuctionData';
+import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
+import { TokenIF } from '../ambient-utils/types';
+import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
 
-interface AuctionsContextIF {
+export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
+    setFilteredAuctionList: Dispatch<
+        SetStateAction<AuctionDataIF[] | undefined>
+    >;
+    filteredAuctionList: AuctionDataIF[] | undefined;
     accountData: AccountDataIF;
     updateUserAuctionsList(address: string): void;
     updateGlobalAuctionsList(): void;
-    getAuctionData(ticker: string): void;
+    getFreshAuctionData(ticker: string): void;
+    freshAuctionStatusData: AuctionStatusDataIF;
     isLoading: boolean;
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     showComments: boolean;
     setShowComments: Dispatch<SetStateAction<boolean>>;
     tickerInput: string;
     setTickerInput: Dispatch<SetStateAction<string>>;
-    auctionStatusData: AuctionStatusDataIF;
     selectedTicker: string | undefined;
     hoveredTicker: string | undefined;
     setHoveredTicker: Dispatch<SetStateAction<string | undefined>>;
@@ -46,6 +48,11 @@ interface AuctionsContextIF {
     };
     showComplete: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
+    activeTickers: {
+        pair: [TokenIF, TokenIF];
+        update: (tickerA: TokenIF, tickerB: TokenIF) => void;
+        reverse: () => void;
+    };
 }
 
 export interface AuctionStatusDataIF {
@@ -57,8 +64,11 @@ export interface AuctionStatusDataIF {
     filledClearingPriceInNativeTokenWei: string;
 
     // open bid data
-    openBidClearingPriceInNativeTokenWei: string | undefined;
-    openBidQtyFilledInNativeTokenWei: string | undefined;
+    openBidClearingPriceInNativeTokenWei?: string | undefined;
+    openBidQtyFilledInNativeTokenWei?: string | undefined;
+
+    // closed auction data
+    tokenAddress?: string | undefined;
 }
 
 export interface AuctionsDataIF {
@@ -87,8 +97,11 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { userAddress } = useContext(UserDataContext);
-    const { cachedGetGlobalAuctionsList, cachedGetUserAuctionsList } =
-        useContext(CachedDataContext);
+    const {
+        cachedGetGlobalAuctionsList,
+        cachedGetUserAuctionsList,
+        cachedGetAuctionStatus,
+    } = useContext(CachedDataContext);
 
     const [globalAuctionList, setGlobalAuctionList] =
         React.useState<AuctionsDataIF>({
@@ -97,6 +110,10 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
             data: [],
         });
 
+    const [filteredAuctionList, setFilteredAuctionList] = React.useState<
+        AuctionDataIF[] | undefined
+    >([]);
+
     const [accountData, setAccountData] = useState<AccountDataIF>({
         dataReceived: false,
         chainId: chainId,
@@ -104,7 +121,7 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         auctions: [],
     });
 
-    const [auctionStatusData, setAuctionStatusData] =
+    const [freshAuctionStatusData, setFreshAuctionStatusData] =
         useState<AuctionStatusDataIF>({
             dataReceived: false,
             ticker: '',
@@ -142,55 +159,80 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     //     return mockAccountData2;
     // };
 
-    const fetchAuctionStatusData = async (
-        ticker: string,
-    ): Promise<AuctionStatusResponseIF> => {
-        return mockAuctionDetailsServerResponseGenerator(ticker, chainId);
-    };
-
     function updateGlobalAuctionsList() {
         cachedGetGlobalAuctionsList(
             chainId,
             Math.floor(Date.now() / 30000),
         ).then((data) => {
-            setGlobalAuctionList({
+            const res = {
                 dataReceived: true,
                 chainId: chainId,
                 data: data,
-            });
+            };
+            setGlobalAuctionList(res);
         });
     }
 
     function updateUserAuctionsList(address: string) {
-        cachedGetUserAuctionsList(
-            chainId,
-            address,
-            Math.floor(Date.now() / 30000),
-        ).then((data) => {
-            setAccountData({
-                dataReceived: true,
-                chainId: chainId,
-                userAddress: address,
-                auctions: data,
+        if (address !== '') {
+            cachedGetUserAuctionsList(
+                chainId,
+                address,
+                Math.floor(Date.now() / 30000),
+            ).then((data) => {
+                setAccountData({
+                    dataReceived: true,
+                    chainId: chainId,
+                    userAddress: address,
+                    auctions: data,
+                });
             });
-        });
+        } else {
+            setAccountData({
+                dataReceived: false,
+                chainId: chainId,
+                userAddress: '',
+                auctions: [],
+            });
+        }
     }
 
-    function getAuctionData(ticker: string) {
-        fetchAuctionStatusData(ticker).then((data) => {
-            setAuctionStatusData({
-                dataReceived: true,
-                ticker: data.ticker,
-                createdAt: data.createdAt,
-                auctionLength: data.auctionLength,
-                chainId: chainId,
-                filledClearingPriceInNativeTokenWei:
-                    data.filledClearingPriceInNativeTokenWei,
-                openBidClearingPriceInNativeTokenWei:
-                    data.openBidClearingPriceInNativeTokenWei,
-                openBidQtyFilledInNativeTokenWei:
-                    data.openBidQtyFilledInNativeTokenWei,
-            });
+    function getFreshAuctionData(ticker: string) {
+        cachedGetAuctionStatus(
+            ticker,
+            CURRENT_AUCTION_VERSION,
+            chainId,
+            Math.floor(Date.now() / 30000),
+        ).then((response) => {
+            const data = response?.data;
+            if (!data) {
+                setFreshAuctionStatusData({
+                    dataReceived: false,
+                    ticker: '',
+                    createdAt: 0,
+                    auctionLength: 0,
+                    chainId: '',
+                    filledClearingPriceInNativeTokenWei: '',
+                    openBidClearingPriceInNativeTokenWei: '',
+                    openBidQtyFilledInNativeTokenWei: '',
+                    tokenAddress: '',
+                });
+            } else {
+                setFreshAuctionStatusData({
+                    dataReceived: true,
+                    ticker: data.ticker,
+                    createdAt: data.createdAt,
+                    auctionLength: data.auctionLength,
+                    chainId: chainId,
+                    filledClearingPriceInNativeTokenWei:
+                        data.filledClearingPriceInNativeTokenWei,
+                    openBidClearingPriceInNativeTokenWei:
+                        data.openBidClearingPriceInNativeTokenWei,
+                    openBidQtyFilledInNativeTokenWei:
+                        data.openBidQtyFilledInNativeTokenWei,
+                    tokenAddress: data.tokenAddress,
+                });
+            }
         });
     }
 
@@ -215,13 +257,44 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         setShowWatchlist(show ?? !showWatchlist);
     }
 
+    const [tickerPair, setTickerPair] = useState<[TokenIF, TokenIF]>([
+        {
+            name: 'Native Ether',
+            address: '0x0000000000000000000000000000000000000000',
+            symbol: 'ETH',
+            decimals: 18,
+            chainId: 11155111,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+        },
+        {
+            address: '0x60bBA138A74C5e7326885De5090700626950d509',
+            chainId: 11155111,
+            decimals: 6,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+            name: 'USDC',
+            symbol: 'USDC',
+        },
+    ]);
+
+    function changeTickers(tickerA: TokenIF, tickerB: TokenIF): void {
+        setTickerPair([tickerA, tickerB]);
+    }
+
+    function reverseTickers(): void {
+        setTickerPair([tickerPair[1], tickerPair[0]]);
+    }
+
     const auctionsContext: AuctionsContextIF = {
-        auctionStatusData: auctionStatusData,
+        freshAuctionStatusData: freshAuctionStatusData,
         globalAuctionList: globalAuctionList,
+        filteredAuctionList: filteredAuctionList,
+        setFilteredAuctionList: setFilteredAuctionList,
         accountData: accountData,
         updateUserAuctionsList: updateUserAuctionsList,
         updateGlobalAuctionsList: updateGlobalAuctionsList,
-        getAuctionData: getAuctionData,
+        getFreshAuctionData: getFreshAuctionData,
         isLoading: isLoading,
         setIsLoading: setIsLoading,
         tickerInput: tickerInput,
@@ -241,6 +314,11 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         },
         showComplete: showComplete,
         setShowComplete: setShowComplete,
+        activeTickers: {
+            pair: tickerPair,
+            update: changeTickers,
+            reverse: reverseTickers,
+        },
     };
 
     return (

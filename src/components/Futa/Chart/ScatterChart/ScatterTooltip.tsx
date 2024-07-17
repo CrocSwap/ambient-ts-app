@@ -1,14 +1,22 @@
+import { useContext } from 'react';
 import {
     getFormattedNumber,
+    getTimeDifferenceAbbrev,
     getTimeRemainingAbbrev,
 } from '../../../../ambient-utils/dataLayer';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { scatterData, textColor } from './ScatterChart';
+import { AuctionsContext } from '../../../../contexts/AuctionsContext';
 
 interface propsIF {
     hoveredDot: scatterData | undefined;
     selectedDot: scatterData | undefined;
 }
 export default function ScatterTooltip(props: propsIF) {
+    const { isUserConnected } = useContext(UserDataContext);
+
+    const { showComplete } = useContext(AuctionsContext);
+
     const { hoveredDot, selectedDot } = props;
     const displayData = hoveredDot
         ? hoveredDot
@@ -16,8 +24,16 @@ export default function ScatterTooltip(props: propsIF) {
           ? selectedDot
           : undefined;
 
+    const displayCompletedAuctionInfo = showComplete
+        ? true
+        : displayData
+          ? displayData.timeRemaining <= 0
+          : false;
+
     const formatTime = (time: number) => {
-        return getTimeRemainingAbbrev(time);
+        return displayCompletedAuctionInfo
+            ? getTimeDifferenceAbbrev(time)
+            : getTimeRemainingAbbrev(time);
     };
 
     const formatPrice = (price: number) => {
@@ -43,22 +59,30 @@ export default function ScatterTooltip(props: propsIF) {
         >
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
                 TICKER:{' '}
-                <span style={{ float: 'right', marginLeft: '10px' }}>
+                <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? displayData.name : '-'}
                 </span>
             </p>
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
-                TIME REMAINING:{' '}
-                <span style={{ float: 'right', marginLeft: '10px' }}>
+                {displayCompletedAuctionInfo ? 'COMPLETED:' : 'TIME REMAINING:'}
+                <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? formatTime(displayData.timeRemaining) : '-'}
                 </span>
             </p>
             <p style={{ textAlign: 'left', margin: '2px 0' }}>
                 MARKET CAP:{' '}
-                <span style={{ float: 'right', marginLeft: '10px' }}>
+                <span style={{ float: 'right', marginLeft: '5px' }}>
                     {displayData ? formatPrice(displayData.price) : '-'}
                 </span>
             </p>
+            {isUserConnected && (
+                <p style={{ textAlign: 'left', margin: '2px 0' }}>
+                    YOUR BID:
+                    <span style={{ float: 'right', marginLeft: '5px' }}>
+                        {displayData ? displayData.userBidSize : '-'}
+                    </span>
+                </p>
+            )}
         </div>
     );
 }

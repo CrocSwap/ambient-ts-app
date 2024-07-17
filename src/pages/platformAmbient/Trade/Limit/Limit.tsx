@@ -32,7 +32,6 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
-    parseErrorMessage,
 } from '../../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../../utils/tutorial/Limit';
 import { useApprove } from '../../../../App/functions/approve';
@@ -130,9 +129,7 @@ export default function Limit() {
     const [priceInputFieldBlurred, setPriceInputFieldBlurred] = useState(false);
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
@@ -569,9 +566,7 @@ export default function Limit() {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewLimitOrderTransactionHash('');
     };
 
@@ -661,16 +656,8 @@ export default function Limit() {
                 unixTimeAdded: Math.floor(Date.now() / 1000),
             });
         } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
             console.error({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(parseErrorMessage(error));
-            setTxErrorJSON(JSON.stringify(error));
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
+            setTxError(error);
         }
 
         let receipt;
@@ -897,9 +884,7 @@ export default function Limit() {
                         newLimitOrderTransactionHash={
                             newLimitOrderTransactionHash
                         }
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         showConfirmation={showConfirmation}
                         resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
@@ -947,9 +932,7 @@ export default function Limit() {
                     <SubmitTransaction
                         type='Limit'
                         newTransactionHash={newLimitOrderTransactionHash}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendLimitOrder}
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}

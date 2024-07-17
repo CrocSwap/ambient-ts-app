@@ -1,10 +1,18 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    MouseEvent,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import Xaxis from './Xaxis';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import {
     getXandYLocationForChart,
     renderCanvasArray,
+    setCanvasResolution,
 } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import Yaxis from './Yaxis';
@@ -21,14 +29,16 @@ export const fillColor = '#0D0F13'; // dark1
 export const accentColor = '#62EBF1'; // accent1
 
 export type scatterData = {
-    name: string;
+    name?: string;
     timeRemaining: number;
+    userBidSize?: string;
     price: number;
     size: number;
+    isShow: boolean;
 };
 
-export const scatterDotDefaultSize = 90;
-export const scatterDotSelectedSize = 150;
+export const scatterDotDefaultSize = 144;
+export const scatterDotSelectedSize = 196;
 
 export default function ScatterChart() {
     const d3Chart = useRef<HTMLDivElement | null>(null);
@@ -41,7 +51,7 @@ export default function ScatterChart() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [pointSeries, setPointSeries] = useState<any>();
 
-    const { hoveredTicker, setHoveredTicker, selectedTicker } =
+    const { hoveredTicker, setHoveredTicker, selectedTicker, showComplete } =
         useContext(AuctionsContext);
 
     const { chartThemeColors } = useContext(ChartContext);
@@ -59,31 +69,58 @@ export default function ScatterChart() {
     const navigate = useNavigate();
 
     const getTimeRemainingValue = (timeRemaining: number) => {
+        if (timeRemaining < 0) {
+            return Math.abs(timeRemaining / 60);
+        }
         return timeRemaining / 60;
     };
 
     const navigateUrlBase = '/auctions';
     const navigateUrl = navigateUrlBase + '/v1/';
 
+    const showDotsData = useMemo(() => {
+        const res = data.filter((i) => i.isShow);
+        return res;
+    }, [diffHashSig(data)]);
+
+    const showDayCount = useMemo(() => {
+        const showDataMinTimeRemaining = Math.ceil(
+            d3.max(showDotsData, (d) => Math.abs(d.timeRemaining / 86400)) || 0,
+        );
+
+        const maxDayCount =
+            showComplete &&
+            showDataMinTimeRemaining &&
+            showDataMinTimeRemaining > 7
+                ? showDataMinTimeRemaining
+                : 7;
+
+        return maxDayCount;
+    }, [diffHashSig(showDotsData)]);
+
     const selectedDot = useMemo(() => {
-        const selectedDotData = data.find((i) => i.name === selectedTicker);
+        const selectedDotData = showDotsData.find(
+            (i) => i.name === selectedTicker,
+        );
 
         if (selectedDotData) {
             return { ...selectedDotData, size: scatterDotSelectedSize };
         }
 
         return undefined;
-    }, [data, hoveredTicker, selectedTicker]);
+    }, [showDotsData, hoveredTicker, selectedTicker]);
 
     const hoveredDot = useMemo(() => {
-        const hoveredDotData = data.find((i) => i.name === hoveredTicker);
+        const hoveredDotData = showDotsData.find(
+            (i) => i.name === hoveredTicker,
+        );
 
         if (hoveredDotData) {
             return { ...hoveredDotData, size: scatterDotSelectedSize };
         }
 
         return undefined;
-    }, [data, hoveredTicker, selectedDot]);
+    }, [showDotsData, hoveredTicker, selectedDot]);
 
     useEffect(() => {
         if (data && data.length) {
@@ -99,8 +136,18 @@ export default function ScatterChart() {
                     Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
                     100000;
 
-                const minXValue = -120;
-                const maxXValue = afterOneWeek ? 1440 + 60 : 1440 * 7 + 60;
+                const maxDomBuffer = showDayCount > 7 ? 1440 : 120;
+                const oneDayMinutes = 1440;
+
+                let maxXValue = showDayCount * oneDayMinutes + maxDomBuffer;
+
+                let minXValue = showDayCount > 7 ? -1441 : -150;
+
+                if (afterOneWeek && !showComplete) {
+                    maxXValue = oneDayMinutes + 30;
+                    minXValue = -30;
+                }
+
                 const xScale = d3
                     .scaleLinear()
                     .domain([maxXValue, minXValue])
@@ -110,18 +157,18 @@ export default function ScatterChart() {
 
                 const yScale = d3
                     .scaleLinear()
-                    .domain([-50000, maxYValue])
+                    .domain([-10000, maxYValue])
                     .range([height, 15]);
 
                 setYscale(() => yScale);
             }
         }
-    }, [diffHashSig(data), chartSize]);
+    }, [diffHashSig(data), showDayCount, afterOneWeek]);
 
     useEffect(() => {
         if (xScale && yScale) {
             const pointSeries = d3fc
-                .seriesSvgPoint()
+                .seriesCanvasPoint()
                 .xScale(xScale)
                 .yScale(yScale)
                 .crossValue((d: scatterData) =>
@@ -130,20 +177,16 @@ export default function ScatterChart() {
                 .mainValue((d: scatterData) => d.price)
                 .size((d: scatterData) => d.size)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .decorate((context: any, d: any) => {
+                .decorate((context: CanvasRenderingContext2D, d: any) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    context.nodes().forEach((selection: any, index: number) => {
-                        d3.select(selection)
-                            .style(
-                                'fill',
-                                d[index].price === selectedDot?.price &&
-                                    d[index].timeRemaining ===
-                                        selectedDot?.timeRemaining
-                                    ? accentColor
-                                    : fillColor,
-                            )
-                            .style('stroke', accentColor);
-                    });
+
+                    context.fillStyle =
+                        d.price === selectedDot?.price &&
+                        d.timeRemaining === selectedDot?.timeRemaining
+                            ? accentColor
+                            : fillColor;
+                    context.strokeStyle =
+                        d.size < 5 ? dotGridColor : accentColor;
                 });
 
             setPointSeries(() => pointSeries);
@@ -152,62 +195,69 @@ export default function ScatterChart() {
 
     useEffect(() => {
         if (xScale && yScale && pointSeries) {
-            const circleJoin = d3fc.dataJoin('g', 'circleJoin');
+            const canvas = d3
+                .select(d3Chart.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
             d3.select(d3Chart.current)
-                .on('draw', (event) => {
-                    const svg = d3.select(event.target).select('svg');
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
 
-                    const xTicks = afterOneWeek
-                        ? d3.range(0, 1441, 60)
-                        : d3.range(0, 1441 * 8, 1441 / 4);
-                    const yTicks = d3.range(
-                        0,
-                        Number(d3.max(data, (d) => d.price)) + 100000,
-                        100000,
-                    );
-                    svg.select('#gridCircles').remove();
-                    svg.select('.circleJoin').remove();
+                    const heightYAxis = yScale.range()[0] + yScale.range()[1];
+                    const tickCount = heightYAxis < 350 ? 5 : 10;
+                    const yTicks = yScale.ticks(tickCount);
 
-                    svg.append('g').attr('id', 'gridCircles');
-
+                    const dataPoint: scatterData[] = [];
+                    const xTicks =
+                        afterOneWeek && !showComplete
+                            ? d3.range(0, 1441, 60)
+                            : d3.range(
+                                  0,
+                                  xScale.domain()[0],
+                                  showDayCount > 7 ? 1441 : 1441 / 4,
+                              );
                     xTicks.forEach((x) => {
                         yTicks.forEach((y) => {
-                            svg.select('#gridCircles')
-                                .append('circle')
-                                .attr('cx', xScale(x))
-                                .attr('cy', yScale(y))
-                                .attr('r', 1)
-                                .attr('fill', dotGridColor);
+                            dataPoint.push({
+                                price: y,
+                                timeRemaining: x * 60,
+                                size: 2,
+                                isShow: true,
+                            });
                         });
                     });
 
+                    pointSeries(dataPoint);
                     const dataWithSelected = selectedDot
-                        ? [...data, selectedDot]
-                        : data;
+                        ? [...showDotsData, selectedDot]
+                        : showDotsData;
 
                     const dataWithHovered = hoveredDot
-                        ? [...dataWithSelected, hoveredDot]
+                        ? [...showDotsData, hoveredDot]
                         : dataWithSelected;
 
-                    circleJoin(svg, [dataWithHovered]).call(pointSeries);
+                    if (data !== undefined) {
+                        pointSeries(dataWithHovered);
+                    }
                 })
-
                 .on('measure', (event: CustomEvent) => {
                     xScale.range([0, event.detail.width]);
                     yScale.range([event.detail.height, 15]);
+                    pointSeries.context(ctx);
                 });
 
             renderCanvasArray([d3Chart]);
         }
     }, [
-        diffHashSig(data),
+        diffHashSig(showDotsData),
         xScale,
         yScale,
-        chartSize,
         pointSeries,
         selectedDot,
         hoveredDot,
+        showComplete,
     ]);
 
     useEffect(() => {
@@ -234,9 +284,8 @@ export default function ScatterChart() {
         if (xScale && yScale) {
             const canvas = d3
                 .select(d3Chart.current)
-                .select('svg')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .node() as any;
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
             const rectSvg = canvas.getBoundingClientRect();
 
@@ -245,7 +294,7 @@ export default function ScatterChart() {
                 rectSvg,
             );
 
-            const dataAtMouse = data.filter((d) => {
+            const dataAtMouse = showDotsData.filter((d) => {
                 const x = xScale(getTimeRemainingValue(d.timeRemaining));
                 const y = yScale(d.price);
                 return Math.abs(x - offsetX) < 5 && Math.abs(y - offsetY) < 5;
@@ -276,13 +325,12 @@ export default function ScatterChart() {
     useEffect(() => {
         if (xScale && yScale) {
             d3.select(d3Chart.current)
-                .select('svg')
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('mousemove', (event: any) => {
+                .select('canvas')
+                .on('mousemove', (event: MouseEvent<HTMLDivElement>) => {
                     const nearestData = findNearestCircle(event);
 
                     d3.select(d3Chart.current)
-                        .select('svg')
+                        .select('canvas')
                         .style('cursor', nearestData ? 'pointer' : 'default');
                     setHoveredTicker(
                         nearestData ? nearestData.name : undefined,
@@ -300,7 +348,7 @@ export default function ScatterChart() {
                     setHoveredTicker(undefined);
                 });
         }
-    }, [xScale, yScale, selectedDot]);
+    }, [xScale, yScale, selectedDot, showDotsData]);
 
     return (
         <div
@@ -318,8 +366,9 @@ export default function ScatterChart() {
                 scale={yScale}
                 axisColor={axisColor}
                 textColor={textColor}
+                chartSize={chartSize}
             />
-            <d3fc-svg
+            <d3fc-canvas
                 ref={d3Chart}
                 style={{
                     gridColumnStart: 2,
@@ -327,13 +376,16 @@ export default function ScatterChart() {
                     gridRow: 1,
                     width: '100%',
                 }}
-            ></d3fc-svg>
+            ></d3fc-canvas>
             <Xaxis
                 data={data.map((i) => i.timeRemaining)}
                 scale={xScale}
                 afterOneWeek={afterOneWeek}
                 axisColor={axisColor}
                 textColor={textColor}
+                showDayCount={showDayCount}
+                chartSize={chartSize}
+                showComplete={showComplete}
             />
             <ScatterTooltip hoveredDot={hoveredDot} selectedDot={selectedDot} />
         </div>

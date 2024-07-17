@@ -10,6 +10,11 @@ export const CROCODILE_LABS_LINKS = [
     'https://etherscan.io/',
 ];
 
+export const CHAT_WHITELISTED_REGEX: RegExp[] = [
+    /^(https:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)?ambient\.finance$/,
+    /^(https:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)?futa\.finance$/,
+];
+
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
 

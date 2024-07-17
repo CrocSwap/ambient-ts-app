@@ -14,7 +14,6 @@ export default function DesktopFooter() {
         value: nativeTokenUsdPrice,
         isUSD: true,
     });
-    console.log({ rpcNodeStatus });
 
     const rpcStatusStyle = rpcNodeStatus
         ? rpcNodeStatus === 'active'
@@ -23,8 +22,6 @@ export default function DesktopFooter() {
               ? styles.inactive_status
               : styles.unknown_status
         : styles.unknown_status;
-
-    console.log({ rpcStatusStyle });
 
     return (
         <footer data-theme='orange_dark' className={styles.desktopContainer}>

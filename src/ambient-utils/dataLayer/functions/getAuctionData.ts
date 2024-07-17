@@ -1,6 +1,7 @@
 import {
     mockAccountData1,
     mockAccountData2,
+    mockAuctionDetailsServerResponseGenerator,
     mockGlobalAuctionData,
 } from '../../../pages/platformFuta/mockAuctionData';
 // import { GCGO_OVERRIDE_URL } from '../../constants';
@@ -10,11 +11,6 @@ import {
     memoizeCacheQueryFn,
 } from './memoizePromiseFn';
 import { CURRENT_AUCTION_VERSION } from '../../constants';
-
-export interface AuctionPlanIF {
-    ticker: string;
-    version: number;
-}
 
 export interface PriceImpactIF {
     ticker: string;
@@ -28,6 +24,12 @@ export interface PriceImpactIF {
 export interface TickerValidityIF {
     isValid: boolean;
     invalidReason?: string;
+}
+
+export interface AuctionTxResponseIF {
+    txType: 'create' | 'bid' | 'claim' | 'return' | 'claimAll';
+    isSuccess: boolean;
+    failureReason?: string;
 }
 
 export interface AuctionListResponseIF {
@@ -56,15 +58,21 @@ export interface AuctionDataIF {
 
 // interface for auction status data used to generate auction details view
 export interface AuctionStatusResponseIF {
-    ticker: string;
-    chainId: string;
-    createdAt: number;
-    auctionLength: number;
-    filledClearingPriceInNativeTokenWei: string;
+    data: {
+        ticker: string;
+        version: number;
+        chainId: string;
+        createdAt: number;
+        auctionLength: number;
+        filledClearingPriceInNativeTokenWei: string;
 
-    // open bid data
-    openBidClearingPriceInNativeTokenWei?: string | undefined;
-    openBidQtyFilledInNativeTokenWei?: string | undefined;
+        // open bid data
+        openBidClearingPriceInNativeTokenWei?: string | undefined;
+        openBidQtyFilledInNativeTokenWei?: string | undefined;
+
+        // closed auction data
+        tokenAddress?: string | undefined;
+    };
 }
 
 const getGlobalAuctionsList = async (
@@ -150,7 +158,7 @@ const excludedTickers = [
 ];
 
 // Regular expression pattern for Latin alphabet characters (both uppercase and lowercase), digits, and emoji
-const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
+export const validTickerPattern = /^[A-Za-z0-9\p{Extended_Pictographic}]+$/u;
 /* 
         Example usage of the pattern
         console.log(isValidString("Hello123")); // true (Latin alphanumeric)
@@ -169,9 +177,7 @@ export const checkTickerValidity = async (
     env: CrocEnv,
     ticker: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _chainId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _lastBlockNumber: number,
+    _lastBlockNumber?: number,
 ): Promise<TickerValidityIF> => {
     const isExcluded = excludedTickers.includes(ticker.toLowerCase());
     const lengthIsValid = ticker.length > 0 && ticker.length <= 10;
@@ -185,7 +191,6 @@ export const checkTickerValidity = async (
     if (!isTickerValid)
         console.log('checking ticker validity', {
             ticker,
-            _chainId,
             isTickerValid,
         });
     const invalidReason = isExcluded ? 'Excluded ticker' : 'Invalid ticker';
@@ -202,7 +207,6 @@ export const checkTickerValidity = async (
 
         console.log('checking ticker validity', {
             ticker,
-            _chainId,
             mockIsTickerAvailable,
         });
 
@@ -212,6 +216,51 @@ export const checkTickerValidity = async (
         };
     } catch (error) {
         return { isValid: false, invalidReason: 'Unknown Error' };
+    }
+};
+
+export const createAuction = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'create',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(`clicked Create Auction for ${ticker}`);
+        const isTickerAvailableAndValid = (
+            await checkTickerValidity(env, ticker)
+        ).isValid;
+
+        if (isTickerAvailableAndValid) {
+            // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+            // const isAuctionCreated: TickerCreationResponseIF = await auctionPlan.create();
+
+            // 2 second timeout to simulate transaction
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            const mockIsAuctionCreated: AuctionTxResponseIF = {
+                txType: 'create',
+                isSuccess: !ticker.toLowerCase().includes('fail'),
+            };
+
+            return mockIsAuctionCreated;
+        } else {
+            return {
+                txType: 'create',
+                isSuccess: false,
+                failureReason: 'Invalid Ticker',
+            };
+        }
+    } catch (error) {
+        return {
+            txType: 'create',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
     }
 };
 
@@ -245,6 +294,217 @@ export const calcBidImpact = async (
     }
 };
 
+export const createBid = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    bidQtyInNativeTokenWei: string,
+    selectedMaxMarketCapInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'bid',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(
+            `clicked Bid for ${ticker} in the amount of ${bidQtyInNativeTokenWei} at max market cap ${selectedMaxMarketCapInWei}`,
+        );
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+        // const bidParams = {
+        //     bidQtyInWei: bidQtyInNativeTokenWei,
+        //     maxMarketCapInWei: selectedMaxMarketCapInWei,
+        // };
+        // const bidResponse: AuctionTxResponseIF =
+        //     await auctionPlan.bid(bidParams);
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockBidResponse: AuctionTxResponseIF = {
+            txType: 'bid',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Bid Failed'
+                : undefined,
+        };
+
+        return mockBidResponse;
+    } catch (error) {
+        return {
+            txType: 'bid',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const claimAllocation = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    // qtyInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'claim',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(`clicked Claim for ${ticker}`);
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+
+        // // if qtyInWei is needed
+        // const claimParams = {
+        //     claimQtyInWei: qtyInWei,
+        // };
+
+        // // if qtyInWei is not needed
+        // const claimResponse: AuctionTxResponseIF =
+        //     await auctionPlan.claim();
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockClaimResponse: AuctionTxResponseIF = {
+            txType: 'claim',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Claim Failed'
+                : undefined,
+        };
+
+        return mockClaimResponse;
+    } catch (error) {
+        return {
+            txType: 'claim',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const returnBid = async (
+    env: CrocEnv | undefined,
+    ticker: string,
+    // qtyInWei: string,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'return',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log(`clicked Return for ${ticker} `);
+
+        // const auctionPlan = env.auction(ticker, CURRENT_AUCTION_VERSION);
+
+        // // if qtyInWei is needed
+        // const returnParams = {
+        //     returnQtyInWei: qtyInWei,
+        // };
+        // const returnResponse: AuctionTxResponseIF =
+        //     await auctionPlan.return(returnParams);
+
+        // // if qtyInWei is not needed
+        // const returnResponse: AuctionTxResponseIF =
+        //     await auctionPlan.return();
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const mockReturnResponse: AuctionTxResponseIF = {
+            txType: 'return',
+            isSuccess: !ticker.toLowerCase().includes('fail'),
+            failureReason: ticker.toLowerCase().includes('fail')
+                ? 'Return Failed'
+                : undefined,
+        };
+
+        return mockReturnResponse;
+    } catch (error) {
+        return {
+            txType: 'return',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const claimAndReturnAll = async (
+    env: CrocEnv | undefined,
+): Promise<AuctionTxResponseIF> => {
+    if (!env)
+        return {
+            txType: 'claimAll',
+            isSuccess: false,
+            failureReason: 'Invalid CrocEnv',
+        };
+    try {
+        console.log('clicked Claim All');
+
+        // const auctionAcccountPlan = env.auctionAcccount();
+
+        // const claimAllResponse: AuctionTxResponseIF =
+        //     await auctionAcccountPlan.claimAll();
+
+        // 2 second timeout to simulate transaction
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const senderAddr = (await env.context).senderAddr;
+
+        const mockClaimResponse: AuctionTxResponseIF = {
+            txType: 'claimAll',
+            isSuccess: !senderAddr?.toLowerCase().includes('0xe09d'),
+            failureReason: senderAddr?.toLowerCase().includes('0xe09d')
+                ? 'Claim All Transaction Failed'
+                : undefined,
+        };
+
+        return mockClaimResponse;
+    } catch (error) {
+        return {
+            txType: 'claimAll',
+            isSuccess: false,
+            failureReason: 'Unknown Error',
+        };
+    }
+};
+
+export const fetchFreshAuctionStatusData = async (
+    ticker: string,
+    version: number,
+    chainId: string,
+): Promise<AuctionStatusResponseIF> => {
+    // const auctionsStatusEndpoint = GCGO_OVERRIDE_URL
+    //     ? GCGO_OVERRIDE_URL + '/auctionStatus?'
+    //     : graphCacheUrl + '/auctionStatus?';
+    return mockAuctionDetailsServerResponseGenerator(ticker, version, chainId);
+    // return fetch(
+    //     auctionsStatusEndpoint +
+    //         new URLSearchParams({
+    //             ticker: ticker,
+    //             version: version.toString(),
+    //             chainId: chainId,
+    //         }),
+    // )
+    //     .then((response) => response?.json())
+    //     .then((json) => {
+    //         if (!json?.data) {
+    //             return undefined;
+    //         }
+
+    //         const payload = json.data as AuctionListResponseIF;
+    //         return payload;
+    //     })
+    //     .catch(() => {
+    //         return undefined;
+    //     });
+};
+
 export type GlobalAuctionListQueryFn = (
     chainId: string,
     // graphCacheUrl: string,
@@ -258,10 +518,24 @@ export type UserAuctionListQueryFn = (
     _cacheTimeTag: number | string,
 ) => Promise<AuctionDataIF[] | undefined>;
 
+export type AuctionStatusQueryFn = (
+    ticker: string,
+    version: number,
+    chainId: string,
+    // graphCacheUrl: string,
+    _cacheTimeTag: number | string,
+) => Promise<AuctionStatusResponseIF | undefined>;
+
 export function memoizeGetGlobalAuctionsList(): GlobalAuctionListQueryFn {
     return memoizeCacheQueryFn(
         getGlobalAuctionsList,
     ) as GlobalAuctionListQueryFn;
+}
+
+export function memoizeGetAuctionStatus(): AuctionStatusQueryFn {
+    return memoizeCacheQueryFn(
+        fetchFreshAuctionStatusData,
+    ) as AuctionStatusQueryFn;
 }
 
 export function memoizeGetUserAuctionsList(): UserAuctionListQueryFn {

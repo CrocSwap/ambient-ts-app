@@ -9,27 +9,56 @@ interface AxisIF {
     afterOneWeek: boolean;
     axisColor: string;
     textColor: string;
+    showDayCount: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chartSize: any;
+    showComplete: boolean;
 }
 export default function Xaxis(props: AxisIF) {
     const d3XaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale, afterOneWeek, axisColor, textColor } = props;
+    const {
+        data,
+        scale,
+        afterOneWeek,
+        axisColor,
+        textColor,
+        showDayCount,
+        chartSize,
+        showComplete,
+    } = props;
 
     useEffect(() => {
         if (scale) {
             const xAxis = d3
                 .axisBottom(scale)
                 .tickValues(
-                    afterOneWeek
+                    afterOneWeek && !showComplete
                         ? d3.range(0, 1441, 60)
-                        : d3.range(0, 1441 * 8, 1441 / 2),
+                        : showDayCount > 30
+                          ? d3.range(0, scale.domain()[0], 1441 * 7)
+                          : d3.range(
+                                0,
+                                scale.domain()[0],
+                                showDayCount > 7 ? 1441 : 1441 / 2,
+                            ),
                 )
                 .tickFormat((d) => {
-                    const hour = d.valueOf() / (afterOneWeek ? 60 : 1441);
                     if (Number.isInteger(d)) {
-                        return hour.toString();
+                        if (afterOneWeek && !showComplete) {
+                            const hour = d.valueOf() / 60;
+                            return hour.toString() + 'h';
+                        }
+
+                        if (showDayCount > 30) {
+                            const week = d.valueOf() / (1441 * 7);
+                            return week.toString() + 'w';
+                        }
+
+                        const day = d.valueOf() / 1441;
+                        return day.toString() + 'd';
                     }
 
-                    return '12h';
+                    return '';
                 });
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
@@ -64,7 +93,11 @@ export default function Xaxis(props: AxisIF) {
         }
 
         renderCanvasArray([d3XaxisRef]);
-    }, [scale, d3XaxisRef]);
+    }, [scale, d3XaxisRef, showComplete]);
+
+    useEffect(() => {
+        renderCanvasArray([d3XaxisRef]);
+    }, [chartSize]);
 
     return (
         <d3fc-svg
@@ -74,6 +107,7 @@ export default function Xaxis(props: AxisIF) {
                 gridColumnEnd: 4,
                 gridRowStart: 2,
                 gridRowEnd: 4,
+                minHeight: '10px',
                 height: '100%',
                 width: '100%',
             }}

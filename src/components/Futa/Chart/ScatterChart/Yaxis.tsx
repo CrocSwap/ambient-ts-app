@@ -4,21 +4,25 @@ import * as d3fc from 'd3fc';
 import { renderCanvasArray } from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 
 interface AxisIF {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any;
+    data: number[];
     scale: d3.ScaleLinear<number, number> | undefined;
     axisColor: string;
     textColor: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    chartSize: any;
 }
 export default function Yaxis(props: AxisIF) {
     const d3YaxisRef = useRef<HTMLInputElement | null>(null);
-    const { data, scale, axisColor, textColor } = props;
+    const { data, scale, axisColor, textColor, chartSize } = props;
 
     useEffect(() => {
         if (scale) {
+            const heightYAxis = scale.range()[0] + scale.range()[1];
+            const tickCount = heightYAxis < 350 ? 5 : 10;
+
             const yAxis = d3
                 .axisLeft(scale)
-                .tickValues(d3.range(0, Number(d3.max(data)) + 100000, 100000))
+                .tickValues(scale.ticks(tickCount).filter((i) => i >= 0))
                 .tickFormat((d) => `${(Number(d) / 1000).toFixed(0)}k`);
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
@@ -56,7 +60,7 @@ export default function Yaxis(props: AxisIF) {
         }
 
         renderCanvasArray([d3YaxisRef]);
-    }, [scale, d3YaxisRef]);
+    }, [scale, chartSize, d3YaxisRef]);
 
     return (
         <d3fc-svg

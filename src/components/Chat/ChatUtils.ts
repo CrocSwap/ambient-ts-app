@@ -1,6 +1,7 @@
 import { PoolIF } from '../../ambient-utils/types';
 import {
     AVATAR_TYPES_SET,
+    CHAT_WHITELISTED_REGEX,
     CROCODILE_LABS_LINKS,
     LS_USER_NON_VERIFIED_MESSAGES,
     LS_USER_VERIFY_TOKEN,
@@ -10,7 +11,13 @@ import {
     ChatWsDecodedMessage,
     GetTopRoomsResponseIF,
 } from './ChatIFs';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { domDebug } from './DomDebugger/DomDebuggerUtils';
+
 import { Message } from './Model/MessageModel';
+
+export const minToMS = 60 * 1000;
 
 export const getLS = (key: string, personalize?: string) => {
     if (personalize) {
@@ -156,6 +163,7 @@ export function isLinkInCrocodileLabsLinks(input: string) {
 
 export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
     try {
+        let ret = false;
         const normalizedWord = word.startsWith('http')
             ? word
             : `https://${word}`;
@@ -163,13 +171,22 @@ export const isLinkInCrocodileLabsLinksForInput = (word: string) => {
         const wordUrl = new URL(normalizedWord);
         const wordDomain = wordUrl.hostname.replace(/^www\./, '').toLowerCase();
 
-        return CROCODILE_LABS_LINKS.some((link) => {
+        ret = CROCODILE_LABS_LINKS.some((link) => {
             const linkUrl = new URL(link);
             const linkDomain = linkUrl.hostname
                 .replace(/^www\./, '')
                 .toLowerCase();
             return wordDomain === linkDomain;
         });
+
+        // check regexes for subdomains
+        if (!ret) {
+            ret = CHAT_WHITELISTED_REGEX.some((regex) => {
+                return regex.test(wordDomain);
+            });
+        }
+
+        return ret;
     } catch (error) {
         return false;
     }
@@ -298,4 +315,37 @@ export const isChainNameTestnet = (chainName: string) => {
     return (
         chainName.indexOf('Sepolia') > -1 || chainName.indexOf('Testnet') > -1
     );
+};
+
+export const getDateLabelInfo = (date: Date) => {
+    const today = new Date();
+    if (
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+    ) {
+        return 'Today';
+    }
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+};
+
+export const handleOpenExplorerAddHttp = (url: string) => {
+    if (!url.includes('https')) {
+        window.open(convertToFullUrl(url));
+    } else {
+        window.open(url);
+    }
+};
+
+export const convertToFullUrl = (domain: string) => {
+    const protocol = 'https://';
+    return protocol + domain;
+};
+
+export const getRedirectTargetFromMessage = (message: Message) => {
+    if (message.ensName && message.ensName.length > 0) {
+        return message.ensName;
+    } else {
+        return message.walletID;
+    }
 };
