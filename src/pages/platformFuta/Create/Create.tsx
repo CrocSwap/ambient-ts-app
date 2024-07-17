@@ -18,6 +18,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useNavigate } from 'react-router-dom';
 import { CURRENT_AUCTION_VERSION } from '../../../ambient-utils/constants';
+import SynthwaveGrid from '../Home/Animations/SynthwaveGrid';
 
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
@@ -222,6 +223,8 @@ export default function Create() {
                 {tokenTicker}
                 {footerDisplay}
             </div>
+
+            <SynthwaveGrid hasVideoPlayedOnce isCreatePage />
         </section>
     );
 }
