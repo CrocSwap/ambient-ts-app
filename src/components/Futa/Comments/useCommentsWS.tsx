@@ -135,7 +135,14 @@ const useCommentsWS = (
 
     useEffect(() => {
         doHandshake();
-    }, [address, ensName, room, isUserIdle, offlineFetcher]);
+    }, [address, ensName, room, offlineFetcher]);
+
+    useEffect(() => {
+        doHandshake();
+        if (!isUserIdle) {
+            fetchForNotConnectedUser();
+        }
+    }, [isUserIdle]);
 
     useEffect(() => {
         fetchMessages();

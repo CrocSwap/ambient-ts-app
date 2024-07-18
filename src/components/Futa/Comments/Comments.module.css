@@ -7,6 +7,10 @@
     }
   }
 
+  .comments_outer{
+    position: relative;
+  }
+
   .mainContainer{
     height: calc(100svh - 170px);
     display: flex;

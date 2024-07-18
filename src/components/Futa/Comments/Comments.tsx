@@ -90,7 +90,9 @@ function Comments() {
                 scrollToBottom();
             }
         }
-        handleUnreadMessages();
+        setTimeout(() => {
+            handleUnreadMessages();
+        }, 500);
     }, [messages]);
 
     useEffect(() => {
@@ -230,27 +232,29 @@ function Comments() {
     };
 
     const handleUnreadMessages = () => {
-        document.querySelectorAll('.unreadComment').forEach((el) => {
-            if (
-                checkVisibilityWithBottom(
-                    el as HTMLElement,
-                    messageListRef.current,
-                )
-            ) {
-                setTimeout(() => {
-                    dropFromCssClasses(el as HTMLElement, 'unread');
-                    setUnreadMessageCount(
-                        document.querySelectorAll('.unreadComment').length,
-                    );
-                }, 1000);
-            }
-        });
-
         setTimeout(() => {
-            setUnreadMessageCount(
-                document.querySelectorAll('.unreadComment').length,
-            );
-        }, 500);
+            document.querySelectorAll('.unreadComment').forEach((el) => {
+                if (
+                    checkVisibilityWithBottom(
+                        el as HTMLElement,
+                        messageListRef.current,
+                    )
+                ) {
+                    setTimeout(() => {
+                        dropFromCssClasses(el as HTMLElement, 'unread');
+                        setUnreadMessageCount(
+                            document.querySelectorAll('.unreadComment').length,
+                        );
+                    }, 1000);
+                }
+            });
+
+            setTimeout(() => {
+                setUnreadMessageCount(
+                    document.querySelectorAll('.unreadComment').length,
+                );
+            }, 500);
+        }, 1000);
     };
 
     const goToUnreadMessages = () => {
@@ -265,9 +269,7 @@ function Comments() {
             );
         }
 
-        setTimeout(() => {
-            handleUnreadMessages();
-        }, 400);
+        handleUnreadMessages();
     };
 
     const _handleScroll = () => {
@@ -277,11 +279,9 @@ function Comments() {
     };
 
     return (
-        <div className={styles.mainContainer}>
-            {isLoading ? (
-                <ShimmerList count={25} />
-            ) : (
-                <>
+        <>
+            <div className={styles.comments_outer}>
+                {userAddress && userAddress.length > 0 && (
                     <div className={styles.connection_status}>
                         {isWsConnected ? (
                             <>
@@ -300,85 +300,103 @@ function Comments() {
                             </>
                         )}
                     </div>
+                )}
 
-                    <div
-                        ref={messageListRef}
-                        className={`${styles.commentsWrapper} ${messages.length == 0 ? styles.no_comments_wrapper : ''} `}
-                        onScroll={_handleScroll}
-                    >
-                        {messages.length == 0 ? (
-                            <span className={styles.no_comment_section}>
-                                {' '}
-                                No comment for this ticker
-                            </span>
-                        ) : (
-                            <>
-                                <div className={styles.comments_content}>
-                                    {fetchedAllPages && (
-                                        <div className={styles.all_fetched}>
-                                            {' '}
-                                            All comments fetched.
+                <div className={styles.mainContainer}>
+                    {isLoading ? (
+                        <ShimmerList count={25} />
+                    ) : (
+                        <>
+                            <div
+                                ref={messageListRef}
+                                className={`${styles.commentsWrapper} ${messages.length == 0 ? styles.no_comments_wrapper : ''} `}
+                                onScroll={_handleScroll}
+                            >
+                                {messages.length == 0 ? (
+                                    <span className={styles.no_comment_section}>
+                                        {' '}
+                                        No comment for this ticker
+                                    </span>
+                                ) : (
+                                    <>
+                                        <div
+                                            className={styles.comments_content}
+                                        >
+                                            {fetchedAllPages && (
+                                                <div
+                                                    className={
+                                                        styles.all_fetched
+                                                    }
+                                                >
+                                                    {' '}
+                                                    All comments fetched.
+                                                </div>
+                                            )}
+                                            {messages.map((msg, index) => {
+                                                return (
+                                                    <CommentCard
+                                                        key={msg._id}
+                                                        style={{
+                                                            animationDelay: `${(messages.length - index - fetchedMessageCount) * 0.015}s`,
+                                                        }}
+                                                        message={msg}
+                                                        previousMessage={
+                                                            index > 0
+                                                                ? messages[
+                                                                      index - 1
+                                                                  ]
+                                                                : undefined
+                                                        }
+                                                        currentUserID={userId}
+                                                    />
+                                                );
+                                            })}
                                         </div>
-                                    )}
-                                    {messages.map((msg, index) => {
-                                        return (
-                                            <CommentCard
-                                                key={msg._id}
-                                                style={{
-                                                    animationDelay: `${(messages.length - index - fetchedMessageCount) * 0.015}s`,
-                                                }}
-                                                message={msg}
-                                                previousMessage={
-                                                    index > 0
-                                                        ? messages[index - 1]
-                                                        : undefined
-                                                }
-                                                currentUserID={userId}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </>
-                        )}
-                    </div>
+                                    </>
+                                )}
+                            </div>
 
-                    {showPrevButton && !fetchedAllPages && (
-                        <IoIosArrowUp
-                            title='Get Previous Messages'
-                            className={`${styles.floating_scroll_btn} ${styles.show_previous_comments_btn}`}
-                            onClick={fetchPrevious}
-                        />
+                            {showPrevButton && !fetchedAllPages && (
+                                <IoIosArrowUp
+                                    title='Get Previous Messages'
+                                    className={`${styles.floating_scroll_btn} ${styles.show_previous_comments_btn}`}
+                                    onClick={fetchPrevious}
+                                />
+                            )}
+
+                            {showScrollToBottom && (
+                                <IoIosArrowDown
+                                    title='Scroll to Bottom'
+                                    className={`${styles.floating_scroll_btn} ${styles.scroll_to_bottom_btn}`}
+                                    onClick={scrollToBottom}
+                                />
+                            )}
+
+                            {unreadMessageCount > 0 &&
+                                panelScrollToBottomDist > 50 && (
+                                    <div
+                                        className={styles.unread_messages_info}
+                                        onClick={goToUnreadMessages}
+                                    >
+                                        {' '}
+                                        {unreadMessageCount} new message
+                                        {unreadMessageCount > 1 ? 's' : ''}
+                                    </div>
+                                )}
+
+                            {/* <div className={styles.debug_btn} onClick={() => {scrollToMessage('669112bc1ce48e351edddd2d')}}></div> */}
+
+                            {/* </div> */}
+                            <CommentInput
+                                commentInputDispatch={commentInputDispatch}
+                                currentUserID={userId}
+                            />
+                        </>
                     )}
-
-                    {showScrollToBottom && (
-                        <IoIosArrowDown
-                            title='Scroll to Bottom'
-                            className={`${styles.floating_scroll_btn} ${styles.scroll_to_bottom_btn}`}
-                            onClick={scrollToBottom}
-                        />
-                    )}
-
-                    {unreadMessageCount > 0 && (
-                        <div
-                            className={styles.unread_messages_info}
-                            onClick={goToUnreadMessages}
-                        >
-                            {' '}
-                            {unreadMessageCount} new messages
-                        </div>
-                    )}
-
-                    {/* <div className={styles.debug_btn} onClick={() => {scrollToMessage('669112bc1ce48e351edddd2d')}}></div> */}
-
-                    {/* </div> */}
-                    <CommentInput
-                        commentInputDispatch={commentInputDispatch}
-                        currentUserID={userId}
-                    />
-                </>
-            )}
-            <DomDebugger />
-        </div>
+                    <DomDebugger />
+                </div>
+            </div>
+        </>
     );
 }
 

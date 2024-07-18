@@ -5,7 +5,6 @@ import { AiOutlineSend } from 'react-icons/ai';
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 import CircularProgressBarForComments from '../../../Global/OpenOrderStatus/CircularProgressBarForComments';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface CommentInputProps {
     commentInputDispatch: (message: string) => void;
@@ -25,8 +24,6 @@ export default function CommentInput(props: CommentInputProps) {
         }
         setMessage(inputVal);
     };
-
-    const isDesktop = useMediaQuery('(min-width: 1020px)');
 
     const limitFilledRate = message.length / _characterLimit;
     const aboutFilled = limitFilledRate > 0.7;
@@ -99,8 +96,7 @@ export default function CommentInput(props: CommentInputProps) {
                             className={styles.connect_to_chat_placeholder}
                             onClick={openWalletModal}
                         >
-                            {' '}
-                            {isDesktop ? 'CONNECT WALLET' : 'CONNECT'}
+                            CONNECT WALLET
                         </div>
                     </>
                 )}
