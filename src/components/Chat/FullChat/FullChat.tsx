@@ -37,6 +37,7 @@ import Room from '../MessagePanel/Room/Room';
 import styles from './FullChat.module.css';
 import ChatNotificationBubble from '../ChatNotification/ChatNotificationBubble';
 import { Message } from '../Model/MessageModel';
+import { IoIosClose } from 'react-icons/io';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -102,6 +103,10 @@ interface FullChatPropsIF {
     setMessageForNotificationBubble: Dispatch<
         SetStateAction<Message | undefined>
     >;
+    showPopUp: boolean;
+    setShowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
+    popUpText: string;
+    setPopUpText: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface ChannelDisplayPropsIF {
@@ -246,6 +251,25 @@ function FullChat(props: FullChatPropsIF) {
         reSwappedReconstructedReadableRoom,
         rooms.length === 0,
     ]);
+
+    function closePopUp() {
+        props.setShowPopUp(false);
+    }
+
+    const sendingLink = (
+        <div className={styles.pop_up}>
+            <p>{props.popUpText}</p>
+            <div className={styles.close_button}>
+                <IoIosClose
+                    onClick={() => closePopUp()}
+                    size={20}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close information box.'
+                />
+            </div>
+        </div>
+    );
 
     // eslint-disable-next-line
     function handleRoomClick(event: any, pool: PoolIF, isDropdown: boolean) {
@@ -750,6 +774,7 @@ function FullChat(props: FullChatPropsIF) {
 
             {messageInput}
             {props.rndMentSkipper && props.rndMentSkipper()}
+            {props.showPopUp ? sendingLink : ''}
             <div id='thelastmessage' />
         </div>
     );
@@ -925,6 +950,7 @@ function FullChat(props: FullChatPropsIF) {
                         {' '}
                         X{' '}
                     </div>
+
                     <Picker
                         onEmojiClick={props.addReactionEmojiPickListener}
                         pickerStyle={{ width: '100%' }}

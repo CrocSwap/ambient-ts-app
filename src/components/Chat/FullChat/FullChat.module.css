@@ -109,6 +109,7 @@
     border-radius: var(--border-radius);
 }
 
+
 .pool_display:hover,
 .option_item:hover {
     background: var(--dark2);
@@ -390,6 +391,18 @@
 .dropdown_icon svg{
     vertical-align: middle;
 }
+.pop_up {
+    padding: 0px 122px;
 
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    border-radius: 5px;
+    background: var(--dark3);
+}
 
 

@@ -83,7 +83,7 @@ export const formatMessageTime = (time: string) => {
 
 export const isLink = (url: string) => {
     const urlPattern =
-        /^(https?:\/\/)?((www\.)?([a-z0-9]+([-]{1}[a-z0-9]+)*\.[a-z]{2,7}))(\/.*)?$/i;
+        /^(https?:\/\/)?((www\.)?([a-z0-9\u00C0-\u017F]+([-]{1}[a-z0-9\u00C0-\u017F]+)*\.[a-z\u00C0-\u017F]{2,7}))(\/.*)?$/i;
     return urlPattern.test(url);
 };
 
