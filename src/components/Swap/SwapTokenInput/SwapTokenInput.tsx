@@ -23,6 +23,8 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -76,6 +78,7 @@ function SwapTokenInput(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
@@ -87,6 +90,8 @@ function SwapTokenInput(props: propsIF) {
         isTokenBEth: isBuyTokenEth,
         contextMatchesParams,
     } = useContext(TradeTokenContext);
+
+    const { activeTickers } = useContext(AuctionsContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
     const { isUserConnected } = useContext(UserDataContext);
@@ -322,6 +327,25 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
+    function reverseForAmbient(): void {
+        isTokenAPrimary
+            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                ? setIsSellLoading(true)
+                : null
+            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+              ? setIsBuyLoading(true)
+              : null;
+
+        if (!isTokenAPrimary) {
+            setSellQtyString(primaryQuantity);
+        } else {
+            setBuyQtyString(primaryQuantity);
+        }
+        setIsTokenAPrimary(!isTokenAPrimary);
+
+        reverseTokens(true);
+    }
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -350,6 +374,7 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 usdValue={usdValueTokenA}
+                ticker={activeTickers.pair[0]}
             />
             <FlexContainer
                 fullWidth
@@ -358,24 +383,9 @@ function SwapTokenInput(props: propsIF) {
             >
                 <TokensArrow
                     onClick={() => {
-                        isTokenAPrimary
-                            ? sellQtyString !== '' &&
-                              parseFloat(sellQtyString) > 0
-                                ? setIsSellLoading(true)
-                                : null
-                            : buyQtyString !== '' &&
-                                parseFloat(buyQtyString) > 0
-                              ? setIsBuyLoading(true)
-                              : null;
-
-                        if (!isTokenAPrimary) {
-                            setSellQtyString(primaryQuantity);
-                        } else {
-                            setBuyQtyString(primaryQuantity);
-                        }
-                        setIsTokenAPrimary(!isTokenAPrimary);
-
-                        reverseTokens(true);
+                        platformName === 'futa'
+                            ? activeTickers.reverse()
+                            : reverseForAmbient();
                     }}
                 />
             </FlexContainer>
@@ -408,6 +418,7 @@ function SwapTokenInput(props: propsIF) {
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
                 percentDiffUsdValue={percentDiffUsdValue}
+                ticker={activeTickers.pair[1]}
             />
         </FlexContainer>
     );

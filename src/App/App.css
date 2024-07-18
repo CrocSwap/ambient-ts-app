@@ -49,7 +49,7 @@ body {
 
 html {
     background: var(--dark1);
-    scrollbar-width: none;
+    scrollbar-width: thin;
     color: var(--text1);
     height: 100%;
 }
@@ -241,10 +241,14 @@ input[type='number'] {
 }
 /* -----------------------FUTA------------ */
 .futa_main {
-    scrollbar-width: 25px !important;
+    scrollbar-width: 5px !important;
     scrollbar-color: var(--accent1) var(--dark2); 
    
 }
+.futa_main::-webkit-scrollbar {
+    width: 8px !important; 
+  }
+  
 
 
 .futa_main::-webkit-scrollbar-track {
@@ -257,8 +261,14 @@ input[type='number'] {
 .futa_main::-webkit-scrollbar-thumb {
     background: var(--accent1);
     border-radius: 0 !important;
+    width: 2px  !important;
 
 
+}
+
+.custom-resizable-handle-futa{
+    background-color: red;
+    width: 200px;
 }
 
 @media only screen and (max-width: 600px) {

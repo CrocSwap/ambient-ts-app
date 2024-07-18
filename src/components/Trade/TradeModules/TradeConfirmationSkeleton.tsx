@@ -28,9 +28,7 @@ interface propsIF {
     tokenA: { token: TokenIF; quantity?: string };
     tokenB: { token: TokenIF; quantity?: string };
     transactionHash: string;
-    txErrorCode: string;
-    txErrorMessage: string;
-    txErrorJSON: string;
+    txError: Error | undefined;
     showConfirmation: boolean;
     statusText: string;
     onClose?: () => void;
@@ -54,9 +52,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         tokenB: { token: tokenB, quantity: tokenBQuantity },
         transactionDetails,
         transactionHash,
-        txErrorCode,
-        txErrorMessage,
-        txErrorJSON,
+        txError,
         statusText,
         showConfirmation,
         resetConfirmation,
@@ -217,9 +213,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         <SubmitTransaction
                             type={type}
                             newTransactionHash={transactionHash}
-                            txErrorCode={txErrorCode}
-                            txErrorMessage={txErrorMessage}
-                            txErrorJSON={txErrorJSON}
+                            txError={txError}
                             resetConfirmation={resetConfirmation}
                             sendTransaction={initiate}
                             transactionPendingDisplayString={statusText}

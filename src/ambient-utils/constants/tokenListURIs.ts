@@ -1,4 +1,5 @@
 // token lists recognized by the app
+
 // list 'broken' exists for testing purposes only
 export const tokenListURIs = {
     ethereumCoingecko: 'https://tokens.coingecko.com/ethereum/all.json',

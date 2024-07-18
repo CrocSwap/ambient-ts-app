@@ -34,9 +34,7 @@ interface InitConfirmationProps {
     isTokenABase: boolean;
     isTxCompletedInit: boolean;
     isTxCompletedRange: boolean;
-    errorCode?: string;
-    txErrorMessage?: string;
-    txErrorJSON?: string;
+    txError?: Error;
     handleNavigation: () => void;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;

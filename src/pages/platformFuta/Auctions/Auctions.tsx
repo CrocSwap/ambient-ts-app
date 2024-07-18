@@ -1,7 +1,7 @@
 import styles from './Auctions.module.css';
 import SearchableTicker from '../../../components/Futa/SearchableTicker/SearchableTicker';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Divider from '../../../components/Futa/Divider/Divider';
+import Divider from '../../../components/Futa/Divider/FutaDivider';
 import { useContext, useEffect, useState } from 'react';
 import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
@@ -38,7 +38,7 @@ export default function Auctions(props: propsIF) {
 
     false && INPUT_DOM_ID;
 
-    const desktopScreen: boolean = useMediaQuery('(min-width: 1280px)');
+    const desktopScreen: boolean = useMediaQuery('(min-width: 968px)');
     const [_, setIsFullLayoutActive] = useState<boolean>(false);
 
     const cacheFrequency = Math.floor(Date.now() / 30000);
@@ -63,7 +63,7 @@ export default function Auctions(props: propsIF) {
                             : '1fr 4px 390px',
                     }}
                 >
-                    <div style={{ height: 'calc(100vh - 200px)' }}>
+                    <div style={{ height: 'calc(100vh - 80px)' }}>
                         <SearchableTicker
                             auctions={sorted}
                             title='AUCTIONS'
@@ -71,34 +71,6 @@ export default function Auctions(props: propsIF) {
                             placeholderTicker={placeholderTicker}
                         />
                     </div>
-                    {/* {isFullLayoutActive ? (
-                        <div className={styles.auctionChartContainer}>
-                            <div style={{ height: '50vh' }}>
-                                <SearchableTicker
-                                    auctions={sorted}
-                                    title='Auctions'
-                                    setIsFullLayoutActive={
-                                        setIsFullLayoutActive
-                                    }
-                                />
-                            </div>
-
-                            <div className={styles.consoleChartComponent}>
-                                <ConsoleComponent />
-                                <Seperator dots={50} />
-                                <Chart />
-                            </div>
-                        </div>
-                    ) : (
-                        <div style={{ height: 'calc(100vh - 200px)' }}>
-                            <SearchableTicker
-                                auctions={sorted}
-                                title='AUCTIONS'
-                                setIsFullLayoutActive={setIsFullLayoutActive}
-                                placeholderTicker={placeholderTicker}
-                            />
-                        </div>
-                    )} */}
 
                     <Seperator dots={100} />
                     <div className={styles.flexColumn}>

@@ -24,7 +24,11 @@ import { useModal } from '../Global/Modal/useModal';
 import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
-import { brand } from '../../ambient-utils/constants';
+import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
+import {
+    AuctionsContext,
+    AuctionsContextIF,
+} from '../../contexts/AuctionsContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -69,6 +73,10 @@ function TokenInputQuantity(props: propsIF) {
         walletBalance,
         // handleBalanceClick,
     } = props;
+
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const { activeTickers } = useContext<AuctionsContextIF>(AuctionsContext);
+
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
 
@@ -232,6 +240,8 @@ function TokenInputQuantity(props: propsIF) {
         </button>
     );
 
+    const [isTickerModalOpen, setIsTickerModalOpen] = useState<boolean>(false);
+
     const futaLayout = (
         <section className={styles.futaLayout}>
             <div className={styles.futaLayoutLeft}>
@@ -239,10 +249,10 @@ function TokenInputQuantity(props: propsIF) {
                 <p>{usdValue}</p>
             </div>
             <div className={styles.futaLayoutRight}>
-                {/* {tokenSelectButton} */}
                 <button
                     className={styles.tokenButton}
                     style={{ cursor: 'default' }}
+                    onClick={() => setIsTickerModalOpen(true)}
                 >
                     <TokenIcon
                         token={token}
@@ -259,10 +269,27 @@ function TokenInputQuantity(props: propsIF) {
                     {walletBalance}
                 </button>
             </div>
+            {isTickerModalOpen && (
+                <SoloTokenSelectModal
+                    onClose={() => setIsTickerModalOpen(false)}
+                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                    setShowSoloSelectTokenButtons={
+                        setShowSoloSelectTokenButtons
+                    }
+                    isSingleToken={!tokenAorB}
+                    tokenAorB={tokenAorB}
+                    reverseTokens={
+                        platformName === 'futa'
+                            ? activeTickers.reverse
+                            : reverseTokens
+                    }
+                    platform='futa'
+                />
+            )}
         </section>
     );
 
-    if (brand === 'futa') return futaLayout;
+    if (platformName.toLowerCase() === 'futa') return futaLayout;
 
     return (
         <div
@@ -280,7 +307,6 @@ function TokenInputQuantity(props: propsIF) {
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
                 {inputDisplay}
-
                 {tokenSelectButton}
             </div>
             {includeWallet && includeWallet}

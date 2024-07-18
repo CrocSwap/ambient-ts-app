@@ -63,7 +63,8 @@ function Comments() {
         getMsgWithRestWithPagination,
     } = useCommentsWS(room ? room : '', fetchListener, '');
     const [userId, setUserId] = useState('');
-    const { userAddress, ensName } = useContext(UserDataContext);
+    const { userAddress, ensName, isUserConnected } =
+        useContext(UserDataContext);
     const { selectedNetwork } = useContext(CrocEnvContext);
     const { saveUser } = useChatApi();
     const [fetchedMessageCount, setFetchedMessageCount] = useState(0);
@@ -314,8 +315,9 @@ function Comments() {
                             >
                                 {messages.length == 0 ? (
                                     <span className={styles.no_comment_section}>
-                                        {' '}
-                                        No comment for this ticker
+                                        {isUserConnected
+                                            ? `Start the ${ticker} comment thread below`
+                                            : `Connect your wallet to comment on ${ticker}`}
                                     </span>
                                 ) : (
                                     <>
