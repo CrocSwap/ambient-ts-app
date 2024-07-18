@@ -7,6 +7,8 @@
     padding: 10px;
     max-width: 400px;
     height: calc(100svh - 420px);
+    z-index: 99 !important;
+   
 }
 
 .create_token_top {
@@ -150,13 +152,10 @@
 
 @media only screen and (min-width: 1080px) {
     .mainContainer{
-        background: url('../../../assets//futa/images/synthwave.png') no-repeat ; 
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
+      
         height: calc(100vh - 155px);
         transition: all var(--animation-speed) ease-in-out;
+        overflow: hidden;
        
     }
    
@@ -167,5 +166,7 @@
             border: 1px solid var(--border);
             background: var(--dark1);
             padding: 16px;
+
+            
     }
 }

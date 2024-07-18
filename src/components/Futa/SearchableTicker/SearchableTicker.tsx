@@ -29,6 +29,7 @@ import { Direction } from 're-resizable/lib/resizer';
 import { NumberSize } from 're-resizable';
 import { FlexContainer } from '../../../styled/Common';
 import Typewriter from '../TypeWriter/TypeWriter';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     auctions: sortedAuctionsIF;
@@ -72,6 +73,8 @@ export default function SearchableTicker(props: propsIF) {
         tradeTableState,
         setIsSearchableTickerHeightMinimum,
     } = useContext(FutaSearchableTickerContext);
+
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
     // shape of data to create filter dropdown menu options
     interface filterOptionIF {
@@ -509,9 +512,14 @@ export default function SearchableTicker(props: propsIF) {
         >
             {headerDisplay}
 
-            <FlexContainer flexDirection='column' fullHeight overflow='hidden'>
-                {resizableChart}
-                {!fullScreenTable && !isAccount && <Chart />}
+            <FlexContainer
+                flexDirection='column'
+                fullHeight
+                overflow='hidden'
+                className={styles.contentContainer}
+            >
+                {isMobile ? searchableContent : resizableChart}
+                {!fullScreenTable && !isAccount && !isMobile && <Chart />}
             </FlexContainer>
         </div>
     );

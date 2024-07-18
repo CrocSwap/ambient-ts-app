@@ -3,9 +3,10 @@ import p5 from 'p5';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface PropsIF {
     hasVideoPlayedOnce: boolean;
+    isCreatePage?: boolean;
 }
 export default function SynthwaveGrid(props: PropsIF) {
-    const { hasVideoPlayedOnce } = props;
+    const { hasVideoPlayedOnce, isCreatePage } = props;
     const sketchRef = useRef<HTMLDivElement | null>(null);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
@@ -366,15 +367,18 @@ export default function SynthwaveGrid(props: PropsIF) {
             ref={sketchRef}
             style={{
                 position: 'absolute',
-                top: showMobileVersion
-                    ? '-100px'
-                    : hasVideoPlayedOnce
-                      ? '100px'
-                      : '0',
+                top: isCreatePage
+                    ? '70px'
+                    : showMobileVersion
+                      ? '-100px'
+                      : hasVideoPlayedOnce
+                        ? '100px'
+                        : '0',
                 left: '0',
                 width: width,
                 height: height,
                 opacity: hasVideoPlayedOnce ? '0.5' : '1',
+                overflow: 'hidden',
             }}
         ></div>
     );

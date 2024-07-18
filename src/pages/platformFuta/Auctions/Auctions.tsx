@@ -38,7 +38,7 @@ export default function Auctions(props: propsIF) {
 
     false && INPUT_DOM_ID;
 
-    const desktopScreen: boolean = useMediaQuery('(min-width: 1280px)');
+    const desktopScreen: boolean = useMediaQuery('(min-width: 968px)');
     const [_, setIsFullLayoutActive] = useState<boolean>(false);
 
     const cacheFrequency = Math.floor(Date.now() / 30000);

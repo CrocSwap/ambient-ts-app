@@ -312,7 +312,7 @@
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 968px) {
     .filter_options {
         flex-wrap: wrap;
     }
@@ -320,6 +320,20 @@
     .sort_toggles {
         width: 100%;
         justify-content: flex-start;
+    }
+
+    .contentContainer{
+        height: calc(100vh - 186px) !important;
+        justify-content: space-between;
+        padding-bottom: 1rem;
+       
+    }
+
+}
+
+@media (max-width: 768px) {
+    .contentContainer{
+        padding-bottom: 0;
     }
 
 }
