@@ -123,7 +123,7 @@ import {
 } from '../../ambient-utils/dataLayer/functions/pinTick';
 import { filterCandleWithTransaction } from './ChartUtils/discontinuityScaleUtils';
 import ChartSettings from './ChartSettings/ChartSettings';
-import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
+import useOnClickOutside, { Event } from '../../utils/hooks/useOnClickOutside';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -458,8 +458,12 @@ export default function Chart(props: propsIF) {
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
 
-    const clickOutsideChartHandler = () => {
-        setContextmenu(false);
+    const clickOutsideChartHandler = (event: Event) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const e = event.target as any;
+        if (e.id !== 'chart_settings') {
+            setContextmenu(false);
+        }
     };
 
     useOnClickOutside(d3Container, clickOutsideChartHandler);
