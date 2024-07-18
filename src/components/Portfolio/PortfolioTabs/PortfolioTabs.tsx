@@ -14,6 +14,7 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import {
     getPositionData,
     getLimitOrderData,
+    filterLimitArray,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
@@ -168,6 +169,7 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
@@ -203,9 +205,10 @@ export default function PortfolioTabs(props: propsIF) {
                         ),
                     )
                         .then((updatedLimitOrderStates) => {
-                            setLookupAccountLimitOrderData(
+                            const filteredData = filterLimitArray(
                                 updatedLimitOrderStates,
                             );
+                            setLookupAccountLimitOrderData(filteredData);
                         })
                         .finally(() => {
                             setDataLoadingStatus({

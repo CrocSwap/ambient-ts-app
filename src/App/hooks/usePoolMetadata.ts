@@ -29,6 +29,7 @@ import {
 } from '../../ambient-utils/api';
 import {
     SpotPriceFn,
+    filterLimitArray,
     getLimitOrderData,
     getPositionData,
     getTransactionData,
@@ -557,9 +558,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     ),
                                 ).then((updatedLimitOrderStates) => {
                                     if (updatedLimitOrderStates.length > 0) {
-                                        setNewLimitsByPoolData(
+                                        const filteredData = filterLimitArray(
                                             updatedLimitOrderStates,
                                         );
+                                        setNewLimitsByPoolData(filteredData);
                                     } else {
                                         setNewLimitsByPoolData(undefined);
                                         setLimitOrdersByPool({
@@ -772,10 +774,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             },
                                         ),
                                     ).then((updatedLimitOrderStates) => {
+                                        const filteredData = filterLimitArray(
+                                            updatedLimitOrderStates,
+                                        );
                                         setUserLimitOrdersByPool({
                                             dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
+                                            limitOrders: filteredData,
                                         });
 
                                         setDataLoadingStatus({
