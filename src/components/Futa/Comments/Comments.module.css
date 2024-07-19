@@ -8,7 +8,6 @@
   }
 
   .comments_outer{
-    position: relative;
   }
 
   .mainContainer{
@@ -59,7 +58,7 @@
 
     .connection_status{
       position: absolute;
-      top: -2rem;
+      top: 2rem;
       right: 45%;
     }
 
@@ -104,6 +103,7 @@
       height: .4rem;
       border-radius: 100vw;
       background-color: var(--positive);
+      margin-right: 1rem;
     }
     .connection_dot_anim{
       display: block;
