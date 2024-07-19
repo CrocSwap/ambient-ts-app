@@ -132,11 +132,16 @@ export default function ScatterChart() {
                 const width = scatterChartSize.width;
                 const height = scatterChartSize.height;
 
+                const maxPrice = Math.ceil(
+                    d3.max(showDotsData, (d) => d.price) || 10000,
+                );
+                const maxPriceDecimalLenght =
+                    Math.abs(maxPrice).toString().length;
+                const maxYValuePow = Math.pow(10, maxPriceDecimalLenght - 1);
                 const maxYValue =
-                    Math.ceil(
-                        (d3.max(showDotsData, (d) => d.price) || 1000) / 100000,
-                    ) * 100000;
+                    Math.ceil(maxPrice / maxYValuePow) * maxYValuePow;
 
+                const minYValue = maxPriceDecimalLenght > 5 ? -15000 : -500;
                 const maxDomBuffer = showDayCount > 7 ? 1440 : 120;
                 const oneDayMinutes = 1440;
 
@@ -158,7 +163,7 @@ export default function ScatterChart() {
 
                 const yScale = d3
                     .scaleLinear()
-                    .domain([-15000, maxYValue])
+                    .domain([minYValue, maxYValue])
                     .range([height, 15]);
 
                 setYscale(() => yScale);
