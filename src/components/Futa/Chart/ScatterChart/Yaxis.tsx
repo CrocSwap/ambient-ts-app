@@ -60,7 +60,7 @@ export default function Yaxis(props: AxisIF) {
         }
 
         renderCanvasArray([d3YaxisRef]);
-    }, [scale, chartSize, d3YaxisRef]);
+    }, [scale, chartSize, d3YaxisRef, data]);
 
     return (
         <d3fc-svg
