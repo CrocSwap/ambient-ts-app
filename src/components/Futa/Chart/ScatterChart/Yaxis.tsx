@@ -23,7 +23,13 @@ export default function Yaxis(props: AxisIF) {
             const yAxis = d3
                 .axisLeft(scale)
                 .tickValues(scale.ticks(tickCount).filter((i) => i >= 0))
-                .tickFormat((d) => `${(Number(d) / 1000).toFixed(0)}k`);
+                .tickFormat((d) => {
+                    if (d.valueOf() % 1000 === 0) {
+                        return `${(Number(d) / 1000).toFixed(0)}k`;
+                    }
+
+                    return `${(Number(d) / 1000).toFixed(1)}k`;
+                });
 
             const d3LinearAxisJoin = d3fc.dataJoin('g', 'd3-axis-linear');
             d3.select(d3YaxisRef.current).on('draw', () => {
