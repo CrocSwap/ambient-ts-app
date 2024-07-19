@@ -461,7 +461,7 @@ export default function Chart(props: propsIF) {
     const clickOutsideChartHandler = (event: Event) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const e = event.target as any;
-        if (e.id !== 'chart_settings') {
+        if (!e.id.includes('chart_settings')) {
             setContextmenu(false);
         }
     };

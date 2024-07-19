@@ -161,6 +161,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 interactive
                 title={'Open chart settings'}
                 enterDelay={500}
+                id='chart_settings_tooltip'
             >
                 <HeaderButtons
                     mobileHide
@@ -174,10 +175,11 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                             };
                         });
                     }}
+                    id='chart_settings_button'
                 >
                     <IoSettingsOutline
                         size={20}
-                        id='chart_settings'
+                        id='chart_settings_symbol'
                         aria-label='Chart settings button'
                     />
                 </HeaderButtons>
