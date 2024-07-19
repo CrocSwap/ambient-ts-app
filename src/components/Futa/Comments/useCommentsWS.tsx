@@ -135,7 +135,14 @@ const useCommentsWS = (
 
     useEffect(() => {
         doHandshake();
-    }, [address, ensName, room, isUserIdle, offlineFetcher]);
+    }, [address, ensName, room, offlineFetcher]);
+
+    useEffect(() => {
+        doHandshake();
+        if (!isUserIdle) {
+            fetchForNotConnectedUser();
+        }
+    }, [isUserIdle]);
 
     useEffect(() => {
         fetchMessages();
@@ -216,17 +223,16 @@ const useCommentsWS = (
         const unreads: Message[] = [];
         data.reverse().forEach((msg: Message) => {
             if (!messagesRef.current.some((m2) => m2._id == msg._id)) {
+                msg.isUnread = true;
                 unreads.push(msg);
             } else {
                 return;
             }
         });
         if (unreads.length > 0) {
-            console.log('unreads', unreads);
             assignMessages([...messagesRef.current, ...unreads]);
             setUnreadMessages(unreads);
         } else {
-            console.log('no new msgs');
             return;
         }
     }
@@ -516,6 +522,7 @@ const useCommentsWS = (
                 : data._id + '';
             setLS(LS_USER_NON_VERIFIED_MESSAGES, nonVrfMessages, address);
         }
+        data.isUnread = true;
         assignMessages([...messagesRef.current, data]);
         if (messagesRef.current[messagesRef.current.length - 1]) {
             setLastMessage(data);
@@ -551,6 +558,17 @@ const useCommentsWS = (
         }
     };
 
+    const markAsRead = (messageId: string) => {
+        console.log('mark as read', messageId);
+        const newMessages = messages.map((msg) => {
+            if (msg._id === messageId) {
+                return { ...msg, isUnread: false };
+            }
+            return msg;
+        });
+        setMessages(newMessages);
+    };
+
     return {
         messages,
         sendMsg,
@@ -572,6 +590,7 @@ const useCommentsWS = (
         isWsConnected,
         isLoading,
         unreadMessages,
+        markAsRead,
     };
 };
 

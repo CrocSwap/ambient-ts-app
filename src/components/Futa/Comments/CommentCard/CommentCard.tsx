@@ -103,7 +103,7 @@ function CommentCard(props: CommentCardProps) {
             <div
                 id={`comment_${props.message._id}`}
                 key={`comment_key_${props.message._id}`}
-                className={`commentBubble ${styles.comment_card_wrapper} ${isBasic ? styles.basic_card : ' '}`}
+                className={`commentBubble ${styles.comment_card_wrapper} ${isBasic ? styles.basic_card : ' '} ${props.message.isUnread ? styles.unread + ' unreadComment' : ' '}`}
                 data-message-id={props.message._id}
                 style={props.style ? props.style : {}}
             >
