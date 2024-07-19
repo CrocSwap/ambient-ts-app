@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Outlet } from 'react-router-dom';
-// import { NumberSize } from 're-resizable';
+import { NumberSize } from 're-resizable';
 import {
     useEffect,
     useState,
@@ -32,11 +32,11 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import {
     ChartContainer,
     MainSection,
-    // ResizableContainer,
+    ResizableContainer,
     TradeDropdown,
     TradeDropdownButton,
 } from '../../../styled/Components/Trade';
-// import { Direction } from 're-resizable/lib/resizer';
+import { Direction } from 're-resizable/lib/resizer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -47,7 +47,7 @@ import PointsBanner from './PointsBanner';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
 
-// const TRADE_CHART_MIN_HEIGHT = 175;
+const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
 function Trade() {
@@ -61,13 +61,13 @@ function Trade() {
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
-        // chartHeights,
-        // setChartHeight,
+        chartHeights,
+        setChartHeight,
         canvasRef,
         tradeTableState,
         isChartHeightMinimum,
         isCandleDataNull,
-        // setIsChartHeightMinimum,
+        setIsChartHeightMinimum,
     } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
@@ -299,107 +299,127 @@ function Trade() {
                         fullHeight
                         overflow='hidden'
                     >
-                        {/* <ResizableContainer
-                            showResizeable={
-                                !isCandleDataNull && !isChartFullScreen
-                            }
-                            enable={{
-                                bottom: false,
-                                top: false,
-                                left: false,
-                                topLeft: false,
-                                bottomLeft: false,
-                                right: false,
-                                topRight: false,
-                                bottomRight: false,
-                            }}
-                            size={{
-                                width: '100%',
-                                height: chartHeights.current,
-                            }}
-                            minHeight={4}
-                            onResize={(
-                                evt: MouseEvent | TouchEvent,
-                                dir: Direction,
-                                ref: HTMLElement,
-                                d: NumberSize,
-                            ) => {
-                                if (
-                                    chartHeights.current + d.height <
-                                    TRADE_CHART_MIN_HEIGHT
-                                ) {
-                                    setIsChartHeightMinimum(true);
-                                } else {
-                                    setIsChartHeightMinimum(false);
-                                }
-                            }}
-                            onResizeStart={() => {
-                                // may be useful later
-                            }}
-                            onResizeStop={(
-                                evt: MouseEvent | TouchEvent,
-                                dir: Direction,
-                                ref: HTMLElement,
-                                d: NumberSize,
-                            ) => {
-                                if (
-                                    chartHeights.current + d.height <
-                                    TRADE_CHART_MIN_HEIGHT
-                                ) {
-                                    if (tradeTableState == 'Expanded') {
-                                        setChartHeight(chartHeights.default);
-                                    } else {
-                                        setChartHeight(chartHeights.min);
-                                    }
-                                } else {
-                                    setChartHeight(
-                                        chartHeights.current + d.height,
-                                    );
-                                }
-                            }}
-                            bounds={'parent'}
-                        >
-                            {(isCandleDataNull || !isPoolInitialized) && (
-                                <NoChartData
-                                    chainId={chainId}
-                                    tokenA={
-                                        isDenomBase ? baseToken : quoteToken
-                                    }
-                                    tokenB={
-                                        isDenomBase ? quoteToken : baseToken
-                                    }
-                                    isCandleDataNull
-                                    isTableExpanded={
-                                        tradeTableState == 'Expanded'
-                                    }
-                                    isPoolInitialized={isPoolInitialized}
-                                />
-                            )}
-                            {!isCandleDataNull && isPoolInitialized && (
-                                <ChartContainer fullScreen={isChartFullScreen}>
-                                    {!isCandleDataNull && (
-                                        <TradeCharts {...tradeChartsProps} />
-                                    )}
-                                </ChartContainer>
-                            )}
-                        </ResizableContainer> */}
-
-                        {(isCandleDataNull || !isPoolInitialized) && (
-                            <NoChartData
-                                chainId={chainId}
-                                tokenA={isDenomBase ? baseToken : quoteToken}
-                                tokenB={isDenomBase ? quoteToken : baseToken}
-                                isCandleDataNull
-                                isTableExpanded={tradeTableState == 'Expanded'}
-                                isPoolInitialized={isPoolInitialized}
-                            />
-                        )}
-                        {!isCandleDataNull && isPoolInitialized && (
-                            <ChartContainer fullScreen={isChartFullScreen}>
-                                {!isCandleDataNull && (
-                                    <TradeCharts {...tradeChartsProps} />
+                        {['futa'].includes(platformName) ? (
+                            <>
+                                {(isCandleDataNull || !isPoolInitialized) && (
+                                    <NoChartData
+                                        chainId={chainId}
+                                        tokenA={
+                                            isDenomBase ? baseToken : quoteToken
+                                        }
+                                        tokenB={
+                                            isDenomBase ? quoteToken : baseToken
+                                        }
+                                        isCandleDataNull
+                                        isTableExpanded={
+                                            tradeTableState == 'Expanded'
+                                        }
+                                        isPoolInitialized={isPoolInitialized}
+                                    />
                                 )}
-                            </ChartContainer>
+                                {!isCandleDataNull && isPoolInitialized && (
+                                    <ChartContainer
+                                        fullScreen={isChartFullScreen}
+                                    >
+                                        {!isCandleDataNull && (
+                                            <TradeCharts
+                                                {...tradeChartsProps}
+                                            />
+                                        )}
+                                    </ChartContainer>
+                                )}
+                            </>
+                        ) : (
+                            <ResizableContainer
+                                showResizeable={
+                                    !isCandleDataNull && !isChartFullScreen
+                                }
+                                enable={{
+                                    bottom: false,
+                                    top: false,
+                                    left: false,
+                                    topLeft: false,
+                                    bottomLeft: false,
+                                    right: false,
+                                    topRight: false,
+                                    bottomRight: false,
+                                }}
+                                size={{
+                                    width: '100%',
+                                    height: chartHeights.current,
+                                }}
+                                minHeight={4}
+                                onResize={(
+                                    evt: MouseEvent | TouchEvent,
+                                    dir: Direction,
+                                    ref: HTMLElement,
+                                    d: NumberSize,
+                                ) => {
+                                    if (
+                                        chartHeights.current + d.height <
+                                        TRADE_CHART_MIN_HEIGHT
+                                    ) {
+                                        setIsChartHeightMinimum(true);
+                                    } else {
+                                        setIsChartHeightMinimum(false);
+                                    }
+                                }}
+                                onResizeStart={() => {
+                                    // may be useful later
+                                }}
+                                onResizeStop={(
+                                    evt: MouseEvent | TouchEvent,
+                                    dir: Direction,
+                                    ref: HTMLElement,
+                                    d: NumberSize,
+                                ) => {
+                                    if (
+                                        chartHeights.current + d.height <
+                                        TRADE_CHART_MIN_HEIGHT
+                                    ) {
+                                        if (tradeTableState == 'Expanded') {
+                                            setChartHeight(
+                                                chartHeights.default,
+                                            );
+                                        } else {
+                                            setChartHeight(chartHeights.min);
+                                        }
+                                    } else {
+                                        setChartHeight(
+                                            chartHeights.current + d.height,
+                                        );
+                                    }
+                                }}
+                                bounds={'parent'}
+                            >
+                                {(isCandleDataNull || !isPoolInitialized) && (
+                                    <NoChartData
+                                        chainId={chainId}
+                                        tokenA={
+                                            isDenomBase ? baseToken : quoteToken
+                                        }
+                                        tokenB={
+                                            isDenomBase ? quoteToken : baseToken
+                                        }
+                                        isCandleDataNull
+                                        isTableExpanded={
+                                            tradeTableState == 'Expanded'
+                                        }
+                                        isPoolInitialized={isPoolInitialized}
+                                    />
+                                )}
+                                {!isCandleDataNull && isPoolInitialized && (
+                                    <ChartContainer
+                                        fullScreen={isChartFullScreen}
+                                    >
+                                        {!isCandleDataNull && (
+                                            <TradeCharts
+                                                {...tradeChartsProps}
+                                            />
+                                        )}
+                                    </ChartContainer>
+                                )}
+                            </ResizableContainer>
                         )}
 
                         {!isChartFullScreen && platformName !== 'futa' && (

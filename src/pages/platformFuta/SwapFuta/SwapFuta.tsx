@@ -9,7 +9,6 @@ function SwapFuta() {
     return (
         <section className={styles.mainSection}>
             <div className={styles.chartSection}>
-                {/* <img src={logo} alt='' /> */}
                 <Trade />
             </div>
             <Swap isOnTradeRoute />

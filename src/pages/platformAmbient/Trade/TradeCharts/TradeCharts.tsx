@@ -355,7 +355,10 @@ function TradeCharts(props: propsIF) {
                 fullHeight
                 fullWidth
                 style={{
-                    padding: isChartFullScreen ? '1rem' : '0',
+                    padding:
+                        isChartFullScreen || ['futa'].includes(platformName)
+                            ? '1rem'
+                            : '0',
                     background: isChartFullScreen ? 'var(--dark2)' : '',
                 }}
                 ref={chartCanvasRef}
