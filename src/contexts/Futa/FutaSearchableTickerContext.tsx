@@ -45,12 +45,6 @@ export const FutaSearchableTickerContextProvider = (props: {
     );
     let SEARCHABLE_TICKER_SAVED_HEIGHT = SEARCHABLE_TICKER_DEFAULT_HEIGHT;
 
-    console.log(
-        { SEARCHABLE_TICKER_MIN_HEIGHT },
-        { SEARCHABLE_TICKER_MAX_HEIGHT },
-        { SEARCHABLE_TICKER_DEFAULT_HEIGHT },
-    );
-
     // Fetch alternative default height from local storage if it exists
     const SEARCHABLE_TICKER_SAVED_HEIGHT_LOCAL_STORAGE = localStorage.getItem(
         'savedSearchableTickerHeight',
