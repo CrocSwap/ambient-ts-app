@@ -18,17 +18,12 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
-import {
-    ALLOW_AUTH,
-    ALLOW_MENTIONS,
-    LS_USER_VERIFY_TOKEN,
-} from './ChatConstants/ChatConstants';
+import { ALLOW_AUTH, ALLOW_MENTIONS } from './ChatConstants/ChatConstants';
 import { ChatVerificationTypes } from './ChatEnums';
 import { ChatGoToChatParamsIF } from './ChatIFs';
 import ChatNotificationBubble from './ChatNotification/ChatNotificationBubble';
 import styles from './ChatPanel.module.css';
 import ChatToaster from './ChatToaster/ChatToaster';
-import { setLS } from './ChatUtils';
 import DomDebugger from './DomDebugger/DomDebugger';
 import FullChat from './FullChat/FullChat';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
@@ -211,7 +206,6 @@ function ChatPanel(props: propsIF) {
         notifications,
         updateLikeDislike,
         isVerified,
-        verifyUser,
         userMap,
         updateUserCache,
         getAllMessages,
@@ -236,7 +230,7 @@ function ChatPanel(props: propsIF) {
         setMessageForNotificationBubble,
     );
 
-    const { getID, updateUser, updateMessageUser, getVerificationMessage } =
+    const { getID, updateUser, updateMessageUser, verifyWalletService } =
         useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
@@ -781,69 +775,75 @@ function ChatPanel(props: propsIF) {
         if (isUserConnected == false)
             activateToastr('Please connect your wallet first.', 'warning');
 
-        // this assignment will be deleted after backend deployment
-        let verificationText =
-            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
+        verifyWalletService(verificationDate).then((e) => {
+            console.log(e);
+            updateUserCache();
+            activateToastr('Your wallet is verified!', 'success');
+        });
 
-        try {
-            const serverSideText = await getVerificationMessage();
-            verificationText = serverSideText;
-        } catch (err) {
-            console.error(err);
-        }
+        // // this assignment will be deleted after backend deployment
+        // let verificationText =
+        //     'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
 
-        const message = verificationText + 'Wallet address:\n' + userAddress;
+        // try {
+        //     const serverSideText = await getVerificationMessage();
+        //     verificationText = serverSideText;
+        // } catch (err) {
+        //     console.error(err);
+        // }
 
-        let verifyDate = new Date();
+        // const message = verificationText + 'Wallet address:\n' + userAddress;
 
-        if (verificationType === ChatVerificationTypes.VerifyWallet) {
-            // verify wallet only
-            if (isVerified) return;
-        } else {
-            // verify wallet and old messages
-            verifyDate = verificationDate;
-        }
+        // let verifyDate = new Date();
 
-        if (
-            window.ethereum &&
-            window.ethereum.request &&
-            typeof window.ethereum.request === 'function'
-        ) {
-            window.ethereum
-                .request({
-                    method: 'personal_sign',
-                    params: [
-                        message.substring(
-                            0,
-                            message.indexOf('Wallet address:'),
-                        ),
-                        userAddress,
-                        '',
-                    ],
-                })
-                // eslint-disable-next-line
-                .then((signedMessage: any) => {
-                    verifyUser(signedMessage, verifyDate);
-                    if (verificationType != 0) {
-                        setTimeout(() => {
-                            setShowVerifyOldMessagesPanel(false);
-                            updateUnverifiedMessages(
-                                verificationDate,
-                                new Date(),
-                            );
-                        }, 1000);
-                    }
-                    setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
-                    setTimeout(() => {
-                        updateUserCache();
-                        activateToastr('Your wallet is verified!', 'success');
-                    }, 500);
-                })
-                // eslint-disable-next-line
-                .catch((error: any) => {
-                    // Handle error
-                });
-        }
+        // if (verificationType === ChatVerificationTypes.VerifyWallet) {
+        //     // verify wallet only
+        //     if (isVerified) return;
+        // } else {
+        //     // verify wallet and old messages
+        //     verifyDate = verificationDate;
+        // }
+
+        // if (
+        //     window.ethereum &&
+        //     window.ethereum.request &&
+        //     typeof window.ethereum.request === 'function'
+        // ) {
+        //     window.ethereum
+        //         .request({
+        //             method: 'personal_sign',
+        //             params: [
+        //                 message.substring(
+        //                     0,
+        //                     message.indexOf('Wallet address:'),
+        //                 ),
+        //                 userAddress,
+        //                 '',
+        //             ],
+        //         })
+        //         // eslint-disable-next-line
+        //         .then((signedMessage: any) => {
+        //             verifyUser(signedMessage, verifyDate);
+        //             if (verificationType != 0) {
+        //                 setTimeout(() => {
+        //                     setShowVerifyOldMessagesPanel(false);
+        //                     updateUnverifiedMessages(
+        //                         verificationDate,
+        //                         new Date(),
+        //                     );
+        //                 }, 1000);
+        //             }
+        //             setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
+        //             setTimeout(() => {
+        //                 updateUserCache();
+        //                 activateToastr('Your wallet is verified!', 'success');
+        //             }, 500);
+        //         })
+        //         // eslint-disable-next-line
+        //         .catch((error: any) => {
+        //             // Handle error
+        //         });
+        // }
     };
 
     const resetReplyState = () => {

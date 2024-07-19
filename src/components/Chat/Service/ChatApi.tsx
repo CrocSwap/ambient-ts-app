@@ -5,6 +5,7 @@ import {
     // getUserAvatarEndpoint,
     // getUserAvatarImageByAccountEndpoint,
     getUserVerifyToken,
+    setLS,
     // updateUserWithAvatarImageEndpoint,
 } from '../ChatUtils';
 import {
@@ -13,7 +14,9 @@ import {
     getUserAvatarImageByAccountEndpoint,
     getVerificationMessageEndpoint,
     updateUserWithAvatarImageEndpoint,
+    verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
+import { LS_USER_VERIFY_TOKEN } from '../ChatConstants/ChatConstants';
 
 const host = CHAT_BACKEND_URL;
 
@@ -242,6 +245,72 @@ const useChatApi = () => {
         return data && data.verificationMessage ? data.verificationMessage : '';
     }
 
+    async function sendVerifyRequest(verifyToken: string, verifyDate: Date) {
+        const response = await fetch(CHAT_BACKEND_URL + verifyUserEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                walletID: userAddress,
+                verifyToken: verifyToken,
+                verifyDate: verifyDate,
+            }),
+        });
+        const data = await response.json();
+
+        return data;
+    }
+
+    async function verifyWalletService(verificationDate: Date) {
+        // this assignment will be deleted after backend deployment
+        let verificationText =
+            'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
+
+        try {
+            const serverSideText = await getVerificationMessage();
+            verificationText = serverSideText;
+        } catch (err) {
+            console.error(err);
+        }
+
+        return new Promise((resolve, reject) => {
+            const message =
+                verificationText + 'Wallet address:\n' + userAddress;
+
+            if (
+                window.ethereum &&
+                window.ethereum.request &&
+                typeof window.ethereum.request === 'function'
+            ) {
+                window.ethereum
+                    .request({
+                        method: 'personal_sign',
+                        params: [
+                            message.substring(
+                                0,
+                                message.indexOf('Wallet address:'),
+                            ),
+                            userAddress,
+                            '',
+                        ],
+                    })
+                    // eslint-disable-next-line
+                    .then(async (signedMessage: any) => {
+                        const resp = await sendVerifyRequest(
+                            signedMessage,
+                            verificationDate,
+                        );
+                        setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
+                        resolve(resp);
+                    })
+                    // eslint-disable-next-line
+                    .catch((error: any) => {
+                        // Handle error
+                        reject(error);
+                    });
+            }
+        });
+    }
+
     return {
         getStatus,
         getID,
@@ -259,6 +328,8 @@ const useChatApi = () => {
         getIDByUserAddress,
         getTopRooms,
         getVerificationMessage,
+        sendVerifyRequest,
+        verifyWalletService,
     };
 };
 export default useChatApi;

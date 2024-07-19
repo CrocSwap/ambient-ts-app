@@ -32,7 +32,6 @@ import {
     getUserListWithRestEndpoint,
     updateLikesDislikesCountEndpoint,
     updateUnverifiedMessagesEndpoint,
-    updateVerifiedDateEndpoint,
     verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
@@ -361,32 +360,6 @@ const useChatSocket = (
         });
         const data = await response.json();
         setIsVerified(data.isVerified);
-
-        return data;
-    }
-
-    async function updateVerifyDate(verifyDate: Date) {
-        const response = await fetch(
-            CHAT_BACKEND_URL + updateVerifiedDateEndpoint,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    walletID: address,
-                    verifyDate: verifyDate,
-                }),
-            },
-        );
-        const data = await response.json();
-        setIsVerified(data.isVerified);
-
-        const userListData = await getUserListWithRest();
-        const usmp = new Map<string, User>();
-        userListData.forEach((user: User) => {
-            usmp.set(user._id, user);
-        });
-        setUserMap(usmp);
-        setUsers(userListData);
 
         return data;
     }
@@ -748,7 +721,6 @@ const useChatSocket = (
         isVerified,
         verifyUser,
         userMap,
-        updateVerifyDate,
         updateUserCache,
         getMsgWithRestWithPagination,
         getAllMessages,
