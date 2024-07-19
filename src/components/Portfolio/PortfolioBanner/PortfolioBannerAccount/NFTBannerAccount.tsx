@@ -121,14 +121,10 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
         NftDataIF | undefined
     >(undefined);
 
-    const { updateUserWithAvatarImage, addListener } = useChatSocket(
-        '',
-        true,
-        true,
-        () => {
+    const { updateUserWithAvatarImage, addListener, isVerified } =
+        useChatSocket('', true, true, () => {
             console.log('show toastr from nft banner comp');
-        },
-    );
+        });
 
     useEffect(() => {
         const selectedNFT = nftArray.find(
@@ -254,15 +250,20 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
     }
 
     function saveSelectedNFT(userID: string | undefined) {
-        if (userID) {
-            updateUserWithAvatarImage(
-                userID,
-                userAddress ? userAddress : '',
-                selectedNft ? selectedNft.cachedUrl : '',
-                selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
-                selectedNft ? selectedNft.thumbnailUrl : '',
-            );
+        if (isVerified) {
+            if (userID) {
+                updateUserWithAvatarImage(
+                    userID,
+                    userAddress ? userAddress : '',
+                    selectedNft ? selectedNft.cachedUrl : '',
+                    selectedThumbnail ? selectedThumbnail.thumbnailUrl : '',
+                    selectedNft ? selectedNft.thumbnailUrl : '',
+                );
+            }
         }
+        // else {
+
+        // }
     }
 
     function openWalletAddressPanel(e: KeyboardEvent) {
