@@ -243,6 +243,7 @@
     flex-direction: column;
     gap: 4px;
     height: 100%;
+    overflow-y: scroll;
 }
 .active{ background: #28585D; }
 .hoverActive {
@@ -312,6 +313,8 @@
     }
 }
 
+
+
 @media (max-width: 968px) {
     .filter_options {
         flex-wrap: wrap;
@@ -336,6 +339,9 @@
         padding-bottom: 0;
     }
 
+}
+.tickerTableContent{
+    padding-bottom: 1rem;
 }
 
 .container{
