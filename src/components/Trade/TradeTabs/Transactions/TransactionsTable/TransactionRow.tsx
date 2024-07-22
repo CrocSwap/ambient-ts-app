@@ -56,6 +56,7 @@ function TransactionRow(props: propsIF) {
         isBuy,
         elapsedTimeString,
         isBaseTokenMoneynessGreaterOrEqual,
+        positionHash,
     } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
@@ -234,6 +235,7 @@ function TransactionRow(props: propsIF) {
                         handleWalletClick={handleWalletClick}
                         openDetailsModal={openDetailsModal}
                         isOwnerActiveAccount={isOwnerActiveAccount}
+                        positionHash={positionHash}
                     />
                 </div>
             </TransactionRowStyled>

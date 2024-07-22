@@ -29,11 +29,18 @@ interface propsIF {
     handleWalletClick: () => void;
     openDetailsModal: () => void;
     isOwnerActiveAccount: boolean;
+    positionHash: string;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const { tx, isAccountView, openDetailsModal, isOwnerActiveAccount } = props;
+    const {
+        tx,
+        isAccountView,
+        openDetailsModal,
+        isOwnerActiveAccount,
+        positionHash,
+    } = props;
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
@@ -54,6 +61,8 @@ export default function TransactionsMenu(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         setShowAllData,
+        setCurrentLimitOrderActive,
+        setCurrentPositionActive,
     } = useContext(TradeTableContext);
 
     const showAbbreviatedCopyTradeButton = isAccountView
@@ -200,17 +209,19 @@ export default function TransactionsMenu(props: propsIF) {
             case 'limitOrder':
                 setOutsideControl(true);
                 setSelectedOutsideTab(1);
-                setShowAllData(true);
+                setShowAllData(false);
+                setCurrentLimitOrderActive(positionHash);
                 break;
             case 'liqchange':
                 setOutsideControl(true);
                 setSelectedOutsideTab(2);
-                setShowAllData(true);
+                setShowAllData(false);
+                setCurrentPositionActive(positionHash);
                 break;
             default:
                 setOutsideControl(true);
                 setSelectedOutsideTab(0);
-                setShowAllData(true);
+                setShowAllData(false);
                 break;
         }
     };

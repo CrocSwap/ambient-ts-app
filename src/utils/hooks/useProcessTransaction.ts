@@ -21,6 +21,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { useFetchBatch } from '../../App/hooks/useFetchBatch';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -143,6 +144,8 @@ export const useProcessTransaction = (
     let isBaseFlowPositive = false;
     let isQuoteFlowPositive = false;
 
+    let positionHash = '';
+
     const baseTokenCharacter = tx.baseSymbol
         ? getUnicodeCharacter(tx.baseSymbol)
         : '';
@@ -212,6 +215,15 @@ export const useProcessTransaction = (
         } else {
             truncatedDisplayPrice = undefined;
         }
+        positionHash = getPositionHash(undefined, {
+            isPositionTypeAmbient: false,
+            user: tx.user ?? '',
+            baseAddress: tx.base ?? '',
+            quoteAddress: tx.quote ?? '',
+            poolIdx: tx.poolIdx ?? 0,
+            bidTick: tx.bidTick ?? 0,
+            askTick: tx.askTick ?? 0,
+        });
     } else if (tx.entityType === 'liqchange') {
         if (
             tx.bidTickPriceDecimalCorrected &&
@@ -291,6 +303,15 @@ export const useProcessTransaction = (
             truncatedLowDisplayPrice = undefined;
             truncatedHighDisplayPrice = undefined;
         }
+        positionHash = getPositionHash(undefined, {
+            isPositionTypeAmbient: tx.positionType == 'ambient',
+            user: tx.user ?? '',
+            baseAddress: tx.base ?? '',
+            quoteAddress: tx.quote ?? '',
+            poolIdx: tx.poolIdx ?? 0,
+            bidTick: tx.bidTick ?? 0,
+            askTick: tx.askTick ?? 0,
+        });
     } else {
         const priceDecimalCorrected = tx.swapPriceDecimalCorrected;
         const invPriceDecimalCorrected = tx.swapInvPriceDecimalCorrected;
@@ -595,5 +616,7 @@ export const useProcessTransaction = (
 
         //
         elapsedTimeString,
+
+        positionHash,
     } as const;
 };
