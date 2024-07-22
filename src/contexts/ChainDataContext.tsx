@@ -13,6 +13,7 @@ import {
     IS_LOCAL_ENV,
     MAINNET_RPC_URL,
     SCROLL_RPC_URL,
+    SEPOLIA_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
@@ -124,11 +125,13 @@ export const ChainDataContextProvider = (props: {
     async function pollBlockNum(): Promise<void> {
         const nodeUrl = ['0x1'].includes(chainData.chainId)
             ? MAINNET_RPC_URL
-            : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-              ? BLAST_RPC_URL
-              : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                ? SCROLL_RPC_URL
-                : blockPollingUrl;
+            : ['0xaa36a7'].includes(chainData.chainId)
+              ? SEPOLIA_RPC_URL
+              : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+                ? BLAST_RPC_URL
+                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                  ? SCROLL_RPC_URL
+                  : blockPollingUrl;
         // const nodeUrl =
         //     chainData.nodeUrl.toLowerCase().includes('infura') &&
         //     import.meta.env.VITE_INFURA_KEY
