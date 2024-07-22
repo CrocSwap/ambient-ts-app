@@ -205,7 +205,7 @@ export default function ScatterChart() {
     }, [xScale, yScale, chartSize, selectedDot]);
 
     useEffect(() => {
-        if (xScale && yScale && pointSeries) {
+        if (xScale && yScale && pointSeries && chartSize) {
             const canvas = d3
                 .select(d3Chart.current)
                 .select('canvas')
@@ -216,7 +216,7 @@ export default function ScatterChart() {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    const heightYAxis = yScale.range()[0] + yScale.range()[1];
+                    const heightYAxis = chartSize.height;
                     const tickCount = heightYAxis < 350 ? 5 : 10;
                     const yTicks = yScale.ticks(tickCount);
 
@@ -280,7 +280,7 @@ export default function ScatterChart() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const resizeObserver = new ResizeObserver((result: any) => {
                     renderCanvasArray([d3Chart]);
-                    setChartSize(result);
+                    setChartSize(result[0].contentRect);
                 });
 
                 resizeObserver.observe(svgDiv.node());
