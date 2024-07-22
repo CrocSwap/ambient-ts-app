@@ -53,6 +53,11 @@ export const BLOCK_POLLING_RPC_URL =
         ? import.meta.env.VITE_BLOCK_POLLING_RPC_URL
         : '';
 
+export const MAINNET_RPC_URL =
+    import.meta.env.VITE_MAINNET_RPC_URL !== undefined
+        ? import.meta.env.VITE_MAINNET_RPC_URL
+        : 'https://ethereum-mainnet.core.chainstack.com/55818ec2ac63dfef6ff4d1a74cf14d72';
+
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
         ? import.meta.env.VITE_BLAST_RPC_URL
