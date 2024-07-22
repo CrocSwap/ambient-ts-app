@@ -667,7 +667,7 @@ export default function MessageInput(props: MessageInputProps) {
                     {showEmojiPicker && (
                         <div
                             className={styles.emojiPicker}
-                            style={{ scrollBehavior: 'auto' }}
+                            style={{ width: '100%' }}
                         >
                             <span
                                 id='chat-close-emoji-panel-button'
@@ -706,7 +706,7 @@ export default function MessageInput(props: MessageInputProps) {
                                 <div>
                                     <>
                                         <Picker
-                                            pickerStyle={{ width: '18vw' }}
+                                            pickerStyle={{ width: '100%' }}
                                             onEmojiClick={handleEmojiClick}
                                             disableSkinTonePicker={true}
                                         />
