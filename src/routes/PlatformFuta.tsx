@@ -20,7 +20,7 @@ import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformFutaRoutes: React.FC = () => {
     const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
     return (
         <div style={{ background: 'var(--dark1)' }}>

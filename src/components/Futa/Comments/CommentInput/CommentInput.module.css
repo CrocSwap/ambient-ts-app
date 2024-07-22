@@ -45,9 +45,11 @@
 
     .connect_to_chat_placeholder{
         color: rgba(255,255,255, .3);
+        background-color: var(--dark3);
+        color: black;
+        background: var(--accent1   );
         padding: .5rem;
         text-align: center;
-        background-color: var(--dark3);
         cursor: pointer;
     }
 

@@ -12,6 +12,10 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
+import {
+    checkVisibilityWithBottom,
+    dropFromCssClasses,
+} from '../../Chat/ChatUtils';
 
 type ShimmerListProps = {
     count: number;
@@ -40,6 +44,7 @@ function Comments() {
     const [scrollBackTarget, setScrollBackTarget] = useState('');
     const [panelScrollTop, setPanelScrollTop] = useState(0);
     const [panelScrollToBottomDist, setPanelScrollToBottomDist] = useState(0);
+    const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
     const fetchListener = () => {
         if (messageListRef && messageListRef.current) {
@@ -79,10 +84,6 @@ function Comments() {
     }, []);
 
     useEffect(() => {
-        if (scrollBackTarget.length > 0) {
-            console.log(scrollBackTarget);
-        }
-
         // handle auto scroll to bottom
         if (messageListRef && messageListRef.current) {
             const diff = assignPanelScrollDistances();
@@ -90,6 +91,9 @@ function Comments() {
                 scrollToBottom();
             }
         }
+        setTimeout(() => {
+            handleUnreadMessages();
+        }, 500);
     }, [messages]);
 
     useEffect(() => {
@@ -101,6 +105,7 @@ function Comments() {
         setPage(0);
         setFetchedAllPages(false);
         setFetchedMessageCount(0);
+        setUnreadMessageCount(0);
     }, [room]);
 
     useEffect(() => {
@@ -146,7 +151,6 @@ function Comments() {
             // messageListWrapper.current.scrollTop = messageListWrapper.current.scrollHeight - msgElOffsetTop + msgElHeight - messageListWrapper.current.getBoundingClientRect().height;
             setTimeout(() => {
                 const target = calculateScrollTarget(messageId);
-                console.log(target);
                 if (messageListRef && messageListRef.current) {
                     if (instant) {
                         messageListRef.current.scrollTo({
@@ -228,17 +232,57 @@ function Comments() {
         setScrollBackTarget('');
     };
 
+    const handleUnreadMessages = () => {
+        setTimeout(() => {
+            document.querySelectorAll('.unreadComment').forEach((el) => {
+                if (
+                    checkVisibilityWithBottom(
+                        el as HTMLElement,
+                        messageListRef.current,
+                    )
+                ) {
+                    setTimeout(() => {
+                        dropFromCssClasses(el as HTMLElement, 'unread');
+                        setUnreadMessageCount(
+                            document.querySelectorAll('.unreadComment').length,
+                        );
+                    }, 1000);
+                }
+            });
+
+            setTimeout(() => {
+                setUnreadMessageCount(
+                    document.querySelectorAll('.unreadComment').length,
+                );
+            }, 500);
+        }, 1000);
+    };
+
+    const goToUnreadMessages = () => {
+        const unreadComments = document.querySelectorAll('.unreadComment');
+        if (unreadComments.length > 0) {
+            const firstUnread = unreadComments[0];
+            scrollToMessage(
+                (firstUnread as HTMLElement).getAttribute(
+                    'data-message-id',
+                ) as string,
+                false,
+            );
+        }
+
+        handleUnreadMessages();
+    };
+
     const _handleScroll = () => {
         assignPanelScrollDistances();
         assignLastSeenMessage();
+        handleUnreadMessages();
     };
 
     return (
-        <div className={styles.mainContainer}>
-            {isLoading ? (
-                <ShimmerList count={25} />
-            ) : (
-                <>
+        <>
+            <div className={styles.comments_outer}>
+                {userAddress && userAddress.length > 0 && (
                     <div className={styles.connection_status}>
                         {isWsConnected ? (
                             <>
@@ -257,76 +301,104 @@ function Comments() {
                             </>
                         )}
                     </div>
+                )}
 
-                    <div
-                        ref={messageListRef}
-                        className={`${styles.commentsWrapper} ${messages.length == 0 ? styles.no_comments_wrapper : ''} `}
-                        onScroll={_handleScroll}
-                    >
-                        {messages.length == 0 ? (
-                            <span className={styles.no_comment_section}>
-                                {isUserConnected
-                                    ? `Start the ${ticker} comment thread below`
-                                    : `Connect your wallet to comment on ${ticker}`}
-                            </span>
-                        ) : (
-                            <>
-                                <div className={styles.comments_content}>
-                                    {fetchedAllPages && (
-                                        <div className={styles.all_fetched}>
-                                            {' '}
-                                            All comments fetched.
+                <div className={styles.mainContainer}>
+                    {isLoading ? (
+                        <ShimmerList count={25} />
+                    ) : (
+                        <>
+                            <div
+                                ref={messageListRef}
+                                className={`${styles.commentsWrapper} ${messages.length == 0 ? styles.no_comments_wrapper : ''} `}
+                                onScroll={_handleScroll}
+                            >
+                                {messages.length == 0 ? (
+                                    <span className={styles.no_comment_section}>
+                                        {isUserConnected
+                                            ? `Start the ${ticker} comment thread below`
+                                            : `Connect your wallet to comment on ${ticker}`}
+                                    </span>
+                                ) : (
+                                    <>
+                                        <div
+                                            className={styles.comments_content}
+                                        >
+                                            {fetchedAllPages && (
+                                                <div
+                                                    className={
+                                                        styles.all_fetched
+                                                    }
+                                                >
+                                                    {' '}
+                                                    All comments fetched.
+                                                </div>
+                                            )}
+                                            {messages.map((msg, index) => {
+                                                return (
+                                                    <CommentCard
+                                                        key={msg._id}
+                                                        style={{
+                                                            animationDelay: `${(messages.length - index - fetchedMessageCount) * 0.015}s`,
+                                                        }}
+                                                        message={msg}
+                                                        previousMessage={
+                                                            index > 0
+                                                                ? messages[
+                                                                      index - 1
+                                                                  ]
+                                                                : undefined
+                                                        }
+                                                        currentUserID={userId}
+                                                    />
+                                                );
+                                            })}
                                         </div>
-                                    )}
-                                    {messages.map((msg, index) => {
-                                        return (
-                                            <CommentCard
-                                                key={msg._id}
-                                                style={{
-                                                    animationDelay: `${(messages.length - index - fetchedMessageCount) * 0.015}s`,
-                                                }}
-                                                message={msg}
-                                                previousMessage={
-                                                    index > 0
-                                                        ? messages[index - 1]
-                                                        : undefined
-                                                }
-                                                currentUserID={userId}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </>
-                        )}
-                    </div>
+                                    </>
+                                )}
+                            </div>
 
-                    {showPrevButton && !fetchedAllPages && (
-                        <IoIosArrowUp
-                            title='Get Previous Messages'
-                            className={`${styles.floating_scroll_btn} ${styles.show_previous_comments_btn}`}
-                            onClick={fetchPrevious}
-                        />
+                            {showPrevButton && !fetchedAllPages && (
+                                <IoIosArrowUp
+                                    title='Get Previous Messages'
+                                    className={`${styles.floating_scroll_btn} ${styles.show_previous_comments_btn}`}
+                                    onClick={fetchPrevious}
+                                />
+                            )}
+
+                            {showScrollToBottom && (
+                                <IoIosArrowDown
+                                    title='Scroll to Bottom'
+                                    className={`${styles.floating_scroll_btn} ${styles.scroll_to_bottom_btn}`}
+                                    onClick={scrollToBottom}
+                                />
+                            )}
+
+                            {unreadMessageCount > 0 &&
+                                panelScrollToBottomDist > 50 && (
+                                    <div
+                                        className={styles.unread_messages_info}
+                                        onClick={goToUnreadMessages}
+                                    >
+                                        {' '}
+                                        {unreadMessageCount} new message
+                                        {unreadMessageCount > 1 ? 's' : ''}
+                                    </div>
+                                )}
+
+                            {/* <div className={styles.debug_btn} onClick={() => {scrollToMessage('669112bc1ce48e351edddd2d')}}></div> */}
+
+                            {/* </div> */}
+                            <CommentInput
+                                commentInputDispatch={commentInputDispatch}
+                                currentUserID={userId}
+                            />
+                        </>
                     )}
-
-                    {showScrollToBottom && (
-                        <IoIosArrowDown
-                            title='Scroll to Bottom'
-                            className={`${styles.floating_scroll_btn} ${styles.scroll_to_bottom_btn}`}
-                            onClick={scrollToBottom}
-                        />
-                    )}
-
-                    {/* <div className={styles.debug_btn} onClick={() => {scrollToMessage('669112bc1ce48e351edddd2d')}}></div> */}
-
-                    {/* </div> */}
-                    <CommentInput
-                        commentInputDispatch={commentInputDispatch}
-                        currentUserID={userId}
-                    />
-                </>
-            )}
-            <DomDebugger />
-        </div>
+                    <DomDebugger />
+                </div>
+            </div>
+        </>
     );
 }
 
