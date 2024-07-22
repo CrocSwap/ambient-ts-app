@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './TickerComponent.module.css';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -744,12 +744,39 @@ export default function TickerComponent(props: PropsIF) {
         QTY_INPUT_ID,
     ) as HTMLInputElement;
 
+    const elementIsVisibleInViewport = (
+        el: HTMLInputElement,
+        partiallyVisible = false,
+    ) => {
+        const { top, left, bottom, right } = el.getBoundingClientRect();
+        const { innerHeight, innerWidth } = window;
+        return partiallyVisible
+            ? ((top > 0 && top < innerHeight) ||
+                  (bottom > 0 && bottom < innerHeight)) &&
+                  ((left > 0 && left < innerWidth) ||
+                      (right > 0 && right < innerWidth))
+            : top >= 0 &&
+                  left >= 0 &&
+                  bottom <= innerHeight &&
+                  right <= innerWidth;
+    };
+
     useEffect(() => {
-        /* auto-focus the bid qty input field on first load
+        // e.g. 100x100 viewport and a 10x10px element at position
+        // {top: -1, left: 0, bottom: 9, right: 10}
+        if (bidQtyInputField) {
+            const elementFullyVisible =
+                elementIsVisibleInViewport(bidQtyInputField); // false - (not fully visible)
+            // const elementPartiallyVisible = elementIsVisibleInViewport(
+            //     bidQtyInputField,
+            //     true,
+            // ); // true - (partially visible)
+            /* auto-focus the bid qty input field on first load
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
-        // could be improved by first checking if the field is visible, rather than auto scrolling
-        if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
+            // could be improved by first checking if the field is visible, rather than auto scrolling
+            if (elementFullyVisible && !inputValue) bidQtyInputField.focus();
+        }
     }, [bidQtyInputField, selectedMaxMarketCapInWeiBigInt, inputValue]);
 
     const completedDisplay = (
@@ -763,27 +790,59 @@ export default function TickerComponent(props: PropsIF) {
             {isUserConnected && !showTradeButton && allocationOrReturnDisplay}
         </div>
     );
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        let isScrolling: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            if (container) {
+                container.classList.add(styles.scrolling);
+
+                // Clear the timeout throughout the scroll
+                window.clearTimeout(isScrolling);
+
+                // Set a timeout to run after scrolling ends
+                isScrolling = setTimeout(() => {
+                    container.classList.remove(styles.scrolling);
+                }, 1000);
+            }
+        };
+
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
 
     const unCompletedDisplay = (
-        <div className={styles.content}>
-            <div className={styles.flexColumn}>
+        <>
+            <div className={styles.content} ref={containerRef}>
                 {!isAuctionPage && <BreadCrumb />}
                 {tickerDisplay}
-                {showComments && <Comments />}
-            </div>
+                <div className={styles.flexColumn}>
+                    {showComments && <Comments />}
+                </div>
 
-            {!showComments && (
-                <>
-                    {openedBidDisplay}
-                    {yourBidDisplay}
-                    <div className={styles.flexColumn}>
-                        {maxFdvDisplay}
-                        {bidSizeDisplay}
-                        {extraInfoDisplay}
-                    </div>
-                </>
-            )}
-        </div>
+                {!showComments && (
+                    <>
+                        {openedBidDisplay}
+                        {yourBidDisplay}
+                        <div className={styles.flexColumn}>
+                            {maxFdvDisplay}
+                            {bidSizeDisplay}
+                            {extraInfoDisplay}
+                        </div>
+                    </>
+                )}
+            </div>
+        </>
     );
 
     return (

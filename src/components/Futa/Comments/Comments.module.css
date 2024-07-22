@@ -7,6 +7,9 @@
     }
   }
 
+  .comments_outer{
+  }
+
   .mainContainer{
     height: calc(100svh - 170px);
     display: flex;
@@ -55,7 +58,7 @@
 
     .connection_status{
       position: absolute;
-      top: -2rem;
+      top: 2rem;
       right: 45%;
     }
 
@@ -100,6 +103,7 @@
       height: .4rem;
       border-radius: 100vw;
       background-color: var(--positive);
+      margin-right: 1rem;
     }
     .connection_dot_anim{
       display: block;
@@ -185,10 +189,26 @@
     }
 
     .all_fetched{
-      margin-top: 2svh;
+      margin-top: 4svh;
     width: 100%;
     text-align: center;
     opacity: 0.3;
+    }
+
+    .unread_messages_info{
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      right: 0;
+      padding: .3rem;
+      color: var(--text1);
+      background: rgba(255,255,255, .1);
+      text-align: center;
+      border-radius: .3rem;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255, .1);
     }
 
     @media only screen and (max-width: 600px){
