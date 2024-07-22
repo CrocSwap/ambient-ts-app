@@ -2,6 +2,7 @@ import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import {
+    getLS,
     // getUserAvatarEndpoint,
     // getUserAvatarImageByAccountEndpoint,
     getUserVerifyToken,
@@ -12,6 +13,7 @@ import {
     getTopRoomsEndpoint,
     getUserAvatarEndpoint,
     getUserAvatarImageByAccountEndpoint,
+    getUserIsVerified,
     getVerificationMessageEndpoint,
     updateUserWithAvatarImageEndpoint,
     verifyUserEndpoint,
@@ -311,6 +313,30 @@ const useChatApi = () => {
         });
     }
 
+    async function isUserVerified() {
+        if (userAddress) {
+            const userToken = getLS(LS_USER_VERIFY_TOKEN, userAddress);
+            if (!userToken) return false;
+            const encodedAddress = encodeURIComponent(userAddress);
+            let encodedToken = '';
+            if (userToken && userToken.length > 20) {
+                encodedToken = encodeURIComponent(userToken.substring(0, 20));
+            }
+            const response = await fetch(
+                CHAT_BACKEND_URL +
+                    getUserIsVerified +
+                    encodedAddress +
+                    '/' +
+                    encodedToken,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data;
+        }
+    }
+
     return {
         getStatus,
         getID,
@@ -330,6 +356,7 @@ const useChatApi = () => {
         getVerificationMessage,
         sendVerifyRequest,
         verifyWalletService,
+        isUserVerified,
     };
 };
 export default useChatApi;
