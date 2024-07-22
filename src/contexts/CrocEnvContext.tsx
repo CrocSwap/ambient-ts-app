@@ -28,6 +28,7 @@ import {
     getDefaultPairForChain,
     BLAST_RPC_URL,
     MAINNET_RPC_URL,
+    SEPOLIA_RPC_URL,
     SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
@@ -75,6 +76,9 @@ const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
     staticNetwork: true,
 });
 const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
+    staticNetwork: true,
+});
+const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
     staticNetwork: true,
 });
 
@@ -195,11 +199,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                   ? scrollProvider
                   : chainData.chainId === '0x13e31'
                     ? blastProvider
-                    : new BatchedJsonRpcProvider(
-                          nodeUrl,
-                          parseInt(chainData.chainId),
-                          { staticNetwork: true },
-                      ),
+                    : chainData.chainId === '0xaa36a7'
+                      ? sepoliaProvider
+                      : new BatchedJsonRpcProvider(
+                            nodeUrl,
+                            parseInt(chainData.chainId),
+                            { staticNetwork: true },
+                        ),
         [chainData.chainId],
     );
 

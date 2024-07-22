@@ -68,6 +68,11 @@ export const SCROLL_RPC_URL =
         ? import.meta.env.VITE_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
 
+export const SEPOLIA_RPC_URL =
+    import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined
+        ? import.meta.env.VITE_SEPOLIA_RPC_URL
+        : 'https://ethereum-sepolia-rpc.publicnode.com';
+
 export const ALCHEMY_API_KEY =
     import.meta.env.VITE_ALCHEMY_API_KEY !== undefined
         ? import.meta.env.VITE_ALCHEMY_API_KEY

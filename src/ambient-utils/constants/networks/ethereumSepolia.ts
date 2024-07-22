@@ -6,23 +6,24 @@ import { GCGO_TESTNET_URL } from '../gcgo';
 import { Provider } from 'ethers';
 import { bigIntToFloat } from '@crocswap-libs/sdk';
 
-const PROVIDER_KEY =
-    import.meta.env.NODE_ENV === 'test'
-        ? import.meta.env.PROVIDER_KEY
-        : import.meta.env.VITE_INFURA_KEY;
+// const PROVIDER_KEY =
+//     import.meta.env.NODE_ENV === 'test'
+//         ? import.meta.env.PROVIDER_KEY
+//         : import.meta.env.VITE_INFURA_KEY;
 
 const chain = {
     chainId: 11155111,
     name: 'Sepolia',
     currency: 'ETH',
-    rpcUrl: 'https://rpc.sepolia.org',
+    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
     explorerUrl: 'https://sepolia.etherscan.io',
 };
 
 export const ethereumSepolia: NetworkIF = {
     chainId: '0xaa36a7',
     graphCacheUrl: GCGO_TESTNET_URL,
-    evmRpcUrl: 'https://sepolia.infura.io/v3/' + PROVIDER_KEY,
+    evmRpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
+    // evmRpcUrl: 'https://sepolia.infura.io/v3/' + PROVIDER_KEY,
     chain: chain,
     shouldPollBlock: false,
     marketData: '0x1',
