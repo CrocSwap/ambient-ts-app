@@ -793,10 +793,10 @@ export default function TickerComponent(props: PropsIF) {
 
     const unCompletedDisplay = (
         <>
+            {!isAuctionPage && <BreadCrumb />}
+            {tickerDisplay}
             <div className={styles.content}>
                 <div className={styles.flexColumn}>
-                    {!isAuctionPage && <BreadCrumb />}
-                    {tickerDisplay}
                     {showComments && <Comments />}
                 </div>
 
