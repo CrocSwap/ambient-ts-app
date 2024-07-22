@@ -244,7 +244,19 @@
     gap: 4px;
     height: 100%;
     overflow-y: scroll;
+    scrollbar-color: var(--dark2) var(--dark2);
 }
+.scrolling{
+    scrollbar-color: var(--accent1) var(--dark2);
+}
+
+
+
+
+
+
+
+
 .active{ background: #28585D; }
 .hoverActive {
     background: var(--dark4);
@@ -301,7 +313,7 @@
     }
     .tickerTableContent{
         height: 100%;
-        overflow-y: scroll;
+       
     }
 }
 

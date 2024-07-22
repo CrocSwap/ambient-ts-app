@@ -9,6 +9,7 @@
     line-height: normal;
 }
 
+
 .content {
     height: 100%;
     display: flex;
@@ -17,8 +18,12 @@
     overflow-y: scroll;
     overflow-x: hidden;
     gap: 8px;
+    scrollbar-color: var(--dark2) var(--dark2);
 }
 
+.scrolling{
+    scrollbar-color: var(--accent1) var(--dark2);
+}
 .justifyBetween {
     height: 100%;
     display: flex;

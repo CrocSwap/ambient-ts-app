@@ -396,7 +396,36 @@ export default function SearchableTicker(props: propsIF) {
             )}
         </div>
     );
+    const containerRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        const container = containerRef.current;
+        let isScrolling: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            if (container) {
+                container.classList.add(styles.scrolling);
+
+                // Clear the timeout throughout the scroll
+                window.clearTimeout(isScrolling);
+
+                // Set a timeout to run after scrolling ends
+                isScrolling = setTimeout(() => {
+                    container.classList.remove(styles.scrolling);
+                }, 1000);
+            }
+        };
+
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
     const searchableContent = (
         <div className={styles.tickerTableContainer}>
             <header className={styles.tickerHeader}>
@@ -412,6 +441,7 @@ export default function SearchableTicker(props: propsIF) {
                     setIsMouseEnter(false);
                     setHoveredTicker(undefined);
                 }}
+                ref={containerRef}
             >
                 {filteredData.length
                     ? (showComplete && auctions.active === 'timeLeft'

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './TickerComponent.module.css';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
@@ -790,10 +790,40 @@ export default function TickerComponent(props: PropsIF) {
             {isUserConnected && !showTradeButton && allocationOrReturnDisplay}
         </div>
     );
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        let isScrolling: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            if (container) {
+                container.classList.add(styles.scrolling);
+
+                // Clear the timeout throughout the scroll
+                window.clearTimeout(isScrolling);
+
+                // Set a timeout to run after scrolling ends
+                isScrolling = setTimeout(() => {
+                    container.classList.remove(styles.scrolling);
+                }, 1000);
+            }
+        };
+
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
 
     const unCompletedDisplay = (
         <>
-            <div className={styles.content}>
+            <div className={styles.content} ref={containerRef}>
                 <div className={styles.flexColumn}>
                     {!isAuctionPage && <BreadCrumb />}
                     {tickerDisplay}
