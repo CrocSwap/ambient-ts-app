@@ -76,14 +76,29 @@ const PlatformAmbientRoutes: React.FC = () => {
                 element={<Portfolio isLevelsPage isRanksPage />}
             />
             <Route path='/account/xp' element={<Portfolio isLevelsPage />} />
-            <Route path='/account/points' element={<Portfolio isPointsTab />} />
             <Route
-                path='/account/:address/points'
-                element={<Portfolio isPointsTab />}
+                path='account/transactions'
+                element={<Portfolio specificTab='transactions' />}
+            />
+            <Route
+                path='account/limits'
+                element={<Portfolio specificTab='limits' />}
+            />
+            <Route
+                path='account/liquidity'
+                element={<Portfolio specificTab='liquidity' />}
+            />
+            <Route
+                path='account/points'
+                element={<Portfolio specificTab='points' />}
+            />
+            <Route
+                path='account/:address/points'
+                element={<Portfolio specificTab='points' />}
             />
             <Route
                 path='/:address/points'
-                element={<Portfolio isPointsTab />}
+                element={<Portfolio specificTab='points' />}
             />
             <Route
                 path='/account/:address/xp/history'
