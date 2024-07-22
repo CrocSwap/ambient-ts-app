@@ -144,7 +144,6 @@ export default function MessageInput(props: MessageInputProps) {
 
             inputRef.current.focus();
         }
-        console.log(emojiObject);
     };
 
     const handleEmojiPickerHideShow = () => {
