@@ -77,8 +77,8 @@ function TransactionRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'accent1'
-            : 'text1';
+              ? 'accent1'
+              : 'text1';
 
     function scrollToDiv() {
         const element = document.getElementById(idForDOM);
@@ -233,6 +233,7 @@ function TransactionRow(props: propsIF) {
                         isAccountView={props.isAccountView}
                         handleWalletClick={handleWalletClick}
                         openDetailsModal={openDetailsModal}
+                        isOwnerActiveAccount={isOwnerActiveAccount}
                     />
                 </div>
             </TransactionRowStyled>

@@ -28,11 +28,12 @@ interface propsIF {
     isAccountView: boolean;
     handleWalletClick: () => void;
     openDetailsModal: () => void;
+    isOwnerActiveAccount: boolean;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
-    const { tx, isAccountView, openDetailsModal } = props;
+    const { tx, isAccountView, openDetailsModal, isOwnerActiveAccount } = props;
     const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
@@ -47,16 +48,21 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { handlePulseAnimation, setActiveMobileComponent } =
-        useContext(TradeTableContext);
+    const {
+        handlePulseAnimation,
+        setActiveMobileComponent,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setShowAllData,
+    } = useContext(TradeTableContext);
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? isSidebarOpen
             ? useMediaQuery('(max-width: 1700px)')
             : useMediaQuery('(max-width: 1400px)')
         : isSidebarOpen
-        ? useMediaQuery('(max-width: 1500px)')
-        : useMediaQuery('(max-width: 1250px)');
+          ? useMediaQuery('(max-width: 1500px)')
+          : useMediaQuery('(max-width: 1250px)');
 
     const {
         tokenA,
@@ -124,8 +130,6 @@ export default function TransactionsMenu(props: propsIF) {
         }
     }
 
-    const isTxCopiable = true;
-
     const walletButton = (
         <Chip ariaLabel='View wallet.' onClick={props.handleWalletClick}>
             Wallet
@@ -191,9 +195,35 @@ export default function TransactionsMenu(props: propsIF) {
         handleCopyClick();
     };
 
+    const viewButtonFunction = (entityType: string) => {
+        switch (entityType) {
+            case 'limitOrder':
+                setOutsideControl(true);
+                setSelectedOutsideTab(1);
+                setShowAllData(true);
+                break;
+            case 'liqchange':
+                setOutsideControl(true);
+                setSelectedOutsideTab(2);
+                setShowAllData(true);
+                break;
+            default:
+                setOutsideControl(true);
+                setSelectedOutsideTab(0);
+                setShowAllData(true);
+                break;
+        }
+    };
+
     const copyButton = (
         <Chip onClick={() => copyButtonFunction(tx.entityType)}>
             {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+        </Chip>
+    );
+
+    const viewButton = (
+        <Chip onClick={() => viewButtonFunction(tx.entityType)}>
+            {showAbbreviatedCopyTradeButton ? 'View' : 'View Status'}
         </Chip>
     );
 
@@ -216,8 +246,15 @@ export default function TransactionsMenu(props: propsIF) {
     const showCopyButtonOutsideDropdownMenu =
         useMediaQuery('(min-width: 650px)');
     // --------------------------------
+
+    const showViewButton =
+        isOwnerActiveAccount &&
+        ['limitOrder', 'liqchange'].includes(tx.entityType);
+
     const transactionsMenu = (
-        <div className={styles.actions_menu}>{isTxCopiable && copyButton}</div>
+        <div className={styles.actions_menu}>
+            {showViewButton ? viewButton : copyButton}
+        </div>
     );
 
     const menuContent = (
