@@ -144,6 +144,7 @@ export default function MessageInput(props: MessageInputProps) {
 
             inputRef.current.focus();
         }
+        console.log(emojiObject);
     };
 
     const handleEmojiPickerHideShow = () => {
@@ -665,7 +666,10 @@ export default function MessageInput(props: MessageInputProps) {
                         </div>
                     </div>
                     {showEmojiPicker && (
-                        <div className={styles.emojiPicker}>
+                        <div
+                            className={styles.emojiPicker}
+                            style={{ scrollBehavior: 'auto' }}
+                        >
                             <span
                                 id='chat-close-emoji-panel-button'
                                 className={styles.emoji_close_button}
@@ -700,14 +704,15 @@ export default function MessageInput(props: MessageInputProps) {
                                     <li>Enter - sends message directly</li>
                                 </ul>
                             ) : (
-                                <Picker
-                                    pickerStyle={{
-                                        width: '100%',
-                                        height: '89%',
-                                    }}
-                                    onEmojiClick={handleEmojiClick}
-                                    disableSkinTonePicker={true}
-                                />
+                                <div>
+                                    <>
+                                        <Picker
+                                            pickerStyle={{ width: '18vw' }}
+                                            onEmojiClick={handleEmojiClick}
+                                            disableSkinTonePicker={true}
+                                        />
+                                    </>
+                                </div>
                             )}
                         </div>
                     )}
