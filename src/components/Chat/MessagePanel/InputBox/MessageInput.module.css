@@ -142,8 +142,7 @@
 }
 
 
-.emojiPicker {
-    width: 97%;
+/* .emojiPicker {
     padding: 0px 8px;
     bottom: 0;
     text-emphasis-color: white;
@@ -151,7 +150,7 @@
 
 .emoji-categories {
     filter: invert(100%);
-}
+} */
 
 .emoji_close_button {
     position: relative;
@@ -363,4 +362,7 @@
         height: 1.2rem;
     }
 
+}
+section[class^="emoji-scroll-wrapper"]{
+    scroll-behavior: auto;
 }
