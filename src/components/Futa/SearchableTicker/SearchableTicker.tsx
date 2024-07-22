@@ -526,6 +526,7 @@ export default function SearchableTicker(props: propsIF) {
                 }
             }}
             bounds={'parent'}
+            style={{ paddingBottom: '0rem' }}
         >
             {searchableContent}
         </ResizableContainer>
