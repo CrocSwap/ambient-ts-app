@@ -16,7 +16,10 @@ import { UserDataContext } from './UserDataContext';
 import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
 import { TokenIF } from '../ambient-utils/types';
-import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
+import {
+    sepoliaETH,
+    CURRENT_AUCTION_VERSION,
+} from '../ambient-utils/constants';
 
 export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
@@ -258,15 +261,7 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
     }
 
     const [tickerPair, setTickerPair] = useState<[TokenIF, TokenIF]>([
-        {
-            name: 'Native Ether',
-            address: '0x0000000000000000000000000000000000000000',
-            symbol: 'ETH',
-            decimals: 18,
-            chainId: 11155111,
-            logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-        },
+        sepoliaETH,
         {
             address: '0x60bBA138A74C5e7326885De5090700626950d509',
             chainId: 11155111,

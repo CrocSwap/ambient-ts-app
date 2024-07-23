@@ -1,12 +1,15 @@
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
-import { memo, useContext } from 'react';
+import {
+    memo,
+    // useContext
+} from 'react';
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-import { BrandContext } from '../../contexts/BrandContext';
+// import { BrandContext } from '../../contexts/BrandContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -33,7 +36,8 @@ interface propsIF {
     isInitPage?: boolean | undefined;
     tokenDecimals?: number;
     percentDiffUsdValue?: number;
-    ticker?: TokenIF;
+    // ticker?: TokenIF;
+    // updateTickerPair?: (t: TokenIF) => void;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -61,7 +65,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isInitPage,
         usdValue,
         percentDiffUsdValue,
-        ticker,
+        // ticker,
+        // updateTickerPair,
     } = props;
 
     const usdValueForDom =
@@ -72,7 +77,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
               })
             : '';
 
-    const { platformName } = useContext(BrandContext);
+    // const { platformName } = useContext(BrandContext);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -190,7 +195,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         <>
             <TokenInputQuantity
                 fieldId={fieldId}
-                token={platformName === 'futa' ? (ticker as TokenIF) : token}
+                token={token}
                 tokenAorB={tokenAorB}
                 value={tokenInput}
                 handleTokenInputEvent={handleTokenInputEvent}
@@ -199,6 +204,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                // updateTickerPair={updateTickerPair}
             />
             {handleRefresh && (
                 <RefreshButton

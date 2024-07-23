@@ -33,6 +33,7 @@ interface propsIF {
     onClose: () => void;
     noModal?: boolean;
     platform?: 'ambient' | 'futa';
+    updateTickerPair?: (t: TokenIF) => void;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -44,6 +45,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         platform = 'ambient',
+        updateTickerPair,
     } = props;
 
     // const mockFutaTickers = [
@@ -393,6 +395,11 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 token={ticker}
                                 chooseToken={() => null}
                                 fromListsText=''
+                                updateTickerPair={() => {
+                                    updateTickerPair &&
+                                        updateTickerPair(ticker);
+                                    onClose();
+                                }}
                             />
                         ))}
             </section>

@@ -246,7 +246,7 @@ export default function ScatterChart() {
                         : showDotsData;
 
                     const dataWithHovered = hoveredDot
-                        ? [...showDotsData, hoveredDot]
+                        ? [...dataWithSelected, hoveredDot]
                         : dataWithSelected;
 
                     if (data !== undefined) {
@@ -342,7 +342,13 @@ export default function ScatterChart() {
 
                     d3.select(d3Chart.current)
                         .select('canvas')
-                        .style('cursor', nearestData ? 'pointer' : 'default');
+                        .style(
+                            'cursor',
+                            nearestData &&
+                                nearestData.name !== selectedDot?.name
+                                ? 'pointer'
+                                : 'default',
+                        );
                     setHoveredTicker(
                         nearestData ? nearestData.name : undefined,
                     );
@@ -350,9 +356,12 @@ export default function ScatterChart() {
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
                     if (nearestData) {
-                        nearestData.name !== selectedDot?.name
-                            ? navigate(navigateUrl + nearestData.name)
-                            : navigate(navigateUrlBase);
+                        if (nearestData.name !== selectedDot?.name) {
+                            navigate(navigateUrl + nearestData.name);
+                        }
+                        d3.select(d3Chart.current)
+                            .select('canvas')
+                            .style('cursor', 'default');
                     }
                 })
                 .on('mouseout', function () {

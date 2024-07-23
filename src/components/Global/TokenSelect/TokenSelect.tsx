@@ -7,15 +7,19 @@ import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 interface propsIF {
     token: TokenIF;
     chooseToken: (tok: TokenIF, isCustom: boolean) => void;
     fromListsText: string;
+    updateTickerPair?: () => void;
 }
 
 export default function TokenSelect(props: propsIF) {
-    const { token, chooseToken, fromListsText } = props;
+    const { token, chooseToken, fromListsText, updateTickerPair } = props;
+
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
 
     const { isUserConnected } = useContext(UserDataContext);
     const { tokenBalances } = useContext(TokenBalanceContext);
@@ -55,7 +59,11 @@ export default function TokenSelect(props: propsIF) {
         <button
             id={`token_select_button_${token.address}`}
             className={styles.main_container}
-            onClick={() => chooseToken(token, false)}
+            onClick={() => {
+                platformName === 'futa'
+                    ? updateTickerPair && updateTickerPair()
+                    : chooseToken(token, false);
+            }}
             role='button'
             tabIndex={0}
             aria-label={`Select ${token.symbol}`}
