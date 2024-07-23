@@ -34,7 +34,8 @@ const PlatformFutaRoutes: React.FC = () => {
                         />
                     }
                 />
-                <Route path='swap' element={<SwapFuta />} />
+                {/* <Route path='swap' element={<SwapFuta />} /> */}
+                <Route path='swap/:params' element={<SwapFuta />} />
                 <Route path='limit' element={<LimitFuta />} />
 
                 <Route path='/explore' element={<Explore />} />
