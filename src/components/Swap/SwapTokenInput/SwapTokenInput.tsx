@@ -374,19 +374,6 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 usdValue={usdValueTokenA}
-                // ticker={activeTickers.pair[0]}
-                // updateTickerPair={(t: TokenIF) => {
-                //     if (activeTickers.pair[0].address === ZERO_ADDRESS) {
-                //         activeTickers.update(t, sepoliaETH);
-                //     } else if (
-                //         activeTickers.pair[1].address.toUpperCase() ===
-                //         t.address.toUpperCase()
-                //     ) {
-                //         activeTickers.reverse();
-                //     } else {
-                //         activeTickers.update(t, activeTickers.pair[1]);
-                //     }
-                // }}
             />
             <FlexContainer
                 fullWidth
@@ -430,19 +417,6 @@ function SwapTokenInput(props: propsIF) {
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
                 percentDiffUsdValue={percentDiffUsdValue}
-                // ticker={activeTickers.pair[1]}
-                // updateTickerPair={(t: TokenIF) => {
-                //     if (activeTickers.pair[0].address === ZERO_ADDRESS) {
-                //         activeTickers.update(t, sepoliaETH);
-                //     } else if (
-                //         activeTickers.pair[0].address.toUpperCase() ===
-                //         t.address.toUpperCase()
-                //     ) {
-                //         activeTickers.reverse();
-                //     } else {
-                //         activeTickers.update(activeTickers.pair[0], t);
-                //     }
-                // }}
             />
         </FlexContainer>
     );
