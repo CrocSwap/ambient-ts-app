@@ -792,6 +792,8 @@ function ChatPanel(props: propsIF) {
             return;
         }
 
+        if (isVerified) return;
+
         verifyWalletService(verificationDate).then(async () => {
             if (verificationType == ChatVerificationTypes.VerifyMessages) {
                 activateToastr('Your wallet and messages verified!', 'success');
