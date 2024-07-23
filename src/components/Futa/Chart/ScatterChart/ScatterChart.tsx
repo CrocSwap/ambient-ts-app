@@ -246,7 +246,7 @@ export default function ScatterChart() {
                         : showDotsData;
 
                     const dataWithHovered = hoveredDot
-                        ? [...showDotsData, hoveredDot]
+                        ? [...dataWithSelected, hoveredDot]
                         : dataWithSelected;
 
                     if (data !== undefined) {
@@ -350,9 +350,9 @@ export default function ScatterChart() {
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
                     if (nearestData) {
-                        nearestData.name !== selectedDot?.name
-                            ? navigate(navigateUrl + nearestData.name)
-                            : navigate(navigateUrlBase);
+                        if (nearestData.name !== selectedDot?.name) {
+                            navigate(navigateUrl + nearestData.name);
+                        }
                     }
                 })
                 .on('mouseout', function () {
