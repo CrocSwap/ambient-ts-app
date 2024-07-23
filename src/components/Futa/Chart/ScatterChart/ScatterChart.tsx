@@ -342,7 +342,13 @@ export default function ScatterChart() {
 
                     d3.select(d3Chart.current)
                         .select('canvas')
-                        .style('cursor', nearestData ? 'pointer' : 'default');
+                        .style(
+                            'cursor',
+                            nearestData &&
+                                nearestData.name !== selectedDot?.name
+                                ? 'pointer'
+                                : 'default',
+                        );
                     setHoveredTicker(
                         nearestData ? nearestData.name : undefined,
                     );
@@ -353,6 +359,9 @@ export default function ScatterChart() {
                         if (nearestData.name !== selectedDot?.name) {
                             navigate(navigateUrl + nearestData.name);
                         }
+                        d3.select(d3Chart.current)
+                            .select('canvas')
+                            .style('cursor', 'default');
                     }
                 })
                 .on('mouseout', function () {
