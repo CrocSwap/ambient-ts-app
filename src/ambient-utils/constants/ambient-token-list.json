@@ -446,6 +446,14 @@
             "logoURI": ""
         },
         {
+            "name": "Scrolly The Map",
+            "address": "0xb65aD8d81d1E4Cb2975352338805AF6e39BA8Be8",
+            "symbol": "SCROLLY",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scrolly.xyz/img/logo.png"
+        },
+        {
             "name": "Ethena USDe",
             "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
             "symbol": "USDe",
