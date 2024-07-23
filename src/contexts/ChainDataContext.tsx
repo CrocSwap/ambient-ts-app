@@ -11,7 +11,9 @@ import {
     ALCHEMY_API_KEY,
     BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
+    MAINNET_RPC_URL,
     SCROLL_RPC_URL,
+    SEPOLIA_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
     supportedNetworks,
 } from '../ambient-utils/constants';
@@ -121,17 +123,25 @@ export const ChainDataContextProvider = (props: {
     const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
 
     async function pollBlockNum(): Promise<void> {
-        // if default RPC is Infura, use key from env variable
-        const nodeUrl =
-            chainData.nodeUrl.toLowerCase().includes('infura') &&
-            import.meta.env.VITE_INFURA_KEY
-                ? chainData.nodeUrl.slice(0, -32) +
-                  import.meta.env.VITE_INFURA_KEY
-                : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-                  ? BLAST_RPC_URL
-                  : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                    ? SCROLL_RPC_URL
-                    : blockPollingUrl;
+        const nodeUrl = ['0x1'].includes(chainData.chainId)
+            ? MAINNET_RPC_URL
+            : ['0xaa36a7'].includes(chainData.chainId)
+              ? SEPOLIA_RPC_URL
+              : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+                ? BLAST_RPC_URL
+                : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+                  ? SCROLL_RPC_URL
+                  : blockPollingUrl;
+        // const nodeUrl =
+        //     chainData.nodeUrl.toLowerCase().includes('infura') &&
+        //     import.meta.env.VITE_INFURA_KEY
+        //         ? chainData.nodeUrl.slice(0, -32) +
+        //           import.meta.env.VITE_INFURA_KEY
+        //         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+        //           ? BLAST_RPC_URL
+        //           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+        //             ? SCROLL_RPC_URL
+        //             : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
             if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);

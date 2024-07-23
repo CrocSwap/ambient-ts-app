@@ -19,8 +19,6 @@ export const getUserIsVerified = apiBase + 'auth/isUserVerified/';
 
 export const verifyUserEndpoint = apiBase + 'auth/verifyUser';
 
-export const updateVerifiedDateEndpoint = apiBase + 'auth/updateVerifyDate';
-
 export const addReactionEndpoint = apiBase + 'messages/addReaction';
 
 export const getUserDetailsEndpoint = apiBase + 'auth/getUserByWalletID';
