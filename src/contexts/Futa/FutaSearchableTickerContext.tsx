@@ -39,7 +39,7 @@ export const FutaSearchableTickerContextProvider = (props: {
 }) => {
     // 2:1 ratio of the window height subtracted by main header and token info header
     const SEARCHABLE_TICKER_MAX_HEIGHT = window.innerHeight - 160;
-    const SEARCHABLE_TICKER_MIN_HEIGHT = 4;
+    const SEARCHABLE_TICKER_MIN_HEIGHT = 54;
     const SEARCHABLE_TICKER_DEFAULT_HEIGHT = Math.floor(
         (SEARCHABLE_TICKER_MAX_HEIGHT * 2) / 3,
     );

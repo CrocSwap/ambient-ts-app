@@ -26,7 +26,7 @@ export default function SynthwaveGrid(props: PropsIF) {
             const cameraY = 220;
             const cameraZ = 300;
             const cameraRotate = 2.0;
-            const moveSpeed = 3; // Speed at which the grid moves towards the camera
+            const moveSpeed = isCreatePage ? 1 : 3; // Speed at which the grid moves towards the camera
 
             // Grid properties
             const scl = 40; // Scale of each grid cell
@@ -379,6 +379,7 @@ export default function SynthwaveGrid(props: PropsIF) {
                 height: height,
                 opacity: hasVideoPlayedOnce ? '0.5' : '1',
                 overflow: 'hidden',
+                pointerEvents: 'none',
             }}
         ></div>
     );
