@@ -95,6 +95,7 @@ function Transactions(props: propsIF) {
 
     const dataLoadingStatus = useContext(DataLoadingContext);
     const {
+        transactionsByUser,
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
@@ -116,14 +117,24 @@ function Transactions(props: propsIF) {
             isAccountView
                 ? activeAccountTransactionData || []
                 : !showAllData
-                ? userTransactionsByPool.changes
-                : transactionsByPool.changes,
+                  ? userTransactionsByPool.changes
+                  : transactionsByPool.changes,
         [
             showAllData,
             activeAccountTransactionData,
             userTransactionsByPool,
             transactionsByPool,
         ],
+    );
+
+    const userTransacionsLength = useMemo(
+        () =>
+            isAccountView
+                ? activeAccountTransactionData
+                    ? activeAccountTransactionData.length
+                    : 0
+                : transactionsByUser.changes.length,
+        [activeAccountTransactionData, transactionsByUser, isAccountView],
     );
 
     useEffect(() => {
@@ -141,12 +152,12 @@ function Transactions(props: propsIF) {
             isCandleSelected
                 ? dataLoadingStatus.isCandleDataLoading
                 : isAccountView && connectedAccountActive
-                ? dataLoadingStatus.isConnectedUserTxDataLoading
-                : isAccountView
-                ? dataLoadingStatus.isLookupUserTxDataLoading
-                : !showAllData
-                ? dataLoadingStatus.isConnectedUserPoolTxDataLoading
-                : dataLoadingStatus.isPoolTxDataLoading,
+                  ? dataLoadingStatus.isConnectedUserTxDataLoading
+                  : isAccountView
+                    ? dataLoadingStatus.isLookupUserTxDataLoading
+                    : !showAllData
+                      ? dataLoadingStatus.isConnectedUserPoolTxDataLoading
+                      : dataLoadingStatus.isPoolTxDataLoading,
         [
             isAccountView,
             showAllData,
@@ -182,12 +193,12 @@ function Transactions(props: propsIF) {
             fullLayoutActive === false)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView &&
-                  isLargeScreen &&
-                  isSidebarOpen &&
-                  fullLayoutActive === false)
-            ? 'medium'
-            : 'large';
+                (isAccountView &&
+                    isLargeScreen &&
+                    isSidebarOpen &&
+                    fullLayoutActive === false)
+              ? 'medium'
+              : 'large';
 
     const getCandleData = () =>
         crocEnv &&
@@ -544,6 +555,7 @@ function Transactions(props: propsIF) {
             setSelectedDate={setSelectedDate}
             type='transactions'
             isAccountView={isAccountView}
+            activeUserPositionsLength={userTransacionsLength}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
