@@ -7,13 +7,17 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import * as d3 from 'd3';
 import { useLocation } from 'react-router-dom';
 import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
-import { LS_KEY_CHART_ANNOTATIONS } from '../pages/Chart/ChartUtils/chartConstants';
+import {
+    LS_KEY_CHART_ANNOTATIONS,
+    LS_KEY_CHART_CONTEXT_SETTINGS,
+} from '../pages/Chart/ChartUtils/chartConstants';
 import {
     actionKeyIF,
     actionStackIF,
@@ -95,17 +99,70 @@ interface ChartContextIF {
         SetStateAction<ChartThemeIF | undefined>
     >;
     chartThemeColors: ChartThemeIF | undefined;
+    defaultChartSettings: LocalChartSettingsIF;
+    localChartSettings: LocalChartSettingsIF | undefined;
+    setLocalChartSettings: React.Dispatch<
+        SetStateAction<LocalChartSettingsIF | undefined>
+    >;
+    setContextmenu: React.Dispatch<SetStateAction<boolean>>;
+    contextmenu: boolean;
+    contextMenuPlacement:
+        | {
+              top: number;
+              left: number;
+              isReversed: boolean;
+          }
+        | undefined;
+    setContextMenuPlacement: React.Dispatch<
+        SetStateAction<
+            | {
+                  top: number;
+                  left: number;
+                  isReversed: boolean;
+              }
+            | undefined
+        >
+    >;
 }
 
 export interface ChartThemeIF {
-    lightFillColor: d3.RGBColor | d3.HSLColor | null;
-    darkFillColor: d3.RGBColor | d3.HSLColor | null;
+    // candle color
+    upCandleBodyColor: d3.RGBColor | d3.HSLColor | null;
+    downCandleBodyColor: d3.RGBColor | d3.HSLColor | null;
+    upCandleBorderColor: d3.RGBColor | d3.HSLColor | null;
+    downCandleBorderColor: d3.RGBColor | d3.HSLColor | null;
+
     selectedDateFillColor: d3.RGBColor | d3.HSLColor | null;
-    // border
-    lightStrokeColor: d3.RGBColor | d3.HSLColor | null;
-    darkStrokeColor: d3.RGBColor | d3.HSLColor | null;
+
+    // liq Color
+    liqAskColor: d3.RGBColor | d3.HSLColor | null;
+    liqBidColor: d3.RGBColor | d3.HSLColor | null;
+
+    // drawing color
+    drawngShapeDefaultColor: d3.RGBColor | d3.HSLColor | null;
+
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
     textColor: string;
+
+    [key: string]: d3.RGBColor | d3.HSLColor | string | null;
+}
+
+export interface LocalChartSettingsIF {
+    chartColors: {
+        upCandleBodyColor: string;
+        downCandleBodyColor: string;
+        selectedDateFillColor: string;
+        upCandleBorderColor: string;
+        downCandleBorderColor: string;
+        liqAskColor: string;
+        liqBidColor: string;
+        selectedDateStrokeColor: string;
+        textColor: string;
+    };
+    isTradeDollarizationEnabled: boolean;
+    showVolume: boolean;
+    showTvl: boolean;
+    showFeeRate: boolean;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -124,6 +181,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     if (CHART_SAVED_HEIGHT_LOCAL_STORAGE) {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
     }
+
+    const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(
+        LS_KEY_CHART_CONTEXT_SETTINGS,
+    );
 
     const [isCandleDataNull, setIsCandleDataNull] = useState(false);
 
@@ -158,6 +219,14 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [isChartHeightMinimum, setIsChartHeightMinimum] = useState(false);
 
+    const [contextmenu, setContextmenu] = useState(false);
+
+    const [contextMenuPlacement, setContextMenuPlacement] = useState<{
+        top: number;
+        left: number;
+        isReversed: boolean;
+    }>();
+
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         saved: number;
@@ -172,11 +241,46 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         default: CHART_DEFAULT_HEIGHT,
     });
 
+    const { skin } = useContext(BrandContext);
+
     const [chartThemeColors, setChartThemeColors] = useState<
         ChartThemeIF | undefined
     >(undefined);
 
-    const { skin } = useContext(BrandContext);
+    const [defaultChartSettings] = useState<LocalChartSettingsIF>({
+        chartColors: {
+            upCandleBodyColor: '--accent5',
+            downCandleBodyColor: '--dark2',
+            selectedDateFillColor: '--accent2',
+            upCandleBorderColor: '--accent5',
+            downCandleBorderColor: '--accent1',
+            liqAskColor: '--accent5',
+            liqBidColor: '--accent1',
+            selectedDateStrokeColor: '--accent2',
+            textColor: '',
+        },
+        isTradeDollarizationEnabled: false,
+        showVolume: true,
+        showTvl: false,
+        showFeeRate: false,
+    });
+
+    const [localChartSettings, setLocalChartSettings] = useState<
+        LocalChartSettingsIF | undefined
+    >(undefined);
+
+    useEffect(() => {
+        if (
+            CHART_CONTEXT_SETTINGS_LOCAL_STORAGE &&
+            localChartSettings === undefined
+        ) {
+            const parsedContextData = JSON.parse(
+                CHART_CONTEXT_SETTINGS_LOCAL_STORAGE,
+            ) as LocalChartSettingsIF;
+
+            setLocalChartSettings(parsedContextData);
+        }
+    }, [CHART_CONTEXT_SETTINGS_LOCAL_STORAGE]);
 
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {
@@ -219,8 +323,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         chartHeights.current === chartHeights.min
             ? 'Expanded'
             : chartHeights.current === chartHeights.max
-            ? 'Collapsed'
-            : undefined;
+              ? 'Collapsed'
+              : undefined;
 
     const isChartEnabled =
         !!import.meta.env.VITE_CHART_IS_ENABLED &&
@@ -285,6 +389,13 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setNumCandlesFetched,
         chartThemeColors,
         setChartThemeColors,
+        defaultChartSettings,
+        localChartSettings,
+        setLocalChartSettings,
+        contextmenu,
+        setContextmenu,
+        contextMenuPlacement,
+        setContextMenuPlacement,
     };
 
     useEffect(() => {
@@ -324,21 +435,67 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     }, [isMagnetActive]);
 
     useEffect(() => {
-        const lightFillColor = getCssVariable(skin, '--accent5');
-        const darFillColor = getCssVariable(skin, '--dark2');
-        const selectedDateFillColor = getCssVariable(skin, '--accent2');
+        const parsedContextData = CHART_CONTEXT_SETTINGS_LOCAL_STORAGE
+            ? JSON.parse(CHART_CONTEXT_SETTINGS_LOCAL_STORAGE)
+            : undefined;
 
-        const darkStrokeColor = getCssVariable(skin, '--accent1');
-        const lightStrokeColor = getCssVariable(skin, '--accent5');
-        const selectedDateStrokeColor = getCssVariable(skin, '--accent2');
+        const contextChartColors =
+            parsedContextData && parsedContextData.chartColors
+                ? parsedContextData.chartColors
+                : undefined;
+
+        const upCandleBodyColor =
+            contextChartColors && contextChartColors.upCandleBodyColor
+                ? d3.color(contextChartColors.upCandleBodyColor)
+                : getCssVariable(skin, '--accent5');
+        const downCandleBodyColor =
+            contextChartColors && contextChartColors.downCandleBodyColor
+                ? d3.color(contextChartColors.downCandleBodyColor)
+                : getCssVariable(skin, '--dark2');
+        const selectedDateFillColor =
+            contextChartColors && contextChartColors.selectedDateFillColor
+                ? d3.color(contextChartColors.selectedDateFillColor)
+                : getCssVariable(skin, '--accent2');
+
+        const downCandleBorderColor =
+            contextChartColors && contextChartColors.downCandleBorderColor
+                ? d3.color(contextChartColors.downCandleBorderColor)
+                : getCssVariable(skin, '--accent1');
+        const upCandleBorderColor =
+            contextChartColors && contextChartColors.upCandleBorderColor
+                ? d3.color(contextChartColors.upCandleBorderColor)
+                : getCssVariable(skin, '--accent5');
+
+        const liqAskColor =
+            contextChartColors && contextChartColors.liqAskColor
+                ? d3.color(contextChartColors.liqAskColor)
+                : getCssVariable(skin, '--accent5');
+        const liqBidColor =
+            contextChartColors && contextChartColors.liqBidColor
+                ? d3.color(contextChartColors.liqBidColor)
+                : getCssVariable(skin, '--accent1');
+
+        const selectedDateStrokeColor =
+            contextChartColors && contextChartColors.selectedDateStrokeColor
+                ? d3.color(contextChartColors.selectedDateStrokeColor)
+                : getCssVariable(skin, '--accent2');
+
+        const drawngShapeDefaultColor =
+            contextChartColors && contextChartColors.drawngShapeDefaultColor
+                ? d3.color(contextChartColors.drawngShapeDefaultColor)
+                : getCssVariable(skin, '--accent1');
 
         const chartThemeColors = {
-            lightFillColor: lightFillColor,
-            darkFillColor: darFillColor,
+            upCandleBodyColor: upCandleBodyColor,
+            downCandleBodyColor: downCandleBodyColor,
+            upCandleBorderColor: upCandleBorderColor,
+            downCandleBorderColor: downCandleBorderColor,
+
+            drawngShapeDefaultColor: drawngShapeDefaultColor,
+
             selectedDateFillColor: selectedDateFillColor,
-            // border
-            lightStrokeColor: lightStrokeColor,
-            darkStrokeColor: darkStrokeColor,
+            liqAskColor: liqAskColor,
+            liqBidColor: liqBidColor,
             selectedDateStrokeColor: selectedDateStrokeColor,
             textColor: '',
         };
