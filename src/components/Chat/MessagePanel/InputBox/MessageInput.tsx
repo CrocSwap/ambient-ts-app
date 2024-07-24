@@ -75,6 +75,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
+    const [tokenForEmojiSearch, setTokenForEmojiSearch] = useState('');
 
     // disabled for now due to es-lint warnings
     // const {
@@ -115,6 +116,13 @@ export default function MessageInput(props: MessageInputProps) {
             setPossibleMentUser(filteredUsers[0] as User);
         }
     }, [filteredUsers]);
+
+    const handleHiddenEmojiClick = (
+        event: React.MouseEvent,
+        emojiObject: IEmojiData,
+    ) => {
+        console.log(emojiObject);
+    };
 
     const handleEmojiClick = (
         event: React.MouseEvent,
@@ -190,6 +198,57 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [props.isReplyButtonPressed]);
 
+    useEffect(() => {
+        console.log(tokenForEmojiSearch);
+        // triggerHiddenEmojiSearch(tokenForEmojiSearch);
+        filterEmojisOnHiddenPicker(tokenForEmojiSearch);
+    }, [tokenForEmojiSearch]);
+
+    const filterEmojisOnHiddenPicker = (word: string) => {
+        const elements = document.querySelectorAll<HTMLElement>(
+            '#chatHiddenEmojiSearch li.emoji button',
+        );
+        const filteredElements: HTMLElement[] = [];
+
+        elements.forEach((element) => {
+            const ariaLabel = element.getAttribute('aria-label');
+            if (ariaLabel && ariaLabel.includes(word)) {
+                filteredElements.push(element);
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        });
+
+        console.log(filteredElements);
+    };
+
+    // const triggerEvent = (el?: HTMLInputElement, eventName?: string) => {
+    //     if(!el || !eventName) return;
+    //     const event = new InputEvent(eventName, {
+    //         composed: true,
+    //         bubbles: true,
+    //         cancelable: false,
+    //     });
+    //     el.dispatchEvent(event);
+    // }
+
+    // const triggerHiddenEmojiSearch = (word: string) => {
+    //     const queryList = document.querySelectorAll('#chatHiddenEmojiSearch .emoji-search');
+    //     if(queryList.length > 0){
+
+    //         const inputEl:HTMLInputElement = queryList[0] as HTMLInputElement;
+    //         inputEl.value = word;
+    //         // inputEl.blur();
+    //         triggerEvent();
+    //         triggerEvent(inputEl, 'input');
+    //         // triggerEvent(inputEl, 'blur');
+    //         // triggerEvent(inputEl, 'keydown');
+    //         // triggerEvent(inputEl, 'keyup');
+
+    //     }
+    // }
+
     const handleSendMessageButton = () => {
         if (message === '') {
             return;
@@ -240,7 +299,9 @@ export default function MessageInput(props: MessageInputProps) {
         setMessage(newMessage);
         setInputLength(newMessage.length);
         setCursorPosition(e.currentTarget.selectionStart);
-
+        setTokenForEmojiSearch(
+            newMessage.split(' ')[newMessage.split(' ').length - 1],
+        );
         if (newMessage.length <= 140) {
             props.setShowPopUp(false);
         }
@@ -701,6 +762,18 @@ export default function MessageInput(props: MessageInputProps) {
                             )}
                         </div>
                     )}
+
+                    <div
+                        id='chatHiddenEmojiSearch'
+                        className={styles.hidden_picker_wrapper}
+                    >
+                        <Picker
+                            pickerStyle={{
+                                width: '100%',
+                            }}
+                            onEmojiClick={handleHiddenEmojiClick}
+                        />
+                    </div>
 
                     {props.isChatOpen && ALLOW_MENTIONS && mentionAutoComplete}
                 </div>

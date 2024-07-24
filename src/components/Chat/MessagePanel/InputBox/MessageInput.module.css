@@ -359,3 +359,11 @@
 section[class^="emoji-scroll-wrapper"]{
     scroll-behavior: auto;
 }
+
+.hidden_picker_wrapper{
+
+    position: fixed;
+    top: 3rem;
+    left: 50%;
+    
+}
