@@ -10,10 +10,16 @@ interface NoTableDataPropsIF {
     setSelectedDate?: Dispatch<number | undefined>;
     isAccountView: boolean;
     activeUserPositionsLength?: number;
+    activeUserPositionsByPoolLength?: number;
 }
 function NoTableData(props: NoTableDataPropsIF) {
-    const { type, setSelectedDate, isAccountView, activeUserPositionsLength } =
-        props;
+    const {
+        type,
+        setSelectedDate,
+        isAccountView,
+        activeUserPositionsLength,
+        activeUserPositionsByPoolLength,
+    } = props;
 
     const { showAllData, setShowAllData } = useContext(TradeTableContext);
 
@@ -33,41 +39,50 @@ function NoTableData(props: NoTableDataPropsIF) {
               : navigate('/account');
     };
 
-    const toggleAllEnabledContentOrNull = isAccountView ? null : (
-        <>
-            <p>
-                {activeUserPositionsLength && activeUserPositionsLength > 0
-                    ? `Click to view all your ${type}`
-                    : `Consider turning on all ${type}`}
-            </p>
-            <button
-                onClick={
-                    activeUserPositionsLength && activeUserPositionsLength > 0
-                        ? navigateToLiquidityTabOnAccount
-                        : toggleAllEnabled
-                }
-            >
-                {activeUserPositionsLength && activeUserPositionsLength > 0
-                    ? `All My ${type}`
-                    : `All ${type}`}
-            </button>
-        </>
-    );
-
-    const message =
-        !showAllData &&
-        activeUserPositionsLength &&
-        activeUserPositionsLength > 0 ? (
-            `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POSITIONS' : 'POSITION') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : activeUserPositionsLength > 1 ? 'TRANSACTIONS' : 'TRANSACTION'} IN OTHER POOLS`
-        ) : (
-            <h2>NO {type.toUpperCase()} FOUND</h2>
+    const toggleAllEnabledContentOrNull =
+        isAccountView ||
+        (showAllData &&
+            !activeUserPositionsByPoolLength &&
+            !activeUserPositionsLength) ? null : (
+            <>
+                <p>
+                    {activeUserPositionsLength
+                        ? `Click to view your ${type}`
+                        : activeUserPositionsByPoolLength
+                          ? `Click to view all your ${type}`
+                          : `Consider turning on all ${type}`}
+                </p>
+                <button
+                    onClick={
+                        activeUserPositionsByPoolLength
+                            ? () => setShowAllData(false)
+                            : activeUserPositionsLength
+                              ? navigateToLiquidityTabOnAccount
+                              : toggleAllEnabled
+                    }
+                >
+                    {activeUserPositionsByPoolLength
+                        ? `My ${type}`
+                        : activeUserPositionsLength
+                          ? `All My ${type}`
+                          : `All ${type}`}
+                </button>
+            </>
         );
+
+    const message = activeUserPositionsByPoolLength ? (
+        `YOU HAVE ${activeUserPositionsByPoolLength} ${type === 'liquidity' ? (activeUserPositionsByPoolLength > 1 ? 'POSITIONS' : 'POSITION') : type === 'limits' ? (activeUserPositionsByPoolLength > 1 ? 'LIMITS' : 'LIMIT') : activeUserPositionsByPoolLength > 1 ? 'TRANSACTIONS' : 'TRANSACTION'} IN THIS POOL`
+    ) : activeUserPositionsLength && activeUserPositionsLength > 0 ? (
+        `YOU HAVE ${activeUserPositionsLength} ${type === 'liquidity' ? (activeUserPositionsLength > 1 ? 'POSITIONS' : 'POSITION') : type === 'limits' ? (activeUserPositionsLength > 1 ? 'LIMITS' : 'LIMIT') : activeUserPositionsLength > 1 ? 'TRANSACTIONS' : 'TRANSACTION'} IN OTHER POOLS`
+    ) : (
+        <h2>NO {type.toUpperCase()} FOUND</h2>
+    );
 
     return (
         <div className={styles.container}>
             {/* <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} /> */}
             {message}
-            {!showAllData && toggleAllEnabledContentOrNull}
+            {toggleAllEnabledContentOrNull}
         </div>
     );
 }
