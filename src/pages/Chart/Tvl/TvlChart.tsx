@@ -123,7 +123,7 @@ function TvlChart(props: TvlData) {
 
             const boundingClientRect = canvas.getBoundingClientRect();
 
-            yScale.range([boundingClientRect.height, 0]);
+            yScale.range([(boundingClientRect.height / 4) * 3, 0]);
             setTvlyScale(() => {
                 return yScale;
             });
