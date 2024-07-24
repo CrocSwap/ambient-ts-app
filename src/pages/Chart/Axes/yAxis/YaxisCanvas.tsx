@@ -669,10 +669,10 @@ function YAxisCanvas(props: yAxisIF) {
                                 event.sourceEvent.type === 'wheel'
                                     ? -dy * 0.003
                                     : event.sourceEvent.type === 'mousemove'
-                                    ? -deltaY * 0.003
-                                    : event.sourceEvent.type === 'touchmove'
-                                    ? -deltaY * 0.005
-                                    : 1,
+                                      ? -deltaY * 0.003
+                                      : event.sourceEvent.type === 'touchmove'
+                                        ? -deltaY * 0.005
+                                        : 1,
                             );
 
                             if (
@@ -931,8 +931,8 @@ function YAxisCanvas(props: yAxisIF) {
             ref={d3Yaxis}
             style={{
                 width: yAxisWidth,
-                gridColumn: 5,
-                gridRow: 3,
+                gridColumn: 2,
+                gridRow: 1,
             }}
         ></d3fc-canvas>
     );

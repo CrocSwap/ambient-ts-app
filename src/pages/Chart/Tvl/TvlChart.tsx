@@ -38,8 +38,6 @@ interface TvlData {
     lastCandleData: CandleDataIF;
     isChartZoom: boolean;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
-    isToolbarOpen: boolean;
-    toolbarWidth: number;
     chartThemeColors: ChartThemeIF | undefined;
 }
 
@@ -65,12 +63,9 @@ function TvlChart(props: TvlData) {
         setIsChartZoom,
         zoomBase,
         render,
-        isToolbarOpen,
-        toolbarWidth,
         chartThemeColors,
     } = props;
 
-    // const tvlMainDiv = useRef(null);
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
 
     const d3CanvasArea = useRef(null);
@@ -555,27 +550,40 @@ function TvlChart(props: TvlData) {
             id='tvl_chart'
             data-testid={'chart'}
             style={{
-                gridTemplateColumns:
-                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
+                gridTemplateColumns: 'auto 1fr auto',
             }}
         >
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
                 className='d3CanvasArea'
+                style={{
+                    display: 'block',
+                    gridColumnStart: 1,
+                    gridColumnEnd: 4,
+                    gridRowStart: 1,
+                    gridRowEnd: 3,
+                }}
             ></d3fc-canvas>
 
             <d3fc-canvas
                 id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
                 className='d3CanvasCrosshair'
+                style={{
+                    display: 'block',
+                    gridColumnStart: 1,
+                    gridColumnEnd: 4,
+                    gridRowStart: 1,
+                    gridRowEnd: 3,
+                }}
             ></d3fc-canvas>
 
             <label
                 style={{
-                    paddingLeft: isToolbarOpen ? '38px' : '9px',
-                    gridColumnStart: '3',
-                    gridColumnEnd: '3',
+                    gridColumnStart: 1,
+                    gridColumnEnd: 1,
+                    gridRow: 1,
                 }}
             >
                 TVL:{' '}
@@ -591,8 +599,9 @@ function TvlChart(props: TvlData) {
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 5,
-                    gridRow: 3,
+                    gridColumn: 3,
+                    gridRowStart: 1,
+                    gridRowEnd: 3,
                 }}
             ></d3fc-canvas>
         </div>
