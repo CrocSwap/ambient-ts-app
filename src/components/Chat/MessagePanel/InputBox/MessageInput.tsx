@@ -656,7 +656,10 @@ export default function MessageInput(props: MessageInputProps) {
                         </div>
                     </div>
                     {showEmojiPicker && (
-                        <div className={styles.emojiPicker}>
+                        <div
+                            className={styles.emojiPicker}
+                            style={{ width: '100%' }}
+                        >
                             <span className={styles.emoji_close_button}>
                                 <RiCloseFill
                                     size={20}
@@ -691,7 +694,6 @@ export default function MessageInput(props: MessageInputProps) {
                                 <Picker
                                     pickerStyle={{
                                         width: '100%',
-                                        height: '89%',
                                     }}
                                     onEmojiClick={handleEmojiClick}
                                     disableSkinTonePicker={true}
