@@ -94,16 +94,16 @@ function OrderRow(props: propsIF) {
             ? baseTokenCharacter
             : quoteTokenCharacter
         : !isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
+          ? baseTokenCharacter
+          : quoteTokenCharacter;
 
     const sideCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? quoteTokenCharacter
             : baseTokenCharacter
         : isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
+          ? baseTokenCharacter
+          : quoteTokenCharacter;
 
     const priceStyle = 'base_color';
 
@@ -111,11 +111,12 @@ function OrderRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'accent1'
-            : 'text1';
+              ? 'accent1'
+              : 'text1';
 
     const orderDomId =
-        limitOrder.limitOrderId === currentLimitOrderActive
+        limitOrder.limitOrderId === currentLimitOrderActive ||
+        posHash === currentLimitOrderActive
             ? `order-${limitOrder.limitOrderId}`
             : '';
 
@@ -131,7 +132,8 @@ function OrderRow(props: propsIF) {
     }
 
     useEffect(() => {
-        limitOrder.limitOrderId === currentLimitOrderActive
+        limitOrder.limitOrderId === currentLimitOrderActive ||
+        posHash === currentLimitOrderActive
             ? scrollToDiv()
             : null;
     }, [currentLimitOrderActive]);
@@ -155,8 +157,8 @@ function OrderRow(props: propsIF) {
                     isOwnerActiveAccount
                         ? 'account'
                         : ensName
-                        ? ensName
-                        : ownerId
+                          ? ensName
+                          : ownerId
                 }`,
             );
     }
@@ -244,7 +246,10 @@ function OrderRow(props: propsIF) {
             <OrderRowStyled
                 size={tableView}
                 account={isAccountView}
-                active={limitOrder.limitOrderId === currentLimitOrderActive}
+                active={
+                    limitOrder.limitOrderId === currentLimitOrderActive ||
+                    posHash === currentLimitOrderActive
+                }
                 user={userNameToDisplay === 'You' && showAllData}
                 id={orderDomId}
                 onClick={openDetailsModal}
