@@ -286,6 +286,7 @@ function TokenInputQuantity(props: propsIF) {
                             : reverseTokens
                     }
                     platform='futa'
+                    isFuta
                     // updateTickerPair={updateTickerPair}
                 />
             )}

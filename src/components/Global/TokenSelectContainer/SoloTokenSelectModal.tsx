@@ -34,6 +34,7 @@ interface propsIF {
     noModal?: boolean;
     platform?: 'ambient' | 'futa';
     updateTickerPair?: (t: TokenIF) => void;
+    isFuta?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -46,6 +47,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         reverseTokens,
         platform = 'ambient',
         updateTickerPair,
+        isFuta = false,
     } = props;
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
@@ -70,7 +72,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
-
+    console.log(isFuta);
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
