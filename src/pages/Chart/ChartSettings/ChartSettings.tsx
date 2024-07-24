@@ -57,7 +57,12 @@ interface ContextMenuIF {
         React.SetStateAction<LocalChartSettingsIF | undefined>
     >;
     isCondensedModeEnabled: boolean;
+    closeOutherChartSetting: boolean;
     setIsCondensedModeEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+    setCloseOutherChartSetting: React.Dispatch<React.SetStateAction<boolean>>;
+    setShouldDisableChartSettings: React.Dispatch<
+        React.SetStateAction<boolean>
+    >;
     render: () => void;
 }
 
@@ -81,6 +86,9 @@ export default function ChartSettings(props: ContextMenuIF) {
         setColorChangeTrigger,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
+        setShouldDisableChartSettings,
+        closeOutherChartSetting,
+        setCloseOutherChartSetting,
     } = props;
 
     const {
@@ -101,6 +109,7 @@ export default function ChartSettings(props: ContextMenuIF) {
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
+    const [reverseColorObj, setReverseColorObj] = useState(false);
 
     const {
         baseToken: { symbol: baseTokenSymbol },
@@ -116,6 +125,25 @@ export default function ChartSettings(props: ContextMenuIF) {
             },
         );
     }, []);
+
+    useEffect(() => {
+        const screenHeight = window.innerHeight;
+
+        const diff = screenHeight - contextMenuPlacement.top;
+
+        setReverseColorObj(
+            (contextMenuPlacement.isReversed && diff < 260) ||
+                (!contextMenuPlacement.isReversed && diff < 700),
+        );
+    }, [contextMenuPlacement]);
+
+    useEffect(() => {
+        if (closeOutherChartSetting) {
+            setSelectedColorObj(undefined);
+            setShouldDisableChartSettings(true);
+            setCloseOutherChartSetting(false);
+        }
+    }, [closeOutherChartSetting]);
 
     const handleCandleColorPicker = (
         replaceSelector: string,
@@ -393,6 +421,7 @@ export default function ChartSettings(props: ContextMenuIF) {
             left={contextMenuPlacement.left}
             isReversed={contextMenuPlacement.isReversed}
             onClick={() => {
+                setShouldDisableChartSettings(true);
                 setSelectedColorObj(undefined);
                 setIsSelecboxActive(false);
             }}
@@ -517,11 +546,18 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                 placement: 'left',
                                             };
 
-                                            return prev === undefined ||
+                                            const result =
+                                                prev === undefined ||
                                                 prev.index !== index ||
                                                 prev.placement !== 'left'
-                                                ? selectedObj
-                                                : undefined;
+                                                    ? selectedObj
+                                                    : undefined;
+
+                                            setShouldDisableChartSettings(
+                                                result === undefined,
+                                            );
+
+                                            return result;
                                         });
                                     }}
                                 ></OptionColor>
@@ -545,11 +581,18 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                 placement: 'right',
                                             };
 
-                                            return prev === undefined ||
+                                            const result =
+                                                prev === undefined ||
                                                 prev.index !== index ||
                                                 prev.placement !== 'right'
-                                                ? selectedObj
-                                                : undefined;
+                                                    ? selectedObj
+                                                    : undefined;
+
+                                            setShouldDisableChartSettings(
+                                                result === undefined,
+                                            );
+
+                                            return result;
                                         });
                                     }}
                                 ></OptionColor>
@@ -566,7 +609,10 @@ export default function ChartSettings(props: ContextMenuIF) {
                                                     'left'
                                                         ? -90
                                                         : -60) +
-                                                    'px, 10px)',
+                                                    'px, ' +
+                                                    (reverseColorObj
+                                                        ? '-325px)'
+                                                        : '10px)'),
                                             }}
                                             onClick={(
                                                 event: MouseEvent<HTMLElement>,
