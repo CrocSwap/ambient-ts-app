@@ -41,7 +41,11 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ZeroAddress } from 'ethers';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import {
+    TradeDataContextIF,
+    TradeDataContext,
+} from '../../../contexts/TradeDataContext';
 
 interface PropsIF {
     isAuctionPage?: boolean;
@@ -145,10 +149,6 @@ const useAuctionStates = () => {
     const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
         ? openBidClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
         : undefined;
-
-    //   const openBidMarketCapInEth = openBidMarketCapInWeiBigInt
-    //       ? toDisplayQty(openBidMarketCapInWeiBigInt, 18)
-    //       : undefined;
 
     useEffect(() => {
         setSelectedMaxMarketCapInWeiBigInt(openBidMarketCapInWeiBigInt);
@@ -665,12 +665,17 @@ export default function TickerComponent(props: PropsIF) {
         );
     };
 
-    const navigateToTrade = () => {
-        console.log(`clicked Trade for ticker: ${tickerFromParams}`);
-        const tokenAddress = freshAuctionStatusData.tokenAddress;
-        const targetStr = `https://dev-ambi.netlify.app/trade/market/chain=${chainId}&tokenA=${ZeroAddress}&tokenB=${tokenAddress}`;
-        window.open(targetStr, '_blank');
-    };
+    // hook to generate navigation actions with pre-loaded path
+    // ... with logic to get data for programmatic generation
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+    const { tokenA, tokenB } = useContext<TradeDataContextIF>(TradeDataContext);
+    function goToSwap(): void {
+        linkGenSwap.navigate({
+            tokenA: tokenA.address.toLowerCase(),
+            tokenB: tokenB.address.toLowerCase(),
+            chain: '0xaa36a7',
+        });
+    }
 
     const bidButton = (
         <button
@@ -683,7 +688,7 @@ export default function TickerComponent(props: PropsIF) {
                     : isNativeTokenAvailableToReturn
                       ? sendReturnTransaction()
                       : showTradeButton
-                        ? navigateToTrade()
+                        ? goToSwap()
                         : !isUserConnected
                           ? openWalletModal()
                           : sendBidTransaction()

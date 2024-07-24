@@ -48,50 +48,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         updateTickerPair,
     } = props;
 
-    // const mockFutaTickers = [
-    //     {
-    //         name: 'Native Ether',
-    //         address: '0x0000000000000000000000000000000000000000',
-    //         symbol: 'ETH',
-    //         decimals: 18,
-    //         chainId: 11155111,
-    //         logoURI:
-    //             'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    //     },
-    //     // {
-    //     //     "name": "PEPE",
-    //     //     "address": "0x1230000000000000000000000000000000000000",
-    //     //     "symbol": "PEPE",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // },
-    //     // {
-    //     //     "name": "JUNIOR",
-    //     //     "address": "0x2340000000000000000000000000000000000000",
-    //     //     "symbol": "JUNIOR",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // },
-    //     // {
-    //     //     "name": "HELLO😊",
-    //     //     "address": "0x3450000000000000000000000000000000000000",
-    //     //     "symbol": "HELLO😊",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // },
-    //     // {
-    //     //     "name": "EMILY",
-    //     //     "address": "0x4560000000000000000000000000000000000000",
-    //     //     "symbol": "EMILY",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // }
-    // ];
-
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
