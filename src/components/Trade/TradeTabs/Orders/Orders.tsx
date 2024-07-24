@@ -75,15 +75,20 @@ function Orders(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
+    const activeUserLimitOrdersByPool = useMemo(
+        () =>
+            userLimitOrdersByPool?.limitOrders.filter(
+                (order) => order.positionLiq != 0 || order.claimableLiq !== 0,
+            ),
+        [userLimitOrdersByPool],
+    );
+
     const limitOrderData = useMemo(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData || []
                 : !showAllData
-                  ? userLimitOrdersByPool?.limitOrders.filter(
-                        (order) =>
-                            order.positionLiq != 0 || order.claimableLiq !== 0,
-                    )
+                  ? activeUserLimitOrdersByPool
                   : limitOrdersByPool.limitOrders.filter(
                         (order) =>
                             order.positionLiq != 0 || order.claimableLiq !== 0,
@@ -93,7 +98,7 @@ function Orders(props: propsIF) {
             isAccountView,
             activeAccountLimitOrderData,
             limitOrdersByPool,
-            userLimitOrdersByPool,
+            activeUserLimitOrdersByPool,
         ],
     );
 
@@ -454,6 +459,7 @@ function Orders(props: propsIF) {
             type='limits'
             isAccountView={isAccountView}
             activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>

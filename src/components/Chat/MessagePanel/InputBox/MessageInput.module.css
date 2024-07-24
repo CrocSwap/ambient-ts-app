@@ -356,3 +356,6 @@
     }
 
 }
+section[class^="emoji-scroll-wrapper"]{
+    scroll-behavior: auto;
+}
