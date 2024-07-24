@@ -322,7 +322,8 @@ export const blastWEETH: TokenIF = {
     decimals: 18,
     name: 'Wrapped eETH',
     symbol: 'weETH',
-    logoURI: 'https://scroll-tech.github.io/token-list/data/weETH/logo.svg',
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
 export const blastWrsETH: TokenIF = {
@@ -439,6 +440,15 @@ export const scrollWstETH: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
+export const scrollWeETH: TokenIF = {
+    name: 'Wrapped eETH',
+    address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
+    symbol: 'weETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
+};
 
 export const scrollWrsETH: TokenIF = {
     name: 'Wrapped Kelp DAO Restaked ETH',
@@ -538,6 +548,15 @@ export const scrollAxlUSDC: TokenIF = {
     address: '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
     symbol: 'axlUSDC',
     decimals: 6,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollsUSDe: TokenIF = {
+    name: 'Staked USDe',
+    address: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+    symbol: 'sUSDe',
+    decimals: 18,
     chainId: 534352,
     logoURI: '',
 };
@@ -663,6 +682,7 @@ export const defaultTokens: TokenIF[] = [
     scrollPufETH,
     scrollWrappedETH,
     scrollWstETH,
+    scrollWeETH,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,
@@ -672,4 +692,5 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaETH,
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
+    scrollsUSDe,
 ];

@@ -27,6 +27,8 @@ import {
     mainnetETH,
     getDefaultPairForChain,
     BLAST_RPC_URL,
+    MAINNET_RPC_URL,
+    SEPOLIA_RPC_URL,
     SCROLL_RPC_URL,
 } from '../ambient-utils/constants';
 import { UserDataContext } from './UserDataContext';
@@ -60,17 +62,23 @@ interface CrocEnvContextIF {
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
-const mainnetProvider = new BatchedJsonRpcProvider(
-    `https://mainnet.infura.io/v3/${
-        import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091'
-    }`,
-    1,
-    { staticNetwork: true },
-);
+const mainnetProvider = new BatchedJsonRpcProvider(MAINNET_RPC_URL, 1, {
+    staticNetwork: true,
+});
+// const mainnetProvider = new BatchedJsonRpcProvider(
+//     `https://mainnet.infura.io/v3/${
+//         import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091'
+//     }`,
+//     1,
+//     { staticNetwork: true },
+// );
 const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
     staticNetwork: true,
 });
 const blastProvider = new BatchedJsonRpcProvider(BLAST_RPC_URL, 81457, {
+    staticNetwork: true,
+});
+const sepoliaProvider = new BatchedJsonRpcProvider(SEPOLIA_RPC_URL, 11155111, {
     staticNetwork: true,
 });
 
@@ -134,13 +142,13 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             tokenA: firstTokenMatchingA
                 ? firstTokenMatchingA.address
                 : shouldReverseDefaultTokens
-                ? dfltTokenB.address
-                : dfltTokenA.address,
+                  ? dfltTokenB.address
+                  : dfltTokenA.address,
             tokenB: firstTokenMatchingB
                 ? firstTokenMatchingB.address
                 : shouldReverseDefaultTokens
-                ? dfltTokenA.address
-                : dfltTokenB.address,
+                  ? dfltTokenA.address
+                  : dfltTokenB.address,
         };
 
         // default URL params for the limit module
@@ -166,29 +174,38 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const nodeUrl =
-        chainData.nodeUrl.toLowerCase().includes('infura') &&
-        import.meta.env.VITE_INFURA_KEY
-            ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
-            : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-            ? BLAST_RPC_URL
-            : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+    const nodeUrl = ['0x1'].includes(chainData.chainId)
+        ? MAINNET_RPC_URL
+        : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+          ? BLAST_RPC_URL
+          : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
             ? SCROLL_RPC_URL
             : chainData.nodeUrl;
+    // const nodeUrl =
+    //     chainData.nodeUrl.toLowerCase().includes('infura') &&
+    //     import.meta.env.VITE_INFURA_KEY
+    //         ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
+    //         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+    //           ? BLAST_RPC_URL
+    //           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+    //             ? SCROLL_RPC_URL
+    //             : chainData.nodeUrl;
 
     const provider = useMemo(
         () =>
             chainData.chainId === '0x1'
                 ? mainnetProvider
                 : chainData.chainId === '0x82750'
-                ? scrollProvider
-                : chainData.chainId === '0x13e31'
-                ? blastProvider
-                : new BatchedJsonRpcProvider(
-                      nodeUrl,
-                      parseInt(chainData.chainId),
-                      { staticNetwork: true },
-                  ),
+                  ? scrollProvider
+                  : chainData.chainId === '0x13e31'
+                    ? blastProvider
+                    : chainData.chainId === '0xaa36a7'
+                      ? sepoliaProvider
+                      : new BatchedJsonRpcProvider(
+                            nodeUrl,
+                            parseInt(chainData.chainId),
+                            { staticNetwork: true },
+                        ),
         [chainData.chainId],
     );
 
@@ -223,17 +240,21 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             // If signer and provider are set to different chains (as can happen)
             // after a network switch, it causes a lot of performance killing timeouts
             // and errors
-            // if (
-            //     ((await signer?.provider?.getNetwork())?.chainId) ==
-            //     (await provider.getNetwork()).chainId
-            // ) {
-            const newCrocEnv = new CrocEnv(
-                provider,
-                signer ? signer : undefined,
-            );
-            APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
-            setCrocEnv(newCrocEnv);
-            // }
+            if (
+                (await signer?.provider?.getNetwork())?.chainId ==
+                (await provider.getNetwork()).chainId
+            ) {
+                const newCrocEnv = new CrocEnv(provider, signer);
+                APP_ENVIRONMENT === 'local' && console.debug({ newCrocEnv });
+                setCrocEnv(newCrocEnv);
+            } else if (signer) {
+                // Since this is a weird case, it's best not to rush things - maybe this happens
+                // during the short moment while the network is switching already, idk.
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                // await useSwitchNetwork().switchNetwork(
+                //     Number(chainData.chainId),
+                // );
+            }
         }
     };
     useEffect(() => {

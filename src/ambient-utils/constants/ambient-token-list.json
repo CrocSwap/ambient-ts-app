@@ -366,6 +366,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/28477/standard/uniETH_200.png?1696527471"
         },
         {
+            "name": "Wrapped eETH",
+            "address": "0x01f0a31698c4d065659b9bdc21b3610292a1c506",
+            "symbol": "weETH",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg"
+        },
+        {
             "name": "StakeStone Ether",
             "address": "0x80137510979822322193FC997d400D5A6C747bf7",
             "symbol": "STONE",
@@ -406,6 +414,14 @@
             "logoURI": ""
         },
         {
+            "name": "Staked USDe",
+            "address": "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2",
+            "symbol": "sUSDe",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
             "name": "Wrapped SOL",
             "address": "0xcdf95e1f720caade4b1dc83abfe15400d2a458ad",
             "symbol": "SOL",
@@ -428,6 +444,14 @@
             "decimals": 18,
             "chainId": 534352,
             "logoURI": ""
+        },
+        {
+            "name": "Scrolly The Map",
+            "address": "0xb65aD8d81d1E4Cb2975352338805AF6e39BA8Be8",
+            "symbol": "SCROLLY",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://scrolly.xyz/img/logo.png"
         },
         {
             "name": "Ethena USDe",

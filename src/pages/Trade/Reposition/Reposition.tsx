@@ -16,7 +16,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
-    parseErrorMessage,
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
@@ -103,15 +102,11 @@ function Reposition() {
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewRepositionTransactionHash('');
     };
 
@@ -219,8 +214,8 @@ function Reposition() {
         currentPoolPriceNonDisplay === 0
             ? '...'
             : isDenomBase
-            ? truncatedCurrentPoolDisplayPriceInBase
-            : truncatedCurrentPoolDisplayPriceInQuote;
+              ? truncatedCurrentPoolDisplayPriceInBase
+              : truncatedCurrentPoolDisplayPriceInQuote;
 
     const handleModalOpen = () => {
         resetConfirmation();
@@ -334,9 +329,7 @@ function Reposition() {
     const sendRepositionTransaction = async () => {
         if (!crocEnv) return;
         let tx;
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
 
         resetConfirmation();
         setShowConfirmation(true);
@@ -390,13 +383,8 @@ function Reposition() {
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
             console.error({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(parseErrorMessage(error));
-            setTxErrorJSON(JSON.stringify(error));
+            setTxError(error);
         }
 
         let receipt;
@@ -766,7 +754,7 @@ function Reposition() {
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
     const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 2.75 : isActiveNetworkBlast ? 2.5 : 0,
+        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.2 : 0,
     );
 
     useEffect(() => {
@@ -869,9 +857,7 @@ function Reposition() {
                                 newTransactionHash={
                                     newRepositionTransactionHash
                                 }
-                                txErrorCode={txErrorCode}
-                                txErrorMessage={txErrorMessage}
-                                txErrorJSON={txErrorJSON}
+                                txError={txError}
                                 sendTransaction={sendRepositionTransaction}
                                 resetConfirmation={resetConfirmation}
                                 transactionPendingDisplayString={`Repositioning ${tokenA.symbol} and ${tokenB.symbol}`}
@@ -884,10 +870,10 @@ function Reposition() {
                                     isRepositionSent
                                         ? 'Reposition Sent'
                                         : isPositionInRange
-                                        ? 'Position Currently In Range'
-                                        : bypassConfirmRepo.isEnabled
-                                        ? 'Reposition'
-                                        : 'Confirm'
+                                          ? 'Position Currently In Range'
+                                          : bypassConfirmRepo.isEnabled
+                                            ? 'Reposition'
+                                            : 'Confirm'
                                 }
                                 action={
                                     bypassConfirmRepo.isEnabled
@@ -916,9 +902,7 @@ function Reposition() {
                     showConfirmation={showConfirmation}
                     newRepositionTransactionHash={newRepositionTransactionHash}
                     resetConfirmation={resetConfirmation}
-                    txErrorCode={txErrorCode}
-                    txErrorMessage={txErrorMessage}
-                    txErrorJSON={txErrorJSON}
+                    txError={txError}
                     minPriceDisplay={minPriceDisplay}
                     maxPriceDisplay={maxPriceDisplay}
                     currentBaseQtyDisplayTruncated={

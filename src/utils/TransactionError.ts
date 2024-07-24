@@ -46,7 +46,6 @@ export function isTransactionDeniedError(error: any): boolean {
         msg.includes('denied') ||
         msg.includes('disapproved')
     )
-        // most likely incomplete list
         return true;
 
     return false;

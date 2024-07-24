@@ -34,6 +34,8 @@ import {
     blastWEETH,
     blastBLAST,
     scrollUSDE,
+    scrollWeETH,
+    scrollsUSDe,
 } from '../../constants/defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -98,6 +100,7 @@ export const STABLE_USD_TOKENS = [
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDE.address,
+    scrollsUSDe.address,
 ].map((x) => x.toLowerCase());
 
 export const USDC_TOKENS = [
@@ -124,6 +127,7 @@ export const STAKED_ETH_TOKENS = [
     scrollWrsETH.address,
     scrollSTONE.address,
     scrollUniETH.address,
+    scrollWeETH.address,
     scrollPxETH.address,
     scrollPufETH.address,
     scrollRocketPoolETH.address,

@@ -46,7 +46,7 @@ import {
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_SCROLL,
+    RANGE_BUFFER_MULTIPLIER_L2,
 } from '../../../ambient-utils/constants/';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
@@ -171,9 +171,7 @@ function Range() {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -823,10 +821,10 @@ function Range() {
 
     const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeePoolInGwei] = useState<number>(
-        isScroll ? 700000 : isActiveNetworkBlast ? 300000 : 0,
+        isScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 0.5 : isActiveNetworkBlast ? 0.5 : 0,
+        isScroll ? 0.01 : isActiveNetworkBlast ? 0.15 : 0,
     );
 
     const amountToReduceNativeTokenQty =
@@ -864,7 +862,7 @@ function Range() {
             );
 
             setAmountToReduceNativeTokenQtyL2(
-                RANGE_BUFFER_MULTIPLIER_SCROLL * costOfScrollPoolInETH,
+                RANGE_BUFFER_MULTIPLIER_L2 * costOfScrollPoolInETH,
             );
 
             const gasPriceInDollarsNum =
@@ -889,9 +887,7 @@ function Range() {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewRangeTransactionHash('');
     };
     const { createRangePosition } = useCreateRangePosition();
@@ -914,9 +910,7 @@ function Range() {
             defaultHighTick,
             isAdd,
             setNewRangeTransactionHash,
-            setTxErrorCode,
-            setTxErrorMessage,
-            setTxErrorJSON,
+            setTxError,
             resetConfirmation,
             activeRangeTxHash,
         });
@@ -1105,9 +1099,7 @@ function Range() {
                         newRangeTransactionHash={newRangeTransactionHash}
                         resetConfirmation={resetConfirmation}
                         showConfirmation={showConfirmation}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
                             pinnedMinPriceDisplayTruncatedInBase
@@ -1169,9 +1161,7 @@ function Range() {
                     <SubmitTransaction
                         type='Range'
                         newTransactionHash={newRangeTransactionHash}
-                        txErrorCode={txErrorCode}
-                        txErrorMessage={txErrorMessage}
-                        txErrorJSON={txErrorJSON}
+                        txError={txError}
                         resetConfirmation={resetConfirmation}
                         sendTransaction={sendTransaction}
                         transactionPendingDisplayString={

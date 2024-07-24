@@ -67,6 +67,7 @@ import Button from '../../components/Form/Button';
 
 import {
     TransactionError,
+    isTransactionDeniedError,
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
@@ -76,7 +77,7 @@ import {
     GAS_DROPS_ESTIMATE_INIT_WITH_POOL,
     GAS_DROPS_ESTIMATE_INIT_WITHOUT_POOL,
     RANGE_BUFFER_MULTIPLIER_MAINNET,
-    RANGE_BUFFER_MULTIPLIER_SCROLL,
+    RANGE_BUFFER_MULTIPLIER_L2,
     GAS_DROPS_ESTIMATE_POOL,
     NUM_GWEI_IN_WEI,
 } from '../../ambient-utils/constants/';
@@ -514,8 +515,8 @@ export default function InitPool() {
                 defaultPriceNumInBase < 0.0001
                     ? defaultPriceNumInBase.toExponential(2)
                     : defaultPriceNumInBase < 2
-                    ? defaultPriceNumInBase.toPrecision(3)
-                    : defaultPriceNumInBase.toFixed(2);
+                      ? defaultPriceNumInBase.toPrecision(3)
+                      : defaultPriceNumInBase.toFixed(2);
 
             if (
                 isReferencePriceFound &&
@@ -532,8 +533,8 @@ export default function InitPool() {
                 !isTokenPairDefault
                     ? setInitialPriceDisplay(defaultPriceTruncated)
                     : !initialPriceInBaseDenom
-                    ? setInitialPriceDisplay('')
-                    : undefined;
+                      ? setInitialPriceDisplay('')
+                      : undefined;
             } else {
                 const invertedPriceNum = 1 / defaultPriceNumInBase;
 
@@ -541,8 +542,8 @@ export default function InitPool() {
                     invertedPriceNum < 0.0001
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
-                        ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toFixed(2);
+                          ? invertedPriceNum.toPrecision(3)
+                          : invertedPriceNum.toFixed(2);
                 setEstimatedInitialPriceDisplay(invertedPriceTruncated);
 
                 isReferencePriceFound &&
@@ -551,8 +552,8 @@ export default function InitPool() {
                 !isTokenPairDefault
                     ? setInitialPriceDisplay(invertedPriceTruncated)
                     : !initialPriceInBaseDenom
-                    ? setInitialPriceDisplay('')
-                    : undefined;
+                      ? setInitialPriceDisplay('')
+                      : undefined;
             }
         }
     };
@@ -792,8 +793,8 @@ export default function InitPool() {
                     invertedPriceNum < 0.0001
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
-                        ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toFixed(2);
+                          ? invertedPriceNum.toPrecision(3)
+                          : invertedPriceNum.toFixed(2);
                 setInitialPriceDisplay(invertedPriceTruncated);
             }
         }
@@ -843,7 +844,7 @@ export default function InitPool() {
                 gasPriceInGwei * GAS_DROPS_ESTIMATE_POOL * NUM_GWEI_IN_WEI;
 
             setAmountToReduceNativeTokenQtyL2(
-                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_SCROLL,
+                costOfScrollPoolInETH * RANGE_BUFFER_MULTIPLIER_L2,
             );
 
             const gasPriceInDollarsNum =
@@ -968,9 +969,7 @@ export default function InitPool() {
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState<
         undefined | string
     >('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const [isInitPending, setIsInitPending] = useState(false);
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
@@ -978,15 +977,14 @@ export default function InitPool() {
 
     const transactionApprovedInit = newInitTransactionHash !== '';
     const transactionApprovedRange = newRangeTransactionHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+    const isTransactionDenied = isTransactionDeniedError(txError);
+    const isTransactionException =
+        txError !== undefined && !isTransactionDenied;
 
     const [activeConfirmationStep, setActiveConfirmationStep] = useState(0);
 
     const resetConfirmation = () => {
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
         setIsTxCompletedInit(false);
@@ -1010,9 +1008,7 @@ export default function InitPool() {
         setNewInitTransactionHash,
         setIsInitPending,
         setIsTxCompletedInit,
-        setTxErrorCode,
-        setTxErrorMessage,
-        setTxErrorJSON,
+        setTxError,
         resetConfirmation,
     );
 
@@ -1094,9 +1090,7 @@ export default function InitPool() {
             defaultHighTick,
             isAdd: false, // Always false for init
             setNewRangeTransactionHash,
-            setTxErrorCode,
-            setTxErrorMessage,
-            setTxErrorJSON,
+            setTxError,
             resetConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
@@ -1156,8 +1150,8 @@ export default function InitPool() {
             ? getUnicodeCharacter(tokenB.symbol)
             : getUnicodeCharacter(tokenA.symbol)
         : !isTokenABase
-        ? getUnicodeCharacter(tokenB.symbol)
-        : getUnicodeCharacter(tokenA.symbol);
+          ? getUnicodeCharacter(tokenB.symbol)
+          : getUnicodeCharacter(tokenA.symbol);
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
@@ -1777,9 +1771,7 @@ export default function InitPool() {
         tokenB,
         isAmbient,
         isTokenABase,
-        errorCode: txErrorCode,
-        txErrorMessage: txErrorMessage,
-        txErrorJSON: txErrorJSON,
+        txError: txError,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,
