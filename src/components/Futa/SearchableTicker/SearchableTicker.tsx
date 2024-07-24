@@ -70,7 +70,6 @@ export default function SearchableTicker(props: propsIF) {
         searchableTickerHeights,
         setSearchableTickerHeight,
         canvasRef,
-        tradeTableState,
         setIsSearchableTickerHeightMinimum,
     } = useContext(FutaSearchableTickerContext);
 
@@ -376,8 +375,6 @@ export default function SearchableTicker(props: propsIF) {
         </div>
     );
     const fullScreenTable = false;
-
-    const CHART_MIN_HEIGHT = 175;
 
     const noAuctionsContent = (
         <div className={styles.noAuctionsContent}>
