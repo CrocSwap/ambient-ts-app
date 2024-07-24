@@ -477,12 +477,12 @@ export const useProcessTransaction = (
 
     const baseQuantityDisplay =
         baseFlowDisplay !== undefined
-            ? `${baseFlowDisplay && parseFloat(baseFlowDisplay) !== 0 ? baseFlowDisplay : isLimitAdd ? '...' : '0'}`
+            ? `${baseFlowDisplay && baseFlowDisplay !== '0' ? baseFlowDisplay : isLimitAdd ? '...' : '0'}`
             : '…';
 
     const quoteQuantityDisplay =
         quoteFlowDisplay !== undefined
-            ? `${quoteFlowDisplay && parseFloat(quoteFlowDisplay) !== 0 ? quoteFlowDisplay : isLimitAdd ? '...' : '0'}`
+            ? `${quoteFlowDisplay && quoteFlowDisplay !== '0' ? quoteFlowDisplay : isLimitAdd ? '...' : '0'}`
             : '…';
 
     // --------------------------------------------------------
