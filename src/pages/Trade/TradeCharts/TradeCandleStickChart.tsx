@@ -149,10 +149,8 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [chartResetStatus, setChartResetStatus] = useState<{
         isResetChart: boolean;
-        resetDomain: undefined | number[];
     }>({
         isResetChart: false,
-        resetDomain: undefined,
     });
     const {
         tokenA,
@@ -208,7 +206,6 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCompletedFetchData(true);
         setChartResetStatus({
             isResetChart: false,
-            resetDomain: undefined,
         });
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
