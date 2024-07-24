@@ -310,6 +310,62 @@
 
 }
 
+section[class^="emoji-scroll-wrapper"]{
+    scroll-behavior: auto;
+}
+
+.hidden_picker_wrapper{
+    position: fixed;
+    top: 3rem;
+    left: 50%;
+}
+
+.custom_emoji_pool{
+    display: none;
+}
+
+.custom_emoji_picker_wrapper{
+    bottom: -5rem;    
+    position: absolute;
+    transition: all .2s ease-in-out;
+    max-width: 18rem;
+    display: flex;
+    overflow: hidden;
+    background-color: red;
+}
+
+.custom_emoji_picker_wrapper.active{
+    bottom: 5rem;
+}
+
+.custom_emoji_picker_wrapper button{
+    flex:  1 1;
+    background: transparent;
+    border: none;
+    margin: .1rem;
+    /* max-width: 2rem;
+    height: 2rem; */
+}
+
+
+
+.custom_emoji_picker_wrapper button img{
+    max-width: 2rem;
+    height: 2rem;
+}
+
+.emoji_node{
+    flex:  1 1;
+    padding: .5rem;
+}
+
+
+
+
+
+
+
+
 @media only screen and (max-width: 600px){
 
     .input, .input_not_allowed {
@@ -355,15 +411,4 @@
         height: 1.2rem;
     }
 
-}
-section[class^="emoji-scroll-wrapper"]{
-    scroll-behavior: auto;
-}
-
-.hidden_picker_wrapper{
-
-    position: fixed;
-    top: 3rem;
-    left: 50%;
-    
 }
