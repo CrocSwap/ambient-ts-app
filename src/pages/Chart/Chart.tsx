@@ -445,6 +445,11 @@ export default function Chart(props: propsIF) {
     const [circleScale, setCircleScale] =
         useState<d3.ScaleLinear<number, number>>();
 
+    const [shouldDisableChartSettings, setShouldDisableChartSettings] =
+        useState<boolean>(true);
+    const [closeOutherChartSetting, setCloseOutherChartSetting] =
+        useState<boolean>(false);
+
     const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
@@ -461,8 +466,12 @@ export default function Chart(props: propsIF) {
     const clickOutsideChartHandler = (event: Event) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const e = event.target as any;
-        if (!e.id.includes('chart_settings')) {
+        if (!e.id.includes('chart_settings') && shouldDisableChartSettings) {
             setContextmenu(false);
+        }
+
+        if (!shouldDisableChartSettings) {
+            setCloseOutherChartSetting(true);
         }
     };
 
@@ -1240,7 +1249,6 @@ export default function Chart(props: propsIF) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
                         setIsChartZoom(true);
-                        setContextmenu(false);
 
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
@@ -1268,6 +1276,8 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('zoom', (event: any) => {
+                        setContextmenu(false);
+
                         async function newDomains() {
                             if (
                                 event.sourceEvent &&
@@ -4553,7 +4563,11 @@ export default function Chart(props: propsIF) {
                 const offsetX = event.offsetX;
                 const offsetY = event.offsetY;
 
-                setContextmenu(false);
+                if (shouldDisableChartSettings) {
+                    setContextmenu(false);
+                } else {
+                    setCloseOutherChartSetting(true);
+                }
 
                 let isOrderHistorySelected = undefined;
                 if (showSwap) {
@@ -6255,6 +6269,11 @@ export default function Chart(props: propsIF) {
                     setColorChangeTrigger={setColorChangeTrigger}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
+                    setShouldDisableChartSettings={
+                        setShouldDisableChartSettings
+                    }
+                    setCloseOutherChartSetting={setCloseOutherChartSetting}
+                    closeOutherChartSetting={closeOutherChartSetting}
                 />
             )}
         </div>
