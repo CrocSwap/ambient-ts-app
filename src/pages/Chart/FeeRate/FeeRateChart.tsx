@@ -32,6 +32,8 @@ interface FreeRateData {
     isChartZoom: boolean;
     firstCandleData: any;
     lastCandleData: any;
+    isToolbarOpen: boolean;
+    toolbarWidth: number;
     chartThemeColors: ChartThemeIF | undefined;
     colorChangeTrigger: boolean;
     setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
@@ -59,6 +61,8 @@ function FeeRateChart(props: FreeRateData) {
         render,
         firstCandleData,
         lastCandleData,
+        isToolbarOpen,
+        toolbarWidth,
         chartThemeColors,
         colorChangeTrigger,
         setColorChangeTrigger,
@@ -417,40 +421,27 @@ function FeeRateChart(props: FreeRateData) {
             id='fee_rate_chart'
             data-testid={'chart'}
             style={{
-                gridTemplateColumns: 'auto 1fr auto',
+                gridTemplateColumns:
+                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
             }}
         >
             <d3fc-canvas
                 id='d3PlotFeeRate'
                 ref={d3CanvasArea}
                 className='d3CanvasArea'
-                style={{
-                    display: 'block',
-                    gridColumnStart: 1,
-                    gridColumnEnd: 4,
-                    gridRowStart: 1,
-                    gridRowEnd: 3,
-                }}
             ></d3fc-canvas>
 
             <d3fc-canvas
                 id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
                 className='d3CanvasCrosshair'
-                style={{
-                    display: 'block',
-                    gridColumnStart: 1,
-                    gridColumnEnd: 4,
-                    gridRowStart: 1,
-                    gridRowEnd: 3,
-                }}
             ></d3fc-canvas>
 
             <label
                 style={{
-                    gridColumnStart: 1,
-                    gridColumnEnd: 1,
-                    gridRow: 1,
+                    paddingLeft: isToolbarOpen ? '38px' : '9px',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
                 }}
             >
                 Fee Rate:{' '}
@@ -470,9 +461,8 @@ function FeeRateChart(props: FreeRateData) {
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 3,
-                    gridRowStart: 1,
-                    gridRowEnd: 3,
+                    gridColumn: 5,
+                    gridRow: 3,
                 }}
             ></d3fc-canvas>
         </div>
