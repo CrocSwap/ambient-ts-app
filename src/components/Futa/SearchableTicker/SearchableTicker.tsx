@@ -70,7 +70,6 @@ export default function SearchableTicker(props: propsIF) {
         searchableTickerHeights,
         setSearchableTickerHeight,
         canvasRef,
-        tradeTableState,
         setIsSearchableTickerHeightMinimum,
     } = useContext(FutaSearchableTickerContext);
 
@@ -377,8 +376,6 @@ export default function SearchableTicker(props: propsIF) {
     );
     const fullScreenTable = false;
 
-    const CHART_MIN_HEIGHT = 175;
-
     const noAuctionsContent = (
         <div className={styles.noAuctionsContent}>
             <Typewriter
@@ -484,16 +481,29 @@ export default function SearchableTicker(props: propsIF) {
                 height: searchableTickerHeights.current,
             }}
             minHeight={4}
+            // onResize={(
+            //     evt: MouseEvent | TouchEvent,
+            //     dir: Direction,
+            //     ref: HTMLElement,
+            //     d: NumberSize,
+            // ) => {
+            //     if (
+            //         searchableTickerHeights.current + d.height <
+            //         CHART_MIN_HEIGHT
+            //     ) {
+            //         setIsSearchableTickerHeightMinimum(true);
+            //     } else {
+            //         setIsSearchableTickerHeightMinimum(false);
+            //     }
+            // }}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
                 ref: HTMLElement,
                 d: NumberSize,
             ) => {
-                if (
-                    searchableTickerHeights.current + d.height <
-                    CHART_MIN_HEIGHT
-                ) {
+                const newHeight = searchableTickerHeights.current + d.height;
+                if (newHeight <= searchableTickerHeights.min) {
                     setIsSearchableTickerHeightMinimum(true);
                 } else {
                     setIsSearchableTickerHeightMinimum(false);
@@ -502,31 +512,40 @@ export default function SearchableTicker(props: propsIF) {
             onResizeStart={() => {
                 // may be useful later
             }}
+            // onResizeStop={(
+            //     evt: MouseEvent | TouchEvent,
+            //     dir: Direction,
+            //     ref: HTMLElement,
+            //     d: NumberSize,
+            // ) => {
+            //     if (
+            //         searchableTickerHeights.current + d.height < CHART_MIN_HEIGHT
+            //     ) {
+            //         setSearchableTickerHeight(searchableTickerHeights.min);
+            //     } else {
+            //         setSearchableTickerHeight(
+            //             searchableTickerHeights.current + d.height,
+            //         );
+            //     }
+
+            // }}
             onResizeStop={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
                 ref: HTMLElement,
                 d: NumberSize,
             ) => {
-                if (
-                    searchableTickerHeights.current + d.height <
-                    CHART_MIN_HEIGHT
-                ) {
-                    if (tradeTableState == 'Expanded') {
-                        setSearchableTickerHeight(
-                            searchableTickerHeights.default,
-                        );
-                    } else {
-                        setSearchableTickerHeight(searchableTickerHeights.min);
-                    }
-                } else {
-                    setSearchableTickerHeight(
+                const newHeight = Math.max(
+                    searchableTickerHeights.min,
+                    Math.min(
                         searchableTickerHeights.current + d.height,
-                    );
-                }
+                        searchableTickerHeights.max,
+                    ),
+                );
+
+                setSearchableTickerHeight(newHeight);
             }}
             bounds={'parent'}
-            style={{ paddingBottom: '0rem' }}
         >
             {searchableContent}
         </ResizableContainer>

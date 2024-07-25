@@ -52,9 +52,9 @@ export default function VolumeBarCanvas(props: propsIF) {
             barSeries.decorate(
                 (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const d3DarkStrokeColor =
-                        chartThemeColors.darkStrokeColor?.copy();
+                        chartThemeColors.downCandleBorderColor?.copy();
                     const d3LightStrokeColor =
-                        chartThemeColors.lightStrokeColor?.copy();
+                        chartThemeColors.upCandleBorderColor?.copy();
 
                     if (d3DarkStrokeColor) d3DarkStrokeColor.opacity = 0.5;
                     if (d3LightStrokeColor) d3LightStrokeColor.opacity = 0.5;
@@ -102,7 +102,13 @@ export default function VolumeBarCanvas(props: propsIF) {
                 },
             );
         }
-    }, [barSeries, selectedDate, visibleDateForCandle, chartThemeColors]);
+    }, [
+        barSeries,
+        selectedDate,
+        visibleDateForCandle,
+        chartThemeColors,
+        denomInBase,
+    ]);
 
     useEffect(() => {
         if (showVolume) {

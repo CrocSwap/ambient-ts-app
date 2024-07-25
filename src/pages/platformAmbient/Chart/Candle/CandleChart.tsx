@@ -7,7 +7,10 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import { diffHashSigScaleData } from '../../../../ambient-utils/dataLayer';
+import {
+    diffHashSigScaleData,
+    diffHashSig,
+} from '../../../../ambient-utils/dataLayer';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../../ambient-utils/types';
@@ -57,11 +60,6 @@ export default function CandleChart(props: candlePropsIF) {
     const crocCandleDarkColor = '#24243e';
     const crocCandleBorderDarkColor = '#7371FC';
 
-    const uniswapCandleLightColor = '#4a5a76';
-    const uniswapCandleBorderLightColor = '#4a5a76';
-    const uniswapCandleDarkColor = '#252f40';
-    const uniswapCandleBorderDarkColor = '#5e6b81';
-
     const bandwidth = useMemo(() => {
         if (candlestick) {
             const bandwidthFunction = candlestick?.bandwidth();
@@ -97,7 +95,7 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
-    }, [diffHashSigScaleData(scaleData)]);
+    }, [diffHashSigScaleData(scaleData), diffHashSig(chartThemeColors)]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -135,8 +133,6 @@ export default function CandleChart(props: candlePropsIF) {
         if (candlestick && chartThemeColors) {
             candlestick.decorate(
                 (context: CanvasRenderingContext2D, d: CandleDataChart) => {
-                    const nowDate = new Date();
-
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected;
@@ -147,31 +143,21 @@ export default function CandleChart(props: candlePropsIF) {
 
                     const crocColor =
                         close > open
-                            ? chartThemeColors.lightFillColor
-                                ? chartThemeColors.lightFillColor.toString()
+                            ? chartThemeColors.upCandleBodyColor
+                                ? chartThemeColors.upCandleBodyColor.toString()
                                 : crocCandleLightColor
-                            : chartThemeColors.darkFillColor
-                              ? chartThemeColors.darkFillColor.toString()
+                            : chartThemeColors.downCandleBodyColor
+                              ? chartThemeColors.downCandleBodyColor.toString()
                               : crocCandleDarkColor;
-
-                    const uniswapColor =
-                        close > open
-                            ? uniswapCandleLightColor
-                            : uniswapCandleDarkColor;
 
                     const crocBorderColor =
                         close > open
-                            ? chartThemeColors.lightStrokeColor
-                                ? chartThemeColors.lightStrokeColor.toString()
+                            ? chartThemeColors.upCandleBorderColor
+                                ? chartThemeColors.upCandleBorderColor.toString()
                                 : crocCandleBorderLightColor
-                            : chartThemeColors.darkStrokeColor
-                              ? chartThemeColors.darkStrokeColor.toString()
+                            : chartThemeColors.downCandleBorderColor
+                              ? chartThemeColors.downCandleBorderColor.toString()
                               : crocCandleBorderDarkColor;
-
-                    const uniswapBorderColor =
-                        close > open
-                            ? uniswapCandleBorderLightColor
-                            : uniswapCandleBorderDarkColor;
 
                     context.fillStyle =
                         selectedDate !== undefined &&
@@ -179,10 +165,7 @@ export default function CandleChart(props: candlePropsIF) {
                             ? chartThemeColors.selectedDateFillColor
                                 ? chartThemeColors.selectedDateFillColor.toString()
                                 : selectedCandleColor
-                            : d.tvlData.tvl === 0 &&
-                                d.time * 1000 < nowDate.getTime()
-                              ? uniswapColor
-                              : crocColor;
+                            : crocColor;
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
@@ -190,10 +173,7 @@ export default function CandleChart(props: candlePropsIF) {
                             ? chartThemeColors.selectedDateFillColor
                                 ? chartThemeColors.selectedDateFillColor.toString()
                                 : selectedCandleColor
-                            : d.tvlData.tvl === 0 &&
-                                d.time * 1000 < nowDate.getTime()
-                              ? uniswapBorderColor
-                              : crocBorderColor;
+                            : crocBorderColor;
 
                     if (d.time * 1000 > visibleDateForCandle) {
                         context.fillStyle = 'transparent';
