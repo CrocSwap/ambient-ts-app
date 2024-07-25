@@ -1,6 +1,9 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './TickerComponent.module.css';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionsContext,
+    AuctionsContextIF,
+} from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -17,6 +20,7 @@ import {
     NUM_GWEI_IN_WEI,
     NUM_WEI_IN_GWEI,
     supportedNetworks,
+    ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import {
     AuctionDataIF,
@@ -42,11 +46,6 @@ import {
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import {
-    TradeDataContextIF,
-    TradeDataContext,
-} from '../../../contexts/TradeDataContext';
-
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
@@ -62,7 +61,7 @@ const useAuctionContexts = () => {
         getFreshAuctionData,
         freshAuctionStatusData,
         setSelectedTicker,
-    } = useContext(AuctionsContext);
+    } = useContext<AuctionsContextIF>(AuctionsContext);
     const {
         chainData: { chainId },
         crocEnv,
@@ -668,11 +667,10 @@ export default function TickerComponent(props: PropsIF) {
     // hook to generate navigation actions with pre-loaded path
     // ... with logic to get data for programmatic generation
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
-    const { tokenA, tokenB } = useContext<TradeDataContextIF>(TradeDataContext);
     function goToSwap(): void {
         linkGenSwap.navigate({
-            tokenA: tokenA.address.toLowerCase(),
-            tokenB: tokenB.address.toLowerCase(),
+            tokenA: ZERO_ADDRESS,
+            tokenB: freshAuctionStatusData.tokenAddress ?? '',
             chain: '0xaa36a7',
         });
     }

@@ -23,7 +23,6 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -55,7 +54,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         chainData: { chainId },
         provider,
     } = useContext(CrocEnvContext);
-
+    isFuta;
     const {
         tokens,
         outputTokens,
@@ -72,13 +71,13 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
-    console.log(isFuta);
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
             tokens.acknowledge(tkn);
         }
-
         if (isSingleToken) setSoloToken(tkn);
 
         // array of recent tokens from App.tsx (current session only)
@@ -136,6 +135,35 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         // close the token modal
         onClose();
     };
+
+    function chooseTokenFuta(tkn: TokenIF): void {
+        if (tokenAorB === 'A') {
+            if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
+                reverseTokens && reverseTokens();
+                onClose();
+                return;
+            } else {
+                linkGenSwap.navigate({
+                    chain: chainId,
+                    tokenA: tkn.address,
+                    tokenB: tokenB.address,
+                });
+            }
+        } else if (tokenAorB === 'B') {
+            if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+                reverseTokens && reverseTokens();
+                onClose();
+                return;
+            } else {
+                linkGenSwap.navigate({
+                    chain: chainId,
+                    tokenA: tokenA.address,
+                    tokenB: tkn.address,
+                });
+            }
+        }
+        onClose();
+    }
 
     // hook to hold data for a token pulled from on-chain
     // null value is allowed to clear the hook when needed or on error
@@ -351,7 +379,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                             <TokenSelect
                                 key={JSON.stringify(ticker)}
                                 token={ticker}
-                                chooseToken={() => null}
+                                chooseToken={chooseTokenFuta}
                                 fromListsText=''
                                 updateTickerPair={() => {
                                     updateTickerPair &&

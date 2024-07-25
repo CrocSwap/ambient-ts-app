@@ -163,6 +163,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // fn to build a full URL including params AND navigate the user
     function navigateUser(paramsObj?: anyParamsIF | string): void {
+        console.log(getFullURL(paramsObj));
         navigate(getFullURL(paramsObj));
     }
 
