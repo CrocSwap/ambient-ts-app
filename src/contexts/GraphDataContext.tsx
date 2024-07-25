@@ -352,7 +352,7 @@ export const GraphDataContextProvider = (props: {
         .filter((r) => JSON.parse(r).status === 0)
         .map((r) => JSON.parse(r).hash);
 
-    const unixTimeOffset = 100; // 100ms needed to account for system clock differences
+    const unixTimeOffset = 10; // 10s offset needed to account for system clock differences
 
     // transaction hashes for subsequently fully removed positions
     const removedPositionUpdateTxHashes = useMemo(
