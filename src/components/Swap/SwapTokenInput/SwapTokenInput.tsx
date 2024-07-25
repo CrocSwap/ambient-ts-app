@@ -109,7 +109,7 @@ function SwapTokenInput(props: propsIF) {
     const debouncedLastInput = useDebounce(lastInput, 200);
 
     const reverseTokens = (skipQuantityReverse?: boolean): void => {
-        if (!isPoolInitialized) return;
+        // if (!isPoolInitialized) return;
         linkGenAny.navigate({
             chain: chainId,
             tokenA: tokenB.address,
