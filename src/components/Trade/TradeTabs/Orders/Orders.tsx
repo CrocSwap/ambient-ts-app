@@ -157,7 +157,7 @@ function Orders(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !limitOrderData.length &&
-        unindexedNonFailedSessionLimitOrderUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
