@@ -437,6 +437,14 @@ export const GraphDataContextProvider = (props: {
 
     const onAccountRoute = location.pathname.includes('account');
 
+    const userDataByPoolLength = useMemo(
+        () =>
+            transactionsByUser.changes.length +
+            userLimitOrdersByPool.limitOrders.length +
+            userPositionsByPool.positions.length,
+        [transactionsByUser, userLimitOrdersByPool, userPositionsByPool],
+    );
+
     useEffect(() => {
         const fetchData = async () => {
             // This useEffect controls a series of other dispatches that fetch data on update of the user object
@@ -595,6 +603,8 @@ export const GraphDataContextProvider = (props: {
             : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
         !!crocEnv,
         !!provider,
+        userDataByPoolLength,
+        allReceipts.length,
     ]);
 
     const graphDataContext: GraphDataContextIF = {
