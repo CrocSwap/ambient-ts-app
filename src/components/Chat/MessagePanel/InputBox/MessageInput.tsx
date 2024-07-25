@@ -118,20 +118,28 @@ export default function MessageInput(props: MessageInputProps) {
         }
     }, [filteredUsers]);
 
-    const handleHiddenEmojiClick = (
-        event: React.MouseEvent,
-        emojiObject: IEmojiData,
-    ) => {
-        console.log(emojiObject);
-    };
+    // const handleHiddenEmojiClick = (
+    //     event: React.MouseEvent,
+    //     emojiObject: IEmojiData,
+    // ) => {
+    //     console.log(emojiObject);
+    // };
 
     const handleEmojiClick = (
         event: React.MouseEvent,
         emojiObject: IEmojiData,
+        clearCustomEmojiSearch?: boolean,
     ) => {
         if (inputRef.current) {
             const emoji = emojiObject.emoji;
-            const currentMessage = message;
+            let currentMessage = message;
+
+            if (clearCustomEmojiSearch) {
+                currentMessage = currentMessage.slice(
+                    0,
+                    currentMessage.lastIndexOf(':'),
+                );
+            }
 
             const selectionStart = inputRef.current.selectionStart as number;
 
@@ -292,6 +300,13 @@ export default function MessageInput(props: MessageInputProps) {
             }
 
             return;
+        }
+
+        if (showCustomEmojiPanel) {
+            if (handleKeyForCustomEmojiPicker(e)) {
+                e.preventDefault();
+                return;
+            }
         }
 
         if (e.key === 'Enter') {
@@ -543,11 +558,15 @@ export default function MessageInput(props: MessageInputProps) {
 
     const [filteredEmojis, setFilteredEmojis] = useState<HTMLElement[]>([]);
     const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
+    const [customEmojiPickerSelectedIndex, setCustomEmojiPickerSelectedIndex] =
+        useState(0);
     const [emojiPool, setEmojiPool] = useState<HTMLElement[]>([]);
-    const customEmojiPanelLimit = 20;
+    // const customEmojiPanelLimit = 20;
+    const customEmojiStartShiftIndex = 7;
 
     useEffect(() => {
-        const needToShowCustomEmojiPanel = filteredEmojis.length > 0;
+        const needToShowCustomEmojiPanel =
+            filteredEmojis.length > 0 && message.includes(':');
 
         if (customEmojiPickerRef.current) {
             const emojis =
@@ -563,7 +582,6 @@ export default function MessageInput(props: MessageInputProps) {
             customEmojiPickerRef.current != null
         ) {
             filteredEmojis.map((emoji) => {
-                console.log(emoji);
                 if (customEmojiPickerRef.current) {
                     // customEmojiPickerRef.current.appendChild(emoji.cloneNode(true));
                     customEmojiPickerRef.current.appendChild(emoji);
@@ -573,13 +591,58 @@ export default function MessageInput(props: MessageInputProps) {
     }, [filteredEmojis]);
 
     useEffect(() => {
-        console.log(tokenForEmojiSearch);
         filterEmojisOnHiddenPicker(tokenForEmojiSearch);
+        setCustomEmojiPickerSelectedIndex(0);
     }, [tokenForEmojiSearch]);
 
     useEffect(() => {
-        generateCustomEmojiPool();
+        const emojis = document.querySelectorAll(
+            '#chatCustomEmojiPicker button',
+        );
+        emojis.forEach((emoji, index) => {
+            if (index == customEmojiPickerSelectedIndex) {
+                emoji.classList.add(styles.focused);
+            } else {
+                emoji.classList.remove(styles.focused);
+            }
+
+            if (index == 0) {
+                if (
+                    customEmojiPickerSelectedIndex >= customEmojiStartShiftIndex
+                ) {
+                    const marginLeftFactor = 2.2;
+                    const gap =
+                        customEmojiPickerSelectedIndex -
+                        customEmojiStartShiftIndex;
+                    const emojiHTML = emoji as HTMLElement;
+                    const marginLeft = marginLeftFactor * gap * -1;
+                    emojiHTML.style.marginLeft = marginLeft + 'rem';
+                } else {
+                    const emojiHTML = emoji as HTMLElement;
+                    const marginLeft = '.2rem';
+                    emojiHTML.style.marginLeft = marginLeft + 'rem';
+                }
+            }
+        });
+        if (customEmojiPickerSelectedIndex < -1) {
+            resetCustomEmojiPickerStates();
+        }
+        domDebug(
+            'customEmojiPickerSelectedIndex',
+            customEmojiPickerSelectedIndex,
+        );
+    }, [customEmojiPickerSelectedIndex, filteredEmojis]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            generateCustomEmojiPool();
+        }, 3000);
     }, []);
+
+    const resetCustomEmojiPickerStates = () => {
+        setCustomEmojiPickerSelectedIndex(0);
+        setFilteredEmojis([]);
+    };
 
     const filterEmojisOnHiddenPicker = (word: string) => {
         // const elements = document.querySelectorAll<HTMLElement>(
@@ -589,14 +652,15 @@ export default function MessageInput(props: MessageInputProps) {
         const filteredElements: HTMLElement[] = [];
         const searchToken = word.split(' ')[0];
 
-        emojiPool.forEach((element, index) => {
-            if (index >= customEmojiPanelLimit) return;
+        if (searchToken.length == 0) return;
+        domDebug('searchToken', searchToken);
+
+        emojiPool.forEach((element) => {
+            // if (index >= customEmojiPanelLimit) return;
+            // console.log(index, customEmojiPanelLimit)
             const ariaLabel = element.getAttribute('aria-label');
             if (ariaLabel && ariaLabel.includes(searchToken)) {
                 filteredElements.push(element);
-                element.style.display = 'block';
-            } else {
-                element.style.display = 'none';
             }
         });
 
@@ -606,11 +670,41 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const generateCustomEmojiPool = () => {
+        if (emojiPool.length > 0) return;
         const emojiButtons = document.querySelectorAll<HTMLElement>(
             '#chatHiddenEmojiSearch li.emoji button',
         );
 
         setEmojiPool([...emojiButtons]);
+    };
+
+    const handleKeyForCustomEmojiPicker = (e: KeyboardEvent) => {
+        let shouldSkip = false;
+        if (e.key === 'ArrowLeft' && customEmojiPickerSelectedIndex >= -1) {
+            setCustomEmojiPickerSelectedIndex(
+                customEmojiPickerSelectedIndex - 1,
+            );
+            shouldSkip = true;
+        } else if (
+            e.key === 'ArrowRight' &&
+            customEmojiPickerSelectedIndex < filteredEmojis.length - 1
+        ) {
+            setCustomEmojiPickerSelectedIndex(
+                customEmojiPickerSelectedIndex + 1,
+            );
+            shouldSkip = true;
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
+            if (filteredEmojis.length > 0) {
+                const emoji = filteredEmojis[customEmojiPickerSelectedIndex];
+                if (emoji) {
+                    emoji.click();
+                    resetCustomEmojiPickerStates();
+                }
+            }
+            shouldSkip = true;
+        }
+
+        return shouldSkip;
     };
 
     return (
@@ -811,7 +905,9 @@ export default function MessageInput(props: MessageInputProps) {
                             pickerStyle={{
                                 width: '100%',
                             }}
-                            onEmojiClick={handleHiddenEmojiClick}
+                            onEmojiClick={(e, data) => {
+                                handleEmojiClick(e, data, true);
+                            }}
                         />
                     </div>
 

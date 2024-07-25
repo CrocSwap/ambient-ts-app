@@ -316,6 +316,8 @@ section[class^="emoji-scroll-wrapper"]{
 
 .hidden_picker_wrapper{
     position: fixed;
+    display: none;
+    z-index: -1;
     top: 3rem;
     left: 50%;
 }
@@ -331,27 +333,40 @@ section[class^="emoji-scroll-wrapper"]{
     max-width: 18rem;
     display: flex;
     overflow: hidden;
-    background-color: red;
+    box-shadow: 0px 0px 12px color-mix(in srgb, var(--accent1) 20%, transparent);
+    background-color: color-mix(in srgb, var(--accent1) 20%, transparent);
+    backdrop-filter: blur(5px);
+    border-radius: .2rem;
+    padding: .5rem 0;
 }
 
 .custom_emoji_picker_wrapper.active{
-    bottom: 5rem;
+    bottom: 3rem;
 }
 
 .custom_emoji_picker_wrapper button{
+    transition: all .2s ease-in-out;
     flex:  1 1;
     background: transparent;
     border: none;
-    margin: .1rem;
+    margin-left: .2rem;
+    border-radius: .4rem;
+    cursor: pointer;
     /* max-width: 2rem;
     height: 2rem; */
 }
 
+.custom_emoji_picker_wrapper button.focused{
 
+    background-color: color-mix(in srgb, var(--accent1) 70%, transparent);
+    transform: scale(1.3);
+}
 
 .custom_emoji_picker_wrapper button img{
     max-width: 2rem;
     height: 2rem;
+    padding: .2rem;
+    vertical-align: middle;
 }
 
 .emoji_node{
