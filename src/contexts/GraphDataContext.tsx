@@ -292,8 +292,8 @@ export const GraphDataContextProvider = (props: {
         (change) => change.txHash,
     );
 
-    const userPositionsByPoolIndexUpdateArray: PositionUpdateIF[] =
-        userPositionsByPool.positions.map((position) => {
+    const positionsByUserIndexUpdateArray: PositionUpdateIF[] =
+        positionsByUser.positions.map((position) => {
             return {
                 positionID: getPositionHash(position),
                 isLimit: false,
@@ -301,8 +301,8 @@ export const GraphDataContextProvider = (props: {
             };
         });
 
-    const userLimitOrdersByPoolIndexUpdateArray: PositionUpdateIF[] =
-        userLimitOrdersByPool.limitOrders.map((limitOrder) => {
+    const limitOrdersByUserIndexUpdateArray: PositionUpdateIF[] =
+        limitOrdersByUser.limitOrders.map((limitOrder) => {
             const posHash = getPositionHash(undefined, {
                 isPositionTypeAmbient: false,
                 user: limitOrder.user,
@@ -366,7 +366,7 @@ export const GraphDataContextProvider = (props: {
                 !removedPositionUpdateTxHashes.includes(
                     positionUpdate.txHash,
                 ) &&
-                !userPositionsByPoolIndexUpdateArray.some(
+                !positionsByUserIndexUpdateArray.some(
                     (userPositionIndexUpdate) =>
                         userPositionIndexUpdate.positionID ===
                             positionUpdate.positionID &&
@@ -385,7 +385,7 @@ export const GraphDataContextProvider = (props: {
                 !removedPositionUpdateTxHashes.includes(
                     positionUpdate.txHash,
                 ) &&
-                !userLimitOrdersByPoolIndexUpdateArray.some(
+                !limitOrdersByUserIndexUpdateArray.some(
                     (userPositionIndexUpdate) =>
                         userPositionIndexUpdate.positionID ===
                             positionUpdate.positionID &&
