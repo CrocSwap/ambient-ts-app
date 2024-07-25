@@ -12,7 +12,6 @@ interface propsIF {
     token: TokenIF;
     chooseToken: (tok: TokenIF, isCustom: boolean) => void;
     fromListsText: string;
-    updateTickerPair?: () => void;
 }
 
 export default function TokenSelect(props: propsIF) {

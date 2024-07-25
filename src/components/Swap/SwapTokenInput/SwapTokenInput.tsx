@@ -23,8 +23,6 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -78,7 +76,6 @@ function SwapTokenInput(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
@@ -90,8 +87,6 @@ function SwapTokenInput(props: propsIF) {
         isTokenBEth: isBuyTokenEth,
         contextMatchesParams,
     } = useContext(TradeTokenContext);
-
-    const { activeTickers } = useContext(AuctionsContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
     const { isUserConnected } = useContext(UserDataContext);
@@ -380,13 +375,7 @@ function SwapTokenInput(props: propsIF) {
                 justifyContent='center'
                 alignItems='center'
             >
-                <TokensArrow
-                    onClick={() => {
-                        platformName === 'futa'
-                            ? activeTickers.reverse()
-                            : reverseForAmbient();
-                    }}
-                />
+                <TokensArrow onClick={() => reverseForAmbient()} />
             </FlexContainer>
             <TokenInputWithWalletBalance
                 fieldId='swap_buy'

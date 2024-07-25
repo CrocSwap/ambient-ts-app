@@ -15,11 +15,7 @@ import {
 import { UserDataContext } from './UserDataContext';
 import { AuctionDataIF } from '../ambient-utils/dataLayer/functions/getAuctionData';
 import { CachedDataContext } from './CachedDataContext';
-import { TokenIF } from '../ambient-utils/types';
-import {
-    sepoliaETH,
-    CURRENT_AUCTION_VERSION,
-} from '../ambient-utils/constants';
+import { CURRENT_AUCTION_VERSION } from '../ambient-utils/constants';
 
 export interface AuctionsContextIF {
     globalAuctionList: AuctionsDataIF;
@@ -51,11 +47,6 @@ export interface AuctionsContextIF {
     };
     showComplete: boolean;
     setShowComplete: Dispatch<SetStateAction<boolean>>;
-    activeTickers: {
-        pair: [TokenIF, TokenIF];
-        update: (tickerA: TokenIF, tickerB: TokenIF) => void;
-        reverse: () => void;
-    };
 }
 
 export interface AuctionStatusDataIF {
@@ -143,24 +134,6 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
 
     const [selectedTicker, setSelectedTicker] = useState<string | undefined>();
     const [hoveredTicker, setHoveredTicker] = useState<string | undefined>();
-
-    // const fetchAccountData = async (
-    //     address: string,
-    //     chainId: string,
-    // ): Promise<AuctionDataIF[]> => {
-    //     false &&
-    //         console.log('fetching account data for address:', {
-    //             address,
-    //             chainId,
-    //         });
-    //     if (
-    //         address.toLowerCase() ===
-    //         '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc'.toLowerCase()
-    //     ) {
-    //         return mockAccountData1;
-    //     }
-    //     return mockAccountData2;
-    // };
 
     function updateGlobalAuctionsList() {
         cachedGetGlobalAuctionsList(
@@ -260,27 +233,6 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         setShowWatchlist(show ?? !showWatchlist);
     }
 
-    const [tickerPair, setTickerPair] = useState<[TokenIF, TokenIF]>([
-        sepoliaETH,
-        {
-            address: '0x60bBA138A74C5e7326885De5090700626950d509',
-            chainId: 11155111,
-            decimals: 6,
-            logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-            name: 'USDC',
-            symbol: 'USDC',
-        },
-    ]);
-
-    function changeTickers(tickerA: TokenIF, tickerB: TokenIF): void {
-        setTickerPair([tickerA, tickerB]);
-    }
-
-    function reverseTickers(): void {
-        setTickerPair([tickerPair[1], tickerPair[0]]);
-    }
-
     const auctionsContext: AuctionsContextIF = {
         freshAuctionStatusData: freshAuctionStatusData,
         globalAuctionList: globalAuctionList,
@@ -309,11 +261,6 @@ export const AuctionsContextProvider = (props: { children: ReactNode }) => {
         },
         showComplete: showComplete,
         setShowComplete: setShowComplete,
-        activeTickers: {
-            pair: tickerPair,
-            update: changeTickers,
-            reverse: reverseTickers,
-        },
     };
 
     return (

@@ -32,7 +32,6 @@ interface propsIF {
     onClose: () => void;
     noModal?: boolean;
     platform?: 'ambient' | 'futa';
-    updateTickerPair?: (t: TokenIF) => void;
     isFuta?: boolean;
 }
 
@@ -45,7 +44,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         platform = 'ambient',
-        updateTickerPair,
         isFuta = false,
     } = props;
 
@@ -136,7 +134,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         onClose();
     };
 
-    function chooseTokenFuta(tkn: TokenIF): void {
+    const chooseTokenFuta = (tkn: TokenIF): void => {
         if (tokenAorB === 'A') {
             if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
@@ -151,6 +149,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
             }
         } else if (tokenAorB === 'B') {
             if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+                console.log('running');
+                console.log(reverseTokens);
                 reverseTokens && reverseTokens();
                 onClose();
                 return;
@@ -163,7 +163,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
             }
         }
         onClose();
-    }
+    };
 
     // hook to hold data for a token pulled from on-chain
     // null value is allowed to clear the hook when needed or on error
@@ -381,11 +381,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 token={ticker}
                                 chooseToken={chooseTokenFuta}
                                 fromListsText=''
-                                updateTickerPair={() => {
-                                    updateTickerPair &&
-                                        updateTickerPair(ticker);
-                                    onClose();
-                                }}
                             />
                         ))}
             </section>

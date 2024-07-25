@@ -25,10 +25,6 @@ import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
 import { BrandContext, BrandContextIF } from '../../contexts/BrandContext';
-import {
-    AuctionsContext,
-    AuctionsContextIF,
-} from '../../contexts/AuctionsContext';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -50,7 +46,6 @@ interface propsIF {
     usdValue?: string | undefined;
     walletBalance?: string;
     handleBalanceClick?: () => void;
-    // updateTickerPair?: (t: TokenIF) => void;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -72,12 +67,9 @@ function TokenInputQuantity(props: propsIF) {
         usdValue,
         noModals,
         walletBalance,
-        // handleBalanceClick,
-        // updateTickerPair,
     } = props;
 
     const { platformName } = useContext<BrandContextIF>(BrandContext);
-    const { activeTickers } = useContext<AuctionsContextIF>(AuctionsContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
@@ -280,14 +272,9 @@ function TokenInputQuantity(props: propsIF) {
                     }
                     isSingleToken={!tokenAorB}
                     tokenAorB={tokenAorB}
-                    reverseTokens={
-                        platformName === 'futa'
-                            ? activeTickers.reverse
-                            : reverseTokens
-                    }
+                    reverseTokens={reverseTokens}
                     platform='futa'
                     isFuta
-                    // updateTickerPair={updateTickerPair}
                 />
             )}
         </section>
