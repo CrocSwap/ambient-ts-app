@@ -292,6 +292,10 @@ const PageHeader = function () {
             return locationPathname.includes('/swap')
                 ? HeaderClasses.active
                 : HeaderClasses.inactive;
+        } else if (linkDestination.includes('/explore')) {
+            return locationPathname.includes('/explore')
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         } else {
             return locationPathname === linkDestination
                 ? HeaderClasses.active
@@ -307,6 +311,8 @@ const PageHeader = function () {
                     : locationPathname.includes(tradeDestination))) ||
             (locationPathname.includes('/swap') &&
                 linkDestination.includes('/swap')) ||
+            (locationPathname.includes('/explore') &&
+                linkDestination.includes('/explore')) ||
             locationPathname === linkDestination
         );
     }
