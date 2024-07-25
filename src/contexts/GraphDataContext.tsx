@@ -288,7 +288,7 @@ export const GraphDataContextProvider = (props: {
         });
     }, [baseToken.address + quoteToken.address]);
 
-    const userTxByPoolHashArray = userTransactionsByPool.changes.map(
+    const txsByUserHashArray = transactionsByUser.changes.map(
         (change) => change.txHash,
     );
 
@@ -331,7 +331,7 @@ export const GraphDataContextProvider = (props: {
     }, [pendingTransactions]);
 
     const unindexedSessionTransactionHashes = sessionTransactionHashes.filter(
-        (tx) => !userTxByPoolHashArray.includes(tx),
+        (tx) => !txsByUserHashArray.includes(tx),
     );
 
     const failedSessionTransactionHashes = allReceipts
