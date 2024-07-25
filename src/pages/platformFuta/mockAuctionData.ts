@@ -506,7 +506,6 @@ export const mockAuctionDetailsServerResponseGenerator = (
                 },
             };
     }
-    console.log(output);
     return output;
 };
 
