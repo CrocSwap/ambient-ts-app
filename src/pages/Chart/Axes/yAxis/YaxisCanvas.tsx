@@ -932,8 +932,8 @@ function YAxisCanvas(props: yAxisIF) {
             ref={d3Yaxis}
             style={{
                 width: yAxisWidth,
-                gridColumn: 5,
-                gridRow: 3,
+                gridColumn: 2,
+                gridRow: 1,
             }}
         ></d3fc-canvas>
     );
