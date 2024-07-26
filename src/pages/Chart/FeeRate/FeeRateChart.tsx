@@ -25,8 +25,6 @@ interface FreeRateData {
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
-    lastCrDate: number | undefined;
-    isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
     mainZoom: any;
@@ -34,7 +32,13 @@ interface FreeRateData {
     isChartZoom: boolean;
     firstCandleData: any;
     lastCandleData: any;
+    isToolbarOpen: boolean;
+    toolbarWidth: number;
     chartThemeColors: ChartThemeIF | undefined;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextMenuPlacement: any;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -49,8 +53,6 @@ function FeeRateChart(props: FreeRateData) {
         setCrosshairActive,
         setCrosshairData,
         crosshairActive,
-        lastCrDate,
-        isCrDataIndActive,
         xAxisActiveTooltip,
         zoomBase,
         mainZoom,
@@ -59,7 +61,13 @@ function FeeRateChart(props: FreeRateData) {
         render,
         firstCandleData,
         lastCandleData,
+        isToolbarOpen,
+        toolbarWidth,
         chartThemeColors,
+        colorChangeTrigger,
+        setColorChangeTrigger,
+        setContextmenu,
+        setContextMenuPlacement,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -172,7 +180,7 @@ function FeeRateChart(props: FreeRateData) {
             scaleData !== undefined &&
             chartThemeColors
         ) {
-            const d3Feerate = chartThemeColors.darkStrokeColor?.copy();
+            const d3Feerate = chartThemeColors.downCandleBorderColor?.copy();
 
             const lineSeries = d3fc
                 .seriesCanvasLine()
@@ -231,8 +239,10 @@ function FeeRateChart(props: FreeRateData) {
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
+
+            setColorChangeTrigger(false);
         }
-    }, [feeRateyScale, scaleData?.xScale]);
+    }, [feeRateyScale, scaleData?.xScale, colorChangeTrigger]);
 
     useEffect(() => {
         if (feeData !== undefined) {
@@ -249,13 +259,6 @@ function FeeRateChart(props: FreeRateData) {
                     .on('draw', () => {
                         setCanvasResolution(canvas);
                         lineSeries(_feeData);
-                        if (
-                            isCrDataIndActive ||
-                            xAxisActiveTooltip === 'croc'
-                        ) {
-                            ctx.setLineDash([0.6, 0.6]);
-                            crDataIndicator([lastCrDate]);
-                        }
                     })
                     .on('measure', (event: any) => {
                         feeRateyScale.range([event.detail.height, 0]);
@@ -266,14 +269,7 @@ function FeeRateChart(props: FreeRateData) {
             }
             renderCanvas();
         }
-    }, [
-        lineSeries,
-        feeData,
-        crDataIndicator,
-        lastCrDate,
-        isCrDataIndActive,
-        xAxisActiveTooltip,
-    ]);
+    }, [lineSeries, feeData, crDataIndicator, xAxisActiveTooltip]);
 
     useEffect(() => {
         const canvas = d3
@@ -392,6 +388,29 @@ function FeeRateChart(props: FreeRateData) {
                     setCrosshairActive('none');
                     renderCanvas();
                 });
+
+                d3.select(d3CanvasCrosshair.current).on(
+                    'contextmenu',
+                    (event: PointerEvent) => {
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            const screenHeight = window.innerHeight;
+
+                            const diff = screenHeight - event.clientY;
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                                isReversed: diff < 350,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
+                    },
+                );
             }
         },
         [crosshairForSubChart, feeData],
@@ -402,40 +421,27 @@ function FeeRateChart(props: FreeRateData) {
             id='fee_rate_chart'
             data-testid={'chart'}
             style={{
-                gridTemplateColumns: 'auto 1fr auto',
+                gridTemplateColumns:
+                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
             }}
         >
             <d3fc-canvas
                 id='d3PlotFeeRate'
                 ref={d3CanvasArea}
                 className='d3CanvasArea'
-                style={{
-                    display: 'block',
-                    gridColumnStart: 1,
-                    gridColumnEnd: 4,
-                    gridRowStart: 1,
-                    gridRowEnd: 3,
-                }}
             ></d3fc-canvas>
 
             <d3fc-canvas
                 id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
                 className='d3CanvasCrosshair'
-                style={{
-                    display: 'block',
-                    gridColumnStart: 1,
-                    gridColumnEnd: 4,
-                    gridRowStart: 1,
-                    gridRowEnd: 3,
-                }}
             ></d3fc-canvas>
 
             <label
                 style={{
-                    gridColumnStart: 1,
-                    gridColumnEnd: 1,
-                    gridRow: 1,
+                    paddingLeft: isToolbarOpen ? '38px' : '9px',
+                    gridColumnStart: '3',
+                    gridColumnEnd: '3',
                 }}
             >
                 Fee Rate:{' '}
@@ -455,9 +461,8 @@ function FeeRateChart(props: FreeRateData) {
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 3,
-                    gridRowStart: 1,
-                    gridRowEnd: 3,
+                    gridColumn: 5,
+                    gridRow: 3,
                 }}
             ></d3fc-canvas>
         </div>
