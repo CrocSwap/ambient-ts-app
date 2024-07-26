@@ -9,7 +9,7 @@ import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
-// import { BrandContext } from '../../contexts/BrandContext';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -36,8 +36,6 @@ interface propsIF {
     isInitPage?: boolean | undefined;
     tokenDecimals?: number;
     percentDiffUsdValue?: number;
-    // ticker?: TokenIF;
-    // updateTickerPair?: (t: TokenIF) => void;
 }
 
 function TokenInputWithWalletBalance(props: propsIF) {
@@ -65,8 +63,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isInitPage,
         usdValue,
         percentDiffUsdValue,
-        // ticker,
-        // updateTickerPair,
     } = props;
 
     const usdValueForDom =
@@ -76,8 +72,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
                   prefix: '$',
               })
             : '';
-
-    // const { platformName } = useContext(BrandContext);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -164,11 +158,16 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+
     const walletContent = (
         <>
             <WalletBalanceSubinfo
                 usdValueForDom={
-                    isLoading || !usdValueForDom || disabledContent
+                    isLoading ||
+                    !usdValueForDom ||
+                    disabledContent ||
+                    !isPoolInitialized
                         ? ''
                         : usdValueForDom
                 }
@@ -204,7 +203,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
-                // updateTickerPair={updateTickerPair}
+                isPoolInitialized={isPoolInitialized}
             />
             {handleRefresh && (
                 <RefreshButton

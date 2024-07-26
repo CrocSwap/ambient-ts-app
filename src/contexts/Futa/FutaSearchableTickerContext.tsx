@@ -69,9 +69,6 @@ export const FutaSearchableTickerContextProvider = (props: {
             max: SEARCHABLE_TICKER_MAX_HEIGHT,
             default: SEARCHABLE_TICKER_DEFAULT_HEIGHT,
         });
-    useEffect(() => {
-        console.log(searchableTickerHeights);
-    }, [searchableTickerHeights.current]);
 
     // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
     useEffect(() => {

@@ -149,10 +149,8 @@ function TradeCandleStickChart(props: propsIF) {
 
     const [chartResetStatus, setChartResetStatus] = useState<{
         isResetChart: boolean;
-        resetDomain: undefined | number[];
     }>({
         isResetChart: false,
-        resetDomain: undefined,
     });
     const {
         tokenA,
@@ -208,7 +206,6 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCompletedFetchData(true);
         setChartResetStatus({
             isResetChart: false,
-            resetDomain: undefined,
         });
         setFetchCountForEnoughData(0);
     }, [period, baseTokenAddress + quoteTokenAddress]);
@@ -1066,7 +1063,7 @@ function TradeCandleStickChart(props: propsIF) {
                     height: '100%',
                     width: '100%',
                     display: 'grid',
-                    gridTemplateRows: '1fr 1.5fr',
+                    gridTemplateRows: 'auto auto',
                 }}
             >
                 {(!isOpenChart || isCompletedFetchData) && (
@@ -1075,10 +1072,17 @@ function TradeCandleStickChart(props: propsIF) {
                             style={{
                                 gridColumn: 1,
                                 gridRowStart: 1,
-                                gridRowEnd: 3,
+                                gridRowEnd: 2,
                             }}
                         >
-                            <Spinner size={100} bg='var(--dark2)' centered />
+                            <Spinner
+                                size={100}
+                                bg='var(--dark2)'
+                                centered
+                                style={{
+                                    alignItems: 'end',
+                                }}
+                            />
                         </div>
                         <div
                             style={{

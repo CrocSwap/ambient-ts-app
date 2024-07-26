@@ -7,7 +7,6 @@ import {
     diffHashSigScaleData,
 } from '../../../../../ambient-utils/dataLayer';
 import {
-    CandleDataChart,
     crosshair,
     renderCanvasArray,
     scaleData,
@@ -20,11 +19,9 @@ import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
 import { CandleDataIF } from '../../../../../ambient-utils/types';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { RangeContext } from '../../../../../contexts/RangeContext';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 interface xAxisIF {
     scaleData: scaleData | undefined;
-    lastCrDate: number | undefined;
     period: number;
     crosshairActive: string;
     crosshairData: Array<crosshair>;
@@ -32,12 +29,8 @@ interface xAxisIF {
     mouseLeaveCanvas: any;
     reset: boolean | undefined;
     isLineDrag: boolean | undefined;
-    xAxisActiveTooltip: string;
-    isCrDataIndActive: boolean;
     setXaxisActiveTooltip: React.Dispatch<React.SetStateAction<string>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
-    setIsCrDataIndActive: React.Dispatch<React.SetStateAction<boolean>>;
-    unparsedCandleData: CandleDataChart[];
     firstCandleData: CandleDataIF;
     lastCandleData: CandleDataIF;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,7 +44,6 @@ interface xAxisIF {
     isChartZoom: boolean;
     isToolbarOpen: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
-    toolbarWidth: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     d3Xaxis: MutableRefObject<any>;
     isUpdatingShape: boolean;
@@ -62,19 +54,14 @@ interface xAxisIF {
 function XAxisCanvas(props: xAxisIF) {
     const {
         scaleData,
-        lastCrDate,
         period,
         crosshairActive,
         crosshairData,
         reset,
         isLineDrag,
         setCrosshairActive,
-        isCrDataIndActive,
         mouseLeaveCanvas,
-        setIsCrDataIndActive,
-        xAxisActiveTooltip,
         setXaxisActiveTooltip,
-        unparsedCandleData,
         firstCandleData,
         lastCandleData,
         changeScale,
@@ -84,7 +71,6 @@ function XAxisCanvas(props: xAxisIF) {
         isChartZoom,
         isToolbarOpen,
         selectedDrawnShape,
-        toolbarWidth,
         d3Xaxis,
         isUpdatingShape,
         timeGaps,
@@ -97,7 +83,6 @@ function XAxisCanvas(props: xAxisIF) {
     const [xAxisZoom, setXaxisZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
 
-    const { advancedMode } = useContext(RangeContext);
     const utcDiff = moment().utcOffset();
     const utcDiffHours = Math.floor(utcDiff / 60);
 
@@ -196,9 +181,7 @@ function XAxisCanvas(props: xAxisIF) {
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
                 : undefined;
-            const firstCrDateLocation = lastCrDate
-                ? xScale(lastCrDate)
-                : undefined;
+
             scaleData.xScaleTime.domain(xScale.domain());
 
             const canvas = d3
@@ -283,18 +266,12 @@ function XAxisCanvas(props: xAxisIF) {
                         context.beginPath();
 
                         if (
-                            d.date.getTime() !== lastCrDate &&
                             !(
-                                (firstCrDateLocation &&
-                                    xScale(d.date) >
-                                        firstCrDateLocation - 65 / 2 &&
-                                    xScale(d.date) <
-                                        firstCrDateLocation + 65 / 2) ||
-                                (timeOfEndCandleLocation &&
-                                    xScale(d.date) >
-                                        timeOfEndCandleLocation - _width / 2 &&
-                                    xScale(d.date) <
-                                        timeOfEndCandleLocation + _width / 2)
+                                timeOfEndCandleLocation &&
+                                xScale(d.date) >
+                                    timeOfEndCandleLocation - _width / 2 &&
+                                xScale(d.date) <
+                                    timeOfEndCandleLocation + _width / 2
                             )
                         ) {
                             if (formatValue) {
@@ -336,21 +313,6 @@ function XAxisCanvas(props: xAxisIF) {
                     );
                 }
 
-                if (
-                    firstCrDateLocation &&
-                    xScale(crosshairData[0].x) >
-                        firstCrDateLocation - (_width - 15) &&
-                    xScale(crosshairData[0].x) <
-                        firstCrDateLocation + (_width - 15) &&
-                    crosshairActive !== 'none'
-                ) {
-                    context.filter = ' blur(7px)';
-                }
-
-                if (firstCrDateLocation) {
-                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
-                }
-
                 if (timeOfEndCandle && timeOfEndCandleLocation) {
                     context.filter = ' blur(0px)';
 
@@ -381,9 +343,10 @@ function XAxisCanvas(props: xAxisIF) {
 
                     const style = getComputedStyle(canvas);
 
-                    const darkFillColor = style.getPropertyValue('--accent1');
+                    const downCandleBodyColor =
+                        style.getPropertyValue('--accent1');
 
-                    const d3LightFillColor = d3.color(darkFillColor);
+                    const d3LightFillColor = d3.color(downCandleBodyColor);
 
                     if (d3LightFillColor) d3LightFillColor.opacity = 0.075;
 
@@ -421,8 +384,8 @@ function XAxisCanvas(props: xAxisIF) {
                                 const textWidth =
                                     context.measureText(point).width + 10;
 
-                                context.fillStyle = darkFillColor
-                                    ? darkFillColor
+                                context.fillStyle = downCandleBodyColor
+                                    ? downCandleBodyColor
                                     : 'rgba(115, 113, 252, 1)';
 
                                 context.fillRect(
@@ -449,35 +412,6 @@ function XAxisCanvas(props: xAxisIF) {
             }
         }
     };
-
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        d3.select(d3Xaxis.current).on('click', (event: any) => {
-            if (scaleData) {
-                const isCroc =
-                    lastCrDate &&
-                    event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.layerX < scaleData?.xScale(lastCrDate) + 15;
-
-                if (isCroc) {
-                    if (!isCrDataIndActive) {
-                        setIsCrDataIndActive(true);
-                    } else {
-                        setIsCrDataIndActive(false);
-                    }
-                }
-            }
-        });
-    }, [
-        location.pathname,
-        isLineDrag,
-        unparsedCandleData?.length,
-        advancedMode,
-        lastCrDate,
-        xAxisActiveTooltip,
-        timeOfEndCandle,
-        isCrDataIndActive,
-    ]);
 
     // Axis's
     useEffect(() => {
@@ -521,14 +455,9 @@ function XAxisCanvas(props: xAxisIF) {
                     mouseLocation > scaleData?.xScale(timeOfEndCandle) - 15 &&
                     mouseLocation < scaleData?.xScale(timeOfEndCandle) + 15;
 
-                const isCroc =
-                    lastCrDate &&
-                    mouseLocation > scaleData?.xScale(lastCrDate) - 15 &&
-                    mouseLocation < scaleData?.xScale(lastCrDate) + 15;
-
-                if (isEgg || isCroc) {
+                if (isEgg) {
                     d3.select(d3Xaxis.current).style('cursor', 'default');
-                    setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
+                    setXaxisActiveTooltip('egg');
                 } else {
                     setXaxisActiveTooltip('');
                 }
@@ -536,7 +465,7 @@ function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [lastCrDate, timeOfEndCandle]);
+    }, [timeOfEndCandle]);
 
     // mouseleave
     useEffect(() => {
@@ -624,7 +553,7 @@ function XAxisCanvas(props: xAxisIF) {
             style={{
                 height: xAxisHeightPixel + 'px',
                 width: '100%',
-                marginLeft: toolbarWidth + 'px',
+                marginTop: 'auto',
             }}
         ></d3fc-canvas>
     );

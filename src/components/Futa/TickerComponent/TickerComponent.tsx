@@ -1,6 +1,9 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './TickerComponent.module.css';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionsContext,
+    AuctionsContextIF,
+} from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -17,6 +20,7 @@ import {
     NUM_GWEI_IN_WEI,
     NUM_WEI_IN_GWEI,
     supportedNetworks,
+    ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import {
     AuctionDataIF,
@@ -41,8 +45,7 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ZeroAddress } from 'ethers';
-
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
@@ -58,7 +61,7 @@ const useAuctionContexts = () => {
         getFreshAuctionData,
         freshAuctionStatusData,
         setSelectedTicker,
-    } = useContext(AuctionsContext);
+    } = useContext<AuctionsContextIF>(AuctionsContext);
     const {
         chainData: { chainId },
         crocEnv,
@@ -145,10 +148,6 @@ const useAuctionStates = () => {
     const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
         ? openBidClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
         : undefined;
-
-    //   const openBidMarketCapInEth = openBidMarketCapInWeiBigInt
-    //       ? toDisplayQty(openBidMarketCapInWeiBigInt, 18)
-    //       : undefined;
 
     useEffect(() => {
         setSelectedMaxMarketCapInWeiBigInt(openBidMarketCapInWeiBigInt);
@@ -665,12 +664,16 @@ export default function TickerComponent(props: PropsIF) {
         );
     };
 
-    const navigateToTrade = () => {
-        console.log(`clicked Trade for ticker: ${tickerFromParams}`);
-        const tokenAddress = freshAuctionStatusData.tokenAddress;
-        const targetStr = `https://dev-ambi.netlify.app/trade/market/chain=${chainId}&tokenA=${ZeroAddress}&tokenB=${tokenAddress}`;
-        window.open(targetStr, '_blank');
-    };
+    // hook to generate navigation actions with pre-loaded path
+    // ... with logic to get data for programmatic generation
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+    function goToSwap(): void {
+        linkGenSwap.navigate({
+            tokenA: ZERO_ADDRESS,
+            tokenB: freshAuctionStatusData.tokenAddress ?? '',
+            chain: '0xaa36a7',
+        });
+    }
 
     const bidButton = (
         <button
@@ -683,7 +686,7 @@ export default function TickerComponent(props: PropsIF) {
                     : isNativeTokenAvailableToReturn
                       ? sendReturnTransaction()
                       : showTradeButton
-                        ? navigateToTrade()
+                        ? goToSwap()
                         : !isUserConnected
                           ? openWalletModal()
                           : sendBidTransaction()
