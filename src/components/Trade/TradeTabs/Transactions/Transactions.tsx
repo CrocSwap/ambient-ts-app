@@ -556,6 +556,9 @@ function Transactions(props: propsIF) {
             type='transactions'
             isAccountView={isAccountView}
             activeUserPositionsLength={userTransacionsLength}
+            activeUserPositionsByPoolLength={
+                userTransactionsByPool.changes.length
+            }
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
