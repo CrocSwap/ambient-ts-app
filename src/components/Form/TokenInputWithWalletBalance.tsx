@@ -9,6 +9,7 @@ import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -157,11 +158,16 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+
     const walletContent = (
         <>
             <WalletBalanceSubinfo
                 usdValueForDom={
-                    isLoading || !usdValueForDom || disabledContent
+                    isLoading ||
+                    !usdValueForDom ||
+                    disabledContent ||
+                    !isPoolInitialized
                         ? ''
                         : usdValueForDom
                 }
@@ -197,6 +203,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                isPoolInitialized={isPoolInitialized}
             />
             {handleRefresh && (
                 <RefreshButton

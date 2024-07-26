@@ -19,7 +19,6 @@ import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSe
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Global/Modal/useModal';
 import styles from './TokenInputQuantity.module.css';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -31,6 +30,7 @@ interface propsIF {
     token: TokenIF;
     value: string;
     handleTokenInputEvent: (val: string) => void;
+    isPoolInitialized?: boolean;
     reverseTokens?: () => void;
     fieldId?: string;
     isLoading?: boolean;
@@ -55,6 +55,7 @@ function TokenInputQuantity(props: propsIF) {
         token,
         value,
         isLoading,
+        isPoolInitialized = true,
         label,
         includeWallet,
         showPulseAnimation,
@@ -71,7 +72,6 @@ function TokenInputQuantity(props: propsIF) {
 
     const { platformName } = useContext<BrandContextIF>(BrandContext);
 
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
@@ -194,20 +194,23 @@ function TokenInputQuantity(props: propsIF) {
             reverseTokens={reverseTokens}
         />
     );
-    const inputDisplay = isLoading ? (
-        <div
-            className={`${styles.flexContainer}`}
-            style={{ width: '100%', height: '100%' }}
-        >
-            <Spinner size={24} bg='var(--dark2)' weight={2} />
-        </div>
-    ) : !isPoolInitialized && fieldId !== 'exchangeBalance' && !onInitPage ? (
-        poolNotInitializedContent
-    ) : disabledContent !== undefined ? (
-        disabledContent
-    ) : (
-        input
-    );
+    const inputDisplay =
+        isLoading && isPoolInitialized ? (
+            <div
+                className={`${styles.flexContainer}`}
+                style={{ width: '100%', height: '100%' }}
+            >
+                <Spinner size={24} bg='var(--dark2)' weight={2} />
+            </div>
+        ) : !isPoolInitialized &&
+          fieldId !== 'exchangeBalance' &&
+          !onInitPage ? (
+            poolNotInitializedContent
+        ) : disabledContent !== undefined ? (
+            disabledContent
+        ) : (
+            input
+        );
 
     const tokenSelectButton = (
         <button
