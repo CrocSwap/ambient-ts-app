@@ -16,8 +16,8 @@ text.market {
     fill: black;
 }
 
-d3fc-canvas,
-d3fc-svg {
+.main_layout_chart  d3fc-canvas,
+.main_layout_chart  d3fc-svg {
     overflow: hidden;
     grid-column-start: 1;
     grid-column-end: 2;
