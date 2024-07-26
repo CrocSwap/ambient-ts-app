@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     txHashTruncated: string;
@@ -112,6 +113,9 @@ export const txRowConstants = (props: propsIF) => {
     } = props;
     const { tokens } = useContext(TokenContext);
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
+
+    const { tokenA, setShouldSwapDirectionReverse } =
+        useContext(TradeDataContext);
     const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
     const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
@@ -317,7 +321,19 @@ export const txRowConstants = (props: propsIF) => {
         >
             {isOwnerActiveAccount ? (
                 <RowItem hover>
-                    <Link to={tradeLinkPath}>
+                    <Link
+                        to={tradeLinkPath}
+                        onClick={() => {
+                            const shouldReverse =
+                                tokenA.address.toLowerCase() ===
+                                (tx.isBuy
+                                    ? tx.quote.toLowerCase()
+                                    : tx.base.toLowerCase());
+                            if (shouldReverse) {
+                                setShouldSwapDirectionReverse(true);
+                            }
+                        }}
+                    >
                         <span style={{ textTransform: 'none' }}>
                             {isBaseTokenMoneynessGreaterOrEqual
                                 ? `${tx.quoteSymbol} / ${tx.baseSymbol}`
