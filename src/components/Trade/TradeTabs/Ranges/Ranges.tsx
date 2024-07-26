@@ -704,7 +704,7 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        unindexedNonFailedSessionPositionUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const unindexedUpdatedPositionHashes = unindexedUpdatedPositions.map(
         (pos) => pos.positionId,
