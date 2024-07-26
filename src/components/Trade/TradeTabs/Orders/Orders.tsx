@@ -102,16 +102,19 @@ function Orders(props: propsIF) {
         ],
     );
 
-    const activeUserPositionsLength = useMemo(
+    const activeUserLimitOrdersLength = useMemo(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData
                     ? activeAccountLimitOrderData.filter(
-                          (position) => position.positionLiq != 0,
+                          (order) =>
+                              order.positionLiq != 0 ||
+                              order.claimableLiq !== 0,
                       ).length
                     : 0
                 : limitOrdersByUser.limitOrders.filter(
-                      (position) => position.positionLiq != 0,
+                      (order) =>
+                          order.positionLiq != 0 || order.claimableLiq !== 0,
                   ).length,
         [activeAccountLimitOrderData, isAccountView, limitOrdersByUser],
     );
@@ -154,7 +157,7 @@ function Orders(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !limitOrderData.length &&
-        unindexedNonFailedSessionLimitOrderUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
@@ -458,7 +461,7 @@ function Orders(props: propsIF) {
         <NoTableData
             type='limits'
             isAccountView={isAccountView}
-            activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsLength={activeUserLimitOrdersLength}
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (

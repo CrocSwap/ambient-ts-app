@@ -1,3 +1,4 @@
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 import styles from './Spinner.module.css';
 
 interface SpinnerPropsIF {
@@ -5,6 +6,7 @@ interface SpinnerPropsIF {
     bg: string;
     weight?: number | string;
     centered?: boolean;
+    style?: CSSProperties;
 }
 // size is a required property that can be either a number or a string.
 // bg is an optional property that represents the background gradient string. It can be a string or undefined.
@@ -16,7 +18,10 @@ export default function Spinner(props: SpinnerPropsIF) {
     const weight = props.weight ? `${props.weight}px` : '3px';
 
     return (
-        <div className={props.centered ? styles.container : ''}>
+        <div
+            className={props.centered ? styles.container : ''}
+            style={props.style || {}}
+        >
             <div
                 className={styles.loader}
                 style={{ width: width, height: width }}
