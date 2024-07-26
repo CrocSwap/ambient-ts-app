@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import Picker, { EmojiClickData, Theme } from 'emoji-picker-react';
 import {
     Dispatch,
     SetStateAction,
@@ -73,10 +73,7 @@ interface FullChatPropsIF {
     verifyOldMessagesStartDate: Date;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     showPicker: boolean;
-    addReactionEmojiPickListener: (
-        event: React.MouseEvent,
-        data: IEmojiData,
-    ) => void;
+    addReactionEmojiPickListener: (data: EmojiClickData) => void;
     setShowPicker: Dispatch<SetStateAction<boolean>>;
     showDeleteConfirmation: boolean;
     handleConfirmDelete: () => void;
@@ -926,9 +923,12 @@ function FullChat(props: FullChatPropsIF) {
                         X{' '}
                     </div>
                     <Picker
-                        onEmojiClick={props.addReactionEmojiPickListener}
-                        pickerStyle={{ width: '100%' }}
-                        disableSkinTonePicker={true}
+                        theme={Theme.DARK}
+                        onEmojiClick={(data) => {
+                            props.addReactionEmojiPickListener(data);
+                        }}
+                        style={{ width: '100%' }}
+                        skinTonesDisabled={true}
                     />
                 </div>
             )}

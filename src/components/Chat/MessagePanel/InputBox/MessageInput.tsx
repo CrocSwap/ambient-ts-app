@@ -1,7 +1,7 @@
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import Picker, { EmojiClickData, Theme } from 'emoji-picker-react';
 import {
     Dispatch,
     SetStateAction,
@@ -126,14 +126,18 @@ export default function MessageInput(props: MessageInputProps) {
     // };
 
     const handleEmojiClick = (
-        event: React.MouseEvent,
-        emojiObject: IEmojiData,
+        emojiObject: EmojiClickData | string,
         clearCustomEmojiSearch?: boolean,
     ) => {
         if (inputRef.current) {
-            const emoji = emojiObject.emoji;
-            let currentMessage = message;
+            let emoji;
+            if (typeof emojiObject == 'string') {
+                emoji = emojiObject;
+            } else {
+                emoji = emojiObject.emoji;
+            }
 
+            let currentMessage = message;
             if (clearCustomEmojiSearch) {
                 currentMessage = currentMessage.slice(
                     0,
@@ -257,9 +261,6 @@ export default function MessageInput(props: MessageInputProps) {
         setMessage(newMessage);
         setInputLength(newMessage.length);
         setCursorPosition(e.currentTarget.selectionStart);
-        setTokenForEmojiSearch(
-            newMessage.split(':')[newMessage.split(':').length - 1],
-        );
         if (newMessage.length <= 140) {
             props.setShowPopUp(false);
         }
@@ -591,6 +592,16 @@ export default function MessageInput(props: MessageInputProps) {
     }, [filteredEmojis]);
 
     useEffect(() => {
+        if (message.includes(':')) {
+            setTokenForEmojiSearch(
+                message.split(':')[message.split(':').length - 1],
+            );
+        } else {
+            setTokenForEmojiSearch('');
+        }
+    }, [message]);
+
+    useEffect(() => {
         filterEmojisOnHiddenPicker(tokenForEmojiSearch);
         setCustomEmojiPickerSelectedIndex(0);
     }, [tokenForEmojiSearch]);
@@ -652,8 +663,10 @@ export default function MessageInput(props: MessageInputProps) {
         const filteredElements: HTMLElement[] = [];
         const searchToken = word.split(' ')[0];
 
-        if (searchToken.length == 0) return;
-        domDebug('searchToken', searchToken);
+        if (searchToken.length == 0) {
+            resetCustomEmojiPickerStates();
+            return;
+        }
 
         emojiPool.forEach((element) => {
             // if (index >= customEmojiPanelLimit) return;
@@ -670,10 +683,11 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const generateCustomEmojiPool = () => {
+        // const selector = '#chatHiddenEmojiSearch li.emoji button';
+        const selector = '#chatHiddenEmojiSearch .epr-btn.epr-emoji';
+
         if (emojiPool.length > 0) return;
-        const emojiButtons = document.querySelectorAll<HTMLElement>(
-            '#chatHiddenEmojiSearch li.emoji button',
-        );
+        const emojiButtons = document.querySelectorAll<HTMLElement>(selector);
 
         setEmojiPool([...emojiButtons]);
     };
@@ -697,7 +711,13 @@ export default function MessageInput(props: MessageInputProps) {
             if (filteredEmojis.length > 0) {
                 const emoji = filteredEmojis[customEmojiPickerSelectedIndex];
                 if (emoji) {
-                    emoji.click();
+                    const unifiedCode = emoji.getAttribute('data-unified');
+                    if (unifiedCode) {
+                        const emojiCharacter = String.fromCodePoint(
+                            parseInt(unifiedCode, 16),
+                        );
+                        handleEmojiClick(emojiCharacter, true);
+                    }
                     resetCustomEmojiPickerStates();
                 }
             }
@@ -875,11 +895,14 @@ export default function MessageInput(props: MessageInputProps) {
                                 </ul>
                             ) : (
                                 <Picker
-                                    pickerStyle={{
+                                    theme={Theme.DARK}
+                                    style={{
                                         width: '100%',
                                     }}
-                                    onEmojiClick={handleEmojiClick}
-                                    disableSkinTonePicker={true}
+                                    onEmojiClick={(emoji) => {
+                                        return handleEmojiClick(emoji);
+                                    }}
+                                    skinTonesDisabled={true}
                                 />
                             )}
                         </div>
@@ -902,12 +925,14 @@ export default function MessageInput(props: MessageInputProps) {
                         className={styles.hidden_picker_wrapper}
                     >
                         <Picker
-                            pickerStyle={{
+                            theme={Theme.DARK}
+                            style={{
                                 width: '100%',
                             }}
-                            onEmojiClick={(e, data) => {
-                                handleEmojiClick(e, data, true);
+                            onEmojiClick={(emoji) => {
+                                return handleEmojiClick(emoji, true);
                             }}
+                            lazyLoadEmojis={false}
                         />
                     </div>
 

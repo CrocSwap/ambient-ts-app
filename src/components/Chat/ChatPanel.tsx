@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import Picker, { EmojiClickData, Theme } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -317,10 +317,7 @@ function ChatPanel(props: propsIF) {
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
-    const addReactionEmojiPickListener = (
-        event: React.MouseEvent,
-        data: IEmojiData,
-    ) => {
+    const addReactionEmojiPickListener = (data: EmojiClickData) => {
         if (focusedMessage && currentUser) {
             addReaction(focusedMessage._id, currentUser, data.emoji);
             setShowPicker(false);
@@ -1440,9 +1437,23 @@ function ChatPanel(props: propsIF) {
                                 X{' '}
                             </div>
                             <Picker
-                                onEmojiClick={addReactionEmojiPickListener}
-                                pickerStyle={{ width: '100%' }}
-                                disableSkinTonePicker={true}
+                                theme={Theme.DARK}
+                                onEmojiClick={(emoji) => {
+                                    addReactionEmojiPickListener(emoji);
+                                }}
+                                // style={{ width: '100%', height: '300px' }}
+                                searchDisabled={true}
+                                reactions={[
+                                    '👍',
+                                    '❤️',
+                                    '😃',
+                                    '😢',
+                                    '🙏',
+                                    '👎',
+                                    '😡',
+                                ]}
+                                // reactionsDefaultOpen={true}
+                                // skinTonesDisabled={true}
                             />
                         </div>
                     )}

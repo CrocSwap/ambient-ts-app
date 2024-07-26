@@ -36,6 +36,7 @@ import {
     ALLOW_REACTIONS,
     ALLOW_REPLIES,
     BASIC_CHAT_MODE,
+    REGEX_EMOJI,
 } from '../../ChatConstants/ChatConstants';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -126,6 +127,12 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const checkRegex = props.message.message.match(REGEX_EMOJI);
+    const onlyEmoji =
+        checkRegex != null &&
+        checkRegex.length < 3 &&
+        props.message.message.length == 2;
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
@@ -427,7 +434,9 @@ function SentMessagePanel(props: SentMessageProps) {
                         ' ' +
                         (props.message.isVerified == true
                             ? styles.vrf_msg_dbg
-                            : '')
+                            : '') +
+                        ' ' +
+                        (onlyEmoji ? styles.only_emoji : '')
                     }
                 >
                     {messagesArray.map((e, i) => {

@@ -316,10 +316,10 @@ section[class^="emoji-scroll-wrapper"]{
 
 .hidden_picker_wrapper{
     position: fixed;
-    display: none;
-    z-index: -1;
     top: 3rem;
     left: 50%;
+    display: none;
+    z-index: -1;
 }
 
 .custom_emoji_pool{
@@ -331,13 +331,14 @@ section[class^="emoji-scroll-wrapper"]{
     position: absolute;
     transition: all .2s ease-in-out;
     max-width: 18rem;
-    display: flex;
+    /* display: flex; */
     overflow: hidden;
     box-shadow: 0px 0px 12px color-mix(in srgb, var(--accent1) 20%, transparent);
     background-color: color-mix(in srgb, var(--accent1) 20%, transparent);
     backdrop-filter: blur(5px);
     border-radius: .2rem;
     padding: .5rem 0;
+    white-space: nowrap;
 }
 
 .custom_emoji_picker_wrapper.active{
@@ -346,14 +347,14 @@ section[class^="emoji-scroll-wrapper"]{
 
 .custom_emoji_picker_wrapper button{
     transition: all .2s ease-in-out;
-    flex:  1 1;
+    /* flex:  1 1; */
+    display: inline-block;
     background: transparent;
     border: none;
     margin-left: .2rem;
     border-radius: .4rem;
     cursor: pointer;
-    /* max-width: 2rem;
-    height: 2rem; */
+    width: 2rem;
 }
 
 .custom_emoji_picker_wrapper button.focused{
@@ -363,8 +364,8 @@ section[class^="emoji-scroll-wrapper"]{
 }
 
 .custom_emoji_picker_wrapper button img{
-    max-width: 2rem;
-    height: 2rem;
+    max-height: 100%;
+    max-width: 100%;
     padding: .2rem;
     vertical-align: middle;
 }
