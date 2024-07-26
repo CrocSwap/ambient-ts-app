@@ -80,7 +80,7 @@ max-width: 50%;
   
 }
 
-@media (max-width: 500px) {
+@media (max-width: 760px) {
 
     .terminalContainer, .output {
        
@@ -103,4 +103,10 @@ max-width: 50%;
         font-size: 12px;
     }
   
+}
+
+@media (max-width: 500px) {
+.terminalContainer{
+   margin-top: 100px;
+}
 }

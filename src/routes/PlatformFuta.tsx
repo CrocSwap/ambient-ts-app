@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from '../pages/platformFuta/Home/Home';
 import Explore from '../pages/platformFuta/Explore/Explore';
@@ -19,21 +19,12 @@ import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformFutaRoutes: React.FC = () => {
-    const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
     const desktopScreen = useMediaQuery('(min-width: 768px)');
 
     return (
         <div style={{ background: 'var(--dark1)' }}>
             <Routes>
-                <Route
-                    path='/'
-                    element={
-                        <Home
-                            hasVideoPlayedOnce={hasVideoPlayedOnce}
-                            setHasVideoPlayedOnce={setHasVideoPlayedOnce}
-                        />
-                    }
-                />
+                <Route path='/' element={<Home />} />
                 {/* <Route path='swap' element={<SwapFuta />} /> */}
                 <Route path='swap/:params' element={<SwapFuta />} />
                 <Route path='limit' element={<LimitFuta />} />

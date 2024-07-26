@@ -1,32 +1,49 @@
 import { useMemo, useState } from 'react';
 
-export interface snackbarMethodsIF {
-    isOpen: boolean;
-    open: (content: string, severity?: snackbarSeverityType) => void;
-    close: () => void;
-    content: string;
-    severity: snackbarSeverityType;
+export interface SnackbarOrigin {
+    vertical: 'top' | 'bottom';
+    horizontal: 'left' | 'center' | 'right';
 }
 
 export type snackbarSeverityType = 'error' | 'warning' | 'info' | 'success';
 
-export const useSnackbar = (initialMode = false) => {
+export interface snackbarMethodsIF {
+    isOpen: boolean;
+    open: (
+        content: string | JSX.Element,
+        severity?: snackbarSeverityType,
+        anchorOrigin?: SnackbarOrigin,
+    ) => void;
+    close: () => void;
+    content: string | JSX.Element;
+    severity: snackbarSeverityType;
+    anchorOrigin: SnackbarOrigin;
+}
+
+export const useSnackbar = (initialMode = false): snackbarMethodsIF => {
     const [isOpen, setIsOpen] = useState<boolean>(initialMode);
-
-    const [content, setContent] = useState<string>('');
-
+    const [content, setContent] = useState<string | JSX.Element>('');
     const [severity, setSeverity] = useState<snackbarSeverityType>('success');
+    const [anchorOrigin, setAnchorOrigin] = useState<SnackbarOrigin>({
+        vertical: 'bottom',
+        horizontal: 'center',
+    });
 
     const open = (
-        content: string,
+        content: string | JSX.Element,
         severity: snackbarSeverityType = 'success',
+        anchorOrigin: SnackbarOrigin = {
+            vertical: 'bottom',
+            horizontal: 'center',
+        },
     ) => {
-        // close current snackbar if open, then reopen with new message
         setIsOpen(false);
         setContent(content);
         setSeverity(severity);
+        setAnchorOrigin(anchorOrigin);
         setIsOpen(true);
     };
+
     const close = () => {
         setIsOpen(false);
         setContent('');
@@ -39,7 +56,8 @@ export const useSnackbar = (initialMode = false) => {
             close,
             content,
             severity,
+            anchorOrigin,
         }),
-        [isOpen, content, severity, initialMode],
+        [isOpen, content, severity, anchorOrigin, initialMode],
     );
 };

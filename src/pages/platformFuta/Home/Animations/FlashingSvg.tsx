@@ -1,6 +1,6 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import styles from './Animations.module.css';
-import logo from '../../../../assets/futa/logos/homeLogo.svg';
+import logo from '../../../../assets/futa/home/FutaLogo.svg';
 
 interface Props {
     customWidth?: string;
