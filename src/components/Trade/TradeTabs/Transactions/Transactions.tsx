@@ -548,7 +548,7 @@ function Transactions(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !txDataToDisplay.length &&
-        unindexedNonFailedSessionTransactionHashes.length === 0;
+        unindexedNonFailedTransactions.length === 0;
 
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
