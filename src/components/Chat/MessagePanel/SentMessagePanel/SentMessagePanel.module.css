@@ -898,6 +898,7 @@
 
 .message_block.only_emoji{
     line-height: normal !important;
+    text-shadow: 1.1px 2px rgba(255, 255, 255, 0.3);
 }
 
 
