@@ -253,7 +253,7 @@ export const orderRowConstants = (props: propsIF) => {
         chain: limitOrder.chainId,
         tokenA: limitOrder.quote,
         tokenB: limitOrder.base,
-        limitTick: limitOrder.isBid ? limitOrder.askTick : limitOrder.bidTick,
+        limitTick: limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,
     };
 
     const tokenPair = (
