@@ -19,6 +19,8 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     txHashTruncated: string;
@@ -113,6 +115,15 @@ export const txRowConstants = (props: propsIF) => {
     } = props;
     const { tokens } = useContext(TokenContext);
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
+    const {
+        setRangeTicksCopied,
+        setSimpleRangeWidth,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        setAdvancedMode,
+    } = useContext(RangeContext);
 
     const { tokenA, setShouldSwapDirectionReverse } =
         useContext(TradeDataContext);
@@ -308,16 +319,60 @@ export const txRowConstants = (props: propsIF) => {
             : tx.entityType.toLowerCase() === 'liqchange'
               ? '/trade/pool/'
               : '/trade/market/') +
-        formSlugForPairParams({
-            chain: tx.chainId,
-            tokenA: tx.quote,
-            tokenB: tx.base,
-        });
+        (tx.entityType.toLowerCase() === 'limitorder'
+            ? formSlugForPairParams({
+                  chain: tx.chainId,
+                  tokenA: tx.isBuy ? tx.base : tx.quote,
+                  tokenB: tx.isBuy ? tx.quote : tx.base,
+                  limitTick: tx.isBid
+                      ? tx.bidTick.toString()
+                      : tx.askTick.toString(),
+              })
+            : tx.entityType.toLowerCase() === 'liqchange'
+              ? formSlugForPairParams({
+                    chain: tx.chainId,
+                    tokenA:
+                        tokenA.address.toLowerCase() === tx.quote.toLowerCase()
+                            ? tx.quote
+                            : tx.base,
+                    tokenB:
+                        tokenA.address.toLowerCase() === tx.quote.toLowerCase()
+                            ? tx.base
+                            : tx.quote,
+                    lowTick: tx.bidTick.toString(),
+                    highTick: tx.askTick.toString(),
+                })
+              : formSlugForPairParams({
+                    chain: tx.chainId,
+                    tokenA: tx.isBuy ? tx.base : tx.quote,
+                    tokenB: tx.isBuy ? tx.quote : tx.base,
+                }));
+
+    const handleCopyClick = () => {
+        if (tx.entityType === 'liqchange') {
+            setActiveMobileComponent('trade');
+
+            setRangeTicksCopied(true);
+            handlePulseAnimation('range');
+
+            if (tx.positionType === 'ambient') {
+                setSimpleRangeWidth(100);
+                setAdvancedMode(false);
+            } else {
+                setAdvancedLowTick(tx.bidTick);
+                setAdvancedHighTick(tx.askTick);
+                setAdvancedMode(true);
+            }
+        }
+    };
 
     const tokenPair = (
         <div
             className='base_color'
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) => {
+                event.stopPropagation();
+                handleCopyClick();
+            }}
         >
             {isOwnerActiveAccount ? (
                 <RowItem hover>
