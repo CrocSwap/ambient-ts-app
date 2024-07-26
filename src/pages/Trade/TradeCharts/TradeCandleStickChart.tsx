@@ -1063,7 +1063,7 @@ function TradeCandleStickChart(props: propsIF) {
                     height: '100%',
                     width: '100%',
                     display: 'grid',
-                    gridTemplateRows: '1fr 1.5fr',
+                    gridTemplateRows: '1fr 1fr',
                 }}
             >
                 {(!isOpenChart || isCompletedFetchData) && (
@@ -1072,7 +1072,7 @@ function TradeCandleStickChart(props: propsIF) {
                             style={{
                                 gridColumn: 1,
                                 gridRowStart: 1,
-                                gridRowEnd: 3,
+                                gridRowEnd: 2,
                             }}
                         >
                             <Spinner size={100} bg='var(--dark2)' centered />
