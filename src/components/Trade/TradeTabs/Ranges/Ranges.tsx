@@ -109,10 +109,24 @@ function Ranges(props: propsIF) {
 
     const activeUserPositionsLength = useMemo(
         () =>
-            positionsByUser.positions.filter(
+            isAccountView
+                ? activeAccountPositionData
+                    ? activeAccountPositionData.filter(
+                          (position) => position.positionLiq != 0,
+                      ).length
+                    : 0
+                : positionsByUser.positions.filter(
+                      (position) => position.positionLiq != 0,
+                  ).length,
+        [activeAccountPositionData, positionsByUser, isAccountView],
+    );
+
+    const activeUserPositionsByPool = useMemo(
+        () =>
+            userPositionsByPool?.positions.filter(
                 (position) => position.positionLiq != 0,
-            ).length,
-        [positionsByUser.positions],
+            ),
+        [userPositionsByPool],
     );
 
     const rangeData = useMemo(
@@ -120,9 +134,7 @@ function Ranges(props: propsIF) {
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                  ? userPositionsByPool?.positions.filter(
-                        (position) => position.positionLiq != 0,
-                    )
+                  ? activeUserPositionsByPool
                   : positionsByPool.positions.filter(
                         (position) => position.positionLiq != 0,
                     ),
@@ -131,7 +143,7 @@ function Ranges(props: propsIF) {
             isAccountView,
             activeAccountPositionData,
             positionsByPool,
-            userPositionsByPool,
+            activeUserPositionsByPool,
         ],
     );
 
@@ -692,7 +704,7 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        unindexedNonFailedSessionPositionUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const unindexedUpdatedPositionHashes = unindexedUpdatedPositions.map(
         (pos) => pos.positionId,
@@ -799,6 +811,7 @@ function Ranges(props: propsIF) {
             type='liquidity'
             isAccountView={isAccountView}
             activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
         />
     );
 

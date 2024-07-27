@@ -29,8 +29,6 @@ interface TvlData {
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
-    lastCrDate: number | undefined;
-    isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
     mainZoom: any;
@@ -38,9 +36,11 @@ interface TvlData {
     lastCandleData: CandleDataIF;
     isChartZoom: boolean;
     setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
-    isToolbarOpen: boolean;
-    toolbarWidth: number;
     chartThemeColors: ChartThemeIF | undefined;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextmenu: React.Dispatch<React.SetStateAction<boolean>>;
+    setContextMenuPlacement: any;
 }
 
 function TvlChart(props: TvlData) {
@@ -55,8 +55,6 @@ function TvlChart(props: TvlData) {
         setCrosshairActive,
         setCrosshairData,
         crosshairActive,
-        lastCrDate,
-        isCrDataIndActive,
         xAxisActiveTooltip,
         mainZoom,
         firstCandleData,
@@ -65,12 +63,13 @@ function TvlChart(props: TvlData) {
         setIsChartZoom,
         zoomBase,
         render,
-        isToolbarOpen,
-        toolbarWidth,
         chartThemeColors,
+        colorChangeTrigger,
+        setColorChangeTrigger,
+        setContextmenu,
+        setContextMenuPlacement,
     } = props;
 
-    // const tvlMainDiv = useRef(null);
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
 
     const d3CanvasArea = useRef(null);
@@ -128,7 +127,7 @@ function TvlChart(props: TvlData) {
 
             const boundingClientRect = canvas.getBoundingClientRect();
 
-            yScale.range([boundingClientRect.height, 0]);
+            yScale.range([(boundingClientRect.height / 4) * 3, 0]);
             setTvlyScale(() => {
                 return yScale;
             });
@@ -274,8 +273,9 @@ function TvlChart(props: TvlData) {
                 );
 
                 const d3TvlGradientStart =
-                    chartThemeColors.darkStrokeColor?.copy();
-                const d3TvlGradient = chartThemeColors.darkStrokeColor?.copy();
+                    chartThemeColors.downCandleBorderColor?.copy();
+                const d3TvlGradient =
+                    chartThemeColors.downCandleBorderColor?.copy();
 
                 if (d3TvlGradientStart) d3TvlGradientStart.opacity = 0;
                 if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
@@ -296,7 +296,13 @@ function TvlChart(props: TvlData) {
                 });
             }
         }
-    }, [d3CanvasArea, diffHashSig(tvlyScale), buffer, resizeHeight]);
+    }, [
+        d3CanvasArea,
+        diffHashSig(tvlyScale),
+        buffer,
+        resizeHeight,
+        colorChangeTrigger,
+    ]);
 
     useEffect(() => {
         if (d3CanvasArea) {
@@ -334,7 +340,8 @@ function TvlChart(props: TvlData) {
                 return areaSeries;
             });
 
-            const d3TvlGradient = chartThemeColors.darkStrokeColor?.copy();
+            const d3TvlGradient =
+                chartThemeColors.downCandleBorderColor?.copy();
 
             if (d3TvlGradient) d3TvlGradient.opacity = 0.7;
 
@@ -395,8 +402,10 @@ function TvlChart(props: TvlData) {
             });
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
+
+            setColorChangeTrigger(false);
         }
-    }, [scaleData, tvlyScale, tvlGradient]);
+    }, [scaleData, tvlyScale, tvlGradient, colorChangeTrigger]);
 
     useEffect(() => {
         const canvas = d3
@@ -411,11 +420,6 @@ function TvlChart(props: TvlData) {
                     setCanvasResolution(canvas);
                     areaSeries(tvlData);
                     lineSeries(tvlData);
-
-                    if (isCrDataIndActive || xAxisActiveTooltip === 'croc') {
-                        ctx.setLineDash([0.6, 0.6]);
-                        crDataIndicator([lastCrDate]);
-                    }
                 })
                 .on('measure', (event: any) => {
                     tvlyScale.range([event.detail.height, 0]);
@@ -432,8 +436,6 @@ function TvlChart(props: TvlData) {
         lineSeries,
         diffHashSig(tvlData),
         crDataIndicator,
-        lastCrDate,
-        isCrDataIndActive,
         xAxisActiveTooltip,
     ]);
 
@@ -486,11 +488,7 @@ function TvlChart(props: TvlData) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasArea, d3Yaxis]);
-    }, [
-        tvlyScale,
-        tvlData,
-        isCrDataIndActive || xAxisActiveTooltip === 'croc',
-    ]);
+    }, [tvlyScale, tvlData]);
     // Tvl Chart
     useEffect(() => {
         if (
@@ -541,6 +539,29 @@ function TvlChart(props: TvlData) {
                 d3.select(d3CanvasCrosshair.current).on('mouseleave', () => {
                     setCrosshairActive('none');
                 });
+
+                d3.select(d3CanvasCrosshair.current).on(
+                    'contextmenu',
+                    (event: PointerEvent) => {
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            const screenHeight = window.innerHeight;
+
+                            const diff = screenHeight - event.clientY;
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                                isReversed: diff < 350,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
+                    },
+                );
             }
         },
         [tvlData],
@@ -555,27 +576,40 @@ function TvlChart(props: TvlData) {
             id='tvl_chart'
             data-testid={'chart'}
             style={{
-                gridTemplateColumns:
-                    toolbarWidth + 'px auto 1fr auto minmax(1em, max-content)',
+                gridTemplateColumns: 'auto 1fr auto',
             }}
         >
             <d3fc-canvas
                 id='d3PlotTvl'
                 ref={d3CanvasArea}
                 className='d3CanvasArea'
+                style={{
+                    display: 'block',
+                    gridColumnStart: 1,
+                    gridColumnEnd: 4,
+                    gridRowStart: 1,
+                    gridRowEnd: 3,
+                }}
             ></d3fc-canvas>
 
             <d3fc-canvas
                 id='d3CanvasCrosshair'
                 ref={d3CanvasCrosshair}
                 className='d3CanvasCrosshair'
+                style={{
+                    display: 'block',
+                    gridColumnStart: 1,
+                    gridColumnEnd: 4,
+                    gridRowStart: 1,
+                    gridRowEnd: 3,
+                }}
             ></d3fc-canvas>
 
             <label
                 style={{
-                    paddingLeft: isToolbarOpen ? '38px' : '9px',
-                    gridColumnStart: '3',
-                    gridColumnEnd: '3',
+                    gridColumnStart: 1,
+                    gridColumnEnd: 1,
+                    gridRow: 1,
                 }}
             >
                 TVL:{' '}
@@ -591,8 +625,9 @@ function TvlChart(props: TvlData) {
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 5,
-                    gridRow: 3,
+                    gridColumn: 3,
+                    gridRowStart: 1,
+                    gridRowEnd: 3,
                 }}
             ></d3fc-canvas>
         </div>

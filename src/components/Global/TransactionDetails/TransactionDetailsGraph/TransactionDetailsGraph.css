@@ -5,7 +5,6 @@
     border: 2px dashed rgba(19, 19, 134, 0.8);
 }
 
-
 .priceLine {
     stroke-width: 1.5;
     stroke-dasharray: 4 3;
@@ -19,13 +18,11 @@
     border: 2px dashed rgba(19, 19, 134, 0.8);
 }
 
-
 .annotation-line > .verticalLine {
-    
-    stroke: #61646F;
+    stroke: #61646f;
     stroke-width: 1.5;
     stroke-dasharray: 8 8;
-    border: 1px solid #61646F   
+    border: 1px solid #61646f;
 }
 
 .transaction_details_graph_placeholder {
@@ -43,4 +40,11 @@
 .transaction_details_graph svg:hover {
     color: var(--accent1);
     cursor: default;
+}
+
+.transaction_details_graph d3fc-canvas,
+.transaction_details_graph d3fc-svg {
+    overflow: hidden;
+    grid-column: 3;
+    grid-row: 3;
 }

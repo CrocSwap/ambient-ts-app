@@ -75,15 +75,20 @@ function Orders(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
+    const activeUserLimitOrdersByPool = useMemo(
+        () =>
+            userLimitOrdersByPool?.limitOrders.filter(
+                (order) => order.positionLiq != 0 || order.claimableLiq !== 0,
+            ),
+        [userLimitOrdersByPool],
+    );
+
     const limitOrderData = useMemo(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData || []
                 : !showAllData
-                  ? userLimitOrdersByPool?.limitOrders.filter(
-                        (order) =>
-                            order.positionLiq != 0 || order.claimableLiq !== 0,
-                    )
+                  ? activeUserLimitOrdersByPool
                   : limitOrdersByPool.limitOrders.filter(
                         (order) =>
                             order.positionLiq != 0 || order.claimableLiq !== 0,
@@ -93,16 +98,25 @@ function Orders(props: propsIF) {
             isAccountView,
             activeAccountLimitOrderData,
             limitOrdersByPool,
-            userLimitOrdersByPool,
+            activeUserLimitOrdersByPool,
         ],
     );
 
-    const activeUserPositionsLength = useMemo(
+    const activeUserLimitOrdersLength = useMemo(
         () =>
-            limitOrdersByUser.limitOrders.filter(
-                (position) => position.positionLiq != 0,
-            ).length,
-        [limitOrdersByUser.limitOrders],
+            isAccountView
+                ? activeAccountLimitOrderData
+                    ? activeAccountLimitOrderData.filter(
+                          (order) =>
+                              order.positionLiq != 0 ||
+                              order.claimableLiq !== 0,
+                      ).length
+                    : 0
+                : limitOrdersByUser.limitOrders.filter(
+                      (order) =>
+                          order.positionLiq != 0 || order.claimableLiq !== 0,
+                  ).length,
+        [activeAccountLimitOrderData, isAccountView, limitOrdersByUser],
     );
 
     const isLoading = useMemo(
@@ -143,7 +157,7 @@ function Orders(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !limitOrderData.length &&
-        unindexedNonFailedSessionLimitOrderUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
@@ -447,7 +461,8 @@ function Orders(props: propsIF) {
         <NoTableData
             type='limits'
             isAccountView={isAccountView}
-            activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsLength={activeUserLimitOrdersLength}
+            activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>

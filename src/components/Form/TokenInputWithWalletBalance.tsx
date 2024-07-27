@@ -200,6 +200,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 includeWallet={walletContent}
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
+                isPoolInitialized={isPoolInitialized}
             />
             {handleRefresh && (
                 <RefreshButton
