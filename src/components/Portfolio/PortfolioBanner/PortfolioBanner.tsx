@@ -167,7 +167,7 @@ export default function PortfolioBanner(props: propsIF) {
                         />
                     </HeaderButtons>
                 </DefaultTooltip>
-                {activeTradeTab === 'liquidity' && (
+                {activeTradeTab === 'liquidity' && connectedAccountActive && (
                     <DefaultTooltip
                         interactive
                         title={'Toggle display of empty positions'}
