@@ -52,6 +52,10 @@ interface liquidityPropsIF {
     mainCanvasBoundingClientRect: any;
     setLiqMaxActiveLiq: React.Dispatch<number | undefined>;
     chartThemeColors: ChartThemeIF | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: any;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type nearestLiquidity = {
@@ -120,6 +124,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         mainCanvasBoundingClientRect,
         setLiqMaxActiveLiq,
         chartThemeColors,
+        render,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = props;
 
     const currentPoolPriceTick =
@@ -245,7 +252,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     useEffect(() => {
         renderChart();
-    }, [liquidityScale === undefined, liquidityDepthScale === undefined]);
+    }, [
+        liquidityScale === undefined,
+        liquidityDepthScale === undefined,
+        diffHashSig(chartThemeColors),
+    ]);
 
     useEffect(() => {
         if (
@@ -350,6 +361,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 chartThemeColors,
             );
         }
+
+        setColorChangeTrigger(false);
+
+        render();
+        renderCanvasArray([d3CanvasLiq]);
     }, [
         liqMode,
         liquidityData?.liqTransitionPointforCurve,
@@ -360,6 +376,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         lineLiqSeries,
         lineLiqDepthAskSeries,
         lineLiqDepthBidSeries,
+        colorChangeTrigger,
     ]);
 
     const clipCanvas = (
@@ -676,8 +693,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         ? liqTooltipSelectedLiqBar?.upperBound
                         : liqTooltipSelectedLiqBar?.lowerBound
                     : isDenomBase
-                    ? liqTooltipSelectedLiqBar?.lowerBound
-                    : liqTooltipSelectedLiqBar?.upperBound;
+                      ? liqTooltipSelectedLiqBar?.lowerBound
+                      : liqTooltipSelectedLiqBar?.upperBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
@@ -922,7 +939,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasLiq]);
-    }, [diffHashSig(liquidityData), ranges, liqMode, location.pathname]);
+    }, [
+        diffHashSig(liquidityData),
+        ranges,
+        liqMode,
+        location.pathname,
+        diffHashSig(chartThemeColors),
+        chartThemeColors,
+    ]);
 
     return (
         <>

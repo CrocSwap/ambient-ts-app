@@ -128,8 +128,13 @@ function Transactions(props: propsIF) {
     );
 
     const userTransacionsLength = useMemo(
-        () => transactionsByUser.changes.length,
-        [transactionsByUser.changes],
+        () =>
+            isAccountView
+                ? activeAccountTransactionData
+                    ? activeAccountTransactionData.length
+                    : 0
+                : transactionsByUser.changes.length,
+        [activeAccountTransactionData, transactionsByUser, isAccountView],
     );
 
     useEffect(() => {
@@ -543,7 +548,7 @@ function Transactions(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !txDataToDisplay.length &&
-        unindexedNonFailedSessionTransactionHashes.length === 0;
+        unindexedNonFailedTransactions.length === 0;
 
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
@@ -551,6 +556,9 @@ function Transactions(props: propsIF) {
             type='transactions'
             isAccountView={isAccountView}
             activeUserPositionsLength={userTransacionsLength}
+            activeUserPositionsByPoolLength={
+                userTransactionsByPool.changes.length
+            }
         />
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction}>
