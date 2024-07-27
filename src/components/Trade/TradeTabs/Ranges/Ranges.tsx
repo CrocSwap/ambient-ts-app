@@ -54,8 +54,11 @@ function Ranges(props: propsIF) {
     const { activeAccountPositionData, connectedAccountActive, isAccountView } =
         props;
 
-    const { showAllData: showAllDataSelection, toggleTradeTable } =
-        useContext(TradeTableContext);
+    const {
+        showAllData: showAllDataSelection,
+        toggleTradeTable,
+        hideEmptyPositionsOnAccount,
+    } = useContext(TradeTableContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -781,7 +784,10 @@ function Ranges(props: propsIF) {
                             )
                             // only show empty positions on account view
                             .filter(
-                                (pos) => isAccountView || pos.positionLiq !== 0,
+                                (pos) =>
+                                    (isAccountView &&
+                                        !hideEmptyPositionsOnAccount) ||
+                                    pos.positionLiq !== 0,
                             ),
                     )}
                     fullData={unindexedUpdatedPositions.concat(fullData)}

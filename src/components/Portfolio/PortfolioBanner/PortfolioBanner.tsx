@@ -24,6 +24,8 @@ import { HeaderButtons } from '../../../styled/Components/Chart';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../ambient-utils/constants';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -36,6 +38,12 @@ export default function PortfolioBanner(props: propsIF) {
         props;
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
+    const {
+        activeTradeTab,
+        //  setActiveTradeTab,
+        hideEmptyPositionsOnAccount,
+        setHideEmptyPositionsOnAccount,
+    } = useContext(TradeTableContext);
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
     const isSmallScreen = useMediaQuery('(max-width: 800px)');
@@ -159,6 +167,36 @@ export default function PortfolioBanner(props: propsIF) {
                         />
                     </HeaderButtons>
                 </DefaultTooltip>
+                {activeTradeTab === 'liquidity' && (
+                    <DefaultTooltip
+                        interactive
+                        title={'Toggle display of empty positions'}
+                        enterDelay={500}
+                    >
+                        <FlexContainer
+                            alignItems='center'
+                            justifyContent='center'
+                            onClick={() => {
+                                console.log('hide empty positions');
+                                localStorage.setItem(
+                                    LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                    String(!hideEmptyPositionsOnAccount),
+                                );
+                                setHideEmptyPositionsOnAccount(
+                                    !hideEmptyPositionsOnAccount,
+                                );
+                            }}
+                            style={{
+                                cursor: 'pointer',
+                                color: hideEmptyPositionsOnAccount
+                                    ? 'var(--accent1)'
+                                    : 'var(--text2)',
+                            }}
+                        >
+                            <span>Hide Empty Positions</span>
+                        </FlexContainer>
+                    </DefaultTooltip>
+                )}
             </FlexContainer>
 
             <PortfolioBannerLevelContainer
