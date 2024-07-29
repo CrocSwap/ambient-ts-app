@@ -27,6 +27,8 @@ export default function TableInfo() {
         poolFeesTotal,
         poolVolume,
         poolVolume24h,
+        apr24h,
+        poolFees24h,
     } = poolData;
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
@@ -51,6 +53,12 @@ export default function TableInfo() {
             maximumFractionDigits: 2,
         },
     );
+
+    const aprString = apr24h
+        ? apr24h === '0.00'
+            ? '< 0.01%'
+            : apr24h + '%'
+        : '...';
 
     return (
         <MainSection>
@@ -91,12 +99,17 @@ export default function TableInfo() {
                                 value={`$${poolFeesTotal?.toString() || '...'}`}
                             />
                             <DetailedBox
+                                label='24h Fees'
+                                value={`$${poolFees24h?.toString() || '...'}`}
+                            />
+                            <DetailedBox
                                 label='Current Fee Rate'
                                 value={`${
                                     liquidityProviderFeeString?.toString() ||
                                     '...'
                                 }%`}
                             />
+                            <DetailedBox label='24h APR' value={aprString} />
                             {baseTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${baseToken.symbol} FDV`}

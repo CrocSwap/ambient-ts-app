@@ -8,7 +8,9 @@ export interface PoolStatIF {
     poolVolume24h?: string;
     poolTvl?: string;
     poolFeesTotal?: string;
+    poolFees24h?: string | undefined;
     poolApy?: string;
+    apr24h?: string | undefined;
 
     poolPriceChangePercent?: string;
     isPoolPriceChangePositive: boolean;
