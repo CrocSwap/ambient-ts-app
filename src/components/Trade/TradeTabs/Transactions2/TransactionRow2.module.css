@@ -1,0 +1,28 @@
+.tx_li {
+    display: inline-flex;
+    justify-content: space-between;
+    width: 100%;
+    overflow: hidden;
+}
+
+.action_buttons {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    position: relative;
+}
+
+.overflow_menu_container {
+    z-index: 2;
+    background: var(--dark3);
+    width: 220%;
+    height: 120%;
+    position: absolute;
+    right: 28px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px;
+    border-radius: var(--border-radius);
+    transition: all 0.4s ease-in-out;
+}
