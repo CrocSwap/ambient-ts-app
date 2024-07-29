@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from '../pages/platformFuta/Home/Home';
 import Explore from '../pages/platformFuta/Explore/Explore';
@@ -17,10 +17,13 @@ import NotFound from '../pages/common/NotFound/NotFound';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
+import { CrocEnvContext } from '../contexts/CrocEnvContext';
 
 const PlatformFutaRoutes: React.FC = () => {
-    const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
-    const desktopScreen = useMediaQuery('(min-width: 768px)');
+    const { defaultUrlParams } = useContext(CrocEnvContext);
+    const [hasVideoPlayedOnce, setHasVideoPlayedOnce] =
+        useState<boolean>(false);
+    const desktopScreen: boolean = useMediaQuery('(min-width: 768px)');
 
     return (
         <div style={{ background: 'var(--dark1)' }}>
@@ -34,7 +37,10 @@ const PlatformFutaRoutes: React.FC = () => {
                         />
                     }
                 />
-                {/* <Route path='swap' element={<SwapFuta />} /> */}
+                <Route
+                    path='/swap'
+                    element={<Navigate replace to={defaultUrlParams.swap} />}
+                />
                 <Route path='swap/:params' element={<SwapFuta />} />
                 <Route path='limit' element={<LimitFuta />} />
 

@@ -38,6 +38,7 @@ export const ethereumMainnet: NetworkIF = {
     shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [mainnetETH, mainnetUSDC],
+    defaultPairFuta: [mainnetETH, mainnetUSDC],
     topPools: [
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),

@@ -22,6 +22,7 @@ export const blastSepolia: NetworkIF = {
     shouldPollBlock: true,
     marketData: '0x1',
     defaultPair: [blastSepoliaETH, blastSepoliaUSDB],
+    defaultPairFuta: [blastSepoliaETH, blastSepoliaUSDB],
     topPools: [
         new TopPool(
             blastSepoliaETH,

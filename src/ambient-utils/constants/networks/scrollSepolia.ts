@@ -26,6 +26,7 @@ export const scrollSepolia: NetworkIF = {
     shouldPollBlock: true,
     marketData: '0x1',
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
+    defaultPairFuta: [scrollSepoliaETH, scrollSepoliaUSDC],
     topPools: [
         new TopPool(
             scrollSepoliaETH,
