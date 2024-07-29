@@ -57,7 +57,6 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     if (brand === 'futa') {
-        // console.log(supportedNetworks[chainId].defaultPairFuta);
         return supportedNetworks[chainId].defaultPairFuta;
     } else {
         return [
