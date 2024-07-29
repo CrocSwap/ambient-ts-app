@@ -64,6 +64,13 @@ function TopPools(props: propsIF) {
         },
         { label: '24h Vol.', hidden: false, align: 'right', sortable: true },
         {
+            label: '24h APR',
+            hidden: true,
+            align: 'right',
+            responsive: 'lg',
+            sortable: true,
+        },
+        {
             label: 'TVL',
             hidden: false,
             align: 'right',

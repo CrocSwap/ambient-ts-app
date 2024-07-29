@@ -2,8 +2,14 @@ import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { sortDirections } from '../../../ambient-utils/types';
 
-export type sortType = 'price' | 'tvl' | '24h vol.' | '24h price δ' | null;
-type sortableKeysType = 'priceChange' | 'tvl' | 'volume';
+export type sortType =
+    | 'price'
+    | 'tvl'
+    | '24h vol.'
+    | '24h apr'
+    | '24h price δ'
+    | null;
+type sortableKeysType = 'priceChange' | 'tvl' | 'volume' | 'apr';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
@@ -38,6 +44,9 @@ export const useSortedPools = (
         switch (sortBy) {
             case '24h vol.':
                 output = sort('volume');
+                break;
+            case '24h apr':
+                output = sort('apr');
                 break;
             case '24h price δ':
                 output = sort('priceChange');
