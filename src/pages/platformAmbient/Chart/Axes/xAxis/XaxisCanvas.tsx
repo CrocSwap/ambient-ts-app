@@ -44,7 +44,6 @@ interface xAxisIF {
     isChartZoom: boolean;
     isToolbarOpen: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
-    toolbarWidth: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     d3Xaxis: MutableRefObject<any>;
     isUpdatingShape: boolean;
@@ -72,7 +71,6 @@ function XAxisCanvas(props: xAxisIF) {
         isChartZoom,
         isToolbarOpen,
         selectedDrawnShape,
-        toolbarWidth,
         d3Xaxis,
         isUpdatingShape,
         timeGaps,
@@ -555,7 +553,7 @@ function XAxisCanvas(props: xAxisIF) {
             style={{
                 height: xAxisHeightPixel + 'px',
                 width: '100%',
-                marginLeft: toolbarWidth + 'px',
+                marginTop: 'auto',
             }}
         ></d3fc-canvas>
     );
