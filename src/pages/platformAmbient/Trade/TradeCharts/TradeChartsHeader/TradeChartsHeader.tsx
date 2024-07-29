@@ -11,14 +11,14 @@ import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimul
 import { FlexContainer } from '../../../../../styled/Common';
 import {
     HeaderButtons,
-    SwitchButton,
+    // SwitchButton,
 } from '../../../../../styled/Components/Chart';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { CandleContext } from '../../../../../contexts/CandleContext';
 import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 // import { IoSettingsOutline } from 'react-icons/io5';
-import { BrandContext } from '../../../../../contexts/BrandContext';
+// import { BrandContext } from '../../../../../contexts/BrandContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -40,8 +40,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
-        showFutaCandles,
-        setShowFutaCandles,
+        // showFutaCandles,
+        // setShowFutaCandles,
     } = useContext(CandleContext);
 
     const {
@@ -55,7 +55,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { platformName } = useContext(BrandContext);
+    // const { platformName } = useContext(BrandContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
@@ -81,7 +81,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const graphSettingsContent = (
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
-            {['futa'].includes(platformName) && (
+            {/* {['futa'].includes(platformName) && (
                 <DefaultTooltip
                     interactive
                     title={!showFutaCandles ? 'Candle Chart' : 'Line Chart'}
@@ -95,7 +95,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         </SwitchButton>
                     </HeaderButtons>
                 </DefaultTooltip>
-            )}
+            )} */}
 
             <DefaultTooltip
                 interactive
