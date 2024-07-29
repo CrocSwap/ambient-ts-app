@@ -49,6 +49,11 @@ export default function VolumeBarCanvas(props: propsIF) {
 
     useEffect(() => {
         if (barSeries && chartThemeColors) {
+            const canvas = d3
+                .select(d3CanvasBar.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
             barSeries.decorate(
                 (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const d3DarkStrokeColor =
@@ -67,6 +72,8 @@ export default function VolumeBarCanvas(props: propsIF) {
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected;
 
+                    const style = getComputedStyle(canvas);
+
                     context.fillStyle =
                         d.volumeUSD === null
                             ? 'transparent'
@@ -74,12 +81,8 @@ export default function VolumeBarCanvas(props: propsIF) {
                                 selectedDate === d.time * 1000
                               ? '#E480FF'
                               : close > open
-                                ? d3LightStrokeColor
-                                    ? d3LightStrokeColor.toString()
-                                    : 'rgba(115,113,252, 0.5)'
-                                : d3DarkStrokeColor
-                                  ? d3DarkStrokeColor.toString()
-                                  : 'rgba(205,193,255, 0.5)';
+                                ? style.getPropertyValue('--accent5')
+                                : style.getPropertyValue('--accent1');
 
                     context.strokeStyle =
                         d.volumeUSD === null || d.volumeUSD === 0
@@ -88,12 +91,8 @@ export default function VolumeBarCanvas(props: propsIF) {
                                 selectedDate === d.time * 1000
                               ? '#E480FF'
                               : close > open
-                                ? d3LightStrokeColor
-                                    ? d3LightStrokeColor.toString()
-                                    : 'rgba(115,113,252, 0.5)'
-                                : d3DarkStrokeColor
-                                  ? d3DarkStrokeColor.toString()
-                                  : 'rgba(205,193,255, 0.5)';
+                                ? style.getPropertyValue('--accent5')
+                                : style.getPropertyValue('--accent1');
 
                     if (d.time * 1000 > visibleDateForCandle) {
                         context.fillStyle = 'transparent';
