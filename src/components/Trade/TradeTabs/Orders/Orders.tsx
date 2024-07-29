@@ -58,6 +58,7 @@ function Orders(props: propsIF) {
         !isAccountView && tradeTableState === 'Expanded';
 
     const {
+        limitOrdersByUser,
         userLimitOrdersByPool,
         limitOrdersByPool,
         unindexedNonFailedSessionLimitOrderUpdates,
@@ -74,23 +75,48 @@ function Orders(props: propsIF) {
     const baseTokenAddress = baseToken.address;
     const quoteTokenAddress = quoteToken.address;
 
+    const activeUserLimitOrdersByPool = useMemo(
+        () =>
+            userLimitOrdersByPool?.limitOrders.filter(
+                (order) => order.positionLiq != 0 || order.claimableLiq !== 0,
+            ),
+        [userLimitOrdersByPool],
+    );
+
     const limitOrderData = useMemo(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData || []
                 : !showAllData
-                ? userLimitOrdersByPool?.limitOrders.filter(
-                      (order) =>
-                          order.positionLiq != 0 || order.claimableLiq !== 0,
-                  )
-                : limitOrdersByPool.limitOrders,
+                  ? activeUserLimitOrdersByPool
+                  : limitOrdersByPool.limitOrders.filter(
+                        (order) =>
+                            order.positionLiq != 0 || order.claimableLiq !== 0,
+                    ),
         [
             showAllData,
             isAccountView,
             activeAccountLimitOrderData,
             limitOrdersByPool,
-            userLimitOrdersByPool,
+            activeUserLimitOrdersByPool,
         ],
+    );
+
+    const activeUserLimitOrdersLength = useMemo(
+        () =>
+            isAccountView
+                ? activeAccountLimitOrderData
+                    ? activeAccountLimitOrderData.filter(
+                          (order) =>
+                              order.positionLiq != 0 ||
+                              order.claimableLiq !== 0,
+                      ).length
+                    : 0
+                : limitOrdersByUser.limitOrders.filter(
+                      (order) =>
+                          order.positionLiq != 0 || order.claimableLiq !== 0,
+                  ).length,
+        [activeAccountLimitOrderData, isAccountView, limitOrdersByUser],
     );
 
     const isLoading = useMemo(
@@ -98,10 +124,10 @@ function Orders(props: propsIF) {
             isAccountView && connectedAccountActive
                 ? dataLoadingStatus.isConnectedUserOrderDataLoading
                 : isAccountView
-                ? dataLoadingStatus.isLookupUserOrderDataLoading
-                : !showAllData
-                ? dataLoadingStatus.isConnectedUserPoolOrderDataLoading
-                : dataLoadingStatus.isPoolOrderDataLoading,
+                  ? dataLoadingStatus.isLookupUserOrderDataLoading
+                  : !showAllData
+                    ? dataLoadingStatus.isConnectedUserPoolOrderDataLoading
+                    : dataLoadingStatus.isPoolOrderDataLoading,
         [
             isAccountView,
             showAllData,
@@ -131,7 +157,7 @@ function Orders(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !limitOrderData.length &&
-        unindexedNonFailedSessionLimitOrderUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
@@ -144,12 +170,12 @@ function Orders(props: propsIF) {
         isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView &&
-                  connectedAccountActive &&
-                  isLargeScreen &&
-                  isSidebarOpen)
-            ? 'medium'
-            : 'large';
+                (isAccountView &&
+                    connectedAccountActive &&
+                    isLargeScreen &&
+                    isSidebarOpen)
+              ? 'medium'
+              : 'large';
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -432,7 +458,12 @@ function Orders(props: propsIF) {
     };
 
     const orderDataOrNull = shouldDisplayNoTableData ? (
-        <NoTableData type='limits' isAccountView={isAccountView} />
+        <NoTableData
+            type='limits'
+            isAccountView={isAccountView}
+            activeUserPositionsLength={activeUserLimitOrdersLength}
+            activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
+        />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul

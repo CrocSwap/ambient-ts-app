@@ -23,8 +23,6 @@ import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance'
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -78,7 +76,6 @@ function SwapTokenInput(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
@@ -90,8 +87,6 @@ function SwapTokenInput(props: propsIF) {
         isTokenBEth: isBuyTokenEth,
         contextMatchesParams,
     } = useContext(TradeTokenContext);
-
-    const { activeTickers } = useContext(AuctionsContext);
 
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
     const { isUserConnected } = useContext(UserDataContext);
@@ -113,28 +108,13 @@ function SwapTokenInput(props: propsIF) {
     // Let input rest 1/5 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 200);
 
-    const reverseTokens = (skipQuantityReverse?: boolean): void => {
-        if (!isPoolInitialized) return;
+    const reverseTokens = (): void => {
         linkGenAny.navigate({
             chain: chainId,
             tokenA: tokenB.address,
             tokenB: tokenA.address,
         });
-
-        if (!skipQuantityReverse) {
-            !isTokenAPrimary
-                ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
-                    ? setIsSellLoading(true)
-                    : null
-                : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-                  ? setIsBuyLoading(true)
-                  : null;
-            if (isTokenAPrimary) {
-                setSellQtyString(primaryQuantity);
-            } else {
-                setBuyQtyString(primaryQuantity);
-            }
-        }
+        setIsTokenAPrimary(!isTokenAPrimary);
 
         setLimitTick(undefined);
     };
@@ -153,7 +133,7 @@ function SwapTokenInput(props: propsIF) {
 
     useEffect(() => {
         if (shouldSwapDirectionReverse) {
-            reverseTokens(false);
+            reverseTokens();
             setShouldSwapDirectionReverse(false);
         }
     }, [shouldSwapDirectionReverse]);
@@ -343,7 +323,7 @@ function SwapTokenInput(props: propsIF) {
         }
         setIsTokenAPrimary(!isTokenAPrimary);
 
-        reverseTokens(true);
+        reverseTokens();
     }
 
     return (
@@ -374,20 +354,13 @@ function SwapTokenInput(props: propsIF) {
                 }}
                 amountToReduceNativeTokenQty={amountToReduceNativeTokenQty}
                 usdValue={usdValueTokenA}
-                ticker={activeTickers.pair[0]}
             />
             <FlexContainer
                 fullWidth
                 justifyContent='center'
                 alignItems='center'
             >
-                <TokensArrow
-                    onClick={() => {
-                        platformName === 'futa'
-                            ? activeTickers.reverse()
-                            : reverseForAmbient();
-                    }}
-                />
+                <TokensArrow onClick={() => reverseForAmbient()} />
             </FlexContainer>
             <TokenInputWithWalletBalance
                 fieldId='swap_buy'
@@ -418,7 +391,6 @@ function SwapTokenInput(props: propsIF) {
                 amountToReduceNativeTokenQty={0} // value not used for buy token
                 usdValue={usdValueTokenB}
                 percentDiffUsdValue={percentDiffUsdValue}
-                ticker={activeTickers.pair[1]}
             />
         </FlexContainer>
     );

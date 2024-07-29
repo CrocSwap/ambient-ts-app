@@ -23,7 +23,6 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -33,6 +32,7 @@ interface propsIF {
     onClose: () => void;
     noModal?: boolean;
     platform?: 'ambient' | 'futa';
+    isFuta?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -44,58 +44,15 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         platform = 'ambient',
+        isFuta = false,
     } = props;
-
-    // const mockFutaTickers = [
-    //     {
-    //         name: 'Native Ether',
-    //         address: '0x0000000000000000000000000000000000000000',
-    //         symbol: 'ETH',
-    //         decimals: 18,
-    //         chainId: 11155111,
-    //         logoURI:
-    //             'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    //     },
-    //     // {
-    //     //     "name": "PEPE",
-    //     //     "address": "0x1230000000000000000000000000000000000000",
-    //     //     "symbol": "PEPE",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // },
-    //     // {
-    //     //     "name": "JUNIOR",
-    //     //     "address": "0x2340000000000000000000000000000000000000",
-    //     //     "symbol": "JUNIOR",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // },
-    //     // {
-    //     //     "name": "HELLO😊",
-    //     //     "address": "0x3450000000000000000000000000000000000000",
-    //     //     "symbol": "HELLO😊",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // },
-    //     // {
-    //     //     "name": "EMILY",
-    //     //     "address": "0x4560000000000000000000000000000000000000",
-    //     //     "symbol": "EMILY",
-    //     //     "decimals": 18,
-    //     //     "chainId": 11155111,
-    //     //     "logoURI": ""
-    //     // }
-    // ];
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
         provider,
     } = useContext(CrocEnvContext);
-
+    isFuta;
     const {
         tokens,
         outputTokens,
@@ -112,13 +69,13 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
             tokens.acknowledge(tkn);
         }
-
         if (isSingleToken) setSoloToken(tkn);
 
         // array of recent tokens from App.tsx (current session only)
@@ -174,6 +131,37 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         }
         setInput('');
         // close the token modal
+        onClose();
+    };
+
+    const chooseTokenFuta = (tkn: TokenIF): void => {
+        if (tokenAorB === 'A') {
+            if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
+                reverseTokens && reverseTokens();
+                onClose();
+                return;
+            } else {
+                linkGenSwap.navigate({
+                    chain: chainId,
+                    tokenA: tkn.address,
+                    tokenB: tokenB.address,
+                });
+            }
+        } else if (tokenAorB === 'B') {
+            if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+                console.log('running');
+                console.log(reverseTokens);
+                reverseTokens && reverseTokens();
+                onClose();
+                return;
+            } else {
+                linkGenSwap.navigate({
+                    chain: chainId,
+                    tokenA: tokenA.address,
+                    tokenB: tkn.address,
+                });
+            }
+        }
         onClose();
     };
 
@@ -391,7 +379,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                             <TokenSelect
                                 key={JSON.stringify(ticker)}
                                 token={ticker}
-                                chooseToken={() => null}
+                                chooseToken={chooseTokenFuta}
                                 fromListsText=''
                             />
                         ))}

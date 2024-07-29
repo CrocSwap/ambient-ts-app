@@ -349,3 +349,39 @@ export const getRedirectTargetFromMessage = (message: Message) => {
         return message.walletID;
     }
 };
+
+// calculates the visibility of an element with respect to the bottom of the parent element
+export const checkVisibilityWithBottom = (
+    el: string | Element | null,
+    parent: string | HTMLElement | null,
+) => {
+    let elDom: Element | null;
+    let parentDom: Element | null;
+    if (typeof el === 'string') {
+        elDom = document.querySelector(el);
+    } else {
+        elDom = el;
+    }
+    if (typeof parent === 'string') {
+        parentDom = document.querySelector(parent);
+    } else {
+        parentDom = parent;
+    }
+
+    if (!elDom || !parentDom) {
+        return false;
+    }
+
+    const elRect = elDom.getBoundingClientRect();
+    const parentRect = parentDom.getBoundingClientRect();
+
+    return elRect.bottom - parentRect.bottom < 10;
+};
+
+export const dropFromCssClasses = (el: Element, classToDrop: string) => {
+    const classes = el.className.split(' ');
+    const filteredClasses = classes.filter(
+        (className) => !className.includes(classToDrop),
+    );
+    el.className = filteredClasses.join(' ');
+};

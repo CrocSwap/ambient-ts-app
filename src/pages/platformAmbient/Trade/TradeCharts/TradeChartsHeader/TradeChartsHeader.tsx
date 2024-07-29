@@ -17,6 +17,7 @@ import { PoolContext } from '../../../../../contexts/PoolContext';
 import { CandleContext } from '../../../../../contexts/CandleContext';
 import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+// import { IoSettingsOutline } from 'react-icons/io5';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
@@ -28,6 +29,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         chartHeights,
         tradeTableState,
         isCandleDataNull,
+        // contextmenu,
+        // setContextmenu,
+        // setContextMenuPlacement,
     } = useContext(ChartContext);
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
@@ -123,7 +127,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 interactive
                 title={
                     isTradeDollarizationEnabled
-                        ? `Switch to prices in ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}`
+                        ? `Switch to prices in ${
+                              isDenomBase ? quoteTokenSymbol : baseTokenSymbol
+                          }`
                         : 'Switch to prices in USD'
                 }
                 enterDelay={500}
@@ -178,6 +184,33 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     />
                 </HeaderButtons>
             </DefaultTooltip>
+            {/* <DefaultTooltip
+                interactive
+                title={'Open chart settings'}
+                enterDelay={500}
+                id='chart_settings_tooltip'
+            >
+                <HeaderButtons
+                    mobileHide
+                    onClick={() => {
+                        setContextmenu(!contextmenu);
+                        setContextMenuPlacement(() => {
+                            return {
+                                top: 200,
+                                left: 550,
+                                isReversed: false,
+                            };
+                        });
+                    }}
+                    id='chart_settings_button'
+                >
+                    <IoSettingsOutline
+                        size={20}
+                        id='chart_settings_symbol'
+                        aria-label='Chart settings button'
+                    />
+                </HeaderButtons>
+            </DefaultTooltip> */}
         </FlexContainer>
     );
 

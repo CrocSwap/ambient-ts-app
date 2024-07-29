@@ -430,9 +430,10 @@ export const mockAuctionDetailsServerResponseGenerator = (
     chainId: string,
 ): AuctionStatusResponseIF => {
     false && console.log({ ticker, chainId });
+    let output: AuctionStatusResponseIF;
     switch (ticker.slice(0, 4)) {
         case 'HELL':
-            return {
+            output = {
                 data: {
                     ticker: ticker,
                     version: version,
@@ -445,8 +446,9 @@ export const mockAuctionDetailsServerResponseGenerator = (
                     tokenAddress: '0x60bBA138A74C5e7326885De5090700626950d509',
                 },
             };
+            break;
         case 'PEPE':
-            return {
+            output = {
                 data: {
                     ticker: ticker,
                     version: version,
@@ -458,8 +460,9 @@ export const mockAuctionDetailsServerResponseGenerator = (
                     openBidQtyFilledInNativeTokenWei: '166000000000000000',
                 },
             };
+            break;
         case 'JUNI':
-            return {
+            output = {
                 data: {
                     ticker: ticker,
                     version: version,
@@ -472,8 +475,9 @@ export const mockAuctionDetailsServerResponseGenerator = (
                     tokenAddress: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
                 },
             };
+            break;
         case 'EMIL':
-            return {
+            output = {
                 data: {
                     ticker: ticker,
                     version: version,
@@ -486,8 +490,9 @@ export const mockAuctionDetailsServerResponseGenerator = (
                     tokenAddress: '0xCA97CC9c1a1dfA54A252DaAFE9b5Cd1E16C81328',
                 },
             };
+            break;
         default:
-            return {
+            output = {
                 data: {
                     ticker: ticker,
                     version: version,
@@ -501,6 +506,7 @@ export const mockAuctionDetailsServerResponseGenerator = (
                 },
             };
     }
+    return output;
 };
 
 export const NUM_WEI_IN_ETH_BIG_INT = 10n ** 18n;

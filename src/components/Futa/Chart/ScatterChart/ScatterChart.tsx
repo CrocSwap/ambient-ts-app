@@ -132,10 +132,16 @@ export default function ScatterChart() {
                 const width = scatterChartSize.width;
                 const height = scatterChartSize.height;
 
+                const maxPrice = Math.ceil(
+                    d3.max(showDotsData, (d) => d.price) || 10000,
+                );
+                const maxPriceDecimalLenght =
+                    Math.abs(maxPrice).toString().length;
+                const maxYValuePow = Math.pow(10, maxPriceDecimalLenght - 1);
                 const maxYValue =
-                    Math.ceil((d3.max(data, (d) => d.price) || 0) / 100000) *
-                    100000;
+                    Math.ceil(maxPrice / maxYValuePow) * maxYValuePow;
 
+                const minYValue = maxPriceDecimalLenght > 5 ? -15000 : -500;
                 const maxDomBuffer = showDayCount > 7 ? 1440 : 120;
                 const oneDayMinutes = 1440;
 
@@ -157,13 +163,18 @@ export default function ScatterChart() {
 
                 const yScale = d3
                     .scaleLinear()
-                    .domain([-10000, maxYValue])
+                    .domain([minYValue, maxYValue])
                     .range([height, 15]);
 
                 setYscale(() => yScale);
             }
         }
-    }, [diffHashSig(data), showDayCount, afterOneWeek]);
+    }, [
+        diffHashSig(data),
+        diffHashSig(showDotsData),
+        showDayCount,
+        afterOneWeek,
+    ]);
 
     useEffect(() => {
         if (xScale && yScale) {
@@ -194,7 +205,7 @@ export default function ScatterChart() {
     }, [xScale, yScale, chartSize, selectedDot]);
 
     useEffect(() => {
-        if (xScale && yScale && pointSeries) {
+        if (xScale && yScale && pointSeries && chartSize) {
             const canvas = d3
                 .select(d3Chart.current)
                 .select('canvas')
@@ -205,7 +216,7 @@ export default function ScatterChart() {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    const heightYAxis = yScale.range()[0] + yScale.range()[1];
+                    const heightYAxis = chartSize.height;
                     const tickCount = heightYAxis < 350 ? 5 : 10;
                     const yTicks = yScale.ticks(tickCount);
 
@@ -235,7 +246,7 @@ export default function ScatterChart() {
                         : showDotsData;
 
                     const dataWithHovered = hoveredDot
-                        ? [...showDotsData, hoveredDot]
+                        ? [...dataWithSelected, hoveredDot]
                         : dataWithSelected;
 
                     if (data !== undefined) {
@@ -269,7 +280,7 @@ export default function ScatterChart() {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const resizeObserver = new ResizeObserver((result: any) => {
                     renderCanvasArray([d3Chart]);
-                    setChartSize(result);
+                    setChartSize(result[0].contentRect);
                 });
 
                 resizeObserver.observe(svgDiv.node());
@@ -331,7 +342,13 @@ export default function ScatterChart() {
 
                     d3.select(d3Chart.current)
                         .select('canvas')
-                        .style('cursor', nearestData ? 'pointer' : 'default');
+                        .style(
+                            'cursor',
+                            nearestData &&
+                                nearestData.name !== selectedDot?.name
+                                ? 'pointer'
+                                : 'default',
+                        );
                     setHoveredTicker(
                         nearestData ? nearestData.name : undefined,
                     );
@@ -339,9 +356,12 @@ export default function ScatterChart() {
                 .on('click', function (event) {
                     const nearestData = findNearestCircle(event);
                     if (nearestData) {
-                        nearestData.name !== selectedDot?.name
-                            ? navigate(navigateUrl + nearestData.name)
-                            : navigate(navigateUrlBase);
+                        if (nearestData.name !== selectedDot?.name) {
+                            navigate(navigateUrl + nearestData.name);
+                        }
+                        d3.select(d3Chart.current)
+                            .select('canvas')
+                            .style('cursor', 'default');
                     }
                 })
                 .on('mouseout', function () {

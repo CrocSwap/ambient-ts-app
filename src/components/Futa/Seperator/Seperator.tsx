@@ -26,9 +26,17 @@ const Seperator: React.FC<SeperatorProps> = ({ horizontal = false, dots }) => {
                 flexDirection: horizontal ? 'row' : 'column',
             }}
         >
-            <TbTriangleInvertedFilled color='42474a' size={8} />
+            <TbTriangleInvertedFilled
+                color='42474a'
+                size={8}
+                style={{ pointerEvents: 'none' }}
+            />
             <div className={styles.dotsContainer}>{dotElements}</div>
-            <TbTriangleFilled color='42474a' size={8} />
+            <TbTriangleFilled
+                color='42474a'
+                size={8}
+                style={{ pointerEvents: 'none' }}
+            />
         </div>
     );
 };

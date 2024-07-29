@@ -94,6 +94,7 @@ function Swap(props: propsIF) {
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
     !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
+
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
@@ -291,12 +292,12 @@ function Swap(props: propsIF) {
                 setIsSellLoading(false);
                 setLastImpactQuery(undefined);
             }
-        } else if (isSellLoading || isBuyLoading) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('...');
         } else if (isPoolInitialized === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (isSellLoading || isBuyLoading) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('...');
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');

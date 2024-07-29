@@ -49,7 +49,6 @@ body {
 
 html {
     background: var(--dark1);
-    scrollbar-width: thin;
     color: var(--text1);
     height: 100%;
 }
@@ -240,31 +239,51 @@ input[type='number'] {
     -moz-appearance: textfield;
 }
 /* -----------------------FUTA------------ */
-.futa_main {
-    scrollbar-width: 5px !important;
+
+.futa_main{
     scrollbar-color: var(--accent1) var(--dark2); 
+
    
 }
 .futa_main::-webkit-scrollbar {
-    width: 8px !important; 
-  }
-  
-
-
-.futa_main::-webkit-scrollbar-track {
-    background: var(--dark2);
-    border: 1px solid var(--accent1);
-   
-    
+    width: 12px;
+    border-radius:  0 !important;
 }
 
 .futa_main::-webkit-scrollbar-thumb {
     background: var(--accent1);
-    border-radius: 0 !important;
-    width: 2px  !important;
+    border-radius:  0 !important;
+ 
+  }
+  
+  .futa_main::-webkit-scrollbar-track {
+    background: var(--dark2);
+    border: 1px solid var(--accent1);
+    border-radius:  0 !important;
+   
 
+  }
+  
+  .futa_main::-webkit-scrollbar-button:vertical:start:decrement {
+    background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,5 5,12 19,12" fill="%23FFFFFF"/></svg>') no-repeat center;
+    background-size: 50%;
+  }
+  
+  .futa_main::-webkit-scrollbar-button:vertical:end:increment {
+    background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,19 5,12 19,12" fill="%23FFFFFF"/></svg>') no-repeat center;
+    background-size: 50%;
 
-}
+    width: 20px;
+    height: 20px;
+    background-color: red;
+  }
+  
+  .futa_main::-webkit-scrollbar-button {
+    height: 12px;
+    background-color: #00ffff;
+    border-radius:  0 !important;
+  }
+
 
 .custom-resizable-handle-futa{
     background-color: red;

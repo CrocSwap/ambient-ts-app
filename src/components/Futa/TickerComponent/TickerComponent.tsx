@@ -1,6 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import styles from './TickerComponent.module.css';
-import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import {
+    AuctionsContext,
+    AuctionsContextIF,
+} from '../../../contexts/AuctionsContext';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
@@ -17,6 +20,7 @@ import {
     NUM_GWEI_IN_WEI,
     NUM_WEI_IN_GWEI,
     supportedNetworks,
+    ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import {
     AuctionDataIF,
@@ -41,8 +45,7 @@ import {
     MARKET_CAP_MULTIPLIER_BIG_INT,
 } from '../../../pages/platformFuta/mockAuctionData';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { ZeroAddress } from 'ethers';
-
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 interface PropsIF {
     isAuctionPage?: boolean;
     placeholderTicker?: boolean;
@@ -58,7 +61,7 @@ const useAuctionContexts = () => {
         getFreshAuctionData,
         freshAuctionStatusData,
         setSelectedTicker,
-    } = useContext(AuctionsContext);
+    } = useContext<AuctionsContextIF>(AuctionsContext);
     const {
         chainData: { chainId },
         crocEnv,
@@ -145,10 +148,6 @@ const useAuctionStates = () => {
     const openBidMarketCapInWeiBigInt = openBidClearingPriceInWeiBigInt
         ? openBidClearingPriceInWeiBigInt * MARKET_CAP_MULTIPLIER_BIG_INT
         : undefined;
-
-    //   const openBidMarketCapInEth = openBidMarketCapInWeiBigInt
-    //       ? toDisplayQty(openBidMarketCapInWeiBigInt, 18)
-    //       : undefined;
 
     useEffect(() => {
         setSelectedMaxMarketCapInWeiBigInt(openBidMarketCapInWeiBigInt);
@@ -665,12 +664,16 @@ export default function TickerComponent(props: PropsIF) {
         );
     };
 
-    const navigateToTrade = () => {
-        console.log(`clicked Trade for ticker: ${tickerFromParams}`);
-        const tokenAddress = freshAuctionStatusData.tokenAddress;
-        const targetStr = `https://dev-ambi.netlify.app/trade/market/chain=${chainId}&tokenA=${ZeroAddress}&tokenB=${tokenAddress}`;
-        window.open(targetStr, '_blank');
-    };
+    // hook to generate navigation actions with pre-loaded path
+    // ... with logic to get data for programmatic generation
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+    function goToSwap(): void {
+        linkGenSwap.navigate({
+            tokenA: ZERO_ADDRESS,
+            tokenB: freshAuctionStatusData.tokenAddress ?? '',
+            chain: '0xaa36a7',
+        });
+    }
 
     const bidButton = (
         <button
@@ -683,7 +686,7 @@ export default function TickerComponent(props: PropsIF) {
                     : isNativeTokenAvailableToReturn
                       ? sendReturnTransaction()
                       : showTradeButton
-                        ? navigateToTrade()
+                        ? goToSwap()
                         : !isUserConnected
                           ? openWalletModal()
                           : sendBidTransaction()
@@ -744,12 +747,39 @@ export default function TickerComponent(props: PropsIF) {
         QTY_INPUT_ID,
     ) as HTMLInputElement;
 
+    const elementIsVisibleInViewport = (
+        el: HTMLInputElement,
+        partiallyVisible = false,
+    ) => {
+        const { top, left, bottom, right } = el.getBoundingClientRect();
+        const { innerHeight, innerWidth } = window;
+        return partiallyVisible
+            ? ((top > 0 && top < innerHeight) ||
+                  (bottom > 0 && bottom < innerHeight)) &&
+                  ((left > 0 && left < innerWidth) ||
+                      (right > 0 && right < innerWidth))
+            : top >= 0 &&
+                  left >= 0 &&
+                  bottom <= innerHeight &&
+                  right <= innerWidth;
+    };
+
     useEffect(() => {
-        /* auto-focus the bid qty input field on first load
+        // e.g. 100x100 viewport and a 10x10px element at position
+        // {top: -1, left: 0, bottom: 9, right: 10}
+        if (bidQtyInputField) {
+            const elementFullyVisible =
+                elementIsVisibleInViewport(bidQtyInputField); // false - (not fully visible)
+            // const elementPartiallyVisible = elementIsVisibleInViewport(
+            //     bidQtyInputField,
+            //     true,
+            // ); // true - (partially visible)
+            /* auto-focus the bid qty input field on first load
                                    and when the max market cap value changes,
                                    but only when the input field is empty */
-        // could be improved by first checking if the field is visible, rather than auto scrolling
-        if (bidQtyInputField && !inputValue) bidQtyInputField.focus();
+            // could be improved by first checking if the field is visible, rather than auto scrolling
+            if (elementFullyVisible && !inputValue) bidQtyInputField.focus();
+        }
     }, [bidQtyInputField, selectedMaxMarketCapInWeiBigInt, inputValue]);
 
     const completedDisplay = (
@@ -763,27 +793,59 @@ export default function TickerComponent(props: PropsIF) {
             {isUserConnected && !showTradeButton && allocationOrReturnDisplay}
         </div>
     );
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        let isScrolling: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            if (container) {
+                container.classList.add(styles.scrolling);
+
+                // Clear the timeout throughout the scroll
+                window.clearTimeout(isScrolling);
+
+                // Set a timeout to run after scrolling ends
+                isScrolling = setTimeout(() => {
+                    container.classList.remove(styles.scrolling);
+                }, 1000);
+            }
+        };
+
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
 
     const unCompletedDisplay = (
-        <div className={styles.content}>
-            <div className={styles.flexColumn}>
+        <>
+            <div className={styles.content} ref={containerRef}>
                 {!isAuctionPage && <BreadCrumb />}
                 {tickerDisplay}
-                {showComments && <Comments />}
-            </div>
+                <div className={styles.flexColumn}>
+                    {showComments && <Comments />}
+                </div>
 
-            {!showComments && (
-                <>
-                    {openedBidDisplay}
-                    {yourBidDisplay}
-                    <div className={styles.flexColumn}>
-                        {maxFdvDisplay}
-                        {bidSizeDisplay}
-                        {extraInfoDisplay}
-                    </div>
-                </>
-            )}
-        </div>
+                {!showComments && (
+                    <>
+                        {openedBidDisplay}
+                        {yourBidDisplay}
+                        <div className={styles.flexColumn}>
+                            {maxFdvDisplay}
+                            {bidSizeDisplay}
+                            {extraInfoDisplay}
+                        </div>
+                    </>
+                )}
+            </div>
+        </>
     );
 
     return (

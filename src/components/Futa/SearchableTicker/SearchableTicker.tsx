@@ -70,7 +70,6 @@ export default function SearchableTicker(props: propsIF) {
         searchableTickerHeights,
         setSearchableTickerHeight,
         canvasRef,
-        tradeTableState,
         setIsSearchableTickerHeightMinimum,
     } = useContext(FutaSearchableTickerContext);
 
@@ -377,8 +376,6 @@ export default function SearchableTicker(props: propsIF) {
     );
     const fullScreenTable = false;
 
-    const CHART_MIN_HEIGHT = 175;
-
     const noAuctionsContent = (
         <div className={styles.noAuctionsContent}>
             <Typewriter
@@ -396,7 +393,36 @@ export default function SearchableTicker(props: propsIF) {
             )}
         </div>
     );
+    const containerRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        const container = containerRef.current;
+        let isScrolling: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            if (container) {
+                container.classList.add(styles.scrolling);
+
+                // Clear the timeout throughout the scroll
+                window.clearTimeout(isScrolling);
+
+                // Set a timeout to run after scrolling ends
+                isScrolling = setTimeout(() => {
+                    container.classList.remove(styles.scrolling);
+                }, 1000);
+            }
+        };
+
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
     const searchableContent = (
         <div className={styles.tickerTableContainer}>
             <header className={styles.tickerHeader}>
@@ -412,6 +438,7 @@ export default function SearchableTicker(props: propsIF) {
                     setIsMouseEnter(false);
                     setHoveredTicker(undefined);
                 }}
+                ref={containerRef}
             >
                 {filteredData.length
                     ? (showComplete && auctions.active === 'timeLeft'
@@ -454,16 +481,29 @@ export default function SearchableTicker(props: propsIF) {
                 height: searchableTickerHeights.current,
             }}
             minHeight={4}
+            // onResize={(
+            //     evt: MouseEvent | TouchEvent,
+            //     dir: Direction,
+            //     ref: HTMLElement,
+            //     d: NumberSize,
+            // ) => {
+            //     if (
+            //         searchableTickerHeights.current + d.height <
+            //         CHART_MIN_HEIGHT
+            //     ) {
+            //         setIsSearchableTickerHeightMinimum(true);
+            //     } else {
+            //         setIsSearchableTickerHeightMinimum(false);
+            //     }
+            // }}
             onResize={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
                 ref: HTMLElement,
                 d: NumberSize,
             ) => {
-                if (
-                    searchableTickerHeights.current + d.height <
-                    CHART_MIN_HEIGHT
-                ) {
+                const newHeight = searchableTickerHeights.current + d.height;
+                if (newHeight <= searchableTickerHeights.min) {
                     setIsSearchableTickerHeightMinimum(true);
                 } else {
                     setIsSearchableTickerHeightMinimum(false);
@@ -472,28 +512,38 @@ export default function SearchableTicker(props: propsIF) {
             onResizeStart={() => {
                 // may be useful later
             }}
+            // onResizeStop={(
+            //     evt: MouseEvent | TouchEvent,
+            //     dir: Direction,
+            //     ref: HTMLElement,
+            //     d: NumberSize,
+            // ) => {
+            //     if (
+            //         searchableTickerHeights.current + d.height < CHART_MIN_HEIGHT
+            //     ) {
+            //         setSearchableTickerHeight(searchableTickerHeights.min);
+            //     } else {
+            //         setSearchableTickerHeight(
+            //             searchableTickerHeights.current + d.height,
+            //         );
+            //     }
+
+            // }}
             onResizeStop={(
                 evt: MouseEvent | TouchEvent,
                 dir: Direction,
                 ref: HTMLElement,
                 d: NumberSize,
             ) => {
-                if (
-                    searchableTickerHeights.current + d.height <
-                    CHART_MIN_HEIGHT
-                ) {
-                    if (tradeTableState == 'Expanded') {
-                        setSearchableTickerHeight(
-                            searchableTickerHeights.default,
-                        );
-                    } else {
-                        setSearchableTickerHeight(searchableTickerHeights.min);
-                    }
-                } else {
-                    setSearchableTickerHeight(
+                const newHeight = Math.max(
+                    searchableTickerHeights.min,
+                    Math.min(
                         searchableTickerHeights.current + d.height,
-                    );
-                }
+                        searchableTickerHeights.max,
+                    ),
+                );
+
+                setSearchableTickerHeight(newHeight);
             }}
             bounds={'parent'}
         >

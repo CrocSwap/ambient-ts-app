@@ -56,6 +56,9 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
                 : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
+    // console.log(chainId)
+    // console.log(supportedNetworks[chainId].defaultPair[0],
+    //     supportedNetworks[chainId].defaultPair[1])
     return [
         supportedNetworks[chainId].defaultPair[0],
         supportedNetworks[chainId].defaultPair[1],

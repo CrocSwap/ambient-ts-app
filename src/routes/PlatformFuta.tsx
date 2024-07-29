@@ -20,7 +20,7 @@ import TestPage from '../pages/common/TestPage/TestPage';
 
 const PlatformFutaRoutes: React.FC = () => {
     const [hasVideoPlayedOnce, setHasVideoPlayedOnce] = useState(false);
-    const desktopScreen = useMediaQuery('(min-width: 1280px)');
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
     return (
         <div style={{ background: 'var(--dark1)' }}>
@@ -34,7 +34,8 @@ const PlatformFutaRoutes: React.FC = () => {
                         />
                     }
                 />
-                <Route path='swap' element={<SwapFuta />} />
+                {/* <Route path='swap' element={<SwapFuta />} /> */}
+                <Route path='swap/:params' element={<SwapFuta />} />
                 <Route path='limit' element={<LimitFuta />} />
 
                 <Route path='/explore' element={<Explore />} />

@@ -114,6 +114,7 @@ export const TradeDataContextProvider = (props: {
               ? dfltTokenB
               : dfltTokenA;
     });
+
     const [tokenB, setTokenB] = React.useState<TokenIF>(
         firstTokenMatchingB
             ? firstTokenMatchingB
@@ -213,12 +214,6 @@ export const TradeDataContextProvider = (props: {
         baseAddress: string,
         quoteAddress: string,
     ) => {
-        // const isPoolBlastEthUSDB =
-        //     chainId === '0x13e31' &&
-        //     baseAddress.toLowerCase() === blastETH.address.toLowerCase() &&
-        //     quoteAddress.toLowerCase() === blastUSDB.address.toLowerCase();
-        // // temporarily reset to 10 for ETH/USDB until volatility reduces
-        // const defaultWidth = isPoolBlastEthUSDB ? 10 : 10;
         const isPoolStable =
             isStablePair(baseAddress, quoteAddress) ||
             isETHPair(baseAddress, quoteAddress);

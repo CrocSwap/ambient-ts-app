@@ -119,8 +119,11 @@ export type crosshair = {
 };
 export type chartItemStates = {
     showTvl: boolean;
+    setShowTvl: React.Dispatch<React.SetStateAction<boolean>>;
     showVolume: boolean;
+    setShowVolume: React.Dispatch<React.SetStateAction<boolean>>;
     showFeeRate: boolean;
+    setShowFeeRate: React.Dispatch<React.SetStateAction<boolean>>;
     liqMode: string;
     showSwap: boolean;
     showLiquidity: boolean;
@@ -172,8 +175,6 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
         canvas.width = width * ratio;
         canvas.height = height * ratio;
 
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
         context.scale(ratio, ratio);
     }
 }

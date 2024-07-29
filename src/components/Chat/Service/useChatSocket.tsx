@@ -28,12 +28,9 @@ import {
     getMessageWithRestEndpoint,
     getMessageWithRestWithPaginationEndpoint,
     getUserDetailsEndpoint,
-    getUserIsVerified,
     getUserListWithRestEndpoint,
     updateLikesDislikesCountEndpoint,
     updateUnverifiedMessagesEndpoint,
-    updateVerifiedDateEndpoint,
-    verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
 
 import useWebSocket, { ReadyState } from 'react-use-websocket';
@@ -77,7 +74,6 @@ const useChatSocket = (
     const [lastMessage, setLastMessage] = useState<Message>();
     const [messageUser, setMessageUser] = useState<string>();
     const [notifications, setNotifications] = useState<Map<string, number>>();
-    const [isVerified, setIsVerified] = useState<boolean>(false);
     const [userMap, setUserMap] = useState<Map<string, User>>(
         new Map<string, User>(),
     );
@@ -325,72 +321,6 @@ const useChatSocket = (
         return data;
     }
 
-    async function isUserVerified() {
-        if (address) {
-            const userToken = getLS(LS_USER_VERIFY_TOKEN, address);
-            if (!userToken) return false;
-            const encodedAddress = encodeURIComponent(address);
-            let encodedToken = '';
-            if (userToken && userToken.length > 20) {
-                encodedToken = encodeURIComponent(userToken.substring(0, 20));
-            }
-            const response = await fetch(
-                CHAT_BACKEND_URL +
-                    getUserIsVerified +
-                    encodedAddress +
-                    '/' +
-                    encodedToken,
-                {
-                    method: 'GET',
-                },
-            );
-            const data = await response.json();
-            return data;
-        }
-    }
-
-    async function verifyUser(verifyToken: string, verifyDate: Date) {
-        const response = await fetch(CHAT_BACKEND_URL + verifyUserEndpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                walletID: address,
-                verifyToken: verifyToken,
-                verifyDate: verifyDate,
-            }),
-        });
-        const data = await response.json();
-        setIsVerified(data.isVerified);
-
-        return data;
-    }
-
-    async function updateVerifyDate(verifyDate: Date) {
-        const response = await fetch(
-            CHAT_BACKEND_URL + updateVerifiedDateEndpoint,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    walletID: address,
-                    verifyDate: verifyDate,
-                }),
-            },
-        );
-        const data = await response.json();
-        setIsVerified(data.isVerified);
-
-        const userListData = await getUserListWithRest();
-        const usmp = new Map<string, User>();
-        userListData.forEach((user: User) => {
-            usmp.set(user._id, user);
-        });
-        setUserMap(usmp);
-        setUsers(userListData);
-
-        return data;
-    }
-
     async function updateUnverifiedMessages(verifyDate: Date, endDate?: Date) {
         const nonVerifiedMessages = getUnverifiedMsgList(address);
         const vrfTkn = getLS(LS_USER_VERIFY_TOKEN, address);
@@ -444,13 +374,6 @@ const useChatSocket = (
 
     useEffect(() => {
         if (!isChatOpen) return;
-        async function checkVerified() {
-            const data = await isUserVerified();
-            if (!data) return setIsVerified(false);
-            setIsVerified(data.verified);
-        }
-
-        checkVerified();
 
         // if (!areSubscriptionsEnabled || !isChatOpen) return;
 
@@ -745,10 +668,7 @@ const useChatSocket = (
         users,
         notifications,
         updateLikeDislike,
-        isVerified,
-        verifyUser,
         userMap,
-        updateVerifyDate,
         updateUserCache,
         getMsgWithRestWithPagination,
         getAllMessages,

@@ -96,8 +96,7 @@ export default function CommentInput(props: CommentInputProps) {
                             className={styles.connect_to_chat_placeholder}
                             onClick={openWalletModal}
                         >
-                            {' '}
-                            Please Connect Wallet to Chat
+                            CONNECT WALLET
                         </div>
                     </>
                 )}
