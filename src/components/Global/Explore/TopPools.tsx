@@ -72,7 +72,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
-            tooltipText: 'tvl',
+            tooltipText: 'Total Value Locked',
         },
         {
             label: '24h Price Δ',
@@ -80,7 +80,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
-            tooltipText: '24h price explanation',
+            // tooltipText: '24h price explanation',
         },
         {
             label: '',
