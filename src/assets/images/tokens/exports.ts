@@ -46,7 +46,7 @@ import RSETH from './RSETH.webp';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import GOON from './GOON.svg';
-import GOONUSD from './goonUSD.svg';
+import GNUSD from './GNUSD.svg';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
 
@@ -100,7 +100,7 @@ export {
     WEETH,
     BLAST,
     GOON,
-    GOONUSD,
+    GNUSD,
     USDE,
     SUSDE,
 };
