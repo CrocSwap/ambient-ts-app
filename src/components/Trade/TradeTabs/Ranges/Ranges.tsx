@@ -41,6 +41,8 @@ import {
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { BiHide } from 'react-icons/bi';
 
 // interface for props
 interface propsIF {
@@ -247,40 +249,53 @@ function Ranges(props: propsIF) {
     const sPagination = useMediaQuery('(max-width: 800px)');
 
     const footerDisplay = rowsPerPage > 0 &&
-        ((isAccountView && rangeData.length > 10) ||
+        ((isAccountView && rangeData.length > 2) ||
             (!isAccountView && tradePageCheck)) && (
             <FlexContainer
                 alignItems='center'
-                justifyContent='center'
-                gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? '40px auto' : '16px auto'}
-                background='dark1'
-                flexDirection={isSmallScreen ? 'column' : 'row'}
+                justifyContent='space-between'
+                fullWidth
             >
-                <RowsPerPageDropdown
-                    rowsPerPage={rowsPerPage}
-                    onChange={handleChangeRowsPerPage}
-                    itemCount={sortedPositions.length}
-                    setCurrentPage={setCurrentPage}
-                    resetPageToFirst={resetPageToFirst}
-                />
-                <Pagination
-                    count={count}
-                    page={page}
-                    shape='circular'
-                    color='secondary'
-                    onChange={handleChange}
-                    showFirstButton
-                    showLastButton
-                    size={sPagination ? 'small' : 'medium'}
-                />
-                {!isSmallScreen && (
-                    <Text
-                        fontSize='mini'
-                        color='text2'
-                        style={{ whiteSpace: 'nowrap' }}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-                )}
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='center'
+                    gap={isSmallScreen ? 4 : 8}
+                    margin={isSmallScreen ? '40px auto' : '16px auto'}
+                    background='dark1'
+                    flexDirection={isSmallScreen ? 'column' : 'row'}
+                >
+                    <RowsPerPageDropdown
+                        rowsPerPage={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedPositions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    {!isSmallScreen && (
+                        <Text
+                            fontSize='mini'
+                            color='text2'
+                            style={{ whiteSpace: 'nowrap' }}
+                        >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
+                    )}
+                </FlexContainer>
+                <FlexContainer alignItems='center' gap={4} padding='0 8px'>
+                    <BiHide size={20} color='var(--accent1)' />
+
+                    <p style={{ fontSize: '12px', color: 'var(--accent1)' }}>
+                        Hide Empty Positions
+                    </p>
+                </FlexContainer>
             </FlexContainer>
         );
 
