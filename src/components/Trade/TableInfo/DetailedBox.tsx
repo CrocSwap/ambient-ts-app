@@ -1,3 +1,5 @@
+import { FlexContainer } from '../../../styled/Common';
+import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import {
     BoxContainer,
     BoxInfoText,
@@ -8,13 +10,23 @@ import {
 interface DetailedBoxPropsIF {
     label: string;
     value: string;
+    tooltipText?: string;
 }
 export function DetailedBox(props: DetailedBoxPropsIF) {
-    const { label, value } = props;
+    const { label, value, tooltipText } = props;
     return (
         <BoxContainer>
             <DetailedBoxContainer>
-                <InfoHeader>{label}</InfoHeader>
+                <FlexContainer gap={8}>
+                    <InfoHeader>{label}</InfoHeader>
+                    {tooltipText && (
+                        <TooltipComponent
+                            title={tooltipText}
+                            placement='bottom'
+                        />
+                    )}
+                </FlexContainer>
+
                 <BoxInfoText>{value}</BoxInfoText>
             </DetailedBoxContainer>
         </BoxContainer>
