@@ -250,10 +250,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   prefix: '$',
               })
             : '';
-        // format fees as 24h apr, use 0 as backup value
-        const apr24hNum: number =
+        // format fees as apr, use 0 as backup value
+        const aprNum: number =
             feesChange24h && expandedPoolStatsNow.tvlTotalUsd
-                ? (feesChange24h / expandedPoolStatsNow.tvlTotalUsd) * 100
+                ? (feesChange24h / expandedPoolStatsNow.tvlTotalUsd) * 100 * 365
                 : 0;
         // human readable price change over last 24 hours
         let priceChangePercent: string;
@@ -327,7 +327,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             tvlStr: tvlDisplay,
             volume: volumeChange24h,
             volumeStr: volumeDisplay,
-            apr: apr24hNum,
+            apr: aprNum,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
             moneyness: {

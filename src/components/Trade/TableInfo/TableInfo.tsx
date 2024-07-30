@@ -27,7 +27,7 @@ export default function TableInfo() {
         poolFeesTotal,
         poolVolume,
         poolVolume24h,
-        apr24h,
+        apr,
         poolFees24h,
     } = poolData;
 
@@ -54,11 +54,7 @@ export default function TableInfo() {
         },
     );
 
-    const aprString = apr24h
-        ? apr24h === '0.00'
-            ? '< 0.01%'
-            : apr24h + '%'
-        : '...';
+    const aprString = apr ? (apr === '0.00' ? '< 0.01%' : apr + '%') : '...';
 
     return (
         <MainSection>
@@ -109,7 +105,7 @@ export default function TableInfo() {
                                     '...'
                                 }%`}
                             />
-                            <DetailedBox label='24h APR' value={aprString} />
+                            <DetailedBox label='APR' value={aprString} />
                             {baseTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${baseToken.symbol} FDV`}

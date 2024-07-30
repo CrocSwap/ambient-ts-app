@@ -151,7 +151,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolVolume24h, setPoolVolume24h] = useState<string | undefined>();
     const [poolFees24h, setPoolFees24h] = useState<string | undefined>();
-    const [apr24h, setApr24h] = useState<string | undefined>();
+    const [apr, setApr] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
     const [poolFeesTotal, setPoolFeesTotal] = useState<string | undefined>();
     // const [poolApy, setPoolApy] = useState<string | undefined>();
@@ -374,12 +374,12 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 setPoolFees24h(feesChange24hString);
             }
             if (feesChange24h && tvlResult) {
-                const apr24h = feesChange24h / tvlResult;
-                const apr24hString = getFormattedNumber({
-                    value: apr24h * 100,
+                const aprNum = feesChange24h / tvlResult;
+                const aprString = getFormattedNumber({
+                    value: aprNum * 100 * 365,
                     isPercentage: true,
                 });
-                setApr24h(apr24hString);
+                setApr(aprString);
             }
 
             // try {
@@ -480,7 +480,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         poolVolume,
         poolVolume24h,
         poolFees24h,
-        apr24h,
+        apr,
         poolTvl,
         poolFeesTotal,
         // poolApy,
