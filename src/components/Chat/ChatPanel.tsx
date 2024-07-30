@@ -325,7 +325,9 @@ function ChatPanel(props: propsIF) {
         e: React.MouseEvent<HTMLDivElement>,
         focusedMessage?: Message,
     ) => {
-        setPickerBottomPos(window.innerHeight - e.clientY);
+        setPickerBottomPos(
+            window.innerHeight - (e.clientY + (isMobile ? 50 : 0)),
+        );
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
@@ -821,6 +823,36 @@ function ChatPanel(props: propsIF) {
         setIsReplyButtonPressed(false);
         setSelectedMessageForReply(undefined);
     };
+
+    const reactionPicker = (
+        <div
+            id='chatReactionWrapper'
+            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+            ref={reactionsRef}
+            style={{ bottom: pickerBottomPos }}
+        >
+            <Picker
+                theme={Theme.DARK}
+                onEmojiClick={(emoji) => {
+                    addReactionEmojiPickListener(emoji);
+                }}
+                // style={{ width: '100%', height: '300px' }}
+                searchDisabled={true}
+                reactions={[
+                    '1f44d',
+                    '2764-fe0f',
+                    '1f603',
+                    '1f602',
+                    '1f622',
+                    '1f64f',
+                    '1f44e',
+                    '1f621',
+                ]}
+                reactionsDefaultOpen={true}
+                allowExpandReactions={false}
+            />
+        </div>
+    );
 
     domDebug('isUserConnected', isUserConnected);
 
@@ -1332,6 +1364,7 @@ function ChatPanel(props: propsIF) {
                     }
                     setSelectedMessageForReply={setSelectedMessageForReply}
                     setIsReplyButtonPressed={setIsReplyButtonPressed}
+                    reactionPicker={reactionPicker}
                 />
             </>
         );

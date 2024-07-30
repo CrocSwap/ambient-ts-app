@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { EmojiClickData, Theme } from 'emoji-picker-react';
+import { EmojiClickData } from 'emoji-picker-react';
 import {
     Dispatch,
     SetStateAction,
@@ -99,6 +99,7 @@ interface FullChatPropsIF {
     setMessageForNotificationBubble: Dispatch<
         SetStateAction<Message | undefined>
     >;
+    reactionPicker: JSX.Element;
 }
 
 interface ChannelDisplayPropsIF {
@@ -908,30 +909,7 @@ function FullChat(props: FullChatPropsIF) {
                 }}
             />
             {props.rndShowPreviousMessages()}
-            {props.isChatOpen && props.showPicker && (
-                <div
-                    id='chatReactionWrapper'
-                    className={styles.reaction_picker_wrapper}
-                >
-                    <div
-                        className={styles.reaction_picker_close}
-                        onClick={() => {
-                            props.setShowPicker(false);
-                        }}
-                    >
-                        {' '}
-                        X{' '}
-                    </div>
-                    <Picker
-                        theme={Theme.DARK}
-                        onEmojiClick={(data) => {
-                            props.addReactionEmojiPickListener(data);
-                        }}
-                        style={{ width: '100%' }}
-                        skinTonesDisabled={true}
-                    />
-                </div>
-            )}
+            {props.isChatOpen && props.showPicker && props.reactionPicker}
         </div>
     );
 }
