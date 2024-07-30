@@ -101,12 +101,14 @@ export default function TableInfo() {
                                 <DetailedBox
                                     label={`${baseToken.symbol} FDV`}
                                     value={baseTokenFdvDisplay}
+                                    tooltipText='tooltip for base fdv'
                                 />
                             )}
                             {quoteTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${quoteToken.symbol} FDV`}
                                     value={quoteTokenFdvDisplay}
+                                    tooltipText='tooltip for quote fdv'
                                 />
                             )}
                         </GridContainer>
