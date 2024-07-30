@@ -28,6 +28,8 @@ import {
     TWITTER_LINK,
 } from '../../../ambient-utils/constants';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
+import Toggle from '../../Form/Toggle';
+import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 import {
     linkGenMethodsIF,
     swapParamsIF,
@@ -104,6 +106,9 @@ export default function Navbar() {
     } = useContext(AppStateContext);
 
     const { selectedTicker } = useContext(AuctionsContext);
+
+    const { showHomeVideoLocalStorage, setShowHomeVideoLocalStorage } =
+        useFutaHomeContext();
 
     // set page title
     useEffect(() => {
@@ -250,6 +255,24 @@ export default function Navbar() {
         </button>
     );
 
+    const skipAnimationToggle = (
+        <motion.div
+            variants={dropdownItemVariants}
+            className={styles.skipAnimationContainer}
+        >
+            <p>Show Home Animation</p>
+            <Toggle
+                isOn={showHomeVideoLocalStorage}
+                handleToggle={() =>
+                    setShowHomeVideoLocalStorage(!showHomeVideoLocalStorage)
+                }
+                Width={36}
+                id='show_home_video_futa_toggle'
+                disabled={false}
+            />
+        </motion.div>
+    );
+
     return (
         <div className={styles.container}>
             <div className={styles.logoContainer}>
@@ -304,6 +327,7 @@ export default function Navbar() {
                                         ensName ? ensName : accountAddress
                                     }`}
                             </motion.p>
+                            {skipAnimationToggle}
                             <motion.p
                                 className={styles.version}
                                 variants={dropdownItemVariants}

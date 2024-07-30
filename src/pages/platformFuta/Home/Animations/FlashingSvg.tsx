@@ -1,12 +1,34 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import styles from './Animations.module.css';
 import logo from '../../../../assets/futa/logos/homeLogo.svg';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { useFutaHomeContext } from '../../../../contexts/Futa/FutaHomeContext';
 
 interface Props {
     customWidth?: string;
+    onLearnClick: () => void;
 }
+
 export default function FlashingSvg(props: Props) {
-    const { customWidth } = props;
+    const { isActionButtonVisible } = useFutaHomeContext();
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.3,
+                delayChildren: 0.2,
+            },
+        },
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, x: -50 },
+        visible: { opacity: 1, x: 0 },
+    };
+
+    const { customWidth, onLearnClick } = props;
     const [visible, setVisible] = useState<boolean>(false);
     const [flash, setFlash] = useState<boolean>(false);
 
@@ -42,8 +64,9 @@ export default function FlashingSvg(props: Props) {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        gap: '1rem',
 
-        transform: `scale(${scaleFactor})`,
+        // transform: `scale(${scaleFactor})`,
         animation: flash
             ? 'flash 1s infinite'
             : visible
@@ -76,15 +99,54 @@ export default function FlashingSvg(props: Props) {
 
     return (
         <div style={terminalStyle} className={styles.terminalStyle}>
-            <div className={styles.logoContainer}>
+            <div
+                className={styles.logoContainer}
+                style={{ transform: `scale(${scaleFactor})` }}
+            >
                 <img src={logo} alt='' />
             </div>
 
-            <div className={textClassName}>
+            <div
+                className={textClassName}
+                style={{ transform: `scale(${scaleFactor})` }}
+            >
                 Unique ticker auctions with instant locked liquidity and no
                 hidden supply.
             </div>
-            <div className={textClassName}>Memes as public goods.</div>
+            <div
+                className={textClassName}
+                style={{ transform: `scale(${scaleFactor})` }}
+            >
+                Memes as public goods.
+            </div>
+
+            <AnimatePresence>
+                {isActionButtonVisible && (
+                    <motion.div
+                        className={styles.actionButtonContent}
+                        initial='hidden'
+                        animate='visible'
+                        variants={containerVariants}
+                    >
+                        <motion.div variants={itemVariants}>
+                            <Link
+                                to='/auctions'
+                                className={styles.exploreButton}
+                            >
+                                Explore
+                            </Link>
+                        </motion.div>
+                        <motion.div variants={itemVariants}>
+                            <button
+                                onClick={onLearnClick}
+                                className={styles.learnButton}
+                            >
+                                Learn
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
