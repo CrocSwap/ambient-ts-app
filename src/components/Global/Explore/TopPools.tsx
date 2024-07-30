@@ -15,6 +15,7 @@ import {
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
 import { useMediaQuery } from '@material-ui/core';
+
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -23,6 +24,7 @@ export interface HeaderItem {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
+    tooltipText?: string;
 }
 
 interface propsIF {
@@ -40,6 +42,7 @@ function TopPools(props: propsIF) {
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
+
     const topPoolsHeaderItems: HeaderItem[] = [
         {
             label: 'Tokens',
@@ -69,6 +72,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
+            tooltipText: 'Total Value Locked',
         },
         {
             label: '24h Price Δ',
@@ -76,6 +80,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
+            // tooltipText: '24h price explanation',
         },
         {
             label: '',
@@ -103,6 +108,7 @@ function TopPools(props: propsIF) {
                             headerItems={topPoolsHeaderItems}
                             sortedPools={sortedPools}
                         />
+
                         <TableBody>
                             {sortedPools.pools.length ? (
                                 sortedPools.pools

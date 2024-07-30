@@ -7,6 +7,7 @@ import {
     TableHeadWrapper,
 } from '../../../styled/Components/Analytics';
 import AssignSort from './AssignSort';
+import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface propsIF {
     headerItems: HeaderItem[];
@@ -52,6 +53,12 @@ const TableHead = (props: propsIF) => {
                                 {isActiveSort && (
                                     <AssignSort
                                         direction={sortedPools.direction}
+                                    />
+                                )}
+                                {item.tooltipText && (
+                                    <TooltipComponent
+                                        title={item.tooltipText}
+                                        placement='right'
                                     />
                                 )}
                             </LabelWrapper>
