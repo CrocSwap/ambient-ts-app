@@ -3,26 +3,10 @@ import FlashingSvg from '../Animations/FlashingSvg';
 import TerminalAnimation from '../Animations/TerminalAnimation';
 import SynthwaveGrid from '../Animations/SynthwaveGrid';
 import styles from './Hero.module.css';
-import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BsSkipForward } from 'react-icons/bs';
 import { IoMdClose } from 'react-icons/io';
 import { useFutaHomeContext } from '../../../../contexts/Futa/FutaHomeContext';
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.3,
-            delayChildren: 0.2,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0 },
-};
 
 interface PropsIF {
     onLearnClick: () => void;
@@ -30,7 +14,6 @@ interface PropsIF {
 
 export default function Hero(props: PropsIF) {
     const {
-        isActionButtonVisible,
         setIsActionButtonVisible,
         showTerminal,
         setShowTerminal,
@@ -97,11 +80,11 @@ export default function Hero(props: PropsIF) {
     const desktopDisplay = (
         <div>
             {hasVideoPlayedOnce || !showHomeVideoLocalStorage ? (
-                <FlashingSvg />
+                <FlashingSvg onLearnClick={onLearnClick} />
             ) : showTerminal ? (
                 <TerminalAnimation />
             ) : (
-                <FlashingSvg />
+                <FlashingSvg onLearnClick={onLearnClick} />
             )}
             <SynthwaveGrid hasVideoPlayedOnce={hasVideoPlayedOnce} />
 
@@ -120,7 +103,7 @@ export default function Hero(props: PropsIF) {
     return (
         <div className={styles.container}>
             {desktopDisplay}
-            <AnimatePresence>
+            {/* <AnimatePresence>
                 {isActionButtonVisible && (
                     <motion.div
                         className={styles.content}
@@ -146,7 +129,7 @@ export default function Hero(props: PropsIF) {
                         </motion.div>
                     </motion.div>
                 )}
-            </AnimatePresence>
+            </AnimatePresence> */}
         </div>
     );
 }

@@ -12,7 +12,7 @@ export default function SynthwaveGrid(props: PropsIF) {
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const width = '100vw';
-    const height = showMobileVersion ? 'calc(100svh)' : 'calc(100vh - 86px)';
+    const height = showMobileVersion ? 'calc(100svh)' : '100vh';
     const initialFrameSkip = hasVideoPlayedOnce ? 700 : 0; // Assume 60 FPS, so 5 seconds * 60 = 300 frames
 
     useEffect(() => {

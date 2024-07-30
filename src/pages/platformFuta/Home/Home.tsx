@@ -13,7 +13,6 @@ import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 function Home() {
     const {
         setIsActionButtonVisible,
-
         setShowTerminal,
         hasVideoPlayedOnce,
         setHasVideoPlayedOnce,
@@ -33,7 +32,6 @@ function Home() {
         }
     }, [hasVideoPlayedOnce, setHasVideoPlayedOnce]);
 
-    // --------------------
     const section0 = useRef<HTMLDivElement>(null);
     const section1 = useRef<HTMLDivElement>(null);
     const section2 = useRef<HTMLDivElement>(null);
@@ -94,8 +92,7 @@ function Home() {
         setActiveIndex(nextIndex);
         scrollTo(sections[nextIndex].ref);
     };
-    // TODO: UNCOMMENT THIS TO ACTIVATE AUTO SCROLL
-    // this is just a temporary value to activate the automatic scroll for development purposes
+
     const [activateAutoScroll, setActivateAutoScroll] = useState(false);
 
     useEffect(() => {
@@ -110,7 +107,8 @@ function Home() {
         return () => {
             clearInterval(interval);
         };
-    }, [activeIndex, sections]);
+    }, [activeIndex, sections, activateAutoScroll]);
+
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -145,17 +143,15 @@ function Home() {
     return (
         <div>
             <div className={`container ${styles.container}`}>
-                {
-                    <DotAnimation
-                        activeIndex={activeIndex}
-                        sections={sections}
-                        onClick={handleDotClick}
-                        activateAutoScroll={activateAutoScroll}
-                        setActivateAutoScroll={setActivateAutoScroll}
-                        handleUpClick={handleUpClick}
-                        handleDownClick={handleDownClick}
-                    />
-                }
+                <DotAnimation
+                    activeIndex={activeIndex}
+                    sections={sections}
+                    onClick={handleDotClick}
+                    activateAutoScroll={activateAutoScroll}
+                    setActivateAutoScroll={setActivateAutoScroll}
+                    handleUpClick={handleUpClick}
+                    handleDownClick={handleDownClick}
+                />
                 {sections.map(({ ref, page, goToSectionRef }, index) => (
                     <div ref={ref} key={index}>
                         <Section
@@ -164,7 +160,7 @@ function Home() {
                             scrollTo={() => scrollTo(goToSectionRef)}
                         />
                     </div>
-                ))}{' '}
+                ))}
             </div>
         </div>
     );

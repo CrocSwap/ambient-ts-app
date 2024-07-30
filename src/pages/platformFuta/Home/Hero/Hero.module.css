@@ -94,8 +94,15 @@
 }
 
 @media (min-width: 768px){
+
+    .container{
+       
+        height: 100vh;
+       
+    }
 .content{
     position: absolute;
+   
 }
 .skipIcon{
     position: absolute;
@@ -104,7 +111,7 @@
 }
 .skipTextContainer{
     position: absolute;
-    bottom: 0;
+    bottom: 50px;
     right: 0;
     z-index: 9999999;
     background: var(--dark2);

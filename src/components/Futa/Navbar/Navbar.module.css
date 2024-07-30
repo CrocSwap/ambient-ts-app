@@ -129,6 +129,12 @@
 
 
 @media (min-width: 768px) {
+
+    .container{
+        position: sticky;
+        top: 0;
+        z-index: 99;
+    }
     .connectButton {
         max-width: 300px;
     }
@@ -138,4 +144,6 @@
         left: auto;
         right: 16px;
     }
+
+    
 }
