@@ -1457,8 +1457,10 @@ function ChatPanel(props: propsIF) {
                                     '1f622',
                                     '1f64f',
                                     '1f44e',
+                                    '1f621',
                                 ]}
                                 reactionsDefaultOpen={true}
+                                allowExpandReactions={false}
                             />
                         </div>
                     )}
