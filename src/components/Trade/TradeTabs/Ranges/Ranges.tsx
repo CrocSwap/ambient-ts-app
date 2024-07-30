@@ -19,6 +19,7 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
+    HideEmptyPositionContainer,
     RangeRow as RangeRowStyled,
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
@@ -43,6 +44,9 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { BiHide } from 'react-icons/bi';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
+import { IoEyeSharp } from 'react-icons/io5';
+import Toggle from '../../../Form/Toggle';
 
 // interface for props
 interface propsIF {
@@ -60,6 +64,7 @@ function Ranges(props: propsIF) {
         showAllData: showAllDataSelection,
         toggleTradeTable,
         hideEmptyPositionsOnAccount,
+        setHideEmptyPositionsOnAccount,
     } = useContext(TradeTableContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
@@ -248,6 +253,14 @@ function Ranges(props: propsIF) {
     const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
 
+    const userHasEmptyPositions = useMemo(
+        () =>
+            positionsByUser.positions.filter(
+                (position) => position.positionLiq === 0,
+            ).length > 0,
+        [positionsByUser.positions],
+    );
+
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && rangeData.length > 2) ||
             (!isAccountView && tradePageCheck)) && (
@@ -255,14 +268,15 @@ function Ranges(props: propsIF) {
                 alignItems='center'
                 justifyContent='space-between'
                 fullWidth
+                flexDirection={isSmallScreen ? 'column' : 'row'}
             >
                 <FlexContainer
                     alignItems='center'
                     justifyContent='center'
                     gap={isSmallScreen ? 4 : 8}
-                    margin={isSmallScreen ? '40px auto' : '16px auto'}
+                    margin={isSmallScreen ? '20px auto' : '16px auto'}
                     background='dark1'
-                    flexDirection={isSmallScreen ? 'column' : 'row'}
+                    flexDirection={isSmallScreen ? 'column-reverse' : 'row'}
                 >
                     <RowsPerPageDropdown
                         rowsPerPage={rowsPerPage}
@@ -289,13 +303,42 @@ function Ranges(props: propsIF) {
                         >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
                     )}
                 </FlexContainer>
-                <FlexContainer alignItems='center' gap={4} padding='0 8px'>
-                    <BiHide size={20} color='var(--accent1)' />
+                {connectedAccountActive && (
+                    // userHasEmptyPositions &&
+                    <HideEmptyPositionContainer
+                        onClick={() => {
+                            console.log('hide empty positions');
+                            localStorage.setItem(
+                                LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                String(!hideEmptyPositionsOnAccount),
+                            );
+                            setHideEmptyPositionsOnAccount(
+                                !hideEmptyPositionsOnAccount,
+                            );
+                        }}
+                    >
+                        {/* {hideEmptyPositionsOnAccount ? <IoEyeSharp size={20} color='var(--accent1)' /> : <BiHide size={20} color='var(--accent1)' />
+                        } */}
+                        <p>Hide Empty Positions</p>
 
-                    <p style={{ fontSize: '12px', color: 'var(--accent1)' }}>
-                        Hide Empty Positions
-                    </p>
-                </FlexContainer>
+                        <Toggle
+                            isOn={hideEmptyPositionsOnAccount}
+                            disabled={false}
+                            handleToggle={() => {
+                                console.log('hide empty positions');
+                                localStorage.setItem(
+                                    LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                    String(!hideEmptyPositionsOnAccount),
+                                );
+                                setHideEmptyPositionsOnAccount(
+                                    !hideEmptyPositionsOnAccount,
+                                );
+                            }}
+                            id='toggle_empty_positions_liquidity'
+                            aria-label='toggle empty positions'
+                        />
+                    </HideEmptyPositionContainer>
+                )}
             </FlexContainer>
         );
 

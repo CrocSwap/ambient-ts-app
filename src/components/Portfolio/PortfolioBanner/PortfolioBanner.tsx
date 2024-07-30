@@ -26,7 +26,6 @@ import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../ambient-utils/constants';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -39,7 +38,6 @@ export default function PortfolioBanner(props: propsIF) {
         props;
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
-    const { positionsByUser } = useContext(GraphDataContext);
 
     const {
         activeTradeTab,
@@ -67,14 +65,6 @@ export default function PortfolioBanner(props: propsIF) {
             diameter={50}
             seed={jsNumberForAddress(addressOfAccountDisplayed)}
         />
-    );
-
-    const userHasEmptyPositions = useMemo(
-        () =>
-            positionsByUser.positions.filter(
-                (position) => position.positionLiq === 0,
-            ).length > 0,
-        [positionsByUser.positions],
     );
 
     const truncatedAccountAddress = connectedAccountActive
@@ -178,9 +168,9 @@ export default function PortfolioBanner(props: propsIF) {
                         />
                     </HeaderButtons>
                 </DefaultTooltip>
-                {activeTradeTab === 'liquidity' && (
-                    // connectedAccountActive &&
-                    // userHasEmptyPositions && (
+                {/* {activeTradeTab === 'liquidity' && (
+                    connectedAccountActive &&
+                    userHasEmptyPositions && (
                     <DefaultTooltip
                         interactive
                         title={'Toggle display of empty positions'}
@@ -209,7 +199,7 @@ export default function PortfolioBanner(props: propsIF) {
                             <span>Hide Empty Positions</span>
                         </FlexContainer>
                     </DefaultTooltip>
-                )}
+                )} */}
             </FlexContainer>
 
             <PortfolioBannerLevelContainer
