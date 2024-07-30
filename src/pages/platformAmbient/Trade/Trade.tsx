@@ -282,7 +282,9 @@ function Trade() {
                 <FlexContainer
                     flexDirection='column'
                     fullWidth
-                    background='dark2'
+                    background={
+                        ['futa'].includes(platformName) ? 'dark1' : 'dark2'
+                    }
                     style={{ height: 'calc(100vh - 56px)' }}
                     ref={canvasRef}
                 >
@@ -319,6 +321,7 @@ function Trade() {
                                 )}
                                 {!isCandleDataNull && isPoolInitialized && (
                                     <ChartContainer
+                                        isFuta={['futa'].includes(platformName)}
                                         fullScreen={isChartFullScreen}
                                     >
                                         {!isCandleDataNull && (
@@ -410,6 +413,7 @@ function Trade() {
                                 )}
                                 {!isCandleDataNull && isPoolInitialized && (
                                     <ChartContainer
+                                        isFuta={['futa'].includes(platformName)}
                                         fullScreen={isChartFullScreen}
                                     >
                                         {!isCandleDataNull && (
