@@ -178,38 +178,38 @@ export default function PortfolioBanner(props: propsIF) {
                         />
                     </HeaderButtons>
                 </DefaultTooltip>
-                {activeTradeTab === 'liquidity' &&
-                    connectedAccountActive &&
-                    userHasEmptyPositions && (
-                        <DefaultTooltip
-                            interactive
-                            title={'Toggle display of empty positions'}
-                            enterDelay={500}
+                {activeTradeTab === 'liquidity' && (
+                    // connectedAccountActive &&
+                    // userHasEmptyPositions && (
+                    <DefaultTooltip
+                        interactive
+                        title={'Toggle display of empty positions'}
+                        enterDelay={500}
+                    >
+                        <FlexContainer
+                            alignItems='center'
+                            justifyContent='center'
+                            onClick={() => {
+                                console.log('hide empty positions');
+                                localStorage.setItem(
+                                    LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                    String(!hideEmptyPositionsOnAccount),
+                                );
+                                setHideEmptyPositionsOnAccount(
+                                    !hideEmptyPositionsOnAccount,
+                                );
+                            }}
+                            style={{
+                                cursor: 'pointer',
+                                color: hideEmptyPositionsOnAccount
+                                    ? 'var(--accent1)'
+                                    : 'var(--text2)',
+                            }}
                         >
-                            <FlexContainer
-                                alignItems='center'
-                                justifyContent='center'
-                                onClick={() => {
-                                    console.log('hide empty positions');
-                                    localStorage.setItem(
-                                        LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
-                                        String(!hideEmptyPositionsOnAccount),
-                                    );
-                                    setHideEmptyPositionsOnAccount(
-                                        !hideEmptyPositionsOnAccount,
-                                    );
-                                }}
-                                style={{
-                                    cursor: 'pointer',
-                                    color: hideEmptyPositionsOnAccount
-                                        ? 'var(--accent1)'
-                                        : 'var(--text2)',
-                                }}
-                            >
-                                <span>Hide Empty Positions</span>
-                            </FlexContainer>
-                        </DefaultTooltip>
-                    )}
+                            <span>Hide Empty Positions</span>
+                        </FlexContainer>
+                    </DefaultTooltip>
+                )}
             </FlexContainer>
 
             <PortfolioBannerLevelContainer
