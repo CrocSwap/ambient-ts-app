@@ -41,6 +41,7 @@ import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -68,6 +69,7 @@ function ChatPanel(props: propsIF) {
     const { selectedNetwork } = useContext(CrocEnvContext);
 
     const messageListWrapper = useRef<HTMLDivElement>(null);
+    const reactionsRef = useRef<HTMLDivElement>(null);
     const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
     const [isModerator, setIsModerator] = useState(false);
@@ -240,7 +242,10 @@ function ChatPanel(props: propsIF) {
         useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
+    const focusedMessageRef = useRef<Message | undefined>();
+    focusedMessageRef.current = focusedMessage;
     const [showPicker, setShowPicker] = useState(false);
+    const [pickerBottomPos, setPickerBottomPos] = useState(0);
 
     const defaultEnsName = 'defaultValue';
 
@@ -251,6 +256,10 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const lastScrollListenerRef = useRef<boolean>();
     lastScrollListenerRef.current = lastScrollListenerActive;
+
+    useOnClickOutside(reactionsRef, () => {
+        setShowPicker(false);
+    });
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
@@ -313,13 +322,17 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const reactionBtnListener = (focusedMessage?: Message) => {
+    const reactionBtnListener = (
+        e: React.MouseEvent<HTMLDivElement>,
+        focusedMessage?: Message,
+    ) => {
+        setPickerBottomPos(window.innerHeight - e.clientY);
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
     const addReactionEmojiPickListener = (data: EmojiClickData) => {
-        if (focusedMessage && currentUser) {
-            addReaction(focusedMessage._id, currentUser, data.emoji);
+        if (focusedMessageRef.current && currentUser) {
+            addReaction(focusedMessageRef.current._id, currentUser, data.emoji);
             setShowPicker(false);
         }
     };
@@ -1422,20 +1435,13 @@ function ChatPanel(props: propsIF) {
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
-                    {isChatOpen && showPicker && (
+                    {isChatOpen && (
                         <div
                             id='chatReactionWrapper'
-                            className={styles.reaction_picker_wrapper}
+                            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+                            ref={reactionsRef}
+                            style={{ bottom: pickerBottomPos }}
                         >
-                            <div
-                                className={styles.reaction_picker_close}
-                                onClick={() => {
-                                    setShowPicker(false);
-                                }}
-                            >
-                                {' '}
-                                X{' '}
-                            </div>
                             <Picker
                                 theme={Theme.DARK}
                                 onEmojiClick={(emoji) => {
@@ -1444,16 +1450,15 @@ function ChatPanel(props: propsIF) {
                                 // style={{ width: '100%', height: '300px' }}
                                 searchDisabled={true}
                                 reactions={[
-                                    '👍',
-                                    '❤️',
-                                    '😃',
-                                    '😢',
-                                    '🙏',
-                                    '👎',
-                                    '😡',
+                                    '1f44d',
+                                    '2764-fe0f',
+                                    '1f603',
+                                    '1f602',
+                                    '1f622',
+                                    '1f64f',
+                                    '1f44e',
                                 ]}
-                                // reactionsDefaultOpen={true}
-                                // skinTonesDisabled={true}
+                                reactionsDefaultOpen={true}
                             />
                         </div>
                     )}
