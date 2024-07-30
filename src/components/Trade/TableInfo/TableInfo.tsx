@@ -101,12 +101,14 @@ export default function TableInfo() {
                                 <DetailedBox
                                     label={`${baseToken.symbol} FDV`}
                                     value={baseTokenFdvDisplay}
+                                    tooltipText={`Fully Diluted Value (FDV) is the product of the total supply of ${baseToken.symbol} and the current market price of ${baseToken.symbol}.`}
                                 />
                             )}
                             {quoteTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${quoteToken.symbol} FDV`}
                                     value={quoteTokenFdvDisplay}
+                                    tooltipText={`Fully Diluted Value (FDV) is the product of the total supply of ${quoteToken.symbol} and the current market price of ${quoteToken.symbol}.`}
                                 />
                             )}
                         </GridContainer>
