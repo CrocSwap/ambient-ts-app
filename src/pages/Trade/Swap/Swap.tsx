@@ -292,12 +292,12 @@ function Swap(props: propsIF) {
                 setIsSellLoading(false);
                 setLastImpactQuery(undefined);
             }
-        } else if (isSellLoading || isBuyLoading) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('...');
         } else if (isPoolInitialized === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (isSellLoading || isBuyLoading) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('...');
         } else if (isLiquidityInsufficient) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
