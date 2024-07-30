@@ -7376,10 +7376,10 @@ modern-screenshot@^4.4.25:
   resolved "https://registry.npmjs.org/modern-screenshot/-/modern-screenshot-4.4.25.tgz"
   integrity sha512-4w6T8NveojRlmpyni6sQcAF0SgdLpNwTkr+G4EXTNCflvP2V/KAaahlCVoCcx55JIDvB6mY6WJaQGqGF3DbkpQ==
 
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+moment@^2.30.1:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
 motion@10.16.2:
   version "10.16.2"
