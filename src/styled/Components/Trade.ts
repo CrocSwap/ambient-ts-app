@@ -4,11 +4,17 @@ import styled from 'styled-components/macro';
 export const MainSection = styled.section<{
     isDropdown?: boolean;
     isSmallScreen?: boolean;
+    isFill: boolean;
 }>`
     display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
-    grid-template-columns: auto 380px;
+    ${({ isFill }) => {
+        if (!isFill) {
+            return 'grid-template-columns: auto 380px;';
+        }
+    }}
+
     height: ${(props) =>
         props.isDropdown && !props.isSmallScreen
             ? 'calc(100dvh - 85px)'
@@ -96,12 +102,15 @@ export const ResizableContainer = styled(Resizable)<{
     `}
 `;
 
-export const ChartContainer = styled.div<{ fullScreen: boolean }>`
-    ${({ fullScreen }) =>
+export const ChartContainer = styled.div<{
+    fullScreen: boolean;
+    isFuta: boolean;
+}>`
+    ${({ fullScreen, isFuta }) =>
         fullScreen
             ? `
         transition: var(--transition);
-        background: var(--dark2);
+        background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         position: fixed;
         width: 100%;
         height: calc(100% - 56px);
@@ -109,7 +118,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
         top: 56px;
         z-index: 10;
 
-        background: var(--dark2);
+        background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
     `
             : `
         flex: 1 0;
@@ -124,8 +133,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
         overflow: hidden;
 
         @media (min-width: 1200px) {
-            background: var(--dark2);
-           
+            background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         }
 
         @media ((min-width: 801px) and (max-width:1200px)) {
