@@ -72,6 +72,8 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
+            tooltipText:
+                'Annual Percentage Rate (APR) for the pool is estimated using the following formula: 24h Fees / TVL * 365',
         },
         {
             label: 'TVL',

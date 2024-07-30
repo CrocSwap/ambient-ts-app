@@ -105,7 +105,13 @@ export default function TableInfo() {
                                     '...'
                                 }%`}
                             />
-                            <DetailedBox label='APR' value={aprString} />
+                            <DetailedBox
+                                label='APR'
+                                value={aprString}
+                                tooltipText={
+                                    'Annual Percentage Rate (APR) for the pool is estimated using the following formula: 24h Fees / TVL * 365'
+                                }
+                            />
                             {baseTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${baseToken.symbol} FDV`}
