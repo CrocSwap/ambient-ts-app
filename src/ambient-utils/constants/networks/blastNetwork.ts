@@ -27,7 +27,6 @@ export const blast: NetworkIF = {
     shouldPollBlock: true,
     marketData: '0x13e31',
     defaultPair: [blastETH, blastUSDB],
-    defaultPairFuta: [blastETH, blastUSDB],
     topPools: [
         new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
         new TopPool(blastETH, blastBLAST, lookupChain('0x13e31').poolIndex),

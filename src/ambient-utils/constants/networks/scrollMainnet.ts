@@ -34,7 +34,6 @@ export const scrollMainnet: NetworkIF = {
     shouldPollBlock: true,
     marketData: '0x82750',
     defaultPair: [scrollETH, scrollUSDC],
-    defaultPairFuta: [scrollETH, scrollUSDC],
     topPools: [
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
