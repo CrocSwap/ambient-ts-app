@@ -30,6 +30,7 @@ import RectSvg from '../../../../../assets/images/icons/draw/RectSvg';
 import FibRetracementSvg from '../../../../../assets/images/icons/draw/FibRetracementSvg';
 import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
 import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 
 /* interface ToolbarProps {
   
@@ -54,6 +55,8 @@ interface undoRedoButtonList {
 function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const { platformName } = useContext(BrandContext);
 
     const {
         toolbarRef,
@@ -323,7 +326,11 @@ function ChartToolbar() {
             }
             id='toolbar_container'
             ref={toolbarRef}
-            backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
+            backgroundColor={
+                mobileView || ['futa'].includes(platformName)
+                    ? 'var(--dark1)'
+                    : 'var(--dark2)'
+            }
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
         >

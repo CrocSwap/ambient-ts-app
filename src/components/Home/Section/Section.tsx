@@ -10,7 +10,6 @@ interface SectionProps {
 export default function Section({ page, customBackground }: SectionProps) {
     const pageRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLDivElement>(null);
-    console.log({ customBackground });
 
     useEffect(() => {
         const observer = new IntersectionObserver(

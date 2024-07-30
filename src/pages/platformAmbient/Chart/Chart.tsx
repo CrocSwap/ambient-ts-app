@@ -124,6 +124,9 @@ import {
 import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
+import { BrandContext } from '../../../contexts/BrandContext';
+import CandleLineChart from './LineChart/LineChart';
+
 interface propsIF {
     isTokenABase: boolean;
     liquidityData: liquidityChartData | undefined;
@@ -252,7 +255,9 @@ export default function Chart(props: propsIF) {
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
         setCandleData,
+        showFutaCandles,
     } = useContext(CandleContext);
+
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
@@ -263,6 +268,8 @@ export default function Chart(props: propsIF) {
     const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
+
+    const { platformName } = useContext(BrandContext);
 
     const [localCandleDomains, setLocalCandleDomains] =
         useState<CandleDomainIF>({
@@ -1337,7 +1344,10 @@ export default function Chart(props: propsIF) {
                                 setCursorStyleTrigger(true);
 
                                 if (rescale) {
-                                    changeScale(true);
+                                    if (!isCondensedModeEnabled) {
+                                        changeScale(true);
+                                    }
+                                    render();
                                 } else {
                                     let domain = undefined;
                                     if (
@@ -1533,6 +1543,11 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [diffHashSigScaleData(scaleData)]);
+
+    useEffect(() => {
+        renderCanvasArray([d3CanvasMain]);
+        render();
+    }, [diffHashSig(showFutaCandles)]);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('timeframe changed');
@@ -4206,20 +4221,30 @@ export default function Chart(props: propsIF) {
                 (!isTriggeredByZoom || unparsedCandleData.length > 10) &&
                 poolPriceWithoutDenom
             ) {
+                const isLine = ['futa'].includes(platformName);
+
                 const placeHolderPrice = denomInBase
                     ? 1 / poolPriceWithoutDenom
                     : poolPriceWithoutDenom;
 
                 const filteredMin = d3.min(unparsedCandleData, (d) =>
                     denomInBase
-                        ? d.invMaxPriceExclMEVDecimalCorrected
-                        : d.minPriceExclMEVDecimalCorrected,
+                        ? isLine
+                            ? d.invPriceCloseExclMEVDecimalCorrected
+                            : d.invMaxPriceExclMEVDecimalCorrected
+                        : isLine
+                          ? d.priceCloseExclMEVDecimalCorrected
+                          : d.minPriceExclMEVDecimalCorrected,
                 );
 
                 const filteredMax = d3.max(unparsedCandleData, (d) =>
                     denomInBase
-                        ? d.invMinPriceExclMEVDecimalCorrected
-                        : d.maxPriceExclMEVDecimalCorrected,
+                        ? isLine
+                            ? d.invPriceCloseExclMEVDecimalCorrected
+                            : d.invMinPriceExclMEVDecimalCorrected
+                        : isLine
+                          ? d.priceCloseExclMEVDecimalCorrected
+                          : d.maxPriceExclMEVDecimalCorrected,
                 );
 
                 if (filteredMin && filteredMax) {
@@ -5896,22 +5921,36 @@ export default function Chart(props: propsIF) {
                     gridTemplateRows: '1fr auto auto auto',
                 }}
             >
-                <CandleChart
-                    chartItemStates={props.chartItemStates}
-                    data={unparsedCandleData}
-                    denomInBase={denomInBase}
-                    lastCandleData={lastCandleData}
-                    period={period}
-                    scaleData={scaleData}
-                    selectedDate={selectedDate}
-                    showLatest={showLatest}
-                    setBandwidth={setBandwidth}
-                    prevlastCandleTime={prevlastCandleTime}
-                    setPrevLastCandleTime={setPrevLastCandleTime}
-                    isDiscontinuityScaleEnabled={isCondensedModeEnabled}
-                    visibleDateForCandle={visibleDateForCandle}
-                    chartThemeColors={chartThemeColors}
-                />
+                {platformName !== 'futa' || showFutaCandles ? (
+                    <CandleChart
+                        chartItemStates={props.chartItemStates}
+                        data={unparsedCandleData}
+                        denomInBase={denomInBase}
+                        lastCandleData={lastCandleData}
+                        period={period}
+                        scaleData={scaleData}
+                        selectedDate={selectedDate}
+                        showLatest={showLatest}
+                        setBandwidth={setBandwidth}
+                        prevlastCandleTime={prevlastCandleTime}
+                        setPrevLastCandleTime={setPrevLastCandleTime}
+                        isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                        visibleDateForCandle={visibleDateForCandle}
+                        chartThemeColors={chartThemeColors}
+                    />
+                ) : (
+                    <CandleLineChart
+                        period={period}
+                        scaleData={scaleData}
+                        denomInBase={denomInBase}
+                        data={visibleCandleData}
+                        showLatest={showLatest}
+                        lastCandleData={lastCandleData}
+                        prevlastCandleTime={prevlastCandleTime}
+                        setPrevLastCandleTime={setPrevLastCandleTime}
+                        chartThemeColors={chartThemeColors}
+                    />
+                )}
 
                 <VolumeBarCanvas
                     scaleData={scaleData}
@@ -5923,7 +5962,7 @@ export default function Chart(props: propsIF) {
                     chartThemeColors={chartThemeColors}
                 />
 
-                {liquidityData && (
+                {liquidityData && platformName !== 'futa' && (
                     <LiquidityChart
                         liqMode={liqMode}
                         liquidityData={liquidityData}

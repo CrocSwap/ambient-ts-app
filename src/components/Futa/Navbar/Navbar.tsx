@@ -17,7 +17,11 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { openInNewTab, trimString } from '../../../ambient-utils/dataLayer';
+import {
+    chainNumToString,
+    openInNewTab,
+    trimString,
+} from '../../../ambient-utils/dataLayer';
 import {
     DISCORD_LINK,
     DOCS_LINK,
@@ -26,6 +30,12 @@ import {
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
 import Toggle from '../../Form/Toggle';
 import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
+import {
+    linkGenMethodsIF,
+    swapParamsIF,
+    useLinkGen,
+} from '../../../utils/hooks/useLinkGen';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 // Animation Variants
 const dropdownVariants = {
@@ -90,6 +100,7 @@ export default function Navbar() {
     const { resetUserGraphData } = useContext(GraphDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
     const { setShowAllData } = useContext(TradeTableContext);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -180,12 +191,25 @@ export default function Navbar() {
         { label: 'legal & privacy', link: '/privacy' },
         { label: 'terms of service', link: '/terms' },
     ];
+
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+
+    const swapParams: swapParamsIF = {
+        chain: chainNumToString(tokenA.chainId),
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
+
     const navbarLinks = [
         {
             label: 'Auctions',
             link: selectedTicker
                 ? `/auctions/v1/${selectedTicker}`
                 : '/auctions',
+        },
+        {
+            label: 'Swap',
+            link: linkGenSwap.getFullURL(swapParams),
         },
         {
             label: 'Account',
