@@ -4,6 +4,7 @@ interface paramsObjIF {
     tokenB: string;
     lowTick?: string;
     highTick?: string;
+    limitTick?: string;
 }
 
 export function formSlugForPairParams(paramsObj: paramsObjIF): string {

@@ -36,6 +36,7 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import useDollarPrice from '../../Chart/ChartUtils/getDollarPrice';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -94,6 +95,8 @@ function TradeCharts(props: propsIF) {
     } = useContext(ChartContext);
 
     const { isUserConnected } = useContext(UserDataContext);
+
+    const { platformName } = useContext(BrandContext);
 
     const { pathname } = useLocation();
 
@@ -312,17 +315,19 @@ function TradeCharts(props: propsIF) {
             <div>
                 <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
-            <div>
-                <VolumeTVLFee
-                    setShowVolume={setShowVolume}
-                    setShowTvl={setShowTvl}
-                    setShowFeeRate={setShowFeeRate}
-                    showVolume={showVolume}
-                    showTvl={showTvl}
-                    showFeeRate={showFeeRate}
-                />
-            </div>
-            {isUserConnected && (
+            {!['futa'].includes(platformName) && (
+                <div>
+                    <VolumeTVLFee
+                        setShowVolume={setShowVolume}
+                        setShowTvl={setShowTvl}
+                        setShowFeeRate={setShowFeeRate}
+                        showVolume={showVolume}
+                        showTvl={showTvl}
+                        showFeeRate={showFeeRate}
+                    />
+                </div>
+            )}
+            {isUserConnected && !['futa'].includes(platformName) && (
                 <div>
                     <OrderHistoryDisplay
                         setShowHistorical={setShowHistorical}
@@ -334,9 +339,11 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            <div>
-                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
-            </div>
+            {!['futa'].includes(platformName) && (
+                <div>
+                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
+                </div>
+            )}
             <div className={styles.chart_overlay_container}>
                 {resetAndRescaleDisplay}
             </div>
@@ -354,6 +361,10 @@ function TradeCharts(props: propsIF) {
                 fullHeight
                 fullWidth
                 style={{
+                    padding:
+                        isChartFullScreen || ['futa'].includes(platformName)
+                            ? '1rem'
+                            : '0',
                     background: isChartFullScreen ? 'var(--dark2)' : '',
                 }}
                 ref={chartCanvasRef}

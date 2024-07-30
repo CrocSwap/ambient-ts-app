@@ -46,6 +46,8 @@ interface CandleContextIF {
     timeOfEndCandle: number | undefined;
     isCondensedModeEnabled: boolean;
     setIsCondensedModeEnabled: Dispatch<SetStateAction<boolean>>;
+    showFutaCandles: boolean;
+    setShowFutaCandles: Dispatch<SetStateAction<boolean>>;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -92,6 +94,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     >();
 
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
+    const [showFutaCandles, setShowFutaCandles] = useState(false);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
     const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
@@ -159,6 +162,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
+        showFutaCandles,
+        setShowFutaCandles,
     };
 
     useEffect(() => {
