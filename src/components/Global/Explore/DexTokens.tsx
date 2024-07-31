@@ -37,6 +37,7 @@ export interface HeaderItem {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
+    tooltipText?: string | JSX.Element;
 }
 
 interface propsIF {
@@ -91,6 +92,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
+            tooltipText: 'Total trade volume',
         },
         {
             label: 'TVL',
@@ -99,6 +101,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
+            tooltipText: 'Total Value Locked',
         },
         {
             label: 'Fees',
@@ -107,6 +110,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
+            tooltipText: 'Total fees collected',
         },
         {
             label: '',
