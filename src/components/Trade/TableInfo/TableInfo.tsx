@@ -81,6 +81,7 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='Total Vol.'
                                 value={`$${poolVolume?.toString() || '...'}`}
+                                tooltipText='Total volume since pool initialization'
                             />
                             <DetailedBox
                                 label='24h Vol.'
@@ -90,10 +91,12 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='TVL'
                                 value={`$${poolTvl?.toString() || '...'}`}
+                                tooltipText='Total value locked in the pool'
                             />
                             <DetailedBox
                                 label='Total Fees'
                                 value={`$${poolFeesTotal?.toString() || '...'}`}
+                                tooltipText='Total fees collected since pool initialization'
                             />
                             <DetailedBox
                                 label='24h Fees'
@@ -106,6 +109,7 @@ export default function TableInfo() {
                                     liquidityProviderFeeString?.toString() ||
                                     '...'
                                 }%`}
+                                tooltipText={`This is a dynamically updated rate to reward ${quoteToken.symbol} / ${baseToken.symbol} liquidity providers`}
                             />
                             <DetailedBox
                                 label='APR'

@@ -106,7 +106,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
-            // tooltipText: '24h price explanation',
+            tooltipText: 'The change in price over the last 24 hours',
         },
         {
             label: '',
