@@ -24,10 +24,13 @@ import {
 import { FlexContainer, Text } from '../../../styled/Common';
 import { Link } from 'react-router-dom';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { BrandContext } from '../../../contexts/BrandContext';
 
 export default function MobileLandingSections() {
     const { isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
+    const { showPoints } = useContext(BrandContext);
+
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
@@ -130,24 +133,27 @@ export default function MobileLandingSections() {
                     </MobileMainLogo>
                 )}
 
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    gap={8}
-                >
-                    <Text fontSize='body' style={{ marginTop: '2.5px' }}>
-                        Points system now live!{' '}
-                    </Text>
-                    <Link to='/xp-leaderboard'>
-                        <Text
-                            fontSize='body'
-                            color='accent1'
-                            style={{ textDecoration: 'underline' }}
-                        >
-                            View Leaderboard
+                {showPoints && (
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        gap={8}
+                    >
+                        <Text fontSize='body' style={{ marginTop: '2.5px' }}>
+                            Points system now live!{' '}
                         </Text>
-                    </Link>
-                </FlexContainer>
+                        <Link to='/xp-leaderboard'>
+                            <Text
+                                fontSize='body'
+                                color='accent1'
+                                style={{ textDecoration: 'underline' }}
+                            >
+                                View Leaderboard
+                            </Text>
+                        </Link>
+                    </FlexContainer>
+                )}
+
                 <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
                 </div>

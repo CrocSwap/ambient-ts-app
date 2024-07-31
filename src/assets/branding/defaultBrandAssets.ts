@@ -54,7 +54,7 @@ export const defaultBrandAssets: brandIF = {
     },
     platformName: 'ambient',
     fontSet: 'ambient',
-    showPoints: true,
+    showPoints: false,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: true,
