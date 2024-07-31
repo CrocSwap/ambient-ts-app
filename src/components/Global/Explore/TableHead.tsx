@@ -25,7 +25,7 @@ const TableHead = (props: propsIF) => {
                         sortedPools.current === item.label.toLowerCase();
                     return (
                         <TableHeaderCell
-                            key={JSON.stringify(item)}
+                            key={JSON.stringify(item.label)}
                             align={item.align}
                             sortable={item.sortable}
                             pxValue={item.pxValue}
