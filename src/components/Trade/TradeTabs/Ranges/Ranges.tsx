@@ -42,7 +42,6 @@ import {
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
 import Toggle from '../../../Form/Toggle';
 
@@ -213,8 +212,15 @@ function Ranges(props: propsIF) {
     //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
     //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
+    const filteredSortedPositions = useMemo(() => {
+        // filter out empty positions on account view when hideEmptyPositionsOnAccount is true
+        return hideEmptyPositionsOnAccount && isAccountView
+            ? sortedPositions.filter((position) => position.positionLiq !== 0)
+            : sortedPositions;
+    }, [hideEmptyPositionsOnAccount, isAccountView, sortedPositions]);
+
     const _DATA = usePagination(
-        sortedPositions,
+        filteredSortedPositions,
         // , isScreenShort, isScreenTall
     );
 
@@ -259,14 +265,6 @@ function Ranges(props: propsIF) {
         [positionsByUser.positions],
     );
 
-    const showPagination =
-        rowsPerPage > 0 &&
-        ((isAccountView && rangeData.length > 2) ||
-            (!isAccountView && tradePageCheck));
-
-    const showEmptyToggleButton =
-        connectedAccountActive && userHasEmptyPositions;
-
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && rangeData.length > 2) ||
             (!isAccountView && tradePageCheck)) && (
@@ -309,9 +307,18 @@ function Ranges(props: propsIF) {
                         >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
                     )}
                 </FlexContainer>
-                {connectedAccountActive && (
-                    // userHasEmptyPositions &&
-                    <HideEmptyPositionContainer>
+                {connectedAccountActive && userHasEmptyPositions && (
+                    <HideEmptyPositionContainer
+                        onClick={() => {
+                            localStorage.setItem(
+                                LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                String(!hideEmptyPositionsOnAccount),
+                            );
+                            setHideEmptyPositionsOnAccount(
+                                !hideEmptyPositionsOnAccount,
+                            );
+                        }}
+                    >
                         <p>Hide Empty Positions</p>
 
                         <Toggle
