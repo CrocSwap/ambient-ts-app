@@ -1,3 +1,5 @@
+import Seperator from '../../../components/Futa/Seperator/Seperator';
+import Divider from '../../../components/Futa/Divider/FutaDivider';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 
 import Trade from '../../platformAmbient/Trade/Trade';
@@ -9,9 +11,16 @@ function SwapFuta() {
     return (
         <section className={styles.mainSection}>
             <div className={styles.chartSection}>
+                <Divider count={2} />
                 <Trade />
             </div>
-            <Swap isOnTradeRoute />
+
+            <Seperator dots={100} />
+
+            <div>
+                <Divider count={2} />
+                <Swap isOnTradeRoute />
+            </div>
         </section>
     );
 }
