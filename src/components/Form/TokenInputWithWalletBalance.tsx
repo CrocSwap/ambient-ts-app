@@ -79,12 +79,12 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const walletBalanceBigInt = tokenBalance
         ? stringToBigInt(tokenBalance, token.decimals)
         : BigInt(0);
-
     const dexBalanceBigInt = tokenDexBalance
         ? stringToBigInt(tokenDexBalance, token.decimals)
         : BigInt(0);
 
     const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
+
     const walletAndExchangeBalance =
         tokenBalance && tokenDexBalance
             ? toDecimal(
@@ -204,6 +204,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
                 isPoolInitialized={isPoolInitialized}
+                walletBalance={walletBalance}
             />
             {handleRefresh && (
                 <RefreshButton
