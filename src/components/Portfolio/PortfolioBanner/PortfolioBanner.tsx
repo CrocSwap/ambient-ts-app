@@ -36,6 +36,7 @@ export default function PortfolioBanner(props: propsIF) {
         props;
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
+
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
     const isSmallScreen = useMediaQuery('(max-width: 800px)');
