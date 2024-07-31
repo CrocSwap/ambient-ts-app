@@ -5,10 +5,10 @@ import {
     getFormattedNumber,
     getUnicodeCharacter,
 } from '../../../../../ambient-utils/dataLayer';
-import { FlexContainer } from '../../../../../styled/Common';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import DropdownSearch from '../../../../../components/Global/DropdownSearch/DropdownSearch';
 import PoolData from './PoolData';
+import styles from './TradeChartsTokenInfo.module.css';
 
 function TradeChartsTokenInfo() {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
@@ -61,11 +61,13 @@ function TradeChartsTokenInfo() {
         toggleDidUserFlipDenom,
     };
     return (
-        <FlexContainer alignItems='center' gap={16}>
-            <DropdownSearch />
+        <div className={styles.container}>
+            <div className={styles.dropdownContainer}>
+                <DropdownSearch />
+            </div>
 
             <PoolData {...poolDataProps} />
-        </FlexContainer>
+        </div>
     );
 }
 
