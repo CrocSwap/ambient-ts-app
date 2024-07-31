@@ -11,7 +11,7 @@ export const futaBrandAssets: brandIF = {
     },
     platformName: 'futa',
     fontSet: 'futa',
-    showPoints: true,
+    showPoints: false,
     showDexStats: false,
     headerImage: large as string,
     includeCanto: false,
