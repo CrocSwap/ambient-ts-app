@@ -4,7 +4,7 @@ import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { memo } from 'react';
 
 interface TooltipComponentProps {
-    title: string;
+    title: string | JSX.Element;
 
     icon?: JSX.Element;
     placement?:

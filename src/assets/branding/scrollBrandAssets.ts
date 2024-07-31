@@ -16,7 +16,7 @@ export const scrollBrandAssets: brandIF = {
     },
     platformName: 'scroll',
     fontSet: 'ambient',
-    showPoints: true,
+    showPoints: false,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: false,
