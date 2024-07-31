@@ -71,9 +71,6 @@ export const TradeTableContextProvider = (props: {
     const [showRangePulseAnimation, setShowRangePulseAnimation] =
         useState(false);
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
-    useEffect(() => {
-        console.log({ selectedOutsideTab });
-    }, [selectedOutsideTab]);
     const [outsideControl, setOutsideControl] = useState(false);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
@@ -85,7 +82,7 @@ export const TradeTableContextProvider = (props: {
     const [hideEmptyPositionsOnAccount, setHideEmptyPositionsOnAccount] =
         useState<boolean>(
             getLocalStorageItem(LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT) ===
-                'true' ?? false,
+                'true',
         );
 
     useEffect(() => {

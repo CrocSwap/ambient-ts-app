@@ -42,10 +42,7 @@ import {
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
-import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { BiHide } from 'react-icons/bi';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
-import { IoEyeSharp } from 'react-icons/io5';
 import Toggle from '../../../Form/Toggle';
 
 // interface for props
@@ -303,11 +300,9 @@ function Ranges(props: propsIF) {
                         >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
                     )}
                 </FlexContainer>
-                {connectedAccountActive && (
-                    // userHasEmptyPositions &&
+                {connectedAccountActive && userHasEmptyPositions && (
                     <HideEmptyPositionContainer
                         onClick={() => {
-                            console.log('hide empty positions');
                             localStorage.setItem(
                                 LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
                                 String(!hideEmptyPositionsOnAccount),
@@ -317,15 +312,12 @@ function Ranges(props: propsIF) {
                             );
                         }}
                     >
-                        {/* {hideEmptyPositionsOnAccount ? <IoEyeSharp size={20} color='var(--accent1)' /> : <BiHide size={20} color='var(--accent1)' />
-                        } */}
                         <p>Hide Empty Positions</p>
 
                         <Toggle
                             isOn={hideEmptyPositionsOnAccount}
                             disabled={false}
                             handleToggle={() => {
-                                console.log('hide empty positions');
                                 localStorage.setItem(
                                     LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
                                     String(!hideEmptyPositionsOnAccount),
