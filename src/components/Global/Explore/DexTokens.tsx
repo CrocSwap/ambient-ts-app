@@ -101,7 +101,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
-            tooltipText: 'Total Value Locked',
+            tooltipText: 'Total value locked',
         },
         {
             label: 'Fees',

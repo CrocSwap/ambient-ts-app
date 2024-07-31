@@ -98,7 +98,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
-            tooltipText: 'Total Value Locked',
+            tooltipText: 'Total value locked',
         },
         {
             label: '24h Price Δ',
