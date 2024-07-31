@@ -28,7 +28,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         LUSD: 95,
         USDPLUS: 95,
         USDE: 95,
-        GOONUSD: 95,
+        GNUSD: 95,
         SUSDE: 90,
         DAI: 90,
         USDT: 80,

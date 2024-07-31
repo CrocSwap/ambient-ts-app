@@ -677,7 +677,7 @@ export const plumeSepoliaGoon: TokenIF = {
 export const plumeSepoliaGoonUSD: TokenIF = {
     name: 'Plume USD Stablecoin',
     address: '0x5c1409a46cd113b3a667db6df0a8d7be37ed3bb3',
-    symbol: 'goonUSD',
+    symbol: 'gnUSD',
     decimals: 18,
     chainId: 161221135,
     logoURI: '',
