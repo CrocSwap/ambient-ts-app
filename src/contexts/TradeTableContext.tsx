@@ -81,8 +81,11 @@ export const TradeTableContextProvider = (props: {
 
     const [hideEmptyPositionsOnAccount, setHideEmptyPositionsOnAccount] =
         useState<boolean>(
-            getLocalStorageItem(LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT) ===
-                'true',
+            getLocalStorageItem(LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT) !== null
+                ? getLocalStorageItem(
+                      LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                  ) === 'true'
+                : true,
         );
 
     useEffect(() => {
