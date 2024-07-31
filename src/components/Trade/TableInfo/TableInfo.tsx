@@ -27,6 +27,8 @@ export default function TableInfo() {
         poolFeesTotal,
         poolVolume,
         poolVolume24h,
+        apr,
+        poolFees24h,
     } = poolData;
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
@@ -51,6 +53,8 @@ export default function TableInfo() {
             maximumFractionDigits: 2,
         },
     );
+
+    const aprString = apr ? (apr === '0.00' ? '< 0.01%' : apr + '%') : '...';
 
     return (
         <MainSection>
@@ -77,18 +81,27 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='Total Vol.'
                                 value={`$${poolVolume?.toString() || '...'}`}
+                                tooltipText='Total volume since pool initialization'
                             />
                             <DetailedBox
                                 label='24h Vol.'
                                 value={`$${poolVolume24h?.toString() || '...'}`}
+                                tooltipText='Total volume in the last 24 hours'
                             />
                             <DetailedBox
                                 label='TVL'
                                 value={`$${poolTvl?.toString() || '...'}`}
+                                tooltipText='Total value locked in the pool'
                             />
                             <DetailedBox
                                 label='Total Fees'
                                 value={`$${poolFeesTotal?.toString() || '...'}`}
+                                tooltipText='Total fees collected since pool initialization'
+                            />
+                            <DetailedBox
+                                label='24h Fees'
+                                value={`$${poolFees24h?.toString() || '...'}`}
+                                tooltipText='Total fees collected in the last 24 hours'
                             />
                             <DetailedBox
                                 label='Current Fee Rate'
@@ -96,17 +109,39 @@ export default function TableInfo() {
                                     liquidityProviderFeeString?.toString() ||
                                     '...'
                                 }%`}
+                                tooltipText={`This is a dynamically updated rate to reward ${quoteToken.symbol} / ${baseToken.symbol} liquidity providers`}
+                            />
+                            <DetailedBox
+                                label='APR'
+                                value={aprString}
+                                tooltipText={
+                                    <>
+                                        <div>
+                                            Annual Percentage Rate (APR) is
+                                            estimated using the following
+                                            formula: 24h Fees / TVL × 365
+                                        </div>
+                                        <div>{' '}</div>
+                                        <div>
+                                            This estimate is based on historical
+                                            data. Past performance does not
+                                            guarantee future results.
+                                        </div>
+                                    </>
+                                }
                             />
                             {baseTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${baseToken.symbol} FDV`}
                                     value={baseTokenFdvDisplay}
+                                    tooltipText={`Fully Diluted Value (FDV) is the product of the total supply of ${baseToken.symbol} and the current market price of ${baseToken.symbol}.`}
                                 />
                             )}
                             {quoteTokenFdvDisplay && (
                                 <DetailedBox
                                     label={`${quoteToken.symbol} FDV`}
                                     value={quoteTokenFdvDisplay}
+                                    tooltipText={`Fully Diluted Value (FDV) is the product of the total supply of ${quoteToken.symbol} and the current market price of ${quoteToken.symbol}.`}
                                 />
                             )}
                         </GridContainer>
