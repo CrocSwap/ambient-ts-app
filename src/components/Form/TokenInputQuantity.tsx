@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-import { uriToHttp } from '../../ambient-utils/dataLayer';
+import { getFormattedNumber, uriToHttp } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
 import Spinner from '../Global/Spinner/Spinner';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
@@ -69,7 +69,7 @@ function TokenInputQuantity(props: propsIF) {
         noModals,
         walletBalance,
     } = props;
-
+    console.log(walletBalance);
     const { platformName } = useContext<BrandContextIF>(BrandContext);
 
     const location = useLocation();
@@ -263,7 +263,12 @@ function TokenInputQuantity(props: propsIF) {
                     className={styles.walletBalanceButton}
                     style={{ cursor: 'default' }}
                 >
-                    {walletBalance}
+                    {walletBalance
+                        ? getFormattedNumber({
+                              value: parseFloat(walletBalance),
+                              abbrevThreshold: 100000, // use 'm', 'b' format > 10m
+                          })
+                        : '...'}
                 </button>
             </div>
             {isTickerModalOpen && (

@@ -23,6 +23,8 @@
     background: var(--dark2, #12121a);
 }
 
+
+
 .rightContainer {
     display: flex;
     flex-direction: row;
@@ -57,6 +59,21 @@
 
 .linkContainer:hover {
     color: var(--text1);
+}
+
+.skipAnimationContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    color: var(--text1, #f0f0f8);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.36px;
+    text-transform: uppercase;
+    text-align: center;
 }
 
 .version {
@@ -112,6 +129,12 @@
 
 
 @media (min-width: 768px) {
+
+    .container{
+        position: sticky;
+        top: 0;
+        z-index: 99;
+    }
     .connectButton {
         max-width: 300px;
     }
@@ -121,4 +144,6 @@
         left: auto;
         right: 16px;
     }
+
+    
 }
