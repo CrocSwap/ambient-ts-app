@@ -140,6 +140,7 @@ export default function App() {
                 )}
                 <AppOverlay />
                 <PageHeader />
+
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
