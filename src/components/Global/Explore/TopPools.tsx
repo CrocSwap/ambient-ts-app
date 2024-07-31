@@ -65,7 +65,13 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: false,
         },
-        { label: '24h Vol.', hidden: false, align: 'right', sortable: true },
+        {
+            label: '24h Vol.',
+            hidden: false,
+            align: 'right',
+            sortable: true,
+            tooltipText: 'Total volume in the last 24 hours',
+        },
         {
             label: 'APR',
             hidden: true,
@@ -75,8 +81,8 @@ function TopPools(props: propsIF) {
             tooltipText: (
                 <>
                     <div>
-                        Annual Percentage Rate (APR) for the pool is estimated
-                        using the following formula: 24h Fees / TVL × 365
+                        Annual Percentage Rate (APR) is estimated using the
+                        following formula: 24h Fees / TVL × 365
                     </div>
                     <div>{' '}</div>
                     <div>

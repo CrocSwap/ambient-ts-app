@@ -85,6 +85,7 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='24h Vol.'
                                 value={`$${poolVolume24h?.toString() || '...'}`}
+                                tooltipText='Total volume in the last 24 hours'
                             />
                             <DetailedBox
                                 label='TVL'
@@ -97,6 +98,7 @@ export default function TableInfo() {
                             <DetailedBox
                                 label='24h Fees'
                                 value={`$${poolFees24h?.toString() || '...'}`}
+                                tooltipText='Total fees collected in the last 24 hours'
                             />
                             <DetailedBox
                                 label='Current Fee Rate'
@@ -111,10 +113,9 @@ export default function TableInfo() {
                                 tooltipText={
                                     <>
                                         <div>
-                                            Annual Percentage Rate (APR) for the
-                                            pool is estimated using the
-                                            following formula: 24h Fees / TVL ×
-                                            365
+                                            Annual Percentage Rate (APR) is
+                                            estimated using the following
+                                            formula: 24h Fees / TVL × 365
                                         </div>
                                         <div>{' '}</div>
                                         <div>
