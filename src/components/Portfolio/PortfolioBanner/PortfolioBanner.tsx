@@ -31,14 +31,6 @@ interface propsIF {
     resolvedUserXp: UserXpDataIF;
 }
 
-// const showPagination =
-// rowsPerPage > 0 &&
-// ((isAccountView && rangeData.length > 2) ||
-//     (!isAccountView && tradePageCheck));
-
-// const showEmptyToggleButton =
-// connectedAccountActive && userHasEmptyPositions;
-
 export default function PortfolioBanner(props: propsIF) {
     const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
         props;

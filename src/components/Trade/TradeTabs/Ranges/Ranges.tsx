@@ -265,20 +265,28 @@ function Ranges(props: propsIF) {
         [positionsByUser.positions],
     );
 
-    const footerDisplay = rowsPerPage > 0 &&
-        ((isAccountView && rangeData.length > 2) ||
-            (!isAccountView && tradePageCheck)) && (
-            <FlexContainer
-                alignItems='center'
-                justifyContent='space-between'
-                fullWidth
-                flexDirection={isSmallScreen ? 'column' : 'row'}
-            >
+    const showPagination =
+        rowsPerPage > 0 &&
+        ((isAccountView && rangeData.length > 10) ||
+            (!isAccountView && tradePageCheck));
+
+    const showEmptyToggleButton =
+        connectedAccountActive && userHasEmptyPositions;
+
+    const footerDisplay = (
+        <FlexContainer
+            alignItems='center'
+            justifyContent='space-between'
+            fullWidth
+            flexDirection={isSmallScreen ? 'column' : 'row'}
+            margin={isSmallScreen ? '20px auto' : '16px auto'}
+        >
+            {showPagination && (
                 <FlexContainer
+                    fullWidth
                     alignItems='center'
                     justifyContent='center'
                     gap={isSmallScreen ? 4 : 8}
-                    margin={isSmallScreen ? '20px auto' : '16px auto'}
                     background='dark1'
                     flexDirection={isSmallScreen ? 'column-reverse' : 'row'}
                 >
@@ -307,9 +315,26 @@ function Ranges(props: propsIF) {
                         >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
                     )}
                 </FlexContainer>
-                {connectedAccountActive && userHasEmptyPositions && (
-                    <HideEmptyPositionContainer
-                        onClick={() => {
+            )}
+            {showEmptyToggleButton && (
+                <HideEmptyPositionContainer
+                    onClick={() => {
+                        localStorage.setItem(
+                            LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                            String(!hideEmptyPositionsOnAccount),
+                        );
+                        setHideEmptyPositionsOnAccount(
+                            !hideEmptyPositionsOnAccount,
+                        );
+                    }}
+                    style={{ width: !showPagination ? '100%' : 'auto' }}
+                >
+                    <p>Hide Empty Positions</p>
+
+                    <Toggle
+                        isOn={hideEmptyPositionsOnAccount}
+                        disabled={false}
+                        handleToggle={() => {
                             localStorage.setItem(
                                 LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
                                 String(!hideEmptyPositionsOnAccount),
@@ -318,28 +343,13 @@ function Ranges(props: propsIF) {
                                 !hideEmptyPositionsOnAccount,
                             );
                         }}
-                    >
-                        <p>Hide Empty Positions</p>
-
-                        <Toggle
-                            isOn={hideEmptyPositionsOnAccount}
-                            disabled={false}
-                            handleToggle={() => {
-                                localStorage.setItem(
-                                    LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
-                                    String(!hideEmptyPositionsOnAccount),
-                                );
-                                setHideEmptyPositionsOnAccount(
-                                    !hideEmptyPositionsOnAccount,
-                                );
-                            }}
-                            id='toggle_empty_positions_liquidity'
-                            aria-label='toggle empty positions'
-                        />
-                    </HideEmptyPositionContainer>
-                )}
-            </FlexContainer>
-        );
+                        id='toggle_empty_positions_liquidity'
+                        aria-label='toggle empty positions'
+                    />
+                </HideEmptyPositionContainer>
+            )}
+        </FlexContainer>
+    );
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (

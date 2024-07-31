@@ -312,6 +312,8 @@ export const HideEmptyPositionContainer = styled.button`
     white-space: nowrap;
     display: flex;
     flex-direction: row;
+
+    justify-content: flex-end;
     align-items: center;
     color: var(--accent1);
     background: transparent;
