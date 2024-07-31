@@ -24,7 +24,7 @@ export interface HeaderItem {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
-    tooltipText?: string;
+    tooltipText?: string | JSX.Element;
 }
 
 interface propsIF {
@@ -72,8 +72,19 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
-            tooltipText:
-                'Annual Percentage Rate (APR) for the pool is estimated using the following formula: 24h Fees / TVL * 365',
+            tooltipText: (
+                <>
+                    <div>
+                        Annual Percentage Rate (APR) for the pool is estimated
+                        using the following formula: 24h Fees / TVL × 365
+                    </div>
+                    <div>{' '}</div>
+                    <div>
+                        This estimate is based on historical data. Past
+                        performance does not guarantee future results.
+                    </div>
+                </>
+            ),
         },
         {
             label: 'TVL',

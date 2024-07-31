@@ -109,7 +109,20 @@ export default function TableInfo() {
                                 label='APR'
                                 value={aprString}
                                 tooltipText={
-                                    'Annual Percentage Rate (APR) for the pool is estimated using the following formula: 24h Fees / TVL * 365'
+                                    <>
+                                        <div>
+                                            Annual Percentage Rate (APR) for the
+                                            pool is estimated using the
+                                            following formula: 24h Fees / TVL ×
+                                            365
+                                        </div>
+                                        <div>{' '}</div>
+                                        <div>
+                                            This estimate is based on historical
+                                            data. Past performance does not
+                                            guarantee future results.
+                                        </div>
+                                    </>
                                 }
                             />
                             {baseTokenFdvDisplay && (
