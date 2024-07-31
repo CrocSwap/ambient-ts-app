@@ -1,11 +1,10 @@
 import React, { memo, useContext } from 'react';
-
+import styles from './TradeChartsTokenInfo.module.css';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
 } from '../../../../ambient-utils/dataLayer';
-import { FlexContainer } from '../../../../styled/Common';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import DropdownSearch from '../../../../components/Global/DropdownSearch/DropdownSearch';
 import PoolData from './PoolData';
@@ -46,10 +45,10 @@ function TradeChartsTokenInfo() {
             ? getFormattedNumber({ value: usdPrice, prefix: '$' })
             : '…'
         : poolPriceDisplay === Infinity ||
-          poolPriceDisplay === 0 ||
-          poolPriceDisplay === undefined
-        ? '…'
-        : `${currencyCharacter}${truncatedPoolPrice}`;
+            poolPriceDisplay === 0 ||
+            poolPriceDisplay === undefined
+          ? '…'
+          : `${currencyCharacter}${truncatedPoolPrice}`;
 
     const poolPriceChangeString =
         poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
@@ -61,11 +60,13 @@ function TradeChartsTokenInfo() {
         toggleDidUserFlipDenom,
     };
     return (
-        <FlexContainer alignItems='center' gap={16}>
-            <DropdownSearch />
+        <div className={styles.container}>
+            <div className={styles.dropdownContainer}>
+                <DropdownSearch />
+            </div>
 
             <PoolData {...poolDataProps} />
-        </FlexContainer>
+        </div>
     );
 }
 
