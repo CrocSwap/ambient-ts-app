@@ -212,8 +212,15 @@ function Ranges(props: propsIF) {
     //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
     //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
+    const filteredSortedPositions = useMemo(() => {
+        // filter out empty positions on account view when hideEmptyPositionsOnAccount is true
+        return hideEmptyPositionsOnAccount && isAccountView
+            ? sortedPositions.filter((position) => position.positionLiq !== 0)
+            : sortedPositions;
+    }, [hideEmptyPositionsOnAccount, isAccountView, sortedPositions]);
+
     const _DATA = usePagination(
-        sortedPositions,
+        filteredSortedPositions,
         // , isScreenShort, isScreenTall
     );
 
