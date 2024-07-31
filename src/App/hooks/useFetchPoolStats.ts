@@ -195,6 +195,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         setPoolPriceChangePercent(undefined);
         setIsPoolPriceChangePositive(true);
         setPoolPriceDisplayNum(undefined);
+        setPoolFees24h(undefined);
+        setApr(undefined);
         if (!location.pathname.includes('limitTick')) {
             setLimitTick(undefined);
         }
