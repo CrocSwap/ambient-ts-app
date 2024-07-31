@@ -1,0 +1,28 @@
+
+.container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+
+}
+
+.dropdownContainer{
+    padding-left: 1rem;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+}
+
+
+
+@media (min-width: 1500px) {
+.container{
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+.dropdownContainer{
+    padding-left: 0;
+}
+}
