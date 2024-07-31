@@ -1,83 +1,57 @@
+
+
 .container {
-    position: relative;
-    bottom: 0;
+  position: relative;
+  overflow-y: auto;
+  /* overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory; */
+  height: 100vh;
+  width: 100vw;
 
-    display: flex;
-    align-items: center;
-    width: 100vw;
-    height: calc(100vh - 64px);
-    padding: 8px;
-    overflow: hidden;
+  background-attachment: fixed;
+}
 
-  
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.container {
+  scrollbar-width: none;
+}
+
+.container {
+  -ms-overflow-style: none;
 }
 
 
-.content {
-    position: absolute;
-    bottom: 3%;
-    z-index: 2;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    gap: 8px;
+@media (max-height: 715px) {
+.container{
+height: auto;
 }
-
-.content a {
-    display: flex;
-    width: 180px;
-    height: 57px;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-    border: 1px solid transparent;
-
-    font-family: "Roboto Mono";
-    font-style: normal;
-    line-height: normal;
-    font-weight: 400;
-    font-size: 36px;
-    text-transform: uppercase;
-    text-align: center;
-
-    transition: all var(--animation-speed) ease-in-out;
-    outline: none;
-    border: none;
 }
 
 
 
+@media (max-width: 600px) {
 
+  .container{
 
+    
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+  }
 
-.exploreButton {
-    background: var(--accent1, #0CCDFF);
-    color: var(--dark1, #06060C);
-}
-
-.exploreButton:hover {
-    background: transparent;
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
-}
-
-.learnButton {
-    background: var(--accent2, #073749);
-    color: var(--accent1, #0CCDFF);
-}
-
-.learnButton:hover {
-    background: transparent;
-    border: 1px solid var(--accent1);
+  .dots{
+    display: none;
+  }
 }
 
 
-@media (max-width: 768px){
-    .content {
-       
-        bottom: 8%
-    }
+@media (min-width: 1600px) {
+  .container {
+
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+
+  }
 }

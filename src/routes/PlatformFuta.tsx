@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from '../pages/platformFuta/Home/Home';
 import Explore from '../pages/platformFuta/Explore/Explore';
@@ -21,22 +21,13 @@ import { CrocEnvContext } from '../contexts/CrocEnvContext';
 
 const PlatformFutaRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
-    const [hasVideoPlayedOnce, setHasVideoPlayedOnce] =
-        useState<boolean>(false);
+
     const desktopScreen: boolean = useMediaQuery('(min-width: 768px)');
 
     return (
         <div style={{ background: 'var(--dark1)' }}>
             <Routes>
-                <Route
-                    path='/'
-                    element={
-                        <Home
-                            hasVideoPlayedOnce={hasVideoPlayedOnce}
-                            setHasVideoPlayedOnce={setHasVideoPlayedOnce}
-                        />
-                    }
-                />
+                <Route path='/' element={<Home />} />
                 <Route
                     path='/swap'
                     element={<Navigate replace to={defaultUrlParams.swap} />}
