@@ -76,8 +76,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     const poolPriceCacheTime = isTradePair
         ? Math.floor(Date.now() / 5000) // 5 second cache for trade pair
         : isUserIdle
-        ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
-        : Math.floor(Date.now() / 10000); // 10 second interval if not idle
+          ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+          : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
@@ -150,6 +150,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolVolume24h, setPoolVolume24h] = useState<string | undefined>();
+    const [poolFees24h, setPoolFees24h] = useState<string | undefined>();
+    const [apr, setApr] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
     const [poolFeesTotal, setPoolFeesTotal] = useState<string | undefined>();
     // const [poolApy, setPoolApy] = useState<string | undefined>();
@@ -193,6 +195,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         setPoolPriceChangePercent(undefined);
         setIsPoolPriceChangePositive(true);
         setPoolPriceDisplayNum(undefined);
+        setPoolFees24h(undefined);
+        setApr(undefined);
         if (!location.pathname.includes('limitTick')) {
             setLimitTick(undefined);
         }
@@ -326,8 +330,11 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                     : 0.0;
 
             const tvlResult = expandedPoolStatsNow?.tvlTotalUsd;
-            const feesTotalResult = expandedPoolStatsNow?.feesTotalUsd;
+            const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
+            const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
             const volumeResult = expandedPoolStatsNow?.volumeTotalUsd;
+
+            const feesChange24h = feesTotalNow - feesTotal24hAgo;
 
             setQuoteTvlDecimal(expandedPoolStatsNow.quoteTvlDecimal);
             setBaseTvlDecimal(expandedPoolStatsNow.baseTvlDecimal);
@@ -343,9 +350,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 });
                 setPoolTvl(tvlString);
             }
-            if (feesTotalResult) {
+            if (feesTotalNow) {
                 const feesTotalString = getFormattedNumber({
-                    value: feesTotalResult,
+                    value: feesTotalNow,
                     isTvl: false,
                 });
                 setPoolFeesTotal(feesTotalString);
@@ -361,6 +368,20 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                     value: volumeChange24h,
                 });
                 setPoolVolume24h(volumeChange24hString);
+            }
+            if (feesChange24h) {
+                const feesChange24hString = getFormattedNumber({
+                    value: feesChange24h,
+                });
+                setPoolFees24h(feesChange24hString);
+            }
+            if (feesChange24h && tvlResult) {
+                const aprNum = feesChange24h / tvlResult;
+                const aprString = getFormattedNumber({
+                    value: aprNum * 100 * 365,
+                    isPercentage: true,
+                });
+                setApr(aprString);
             }
 
             // try {
@@ -428,8 +449,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         poolPriceDisplay === undefined
             ? '…'
             : shouldInvertDisplay
-            ? `${quoteTokenCharacter}${poolPriceDisplay}`
-            : `${baseTokenCharacter}${poolPriceDisplay}`;
+              ? `${quoteTokenCharacter}${poolPriceDisplay}`
+              : `${baseTokenCharacter}${poolPriceDisplay}`;
 
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
@@ -460,6 +481,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         quoteLogoUri,
         poolVolume,
         poolVolume24h,
+        poolFees24h,
+        apr,
         poolTvl,
         poolFeesTotal,
         // poolApy,

@@ -24,7 +24,7 @@ export interface HeaderItem {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
-    tooltipText?: string;
+    tooltipText?: string | JSX.Element;
 }
 
 interface propsIF {
@@ -65,14 +65,40 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: false,
         },
-        { label: '24h Vol.', hidden: false, align: 'right', sortable: true },
+        {
+            label: '24h Vol.',
+            hidden: false,
+            align: 'right',
+            sortable: true,
+            tooltipText: 'Total volume in the last 24 hours',
+        },
+        {
+            label: 'APR',
+            hidden: true,
+            align: 'right',
+            responsive: 'lg',
+            sortable: true,
+            tooltipText: (
+                <>
+                    <div>
+                        Annual Percentage Rate (APR) is estimated using the
+                        following formula: 24h Fees / TVL × 365
+                    </div>
+                    <div>{' '}</div>
+                    <div>
+                        This estimate is based on historical data. Past
+                        performance does not guarantee future results.
+                    </div>
+                </>
+            ),
+        },
         {
             label: 'TVL',
             hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: true,
-            tooltipText: 'Total Value Locked',
+            tooltipText: 'Total value locked',
         },
         {
             label: '24h Price Δ',
@@ -80,7 +106,7 @@ function TopPools(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
-            // tooltipText: '24h price explanation',
+            tooltipText: 'The change in price over the last 24 hours',
         },
         {
             label: '',
