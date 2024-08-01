@@ -1,3 +1,4 @@
+import Comments from '../../../components/Futa/Comments/Comments';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 
 import Trade from '../../platformAmbient/Trade/Trade';
@@ -12,6 +13,10 @@ function SwapFuta() {
                 <Trade />
             </div>
             <Swap isOnTradeRoute />
+
+            <div className={styles.comments_wrapper}>
+                <Comments />
+            </div>
         </section>
     );
 }
