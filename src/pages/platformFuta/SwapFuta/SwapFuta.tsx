@@ -14,8 +14,9 @@ function SwapFuta() {
                 <Divider count={2} />
                 <Trade />
             </div>
-
-            <Seperator dots={100} />
+            <div style={{ paddingBottom: '4px' }}>
+                <Seperator dots={100} />
+            </div>
 
             <div>
                 <Divider count={2} />
