@@ -4247,8 +4247,6 @@ export default function Chart(props: propsIF) {
                           : d.maxPriceExclMEVDecimalCorrected,
                 );
 
-                console.log(filteredMin, filteredMax);
-
                 if (filteredMin && filteredMax) {
                     minYBoundary = Math.min(placeHolderPrice, filteredMin);
                     maxYBoundary = Math.max(placeHolderPrice, filteredMax);

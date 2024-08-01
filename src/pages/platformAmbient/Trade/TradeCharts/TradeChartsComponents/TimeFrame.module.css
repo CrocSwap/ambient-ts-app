@@ -43,6 +43,7 @@
 
 .futa_active_selected_button,
 .futa_non_active_selected_button {
+    display: flex;
     background: var(--dark2);
     transition: var(--transition);
     cursor: pointer;
@@ -50,8 +51,12 @@
     line-height: var(--body-lh);
     color: var(--text2);
     text-align: center;
+    text-justify: auto;
     outline: none;
     position: relative;
+
+    align-items: center;
+    justify-content: center;
 
     border: none;
 
@@ -63,12 +68,10 @@
 .futa_active_selected_button:hover,
 .futa_non_active_selected_button:hover {
     background-color: var(--dark3);
-    color: var(--text1);
+    color: var(--accent1);
 }
 
 .futa_active_selected_button {
-    width: 100%;
-    height: 100%;
     color: var(--accent1);
     border: 1px solid var(--accent1);
 }
