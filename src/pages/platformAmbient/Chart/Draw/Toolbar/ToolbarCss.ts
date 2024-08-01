@@ -220,7 +220,7 @@ const DividerButton = styled.div<{ isActive: boolean }>`
         isActive ? 'var(--dark1)' : 'var(--accent1)}'};
 `;
 
-const ArrowRight = styled.span<{ isActive: boolean }>`
+const ArrowRight = styled.span<{ isActive: boolean; isFuta: boolean }>`
     ${({ isActive }) => {
         if (isActive) {
             return `
@@ -238,8 +238,10 @@ const ArrowRight = styled.span<{ isActive: boolean }>`
     display: inline-block;
     width: 5px;
     height: 5px;
-    border-top: 1px solid #dbdbdb;
-    border-right: 1px solid #dbdbdb;
+    border-top: ${({ isFuta, isActive }) =>
+        isFuta && !isActive ? '1px solid var(--dark1)' : '1px solid #dbdbdb'};
+    border-right: ${({ isFuta, isActive }) =>
+        isFuta && !isActive ? '1px solid var(--dark1)' : '1px solid #dbdbdb'};
     transition: all 600ms;
 `;
 

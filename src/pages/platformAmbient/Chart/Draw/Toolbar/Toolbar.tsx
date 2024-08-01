@@ -547,7 +547,10 @@ function ChartToolbar() {
                         setIsToolbarOpen((prev: boolean) => !prev)
                     }
                 >
-                    <ArrowRight isActive={isToolbarOpen}></ArrowRight>
+                    <ArrowRight
+                        isActive={isToolbarOpen}
+                        isFuta={['futa'].includes(platformName)}
+                    ></ArrowRight>
                 </DividerButton>
             </DividerContainer>
         </ToolbarContainer>
