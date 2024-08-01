@@ -69,7 +69,6 @@ function TokenInputQuantity(props: propsIF) {
         noModals,
         walletBalance,
     } = props;
-    console.log(walletBalance);
     const { platformName } = useContext<BrandContextIF>(BrandContext);
 
     const location = useLocation();
