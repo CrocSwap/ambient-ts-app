@@ -205,7 +205,7 @@ export default function OrderHistoryTooltip(props: {
                                 <HoveredTooltip
                                     hoveredTool={hoveredID}
                                     height={22}
-                                    width={470}
+                                    width={490}
                                     arrow={false}
                                 ></HoveredTooltip>
                             </div>
