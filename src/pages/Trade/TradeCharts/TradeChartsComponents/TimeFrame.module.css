@@ -95,7 +95,8 @@
     opacity: 1;
     pointer-events: auto;
     left: 30px;
-    top: 50px;
+    top: 25px;
+    z-index: 999;
 }
 
 .main_time_frame_container button:focus-visible,
