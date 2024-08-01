@@ -110,7 +110,7 @@
 .futa_active_selected_button:hover,
 .futa_non_active_selected_button:hover {
     background-color: var(--dark3);
-    color: var(--text1);
+    color: var(--accent1);
 }
 
 .futa_active_selected_button {
