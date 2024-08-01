@@ -49,6 +49,7 @@
     border-radius: var(--border-radius);
     border: 1px solid var(--dark3);
     text-transform: capitalize;
+    font-size: 7px;
 }
 
 .dropdown_menu {
@@ -92,12 +93,13 @@
 
     opacity: 0;
     pointer-events: none;
-    left: 0;
+    left: -30px;
 }
 
 .dropdown_wrapper_active {
     opacity: 1;
     /* top: 10px; */
     pointer-events: auto;
-    right: 70px;
+    left: -30px;
+    top: 30px;
 }
