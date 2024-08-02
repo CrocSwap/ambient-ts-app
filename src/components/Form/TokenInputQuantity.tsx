@@ -46,6 +46,7 @@ interface propsIF {
     usdValue?: string | undefined;
     walletBalance?: string;
     handleBalanceClick?: () => void;
+    percentDiffUsdValue?: number | undefined;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -68,7 +69,9 @@ function TokenInputQuantity(props: propsIF) {
         usdValue,
         noModals,
         walletBalance,
+        percentDiffUsdValue,
     } = props;
+
     const { platformName } = useContext<BrandContextIF>(BrandContext);
 
     const location = useLocation();
@@ -238,11 +241,32 @@ function TokenInputQuantity(props: propsIF) {
 
     const [isTickerModalOpen, setIsTickerModalOpen] = useState<boolean>(false);
 
+    const showWarning =
+        usdValue &&
+        percentDiffUsdValue !== undefined &&
+        percentDiffUsdValue < -10;
+
     const futaLayout = (
         <section className={styles.futaLayout}>
             <div className={styles.futaLayoutLeft}>
                 {inputDisplay}
-                <p>{usdValue}</p>
+                <p
+                    className={styles.usdValue}
+                    style={
+                        showWarning ? { color: 'var(--other-red)' } : undefined
+                    }
+                >
+                    {percentDiffUsdValue
+                        ? usdValue +
+                          ' (' +
+                          (percentDiffUsdValue !== undefined
+                              ? getFormattedNumber({
+                                    value: percentDiffUsdValue,
+                                    isPercentage: true,
+                                }) + '%)'
+                              : undefined)
+                        : usdValue}
+                </p>
             </div>
             <div className={styles.futaLayoutRight}>
                 <button
@@ -261,6 +285,7 @@ function TokenInputQuantity(props: propsIF) {
                 <button
                     className={styles.walletBalanceButton}
                     style={{ cursor: 'default' }}
+                    onClick={() => null}
                 >
                     {walletBalance
                         ? getFormattedNumber({
