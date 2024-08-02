@@ -13,7 +13,7 @@ function CurveDepth(props: propsIF) {
 
     const [showCurveDepthDropdown, setShowCurveDepthDropdown] = useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 968px)');
+    const mobileView = useMediaQuery('(max-width: 968px)');
 
     const curveDepthData = [
         {
@@ -82,7 +82,7 @@ function CurveDepth(props: propsIF) {
             </div>
         </div>
     );
-    if (desktopView) return curveDepthMobile;
+    if (mobileView) return curveDepthMobile;
 
     return (
         <div

@@ -1,6 +1,6 @@
 {
     "name": "Ambient Providoor",
-    "description": "Providoor badge is for users who have made one or more single LP positions on Ambient Finance valued over $1000. (Art by @ShizzyAizawa)",
+    "description": "Providoor badge is for users who have made an LP position on Ambient valued over $1000. (Art by @ShizzyAizawa)",
     "attributes": [
         { "trait_type": "Variant", "value": "Providoor" },
         { "trait_type": "Artist", "value": "@ShizzyAizawa" }
