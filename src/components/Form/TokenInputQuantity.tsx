@@ -256,7 +256,7 @@ function TokenInputQuantity(props: propsIF) {
                         showWarning ? { color: 'var(--other-red)' } : undefined
                     }
                 >
-                    {percentDiffUsdValue
+                    {percentDiffUsdValue && showWarning
                         ? usdValue +
                           ' (' +
                           (percentDiffUsdValue !== undefined
