@@ -60,13 +60,14 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     if (!showNotificationTable) return null;
     return (
-        <MainContainer>
+        <MainContainer isFuta={isFuta}>
             <Container
                 flexDirection='column'
                 justifyContent='space-between'
                 fullWidth
                 background='dark1'
                 ref={notificationItemRef}
+                isFuta={isFuta}
             >
                 <Header>Recent Transactions</Header>
 
