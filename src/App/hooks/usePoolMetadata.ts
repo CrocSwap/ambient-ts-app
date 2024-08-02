@@ -328,11 +328,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
-                                annotate: 'true', // token quantities
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
                                 n: '200',
                             }),
                     )
@@ -405,13 +400,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
-                                ensResolution: 'true',
-                                omitEmpty: 'true',
-                                omitKnockout: 'true',
-                                addValue: 'true',
-                                sortByAPY: 'true',
                                 n: '50',
-                                minPosAge: '86400', // restrict leaderboard to position > 1 day old
                             }),
                     )
                         .then((response) => response.json())
@@ -482,11 +471,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         quote: quoteTokenAddress,
                         poolIdx: props.chainData.poolIndex,
                         chainId: props.chainData.chainId,
-                        annotate: true,
-                        addValue: true,
-                        simpleCalc: true,
-                        annotateMEV: false,
-                        ensResolution: true,
                         n: 200,
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
