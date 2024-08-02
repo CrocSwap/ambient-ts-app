@@ -7,6 +7,7 @@ import {
 } from '../../../styled/Components/Analytics';
 import { sortedDexTokensIF } from './useSortedDexTokens';
 import AssignSort from './AssignSort';
+import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface propsIF {
     headerItems: HeaderItem[];
@@ -51,6 +52,12 @@ const TableHeadTokens = (props: propsIF) => {
                                                 ? 'descending'
                                                 : 'ascending'
                                         }
+                                    />
+                                )}
+                                {item.tooltipText && (
+                                    <TooltipComponent
+                                        title={item.tooltipText}
+                                        placement='right'
                                     />
                                 )}
                             </LabelWrapper>

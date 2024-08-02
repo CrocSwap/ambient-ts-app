@@ -4,7 +4,6 @@ import styles from './PointsBanner.module.css';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { MdClose } from 'react-icons/md';
-import { SidebarContext } from '../../contexts/SidebarContext';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
 import { FlexContainer, Text } from '../../styled/Common';
@@ -18,10 +17,7 @@ export default function PointsBanner(props: propsIF) {
     const { dismissElem, smallCard } = props;
     const { isActiveNetworkBlast } = useContext(ChainDataContext);
 
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
-    const isSmallScreen = useMediaQuery('(max-width: 1600px)') && isSidebarOpen;
+    const isSmallScreen = useMediaQuery('(max-width: 1600px)');
 
     // hook to allow navigation on click to leaderboard
     // @Junior feel free to change the DOM to a `<Link />` element
@@ -48,8 +44,8 @@ export default function PointsBanner(props: propsIF) {
     const promptText: string = isUserConnected
         ? 'Check your ambient points here'
         : smallCard
-        ? 'Connect wallet to check your points'
-        : 'Connect wallet to check your ambient points';
+          ? 'Connect wallet to check your points'
+          : 'Connect wallet to check your ambient points';
 
     if (isActiveNetworkBlast) {
         return (
