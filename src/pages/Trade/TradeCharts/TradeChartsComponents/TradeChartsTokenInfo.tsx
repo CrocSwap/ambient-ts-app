@@ -8,6 +8,7 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import DropdownSearch from '../../../../components/Global/DropdownSearch/DropdownSearch';
 import PoolData from './PoolData';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 function TradeChartsTokenInfo() {
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
@@ -59,13 +60,16 @@ function TradeChartsTokenInfo() {
         isPoolPriceChangePositive,
         toggleDidUserFlipDenom,
     };
+
+    const smallScreen = useMediaQuery('(min-width: 768px)');
+
     return (
         <div className={styles.container}>
             <div className={styles.dropdownContainer}>
                 <DropdownSearch />
             </div>
 
-            <PoolData {...poolDataProps} />
+            {smallScreen && <PoolData {...poolDataProps} />}
         </div>
     );
 }
