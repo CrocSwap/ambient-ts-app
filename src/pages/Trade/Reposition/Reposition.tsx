@@ -492,8 +492,6 @@ function Reposition() {
                     poolIdx: poolIndex.toString(),
                     chainId: position.chainId,
                     positionType: position.positionType,
-                    addValue: 'true',
-                    omitAPY: 'true',
                 }),
         )
             .then((response) => response?.json())
