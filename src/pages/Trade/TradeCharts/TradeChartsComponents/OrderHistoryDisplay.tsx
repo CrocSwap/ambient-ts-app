@@ -38,7 +38,7 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         setShowOrderHistoryDisplayDropdown,
     ] = useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 968px)');
+    const mobileView = useMediaQuery('(max-width: 968px)');
 
     const handleSwapToggle = () => {
         setShowSwap(!showSwap);
@@ -136,7 +136,7 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         </div>
     );
 
-    if (desktopView) return OrderHistoryDisplayMobile;
+    if (mobileView) return OrderHistoryDisplayMobile;
 
     return (
         <div
