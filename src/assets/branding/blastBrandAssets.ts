@@ -15,7 +15,7 @@ export const blastBrandAssets: brandIF = {
     },
     platformName: 'blast',
     fontSet: 'ambient',
-    showPoints: true,
+    showPoints: false,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: false,

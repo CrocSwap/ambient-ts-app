@@ -25,6 +25,7 @@ import {
 import { FlexContainer, Text } from '../../../styled/Common';
 import { Link } from 'react-router-dom';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { BrandContext } from '../../../contexts/BrandContext';
 
 export default function MobileLandingSections() {
     const {
@@ -32,6 +33,7 @@ export default function MobileLandingSections() {
         isActiveNetworkScroll,
         isActiveNetworkPlume,
     } = useContext(ChainDataContext);
+    const { showPoints } = useContext(BrandContext);
     const [isIPhone, setIsIPhone] = useState(false);
     useEffect(() => {
         const userAgent = window.navigator.userAgent;
@@ -164,7 +166,8 @@ export default function MobileLandingSections() {
                         </FlexContainer>
                     </MobileMainLogo>
                 )}
-                {!isActiveNetworkPlume && (
+
+                {showPoints && (
                     <FlexContainer
                         justifyContent='center'
                         alignItems='center'

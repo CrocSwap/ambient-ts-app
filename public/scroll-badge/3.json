@@ -1,6 +1,6 @@
 {
     "name": "Ambient Filloor",
-    "description": "Filloor badge is for users who have one or more filled limit orders on Ambient Finance valued over $500. (Art by @ShizzyAizawa)",
+    "description": "Filloor badge is for users who have a filled limit order on Ambient valued over $500. (Art by @ShizzyAizawa)",
     "attributes": [
         { "trait_type": "Variant", "value": "Filloor" },
         { "trait_type": "Artist", "value": "@ShizzyAizawa" }

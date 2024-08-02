@@ -80,7 +80,7 @@ const LinkText = styled.a`
 
 const DetailedBoxContainer = styled.div`
     display: flex;
-    padding: 8px;
+    padding: 1rem 8px;
 
     flex-direction: column;
     gap: 0.5rem;

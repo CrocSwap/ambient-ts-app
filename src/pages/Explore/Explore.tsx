@@ -228,10 +228,6 @@ const Section = styled.section`
     display: flex;
     flex-direction: column;
     gap: 16px;
-
-    @media (max-width: 1280px) {
-        margin-left: 2rem;
-    }
 `;
 
 const MainWrapper = styled.div`
