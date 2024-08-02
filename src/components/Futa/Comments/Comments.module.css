@@ -7,8 +7,12 @@
     }
   }
 
-  .comments_outer{
+  .comments_outer.small{
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
   }
+  
 
   .mainContainer{
     height: calc(100svh - 170px);
@@ -17,6 +21,14 @@
     justify-content: space-between;
     position: relative;
     overflow: hidden;
+  }
+  
+  .mainContainer.small{
+    max-height: calc(47svh);
+  }
+
+  .mainContainer.small .commentsWrapper{
+    max-height: calc(98% - 100px);
   }
 
   .container {
@@ -210,6 +222,20 @@
       backdrop-filter: blur(5px);
       border: 1px solid rgba(255,255,255, .1);
     }
+
+    
+    
+  .comments_outer.small .connection_status{
+    right: 0rem;
+    top: 1rem;
+  }
+  
+  .comments_outer.small .comments_header{
+    position: absolute;
+    left: 0rem;
+    top: .5rem;
+    font-size: 1.2rem;
+  }
 
     @media only screen and (max-width: 600px){
 

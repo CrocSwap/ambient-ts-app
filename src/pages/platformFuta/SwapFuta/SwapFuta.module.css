@@ -60,10 +60,7 @@
 }
 
 .comments_wrapper{
-    right: 1rem;
-    position: absolute;
-    width: 24rem;
-    bottom: 0;
-    height: 50vh;
+    /* position: absolute; */
+    width: 100%;
     display: block;
 }

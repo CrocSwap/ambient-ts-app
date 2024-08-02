@@ -12,11 +12,12 @@ function SwapFuta() {
             <div className={styles.chartSection}>
                 <Trade />
             </div>
-            <Swap isOnTradeRoute />
-
-            <div className={styles.comments_wrapper}>
-                <Comments />
-            </div>
+            <span>
+                <span id='swapFutaTradeWrapper'>
+                    <Swap isOnTradeRoute />
+                </span>
+                <Comments isForTrade={true} isSmall={true} />
+            </span>
         </section>
     );
 }

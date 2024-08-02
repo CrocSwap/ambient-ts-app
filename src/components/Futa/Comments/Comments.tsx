@@ -1,4 +1,11 @@
-import React, { memo, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    CSSProperties,
+    memo,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './Comments.module.css';
 import useCommentsWS from './useCommentsWS';
@@ -16,6 +23,7 @@ import {
     checkVisibilityWithBottom,
     dropFromCssClasses,
 } from '../../Chat/ChatUtils';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 type ShimmerListProps = {
     count: number;
@@ -31,9 +39,26 @@ const ShimmerList: React.FC<ShimmerListProps> = ({ count }) => {
     );
 };
 
-function Comments() {
+interface CommentsProps {
+    isForTrade?: boolean;
+    isSmall?: boolean;
+}
+
+function Comments(props: CommentsProps) {
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
     const { ticker } = useParams();
-    const room = ticker + ' / ETH';
+
+    const getRoom = () => {
+        if (props.isForTrade) {
+            const tokenA = isDenomBase ? baseToken : quoteToken;
+            const tokenB = isDenomBase ? quoteToken : baseToken;
+
+            return tokenA.symbol + ' / ' + tokenB.symbol;
+        } else {
+            return ticker + ' / ETH';
+        }
+    };
+    const room = getRoom();
 
     const messageListRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,6 +70,7 @@ function Comments() {
     const [panelScrollTop, setPanelScrollTop] = useState(0);
     const [panelScrollToBottomDist, setPanelScrollToBottomDist] = useState(0);
     const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+    const [panelMaxHeight, setPanelMaxHeight] = useState(0);
 
     const fetchListener = () => {
         if (messageListRef && messageListRef.current) {
@@ -79,8 +105,42 @@ function Comments() {
             setUserId('');
         }
     };
+
+    const bindMaxHeight = () => {
+        const tradeWrapper = document.getElementById('swapFutaTradeWrapper');
+        if (tradeWrapper) {
+            const tradeSectionHeight =
+                tradeWrapper.getBoundingClientRect().height;
+            domDebug('screen height', window.screen.height);
+            domDebug('trader section height', tradeSectionHeight);
+            setPanelMaxHeight(window.innerHeight - tradeSectionHeight - 110);
+        }
+    };
+
+    const initialResizing = () => {
+        if (props.isSmall) {
+            bindMaxHeight();
+        }
+        if (window) {
+            window.addEventListener('resize', () => {
+                bindMaxHeight();
+            });
+        }
+    };
+
+    const getMainContainerStyle = () => {
+        const ret: CSSProperties = {};
+
+        if (panelMaxHeight) {
+            ret.maxHeight = panelMaxHeight + 'px';
+        }
+
+        return ret;
+    };
+
     useEffect(() => {
         initialSave();
+        initialResizing();
     }, []);
 
     useEffect(() => {
@@ -281,7 +341,10 @@ function Comments() {
 
     return (
         <>
-            <div className={styles.comments_outer}>
+            <div className={`${styles.comments_outer} ${styles.small}`}>
+                {props.isSmall && (
+                    <div className={styles.comments_header}>COMMENTS</div>
+                )}
                 {userAddress && userAddress.length > 0 && (
                     <div className={styles.connection_status}>
                         {isWsConnected ? (
@@ -303,7 +366,10 @@ function Comments() {
                     </div>
                 )}
 
-                <div className={styles.mainContainer}>
+                <div
+                    className={`${styles.mainContainer} ${props.isSmall ? styles.small : ' '}`}
+                    style={getMainContainerStyle()}
+                >
                     {isLoading ? (
                         <ShimmerList count={25} />
                     ) : (
@@ -316,8 +382,8 @@ function Comments() {
                                 {messages.length == 0 ? (
                                     <span className={styles.no_comment_section}>
                                         {isUserConnected
-                                            ? `Start the ${ticker} comment thread below`
-                                            : `Connect your wallet to comment on ${ticker}`}
+                                            ? `Start the ${props.isForTrade ? getRoom() : ticker} comment thread below`
+                                            : `Connect your wallet to comment on ${props.isForTrade ? getRoom() : ticker}`}
                                     </span>
                                 ) : (
                                     <>
