@@ -10,6 +10,7 @@ import {
 } from './NotificationTable.styles';
 import { FlexContainer } from '../../../../styled/Common';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -21,6 +22,8 @@ interface NotificationTableProps {
 const NotificationTable = (props: NotificationTableProps) => {
     const { showNotificationTable, pendingTransactions, notificationItemRef } =
         props;
+
+    const { platformName } = useContext(BrandContext);
 
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
@@ -53,6 +56,8 @@ const NotificationTable = (props: NotificationTableProps) => {
         />
     ));
 
+    const isFuta = ['futa'].includes(platformName);
+
     if (!showNotificationTable) return null;
     return (
         <MainContainer>
@@ -76,6 +81,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                             resetReceiptData();
                         }}
                         aria-label='Clear all'
+                        isFuta={isFuta}
                     >
                         Clear all
                     </FooterButton>

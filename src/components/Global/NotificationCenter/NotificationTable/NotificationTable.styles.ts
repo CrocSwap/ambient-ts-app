@@ -1,6 +1,10 @@
 import styled from 'styled-components/macro';
 import { FlexContainer } from '../../../../styled/Common';
 
+interface StyledProps {
+    isFuta: boolean;
+}
+
 export const MainContainer = styled.div`
     z-index: 15;
     width: 380px;
@@ -51,7 +55,7 @@ export const Content = styled(FlexContainer)`
     }
 `;
 
-export const FooterButton = styled.button`
+export const FooterButton = styled.button<StyledProps>`
     padding: 4px 16px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -61,7 +65,8 @@ export const FooterButton = styled.button`
     text-align: center;
     background: transparent;
     text-transform: capitalize;
-    color: var(--accent5);
+    color: ${({ isFuta }) => (isFuta ? 'var(--dark1)' : 'var(-accent5)')};
+
     border-radius: var(--border-radius);
     transition: var(--transition);
     background: var(--accent1);

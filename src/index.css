@@ -255,6 +255,13 @@
         var(--accent5) 49.48%,
         var(--accent1) 100%
     );
+
+    --title-gradient: linear-gradient(
+        90deg,
+        #62EBF1 0%,
+        #7BE4FF 49.48%,
+        #62EBF1 100%
+    );
 }
 
 *::placeholder {
