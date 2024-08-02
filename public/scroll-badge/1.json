@@ -1,6 +1,6 @@
 {
     "name": "Ambient Swapooor",
-    "description": "Swapooor badge is for users who have made one or more single swaps on Ambient for $500. (Art by @ShizzyAizawa)",
+    "description": "Swapooor badge is for users who have made a swap on Ambient over $500. (Art by @ShizzyAizawa)",
     "attributes": [
         { "trait_type": "Variant", "value": "Swapooor" },
         { "trait_type": "Artist", "value": "@ShizzyAizawa" }
