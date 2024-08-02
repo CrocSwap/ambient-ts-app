@@ -336,6 +336,10 @@ div.tooltip {
 }
 
 @media only screen and (max-width: 700px) {
+
+    .main_layout_chart{
+        padding-bottom: 20px;
+    }
     .popup {
         font-size: medium;
         width: 80%;

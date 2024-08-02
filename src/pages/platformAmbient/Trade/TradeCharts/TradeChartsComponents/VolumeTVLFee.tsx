@@ -36,7 +36,7 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] =
         useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 968px)');
+    const mobileView = useMediaQuery('(max-width: 968px)');
 
     const handleVolumeToggle = () => {
         setShowVolume(!showVolume);
@@ -130,7 +130,7 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         </div>
     );
 
-    if (desktopView) return volumeTVLFeeMobile;
+    if (mobileView) return volumeTVLFeeMobile;
 
     return (
         <div
