@@ -23,7 +23,7 @@ interface LevelButtonProps {
 export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     width: 100%;
     height: 56px;
-    background: var(--dark1);
+    background: var(--navbar-bg, --dark1);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -223,6 +223,7 @@ export const TokenContainer = styled.section`
 `;
 
 export const LogoName = styled(FlexContainer)`
+    color: var(--text2);
     img {
         width: 25px;
         height: 25px;
@@ -277,6 +278,10 @@ export const AccountLink = styled(NavLink)`
     background: var(--dark3);
     text-decoration: none;
     color: var(--text2);
+
+    &:hover {
+        color: var(--text1) !important;
+    }
 `;
 
 export const WalletContent = styled.section`
@@ -306,7 +311,7 @@ export const WalletWrapper = styled(FlexContainer)`
     opacity: 1;
     bottom: 85px;
     pointer-events: auto;
-    border: 1px solid var(--accent1);
+    border: 1px solid var(--color-border);
     @media (max-width: 500px) {
         width: 300px;
         right: -50px;
@@ -430,7 +435,7 @@ export const StyledExchangeBalanceDropdown = styled.div`
     border-radius: var(--border-radius);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
     text-align: start;
-    border: 1px solid var(--accent1);
+    border: 1px solid var(--color-border);
 
     @media only screen and (max-width: 600px) {
         width: auto;

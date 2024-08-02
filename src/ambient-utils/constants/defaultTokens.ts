@@ -6,7 +6,7 @@ export const mainnetETH: TokenIF = {
     decimals: 18,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    name: 'Ether',
+    name: 'Native Ether',
     symbol: 'ETH',
 };
 
@@ -157,7 +157,7 @@ export const blastETH: TokenIF = {
     decimals: 18,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    name: 'Ether',
+    name: 'Native Ether',
     symbol: 'ETH',
 };
 
@@ -368,7 +368,7 @@ export const blastSepoliaETH: TokenIF = {
     decimals: 18,
     logoURI:
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-    name: 'Ether',
+    name: 'Native Ether',
     symbol: 'ETH',
 };
 
@@ -626,6 +626,63 @@ export const scrollSepoliaUSDC: TokenIF = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const plumeSepoliaETH: TokenIF = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 161221135,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const plumeSepoliaUSDC: TokenIF = {
+    name: 'USDC',
+    address: '0xEa237441c92CAe6FC17Caaf9a7acB3f953be4bd1',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 161221135,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+};
+
+export const plumeSepoliaUSDT: TokenIF = {
+    name: 'Tether USD',
+    address: '0x4632403a83fb736Ab2c76b4C32FAc9F81e2CfcE2',
+    symbol: 'USDT',
+    decimals: 6,
+    chainId: 161221135,
+    logoURI: 'https://scroll-tech.github.io/token-list/data/USDT/logo.svg',
+};
+
+export const plumeSepoliaDAI: TokenIF = {
+    name: 'Dai Stablecoin',
+    address: '0x1aa70741167155E08bD319bE096C94eE54C6CA19',
+    symbol: 'DAI',
+    decimals: 18,
+    chainId: 161221135,
+    logoURI:
+        'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
+};
+
+export const plumeSepoliaGoon: TokenIF = {
+    name: 'Goon Testnet Token',
+    address: '0xba22114ec75f0d55c34a5e5a3cf384484ad9e733',
+    symbol: 'GOON',
+    decimals: 18,
+    chainId: 161221135,
+    logoURI: '',
+};
+
+export const plumeSepoliaGoonUSD: TokenIF = {
+    name: 'Plume USD Stablecoin',
+    address: '0x5c1409a46cd113b3a667db6df0a8d7be37ed3bb3',
+    symbol: 'gnUSD',
+    decimals: 18,
+    chainId: 161221135,
+    logoURI: '',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
@@ -692,5 +749,11 @@ export const defaultTokens: TokenIF[] = [
     scrollSepoliaETH,
     scrollSepoliaUSDC,
     scrollSepoliaWBTC,
+    plumeSepoliaETH,
+    plumeSepoliaUSDC,
+    plumeSepoliaUSDT,
+    plumeSepoliaDAI,
+    plumeSepoliaGoon,
+    plumeSepoliaGoonUSD,
     scrollsUSDe,
 ];

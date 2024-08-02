@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import styles from './ContentContainer.module.css';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface ContentContainerPropsIF {
     children: ReactNode;
@@ -11,6 +12,8 @@ interface ContentContainerPropsIF {
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
+
     const {
         children,
         isOnTradeRoute,
@@ -33,7 +36,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
 
     return (
         <section
-            className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}
+            className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle} ${isActiveNetworkPlume && styles.plume_container}`}
         >
             <section className={`${styles.window} ${tradeRouteStyle}`}>
                 <div

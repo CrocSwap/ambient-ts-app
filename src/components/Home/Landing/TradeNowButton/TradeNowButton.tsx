@@ -11,6 +11,7 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     fieldId: string;
@@ -20,6 +21,9 @@ interface propsIF {
 export default function TradeNowButton(props: propsIF) {
     const { fieldId, inNav } = props;
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
@@ -31,10 +35,15 @@ export default function TradeNowButton(props: propsIF) {
     return (
         <StyledLink
             id={fieldId}
-            to={linkGenMarket.getFullURL(tradeButtonParams)}
+            to={
+                isActiveNetworkPlume
+                    ? linkGenSwap.getFullURL(tradeButtonParams)
+                    : linkGenMarket.getFullURL(tradeButtonParams)
+            }
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
+            isPlume={isActiveNetworkPlume}
         >
             <FlexContainer
                 fullHeight
@@ -42,16 +51,19 @@ export default function TradeNowButton(props: propsIF) {
                 justifyContent='center'
                 alignItems='center'
                 rounded
-                background='dark2'
+                background={!isActiveNetworkPlume ? 'dark2' : undefined}
+                style={{
+                    color: isActiveNetworkPlume ? 'var(--text1)' : 'none',
+                }}
             >
                 <TradeNowButtonText
                     fontWeight='300'
                     font='font-logo'
                     fontSize='header2'
-                    color='accent1'
+                    color={isActiveNetworkPlume ? 'text1' : 'accent1'}
                     inNav={inNav}
                 >
-                    Trade Now
+                    {isActiveNetworkPlume ? 'Swap Now' : 'Trade Now'}
                 </TradeNowButtonText>
             </FlexContainer>
         </StyledLink>

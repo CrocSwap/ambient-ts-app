@@ -43,6 +43,11 @@ export function lookupChainId(
         case '0x82750':
             chainIdHex = '0x82750';
             break;
+        case 'plumesepolia':
+        case '161221135':
+        case '0x99c0a0f':
+            chainIdHex = '0x99c0a0f';
+            break;
         case 'blast':
         case '81457':
         case '0x13e31':

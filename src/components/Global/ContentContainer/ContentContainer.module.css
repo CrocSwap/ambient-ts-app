@@ -4,8 +4,8 @@
     color: var(--text2);
     border-radius: var(--border-radius);
 
-    background-color: var(--accent1);
-    background: var(--accent1);
+    /* background-color: var(--accent1);
+    background: var(--accent1); */
 }
 
 .main_content {
@@ -19,6 +19,7 @@
 
 .swap_main_content {
     box-shadow: var(--gradient-box-shadow);
+
 }
 
 .swap_bg {
@@ -40,18 +41,25 @@
 }
 
 .swap_route {
-    background: var(--accent1);
+    /* background: var(--accent1); */
     padding: 1px;
     border-radius: var(--border-radius);
     box-shadow: var(--swap-box-shadow);
+    background: var(--swap-border);
 }
 
 /* media queries */
 
+/* @media (max-height: 1000px) {
+.swap_main_content {
+   max-height: 470px;
+   overflow-y: scroll;
+}
+} */
+
+
 @media (min-width: 1200px) {
-    .container {
-        max-width: 1140px;
-    }
+  
 
     .customWidthAuto {
         max-width: 1240px;
@@ -59,9 +67,6 @@
 }
 
 @media (min-width: 992px) {
-    .container {
-        max-width: 960px;
-    }
     .customWidthAuto {
         max-width: auto;
     }
@@ -70,6 +75,12 @@
 @media (min-width: 768px) {
     .container {
         max-width: 720px;
+        width: 420px;
+    }
+    
+    .plume_container{
+        min-width: 482px;
+
     }
 
     .customWidthAuto {
@@ -89,8 +100,8 @@
         max-width: 420px;
     }
     .swap_route {
-        min-width: 430px;
-        max-width: 440px;
+      
+        max-width: 558px;
     }
     .customWidth_container {
         max-width: 640px;

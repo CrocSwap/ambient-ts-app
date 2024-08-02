@@ -182,17 +182,17 @@ export async function expandPoolStats(
     const basePrice = baseUsdPrice
         ? baseUsdPrice
         : isETHorStakedEthToken(base)
-        ? (await getEthPrice()) || 0.0
-        : quoteUsdPrice
-        ? quoteUsdPrice / (await getSpotPrice())
-        : 0.0;
+          ? (await getEthPrice()) || 0.0
+          : quoteUsdPrice
+            ? quoteUsdPrice / (await getSpotPrice())
+            : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : isETHorStakedEthToken(quote)
-        ? (await getEthPrice()) || 0.0
-        : baseUsdPrice
-        ? baseUsdPrice * (await getSpotPrice())
-        : 0.0;
+          ? (await getEthPrice()) || 0.0
+          : baseUsdPrice
+            ? baseUsdPrice * (await getSpotPrice())
+            : 0.0;
 
     return decoratePoolStats(
         payload,

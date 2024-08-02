@@ -6,21 +6,27 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { useContext, useMemo } from 'react';
 import { BrandContext } from '../../../contexts/BrandContext';
 import { heroItem } from '../../../assets/branding/types';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 export default function Hero() {
     const smallScreen: boolean = useMediaQuery('(max-width: 1200px)');
     const { hero, platformName } = useContext(BrandContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     // recognized slugs for background image CSS classes
-    type cssSlugs = 'purple_waves' | 'stars';
+    type cssSlugs = 'purple_waves' | 'stars' | 'clouds';
     // slug to specify the desired background image
     const cssSlug = useMemo<cssSlugs>(() => {
         // declare an output variable
         let slug: cssSlugs;
         // router to map a background image from deployment config
+        if (isActiveNetworkPlume) return 'clouds';
         switch (platformName) {
             case 'futa':
                 slug = 'stars';
+                break;
+            case 'plumeSepolia':
+                slug = 'clouds';
                 break;
             case 'ambient':
             default:
@@ -29,7 +35,7 @@ export default function Hero() {
         }
         // return output variable
         return slug;
-    }, [platformName]);
+    }, [platformName, isActiveNetworkPlume]);
 
     // fn to turn hero banner metadata into JSX for DOM
     function makeHeroJSX(h: heroItem): JSX.Element {

@@ -3,6 +3,7 @@ import { ethereumSepolia } from './ethereumSepolia';
 import { ethereumMainnet } from './ethereumMainnet';
 import { scrollMainnet } from './scrollMainnet';
 import { scrollSepolia } from './scrollSepolia';
+import { plumeSepolia } from './plumeSepolia';
 import { blastSepolia } from './blastSepolia';
 import { blast } from './blastNetwork';
 import {
@@ -11,6 +12,7 @@ import {
     defaultBrandAssets,
     blastBrandAssets,
     scrollBrandAssets,
+    plumeSepoliaBrandAssets,
     futaBrandAssets,
 } from '../../../assets/branding';
 
@@ -21,6 +23,7 @@ const networks: NetworkIF[] = [
     ethereumSepolia,
     ethereumMainnet,
     scrollMainnet,
+    plumeSepolia,
     scrollSepolia,
     blastSepolia,
     blast,
@@ -46,14 +49,18 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
     brand === 'blast'
         ? getNetworks(Object.keys(blastBrandAssets.networks))
         : brand === 'scroll'
-        ? getNetworks(Object.keys(scrollBrandAssets.networks))
-        : brand === 'futa'
-        ? getNetworks(Object.keys(futaBrandAssets.networks))
-        : brand === 'ambientProduction'
-        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
-        : brand === 'ambientTestnet'
-        ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
-        : getNetworks(Object.keys(defaultBrandAssets.networks));
+          ? getNetworks(Object.keys(scrollBrandAssets.networks))
+          : brand === 'plumeSepolia'
+            ? getNetworks(Object.keys(plumeSepoliaBrandAssets.networks))
+            : brand === 'futa'
+              ? getNetworks(Object.keys(futaBrandAssets.networks))
+              : brand === 'ambientProduction'
+                ? getNetworks(
+                      Object.keys(ambientProductionBrandAssets.networks),
+                  )
+                : brand === 'ambientTestnet'
+                  ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+                  : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
     return [
@@ -66,5 +73,6 @@ export { ethereumSepolia };
 export { ethereumMainnet };
 export { scrollMainnet };
 export { scrollSepolia };
+export { plumeSepolia };
 export { blastSepolia };
 export { blast };

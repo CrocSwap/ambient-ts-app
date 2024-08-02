@@ -522,10 +522,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     .dash[0]
                                                     ? lineOptionSvg
                                                     : 5 ===
-                                                      selectedDrawnShape.data
-                                                          .line.dash[0]
-                                                    ? dashOptionSvg
-                                                    : dottedOptionSvg)
+                                                        selectedDrawnShape.data
+                                                            .line.dash[0]
+                                                      ? dashOptionSvg
+                                                      : dottedOptionSvg)
                                             }
                                             alt=''
                                         />
@@ -650,10 +650,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     .dash[0]
                                                     ? lineOptionSvg
                                                     : 5 ===
-                                                      selectedDrawnShape.data
-                                                          .border.dash[0]
-                                                    ? dashOptionSvg
-                                                    : dottedOptionSvg)
+                                                        selectedDrawnShape.data
+                                                            .border.dash[0]
+                                                      ? dashOptionSvg
+                                                      : dottedOptionSvg)
                                             }
                                             alt=''
                                         />
@@ -1133,8 +1133,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                       (isLineColorPickerTabActive
                                           ? 60
                                           : isBorderColorPickerTabActive
-                                          ? 90
-                                          : 120) + 'px',
+                                            ? 90
+                                            : 120) + 'px',
                                   left: '85px',
                               }
                     }
@@ -1147,8 +1147,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             isLineColorPickerTabActive
                                 ? colorPicker.lineColor
                                 : isBorderColorPickerTabActive
-                                ? colorPicker.borderColor
-                                : colorPicker.background
+                                  ? colorPicker.borderColor
+                                  : colorPicker.background
                         }
                         width={'170px'}
                         onChange={(item, event) => {

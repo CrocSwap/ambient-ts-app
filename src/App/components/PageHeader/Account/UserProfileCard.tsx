@@ -19,11 +19,17 @@ interface LevelDropdownPropsIF {
     handleCopyAddress: () => void;
     accountAddressFull: string;
     padding?: string;
+    isPlume?: boolean;
 }
 
 export default function UserProfileCard(props: LevelDropdownPropsIF) {
-    const { ensName, accountAddress, handleCopyAddress, accountAddressFull } =
-        props;
+    const {
+        ensName,
+        accountAddress,
+        handleCopyAddress,
+        accountAddressFull,
+        isPlume,
+    } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -36,7 +42,10 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
 
     return (
         <NameDisplayContainer gap={4} alignItems='center'>
-            <Link to={link}>
+            <Link
+                to={!isPlume ? link : '#'}
+                style={{ pointerEvents: isPlume ? 'none' : 'auto' }}
+            >
                 {userAddress &&
                     userAvatarData &&
                     getAvatarComponent(userAddress, userAvatarData, 50)}

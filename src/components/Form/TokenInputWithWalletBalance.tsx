@@ -62,6 +62,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         percentDiffUsdValue,
     } = props;
 
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+
     const usdValueForDom =
         usdValue && parseFloat(tokenInput) > 0
             ? getFormattedNumber({
@@ -155,8 +157,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
-
     const walletContent = (
         <>
             <WalletBalanceSubinfo
@@ -164,7 +164,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                     isLoading ||
                     !usdValueForDom ||
                     disabledContent ||
-                    !isPoolInitialized
+                    (!isPoolInitialized && !isInitPage)
                         ? ''
                         : usdValueForDom
                 }

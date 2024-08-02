@@ -693,8 +693,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         ? liqTooltipSelectedLiqBar?.upperBound
                         : liqTooltipSelectedLiqBar?.lowerBound
                     : isDenomBase
-                    ? liqTooltipSelectedLiqBar?.lowerBound
-                    : liqTooltipSelectedLiqBar?.upperBound;
+                      ? liqTooltipSelectedLiqBar?.lowerBound
+                      : liqTooltipSelectedLiqBar?.upperBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),

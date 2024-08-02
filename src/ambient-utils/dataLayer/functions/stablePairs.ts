@@ -32,7 +32,11 @@ import {
     scrollRocketPoolETH,
     scrollPufETH,
     blastWEETH,
+    plumeSepoliaUSDC,
+    plumeSepoliaGoonUSD,
     blastBLAST,
+    plumeSepoliaUSDT,
+    plumeSepoliaDAI,
     scrollUSDE,
     scrollWeETH,
     scrollsUSDe,
@@ -99,6 +103,10 @@ export const STABLE_USD_TOKENS = [
     sepoliaUSDC.address,
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
+    plumeSepoliaUSDC.address,
+    plumeSepoliaUSDT.address,
+    plumeSepoliaDAI.address,
+    plumeSepoliaGoonUSD.address,
     scrollUSDE.address,
     scrollsUSDe.address,
 ].map((x) => x.toLowerCase());
@@ -110,6 +118,7 @@ export const USDC_TOKENS = [
     blastSepoliaUSDB.address,
     scrollSepoliaUSDC.address,
     scrollUSDC.address,
+    plumeSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
 export const BLAST_REWARD_TOKENS = [blastBLAST.address].map((x) =>

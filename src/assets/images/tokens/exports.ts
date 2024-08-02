@@ -45,6 +45,8 @@ import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
+import GOON from './GOON.svg';
+import GNUSD from './GNUSD.svg';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
 
@@ -97,6 +99,8 @@ export {
     RSETH,
     WEETH,
     BLAST,
+    GOON,
+    GNUSD,
     USDE,
     SUSDE,
 };
