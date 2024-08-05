@@ -126,6 +126,7 @@ export const useAppChain = (): {
                             pathname.includes('/xp');
                         const isPathPointsTabOnAccount =
                             pathname.includes('/points');
+                        const isPathOnAccount = pathname.includes('/account');
                         const isPathOnExplore = pathname.includes('/explore');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
@@ -161,8 +162,9 @@ export const useAppChain = (): {
                                 }
                             } else if (
                                 isPathUserAddress ||
-                                isPathUserXpOrLeaderboard ||
+                                isPathOnAccount ||
                                 isPathPointsTabOnAccount ||
+                                isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
                                 if (
