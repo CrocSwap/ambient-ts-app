@@ -1,5 +1,9 @@
 import { useContext } from 'react';
-import { GridContainer, ScrollContainer } from '../../../styled/Common';
+import {
+    FlexContainer,
+    GridContainer,
+    ScrollContainer,
+} from '../../../styled/Common';
 
 import { MainSection } from './TableInfo.styles';
 
@@ -58,7 +62,7 @@ export default function TableInfo() {
 
     return (
         <MainSection>
-            <ScrollContainer>
+            <FlexContainer className='custom_scroll_ambient' height='190px'>
                 <GridContainer
                     numCols={smallScreen ? 1 : 2}
                     gap={8}
@@ -149,7 +153,7 @@ export default function TableInfo() {
                         <GridContainer numCols={4} gap={8}></GridContainer>
                     </GridContainer>
                 </GridContainer>
-            </ScrollContainer>
+            </FlexContainer>
         </MainSection>
     );
 }
