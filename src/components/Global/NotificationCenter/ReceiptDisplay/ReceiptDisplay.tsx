@@ -86,7 +86,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
-                ? '< 1 minute ago'
+                ? '< 1 min. ago'
                 : elapsedTimeInSecondsNum < 120
                   ? '1 minute ago'
                   : elapsedTimeInSecondsNum < 3600
