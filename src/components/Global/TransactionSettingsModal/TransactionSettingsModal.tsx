@@ -12,6 +12,8 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import SendToDexBalControl from '../SendToDexBalControl/SendToDexBalControl';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
+import DollarizationModalControl from '../DollarizationModalControl/DollarizationModalControl';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -31,6 +33,8 @@ interface propsIF {
 export default function TransactionSettingsModal(props: propsIF) {
     const { module, slippage, dexBalSwap, onClose, bypassConfirm } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
+        useContext(PoolContext);
 
     const isPairStable = isStablePair(tokenA.address, tokenB.address);
 
@@ -56,6 +60,9 @@ export default function TransactionSettingsModal(props: propsIF) {
         bypassConfirm.isEnabled,
     );
 
+    const [currentDollarizationMode, setCurrentDollarizationMode] =
+        useState<boolean>(isTradeDollarizationEnabled);
+
     const updateSettings = (): void => {
         isPairStable
             ? slippage.updateStable(currentSlippage)
@@ -66,6 +73,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                 ? dexBalSwap.outputToDexBal.enable()
                 : dexBalSwap.outputToDexBal.disable()
             : undefined;
+        setIsTradeDollarizationEnabled(currentDollarizationMode);
         onClose();
     };
 
@@ -129,6 +137,11 @@ export default function TransactionSettingsModal(props: propsIF) {
                         setTempBypassConfirm={setCurrentSkipConfirm}
                         displayInSettings={true}
                     />
+                    <DollarizationModalControl
+                        tempEnableDollarization={currentDollarizationMode}
+                        setTempEnableDollarization={setCurrentDollarizationMode}
+                        displayInSettings={true}
+                    />
                 </section>
                 <div style={{ padding: '0 16px' }}>
                     <Button
@@ -137,8 +150,8 @@ export default function TransactionSettingsModal(props: propsIF) {
                             module === 'Limit Order'
                                 ? 'Submit Settings'
                                 : currentSlippage > 0
-                                ? 'Submit'
-                                : 'Enter a Valid Slippage'
+                                  ? 'Submit'
+                                  : 'Enter a Valid Slippage'
                         }
                         action={updateSettings}
                         disabled={

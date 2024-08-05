@@ -67,8 +67,8 @@ export default function PortfolioBannerAccount(
     const addressToDisplay = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
-        ? truncatedAccountAddress
-        : userAddress;
+          ? truncatedAccountAddress
+          : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -80,8 +80,8 @@ export default function PortfolioBannerAccount(
                 resolvedAddress
                     ? resolvedAddress
                     : userAddress
-                    ? userAddress
-                    : '',
+                      ? userAddress
+                      : '',
             );
             setUserProfileNFT(avatar.avatarImage);
             setUserThumbnailNFT(avatar.avatarThumbnail);
@@ -101,14 +101,14 @@ export default function PortfolioBannerAccount(
             ensNameAvailable
                 ? ensName
                 : resolvedAddress
-                ? resolvedAddress
-                : userAddress ?? '',
+                  ? resolvedAddress
+                  : userAddress ?? '',
         );
         const copiedData = ensNameAvailable
             ? ensName
             : resolvedAddress
-            ? resolvedAddress
-            : userAddress;
+              ? resolvedAddress
+              : userAddress;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
@@ -175,8 +175,8 @@ export default function PortfolioBannerAccount(
                                 resolvedAddress
                                     ? resolvedAddress
                                     : userAddress
-                                    ? userAddress
-                                    : '',
+                                      ? userAddress
+                                      : '',
                                 userProfileNFT,
                                 65,
                                 resolvedAddress !== undefined &&
