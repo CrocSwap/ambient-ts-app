@@ -120,7 +120,8 @@ function TransactionRow(props: propsIF) {
             const typeSuffix =
                 type === 'range' && sideType !== 'remove'
                     ? '/liquidity'
-                    : type === 'limit'
+                    : type === 'limit' &&
+                        (sideType === 'buy' || sideType === 'sell')
                       ? '/limits'
                       : '/transactions';
             const accountUrl = `/${
