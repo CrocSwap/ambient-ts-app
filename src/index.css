@@ -223,7 +223,7 @@
     /* border */
     --color-border: 1px solid var(--accent1);
     --border: #424649;
-    --border-radius: 4px;
+    --border-radius: 0;
     --swap-border: var(--title-gradient);
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
@@ -254,6 +254,13 @@
         var(--accent1) 0%,
         var(--accent5) 49.48%,
         var(--accent1) 100%
+    );
+
+    --title-gradient: linear-gradient(
+        90deg,
+        #62EBF1 0%,
+        #7BE4FF 49.48%,
+        #62EBF1 100%
     );
 }
 
