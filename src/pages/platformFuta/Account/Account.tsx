@@ -14,7 +14,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import Typewriter from '../../../components/Futa/TypeWriter/TypeWriter';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { Navigate, Link, useParams } from 'react-router-dom';
-import Seperator from '../../../components/Futa/Seperator/Seperator';
+import Separator from '../../../components/Futa/Separator/Separator';
 import TooltipLabel from '../../../components/Futa/TooltipLabel/TooltipLabel';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
@@ -237,8 +237,8 @@ export default function Account() {
                     isAccount={true}
                 />
             </div>
-            <div className={styles.seperatorContainer}>
-                <Seperator dots={70} />
+            <div className={styles.separatorContainer}>
+                <Separator dots={70} />
             </div>
 
             <div className={styles.rightLayout}>
