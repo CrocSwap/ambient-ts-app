@@ -13,10 +13,6 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import {
-    BrandContext,
-    BrandContextIF,
-} from '../../../../contexts/BrandContext';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -31,10 +27,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         chainData: { chainId },
         provider,
     } = useContext(CrocEnvContext);
-
-    const { platformName } = useContext<BrandContextIF>(BrandContext);
-
-    const isFuta = platformName.toLowerCase() === 'futa';
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
     const { removeReceipt } = useContext(ReceiptContext);
@@ -94,17 +86,11 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
-                ? isFuta
-                    ? '< 1 min. ago'
-                    : '< 1 minute ago'
+                ? '< 1 minute ago'
                 : elapsedTimeInSecondsNum < 120
-                  ? isFuta
-                      ? '1 min. ago'
-                      : '1 minute ago'
+                  ? '1 minute ago'
                   : elapsedTimeInSecondsNum < 3600
-                    ? isFuta
-                        ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago `
-                        : `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago `
+                    ? `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago `
                     : elapsedTimeInSecondsNum < 7200
                       ? '1 hour ago'
                       : elapsedTimeInSecondsNum < 86400
