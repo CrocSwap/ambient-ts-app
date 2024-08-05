@@ -250,23 +250,27 @@ function TokenInputQuantity(props: propsIF) {
         <section className={styles.futaLayout}>
             <div className={styles.futaLayoutLeft}>
                 {inputDisplay}
-                <p
-                    className={styles.usdValue}
-                    style={
-                        showWarning ? { color: 'var(--other-red)' } : undefined
-                    }
-                >
-                    {percentDiffUsdValue && showWarning
-                        ? usdValue +
-                          ' (' +
-                          (percentDiffUsdValue !== undefined
-                              ? getFormattedNumber({
-                                    value: percentDiffUsdValue,
-                                    isPercentage: true,
-                                }) + '%)'
-                              : undefined)
-                        : usdValue}
-                </p>
+                {!isLoading && (
+                    <p
+                        className={styles.usdValue}
+                        style={
+                            showWarning
+                                ? { color: 'var(--other-red)' }
+                                : undefined
+                        }
+                    >
+                        {percentDiffUsdValue && showWarning
+                            ? usdValue +
+                              ' (' +
+                              (percentDiffUsdValue !== undefined
+                                  ? getFormattedNumber({
+                                        value: percentDiffUsdValue,
+                                        isPercentage: true,
+                                    }) + '%)'
+                                  : undefined)
+                            : usdValue}
+                    </p>
+                )}
             </div>
             <div className={styles.futaLayoutRight}>
                 <button
