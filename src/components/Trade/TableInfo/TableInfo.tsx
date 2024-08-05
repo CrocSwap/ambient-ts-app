@@ -1,9 +1,5 @@
 import { useContext } from 'react';
-import {
-    FlexContainer,
-    GridContainer,
-    ScrollContainer,
-} from '../../../styled/Common';
+import { FlexContainer, GridContainer } from '../../../styled/Common';
 
 import { MainSection } from './TableInfo.styles';
 
