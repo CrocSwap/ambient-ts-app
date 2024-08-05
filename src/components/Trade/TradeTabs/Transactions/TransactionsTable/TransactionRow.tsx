@@ -116,8 +116,19 @@ function TransactionRow(props: propsIF) {
 
     const handleWalletClick = () => {
         if (!isAccountView) {
+            console.log({ sideType });
+            const typeSuffix =
+                type === 'range' && sideType !== 'remove'
+                    ? '/liquidity'
+                    : type === 'limit'
+                      ? '/limits'
+                      : '/transactions';
             const accountUrl = `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                isOwnerActiveAccount
+                    ? 'account' + typeSuffix
+                    : ensName
+                      ? ensName + typeSuffix
+                      : ownerId + typeSuffix
             }`;
             window.open(accountUrl);
         }
