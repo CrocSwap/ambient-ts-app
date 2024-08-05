@@ -67,6 +67,7 @@ export default function TableInfo() {
                     numCols={smallScreen ? 1 : 2}
                     gap={8}
                     height={'200px'}
+                    width='calc(100% - 8px)'
                 >
                     <GridContainer numCols={2} gap={8}>
                         {featuredData.map((data, idx) => (
