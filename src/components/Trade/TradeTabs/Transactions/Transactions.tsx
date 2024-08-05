@@ -711,7 +711,10 @@ function Transactions(props: propsIF) {
         >
             <div>{headerColumnsDisplay}</div>
 
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
