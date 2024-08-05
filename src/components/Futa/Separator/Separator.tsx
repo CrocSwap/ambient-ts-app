@@ -1,14 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import styles from './Seperator.module.css';
+import styles from './Separator.module.css';
 import { TbTriangleInvertedFilled, TbTriangleFilled } from 'react-icons/tb';
 
-interface SeperatorProps {
+interface SeparatorProps {
     horizontal?: boolean;
     dots: number;
 }
 
-const Seperator: React.FC<SeperatorProps> = ({ horizontal = false, dots }) => {
+const Separator: React.FC<SeparatorProps> = ({ horizontal = false, dots }) => {
     const dotElements = Array.from({ length: dots }).map((_, index) => (
         <motion.div
             key={index}
@@ -41,4 +41,4 @@ const Seperator: React.FC<SeperatorProps> = ({ horizontal = false, dots }) => {
     );
 };
 
-export default Seperator;
+export default Separator;
