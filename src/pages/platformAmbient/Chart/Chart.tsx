@@ -4423,6 +4423,7 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(visibleCandleData),
         prevPeriod === period,
         candleTimeInSeconds === period,
+        denomInBase,
     ]);
 
     useEffect(() => {
