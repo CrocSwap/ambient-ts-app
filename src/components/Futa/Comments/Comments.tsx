@@ -24,6 +24,7 @@ import {
     dropFromCssClasses,
 } from '../../Chat/ChatUtils';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
 
 type ShimmerListProps = {
     count: number;
@@ -42,6 +43,7 @@ const ShimmerList: React.FC<ShimmerListProps> = ({ count }) => {
 interface CommentsProps {
     isForTrade?: boolean;
     isSmall?: boolean;
+    resizeEffectorSelector?: string;
 }
 
 function Comments(props: CommentsProps) {
@@ -107,15 +109,29 @@ function Comments(props: CommentsProps) {
     };
 
     const bindMaxHeight = () => {
-        const tradeWrapper = document.getElementById('swapFutaTradeWrapper');
-        if (tradeWrapper) {
-            const tradeSectionHeight =
-                tradeWrapper.getBoundingClientRect().height;
-            domDebug('screen height', window.screen.height);
-            domDebug('trader section height', tradeSectionHeight);
-            setPanelMaxHeight(window.innerHeight - tradeSectionHeight - 110);
+        if (props.resizeEffectorSelector) {
+            const tradeWrapper = document.getElementById(
+                props.resizeEffectorSelector,
+            );
+            if (tradeWrapper) {
+                const tradeSectionHeight =
+                    tradeWrapper.getBoundingClientRect().height;
+                domDebug('screen height', window.screen.height);
+                domDebug('trader section height', tradeSectionHeight);
+                setPanelMaxHeight(
+                    window.innerHeight - tradeSectionHeight - 110,
+                );
+            }
         }
     };
+
+    useOnBoundryChange(
+        props.resizeEffectorSelector ? props.resizeEffectorSelector : '',
+        200,
+        () => {
+            bindMaxHeight();
+        },
+    );
 
     const initialResizing = () => {
         if (props.isSmall) {
@@ -341,7 +357,9 @@ function Comments(props: CommentsProps) {
 
     return (
         <>
-            <div className={`${styles.comments_outer} ${styles.small}`}>
+            <div
+                className={`${styles.comments_outer} ${props.isSmall ? styles.small : ' '}`}
+            >
                 {props.isSmall && (
                     <div className={styles.comments_header}>COMMENTS</div>
                 )}

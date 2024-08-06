@@ -15,6 +15,7 @@
   
 
   .mainContainer{
+    transition: all .2s ease-in-out;
     height: calc(100svh - 170px);
     display: flex;
     flex-direction: column;
