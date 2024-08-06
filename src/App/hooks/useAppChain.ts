@@ -10,7 +10,6 @@ import {
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
-import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -22,12 +21,8 @@ export const useAppChain = (): {
     const { switchNetwork } = useSwitchNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
-    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
-    const [searchParams] = useSearchParams();
-    const chainParam = searchParams.get('chain');
-    const networkParam = searchParams.get('network');
     const [ignoreFirst, setIgnoreFirst] = useState<boolean>(true);
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
@@ -137,10 +132,7 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (chainParam || networkParam) {
-                                // navigate to index page only if "chain" or "network" in URL
-                                linkGenIndex.navigate();
-                            } else if (
+                            if (
                                 linkGenCurrent.currentPage === 'initpool' ||
                                 linkGenCurrent.currentPage === 'reposition'
                             ) {
