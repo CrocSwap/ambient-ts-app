@@ -123,8 +123,8 @@ function RangesRow(props: propsIF) {
             ? baseTokenCharacter
             : quoteTokenCharacter
         : !isDenomBase
-        ? baseTokenCharacter
-        : quoteTokenCharacter;
+          ? baseTokenCharacter
+          : quoteTokenCharacter;
 
     function scrollToDiv(block?: 'start' | 'center' | 'end' | 'nearest') {
         const element = document.getElementById(positionDomId);
@@ -162,32 +162,21 @@ function RangesRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'accent1'
-            : 'text1';
+              ? 'accent1'
+              : 'text1';
 
     function handleWalletLinkClick() {
         if (!isAccountView)
             window.open(
                 `/${
                     isOwnerActiveAccount
-                        ? 'account'
+                        ? 'account' + '/liquidity'
                         : ensName
-                        ? ensName
-                        : ownerId
+                          ? ensName + '/liquidity'
+                          : ownerId + '/liquidity'
                 }`,
             );
     }
-
-    const handleAccountClick = () => {
-        if (!isAccountView) {
-            const accountUrl = `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`;
-            window.open(accountUrl);
-        } else {
-            openDetailsModal();
-        }
-    };
 
     const rangeRowConstantsProps = {
         handleCopyPosHash,
@@ -283,7 +272,7 @@ function RangesRow(props: propsIF) {
                 <div data-label='menu'>
                     <RangesMenu
                         {...rangeMenuProps}
-                        handleAccountClick={handleAccountClick}
+                        handleWalletLinkClick={handleWalletLinkClick}
                         isAccountView={isAccountView}
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
