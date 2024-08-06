@@ -218,6 +218,7 @@ const PageHeader = function () {
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const swapParams: swapParamsIF = {
         chain: chainNumToString(tokenA.chainId),
@@ -230,6 +231,16 @@ const PageHeader = function () {
         destination: string;
         shouldDisplay: boolean;
     }
+
+    // maintain limits and liquidity tab selection when navigating from portfolio
+    const tradeLinkDestination = location.pathname.includes('trade/')
+        ? linkGenMarket.getFullURL(swapParams)
+        : (activeTradeTab === 'liquidity'
+              ? linkGenPool
+              : activeTradeTab === 'limits'
+                ? linkGenLimit
+                : linkGenMarket
+          ).getFullURL(swapParams);
 
     const linkData: linkDataIF[] = [
         {
@@ -244,7 +255,7 @@ const PageHeader = function () {
         },
         {
             title: 'Trade',
-            destination: linkGenMarket.getFullURL(swapParams),
+            destination: tradeLinkDestination,
             shouldDisplay: true,
         },
         {
