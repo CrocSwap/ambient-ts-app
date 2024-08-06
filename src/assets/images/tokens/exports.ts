@@ -47,6 +47,7 @@ import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
+import NURI from './NURI.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -99,4 +100,5 @@ export {
     BLAST,
     USDE,
     SUSDE,
+    NURI,
 };

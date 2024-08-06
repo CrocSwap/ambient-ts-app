@@ -418,6 +418,7 @@ export default function PortfolioTabs(props: propsIF) {
                         : accountTabDataWithoutTokens
                 }
                 rightTabOptions={false}
+                isPortfolio={true}
             />
         </PortfolioTabsPortfolioTabsContainer>
     );

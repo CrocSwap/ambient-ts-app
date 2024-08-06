@@ -36,6 +36,7 @@ import {
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
 
 // Animation Variants
 const dropdownVariants = {
@@ -289,6 +290,7 @@ export default function Navbar() {
                     />
                 )}
                 {!isUserConnected && connectWagmiButton}
+                <NotificationCenter />
                 <div className={styles.moreContainer} ref={dropdownRef}>
                     <FiMoreHorizontal
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
