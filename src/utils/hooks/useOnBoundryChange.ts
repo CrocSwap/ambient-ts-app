@@ -26,7 +26,6 @@ const useOnBoundryChange = (
     useEffect(() => {
         // assign el, and t0 dimension props
         const el = document.getElementById(elementId);
-        console.log(el);
         if (el) {
             setElementWidth(el.getBoundingClientRect().width);
             setElementHeight(el.getBoundingClientRect().height);
