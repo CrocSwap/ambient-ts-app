@@ -565,6 +565,7 @@ export const LPButton = styled.button`
     text-decoration-line: underline;
     transition: color 0.3s ease;
     cursor: pointer;
+    text-transform: uppercase;
 
     &:hover {
         color: var(--accent2);
