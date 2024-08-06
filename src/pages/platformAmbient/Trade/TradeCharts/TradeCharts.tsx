@@ -209,7 +209,13 @@ function TradeCharts(props: propsIF) {
     >();
 
     const resetAndRescaleDisplay = (
-        <div className={styles.chart_overlay_container}>
+        <div
+            className={
+                ['futa'].includes(platformName)
+                    ? styles.futa_chart_overlay_container
+                    : styles.chart_overlay_container
+            }
+        >
             {showLatest && (
                 <div className={styles.settings_container}>
                     <button
@@ -220,7 +226,11 @@ function TradeCharts(props: propsIF) {
                                 setLatest(true);
                             }
                         }}
-                        className={styles.non_active_selected_button}
+                        className={
+                            ['futa'].includes(platformName)
+                                ? styles.futa_non_active_selected_button
+                                : styles.non_active_selected_button
+                        }
                         aria-label='Show latest.'
                     >
                         Latest
@@ -235,9 +245,13 @@ function TradeCharts(props: propsIF) {
                         setRescale(true);
                     }}
                     className={
-                        reset
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
+                        ['futa'].includes(platformName)
+                            ? reset
+                                ? styles.futa_active_selected_button
+                                : styles.futa_non_active_selected_button
+                            : reset
+                              ? styles.active_selected_button
+                              : styles.non_active_selected_button
                     }
                     aria-label='Reset.'
                 >
@@ -253,9 +267,13 @@ function TradeCharts(props: propsIF) {
                         });
                     }}
                     className={
-                        rescale
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
+                        ['futa'].includes(platformName)
+                            ? rescale
+                                ? styles.futa_active_selected_button
+                                : styles.futa_non_active_selected_button
+                            : rescale
+                              ? styles.active_selected_button
+                              : styles.non_active_selected_button
                     }
                     aria-label='Auto rescale.'
                 >
@@ -311,7 +329,11 @@ function TradeCharts(props: propsIF) {
     );
 
     const timeFrameContent = (
-        <FlexContainer justifyContent='space-between' alignItems='center'>
+        <FlexContainer
+            justifyContent='space-between'
+            alignItems='center'
+            padding={['futa'].includes(platformName) ? '0 0 5px 0' : '0px'}
+        >
             <div>
                 <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>

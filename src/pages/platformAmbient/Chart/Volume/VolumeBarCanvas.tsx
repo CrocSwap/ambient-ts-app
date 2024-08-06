@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleDataIF } from '../../../../ambient-utils/types';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -32,6 +33,8 @@ export default function VolumeBarCanvas(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [barSeries, setBarSeries] = useState<any>();
 
+    const { platformName } = useContext(BrandContext);
+
     useEffect(() => {
         if (scaleData !== undefined) {
             const canvasBarChart = d3fc
@@ -49,11 +52,6 @@ export default function VolumeBarCanvas(props: propsIF) {
 
     useEffect(() => {
         if (barSeries && chartThemeColors) {
-            const canvas = d3
-                .select(d3CanvasBar.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-
             barSeries.decorate(
                 (context: CanvasRenderingContext2D, d: CandleDataIF) => {
                     const d3DarkStrokeColor =
@@ -62,7 +60,12 @@ export default function VolumeBarCanvas(props: propsIF) {
                         chartThemeColors.upCandleBorderColor?.copy();
 
                     if (d3DarkStrokeColor) d3DarkStrokeColor.opacity = 0.5;
-                    if (d3LightStrokeColor) d3LightStrokeColor.opacity = 0.5;
+                    if (d3LightStrokeColor)
+                        d3LightStrokeColor.opacity = ['futa'].includes(
+                            platformName,
+                        )
+                            ? 1
+                            : 0.5;
 
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
@@ -72,8 +75,6 @@ export default function VolumeBarCanvas(props: propsIF) {
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected;
 
-                    const style = getComputedStyle(canvas);
-
                     context.fillStyle =
                         d.volumeUSD === null
                             ? 'transparent'
@@ -81,8 +82,12 @@ export default function VolumeBarCanvas(props: propsIF) {
                                 selectedDate === d.time * 1000
                               ? '#E480FF'
                               : close > open
-                                ? style.getPropertyValue('--accent5')
-                                : style.getPropertyValue('--accent1');
+                                ? d3LightStrokeColor
+                                    ? d3LightStrokeColor.toString()
+                                    : 'rgba(115,113,252, 0.5)'
+                                : d3DarkStrokeColor
+                                  ? d3DarkStrokeColor.toString()
+                                  : 'rgba(205,193,255, 0.5)';
 
                     context.strokeStyle =
                         d.volumeUSD === null || d.volumeUSD === 0
@@ -91,8 +96,12 @@ export default function VolumeBarCanvas(props: propsIF) {
                                 selectedDate === d.time * 1000
                               ? '#E480FF'
                               : close > open
-                                ? style.getPropertyValue('--accent5')
-                                : style.getPropertyValue('--accent1');
+                                ? d3LightStrokeColor
+                                    ? d3LightStrokeColor.toString()
+                                    : 'rgba(115,113,252, 0.5)'
+                                : d3DarkStrokeColor
+                                  ? d3DarkStrokeColor.toString()
+                                  : 'rgba(205,193,255, 0.5)';
 
                     if (d.time * 1000 > visibleDateForCandle) {
                         context.fillStyle = 'transparent';
