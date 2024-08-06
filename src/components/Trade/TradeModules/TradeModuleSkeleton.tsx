@@ -20,6 +20,8 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 import { brand } from '../../../ambient-utils/constants';
+import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
+import { openInNewTab } from '../../../ambient-utils/dataLayer';
 
 interface PropsIF {
     chainId: string;
@@ -107,6 +109,12 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
+
+    const poolLinkParams: poolParamsIF = {
+        chain: chainId,
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
 
     return (
         <>
@@ -222,6 +230,28 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                         />
                     )}
                     {warnings && warnings}
+                    {isFuta && (
+                        <div
+                            onClick={() =>
+                                openInNewTab(
+                                    'https://testnet.ambient.finance/trade/pool/' +
+                                        // 'https://ambient.finance/trade/pool/' +
+                                        Object.entries(poolLinkParams)
+                                            .map(
+                                                (
+                                                    tup: [
+                                                        string,
+                                                        string | number,
+                                                    ],
+                                                ) => tup.join('='),
+                                            )
+                                            .join('&'),
+                                )
+                            }
+                        >
+                            Looking to LP?
+                        </div>
+                    )}
                 </FlexContainer>
             </ContentContainer>
             {modal}
