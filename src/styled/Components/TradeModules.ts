@@ -57,8 +57,9 @@ export const TradeModuleLink = styled(Link)<TradeModuleLinkProps>`
 `;
 
 export const WarningContainer = styled(FlexContainer)`
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--other-red);
     border-radius: var(--border-radius);
+    text-transform: uppercase;
 
     & svg {
         color: var(--other-red) !important;
@@ -547,4 +548,25 @@ export const CurrencyQuantityInput = styled.input`
     transition:
         border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
+`;
+
+export const LPButton = styled.button`
+    background: transparent;
+    outline: none;
+    border: none;
+    color: var(--accent1);
+    text-align: center;
+    font-family: 'Fira Mono';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.36px;
+    text-decoration-line: underline;
+    transition: color 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--accent2);
+    }
 `;

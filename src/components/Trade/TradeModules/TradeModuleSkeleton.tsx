@@ -8,6 +8,7 @@ import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
     AcknowledgeLink,
     AcknowledgeText,
+    LPButton,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
@@ -231,7 +232,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     )}
                     {warnings && warnings}
                     {isFuta && (
-                        <div
+                        <LPButton
                             onClick={() =>
                                 openInNewTab(
                                     'https://testnet.ambient.finance/trade/pool/' +
@@ -250,7 +251,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             }
                         >
                             Looking to LP?
-                        </div>
+                        </LPButton>
                     )}
                 </FlexContainer>
             </ContentContainer>
