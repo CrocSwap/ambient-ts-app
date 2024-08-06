@@ -69,6 +69,14 @@ export const useAppChain = (): {
         return output;
     }
 
+    function has42CharacterStringWith0xAfterSlash(inputString: string) {
+        // Regular expression to match a forward slash followed by '0x' and then exactly 40 hex characters
+        const regex = /\/0x[a-fA-F0-9]{40}/;
+
+        // Test the input string against the regular expression
+        return regex.test(inputString);
+    }
+
     // memoized and validated chain ID from the URL
     const chainInURLValidated: string | null = useMemo(
         () => getChainFromURL(),
@@ -105,20 +113,20 @@ export const useAppChain = (): {
                         // first part seems unnecessary but appears to help stability
                         const { pathname } = window.location;
 
-                        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+                        const isPathENS = pathname.slice(1)?.includes('.eth');
                         /*  check if path is 42 character hex string 
                             after removing the first character for /{hex} URLs 
                             or first 9 characters for /account/{hex} */
-                        const isPathHex =
-                            (pathname.slice(1)?.startsWith('0x') &&
-                                pathname.slice(1)?.length == 42) ||
-                            (pathname.slice(9)?.startsWith('0x') &&
-                                pathname.slice(9)?.length == 42);
-                        const isPathUserAddress = isPathENS || isPathHex;
+                        const isPathHexEoaAddress =
+                            has42CharacterStringWith0xAfterSlash(pathname);
+                        const isPathUserAddress =
+                            isPathENS || isPathHexEoaAddress;
+
                         const isPathUserXpOrLeaderboard =
                             pathname.includes('/xp');
                         const isPathPointsTabOnAccount =
                             pathname.includes('/points');
+                        const isPathOnAccount = pathname.includes('/account');
                         const isPathOnExplore = pathname.includes('/explore');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
@@ -154,8 +162,9 @@ export const useAppChain = (): {
                                 }
                             } else if (
                                 isPathUserAddress ||
-                                isPathUserXpOrLeaderboard ||
+                                isPathOnAccount ||
                                 isPathPointsTabOnAccount ||
+                                isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
                                 if (
@@ -220,13 +229,10 @@ export const useAppChain = (): {
         const { pathname } = window.location;
 
         setActiveNetwork(network);
-        const isPathENS = pathname.slice(1)?.endsWith('.eth');
-        const isPathHex =
-            (pathname.slice(1)?.startsWith('0x') &&
-                pathname.slice(1)?.length == 42) ||
-            (pathname.slice(9)?.startsWith('0x') &&
-                pathname.slice(9)?.length == 42);
-        const isPathUserAddress = isPathENS || isPathHex;
+        const isPathENS = pathname.slice(1)?.includes('.eth');
+        const isPathHexEoaAddress =
+            has42CharacterStringWith0xAfterSlash(pathname);
+        const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');
         if (
