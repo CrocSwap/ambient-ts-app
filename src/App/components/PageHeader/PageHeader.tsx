@@ -20,7 +20,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
@@ -86,10 +85,6 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
-    const { isConnected } = useWeb3ModalAccount();
-    const switchNetwork = isConnected
-        ? useSwitchNetwork().switchNetwork
-        : undefined;
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -417,7 +412,7 @@ const PageHeader = function () {
                                     ) : null}
                                 </FlexContainer>
                             )} */}
-                            <NetworkSelector switchNetwork={switchNetwork} />
+                            <NetworkSelector />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
