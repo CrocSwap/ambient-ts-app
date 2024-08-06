@@ -71,7 +71,7 @@ const PageHeader = function () {
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
-    const { setShowAllData } = useContext(TradeTableContext);
+    const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -259,7 +259,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: '/account',
+            destination: `/account/${activeTradeTab}`,
             shouldDisplay: !!isUserConnected,
         },
         {
@@ -273,32 +273,6 @@ const PageHeader = function () {
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
     function isActive(linkDestination: string, locationPathname: string) {
-        if (linkDestination.includes('/trade')) {
-            if (linkDestination.includes('/pool')) {
-                return locationPathname.includes('/trade/pool')
-                    ? HeaderClasses.active
-                    : HeaderClasses.inactive;
-            } else {
-                return locationPathname.includes(tradeDestination)
-                    ? HeaderClasses.active
-                    : HeaderClasses.inactive;
-            }
-        } else if (linkDestination.includes('/swap')) {
-            return locationPathname.includes('/swap')
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        } else if (linkDestination.includes('/explore')) {
-            return locationPathname.includes('/explore')
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        } else {
-            return locationPathname === linkDestination
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        }
-    }
-
-    function isUnderlined(linkDestination: string, locationPathname: string) {
         return (
             (linkDestination.includes('/trade') &&
                 (linkDestination.includes('/trade/pool')
@@ -308,6 +282,9 @@ const PageHeader = function () {
                 linkDestination.includes('/swap')) ||
             (locationPathname.includes('/explore') &&
                 linkDestination.includes('/explore')) ||
+            (locationPathname.endsWith('/account') &&
+                linkDestination.includes('/account') &&
+                !linkDestination.includes('/points')) ||
             locationPathname === linkDestination
         );
     }
@@ -322,19 +299,19 @@ const PageHeader = function () {
                     link.shouldDisplay ? (
                         <NavigationLink
                             tabIndex={0}
-                            className={isActive(
-                                link.destination,
-                                location.pathname,
-                            )}
+                            className={
+                                isActive(link.destination, location.pathname)
+                                    ? HeaderClasses.active
+                                    : HeaderClasses.inactive
+                            }
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {isUnderlined(
-                                link.destination,
-                                location.pathname,
-                            ) && <UnderlinedMotionDiv layoutId='underline' />}
+                            {isActive(link.destination, location.pathname) && (
+                                <UnderlinedMotionDiv layoutId='underline' />
+                            )}
                         </NavigationLink>
                     ) : null,
                 )}
