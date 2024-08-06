@@ -21,7 +21,7 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 // import { IoSettingsOutline } from 'react-icons/io5';
-// import { BrandContext } from '../../../../../contexts/BrandContext';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -60,7 +60,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    // const { platformName } = useContext(BrandContext);
+    const { platformName } = useContext(BrandContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
@@ -68,15 +68,16 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
-            const blob = isChartFullScreen
-                ? await printDomToImage(chartCanvasRef.current, '#171d27')
-                : await printDomToImage(
-                      canvasRef.current,
-                      '#171d27',
-                      undefined,
-                      // height, trade charts header + chart height
-                      50 + chartHeights.current,
-                  );
+            const blob =
+                isChartFullScreen || ['futa'].includes(platformName)
+                    ? await printDomToImage(chartCanvasRef.current, '#171d27')
+                    : await printDomToImage(
+                          canvasRef.current,
+                          '#171d27',
+                          undefined,
+                          // height, trade charts header + chart height
+                          50 + chartHeights.current,
+                      );
             if (blob) {
                 copy(blob);
                 openSnackbar('Chart image copied to clipboard', 'info');

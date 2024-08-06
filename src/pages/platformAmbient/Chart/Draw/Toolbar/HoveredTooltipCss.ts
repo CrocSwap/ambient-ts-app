@@ -31,6 +31,8 @@ const Tooltip = styled.div<{ height: number; width: number }>`
     align-items: center;
 
     pointer-events: none;
+
+    font-size: 11.5px;
 `;
 
 const TooltipArrow = styled.div`

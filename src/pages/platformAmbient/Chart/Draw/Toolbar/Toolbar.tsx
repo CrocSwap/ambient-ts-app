@@ -373,7 +373,7 @@ function ChartToolbar() {
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
                                                 height={22}
-                                                width={125}
+                                                width={135}
                                                 arrow={true}
                                             ></HoveredTooltip>
                                         )}
@@ -417,7 +417,7 @@ function ChartToolbar() {
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
                                                 height={22}
-                                                width={125}
+                                                width={135}
                                                 arrow={true}
                                             ></HoveredTooltip>
                                         )}
@@ -490,7 +490,7 @@ function ChartToolbar() {
                                             <HoveredTooltip
                                                 hoveredTool={hoveredTool}
                                                 height={22}
-                                                width={125}
+                                                width={135}
                                                 arrow={true}
                                             ></HoveredTooltip>
                                         )}
@@ -524,7 +524,7 @@ function ChartToolbar() {
                                         <HoveredTooltip
                                             hoveredTool={hoveredTool}
                                             height={22}
-                                            width={125}
+                                            width={135}
                                             arrow={true}
                                         ></HoveredTooltip>
                                     )}
@@ -547,7 +547,10 @@ function ChartToolbar() {
                         setIsToolbarOpen((prev: boolean) => !prev)
                     }
                 >
-                    <ArrowRight isActive={isToolbarOpen}></ArrowRight>
+                    <ArrowRight
+                        isActive={isToolbarOpen}
+                        isFuta={['futa'].includes(platformName)}
+                    ></ArrowRight>
                 </DividerButton>
             </DividerContainer>
         </ToolbarContainer>
