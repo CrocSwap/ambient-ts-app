@@ -96,7 +96,7 @@ export default function NetworkSelector() {
                     if (!initialLoadComplete) {
                         setTimeout(() => {
                             setInitialLoadComplete(true);
-                        }, 200);
+                        }, 500);
                     } else {
                         chooseNetwork(supportedNetworks[targetChain]);
                     }
