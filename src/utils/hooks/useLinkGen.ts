@@ -67,12 +67,13 @@ const BASE_URL_PATHS = {
     privacy: '/privacy',
     faq: '/faq',
     faqPoints: '/faq/points',
+    fourOhFour: '/404',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
 export type pageNames = keyof typeof BASE_URL_PATHS;
 // string-literal union type of keys in `BASE_URL_PATHS`
-export type baseURLs = typeof BASE_URL_PATHS[pageNames];
+export type baseURLs = (typeof BASE_URL_PATHS)[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
@@ -129,6 +130,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'privacy';
         } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {
             pageName = 'faqPoints';
+        } else if (pathname.startsWith(BASE_URL_PATHS.fourOhFour)) {
+            pageName = 'fourOhFour';
         } else {
             pageName = 'home';
         }
