@@ -233,14 +233,9 @@ const PageHeader = function () {
     }
 
     // maintain limits and liquidity tab selection when navigating from portfolio
-    const tradeLinkDestination = location.pathname.includes('trade/')
-        ? linkGenMarket.getFullURL(swapParams)
-        : (activeTradeTab === 'liquidity'
-              ? linkGenPool
-              : activeTradeTab === 'limits'
-                ? linkGenLimit
-                : linkGenMarket
-          ).getFullURL(swapParams);
+    const tradeLinkDestination = (
+        activeTradeTab === 'limits' ? linkGenLimit : linkGenMarket
+    ).getFullURL(swapParams);
 
     const linkData: linkDataIF[] = [
         {
@@ -270,7 +265,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: `/account/${activeTradeTab}`,
+            destination: `/account${activeTradeTab && '/' + activeTradeTab}`,
             shouldDisplay: !!isUserConnected,
         },
         {
@@ -284,6 +279,11 @@ const PageHeader = function () {
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
     function isActive(linkDestination: string, locationPathname: string) {
+        const trailingSlashRegex = /\/$/;
+        const locationPathnameNoTrailingSlash = locationPathname.replace(
+            trailingSlashRegex,
+            '',
+        );
         return (
             (linkDestination.includes('/trade') &&
                 (linkDestination.includes('/trade/pool')
@@ -293,7 +293,7 @@ const PageHeader = function () {
                 linkDestination.includes('/swap')) ||
             (locationPathname.includes('/explore') &&
                 linkDestination.includes('/explore')) ||
-            (locationPathname.endsWith('/account') &&
+            (locationPathnameNoTrailingSlash.endsWith('/account') &&
                 linkDestination.includes('/account') &&
                 !linkDestination.includes('/points')) ||
             locationPathname === linkDestination
