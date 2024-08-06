@@ -8,6 +8,7 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -122,9 +123,18 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                                 : { cursor: 'default' }
                         }
                     >
-                        {`My ${props.currentTab}`}
+                        {isDesktopScreen ? `My ${props.currentTab}` : 'Mine'}
                     </Text>
-                    {toggleOrNull}
+                    <DefaultTooltip
+                        interactive
+                        title={`My ${props.currentTab}`}
+                        placement={'bottom'}
+                        arrow
+                        enterDelay={700}
+                        leaveDelay={200}
+                    >
+                        {toggleOrNull}
+                    </DefaultTooltip>
                 </FlexContainer>
             )}
             {tradeTableState !== 'Collapsed' && isDesktopScreen && collapseIcon}

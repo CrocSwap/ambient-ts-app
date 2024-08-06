@@ -7,7 +7,7 @@ import { sortedAuctionsIF, useSortedAuctions } from './useSortedAuctions';
 import TickerComponent from '../../../components/Futa/TickerComponent/TickerComponent';
 
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import Seperator from '../../../components/Futa/Seperator/Seperator';
+import Separator from '../../../components/Futa/Separator/Separator';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 interface propsIF {
@@ -72,7 +72,7 @@ export default function Auctions(props: propsIF) {
                         />
                     </div>
 
-                    <Seperator dots={100} />
+                    <Separator dots={100} />
                     <div className={styles.flexColumn}>
                         <Divider count={2} />
                         {!hideTicker && (

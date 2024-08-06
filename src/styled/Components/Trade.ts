@@ -27,10 +27,6 @@ export const MainSection = styled.section<{
         flex-direction: column;
     }
 
-    @media only screen and (max-width: 1279px) {
-        padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
-    }
-
     @media (max-width: 600px) {
         display: flex;
         flex-direction: column;
@@ -48,7 +44,6 @@ export const TradeDropdown = styled.div`
     text-transform: capitalize;
     margin: 0 auto;
     background: var(--dark2);
-
     @media (max-width: 500px) {
         width: 95%;
     }

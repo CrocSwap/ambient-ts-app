@@ -83,8 +83,13 @@ function Trade() {
         setActiveMobileComponent,
     } = useContext(TradeTableContext);
 
-    const { baseToken, quoteToken, isDenomBase, limitTick } =
-        useContext(TradeDataContext);
+    const {
+        baseToken,
+        quoteToken,
+        isDenomBase,
+        limitTick,
+        toggleDidUserFlipDenom,
+    } = useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -220,12 +225,10 @@ function Trade() {
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
+    const isFuta = ['futa'].includes(platformName);
+
     const mobileTrade = (
-        <MainSection
-            isDropdown
-            isSmallScreen={smallScreen}
-            isFill={['futa'].includes(platformName)}
-        >
+        <MainSection isDropdown isSmallScreen={smallScreen} isFill={isFuta}>
             {mobileTradeDropdown}
 
             <Text
@@ -238,6 +241,7 @@ function Trade() {
                     alignItems: 'center',
                     gap: '8px',
                 }}
+                onClick={() => toggleDidUserFlipDenom()}
             >
                 <MdAutoGraph size={22} color='var(--accent5)' />
                 {conversionRate}
@@ -278,14 +282,16 @@ function Trade() {
 
     return (
         <>
-            <MainSection isFill={['futa'].includes(platformName)}>
+            <MainSection isFill={isFuta}>
                 <FlexContainer
                     flexDirection='column'
                     fullWidth
-                    background={
-                        ['futa'].includes(platformName) ? 'dark1' : 'dark2'
-                    }
-                    style={{ height: 'calc(100vh - 56px)' }}
+                    background={isFuta ? 'dark1' : 'dark2'}
+                    style={{
+                        height: isFuta
+                            ? 'calc(100vh - 65px)'
+                            : 'calc(100vh - 56px)',
+                    }}
                     ref={canvasRef}
                 >
                     {showTopPtsBanner && showPoints && (
@@ -301,7 +307,7 @@ function Trade() {
                         fullHeight
                         overflow='hidden'
                     >
-                        {['futa'].includes(platformName) ? (
+                        {isFuta ? (
                             <>
                                 {(isCandleDataNull || !isPoolInitialized) && (
                                     <NoChartData
@@ -321,7 +327,7 @@ function Trade() {
                                 )}
                                 {!isCandleDataNull && isPoolInitialized && (
                                     <ChartContainer
-                                        isFuta={['futa'].includes(platformName)}
+                                        isFuta={isFuta}
                                         fullScreen={isChartFullScreen}
                                     >
                                         {!isCandleDataNull && (
@@ -413,7 +419,7 @@ function Trade() {
                                 )}
                                 {!isCandleDataNull && isPoolInitialized && (
                                     <ChartContainer
-                                        isFuta={['futa'].includes(platformName)}
+                                        isFuta={isFuta}
                                         fullScreen={isChartFullScreen}
                                     >
                                         {!isCandleDataNull && (

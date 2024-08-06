@@ -6,6 +6,8 @@ import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolIn
 import { DataLoadingContext } from './DataLoadingContext';
 import { linkGenMethodsIF, useLinkGen } from '../utils/hooks/useLinkGen';
 import { TradeDataContext } from './TradeDataContext';
+import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../ambient-utils/constants';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -25,12 +27,18 @@ interface TradeTableContextIF {
     setShowAllData: (val: boolean) => void;
     selectedOutsideTab: number;
     setSelectedOutsideTab: (val: number) => void;
+    activeTradeTab: string;
+    setActiveTradeTab: (val: string) => void;
+
     outsideControl: boolean;
     setOutsideControl: (val: boolean) => void;
     handlePulseAnimation: (type: 'swap' | 'limitOrder' | 'range') => void;
 
     activeMobileComponent: string;
     setActiveMobileComponent: (val: string) => void;
+
+    hideEmptyPositionsOnAccount: boolean;
+    setHideEmptyPositionsOnAccount: (val: boolean) => void;
 }
 
 export const TradeTableContext = createContext<TradeTableContextIF>(
@@ -66,8 +74,19 @@ export const TradeTableContextProvider = (props: {
     const [outsideControl, setOutsideControl] = useState(false);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
+    const [activeTradeTab, setActiveTradeTab] = useState('');
+
     const { resetPoolDataLoadingStatus, resetConnectedUserDataLoadingStatus } =
         useContext(DataLoadingContext);
+
+    const [hideEmptyPositionsOnAccount, setHideEmptyPositionsOnAccount] =
+        useState<boolean>(
+            getLocalStorageItem(LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT) !== null
+                ? getLocalStorageItem(
+                      LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                  ) === 'true'
+                : true,
+        );
 
     useEffect(() => {
         resetPoolDataLoadingStatus();
@@ -117,6 +136,10 @@ export const TradeTableContextProvider = (props: {
         setOutsideControl,
         activeMobileComponent,
         setActiveMobileComponent,
+        activeTradeTab,
+        setActiveTradeTab,
+        hideEmptyPositionsOnAccount,
+        setHideEmptyPositionsOnAccount,
     };
 
     function handlePulseAnimation(type: 'swap' | 'limitOrder' | 'range') {

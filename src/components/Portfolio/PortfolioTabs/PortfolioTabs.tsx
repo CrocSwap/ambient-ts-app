@@ -124,11 +124,6 @@ export default function PortfolioTabs(props: propsIF) {
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
-                    ensResolution: 'true',
-                    annotate: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -174,8 +169,6 @@ export default function PortfolioTabs(props: propsIF) {
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -221,11 +214,6 @@ export default function PortfolioTabs(props: propsIF) {
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
                 n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,

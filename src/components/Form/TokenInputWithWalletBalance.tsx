@@ -205,6 +205,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 disabledContent={disabledContent}
                 isPoolInitialized={isPoolInitialized}
                 walletBalance={walletBalance}
+                usdValue={usdValueForDom}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
             {handleRefresh && (
                 <RefreshButton
