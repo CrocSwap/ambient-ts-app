@@ -420,7 +420,6 @@ const PageHeader = function () {
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
-                            <NotificationCenter />
                         </FlexContainer>
                     </div>
                 )}
