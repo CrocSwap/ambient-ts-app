@@ -5,6 +5,7 @@ import {
     getLimitOrderData,
     getPositionData,
     querySpotPrice,
+    filterLimitArray,
 } from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
@@ -125,7 +126,14 @@ const decorateUserPositions = async ({
                     );
                 },
             ),
-        );
+        ).then((updatedLimitOrderStates) => {
+            if (updatedLimitOrderStates.length > 0) {
+                const filteredData = filterLimitArray(updatedLimitOrderStates);
+                return filteredData;
+            } else {
+                return [];
+            }
+        });
     } else {
         // default to 'PositionIF'
         return await Promise.all(
