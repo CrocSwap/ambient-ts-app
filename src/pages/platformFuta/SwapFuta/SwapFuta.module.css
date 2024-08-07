@@ -8,6 +8,16 @@
    
 }
 
+.mobileMainSection {
+    display: grid;
+    gap: 8px;
+    padding: 0 8px;
+    height: 100%;
+    background: black;
+    padding-top: 15px;
+    /* height: calc(100dvh - 75px);  */
+}
+
 .chartSection{
     /* display: flex;
     justify-content: center;
