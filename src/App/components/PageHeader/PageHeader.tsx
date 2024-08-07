@@ -190,6 +190,10 @@ const PageHeader = function () {
                 document.title = 'My Limits ~ Ambient';
             } else if (pathNoLeadingSlash.includes('transactions')) {
                 document.title = 'My Transactions ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('wallet-balances')) {
+                document.title = 'My Wallet Balances ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('exchange-balances')) {
+                document.title = 'My Exchange Balances ~ Ambient';
             } else {
                 document.title = 'My Account ~ Ambient';
             }
@@ -214,6 +218,10 @@ const PageHeader = function () {
                 document.title = `${ensNameOrAddressTruncated} Limits ~ Ambient`;
             } else if (pathNoLeadingSlash.includes('transactions')) {
                 document.title = `${ensNameOrAddressTruncated} Transactions ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('wallet-balances')) {
+                document.title = `${ensNameOrAddressTruncated} Wallet Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('exchange-balances')) {
+                document.title = `${ensNameOrAddressTruncated} Exchange Balances ~ Ambient`;
             } else {
                 document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
             }
