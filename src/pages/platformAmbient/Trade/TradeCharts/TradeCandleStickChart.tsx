@@ -47,6 +47,7 @@ import {
     xAxisBuffer,
 } from '../../Chart/ChartUtils/chartConstants';
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -94,6 +95,10 @@ function TradeCandleStickChart(props: propsIF) {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
+
+    const { liqMode } = props.chartItemStates;
+
+    const { platformName } = useContext(BrandContext);
 
     const period = useMemo(
         () => chartSettings.candleTime.global.time,
@@ -610,7 +615,13 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData === undefined, mobileView, isDenomBase, period]);
+    }, [
+        unparsedCandleData === undefined,
+        mobileView,
+        isDenomBase,
+        period,
+        liqMode,
+    ]);
 
     useEffect(() => {
         if (candleScale.isFetchFirst200Candle === true) {
@@ -876,13 +887,18 @@ function TradeCandleStickChart(props: propsIF) {
         const snapDiff = nowDate % (period * 1000);
         const snappedTime = nowDate + (period * 1000 - snapDiff);
 
+        const liqBuffer =
+            liqMode === 'none' || ['futa'].includes(platformName)
+                ? 0.95
+                : xAxisBuffer;
+
         const centerX = snappedTime;
         const diff =
-            (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+            (localInitialDisplayCandleCount * period * 1000) / liqBuffer;
 
         xScale.domain([
-            centerX - diff * xAxisBuffer,
-            centerX + diff * (1 - xAxisBuffer),
+            centerX - diff * liqBuffer,
+            centerX + diff * (1 - liqBuffer),
         ]);
     };
     const resetChart = () => {

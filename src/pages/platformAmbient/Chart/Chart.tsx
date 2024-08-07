@@ -703,6 +703,8 @@ export default function Chart(props: propsIF) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
+    const [shouldResetBuffer, setShouldResetBuffer] = useState(true);
+
     const toolbarWidth = isToolbarOpen ? 38 : 15;
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
@@ -911,6 +913,12 @@ export default function Chart(props: propsIF) {
             setXScaleDefault();
         }
     }, []);
+
+    useEffect(() => {
+        if (shouldResetBuffer) {
+            setXScaleDefault();
+        }
+    }, [liqMode, shouldResetBuffer]);
 
     useEffect(() => {
         (async () => {
@@ -1412,6 +1420,7 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
+                        setShouldResetBuffer(false);
                         if (event.sourceEvent.type !== 'wheel') {
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
@@ -2575,9 +2584,14 @@ export default function Chart(props: propsIF) {
             const snapDiff = nowDate % (period * 1000);
             const snappedTime = nowDate + (period * 1000 - snapDiff);
 
+            const liqBuffer =
+                liqMode === 'none' || ['futa'].includes(platformName)
+                    ? 0.95
+                    : xAxisBuffer;
+
             const centerX = snappedTime;
             const diff =
-                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+                (localInitialDisplayCandleCount * period * 1000) / liqBuffer;
 
             setPrevLastCandleTime(snappedTime / 1000);
 
@@ -2597,14 +2611,15 @@ export default function Chart(props: propsIF) {
             const canvas = canvasDiv
                 .select('canvas')
                 .node() as HTMLCanvasElement;
+
             const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
-                centerX - diff * xAxisBuffer,
-                centerX + diff * (1 - xAxisBuffer),
+                centerX - diff * liqBuffer,
+                centerX + diff * (1 - liqBuffer),
             ];
 
             const targetValue = Date.now();
-            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
+            const targetPixel = currentRange[1] * (1 - liqBuffer);
 
             const newDomainMin =
                 targetValue -
@@ -2694,6 +2709,7 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
+            setShouldResetBuffer(true);
             resetFunc();
             setReset(false);
             setShowLatest(false);
@@ -2734,7 +2750,14 @@ export default function Chart(props: propsIF) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [latest, denomInBase, poolPriceDisplay, rescale, location.pathname]);
+    }, [
+        latest,
+        denomInBase,
+        poolPriceDisplay,
+        rescale,
+        location.pathname,
+        liqMode,
+    ]);
 
     const onClickRange = async (event: PointerEvent) => {
         if (scaleData && liquidityData) {

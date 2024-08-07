@@ -161,15 +161,16 @@ function Trade() {
                                 Chart
                             </TradeDropdownButton>
                         )}
-                    {activeMobileComponent !== 'transactions' && (
-                        <TradeDropdownButton
-                            onClick={() =>
-                                handleMobileDropdownClick('transactions')
-                            }
-                        >
-                            Transactions
-                        </TradeDropdownButton>
-                    )}
+                    {activeMobileComponent !== 'transactions' &&
+                        !['futa'].includes(platformName) && (
+                            <TradeDropdownButton
+                                onClick={() =>
+                                    handleMobileDropdownClick('transactions')
+                                }
+                            >
+                                Transactions
+                            </TradeDropdownButton>
+                        )}
                 </div>
             )}
         </TradeDropdown>
@@ -278,7 +279,8 @@ function Trade() {
         </MainSection>
     );
 
-    if (showActiveMobileComponent) return mobileTrade;
+    if (showActiveMobileComponent && platformName !== 'futa')
+        return mobileTrade;
 
     return (
         <>
