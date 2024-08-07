@@ -79,10 +79,13 @@ export default function TabComponent(props: TabPropsIF) {
 
     function removeTxTypesFromEnd(inputString: string) {
         // Regular expression to match "transactions", "limits", or "liquidity" at the end of the string
-        const regex = /(transactions|limits|liquidity|points)$/;
+        const typeRegex = /(transactions|limits|liquidity|points)$/;
+        const trailingSlashRegex = /\/$/;
 
         // Replace the matched keyword with an empty string
-        return inputString.replace(regex, '');
+        return inputString
+            .replace(trailingSlashRegex, '')
+            .replace(typeRegex, '');
     }
 
     function ensureEndsWithSlash(inputString: string) {
@@ -107,8 +110,6 @@ export default function TabComponent(props: TabPropsIF) {
         ) {
             setActiveTradeTab(item.label.toLowerCase());
             if (isPortfolio) {
-                console.log({ pathNoType });
-
                 item.label.toLowerCase() === 'transactions'
                     ? navigate(`${pathNoType}transactions`)
                     : item.label.toLowerCase() === 'limits'
