@@ -2,11 +2,12 @@ import { MutableRefObject, useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
+    isTransactionDeniedError,
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
@@ -90,23 +91,65 @@ export function useCreateRangePosition() {
         });
 
         try {
-            tx = await createRangePositionTx({
-                crocEnv,
-                isAmbient,
-                slippageTolerancePercentage,
-                tokenA: {
-                    address: tokenA.address,
-                    qty: tokenAInputQty,
-                    isWithdrawFromDexChecked: isWithdrawTokenAFromDexChecked,
-                },
-                tokenB: {
-                    address: tokenB.address,
-                    qty: tokenBInputQty,
-                    isWithdrawFromDexChecked: isWithdrawTokenBFromDexChecked,
-                },
-                isTokenAPrimary,
-                tick: { low: defaultLowTick, high: defaultHighTick },
-            });
+            try {
+                tx = await createRangePositionTx({
+                    crocEnv,
+                    isAmbient,
+                    slippageTolerancePercentage,
+                    tokenA: {
+                        address: tokenA.address,
+                        qty: tokenAInputQty,
+                        isWithdrawFromDexChecked:
+                            isWithdrawTokenAFromDexChecked,
+                    },
+                    tokenB: {
+                        address: tokenB.address,
+                        qty: tokenBInputQty,
+                        isWithdrawFromDexChecked:
+                            isWithdrawTokenBFromDexChecked,
+                    },
+                    isTokenAPrimary,
+                    tick: { low: defaultLowTick, high: defaultHighTick },
+                });
+            } catch (error) {
+                // If the user's requested position fails to create and its the non-primary side is ETH,
+                // try to create the same position but with the ETH amount static instead of floating.
+                if (
+                    (isTokenAPrimary && tokenB.address != ZERO_ADDRESS) ||
+                    (!isTokenAPrimary && tokenA.address != ZERO_ADDRESS) ||
+                    isTransactionDeniedError(error)
+                ) {
+                    throw error;
+                }
+                console.log(
+                    'position creation with floating ETH failed, trying static ETH',
+                    error,
+                );
+                try {
+                    tx = await createRangePositionTx({
+                        crocEnv,
+                        isAmbient,
+                        slippageTolerancePercentage,
+                        tokenA: {
+                            address: tokenA.address,
+                            qty: tokenAInputQty,
+                            isWithdrawFromDexChecked:
+                                isWithdrawTokenAFromDexChecked,
+                        },
+                        tokenB: {
+                            address: tokenB.address,
+                            qty: tokenBInputQty,
+                            isWithdrawFromDexChecked:
+                                isWithdrawTokenBFromDexChecked,
+                        },
+                        isTokenAPrimary: !isTokenAPrimary,
+                        tick: { low: defaultLowTick, high: defaultHighTick },
+                    });
+                } catch (error2) {
+                    if (isTransactionDeniedError(error2)) throw error2;
+                    else throw error;
+                }
+            }
 
             setNewRangeTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);

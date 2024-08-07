@@ -19,7 +19,6 @@ import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSe
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Global/Modal/useModal';
 import { FlexContainer, Text } from '../../styled/Common';
 import {
@@ -36,6 +35,7 @@ interface propsIF {
     token: TokenIF;
     value: string;
     handleTokenInputEvent: (val: string) => void;
+    isPoolInitialized?: boolean;
     reverseTokens?: () => void;
     fieldId?: string;
     isLoading?: boolean;
@@ -55,6 +55,7 @@ function TokenInputQuantity(props: propsIF) {
         token,
         value,
         isLoading,
+        isPoolInitialized = true,
         label,
         includeWallet,
         showPulseAnimation,
@@ -64,7 +65,6 @@ function TokenInputQuantity(props: propsIF) {
         reverseTokens,
         setTokenModalOpen = () => null,
     } = props;
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
     const location = useLocation();
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
@@ -214,7 +214,7 @@ function TokenInputQuantity(props: propsIF) {
                 animation={showPulseAnimation ? 'pulse' : ''}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
-                {isLoading ? (
+                {isLoading && isPoolInitialized ? (
                     <FlexContainer fullWidth fullHeight alignItems='center'>
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
                     </FlexContainer>

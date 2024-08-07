@@ -445,8 +445,12 @@ export default function Chart(props: propsIF) {
     const [circleScale, setCircleScale] =
         useState<d3.ScaleLinear<number, number>>();
 
+    const [shouldDisableChartSettings, setShouldDisableChartSettings] =
+        useState<boolean>(true);
+    const [closeOutherChartSetting, setCloseOutherChartSetting] =
+        useState<boolean>(false);
+
     const mobileView = useMediaQuery('(max-width: 1200px)');
-    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const drawSettings = useDrawSettings(chartThemeColors);
     const getDollarPrice = useDollarPrice();
@@ -461,8 +465,12 @@ export default function Chart(props: propsIF) {
     const clickOutsideChartHandler = (event: Event) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const e = event.target as any;
-        if (!e.id.includes('chart_settings')) {
+        if (!e.id.includes('chart_settings') && shouldDisableChartSettings) {
             setContextmenu(false);
+        }
+
+        if (!shouldDisableChartSettings) {
+            setCloseOutherChartSetting(true);
         }
     };
 
@@ -689,9 +697,7 @@ export default function Chart(props: propsIF) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
-    const toolbarWidth = isToolbarOpen
-        ? 38 - (mobileView ? (smallScreen ? 0 : 25) : 13)
-        : 9 - (mobileView ? 0 : 4);
+    const toolbarWidth = isToolbarOpen ? 38 : 15;
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,
@@ -1240,7 +1246,6 @@ export default function Chart(props: propsIF) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
                         setIsChartZoom(true);
-                        setContextmenu(false);
 
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
@@ -1268,6 +1273,8 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('zoom', (event: any) => {
+                        setContextmenu(false);
+
                         async function newDomains() {
                             if (
                                 event.sourceEvent &&
@@ -2571,14 +2578,19 @@ export default function Chart(props: propsIF) {
             });
             timeGaps.forEach((obj) => (obj.isAddedPixel = false));
 
-            const targetValue = Date.now();
-            const targetPixel = scaleData.xScale.range()[1] * (1 - xAxisBuffer);
+            const canvasDiv = d3.select(d3CanvasMain.current);
 
-            const currentRange = scaleData?.xScale.range();
+            const canvas = canvasDiv
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+            const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
             ];
+
+            const targetValue = Date.now();
+            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
 
             const newDomainMin =
                 targetValue -
@@ -4553,7 +4565,11 @@ export default function Chart(props: propsIF) {
                 const offsetX = event.offsetX;
                 const offsetY = event.offsetY;
 
-                setContextmenu(false);
+                if (shouldDisableChartSettings) {
+                    setContextmenu(false);
+                } else {
+                    setCloseOutherChartSetting(true);
+                }
 
                 let isOrderHistorySelected = undefined;
                 if (showSwap) {
@@ -5874,285 +5890,257 @@ export default function Chart(props: propsIF) {
                 gridRowStart: 1,
                 gridRowEnd: 3,
                 visibility: isCompletedFetchData ? 'hidden' : 'visible',
+                paddingLeft: toolbarWidth + 'px',
             }}
         >
-            <d3fc-group id='d3fc_group' auto-resize>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}
-                >
-                    <div
-                        className='chart_grid'
-                        id='chart_grid'
-                        style={{
-                            gridTemplateColumns:
-                                toolbarWidth +
-                                'px auto 1fr auto minmax(1em, max-content)',
-                        }}
-                    >
-                        <CandleChart
-                            chartItemStates={props.chartItemStates}
-                            data={unparsedCandleData}
-                            denomInBase={denomInBase}
-                            lastCandleData={lastCandleData}
-                            period={period}
+            <d3fc-group
+                id='d3fc_group'
+                auto-resize
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr auto',
+                    gridTemplateRows: '1fr auto auto auto',
+                }}
+            >
+                <CandleChart
+                    chartItemStates={props.chartItemStates}
+                    data={unparsedCandleData}
+                    denomInBase={denomInBase}
+                    lastCandleData={lastCandleData}
+                    period={period}
+                    scaleData={scaleData}
+                    selectedDate={selectedDate}
+                    showLatest={showLatest}
+                    setBandwidth={setBandwidth}
+                    prevlastCandleTime={prevlastCandleTime}
+                    setPrevLastCandleTime={setPrevLastCandleTime}
+                    isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                    visibleDateForCandle={visibleDateForCandle}
+                    chartThemeColors={chartThemeColors}
+                />
+
+                <VolumeBarCanvas
+                    scaleData={scaleData}
+                    volumeData={unparsedCandleData}
+                    denomInBase={denomInBase}
+                    selectedDate={selectedDate}
+                    showVolume={showVolume}
+                    visibleDateForCandle={visibleDateForCandle}
+                    chartThemeColors={chartThemeColors}
+                />
+
+                {liquidityData && (
+                    <LiquidityChart
+                        liqMode={liqMode}
+                        liquidityData={liquidityData}
+                        liquidityScale={liquidityScale}
+                        scaleData={scaleData}
+                        liquidityDepthScale={liquidityDepthScale}
+                        ranges={ranges}
+                        chartMousemoveEvent={chartMousemoveEvent}
+                        liqTooltip={liqTooltip}
+                        mouseLeaveEvent={mouseLeaveEvent}
+                        isActiveDragOrZoom={isChartZoom || isLineDrag}
+                        mainCanvasBoundingClientRect={
+                            mainCanvasBoundingClientRect
+                        }
+                        setLiqMaxActiveLiq={setLiqMaxActiveLiq}
+                        chartThemeColors={chartThemeColors}
+                        render={render}
+                        colorChangeTrigger={colorChangeTrigger}
+                        setColorChangeTrigger={setColorChangeTrigger}
+                    />
+                )}
+
+                {(showSwap || showLiquidity || showHistorical) &&
+                    circleScale &&
+                    scaleData && (
+                        <OrderHistoryCanvas
                             scaleData={scaleData}
-                            selectedDate={selectedDate}
-                            showLatest={showLatest}
-                            setBandwidth={setBandwidth}
-                            prevlastCandleTime={prevlastCandleTime}
-                            setPrevLastCandleTime={setPrevLastCandleTime}
-                            isDiscontinuityScaleEnabled={isCondensedModeEnabled}
-                            visibleDateForCandle={visibleDateForCandle}
-                            chartThemeColors={chartThemeColors}
-                        />
-
-                        <VolumeBarCanvas
-                            scaleData={scaleData}
-                            volumeData={unparsedCandleData}
                             denomInBase={denomInBase}
-                            selectedDate={selectedDate}
-                            showVolume={showVolume}
-                            visibleDateForCandle={visibleDateForCandle}
-                            chartThemeColors={chartThemeColors}
+                            showSwap={showSwap}
+                            showLiquidity={showLiquidity}
+                            showHistorical={showHistorical}
+                            hoveredOrderHistory={hoveredOrderHistory}
+                            isHoveredOrderHistory={isHoveredOrderHistory}
+                            drawSettings={drawSettings}
+                            userTransactionData={userTransactionData}
+                            circleScale={circleScale}
+                            isSelectedOrderHistory={isSelectedOrderHistory}
+                            selectedOrderHistory={selectedOrderHistory}
                         />
-
-                        {liquidityData && (
-                            <LiquidityChart
-                                liqMode={liqMode}
-                                liquidityData={liquidityData}
-                                liquidityScale={liquidityScale}
-                                scaleData={scaleData}
-                                liquidityDepthScale={liquidityDepthScale}
-                                ranges={ranges}
-                                chartMousemoveEvent={chartMousemoveEvent}
-                                liqTooltip={liqTooltip}
-                                mouseLeaveEvent={mouseLeaveEvent}
-                                isActiveDragOrZoom={isChartZoom || isLineDrag}
-                                mainCanvasBoundingClientRect={
-                                    mainCanvasBoundingClientRect
-                                }
-                                setLiqMaxActiveLiq={setLiqMaxActiveLiq}
-                                chartThemeColors={chartThemeColors}
-                                render={render}
-                                colorChangeTrigger={colorChangeTrigger}
-                                setColorChangeTrigger={setColorChangeTrigger}
-                            />
-                        )}
-
-                        {(showSwap || showLiquidity || showHistorical) &&
-                            circleScale &&
-                            scaleData && (
-                                <OrderHistoryCanvas
-                                    scaleData={scaleData}
-                                    denomInBase={denomInBase}
-                                    showSwap={showSwap}
-                                    showLiquidity={showLiquidity}
-                                    showHistorical={showHistorical}
-                                    hoveredOrderHistory={hoveredOrderHistory}
-                                    isHoveredOrderHistory={
-                                        isHoveredOrderHistory
-                                    }
-                                    drawSettings={drawSettings}
-                                    userTransactionData={userTransactionData}
-                                    circleScale={circleScale}
-                                    isSelectedOrderHistory={
-                                        isSelectedOrderHistory
-                                    }
-                                    selectedOrderHistory={selectedOrderHistory}
-                                />
-                            )}
-
-                        <d3fc-canvas
-                            ref={d3CanvasCrosshair}
-                            className='cr-canvas'
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasMarketLine}
-                            className='market-line-canvas'
-                        ></d3fc-canvas>
-
-                        <RangeLinesChart {...rangeCanvasProps} />
-
-                        <LimitLineChart {...limitCanvasProps} />
-
-                        <d3fc-canvas
-                            ref={d3CanvasMain}
-                            className='main-canvas'
-                            id={mainCanvasElementId}
-                        ></d3fc-canvas>
-
-                        {activeDrawingType !== 'Cross' && scaleData && (
-                            <DrawCanvas
-                                scaleData={scaleData}
-                                setDrawnShapeHistory={setDrawnShapeHistory}
-                                setCrossHairDataFunc={setCrossHairDataFunc}
-                                activeDrawingType={activeDrawingType}
-                                setActiveDrawingType={setActiveDrawingType}
-                                setSelectedDrawnShape={setSelectedDrawnShape}
-                                denomInBase={denomInBase}
-                                addDrawActionStack={addDrawActionStack}
-                                period={period}
-                                crosshairData={crosshairData}
-                                snapForCandle={snapForCandle}
-                                visibleCandleData={visibleCandleData}
-                                render={render}
-                                zoomBase={zoomBase}
-                                setIsChartZoom={setIsChartZoom}
-                                isChartZoom={isChartZoom}
-                                lastCandleData={lastCandleData}
-                                firstCandleData={firstCandleData}
-                                isMagnetActive={isMagnetActive}
-                                drawSettings={drawSettings}
-                                quoteTokenDecimals={quoteTokenDecimals}
-                                baseTokenDecimals={baseTokenDecimals}
-                                setIsUpdatingShape={setIsUpdatingShape}
-                                bandwidth={bandwidth}
-                            />
-                        )}
-
-                        {isDragActive && scaleData && (
-                            <DragCanvas
-                                scaleData={scaleData}
-                                canUserDragDrawnShape={canUserDragDrawnShape}
-                                hoveredDrawnShape={hoveredDrawnShape}
-                                drawnShapeHistory={drawnShapeHistory}
-                                render={render}
-                                mousemove={mousemove}
-                                setCrossHairDataFunc={setCrossHairDataFunc}
-                                setSelectedDrawnShape={setSelectedDrawnShape}
-                                setIsUpdatingShape={setIsUpdatingShape}
-                                denomInBase={denomInBase}
-                                addDrawActionStack={addDrawActionStack}
-                                snapForCandle={snapForCandle}
-                                visibleCandleData={visibleCandleData}
-                                zoomBase={zoomBase}
-                                setIsChartZoom={setIsChartZoom}
-                                isChartZoom={isChartZoom}
-                                lastCandleData={lastCandleData}
-                                firstCandleData={firstCandleData}
-                                setIsDragActive={setIsDragActive}
-                                period={period}
-                                setContextmenu={setContextmenu}
-                                setContextMenuPlacement={
-                                    setContextMenuPlacement
-                                }
-                            />
-                        )}
-                        <YAxisCanvas {...yAxisCanvasProps} />
-                    </div>
-                    {showFeeRate && (
-                        <>
-                            <hr />
-                            <FeeRateChart
-                                feeData={visibleCandleData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={period}
-                                crosshairForSubChart={crosshairData}
-                                setCrosshairData={setCrosshairData}
-                                subChartValues={subChartValues}
-                                scaleData={scaleData}
-                                render={render}
-                                yAxisWidth={yAxisWidth}
-                                setCrossHairLocation={
-                                    candleOrVolumeDataHoverStatus
-                                }
-                                setCrosshairActive={setCrosshairActive}
-                                crosshairActive={crosshairActive}
-                                setShowTooltip={props.setShowTooltip}
-                                xAxisActiveTooltip={xAxisActiveTooltip}
-                                zoomBase={zoomBase}
-                                mainZoom={mainZoom}
-                                setIsChartZoom={setIsChartZoom}
-                                isChartZoom={isChartZoom}
-                                lastCandleData={lastCandleData}
-                                firstCandleData={firstCandleData}
-                                isToolbarOpen={isToolbarOpen}
-                                toolbarWidth={toolbarWidth}
-                                chartThemeColors={chartThemeColors}
-                                colorChangeTrigger={colorChangeTrigger}
-                                setColorChangeTrigger={setColorChangeTrigger}
-                                setContextmenu={setContextmenu}
-                                setContextMenuPlacement={
-                                    setContextMenuPlacement
-                                }
-                            />
-                        </>
                     )}
 
-                    {showTvl && (
-                        <>
-                            <hr />
-                            <TvlChart
-                                tvlData={visibleCandleData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={period}
-                                crosshairForSubChart={crosshairData}
-                                setCrosshairData={setCrosshairData}
-                                scaleData={scaleData}
-                                subChartValues={subChartValues}
-                                render={render}
-                                yAxisWidth={yAxisWidth}
-                                setCrossHairLocation={
-                                    candleOrVolumeDataHoverStatus
-                                }
-                                setCrosshairActive={setCrosshairActive}
-                                crosshairActive={crosshairActive}
-                                setShowTooltip={props.setShowTooltip}
-                                xAxisActiveTooltip={xAxisActiveTooltip}
-                                mainZoom={mainZoom}
-                                lastCandleData={lastCandleData}
-                                firstCandleData={firstCandleData}
-                                isChartZoom={isChartZoom}
-                                zoomBase={zoomBase}
-                                setIsChartZoom={setIsChartZoom}
-                                isToolbarOpen={isToolbarOpen}
-                                toolbarWidth={toolbarWidth}
-                                chartThemeColors={chartThemeColors}
-                                colorChangeTrigger={colorChangeTrigger}
-                                setColorChangeTrigger={setColorChangeTrigger}
-                                setContextmenu={setContextmenu}
-                                setContextMenuPlacement={
-                                    setContextMenuPlacement
-                                }
-                            />
-                        </>
-                    )}
+                <d3fc-canvas
+                    ref={d3CanvasCrosshair}
+                    className='cr-canvas'
+                ></d3fc-canvas>
+                <d3fc-canvas
+                    ref={d3CanvasMarketLine}
+                    className='market-line-canvas'
+                ></d3fc-canvas>
 
-                    <div className='xAxis'>
+                <RangeLinesChart {...rangeCanvasProps} />
+
+                <LimitLineChart {...limitCanvasProps} />
+
+                <d3fc-canvas
+                    ref={d3CanvasMain}
+                    className='main-canvas'
+                    id={mainCanvasElementId}
+                ></d3fc-canvas>
+
+                {activeDrawingType !== 'Cross' && scaleData && (
+                    <DrawCanvas
+                        scaleData={scaleData}
+                        setDrawnShapeHistory={setDrawnShapeHistory}
+                        setCrossHairDataFunc={setCrossHairDataFunc}
+                        activeDrawingType={activeDrawingType}
+                        setActiveDrawingType={setActiveDrawingType}
+                        setSelectedDrawnShape={setSelectedDrawnShape}
+                        denomInBase={denomInBase}
+                        addDrawActionStack={addDrawActionStack}
+                        period={period}
+                        crosshairData={crosshairData}
+                        snapForCandle={snapForCandle}
+                        visibleCandleData={visibleCandleData}
+                        render={render}
+                        zoomBase={zoomBase}
+                        setIsChartZoom={setIsChartZoom}
+                        isChartZoom={isChartZoom}
+                        lastCandleData={lastCandleData}
+                        firstCandleData={firstCandleData}
+                        isMagnetActive={isMagnetActive}
+                        drawSettings={drawSettings}
+                        quoteTokenDecimals={quoteTokenDecimals}
+                        baseTokenDecimals={baseTokenDecimals}
+                        setIsUpdatingShape={setIsUpdatingShape}
+                        bandwidth={bandwidth}
+                    />
+                )}
+
+                {isDragActive && scaleData && (
+                    <DragCanvas
+                        scaleData={scaleData}
+                        canUserDragDrawnShape={canUserDragDrawnShape}
+                        hoveredDrawnShape={hoveredDrawnShape}
+                        drawnShapeHistory={drawnShapeHistory}
+                        render={render}
+                        mousemove={mousemove}
+                        setCrossHairDataFunc={setCrossHairDataFunc}
+                        setSelectedDrawnShape={setSelectedDrawnShape}
+                        setIsUpdatingShape={setIsUpdatingShape}
+                        denomInBase={denomInBase}
+                        addDrawActionStack={addDrawActionStack}
+                        snapForCandle={snapForCandle}
+                        visibleCandleData={visibleCandleData}
+                        zoomBase={zoomBase}
+                        setIsChartZoom={setIsChartZoom}
+                        isChartZoom={isChartZoom}
+                        lastCandleData={lastCandleData}
+                        firstCandleData={firstCandleData}
+                        setIsDragActive={setIsDragActive}
+                        period={period}
+                        setContextmenu={setContextmenu}
+                        setContextMenuPlacement={setContextMenuPlacement}
+                    />
+                )}
+                <YAxisCanvas {...yAxisCanvasProps} />
+                {showFeeRate && (
+                    <>
                         <hr />
-
-                        <XAxisCanvas
-                            changeScale={changeScale}
-                            crosshairActive={crosshairActive}
-                            crosshairData={crosshairData}
-                            firstCandleData={firstCandleData}
-                            isLineDrag={isLineDrag}
-                            lastCandleData={lastCandleData}
-                            mouseLeaveCanvas={mouseLeaveCanvas}
+                        <FeeRateChart
+                            feeData={visibleCandleData.sort(
+                                (a, b) => b.time - a.time,
+                            )}
                             period={period}
-                            render={render}
+                            crosshairForSubChart={crosshairData}
+                            setCrosshairData={setCrosshairData}
+                            subChartValues={subChartValues}
                             scaleData={scaleData}
-                            reset={reset}
+                            render={render}
+                            yAxisWidth={yAxisWidth}
+                            setCrossHairLocation={candleOrVolumeDataHoverStatus}
                             setCrosshairActive={setCrosshairActive}
-                            setXaxisActiveTooltip={setXaxisActiveTooltip}
-                            showLatestActive={showLatestActive}
+                            crosshairActive={crosshairActive}
+                            setShowTooltip={props.setShowTooltip}
+                            xAxisActiveTooltip={xAxisActiveTooltip}
                             zoomBase={zoomBase}
+                            mainZoom={mainZoom}
+                            setIsChartZoom={setIsChartZoom}
                             isChartZoom={isChartZoom}
-                            isToolbarOpen={isToolbarOpen}
-                            selectedDrawnShape={selectedDrawnShape}
-                            toolbarWidth={toolbarWidth}
-                            d3Xaxis={d3XaxisRef}
-                            isUpdatingShape={isUpdatingShape}
-                            timeGaps={timeGaps}
-                            isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                            lastCandleData={lastCandleData}
+                            firstCandleData={firstCandleData}
+                            chartThemeColors={chartThemeColors}
+                            colorChangeTrigger={colorChangeTrigger}
+                            setColorChangeTrigger={setColorChangeTrigger}
+                            setContextmenu={setContextmenu}
+                            setContextMenuPlacement={setContextMenuPlacement}
                         />
-                    </div>
+                    </>
+                )}
+
+                {showTvl && (
+                    <>
+                        <hr />
+                        <TvlChart
+                            tvlData={visibleCandleData.sort(
+                                (a, b) => b.time - a.time,
+                            )}
+                            period={period}
+                            crosshairForSubChart={crosshairData}
+                            setCrosshairData={setCrosshairData}
+                            scaleData={scaleData}
+                            subChartValues={subChartValues}
+                            render={render}
+                            yAxisWidth={yAxisWidth}
+                            setCrossHairLocation={candleOrVolumeDataHoverStatus}
+                            setCrosshairActive={setCrosshairActive}
+                            crosshairActive={crosshairActive}
+                            setShowTooltip={props.setShowTooltip}
+                            xAxisActiveTooltip={xAxisActiveTooltip}
+                            mainZoom={mainZoom}
+                            lastCandleData={lastCandleData}
+                            firstCandleData={firstCandleData}
+                            isChartZoom={isChartZoom}
+                            zoomBase={zoomBase}
+                            setIsChartZoom={setIsChartZoom}
+                            chartThemeColors={chartThemeColors}
+                            colorChangeTrigger={colorChangeTrigger}
+                            setColorChangeTrigger={setColorChangeTrigger}
+                            setContextmenu={setContextmenu}
+                            setContextMenuPlacement={setContextMenuPlacement}
+                        />
+                    </>
+                )}
+
+                <div className='xAxis'>
+                    <hr />
+
+                    <XAxisCanvas
+                        changeScale={changeScale}
+                        crosshairActive={crosshairActive}
+                        crosshairData={crosshairData}
+                        firstCandleData={firstCandleData}
+                        isLineDrag={isLineDrag}
+                        lastCandleData={lastCandleData}
+                        mouseLeaveCanvas={mouseLeaveCanvas}
+                        period={period}
+                        render={render}
+                        scaleData={scaleData}
+                        reset={reset}
+                        setCrosshairActive={setCrosshairActive}
+                        setXaxisActiveTooltip={setXaxisActiveTooltip}
+                        showLatestActive={showLatestActive}
+                        zoomBase={zoomBase}
+                        isChartZoom={isChartZoom}
+                        isToolbarOpen={isToolbarOpen}
+                        selectedDrawnShape={selectedDrawnShape}
+                        d3Xaxis={d3XaxisRef}
+                        isUpdatingShape={isUpdatingShape}
+                        timeGaps={timeGaps}
+                        isDiscontinuityScaleEnabled={isCondensedModeEnabled}
+                    />
                 </div>
             </d3fc-group>
             {isShowFloatingToolbar && (
@@ -6255,6 +6243,11 @@ export default function Chart(props: propsIF) {
                     setColorChangeTrigger={setColorChangeTrigger}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
+                    setShouldDisableChartSettings={
+                        setShouldDisableChartSettings
+                    }
+                    setCloseOutherChartSetting={setCloseOutherChartSetting}
+                    closeOutherChartSetting={closeOutherChartSetting}
                 />
             )}
         </div>
