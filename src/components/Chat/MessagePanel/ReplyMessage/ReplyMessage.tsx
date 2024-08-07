@@ -188,7 +188,11 @@ export default function ReplyMessage(props: propsIF) {
 
                         <div className={styles.tooltip_message_time}>
                             <p>
-                                {formatMessageTime(props.messageObj.createdAt)}
+                                {props.messageObj.isDeleted
+                                    ? ''
+                                    : formatMessageTime(
+                                          props.messageObj.createdAt,
+                                      )}
                             </p>
                         </div>
                     </div>
