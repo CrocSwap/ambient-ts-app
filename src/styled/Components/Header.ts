@@ -300,8 +300,7 @@ export const WalletWrapper = styled(FlexContainer)`
     top: 50px;
     width: 347px;
     height: 280px;
-    right: -150px;
-
+    right: 0px;
     z-index: 9999;
     padding: 8px 1rem;
     opacity: 1;
@@ -322,7 +321,7 @@ export const LevelWrapper = styled(FlexContainer)`
     top: 50px;
     width: auto;
     min-width: 350px;
-    right: -75px;
+    right: 15px;
     z-index: 9999;
     padding: 8px 1rem;
     border: 1px solid var(--accent1);
