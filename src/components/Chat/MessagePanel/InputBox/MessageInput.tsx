@@ -64,6 +64,8 @@ interface MessageInputProps {
     isChatOpen?: boolean;
     isMobile?: boolean;
     userMap?: Map<string, User>;
+    showEmojiPicker: boolean;
+    setShowEmojiPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -71,7 +73,6 @@ export default function MessageInput(props: MessageInputProps) {
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
     const [message, setMessage] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
@@ -89,6 +90,8 @@ export default function MessageInput(props: MessageInputProps) {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
     const roomId = props.room;
+
+    const { showEmojiPicker, setShowEmojiPicker } = props;
 
     const isRoomAdmins = roomId === 'Admins';
 

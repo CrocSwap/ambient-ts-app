@@ -138,6 +138,8 @@ function ChatPanel(props: propsIF) {
         setShowVerifyWalletConfirmationInDelete,
     ] = useState(false);
 
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
     // some tricky date set for old messages verification. if it is not changed by confirmation panel, some future date will be used to not verify any messages
     const [verifyOldMessagesStartDate, setVerifyOldMessagesStartDate] =
         useState(new Date(new Date().getTime() + 1000 * 60 * 60 * 100));
@@ -1236,6 +1238,8 @@ function ChatPanel(props: propsIF) {
             isMobile={isMobile}
             userMap={userMap}
             chainId={selectedNetwork.chainId}
+            showEmojiPicker={showEmojiPicker}
+            setShowEmojiPicker={setShowEmojiPicker}
         />
     );
 
@@ -1254,7 +1258,7 @@ function ChatPanel(props: propsIF) {
                             <IoIosArrowUp size={22} />
                         </div>
                     )}
-                    {showNextMents && (
+                    {showNextMents && !showEmojiPicker && (
                         <div
                             className={styles.ment_skip_button_down}
                             onClick={() => {
@@ -1265,7 +1269,7 @@ function ChatPanel(props: propsIF) {
                             <IoIosArrowDown size={22} />
                         </div>
                     )}
-                    {showNextMents && (
+                    {showNextMents && !showEmojiPicker && (
                         <div
                             className={styles.ment_skip_button_last}
                             onClick={() => {
@@ -1304,7 +1308,7 @@ function ChatPanel(props: propsIF) {
                 style={{ cursor: 'pointer' }}
                 title='Show previous messages'
             >
-                {showPreviousMessagesButton ? (
+                {showPreviousMessagesButton && !showEmojiPicker ? (
                     <RiArrowUpDoubleLine
                         role='button'
                         size={27}
