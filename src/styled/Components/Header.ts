@@ -575,8 +575,6 @@ export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
     }
 `;
 
-// NetworkSelector
-
 export const DropdownMenuContainer = styled(FlexContainer)`
     z-index: 99999;
     background-color: var(--dark2);
