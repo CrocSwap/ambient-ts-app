@@ -97,7 +97,6 @@ background-size: cover; */
     /* backdrop-filter: blur(10px); */
     display: flex;
     justify-content: center;
-    align-items: center;
     position: absolute;
     font-size: var(--header-size);
     line-height: var(--header1-lh);

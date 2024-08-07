@@ -20,7 +20,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
@@ -72,7 +71,7 @@ const PageHeader = function () {
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
-    const { setShowAllData } = useContext(TradeTableContext);
+    const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -86,10 +85,6 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
-    const { isConnected } = useWeb3ModalAccount();
-    const switchNetwork = isConnected
-        ? useSwitchNetwork().switchNetwork
-        : undefined;
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -223,6 +218,7 @@ const PageHeader = function () {
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const swapParams: swapParamsIF = {
         chain: chainNumToString(tokenA.chainId),
@@ -235,6 +231,11 @@ const PageHeader = function () {
         destination: string;
         shouldDisplay: boolean;
     }
+
+    // maintain limits and liquidity tab selection when navigating from portfolio
+    const tradeLinkDestination = (
+        activeTradeTab === 'limits' ? linkGenLimit : linkGenMarket
+    ).getFullURL(swapParams);
 
     const linkData: linkDataIF[] = [
         {
@@ -249,7 +250,7 @@ const PageHeader = function () {
         },
         {
             title: 'Trade',
-            destination: linkGenMarket.getFullURL(swapParams),
+            destination: tradeLinkDestination,
             shouldDisplay: true,
         },
         {
@@ -264,7 +265,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: '/account',
+            destination: `/account${activeTradeTab && '/' + activeTradeTab}`,
             shouldDisplay: !!isUserConnected,
         },
         {
@@ -278,28 +279,11 @@ const PageHeader = function () {
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
     function isActive(linkDestination: string, locationPathname: string) {
-        if (linkDestination.includes('/trade')) {
-            if (linkDestination.includes('/pool')) {
-                return locationPathname.includes('/trade/pool')
-                    ? HeaderClasses.active
-                    : HeaderClasses.inactive;
-            } else {
-                return locationPathname.includes(tradeDestination)
-                    ? HeaderClasses.active
-                    : HeaderClasses.inactive;
-            }
-        } else if (linkDestination.includes('/swap')) {
-            return locationPathname.includes('/swap')
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        } else {
-            return locationPathname === linkDestination
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        }
-    }
-
-    function isUnderlined(linkDestination: string, locationPathname: string) {
+        const trailingSlashRegex = /\/$/;
+        const locationPathnameNoTrailingSlash = locationPathname.replace(
+            trailingSlashRegex,
+            '',
+        );
         return (
             (linkDestination.includes('/trade') &&
                 (linkDestination.includes('/trade/pool')
@@ -307,6 +291,11 @@ const PageHeader = function () {
                     : locationPathname.includes(tradeDestination))) ||
             (locationPathname.includes('/swap') &&
                 linkDestination.includes('/swap')) ||
+            (locationPathname.includes('/explore') &&
+                linkDestination.includes('/explore')) ||
+            (locationPathnameNoTrailingSlash.endsWith('/account') &&
+                linkDestination.includes('/account') &&
+                !linkDestination.includes('/points')) ||
             locationPathname === linkDestination
         );
     }
@@ -321,19 +310,19 @@ const PageHeader = function () {
                     link.shouldDisplay ? (
                         <NavigationLink
                             tabIndex={0}
-                            className={isActive(
-                                link.destination,
-                                location.pathname,
-                            )}
+                            className={
+                                isActive(link.destination, location.pathname)
+                                    ? HeaderClasses.active
+                                    : HeaderClasses.inactive
+                            }
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {isUnderlined(
-                                link.destination,
-                                location.pathname,
-                            ) && <UnderlinedMotionDiv layoutId='underline' />}
+                            {isActive(link.destination, location.pathname) && (
+                                <UnderlinedMotionDiv layoutId='underline' />
+                            )}
                         </NavigationLink>
                     ) : null,
                 )}
@@ -411,7 +400,7 @@ const PageHeader = function () {
                                     ) : null}
                                 </FlexContainer>
                             )} */}
-                            <NetworkSelector switchNetwork={switchNetwork} />
+                            <NetworkSelector />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />

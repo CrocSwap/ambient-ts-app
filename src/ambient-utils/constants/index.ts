@@ -53,6 +53,11 @@ export const BLOCK_POLLING_RPC_URL =
         ? import.meta.env.VITE_BLOCK_POLLING_RPC_URL
         : '';
 
+export const MAINNET_RPC_URL =
+    import.meta.env.VITE_MAINNET_RPC_URL !== undefined
+        ? import.meta.env.VITE_MAINNET_RPC_URL
+        : 'https://ethereum-mainnet.core.chainstack.com/55818ec2ac63dfef6ff4d1a74cf14d72';
+
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
         ? import.meta.env.VITE_BLAST_RPC_URL
@@ -62,6 +67,11 @@ export const SCROLL_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
         ? import.meta.env.VITE_SCROLL_RPC_URL
         : 'https://rpc.scroll.io/';
+
+export const SEPOLIA_RPC_URL =
+    import.meta.env.VITE_SEPOLIA_RPC_URL !== undefined
+        ? import.meta.env.VITE_SEPOLIA_RPC_URL
+        : 'https://ethereum-sepolia-rpc.publicnode.com';
 
 export const ALCHEMY_API_KEY =
     import.meta.env.VITE_ALCHEMY_API_KEY !== undefined
@@ -92,6 +102,8 @@ export const OVERRIDE_CANDLE_POOL_ID = 36000;
 export const LS_KEY_CHART_SETTINGS = 'chart_settings';
 export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
 export const LS_KEY_ORDER_HISTORY_SETTINGS = 'order_history_settings';
+export const LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT =
+    'hide_empty_positions_on_account';
 
 // Icon archive
 export const ETH_ICON_URL =

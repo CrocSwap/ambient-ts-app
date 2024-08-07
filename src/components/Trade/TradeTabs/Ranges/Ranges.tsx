@@ -19,6 +19,7 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
+    HideEmptyPositionContainer,
     RangeRow as RangeRowStyled,
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
@@ -41,6 +42,8 @@ import {
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
+import Toggle from '../../../Form/Toggle';
 
 // interface for props
 interface propsIF {
@@ -54,8 +57,12 @@ function Ranges(props: propsIF) {
     const { activeAccountPositionData, connectedAccountActive, isAccountView } =
         props;
 
-    const { showAllData: showAllDataSelection, toggleTradeTable } =
-        useContext(TradeTableContext);
+    const {
+        showAllData: showAllDataSelection,
+        toggleTradeTable,
+        hideEmptyPositionsOnAccount,
+        setHideEmptyPositionsOnAccount,
+    } = useContext(TradeTableContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -121,14 +128,20 @@ function Ranges(props: propsIF) {
         [activeAccountPositionData, positionsByUser, isAccountView],
     );
 
+    const activeUserPositionsByPool = useMemo(
+        () =>
+            userPositionsByPool?.positions.filter(
+                (position) => position.positionLiq != 0,
+            ),
+        [userPositionsByPool],
+    );
+
     const rangeData = useMemo(
         () =>
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                  ? userPositionsByPool?.positions.filter(
-                        (position) => position.positionLiq != 0,
-                    )
+                  ? activeUserPositionsByPool
                   : positionsByPool.positions.filter(
                         (position) => position.positionLiq != 0,
                     ),
@@ -137,7 +150,7 @@ function Ranges(props: propsIF) {
             isAccountView,
             activeAccountPositionData,
             positionsByPool,
-            userPositionsByPool,
+            activeUserPositionsByPool,
         ],
     );
 
@@ -199,8 +212,15 @@ function Ranges(props: propsIF) {
     //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
     //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
+    const filteredSortedPositions = useMemo(() => {
+        // filter out empty positions on account view when hideEmptyPositionsOnAccount is true
+        return hideEmptyPositionsOnAccount && isAccountView
+            ? sortedPositions.filter((position) => position.positionLiq !== 0)
+            : sortedPositions;
+    }, [hideEmptyPositionsOnAccount, isAccountView, sortedPositions]);
+
     const _DATA = usePagination(
-        sortedPositions,
+        filteredSortedPositions,
         // , isScreenShort, isScreenTall
     );
 
@@ -237,43 +257,99 @@ function Ranges(props: propsIF) {
     const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
 
-    const footerDisplay = rowsPerPage > 0 &&
+    const userHasEmptyPositions = useMemo(
+        () =>
+            positionsByUser.positions.filter(
+                (position) => position.positionLiq === 0,
+            ).length > 0,
+        [positionsByUser.positions],
+    );
+
+    const showPagination =
+        rowsPerPage > 0 &&
         ((isAccountView && rangeData.length > 10) ||
-            (!isAccountView && tradePageCheck)) && (
-            <FlexContainer
-                alignItems='center'
-                justifyContent='center'
-                gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? '40px auto' : '16px auto'}
-                background='dark1'
-                flexDirection={isSmallScreen ? 'column' : 'row'}
-            >
-                <RowsPerPageDropdown
-                    rowsPerPage={rowsPerPage}
-                    onChange={handleChangeRowsPerPage}
-                    itemCount={sortedPositions.length}
-                    setCurrentPage={setCurrentPage}
-                    resetPageToFirst={resetPageToFirst}
-                />
-                <Pagination
-                    count={count}
-                    page={page}
-                    shape='circular'
-                    color='secondary'
-                    onChange={handleChange}
-                    showFirstButton
-                    showLastButton
-                    size={sPagination ? 'small' : 'medium'}
-                />
-                {!isSmallScreen && (
-                    <Text
-                        fontSize='mini'
-                        color='text2'
-                        style={{ whiteSpace: 'nowrap' }}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-                )}
-            </FlexContainer>
-        );
+            (!isAccountView && tradePageCheck));
+
+    const showEmptyToggleButton =
+        connectedAccountActive && userHasEmptyPositions;
+
+    const footerDisplay = (
+        <FlexContainer
+            alignItems='center'
+            justifyContent='space-between'
+            fullWidth
+            flexDirection={isSmallScreen ? 'column' : 'row'}
+            margin={isSmallScreen ? '20px auto' : '16px auto'}
+        >
+            {showPagination && (
+                <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    justifyContent='center'
+                    gap={isSmallScreen ? 4 : 8}
+                    background='dark1'
+                    flexDirection={isSmallScreen ? 'column-reverse' : 'row'}
+                >
+                    <RowsPerPageDropdown
+                        rowsPerPage={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedPositions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    {!isSmallScreen && (
+                        <Text
+                            fontSize='mini'
+                            color='text2'
+                            style={{ whiteSpace: 'nowrap' }}
+                        >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
+                    )}
+                </FlexContainer>
+            )}
+            {showEmptyToggleButton && (
+                <HideEmptyPositionContainer
+                    onClick={() => {
+                        localStorage.setItem(
+                            LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                            String(!hideEmptyPositionsOnAccount),
+                        );
+                        setHideEmptyPositionsOnAccount(
+                            !hideEmptyPositionsOnAccount,
+                        );
+                    }}
+                    style={{ width: !showPagination ? '100%' : 'auto' }}
+                >
+                    <p>Hide Empty Positions</p>
+
+                    <Toggle
+                        isOn={hideEmptyPositionsOnAccount}
+                        disabled={false}
+                        handleToggle={() => {
+                            localStorage.setItem(
+                                LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                String(!hideEmptyPositionsOnAccount),
+                            );
+                            setHideEmptyPositionsOnAccount(
+                                !hideEmptyPositionsOnAccount,
+                            );
+                        }}
+                        id='toggle_empty_positions_liquidity'
+                        aria-label='toggle empty positions'
+                    />
+                </HideEmptyPositionContainer>
+            )}
+        </FlexContainer>
+    );
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -698,7 +774,7 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        unindexedNonFailedSessionPositionUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const unindexedUpdatedPositionHashes = unindexedUpdatedPositions.map(
         (pos) => pos.positionId,
@@ -775,7 +851,10 @@ function Ranges(props: propsIF) {
                             )
                             // only show empty positions on account view
                             .filter(
-                                (pos) => isAccountView || pos.positionLiq !== 0,
+                                (pos) =>
+                                    (isAccountView &&
+                                        !hideEmptyPositionsOnAccount) ||
+                                    pos.positionLiq !== 0,
                             ),
                     )}
                     fullData={unindexedUpdatedPositions.concat(fullData)}
@@ -805,6 +884,7 @@ function Ranges(props: propsIF) {
             type='liquidity'
             isAccountView={isAccountView}
             activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
         />
     );
 

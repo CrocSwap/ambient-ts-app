@@ -56,6 +56,7 @@ function TransactionRow(props: propsIF) {
         isBuy,
         elapsedTimeString,
         isBaseTokenMoneynessGreaterOrEqual,
+        positionHash,
     } = useProcessTransaction(tx, userAddress, crocEnv, isAccountView);
 
     const {
@@ -77,8 +78,8 @@ function TransactionRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'accent1'
-            : 'text1';
+              ? 'accent1'
+              : 'text1';
 
     function scrollToDiv() {
         const element = document.getElementById(idForDOM);
@@ -115,8 +116,20 @@ function TransactionRow(props: propsIF) {
 
     const handleWalletClick = () => {
         if (!isAccountView) {
+            console.log({ sideType });
+            const typeSuffix =
+                type === 'range' && sideType !== 'remove'
+                    ? '/liquidity'
+                    : type === 'limit' &&
+                        (sideType === 'buy' || sideType === 'sell')
+                      ? '/limits'
+                      : '/transactions';
             const accountUrl = `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
+                isOwnerActiveAccount
+                    ? 'account' + typeSuffix
+                    : ensName
+                      ? ensName + typeSuffix
+                      : ownerId + typeSuffix
             }`;
             window.open(accountUrl);
         }
@@ -233,6 +246,8 @@ function TransactionRow(props: propsIF) {
                         isAccountView={props.isAccountView}
                         handleWalletClick={handleWalletClick}
                         openDetailsModal={openDetailsModal}
+                        isOwnerActiveAccount={isOwnerActiveAccount}
+                        positionHash={positionHash}
                     />
                 </div>
             </TransactionRowStyled>

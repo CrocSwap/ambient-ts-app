@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import { fetchUserRecentChanges, fetchRecords } from '../ambient-utils/api';
 import {
     TokenIF,
@@ -288,36 +288,50 @@ export const GraphDataContextProvider = (props: {
         });
     }, [baseToken.address + quoteToken.address]);
 
-    const userTxByPoolHashArray = userTransactionsByPool.changes.map(
-        (change) => change.txHash,
+    const txsByUserHashArray = useMemo(
+        () =>
+            transactionsByUser.changes
+                .concat(userTransactionsByPool.changes)
+                .map((change) => change.txHash),
+        [transactionsByUser, userTransactionsByPool],
     );
 
-    const userPositionsByPoolIndexUpdateArray: PositionUpdateIF[] =
-        userPositionsByPool.positions.map((position) => {
-            return {
-                positionID: getPositionHash(position),
-                isLimit: false,
-                unixTimeIndexed: position.latestUpdateTime,
-            };
-        });
+    const positionsByUserIndexUpdateArray: PositionUpdateIF[] = useMemo(
+        () =>
+            positionsByUser.positions
+                .concat(userPositionsByPool.positions)
+                .map((position) => {
+                    return {
+                        positionID: getPositionHash(position),
+                        isLimit: false,
+                        unixTimeIndexed: position.latestUpdateTime,
+                    };
+                }),
+        [positionsByUser, userPositionsByPool],
+    );
 
-    const userLimitOrdersByPoolIndexUpdateArray: PositionUpdateIF[] =
-        userLimitOrdersByPool.limitOrders.map((limitOrder) => {
-            const posHash = getPositionHash(undefined, {
-                isPositionTypeAmbient: false,
-                user: limitOrder.user,
-                baseAddress: limitOrder.base,
-                quoteAddress: limitOrder.quote,
-                poolIdx: limitOrder.poolIdx,
-                bidTick: limitOrder.bidTick,
-                askTick: limitOrder.askTick,
-            });
-            return {
-                positionID: posHash,
-                isLimit: true,
-                unixTimeIndexed: limitOrder.latestUpdateTime,
-            };
-        });
+    const limitOrdersByUserIndexUpdateArray: PositionUpdateIF[] = useMemo(
+        () =>
+            limitOrdersByUser.limitOrders
+                .concat(userLimitOrdersByPool.limitOrders)
+                .map((limitOrder) => {
+                    const posHash = getPositionHash(undefined, {
+                        isPositionTypeAmbient: false,
+                        user: limitOrder.user,
+                        baseAddress: limitOrder.base,
+                        quoteAddress: limitOrder.quote,
+                        poolIdx: limitOrder.poolIdx,
+                        bidTick: limitOrder.bidTick,
+                        askTick: limitOrder.askTick,
+                    });
+                    return {
+                        positionID: posHash,
+                        isLimit: true,
+                        unixTimeIndexed: limitOrder.latestUpdateTime,
+                    };
+                }),
+        [limitOrdersByUser, userLimitOrdersByPool],
+    );
 
     useEffect(() => {
         for (let i = 0; i < pendingTransactions.length; i++) {
@@ -331,70 +345,105 @@ export const GraphDataContextProvider = (props: {
     }, [pendingTransactions]);
 
     const unindexedSessionTransactionHashes = sessionTransactionHashes.filter(
-        (tx) => !userTxByPoolHashArray.includes(tx),
+        (tx) => !txsByUserHashArray.includes(tx),
     );
 
     const failedSessionTransactionHashes = allReceipts
         .filter((r) => JSON.parse(r).status === 0)
         .map((r) => JSON.parse(r).hash);
 
+    const unixTimeOffset = 10; // 10s offset needed to account for system clock differences
+
     // transaction hashes for subsequently fully removed positions
-    const removedPositionUpdateTxHashes = sessionPositionUpdates
-        .filter((pos1) =>
-            sessionPositionUpdates.some((pos2) => {
-                return (
-                    pos1.positionID === pos2.positionID &&
-                    pos2.isFullRemoval &&
-                    (pos2.unixTimeReceipt || 0) > (pos1.unixTimeAdded || 0)
-                );
-            }),
-        )
-        .map((removedTx) => removedTx.txHash);
+    const removedPositionUpdateTxHashes = useMemo(
+        () =>
+            sessionPositionUpdates
+                .filter((pos1) =>
+                    sessionPositionUpdates.some((pos2) => {
+                        return (
+                            pos1.positionID === pos2.positionID &&
+                            pos2.isFullRemoval &&
+                            (pos2.unixTimeReceipt || 0) >
+                                (pos1.unixTimeAdded || 0)
+                        );
+                    }),
+                )
+                .map((removedTx) => removedTx.txHash),
+        [sessionPositionUpdates],
+    );
 
-    const unindexedNonFailedSessionTransactionHashes =
-        unindexedSessionTransactionHashes.filter(
-            (tx) => !failedSessionTransactionHashes.includes(tx),
-        );
+    const unindexedNonFailedSessionTransactionHashes = useMemo(
+        () =>
+            unindexedSessionTransactionHashes.filter(
+                (tx) => !failedSessionTransactionHashes.includes(tx),
+            ),
+        [unindexedSessionTransactionHashes, failedSessionTransactionHashes],
+    );
 
-    const unindexedNonFailedSessionPositionUpdates =
-        sessionPositionUpdates.filter(
-            (positionUpdate) =>
-                positionUpdate.isLimit === false &&
-                !failedSessionTransactionHashes.includes(
-                    positionUpdate.txHash,
-                ) &&
-                !removedPositionUpdateTxHashes.includes(
-                    positionUpdate.txHash,
-                ) &&
-                !userPositionsByPoolIndexUpdateArray.some(
-                    (userPositionIndexUpdate) =>
-                        userPositionIndexUpdate.positionID ===
-                            positionUpdate.positionID &&
-                        (userPositionIndexUpdate.unixTimeIndexed || 0) >=
-                            (positionUpdate.unixTimeAdded || 0),
-                ),
-        );
+    const unindexedNonFailedSessionPositionUpdates = useMemo(
+        () =>
+            sessionPositionUpdates.filter(
+                (positionUpdate) =>
+                    positionUpdate.isLimit === false &&
+                    !failedSessionTransactionHashes.includes(
+                        positionUpdate.txHash,
+                    ) &&
+                    !removedPositionUpdateTxHashes.includes(
+                        positionUpdate.txHash,
+                    ) &&
+                    !positionsByUserIndexUpdateArray.some(
+                        (userPositionIndexUpdate) =>
+                            userPositionIndexUpdate.positionID ===
+                                positionUpdate.positionID &&
+                            (userPositionIndexUpdate.unixTimeIndexed || 0) +
+                                unixTimeOffset >=
+                                (positionUpdate.unixTimeAdded || 0),
+                    ),
+            ),
+        [
+            sessionPositionUpdates,
+            failedSessionTransactionHashes,
+            removedPositionUpdateTxHashes,
+            positionsByUserIndexUpdateArray,
+        ],
+    );
 
-    const unindexedNonFailedSessionLimitOrderUpdates =
-        sessionPositionUpdates.filter(
-            (positionUpdate) =>
-                positionUpdate.isLimit === true &&
-                !failedSessionTransactionHashes.includes(
-                    positionUpdate.txHash,
-                ) &&
-                !removedPositionUpdateTxHashes.includes(
-                    positionUpdate.txHash,
-                ) &&
-                !userLimitOrdersByPoolIndexUpdateArray.some(
-                    (userPositionIndexUpdate) =>
-                        userPositionIndexUpdate.positionID ===
-                            positionUpdate.positionID &&
-                        (userPositionIndexUpdate.unixTimeIndexed || 0) >=
-                            (positionUpdate.unixTimeAdded || 0),
-                ),
-        );
+    const unindexedNonFailedSessionLimitOrderUpdates = useMemo(
+        () =>
+            sessionPositionUpdates.filter(
+                (positionUpdate) =>
+                    positionUpdate.isLimit === true &&
+                    !failedSessionTransactionHashes.includes(
+                        positionUpdate.txHash,
+                    ) &&
+                    !removedPositionUpdateTxHashes.includes(
+                        positionUpdate.txHash,
+                    ) &&
+                    !limitOrdersByUserIndexUpdateArray.some(
+                        (userPositionIndexUpdate) =>
+                            userPositionIndexUpdate.positionID ===
+                                positionUpdate.positionID &&
+                            (userPositionIndexUpdate.unixTimeIndexed || 0) +
+                                unixTimeOffset >=
+                                (positionUpdate.unixTimeAdded || 0),
+                    ),
+            ),
+        [
+            sessionPositionUpdates,
+            failedSessionTransactionHashes,
+            limitOrdersByUserIndexUpdateArray,
+        ],
+    );
 
     const onAccountRoute = location.pathname.includes('account');
+
+    const userDataByPoolLength = useMemo(
+        () =>
+            transactionsByUser.changes.length +
+            userLimitOrdersByPool.limitOrders.length +
+            userPositionsByPool.positions.length,
+        [transactionsByUser, userLimitOrdersByPool, userPositionsByPool],
+    );
 
     useEffect(() => {
         const fetchData = async () => {
@@ -458,11 +507,6 @@ export const GraphDataContextProvider = (props: {
                     tokenList: tokens.tokenUniv,
                     user: userAddress,
                     chainId: chainData.chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
@@ -554,6 +598,8 @@ export const GraphDataContextProvider = (props: {
             : Math.floor(Date.now() / (onAccountRoute ? 15000 : 60000)), // cache every 15 seconds while viewing portfolio, otherwise 1 minute
         !!crocEnv,
         !!provider,
+        userDataByPoolLength,
+        allReceipts.length,
     ]);
 
     const graphDataContext: GraphDataContextIF = {
