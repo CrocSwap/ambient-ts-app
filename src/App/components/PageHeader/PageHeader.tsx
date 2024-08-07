@@ -177,9 +177,10 @@ const PageHeader = function () {
                 pathNoLeadingSlash?.length == 50);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
-
         if (pathNoLeadingSlash === 'account') {
             document.title = 'My Account ~ Ambient';
+        } else if (pathNoLeadingSlash === 'account/points') {
+            document.title = 'My Points ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
@@ -213,10 +214,10 @@ const PageHeader = function () {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/edit')
+            ? '/trade/edit/'
+            : '/trade/market/';
 
     // hooks to generate URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');

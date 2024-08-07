@@ -10,6 +10,7 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
 import Button from '../../../components/Form/Button';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { maxWidth } from '../../../ambient-utils/types/mediaQueries';
 
 // interface for React functional component props
 interface propsIF {
@@ -46,7 +47,9 @@ export default function SidebarAccordion(props: propsIF) {
             IS_LOCAL_ENV && console.debug({ isOpen });
         }
     }, [isTopPools, isOpen]);
-    const overflowSidebarMQ = useMediaQuery('(max-width: 1280px)');
+
+    const BREAKPOINT: maxWidth = '(max-width: 1280px)';
+    const overflowSidebarMQ = useMediaQuery(BREAKPOINT);
 
     const openStateContent = (
         <motion.div

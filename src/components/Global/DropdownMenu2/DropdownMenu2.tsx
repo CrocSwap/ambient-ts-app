@@ -88,8 +88,8 @@ export default function DropdownMenu2(props: propsIF) {
                     minWidth: !desktopScreen
                         ? ''
                         : titleWidth
-                        ? titleWidth
-                        : '100px',
+                          ? titleWidth
+                          : '100px',
                 }}
             >
                 <MenuItem gap={4}>
@@ -106,7 +106,7 @@ export default function DropdownMenu2(props: propsIF) {
                                     title.includes('Scroll') ||
                                     title.includes('Blast')
                                         ? '20px'
-                                        : '15px'
+                                        : '20px'
                                 }
                                 height='20px'
                                 style={{
@@ -114,10 +114,13 @@ export default function DropdownMenu2(props: propsIF) {
                                     marginLeft: '2px',
                                 }}
                             />
-                            {title === 'Scroll Sepolia' ||
-                            title === 'Blast Sepolia'
-                                ? 'Sepolia'
-                                : title}
+                            {title === 'Scroll Sepolia'
+                                ? 'Scroll Testnet'
+                                : title === 'Blast Sepolia'
+                                  ? 'Blast Testnet'
+                                  : title === 'Sepolia'
+                                    ? 'Sepolia Testnet'
+                                    : title}
                         </Icon>
                     )}
                     {!desktopScreen && (
