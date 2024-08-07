@@ -10,6 +10,7 @@ import {
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
     minToMS,
+    formatURL,
 } from '../../../Chat/ChatUtils';
 import { useNavigate } from 'react-router-dom';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
@@ -69,7 +70,7 @@ function CommentCard(props: CommentCardProps) {
                         }}
                         className={`${styles.comment_content_token} ${styles.link_token}`}
                     >
-                        {e}
+                        {formatURL(e)}
                     </span>,
                 );
             } else {
