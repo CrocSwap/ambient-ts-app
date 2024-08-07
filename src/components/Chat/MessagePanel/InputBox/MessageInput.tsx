@@ -415,19 +415,19 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function openEmojiPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyX' && e.altKey) {
+        if (e.code === 'KeyX' && e.altKey && isUserConnected && userAddress) {
             setShowEmojiPicker(true);
         }
     }
 
     function closeEmojiPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyQ' && e.altKey) {
+        if (e.code === 'KeyQ' && e.altKey && isUserConnected && userAddress) {
             setShowEmojiPicker(false);
         }
     }
 
     function openInfo(e: KeyboardEvent) {
-        if (e.code === 'KeyM' && e.ctrlKey) {
+        if (e.code === 'KeyM' && e.ctrlKey && isUserConnected && userAddress) {
             setShowEmojiPicker(true);
             setIsInfoPressed(true);
         }
