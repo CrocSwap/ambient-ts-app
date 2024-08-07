@@ -6,11 +6,11 @@ import {
     getDefaultChainId,
     validateChainId,
     chainNumToString,
+    checkEoaHexAddress,
 } from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
-import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -22,12 +22,8 @@ export const useAppChain = (): {
     const { switchNetwork } = useSwitchNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
-    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
-    const [searchParams] = useSearchParams();
-    const chainParam = searchParams.get('chain');
-    const networkParam = searchParams.get('network');
     const [ignoreFirst, setIgnoreFirst] = useState<boolean>(true);
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
@@ -67,14 +63,6 @@ export const useAppChain = (): {
             if (isValid) output = chainAsString;
         }
         return output;
-    }
-
-    function has42CharacterStringWith0xAfterSlash(inputString: string) {
-        // Regular expression to match a forward slash followed by '0x' and then exactly 40 hex characters
-        const regex = /\/0x[a-fA-F0-9]{40}/;
-
-        // Test the input string against the regular expression
-        return regex.test(inputString);
     }
 
     // memoized and validated chain ID from the URL
@@ -118,7 +106,7 @@ export const useAppChain = (): {
                             after removing the first character for /{hex} URLs 
                             or first 9 characters for /account/{hex} */
                         const isPathHexEoaAddress =
-                            has42CharacterStringWith0xAfterSlash(pathname);
+                            checkEoaHexAddress(pathname);
                         const isPathUserAddress =
                             isPathENS || isPathHexEoaAddress;
 
@@ -138,10 +126,7 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (chainParam || networkParam) {
-                                // navigate to index page only if "chain" or "network" in URL
-                                linkGenIndex.navigate();
-                            } else if (
+                            if (
                                 linkGenCurrent.currentPage === 'initpool' ||
                                 linkGenCurrent.currentPage === 'reposition'
                             ) {
@@ -232,8 +217,7 @@ export const useAppChain = (): {
 
         setActiveNetwork(network);
         const isPathENS = pathname.slice(1)?.includes('.eth');
-        const isPathHexEoaAddress =
-            has42CharacterStringWith0xAfterSlash(pathname);
+        const isPathHexEoaAddress = checkEoaHexAddress(pathname);
         const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');

@@ -22,6 +22,7 @@ export * from './getTransactionData';
 export * from './getTxType';
 export * from './getUnicodeCharacter';
 export * from './isJsonString';
+export * from './serializeBigInt';
 export * from './lookupChainId';
 export * from './memoizePromiseFn';
 export * from './openInNewTab';

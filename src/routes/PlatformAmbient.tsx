@@ -92,6 +92,14 @@ const PlatformAmbientRoutes: React.FC = () => {
                 path='account/points'
                 element={<Portfolio specificTab='points' />}
             />
+            <Route
+                path='account/exchange-balances'
+                element={<Portfolio specificTab='exchange-balances' />}
+            />
+            <Route
+                path='account/wallet-balances'
+                element={<Portfolio specificTab='wallet-balances' />}
+            />
             <Route path='account/xp' element={<Portfolio isLevelsPage />} />
             <Route
                 path='account/xp/history'
@@ -111,12 +119,20 @@ const PlatformAmbientRoutes: React.FC = () => {
                 element={<Portfolio specificTab='liquidity' />}
             />
             <Route
-                path='account/:address/xp'
-                element={<Portfolio isLevelsPage />}
-            />
-            <Route
                 path='account/:address/points'
                 element={<Portfolio specificTab='points' />}
+            />
+            <Route
+                path='account/:address/exchange-balances'
+                element={<Portfolio specificTab='exchange-balances' />}
+            />
+            <Route
+                path='account/:address/wallet-balances'
+                element={<Portfolio specificTab='wallet-balances' />}
+            />
+            <Route
+                path='account/:address/xp'
+                element={<Portfolio isLevelsPage />}
             />
             <Route
                 path='account/:address/xp/history'
@@ -138,6 +154,14 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route
                 path='/:address/points'
                 element={<Portfolio specificTab='points' />}
+            />
+            <Route
+                path='/:address/exchange-balances'
+                element={<Portfolio specificTab='exchange-balances' />}
+            />
+            <Route
+                path='/:address/wallet-balances'
+                element={<Portfolio specificTab='wallet-balances' />}
             />
             <Route path='/:address/xp' element={<Portfolio isLevelsPage />} />
             <Route
@@ -165,7 +189,6 @@ const PlatformAmbientRoutes: React.FC = () => {
             {IS_LOCAL_ENV && (
                 <Route path='template/form' element={<ExampleForm />} />
             )}
-
             <Route path='/404' element={<NotFound />} />
             <Route path='*' element={<Navigate to='/404' replace />} />
         </Routes>
