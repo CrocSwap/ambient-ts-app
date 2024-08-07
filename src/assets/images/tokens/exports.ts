@@ -47,8 +47,10 @@ import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import GOON from './GOON.svg';
 import GNUSD from './GNUSD.svg';
+import ZCAT from './ZCAT.webp';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
+import NURI from './NURI.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -101,6 +103,8 @@ export {
     BLAST,
     GOON,
     GNUSD,
+    ZCAT,
     USDE,
     SUSDE,
+    NURI,
 };

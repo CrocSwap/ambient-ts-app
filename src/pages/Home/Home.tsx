@@ -5,21 +5,22 @@ import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { Navigate, Link, useSearchParams } from 'react-router-dom';
-import { useSwitchNetwork } from '@web3modal/ethers/react';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { supportedNetworks } from '../../ambient-utils/constants';
 import { useContext, useEffect } from 'react';
 import { lookupChainId } from '../../ambient-utils/dataLayer';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { Text } from '../../styled/Common';
 import styled from 'styled-components';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { BrandContext } from '../../contexts/BrandContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { minWidth } from '../../ambient-utils/types/mediaQueries';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     // hook from web3modal to switch connected wallet in extension
+    const { isConnected } = useWeb3ModalAccount();
     const { switchNetwork } = useSwitchNetwork();
     // hook from web3modal indicating if user is connected
     const { isUserConnected } = useContext(UserDataContext);
@@ -60,6 +61,7 @@ export default function Home() {
             }
         }
     }, [isUserConnected]);
+    // hook to consume and alter search params on the index page
 
     const BREAKPOINT: minWidth = '(min-width: 720px)';
 
@@ -94,15 +96,13 @@ export default function Home() {
                 <PointSystemContainer>
                     <Text fontSize='header1'>Points system now live!</Text>
 
-                    <Link
-                        to={isUserConnected ? '/account/xp' : '/xp-leaderboard'}
-                    >
+                    <Link to={isConnected ? '/account/xp' : '/xp-leaderboard'}>
                         <Text
                             fontSize='header2'
                             color='accent1'
                             style={{ textDecoration: 'underline' }}
                         >
-                            {isUserConnected
+                            {isConnected
                                 ? ' View your current XP here'
                                 : 'View XP leaderboard'}
                         </Text>
