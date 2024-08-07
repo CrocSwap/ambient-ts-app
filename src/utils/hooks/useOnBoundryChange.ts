@@ -23,18 +23,27 @@ const useOnBoundryChange = (
     const heightRef = useRef<number>();
     heightRef.current = elementHeight;
 
-    useEffect(() => {
+    const bindListener = () => {
+        if (!elementId || !checkFrequency || !handler) {
+            return;
+        }
+
         // assign el, and t0 dimension props
+        if (checkerRef.current) {
+            return;
+        }
+
         const el = document.getElementById(elementId);
         if (el) {
             setElementWidth(el.getBoundingClientRect().width);
             setElementHeight(el.getBoundingClientRect().height);
 
+            if (checkerRef.current) {
+                clearInterval(checkerRef.current);
+            }
+
             // start interval
             const interval = setInterval(() => {
-                if (checkerRef.current) {
-                    clearInterval(checkerRef.current);
-                }
                 const newWidth = el.getBoundingClientRect().width;
                 const newHeight = el.getBoundingClientRect().height;
                 if (
@@ -48,13 +57,21 @@ const useOnBoundryChange = (
             }, checkFrequency);
 
             setBoundryChecker(interval);
+            checkerRef.current = interval;
         }
+    };
 
+    useEffect(() => {
         return () => {
             if (checkerRef.current) {
                 clearInterval(checkerRef.current);
+                checkerRef.current = undefined;
             }
         };
     }, []);
+
+    useEffect(() => {
+        bindListener();
+    }, [elementId.length > 0]);
 };
 export default useOnBoundryChange;
