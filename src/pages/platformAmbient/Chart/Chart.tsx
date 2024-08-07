@@ -2611,6 +2611,7 @@ export default function Chart(props: propsIF) {
             const canvas = canvasDiv
                 .select('canvas')
                 .node() as HTMLCanvasElement;
+
             const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
                 centerX - diff * liqBuffer,
@@ -2618,7 +2619,7 @@ export default function Chart(props: propsIF) {
             ];
 
             const targetValue = Date.now();
-            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
+            const targetPixel = currentRange[1] * (1 - liqBuffer);
 
             const newDomainMin =
                 targetValue -
