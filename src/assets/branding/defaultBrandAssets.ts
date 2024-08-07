@@ -6,6 +6,15 @@ import zircuitLogo from '../../assets/images/logos/zircuit-light-logo.svg';
 
 export const defaultBrandAssets: brandIF = {
     networks: {
+        // scroll mainnet
+        '0x82750': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
+        },
         // ethereum mainnet
         '0x1': {
             color: 'purple_dark',
@@ -15,15 +24,6 @@ export const defaultBrandAssets: brandIF = {
         '0xaa36a7': {
             color: 'purple_dark',
             hero: [{ content: 'ambient', processAs: 'text' }],
-        },
-        // scroll mainnet
-        '0x82750': {
-            color: 'purple_dark',
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
         },
         // scroll sepolia
         '0x8274f': {
@@ -64,7 +64,7 @@ export const defaultBrandAssets: brandIF = {
     },
     platformName: 'ambient',
     fontSet: 'ambient',
-    showPoints: true,
+    showPoints: false,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: true,

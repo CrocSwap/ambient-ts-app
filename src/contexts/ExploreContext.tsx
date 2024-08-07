@@ -49,6 +49,7 @@ export interface PoolDataIF extends PoolIF {
     tvlStr: string;
     volume: number;
     volumeStr: string;
+    apr: number;
     priceChange: number;
     priceChangeStr: string;
     moneyness: {
@@ -198,6 +199,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
         const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
+        const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
+        const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
+        const feesChange24h = feesTotalNow - feesTotal24hAgo;
+
         const priceChangeRaw =
             ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
                 ? shouldInvert
@@ -218,6 +223,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 tvlStr: '0',
                 volume: 0,
                 volumeStr: '0',
+                apr: 0,
                 priceChange: 0,
                 priceChangeStr: '0',
                 moneyness: {
@@ -244,6 +250,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   prefix: '$',
               })
             : '';
+        // format fees as apr, use 0 as backup value
+        const aprNum: number =
+            feesChange24h && expandedPoolStatsNow.tvlTotalUsd
+                ? (feesChange24h / expandedPoolStatsNow.tvlTotalUsd) * 100 * 365
+                : 0;
         // human readable price change over last 24 hours
         let priceChangePercent: string;
 
@@ -316,6 +327,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             tvlStr: tvlDisplay,
             volume: volumeChange24h,
             volumeStr: volumeDisplay,
+            apr: aprNum,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
             moneyness: {
