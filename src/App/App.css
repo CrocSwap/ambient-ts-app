@@ -14,9 +14,7 @@
 
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
-* {
-    scrollbar-width: none;
-}
+
 
 body::-webkit-scrollbar {
     display: none;
@@ -241,6 +239,33 @@ input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
 }
+.custom_scroll_ambient {
+    height: 400px; /* Adjust the height as needed */
+    overflow-y: scroll !important;
+  }
+   .custom_scroll_ambient::-webkit-scrollbar {
+    width: 12px !important; /* Adjust the width as needed */
+  }
+   .custom_scroll_ambient::-webkit-scrollbar-thumb {
+    border: 2px solid transparent !important; /* Space for the border */
+    background-clip: padding-box !important; /* Create space for the border */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    background-image: linear-gradient(#06060C, #06060C),
+                      linear-gradient(
+                        0deg,
+                        var(--accent1) 0%,
+                        var(--accent5) 49.48%,
+                        var(--accent1) 100%
+                      ) !important;
+    background-origin: border-box !important;
+    background-clip: content-box, border-box !important; /* Clip the border to show gradient */
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
+  }
+   .custom_scroll_ambient::-webkit-scrollbar-track {
+    background: #06060C !important; /* Background color of the scrollbar track */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    padding: 2px !important; /* Add padding to the track */
+  }
 
 @media only screen and (max-width: 600px) {
     .app_blur {
