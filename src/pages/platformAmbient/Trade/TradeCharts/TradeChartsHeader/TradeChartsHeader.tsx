@@ -19,6 +19,7 @@ import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { IoSettingsOutline } from 'react-icons/io5';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 // import { IoSettingsOutline } from 'react-icons/io5';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 
@@ -51,6 +52,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const { activeMobileComponent } = useContext(TradeTableContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -113,6 +116,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     onClick={() =>
                         setIsCondensedModeEnabled(!isCondensedModeEnabled)
                     }
+                    mobileHide={activeMobileComponent !== 'chart'}
                 >
                     <AiOutlineAreaChart
                         size={20}
@@ -141,6 +145,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     onClick={() =>
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }
+                    mobileHide={activeMobileComponent !== 'chart'}
                 >
                     <AiOutlineDollarCircle
                         size={20}

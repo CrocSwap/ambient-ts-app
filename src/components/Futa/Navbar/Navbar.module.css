@@ -12,14 +12,14 @@
 
 .moreContainer {
     display: flex;
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     padding: 2px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    border-radius: 100px;
+    /* border-radius: 100px; */
     background: var(--dark2, #12121a);
 }
 

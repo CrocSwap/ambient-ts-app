@@ -215,7 +215,6 @@ function RangeActionModal(props: propsIF) {
                             askTick: position.askTick
                                 ? position.askTick.toString()
                                 : '0',
-                            addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )

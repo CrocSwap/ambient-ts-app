@@ -2606,14 +2606,19 @@ export default function Chart(props: propsIF) {
             });
             timeGaps.forEach((obj) => (obj.isAddedPixel = false));
 
-            const targetValue = Date.now();
-            const targetPixel = scaleData.xScale.range()[1] * (1 - liqBuffer);
+            const canvasDiv = d3.select(d3CanvasMain.current);
 
-            const currentRange = scaleData?.xScale.range();
+            const canvas = canvasDiv
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+            const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
                 centerX - diff * liqBuffer,
                 centerX + diff * (1 - liqBuffer),
             ];
+
+            const targetValue = Date.now();
+            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
 
             const newDomainMin =
                 targetValue -

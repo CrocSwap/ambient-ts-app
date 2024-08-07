@@ -27,8 +27,9 @@ const PlatformAmbientRoutes: React.FC = () => {
 
     return (
         <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/trade' element={<Trade />}>
+            <Route index element={<Home />} />
+            <Route path='accessibility' element={<Accessibility />} />
+            <Route path='trade' element={<Trade />}>
                 <Route
                     path=''
                     element={<Navigate to='/trade/market' replace />}
@@ -62,20 +63,19 @@ const PlatformAmbientRoutes: React.FC = () => {
                 />
             </Route>
             <Route
-                path='/chat'
+                path='chat'
                 element={<ChatPanel isFullScreen={true} appPage={true} />}
             />
             <Route
-                path='/chat/:params'
+                path='chat/:params'
                 element={<ChatPanel isFullScreen={true} appPage={true} />}
             />
-            <Route path='/initpool/:params' element={<InitPool />} />
-            <Route path='/account' element={<Portfolio />} />
+            <Route path='initpool/:params' element={<InitPool />} />
+            <Route path='account' element={<Portfolio />} />
             <Route
-                path='/xp-leaderboard'
+                path='xp-leaderboard'
                 element={<Portfolio isLevelsPage isRanksPage />}
             />
-            <Route path='/account/xp' element={<Portfolio isLevelsPage />} />
             <Route
                 path='account/transactions'
                 element={<Portfolio specificTab='transactions' />}
@@ -92,63 +92,82 @@ const PlatformAmbientRoutes: React.FC = () => {
                 path='account/points'
                 element={<Portfolio specificTab='points' />}
             />
+            <Route path='account/xp' element={<Portfolio isLevelsPage />} />
+            <Route
+                path='account/xp/history'
+                element={<Portfolio isLevelsPage isViewMoreActive />}
+            />
+            <Route path='account/:address' element={<Portfolio />} />
+            <Route
+                path='account/:address/transactions'
+                element={<Portfolio specificTab='transactions' />}
+            />
+            <Route
+                path='account/:address/limits'
+                element={<Portfolio specificTab='limits' />}
+            />
+            <Route
+                path='account/:address/liquidity'
+                element={<Portfolio specificTab='liquidity' />}
+            />
+            <Route
+                path='account/:address/xp'
+                element={<Portfolio isLevelsPage />}
+            />
             <Route
                 path='account/:address/points'
                 element={<Portfolio specificTab='points' />}
             />
             <Route
+                path='account/:address/xp/history'
+                element={<Portfolio isLevelsPage isViewMoreActive />}
+            />
+            <Route path='/:address' element={<Portfolio />} />
+            <Route
+                path='/:address/transactions'
+                element={<Portfolio specificTab='transactions' />}
+            />
+            <Route
+                path='/:address/limits'
+                element={<Portfolio specificTab='limits' />}
+            />
+            <Route
+                path='/:address/liquidity'
+                element={<Portfolio specificTab='liquidity' />}
+            />
+            <Route
                 path='/:address/points'
                 element={<Portfolio specificTab='points' />}
             />
-            <Route
-                path='/account/:address/xp/history'
-                element={<Portfolio isLevelsPage isViewMoreActive />}
-            />
-            <Route
-                path='/account/xp/history'
-                element={<Portfolio isLevelsPage isViewMoreActive />}
-            />
-            <Route path='/account/:address' element={<Portfolio />} />
-            <Route
-                path='/account/:address/xp'
-                element={<Portfolio isLevelsPage />}
-            />
-            <Route
-                path='/swap'
-                element={<Navigate replace to={defaultUrlParams.swap} />}
-            />
-            <Route
-                path='/explore'
-                element={<Navigate to='/explore/pools' replace />}
-            />
-            <Route path='/explore/pools' element={<Explore view='pools' />} />
-            <Route path='/explore/tokens' element={<Explore view='tokens' />} />
-            <Route path='/swap/:params' element={<Swap />} />
-            <Route
-                path='/template/form'
-                element={IS_LOCAL_ENV ? <ExampleForm /> : <NotFound />}
-            />
-            <Route path='/accessibility' element={<Accessibility />} />
-            <Route path='/terms' element={<TermsOfService />} />
-            <Route path='/privacy' element={<PrivacyPolicy />} />
-            <Route
-                path='/faq'
-                element={<Navigate to='/faq/points' replace />}
-            />
-            <Route path='/faq/points' element={<FAQPoints />} />
-            <Route path='/faq/points/:params' element={<FAQPoints />} />
-            <Route path='/404' element={<NotFound />} />
-            {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
-            <Route
-                path='/testpage'
-                element={IS_LOCAL_ENV ? <TestPage /> : <NotFound />}
-            />
-            <Route path='/:address' element={<Portfolio />} />
             <Route path='/:address/xp' element={<Portfolio isLevelsPage />} />
             <Route
                 path='/:address/xp/history'
                 element={<Portfolio isLevelsPage isViewMoreActive />}
             />
+            <Route
+                path='swap'
+                element={<Navigate replace to={defaultUrlParams.swap} />}
+            />
+            {/* refactor EXPLORE as a nested route */}
+            <Route
+                path='explore'
+                element={<Navigate to='/explore/pools' replace />}
+            />
+            <Route path='explore/pools' element={<Explore view='pools' />} />
+            <Route path='explore/tokens' element={<Explore view='tokens' />} />
+            <Route path='swap/:params' element={<Swap />} />
+            <Route path='terms' element={<TermsOfService />} />
+            <Route path='privacy' element={<PrivacyPolicy />} />
+            <Route path='faq' element={<Navigate to='/faq/points' replace />} />
+            <Route path='faq/points' element={<FAQPoints />} />
+            <Route path='faq/points/:params' element={<FAQPoints />} />
+            {IS_LOCAL_ENV && <Route path='testpage' element={<TestPage />} />}
+            {IS_LOCAL_ENV && (
+                <Route path='template/form' element={<ExampleForm />} />
+            )}
+
+            <Route path='/404' element={<NotFound />} />
+            <Route path='*' element={<Navigate to='/404' replace />} />
         </Routes>
     );
 };
