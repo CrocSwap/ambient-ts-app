@@ -172,6 +172,10 @@ export interface LocalChartSettingsIF {
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
+    const { skin, platformName } = useContext(BrandContext);
+
+    const isFuta = ['futa'].includes(platformName);
+
     // 2:1 ratio of the window height subtracted by main header and token info header
     const CHART_MAX_HEIGHT = window.innerHeight - 160;
     const CHART_MIN_HEIGHT = 4;
@@ -182,8 +186,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const CHART_SAVED_HEIGHT_LOCAL_STORAGE =
         localStorage.getItem('savedChartHeight');
 
-    if (CHART_SAVED_HEIGHT_LOCAL_STORAGE) {
+    if (CHART_SAVED_HEIGHT_LOCAL_STORAGE && !isFuta) {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
+    }
+
+    if (isFuta) {
+        CHART_SAVED_HEIGHT = CHART_MAX_HEIGHT + 50;
     }
 
     const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(
@@ -244,8 +252,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         max: CHART_MAX_HEIGHT,
         default: CHART_DEFAULT_HEIGHT,
     });
-
-    const { skin } = useContext(BrandContext);
 
     const [chartThemeColors, setChartThemeColors] = useState<
         ChartThemeIF | undefined
@@ -428,7 +434,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
-        if (storedData) {
+        if (storedData && !isFuta) {
             const parseStoredData = JSON.parse(storedData);
             parseStoredData.isMagnetActive = isMagnetActive.value;
             localStorage.setItem(
