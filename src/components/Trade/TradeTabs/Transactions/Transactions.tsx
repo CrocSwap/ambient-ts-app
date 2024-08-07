@@ -55,7 +55,7 @@ import {
 } from '../../../../contexts/SidebarContext';
 import {
     TransactionRow as TransactionRowStyled,
-    ViewMoreButton,
+    // ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import {
     FlexContainer,
@@ -110,8 +110,7 @@ function Transactions(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext<CachedDataIF>(CachedDataContext);
-    const { chartSettings, tradeTableState } =
-        useContext<ChartContextIF>(ChartContext);
+    const { chartSettings } = useContext<ChartContextIF>(ChartContext);
     const {
         crocEnv,
         activeNetwork,
@@ -120,7 +119,7 @@ function Transactions(props: propsIF) {
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
     const {
         // showAllData: showAllDataSelection,
-        toggleTradeTable,
+        // toggleTradeTable,
         setOutsideControl,
     } = useContext<TradeTableContextIF>(TradeTableContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
@@ -134,8 +133,8 @@ function Transactions(props: propsIF) {
     // only show all data and expand when on trade tab page
     // const showAllData = !isAccountView && showAllDataSelection;
     const showAllData = true;
-    const isTradeTableExpanded: boolean =
-        !isAccountView && tradeTableState === 'Expanded';
+    // const isTradeTableExpanded: boolean =
+    //     !isAccountView && tradeTableState === 'Expanded';
 
     const dataLoadingStatus =
         useContext<DataLoadingContextIF>(DataLoadingContext);
@@ -485,7 +484,7 @@ function Transactions(props: propsIF) {
         // showingTo,
         // totalItems,
         // setCurrentPage,
-        rowsPerPage,
+        // rowsPerPage,
         // changeRowsPerPage,
         // count,
         fullData,
@@ -581,11 +580,11 @@ function Transactions(props: propsIF) {
         }
     };
 
-    // leaving this intact because we'll still need it
-    const showViewMoreButton: boolean =
-        !isTradeTableExpanded &&
-        !isAccountView &&
-        sortedTransactions.length > rowsPerPage;
+    // // leaving this intact because we'll still need it
+    // const showViewMoreButton: boolean =
+    //     !isTradeTableExpanded &&
+    //     !isAccountView &&
+    //     sortedTransactions.length > rowsPerPage;
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -728,7 +727,7 @@ function Transactions(props: propsIF) {
                     isAccountView={isAccountView}
                 />
             </ul>
-            {showViewMoreButton && (
+            {/* {showViewMoreButton && (
                 <FlexContainer
                     justifyContent='center'
                     alignItems='center'
@@ -738,7 +737,7 @@ function Transactions(props: propsIF) {
                         View More
                     </ViewMoreButton>
                 </FlexContainer>
-            )}
+            )} */}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
         </div>
     );
