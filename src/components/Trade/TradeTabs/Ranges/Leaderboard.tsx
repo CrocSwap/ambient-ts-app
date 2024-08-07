@@ -67,8 +67,8 @@ function Leaderboard() {
     const tableView = isSmallScreen
         ? 'small'
         : !isSmallScreen && !isLargeScreen
-          ? 'medium'
-          : 'large';
+        ? 'medium'
+        : 'large';
 
     const quoteTokenSymbol = quoteToken?.symbol;
     const baseTokenSymbol = baseToken?.symbol;
@@ -217,10 +217,7 @@ function Leaderboard() {
                     />
                 ))}
             </RangeRowStyled>
-            <div
-                style={{ flex: 1, overflow: 'auto' }}
-                className='custom_scroll_ambient'
-            >
+            <div style={{ flex: 1, overflow: 'auto' }}>
                 {positionsByApy.length > 0 && (
                     <TableRows
                         type='Range'
