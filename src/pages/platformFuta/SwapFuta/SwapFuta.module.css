@@ -71,3 +71,9 @@
         background-position: -100% 0;
     }
 }
+
+.comments_wrapper{
+    /* position: absolute; */
+    width: 100%;
+    display: block;
+}
