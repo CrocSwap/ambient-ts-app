@@ -30,10 +30,6 @@ interface RecordRequestIF {
     user: string;
     chainId: string;
     gcUrl?: string;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
@@ -48,19 +44,11 @@ const fetchUserPositions = async ({
     user,
     chainId,
     gcUrl,
-    ensResolution = true,
-    annotate = true,
-    omitKnockout = true,
-    addValue = true,
 }: {
     recordType: RecordType;
     user: string;
     chainId: string;
     gcUrl?: string;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
 }): Promise<Response> => {
     let selectedEndpoint;
     if (recordType == RecordType.LimitOrder) {
@@ -74,10 +62,6 @@ const fetchUserPositions = async ({
             new URLSearchParams({
                 user: user,
                 chainId: chainId,
-                ensResolution: ensResolution.toString(),
-                annotate: annotate.toString(),
-                omitKnockout: omitKnockout.toString(),
-                addValue: addValue.toString(),
             }),
     );
     return res;
@@ -154,10 +138,6 @@ const fetchDecorated = async ({
     user,
     chainId,
     gcUrl,
-    ensResolution = true,
-    annotate = true,
-    omitKnockout = true,
-    addValue = true,
     tokenUniv,
     crocEnv,
     provider,
@@ -171,10 +151,6 @@ const fetchDecorated = async ({
         user,
         chainId,
         gcUrl,
-        ensResolution,
-        annotate,
-        omitKnockout,
-        addValue,
     });
     const json = await response?.json();
     // Compromise between reusing RecordRequestIF and ensuring that these variables are safely assigned.
@@ -218,10 +194,6 @@ const fetchSimpleDecorated = async ({
     chainId,
     gcUrl,
     provider,
-    ensResolution = true,
-    annotate = true,
-    omitKnockout = true,
-    addValue = true,
     tokenUniv,
     crocEnv,
     cachedFetchTokenPrice,
@@ -256,12 +228,6 @@ const fetchSimpleDecorated = async ({
         provider: sess.provider,
         tokenUniv: sess.tokenUniv,
         crocEnv: sess.crocEnv,
-
-        // Control flags:
-        ensResolution,
-        annotate,
-        omitKnockout,
-        addValue,
 
         // Data Sources
         cachedFetchTokenPrice,
