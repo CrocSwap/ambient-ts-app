@@ -25,6 +25,7 @@ import {
     getFormattedNumber,
     chainNumToString,
     trimString,
+    checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
@@ -158,32 +159,64 @@ const PageHeader = function () {
                   value: poolPriceDisplayWithDenom,
               });
 
+    function removeAfterEth(inputString: string) {
+        // Find the position of ".eth"
+        const ethIndex = inputString.indexOf('.eth');
+
+        // If ".eth" is found in the string, return the substring up to and including ".eth"
+        if (ethIndex !== -1) {
+            return inputString.substring(0, ethIndex + 4);
+        }
+
+        // If ".eth" is not found, return the original string
+        return inputString;
+    }
+
     useEffect(() => {
         const path = location.pathname;
 
         const pathNoLeadingSlash = path.slice(1);
 
-        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
-        const isAddressHex =
-            (pathNoLeadingSlash?.startsWith('0x') &&
-                pathNoLeadingSlash?.length == 42) ||
-            (pathNoLeadingSlash?.startsWith('account/0x') &&
-                pathNoLeadingSlash?.length == 50);
+        const isAddressEns = pathNoLeadingSlash?.includes('.eth');
+        const isAddressHex = checkEoaHexAddress(path);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
-        if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account ~ Ambient';
-        } else if (pathNoLeadingSlash === 'account/points') {
-            document.title = 'My Points ~ Ambient';
+        if (pathNoLeadingSlash.startsWith('account') && !isPathValidAddress) {
+            if (pathNoLeadingSlash.includes('points')) {
+                document.title = 'My Points ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('liquidity')) {
+                document.title = 'My Liquidity ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('limits')) {
+                document.title = 'My Limits ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('transactions')) {
+                document.title = 'My Transactions ~ Ambient';
+            } else {
+                document.title = 'My Account ~ Ambient';
+            }
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoPrefixDecoded.length > 15
-                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
-                    : pathNoPrefixDecoded
+                ? removeAfterEth(pathNoPrefixDecoded).length > 15
+                    ? trimString(
+                          removeAfterEth(pathNoPrefixDecoded),
+                          10,
+                          3,
+                          '…',
+                      )
+                    : removeAfterEth(pathNoPrefixDecoded)
                 : trimString(pathNoPrefixDecoded, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
+            if (pathNoLeadingSlash.includes('points')) {
+                document.title = `${ensNameOrAddressTruncated} Points ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('liquidity')) {
+                document.title = `${ensNameOrAddressTruncated} Liquidity ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('limits')) {
+                document.title = `${ensNameOrAddressTruncated} Limits ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('transactions')) {
+                document.title = `${ensNameOrAddressTruncated} Transactions ~ Ambient`;
+            } else {
+                document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
+            }
         } else if (
             location.pathname.includes('swap') ||
             location.pathname.includes('trade')
@@ -196,7 +229,13 @@ const PageHeader = function () {
         } else if (location.pathname.includes('initpool')) {
             document.title = 'Pool Initialization ~ Ambient';
         } else if (location.pathname.includes('explore')) {
-            document.title = 'Explore ~ Ambient';
+            if (location.pathname.includes('pool')) {
+                document.title = 'Explore Pools ~ Ambient';
+            } else if (location.pathname.includes('tokens')) {
+                document.title = 'Explore Tokens ~ Ambient';
+            } else {
+                document.title = 'Explore ~ Ambient';
+            }
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
