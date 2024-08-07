@@ -130,7 +130,7 @@ export default function App() {
         <>
             <FlexContainer
                 flexDirection='column'
-                className={containerStyle}
+                className={`${containerStyle} `}
                 data-theme={skin}
             >
                 {showPoints && showPointSystemPopup && (
