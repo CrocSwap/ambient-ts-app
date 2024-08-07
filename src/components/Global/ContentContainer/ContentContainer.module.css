@@ -118,6 +118,13 @@
 @media only screen and (max-width: 600px) {
     .main_content {
         overflow-y: scroll;
+       height: 500px !important;
+       padding: 8px !important;
+       box-shadow: none;
+    }
+
+    .swap_route{
+        background: transparent;
     }
 
     .swap_route,
