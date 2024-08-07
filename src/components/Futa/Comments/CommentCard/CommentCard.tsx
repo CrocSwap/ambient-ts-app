@@ -30,7 +30,7 @@ function CommentCard(props: CommentCardProps) {
         const messageDate = new Date(props.message.createdAt);
         if (props.previousMessage) {
             const prevMessageDate = new Date(props.previousMessage.createdAt);
-            if (messageDate.getDay() != prevMessageDate.getDay()) {
+            if (messageDate.getUTCDate() != prevMessageDate.getUTCDate()) {
                 hasDayInfo = true;
             }
         } else {
