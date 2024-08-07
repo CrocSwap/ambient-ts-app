@@ -29,7 +29,8 @@
   }
 
   .mainContainer.small .commentsWrapper{
-    max-height: calc(98% - 100px);
+    max-height: calc(98% - 40px);
+    bottom: 3rem;
   }
 
   .container {

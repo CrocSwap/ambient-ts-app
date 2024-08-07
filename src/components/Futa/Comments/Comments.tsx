@@ -118,9 +118,7 @@ function Comments(props: CommentsProps) {
                     tradeWrapper.getBoundingClientRect().height;
                 domDebug('screen height', window.screen.height);
                 domDebug('trader section height', tradeSectionHeight);
-                setPanelMaxHeight(
-                    window.innerHeight - tradeSectionHeight - 110,
-                );
+                setPanelMaxHeight(window.innerHeight - tradeSectionHeight - 90);
             }
         }
     };
@@ -360,10 +358,7 @@ function Comments(props: CommentsProps) {
             <div
                 className={`${styles.comments_outer} ${props.isSmall ? styles.small : ' '}`}
             >
-                {props.isSmall && (
-                    <div className={styles.comments_header}>COMMENTS</div>
-                )}
-                {userAddress && userAddress.length > 0 && (
+                {userAddress && userAddress.length > 0 && !props.isSmall && (
                     <div className={styles.connection_status}>
                         {isWsConnected ? (
                             <>
