@@ -3,6 +3,7 @@
     background-color: var(--dark2);
     position: absolute;
     width: calc(100% - 1rem);
+    width: 100%;
     bottom: 0;
     }
 
@@ -60,4 +61,8 @@
         top: 0;
         background: var(--accent1);
         color: black;
+    }
+
+    .send_icon{
+        transform: rotate(-45deg) scale(1.2);
     }

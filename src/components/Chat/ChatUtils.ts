@@ -70,7 +70,11 @@ export const hasEns = (message: Message) => {
 
 export const getShownName = (message: Message) => {
     if (!hasEns(message)) {
-        return message.walletID.slice(0, 6) + '...';
+        return (
+            message.walletID.slice(0, 6) +
+            '...' +
+            message.walletID.slice(message.walletID.length - 4)
+        );
     } else {
         return message.ensName;
     }
