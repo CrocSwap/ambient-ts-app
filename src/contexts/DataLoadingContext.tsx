@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 
-interface DataLoadingContextIF {
+export interface DataLoadingContextIF {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
     isConnectedUserPoolOrderDataLoading: boolean;

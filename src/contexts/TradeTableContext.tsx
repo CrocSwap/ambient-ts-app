@@ -11,7 +11,7 @@ import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../ambient-utils/constan
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
-interface TradeTableContextIF {
+export interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
     showRangePulseAnimation: boolean;
     showSwapPulseAnimation: boolean;

@@ -19,7 +19,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
 import { TransactionReceipt } from 'ethers';
 
-interface SidebarStateIF {
+export interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
     sidebar: sidebarMethodsIF;
     hideOnMobile: boolean;
