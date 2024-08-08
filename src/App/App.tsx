@@ -128,6 +128,7 @@ export default function App() {
 
     return (
         <>
+            {location.pathname == '/' && <PageHeader />}
             <FlexContainer
                 flexDirection='column'
                 className={`${containerStyle} `}
@@ -139,7 +140,7 @@ export default function App() {
                     />
                 )}
                 <AppOverlay />
-                <PageHeader />
+                {location.pathname !== '/' && <PageHeader />}
 
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
