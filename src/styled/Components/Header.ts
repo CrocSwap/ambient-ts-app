@@ -305,8 +305,7 @@ export const WalletWrapper = styled(FlexContainer)`
     top: 50px;
     width: 347px;
     height: 280px;
-    right: -150px;
-
+    right: 0px;
     z-index: 9999;
     padding: 8px 1rem;
     opacity: 1;
@@ -315,7 +314,7 @@ export const WalletWrapper = styled(FlexContainer)`
     border: 1px solid var(--color-border);
     @media (max-width: 500px) {
         width: 300px;
-        right: -50px;
+        right: -100px;
     }
 `;
 
@@ -327,7 +326,7 @@ export const LevelWrapper = styled(FlexContainer)`
     top: 50px;
     width: auto;
     min-width: 350px;
-    right: -75px;
+    right: 15px;
     z-index: 9999;
     padding: 8px 1rem;
     border: 1px solid var(--accent1);
@@ -343,7 +342,8 @@ export const LevelWrapper = styled(FlexContainer)`
     border-radius: 4px;
 
     @media (max-width: 500px) {
-        right: -70px;
+        right: -50px;
+        width: 300px;
     }
 `;
 export const AccountDropdownWrapper = styled(FlexContainer)`
@@ -580,8 +580,6 @@ export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
         height: 20px;
     }
 `;
-
-// NetworkSelector
 
 export const DropdownMenuContainer = styled(FlexContainer)`
     z-index: 99999;
