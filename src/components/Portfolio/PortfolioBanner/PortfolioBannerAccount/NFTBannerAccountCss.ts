@@ -111,8 +111,8 @@ const NFTImg = styled.img<{
             selectedNFT
                 ? '#7bede4'
                 : selectedThumbnail
-                ? '#ff9800'
-                : 'transparent'};
+                  ? '#ff9800'
+                  : 'transparent'};
     border-radius: 8px;
 
     width: ${({ isMobile }) => (isMobile ? '20vw' : '75px')};

@@ -14,6 +14,7 @@ import {
     Ring,
 } from './ActivityIndicator.styles';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface AcitivtyIndicatorProps {
     value: number;
@@ -31,6 +32,8 @@ const animStates = {
 };
 const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     const { appHeaderDropdown } = useContext(AppStateContext);
+    const { platformName } = useContext(BrandContext);
+
     const controls = useAnimation();
     const isFirstRun = useRef(true);
 
@@ -55,9 +58,11 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
         } else appHeaderDropdown.setIsActive(false);
     };
 
+    const isFuta = ['futa'].includes(platformName);
+
     const pendingCircle = (
-        <Circle onClick={toggleNotificationCenter}>
-            <Ring />
+        <Circle onClick={toggleNotificationCenter} isFuta={isFuta}>
+            <Ring isFuta={isFuta} />
         </Circle>
     );
 
@@ -80,6 +85,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                         whileHover='hover'
                         whileTap='pressed'
                         variants={animStates}
+                        isFuta={isFuta}
                     >
                         <span
                             aria-live='polite'

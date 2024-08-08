@@ -31,7 +31,7 @@ const validParams = [
 ] as const;
 
 // type generated as a union of all string literals in `validParams`
-export type validParamsType = typeof validParams[number];
+export type validParamsType = (typeof validParams)[number];
 
 export interface updatesIF {
     update?: Array<[validParamsType, string | number]>;
@@ -229,7 +229,6 @@ export const useUrlParams = (
         if (lookup) {
             return lookup;
         } else {
-            // const provider = inflateProvider(chainId);
             if (provider) {
                 return fetchContractDetails(
                     provider,
@@ -240,20 +239,6 @@ export const useUrlParams = (
             }
         }
     }
-
-    // function inflateProvider(chainId: string) {
-    //     if (!provider) {
-    //         provider = useProvider({ chainId: parseInt(chainId) });
-    //         if (!provider) {
-    //             console.warn(
-    //                 'Cannot set provider to lookup token address on chain',
-    //                 chainId,
-    //             );
-    //             return undefined;
-    //         }
-    //     }
-    //     return provider;
-    // }
 
     function processOptParam(
         paramName: validParamsType,
@@ -286,13 +271,6 @@ export const useUrlParams = (
         return undefined;
     }
 
-    // removing to allow the first default token to be set as token b by default
-    // function processDefaultTokens(chainToUse: string) {
-    //     const [dfltA, dfltB] = getDefaultPairForChain(chainToUse);
-    //     setTokenA(dfltA);
-    //     setTokenB(dfltB);
-    // }
-
     useEffect((): (() => void) => {
         let flag = true;
 
@@ -309,16 +287,12 @@ export const useUrlParams = (
 
             // prevent race condition involving lookup and fetching contract
             if (!flag) return;
-
             // If both tokens are valid and have data for this chain, use those
             // Otherwise fallback to the chain's default pair.
             if (tokenPair && tokenPair[0].decimals && tokenPair[1].decimals) {
                 setTokenA(tokenPair[0]);
                 setTokenB(tokenPair[1]);
             }
-            //  else {
-            //     processDefaultTokens(chainToUse);
-            // }
         };
 
         try {
@@ -329,9 +303,6 @@ export const useUrlParams = (
             if (tokenA && tokenB) {
                 processTokenAddr(tokenA, tokenB, chainToUse);
             }
-            // else {
-            //     processDefaultTokens(chainToUse);
-            // }
 
             processOptParam('limitTick', async (tick: string) => {
                 setLimitTick(parseInt(tick));

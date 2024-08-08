@@ -43,4 +43,13 @@ export const RedTextTooltip = withStyles({
     },
 })(Tooltip);
 
+export const FutaTooltip = withStyles({
+    tooltip: {
+        color: 'var(--text2)',
+        backgroundColor: 'var(--dark2)',
+        border: '1px solid yellow',
+        padding: '8px',
+    },
+})(Tooltip);
+
 //   https://stackoverflow.com/questions/36759985/how-to-style-mui-tooltip

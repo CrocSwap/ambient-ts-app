@@ -1,6 +1,9 @@
 import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { TokenIF } from '../../ambient-utils/types';
-import { memo } from 'react';
+import {
+    memo,
+    // useContext
+} from 'react';
 import { formatTokenInput, stringToBigInt } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
@@ -76,12 +79,12 @@ function TokenInputWithWalletBalance(props: propsIF) {
     const walletBalanceBigInt = tokenBalance
         ? stringToBigInt(tokenBalance, token.decimals)
         : BigInt(0);
-
     const dexBalanceBigInt = tokenDexBalance
         ? stringToBigInt(tokenDexBalance, token.decimals)
         : BigInt(0);
 
     const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
+
     const walletAndExchangeBalance =
         tokenBalance && tokenDexBalance
             ? toDecimal(
@@ -201,6 +204,9 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 showPulseAnimation={showPulseAnimation}
                 disabledContent={disabledContent}
                 isPoolInitialized={isPoolInitialized}
+                walletBalance={walletBalance}
+                usdValue={usdValueForDom}
+                percentDiffUsdValue={percentDiffUsdValue}
             />
             {handleRefresh && (
                 <RefreshButton

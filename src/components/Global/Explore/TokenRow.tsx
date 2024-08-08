@@ -8,7 +8,7 @@ import {
 } from '../../../styled/Components/Analytics';
 import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { dexTokenData } from '../../../pages/Explore/useTokenStats';
+import { dexTokenData } from '../../../pages/platformAmbient/Explore/useTokenStats';
 import { GCServerPoolIF, PoolIF, TokenIF } from '../../../ambient-utils/types';
 
 interface propsIF {

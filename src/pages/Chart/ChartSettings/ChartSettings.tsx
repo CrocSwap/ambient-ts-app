@@ -23,24 +23,28 @@ import {
     StyledSelectbox,
 } from './ChartSettingsCss';
 import { VscClose } from 'react-icons/vsc';
-import { chartItemStates, getCssVariable } from '../ChartUtils/chartUtils';
 import {
     ChartThemeIF,
     LocalChartSettingsIF,
 } from '../../../contexts/ChartContext';
+
+import { SketchPicker } from 'react-color';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { BrandContext } from '../../../contexts/BrandContext';
+import Spinner from '../../../components/Global/Spinner/Spinner';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../../platformAmbient/Chart/ChartUtils/chartConstants';
+import {
+    chartItemStates,
+    getCssVariable,
+} from '../../platformAmbient/Chart/ChartUtils/chartUtils';
 import {
     ColorPickerTab,
     DropDownList,
     DropDownListContainer,
     LabelSettingsArrow,
     ListItem,
-} from '../Draw/FloatingToolbar/FloatingToolbarSettingsCss';
-import { SketchPicker } from 'react-color';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { BrandContext } from '../../../contexts/BrandContext';
-import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
-import Spinner from '../../../components/Global/Spinner/Spinner';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+} from '../../platformAmbient/Chart/Draw/FloatingToolbar/FloatingToolbarSettingsCss';
 
 interface ContextMenuIF {
     contextMenuPlacement: { top: number; left: number; isReversed: boolean };
@@ -105,7 +109,7 @@ export default function ChartSettings(props: ContextMenuIF) {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
-    const { skin } = useContext(BrandContext);
+    const { skin, platformName } = useContext(BrandContext);
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
@@ -397,6 +401,7 @@ export default function ChartSettings(props: ContextMenuIF) {
             action: handleCandleColorPicker,
             upColor: 'upCandleBodyColor',
             downColor: 'downCandleBodyColor',
+            exclude: [''],
         },
         {
             selection: 'Candle Borders',
@@ -404,6 +409,7 @@ export default function ChartSettings(props: ContextMenuIF) {
             action: handleCandleColorPicker,
             upColor: 'upCandleBorderColor',
             downColor: 'downCandleBorderColor',
+            exclude: [''],
         },
         {
             selection: 'Liquidity Area',
@@ -411,6 +417,7 @@ export default function ChartSettings(props: ContextMenuIF) {
             action: handleCandleColorPicker,
             upColor: 'liqAskColor',
             downColor: 'liqBidColor',
+            exclude: ['futa'],
         },
     ];
 
@@ -429,7 +436,9 @@ export default function ChartSettings(props: ContextMenuIF) {
             <ContextMenu>
                 <ContextMenuHeader>
                     <ContextMenuHeaderText>
-                        Chart Settings
+                        {['futa'].includes(platformName)
+                            ? 'CHART SETTINGS'
+                            : 'Chart Settings'}
                     </ContextMenuHeaderText>
                     <CloseButton onClick={() => setContextmenu(false)}>
                         <VscClose size={24} />
@@ -448,7 +457,9 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 </Icon>
                             </StyledCheckbox>
                             <ContextMenuContextText>
-                                {item.selection}
+                                {['futa'].includes(platformName)
+                                    ? item.selection.toUpperCase()
+                                    : item.selection}
                             </ContextMenuContextText>
                         </CheckList>
                     ))}
@@ -458,7 +469,9 @@ export default function ChartSettings(props: ContextMenuIF) {
                     {selectionContent.map((item, index) => (
                         <CheckList key={index}>
                             <ContextMenuContextText>
-                                {item.selection}
+                                {['futa'].includes(platformName)
+                                    ? item.selection.toUpperCase()
+                                    : item.selection}
                             </ContextMenuContextText>
                             <StyledSelectbox
                                 onClick={(event: MouseEvent<HTMLElement>) => {
@@ -520,142 +533,185 @@ export default function ChartSettings(props: ContextMenuIF) {
                 </SelectionContainer>
 
                 <ColorPickerContainer>
-                    {colorPickerContent.map((item, index) => (
-                        <ColorList key={index}>
-                            <ContextMenuContextText>
-                                {item.selection}
-                            </ContextMenuContextText>
+                    {colorPickerContent.map(
+                        (item, index) =>
+                            !item.exclude.includes(platformName) && (
+                                <ColorList key={index}>
+                                    <ContextMenuContextText>
+                                        {['futa'].includes(platformName)
+                                            ? item.selection.toUpperCase()
+                                            : item.selection}
+                                    </ContextMenuContextText>
 
-                            <ColorOptions>
-                                <OptionColor
-                                    backgroundColor={chartThemeColors[
-                                        item.upColor
-                                    ]?.toString()}
-                                    onClick={(
-                                        event: MouseEvent<HTMLElement>,
-                                    ) => {
-                                        event.stopPropagation();
-                                        setSelectedColorObj((prev) => {
-                                            const selectedObj = {
-                                                selectedColor:
-                                                    chartThemeColors[
-                                                        item.upColor
-                                                    ]?.toString(),
-                                                replaceSelector: item.upColor,
-                                                index: index,
-                                                placement: 'left',
-                                            };
-
-                                            const result =
-                                                prev === undefined ||
-                                                prev.index !== index ||
-                                                prev.placement !== 'left'
-                                                    ? selectedObj
-                                                    : undefined;
-
-                                            setShouldDisableChartSettings(
-                                                result === undefined,
-                                            );
-
-                                            return result;
-                                        });
-                                    }}
-                                ></OptionColor>
-
-                                <OptionColor
-                                    backgroundColor={chartThemeColors[
-                                        item.downColor
-                                    ]?.toString()}
-                                    onClick={(
-                                        event: MouseEvent<HTMLElement>,
-                                    ) => {
-                                        event.stopPropagation();
-                                        setSelectedColorObj((prev) => {
-                                            const selectedObj = {
-                                                selectedColor:
-                                                    chartThemeColors[
-                                                        item.downColor
-                                                    ]?.toString(),
-                                                replaceSelector: item.downColor,
-                                                index: index,
-                                                placement: 'right',
-                                            };
-
-                                            const result =
-                                                prev === undefined ||
-                                                prev.index !== index ||
-                                                prev.placement !== 'right'
-                                                    ? selectedObj
-                                                    : undefined;
-
-                                            setShouldDisableChartSettings(
-                                                result === undefined,
-                                            );
-
-                                            return result;
-                                        });
-                                    }}
-                                ></OptionColor>
-
-                                {selectedColorObj &&
-                                    selectedColorObj.index === index && (
-                                        <ColorPickerTab
-                                            style={{
-                                                position: 'fixed',
-                                                zIndex: 199,
-                                                transform:
-                                                    'translate(' +
-                                                    (selectedColorObj.placement ===
-                                                    'left'
-                                                        ? -90
-                                                        : -60) +
-                                                    'px, ' +
-                                                    (reverseColorObj
-                                                        ? '-325px)'
-                                                        : '10px)'),
-                                            }}
+                                    <ColorOptions>
+                                        <OptionColor
+                                            backgroundColor={chartThemeColors[
+                                                item.upColor
+                                            ]?.toString()}
                                             onClick={(
                                                 event: MouseEvent<HTMLElement>,
-                                            ) => event.stopPropagation()}
-                                        >
-                                            <SketchPicker
-                                                color={
-                                                    selectedColorObj.selectedColor
-                                                }
-                                                width={'170px'}
-                                                onChange={(color, event) => {
+                                            ) => {
+                                                event.stopPropagation();
+                                                setSelectedColorObj((prev) => {
+                                                    const selectedObj = {
+                                                        selectedColor:
+                                                            chartThemeColors[
+                                                                item.upColor
+                                                            ]?.toString(),
+                                                        replaceSelector:
+                                                            item.upColor,
+                                                        index: index,
+                                                        placement: 'left',
+                                                    };
+
+                                                    const result =
+                                                        prev === undefined ||
+                                                        prev.index !== index ||
+                                                        prev.placement !==
+                                                            'left'
+                                                            ? selectedObj
+                                                            : undefined;
+
+                                                    setShouldDisableChartSettings(
+                                                        result === undefined,
+                                                    );
+
+                                                    return result;
+                                                });
+                                            }}
+                                        ></OptionColor>
+                                        {item.downColor !== '' && (
+                                            <OptionColor
+                                                backgroundColor={chartThemeColors[
+                                                    item.downColor
+                                                ]?.toString()}
+                                                onClick={(
+                                                    event: MouseEvent<HTMLElement>,
+                                                ) => {
                                                     event.stopPropagation();
-                                                    item.action(
-                                                        selectedColorObj.replaceSelector,
-                                                        color,
+                                                    setSelectedColorObj(
+                                                        (prev) => {
+                                                            const selectedObj =
+                                                                {
+                                                                    selectedColor:
+                                                                        chartThemeColors[
+                                                                            item
+                                                                                .downColor
+                                                                        ]?.toString(),
+                                                                    replaceSelector:
+                                                                        item.downColor,
+                                                                    index: index,
+                                                                    placement:
+                                                                        'right',
+                                                                };
+
+                                                            const result =
+                                                                prev ===
+                                                                    undefined ||
+                                                                prev.index !==
+                                                                    index ||
+                                                                prev.placement !==
+                                                                    'right'
+                                                                    ? selectedObj
+                                                                    : undefined;
+
+                                                            setShouldDisableChartSettings(
+                                                                result ===
+                                                                    undefined,
+                                                            );
+
+                                                            return result;
+                                                        },
                                                     );
                                                 }}
-                                            />
-                                        </ColorPickerTab>
-                                    )}
-                            </ColorOptions>
-                        </ColorList>
-                    ))}
+                                            ></OptionColor>
+                                        )}
+
+                                        {selectedColorObj &&
+                                            selectedColorObj.index ===
+                                                index && (
+                                                <ColorPickerTab
+                                                    style={{
+                                                        position: 'fixed',
+                                                        zIndex: 199,
+                                                        transform:
+                                                            'translate(' +
+                                                            (selectedColorObj.placement ===
+                                                            'left'
+                                                                ? -90
+                                                                : -60) +
+                                                            'px, ' +
+                                                            (reverseColorObj
+                                                                ? '-325px)'
+                                                                : '10px)'),
+                                                    }}
+                                                    onClick={(
+                                                        event: MouseEvent<HTMLElement>,
+                                                    ) =>
+                                                        event.stopPropagation()
+                                                    }
+                                                >
+                                                    <SketchPicker
+                                                        color={
+                                                            selectedColorObj.selectedColor
+                                                        }
+                                                        width={'170px'}
+                                                        onChange={(
+                                                            color,
+                                                            event,
+                                                        ) => {
+                                                            event.stopPropagation();
+                                                            item.action(
+                                                                selectedColorObj.replaceSelector,
+                                                                color,
+                                                            );
+                                                        }}
+                                                    />
+                                                </ColorPickerTab>
+                                            )}
+                                    </ColorOptions>
+                                </ColorList>
+                            ),
+                    )}
                 </ColorPickerContainer>
 
                 <ContextMenuFooter>
                     <FooterButtons
-                        backgroundColor={'transparent'}
-                        hoverColor={
-                            applyDefault ? 'transparent' : 'var(--accent1)'
+                        backgroundColor={
+                            ['futa'].includes(platformName)
+                                ? 'var(--dark3)'
+                                : 'transparent'
                         }
-                        textColor={'var(--accent1)'}
-                        hoverTextColor={'var(--text1)'}
+                        hoverColor={
+                            ['futa'].includes(platformName)
+                                ? 'var(--dark3)'
+                                : applyDefault
+                                  ? 'transparent'
+                                  : 'var(--accent1)'
+                        }
+                        textColor={
+                            ['futa'].includes(platformName)
+                                ? 'var(--text2)'
+                                : 'var(--accent1)'
+                        }
+                        hoverTextColor={
+                            ['futa'].includes(platformName)
+                                ? 'var(--accent1)'
+                                : 'var(--text1)'
+                        }
                         width={'98px'}
                         onClick={() =>
                             handleApplyDefaults(defaultChartSettings)
                         }
+                        isFuta={['futa'].includes(platformName)}
                     >
                         {applyDefault ? (
                             <Spinner size={14} bg='transparent' centered />
                         ) : (
                             <FooterContextText>
-                                Apply defaults
+                                {['futa'].includes(platformName)
+                                    ? 'DEFAULTS'
+                                    : 'Apply defaults'}
                             </FooterContextText>
                         )}
                     </FooterButtons>
@@ -668,14 +724,35 @@ export default function ChartSettings(props: ContextMenuIF) {
                             }}
                         >
                             <FooterButtons
-                                backgroundColor={'transparent'}
-                                hoverColor={'var(--accent1)'}
-                                textColor={'var(--accent1)'}
-                                hoverTextColor={'var(--text1)'}
+                                backgroundColor={
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--dark3)'
+                                        : 'transparent'
+                                }
+                                hoverColor={
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--dark3)'
+                                        : 'var(--accent1)'
+                                }
+                                textColor={
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--text2)'
+                                        : 'var(--accent1)'
+                                }
+                                hoverTextColor={
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--accent1)'
+                                        : 'var(--text1)'
+                                }
                                 width={'55px'}
                                 onClick={() => handleCancelChanges()}
+                                isFuta={['futa'].includes(platformName)}
                             >
-                                <FooterContextText>Cancel</FooterContextText>
+                                <FooterContextText>
+                                    {['futa'].includes(platformName)
+                                        ? 'APPLY'
+                                        : 'Cancel'}
+                                </FooterContextText>
                             </FooterButtons>
                         </div>
                         <div
@@ -687,13 +764,26 @@ export default function ChartSettings(props: ContextMenuIF) {
                         >
                             <FooterButtons
                                 backgroundColor={
-                                    isSaving ? 'transparent' : 'var(--accent1)'
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--dark3)'
+                                        : isSaving
+                                          ? 'transparent'
+                                          : 'var(--accent1)'
                                 }
-                                hoverColor={'transparent'}
-                                textColor={'var(--text1)'}
+                                hoverColor={
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--dark3)'
+                                        : 'transparent'
+                                }
+                                textColor={
+                                    ['futa'].includes(platformName)
+                                        ? 'var(--text2)'
+                                        : 'var(--text1)'
+                                }
                                 hoverTextColor={'var(--accent1)'}
                                 width={'45px'}
                                 onClick={() => handleSaveChanges()}
+                                isFuta={['futa'].includes(platformName)}
                             >
                                 {isSaving ? (
                                     <Spinner
@@ -702,7 +792,11 @@ export default function ChartSettings(props: ContextMenuIF) {
                                         centered
                                     />
                                 ) : (
-                                    <FooterContextText>Save</FooterContextText>
+                                    <FooterContextText>
+                                        {['futa'].includes(platformName)
+                                            ? 'OK'
+                                            : 'Save'}
+                                    </FooterContextText>
                                 )}
                             </FooterButtons>
                         </div>

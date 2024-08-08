@@ -20,7 +20,7 @@ const PREMIUM_THEMES_IN_ENV = {
 
 type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
-interface BrandContextIF {
+export interface BrandContextIF {
     skin: skins;
     fontSet: fontSets;
     colorAndFont: string;

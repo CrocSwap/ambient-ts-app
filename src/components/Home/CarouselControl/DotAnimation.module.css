@@ -1,0 +1,38 @@
+
+.dots{
+    position: fixed;
+    z-index: 100;
+    top: 50%;
+    opacity: 1;
+    transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translate3d(0, -50%, 0);
+    right: 17px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap:8px;
+  }
+
+  .dots span{
+    cursor: pointer;
+    background-color: var(--text3);;
+
+  }
+
+
+  .show_arrow{
+opacity: 1;
+  }
+
+  .disable_arrow{
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (max-width: 500px) {
+
+.dots{
+    display: none;
+}
+  }

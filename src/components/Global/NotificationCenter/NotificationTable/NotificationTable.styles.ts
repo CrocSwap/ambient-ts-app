@@ -1,7 +1,11 @@
 import styled from 'styled-components/macro';
 import { FlexContainer } from '../../../../styled/Common';
 
-export const MainContainer = styled.div`
+interface StyledProps {
+    isFuta: boolean;
+}
+
+export const MainContainer = styled.div<StyledProps>`
     z-index: 15;
     width: 380px;
     height: calc(100vh - 9rem);
@@ -21,15 +25,17 @@ export const MainContainer = styled.div`
     }
 `;
 
-export const Container = styled(FlexContainer)`
+export const Container = styled(FlexContainer)<StyledProps>`
     z-index: 10;
-    width: 100%;
+    width: ${({ isFuta }) => (isFuta ? '95%' : '100%')};
+
     height: 400px;
     position: absolute;
     border-radius: var(--border-radius);
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    right: 0;
+    right: ${({ isFuta }) => (isFuta ? '2.2rem' : '0')};
+
     border: 1px solid var(--accent1);
 `;
 
@@ -57,7 +63,7 @@ export const Content = styled(FlexContainer)`
     }
 `;
 
-export const FooterButton = styled.button`
+export const FooterButton = styled.button<StyledProps>`
     padding: 4px 16px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -67,7 +73,8 @@ export const FooterButton = styled.button`
     text-align: center;
     background: transparent;
     text-transform: capitalize;
-    color: var(--accent5);
+    color: ${({ isFuta }) => (isFuta ? 'var(--dark1)' : 'var(-accent5)')};
+
     border-radius: var(--border-radius);
     transition: var(--transition);
     background: var(--accent1);

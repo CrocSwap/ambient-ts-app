@@ -23,7 +23,9 @@
 .dropdown_content {
     display: flex;
     width: 340px;
-    overflow-y: scroll;
+    min-height: 140px;
+   
+  
 
     flex-direction: column;
 

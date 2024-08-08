@@ -10,7 +10,6 @@ import {
     memo,
     useMemo,
 } from 'react';
-
 import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
@@ -711,7 +710,10 @@ function Transactions(props: propsIF) {
         >
             <div>{headerColumnsDisplay}</div>
 
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading

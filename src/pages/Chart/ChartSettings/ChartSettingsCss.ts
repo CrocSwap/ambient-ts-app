@@ -169,15 +169,17 @@ const FooterButtons = styled.div<{
     textColor: string;
     hoverTextColor: string;
     width: string;
+    isFuta: boolean;
 }>`
     padding: 5px 8px 5px 8px;
     gap: 10px;
-    border-radius: 50px;
+    border-radius: ${({ isFuta }) => (isFuta ? '0px' : '50px')};
 
     width: ${({ width }) => width};
     height: 27px;
 
-    border: 1px solid var(--accent1);
+    border: 1px solid
+        ${({ isFuta }) => (isFuta ? 'transparent' : 'var(--accent1)')};
 
     background: ${({ backgroundColor }) => backgroundColor};
 
@@ -188,6 +190,13 @@ const FooterButtons = styled.div<{
     &:hover {
         background: ${({ hoverColor }) => hoverColor};
         color: ${({ hoverTextColor }) => hoverTextColor};
+        ${({ isFuta }) => {
+            if (isFuta) {
+                return `
+            border: 1px solid var(--accent1);
+            `;
+            }
+        }}
     }
 `;
 

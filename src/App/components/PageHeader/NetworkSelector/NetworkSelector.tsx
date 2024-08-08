@@ -30,7 +30,11 @@ import { BrandContext } from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
-export default function NetworkSelector() {
+interface propsIF {
+    customBR?: string;
+}
+
+export default function NetworkSelector(props: propsIF) {
     const {
         chooseNetwork,
         chainData: { chainId },
@@ -315,7 +319,12 @@ export default function NetworkSelector() {
     );
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div
+            style={{
+                position: 'relative',
+                borderRadius: props.customBR ? props.customBR : '4px',
+            }}
+        >
             <DropdownMenuContainer
                 justifyContent='center'
                 alignItems='center'

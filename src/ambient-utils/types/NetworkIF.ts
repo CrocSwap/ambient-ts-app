@@ -12,6 +12,7 @@ export interface NetworkIF {
     shouldPollBlock: boolean;
     marketData: string;
     defaultPair: TokenIF[];
+    defaultPairFuta?: [TokenIF, TokenIF];
     topPools: TopPool[];
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

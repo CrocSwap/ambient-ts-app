@@ -15,14 +15,21 @@ const pulsate = keyframes`
     }
 `;
 
-export const ActivityIndicatorDiv = styled(motion.div)`
+interface StyledProps {
+    isFuta: boolean;
+}
+
+const getAccentColor = (isFuta: boolean) =>
+    isFuta ? 'var(--accent1)' : 'var(--accent4)';
+
+export const ActivityIndicatorDiv = styled(motion.div)<StyledProps>`
     height: 30px;
     width: 30px;
     background: var(--dark2);
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 50%;
+    border-radius: ${({ isFuta }) => (isFuta ? '0' : '50%')};
     cursor: pointer;
     user-select: none;
 
@@ -41,12 +48,13 @@ export const CircleButton = styled(motion.button)`
     background: transparent;
 `;
 
-export const Circle = styled.button`
+export const Circle = styled.button<StyledProps>`
     position: relative;
-    width: 20px;
-    height: 20px;
-    background-color: var(--accent4);
-    border-radius: 50%;
+    width: ${({ isFuta }) => (isFuta ? '16.66px' : '20px')};
+    height: ${({ isFuta }) => (isFuta ? '16.66px' : '20px')};
+
+    background-color: ${({ isFuta }) => getAccentColor(isFuta)};
+    border-radius: ${({ isFuta }) => (isFuta ? '0' : '50%')};
     position: relative;
     cursor: pointer;
     display: flex;
@@ -55,11 +63,12 @@ export const Circle = styled.button`
     padding: none;
 `;
 
-export const Ring = styled.div`
-    border: 3px solid var(--accent4);
-    border-radius: 30px;
-    height: 40px;
-    width: 40px;
+export const Ring = styled.div<StyledProps>`
+    border: 3px solid ${({ isFuta }) => getAccentColor(isFuta)};
+    border-radius: ${({ isFuta }) => (isFuta ? '0' : '30px')};
+
+    width: ${({ isFuta }) => (isFuta ? '33.33px' : '40px')};
+    height: ${({ isFuta }) => (isFuta ? '33.33px' : '40px')};
     position: absolute;
     top: -50%;
     left: -50%;

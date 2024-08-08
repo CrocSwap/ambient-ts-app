@@ -238,7 +238,7 @@ const DropdownSearch = () => {
                 <motion.div
                     className={styles.dropdown_content}
                     initial={{ height: 0 }}
-                    animate={{ height: '184px' }}
+                    animate={{ height: 'auto' }}
                     exit={{ height: 0 }}
                     transition={{ type: 'spring', stiffness: 200 }}
                 >

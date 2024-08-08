@@ -116,6 +116,7 @@ export const useAppChain = (): {
                             pathname.includes('/points');
                         const isPathOnAccount = pathname.includes('/account');
                         const isPathOnExplore = pathname.includes('/explore');
+                        const isPathOnAuctions = pathname.includes('/auctions');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -149,6 +150,7 @@ export const useAppChain = (): {
                                 isPathUserAddress ||
                                 isPathOnAccount ||
                                 isPathPointsTabOnAccount ||
+                                isPathOnAuctions ||
                                 isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {

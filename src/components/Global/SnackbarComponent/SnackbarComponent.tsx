@@ -65,7 +65,13 @@ function SnackbarComponent() {
     const isSmallScreen = useMediaQuery('(max-width: 500px)');
 
     const {
-        snackbar: { isOpen: isSnackbarOpen, close, content, severity },
+        snackbar: {
+            isOpen: isSnackbarOpen,
+            close,
+            content,
+            severity,
+            anchorOrigin,
+        },
     } = useContext(AppStateContext);
 
     const handleClose = (event?: SyntheticEvent | Event, reason?: string) => {
@@ -106,6 +112,7 @@ function SnackbarComponent() {
                 open={isSnackbarOpen}
                 autoHideDuration={8000}
                 onClose={handleClose}
+                anchorOrigin={anchorOrigin}
                 // z-index needs to be greater than globalPopup
                 style={{ width: '900px', zIndex: 10000000 }}
             >

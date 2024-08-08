@@ -22,4 +22,5 @@ export interface Message {
     isVerified?: boolean;
     avatarImage: string;
     chainId?: string;
+    isUnread?: boolean;
 }

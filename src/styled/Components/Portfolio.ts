@@ -59,7 +59,9 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
 
     &::placeholder {
         color: var(--text2);

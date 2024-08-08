@@ -57,3 +57,13 @@ export const ArrowContainer = styled.div<{ degree?: number }>`
     margin: auto;
     transform: ${({ degree }) => `rotate(${degree}deg)`};
 `;
+
+export const SwitchButton = styled.div<{ isActive: boolean }>`
+    margin-top: 4px;
+
+    border-radius: 4px;
+    padding: 2px 5px 2px 5px;
+    cursor: pointer;
+
+    color: ${({ isActive }) => (isActive ? 'var(--text2)' : 'var(--text1)')};
+`;

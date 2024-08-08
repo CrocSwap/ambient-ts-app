@@ -47,8 +47,8 @@ export function getFormattedNumber({
     } else if (isUSD) {
         // only display two decimal points for USD values
         valueString = value.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+            minimumFractionDigits: minFracDigits,
+            maximumFractionDigits: maxFracDigits,
         });
         prefix = '$';
     } else if (isToken) {
