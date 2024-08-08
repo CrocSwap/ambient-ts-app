@@ -104,9 +104,6 @@
 @media only screen and (max-width: 1200px) {
     .main_content {
         background-color: var(--dark1);
-
-        /* width: 90%;
-        margin: 0 auto; */
     }
 
     .swap_route,
