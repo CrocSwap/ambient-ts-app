@@ -259,11 +259,18 @@ export default function TransactionsMenu(props: propsIF) {
 
     const showViewButton =
         isOwnerActiveAccount &&
-        ['limitOrder', 'liqchange'].includes(tx.entityType);
+        ['limitOrder', 'liqchange'].includes(tx.entityType) &&
+        !['remove', 'recover', 'burn'].includes(tx.changeType);
+
+    const showExplorerButton = isOwnerActiveAccount && !showViewButton;
 
     const transactionsMenu = (
         <div className={styles.actions_menu}>
-            {showViewButton ? viewButton : copyButton}
+            {showExplorerButton
+                ? explorerButton
+                : showViewButton
+                  ? viewButton
+                  : copyButton}
         </div>
     );
 

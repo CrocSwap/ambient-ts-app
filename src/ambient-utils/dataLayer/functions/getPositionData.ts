@@ -396,7 +396,6 @@ export type PositionStatsFn = (
     poolIdx: number,
     chainId: string,
     positionType: string,
-    addValue: boolean,
     time: number, // arbitrary number to cache for an amount of time
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;

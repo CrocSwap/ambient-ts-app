@@ -30,7 +30,7 @@ interface propsIF {
     isOwnerActiveAccount?: boolean;
     isOrderFilled: boolean;
     isAccountView: boolean;
-    handleAccountClick: () => void;
+    handleWalletLinkClick: () => void;
     openDetailsModal: () => void;
     openActionModal: () => void;
     setLimitModalAction: React.Dispatch<React.SetStateAction<LimitModalAction>>;
@@ -46,7 +46,7 @@ export default function OrdersMenu(props: propsIF) {
         isOrderFilled,
         isOwnerActiveAccount,
         isAccountView,
-        handleAccountClick,
+        handleWalletLinkClick,
         openDetailsModal,
         openActionModal,
         setLimitModalAction,
@@ -87,15 +87,15 @@ export default function OrdersMenu(props: propsIF) {
             ? useMediaQuery('(max-width: 1600px)')
             : useMediaQuery('(max-width: 1450px)')
         : isSidebarOpen
-        ? useMediaQuery('(max-width: 2000px)')
-        : useMediaQuery('(max-width: 1250px)');
+          ? useMediaQuery('(max-width: 2000px)')
+          : useMediaQuery('(max-width: 1250px)');
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const smallView = tableView === 'small';
 
     const walletButton = (
-        <Chip ariaLabel='View wallet.' onClick={handleAccountClick}>
+        <Chip ariaLabel='View wallet.' onClick={handleWalletLinkClick}>
             Wallet
             <FiExternalLink
                 size={15}

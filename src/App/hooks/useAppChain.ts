@@ -6,11 +6,11 @@ import {
     getDefaultChainId,
     validateChainId,
     chainNumToString,
+    checkEoaHexAddress,
 } from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
-import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -22,12 +22,8 @@ export const useAppChain = (): {
     const { switchNetwork } = useSwitchNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
-    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
-    const [searchParams] = useSearchParams();
-    const chainParam = searchParams.get('chain');
-    const networkParam = searchParams.get('network');
     const [ignoreFirst, setIgnoreFirst] = useState<boolean>(true);
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
@@ -105,20 +101,20 @@ export const useAppChain = (): {
                         // first part seems unnecessary but appears to help stability
                         const { pathname } = window.location;
 
-                        const isPathENS = pathname.slice(1)?.endsWith('.eth');
+                        const isPathENS = pathname.slice(1)?.includes('.eth');
                         /*  check if path is 42 character hex string 
                             after removing the first character for /{hex} URLs 
                             or first 9 characters for /account/{hex} */
-                        const isPathHex =
-                            (pathname.slice(1)?.startsWith('0x') &&
-                                pathname.slice(1)?.length == 42) ||
-                            (pathname.slice(9)?.startsWith('0x') &&
-                                pathname.slice(9)?.length == 42);
-                        const isPathUserAddress = isPathENS || isPathHex;
+                        const isPathHexEoaAddress =
+                            checkEoaHexAddress(pathname);
+                        const isPathUserAddress =
+                            isPathENS || isPathHexEoaAddress;
+
                         const isPathUserXpOrLeaderboard =
                             pathname.includes('/xp');
                         const isPathPointsTabOnAccount =
                             pathname.includes('/points');
+                        const isPathOnAccount = pathname.includes('/account');
                         const isPathOnExplore = pathname.includes('/explore');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
@@ -129,10 +125,7 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (chainParam || networkParam) {
-                                // navigate to index page only if "chain" or "network" in URL
-                                linkGenIndex.navigate();
-                            } else if (
+                            if (
                                 linkGenCurrent.currentPage === 'initpool' ||
                                 linkGenCurrent.currentPage === 'reposition'
                             ) {
@@ -154,8 +147,9 @@ export const useAppChain = (): {
                                 }
                             } else if (
                                 isPathUserAddress ||
-                                isPathUserXpOrLeaderboard ||
+                                isPathOnAccount ||
                                 isPathPointsTabOnAccount ||
+                                isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
                                 if (
@@ -220,13 +214,9 @@ export const useAppChain = (): {
         const { pathname } = window.location;
 
         setActiveNetwork(network);
-        const isPathENS = pathname.slice(1)?.endsWith('.eth');
-        const isPathHex =
-            (pathname.slice(1)?.startsWith('0x') &&
-                pathname.slice(1)?.length == 42) ||
-            (pathname.slice(9)?.startsWith('0x') &&
-                pathname.slice(9)?.length == 42);
-        const isPathUserAddress = isPathENS || isPathHex;
+        const isPathENS = pathname.slice(1)?.includes('.eth');
+        const isPathHexEoaAddress = checkEoaHexAddress(pathname);
+        const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');
         if (

@@ -1,7 +1,7 @@
 // import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     MenuContent,
@@ -28,21 +28,21 @@ import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
 import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { lookupChainId } from '../../../../ambient-utils/dataLayer';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 
-interface propsIF {
-    switchNetwork: ((chainId_: number) => Promise<void>) | undefined;
-}
-
-export default function NetworkSelector(props: propsIF) {
-    const { switchNetwork } = props;
+export default function NetworkSelector() {
     const {
         chooseNetwork,
         chainData: { chainId },
+        chainData,
     } = useContext(CrocEnvContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
+    const { switchNetwork } = useSwitchNetwork();
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { isConnected } = useWeb3ModalAccount();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
@@ -56,7 +56,7 @@ export default function NetworkSelector(props: propsIF) {
 
     // click handler for network switching (does not handle Canto link)
     async function handleClick(chn: ChainSpec): Promise<void> {
-        if (switchNetwork) {
+        if (isConnected) {
             await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
@@ -70,6 +70,43 @@ export default function NetworkSelector(props: propsIF) {
             chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
+
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    // logic to consume chain param data from the URL
+    // runs once when the app initializes, again when web3modal finishes initializing
+    useEffect(() => {
+        // search for param in URL by key 'chain' or 'network'
+        const chainParam: string | null =
+            searchParams.get('chain') ?? searchParams.get('network');
+        // logic to execute if a param is found (if not, do nothing)
+        if (chainParam) {
+            // get a canonical 0x hex string chain ID from URL param
+            const targetChain: string =
+                lookupChainId(chainParam, 'string') ?? chainParam;
+            // check if chain is supported and not the current chain in the app
+            // yes → trigger machinery to switch the current network
+            // no → no action except to clear the param from the URL
+            if (
+                supportedNetworks[targetChain] &&
+                targetChain !== chainData.chainId
+            ) {
+                // use web3modal if wallet is connected, otherwise use in-app toggle
+                if (isConnected) {
+                    switchNetwork(parseInt(targetChain));
+                } else {
+                    if (!initialLoadComplete) {
+                        setTimeout(() => {
+                            setInitialLoadComplete(true);
+                        }, 500);
+                    } else {
+                        chooseNetwork(supportedNetworks[targetChain]);
+                    }
+                }
+            } else {
+                setSearchParams('');
+            }
+        }
+    }, [isConnected, initialLoadComplete]);
 
     // !important:  network data is manually coded because the data used to generate
     // !important:  ... elements does not follow a consistent shape (due to Canto)

@@ -14,6 +14,7 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import {
     getPositionData,
     getLimitOrderData,
+    filterLimitArray,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
@@ -124,11 +125,6 @@ export default function PortfolioTabs(props: propsIF) {
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
-                    ensResolution: 'true',
-                    annotate: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -168,14 +164,13 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -203,9 +198,10 @@ export default function PortfolioTabs(props: propsIF) {
                         ),
                     )
                         .then((updatedLimitOrderStates) => {
-                            setLookupAccountLimitOrderData(
+                            const filteredData = filterLimitArray(
                                 updatedLimitOrderStates,
                             );
+                            setLookupAccountLimitOrderData(filteredData);
                         })
                         .finally(() => {
                             setDataLoadingStatus({
@@ -221,11 +217,6 @@ export default function PortfolioTabs(props: propsIF) {
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
                 n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
@@ -430,6 +421,7 @@ export default function PortfolioTabs(props: propsIF) {
                         : accountTabDataWithoutTokens
                 }
                 rightTabOptions={false}
+                isPortfolio={true}
             />
         </PortfolioTabsPortfolioTabsContainer>
     );

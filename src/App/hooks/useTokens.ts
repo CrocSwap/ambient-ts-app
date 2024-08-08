@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { tokenListURIs, defaultTokens } from '../../ambient-utils/constants';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
-import { chainNumToString, uriToHttp } from '../../ambient-utils/dataLayer';
+import {
+    chainNumToString,
+    uriToHttp,
+    serializeBigInt,
+} from '../../ambient-utils/dataLayer';
 
 export interface tokenMethodsIF {
     allDefaultTokens: TokenIF[];
@@ -253,7 +257,7 @@ export const useTokens = (
             // to next session
             localStorage.setItem(
                 localStorageKeys.ackTokens,
-                JSON.stringify(newAckList),
+                serializeBigInt(newAckList),
             );
         },
         [chainId, tokenUniv],

@@ -1,6 +1,7 @@
 export interface LimitOrderIF {
     id: string;
     limitOrderId: string;
+    positionHash: string;
     pivotTime: number;
     crossTime: number;
     user: string;

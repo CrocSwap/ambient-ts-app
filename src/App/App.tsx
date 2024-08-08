@@ -252,10 +252,6 @@ export default function App() {
                             element={<Portfolio isLevelsPage isRanksPage />}
                         />
                         <Route
-                            path='account/xp'
-                            element={<Portfolio isLevelsPage />}
-                        />
-                        <Route
                             path='account/transactions'
                             element={<Portfolio specificTab='transactions' />}
                         />
@@ -272,18 +268,20 @@ export default function App() {
                             element={<Portfolio specificTab='points' />}
                         />
                         <Route
-                            path='account/:address/points'
-                            element={<Portfolio specificTab='points' />}
-                        />
-                        <Route
-                            path='/:address/points'
-                            element={<Portfolio specificTab='points' />}
-                        />
-                        <Route
-                            path='account/:address/xp/history'
+                            path='account/exchange-balances'
                             element={
-                                <Portfolio isLevelsPage isViewMoreActive />
+                                <Portfolio specificTab='exchange-balances' />
                             }
+                        />
+                        <Route
+                            path='account/wallet-balances'
+                            element={
+                                <Portfolio specificTab='wallet-balances' />
+                            }
+                        />
+                        <Route
+                            path='account/xp'
+                            element={<Portfolio isLevelsPage />}
                         />
                         <Route
                             path='account/xp/history'
@@ -296,8 +294,81 @@ export default function App() {
                             element={<Portfolio />}
                         />
                         <Route
+                            path='account/:address/transactions'
+                            element={<Portfolio specificTab='transactions' />}
+                        />
+                        <Route
+                            path='account/:address/limits'
+                            element={<Portfolio specificTab='limits' />}
+                        />
+                        <Route
+                            path='account/:address/liquidity'
+                            element={<Portfolio specificTab='liquidity' />}
+                        />
+                        <Route
+                            path='account/:address/points'
+                            element={<Portfolio specificTab='points' />}
+                        />
+                        <Route
+                            path='account/:address/exchange-balances'
+                            element={
+                                <Portfolio specificTab='exchange-balances' />
+                            }
+                        />
+                        <Route
+                            path='account/:address/wallet-balances'
+                            element={
+                                <Portfolio specificTab='wallet-balances' />
+                            }
+                        />
+                        <Route
                             path='account/:address/xp'
                             element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='account/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
+                        />
+                        <Route path='/:address' element={<Portfolio />} />
+                        <Route
+                            path='/:address/transactions'
+                            element={<Portfolio specificTab='transactions' />}
+                        />
+                        <Route
+                            path='/:address/limits'
+                            element={<Portfolio specificTab='limits' />}
+                        />
+                        <Route
+                            path='/:address/liquidity'
+                            element={<Portfolio specificTab='liquidity' />}
+                        />
+                        <Route
+                            path='/:address/points'
+                            element={<Portfolio specificTab='points' />}
+                        />
+                        <Route
+                            path='/:address/exchange-balances'
+                            element={
+                                <Portfolio specificTab='exchange-balances' />
+                            }
+                        />
+                        <Route
+                            path='/:address/wallet-balances'
+                            element={
+                                <Portfolio specificTab='wallet-balances' />
+                            }
+                        />
+                        <Route
+                            path='/:address/xp'
+                            element={<Portfolio isLevelsPage />}
+                        />
+                        <Route
+                            path='/:address/xp/history'
+                            element={
+                                <Portfolio isLevelsPage isViewMoreActive />
+                            }
                         />
                         <Route
                             path='swap'
@@ -339,17 +410,6 @@ export default function App() {
                                 element={<ExampleForm />}
                             />
                         )}
-                        <Route path='/:address' element={<Portfolio />} />
-                        <Route
-                            path='/:address/xp'
-                            element={<Portfolio isLevelsPage />}
-                        />
-                        <Route
-                            path='/:address/xp/history'
-                            element={
-                                <Portfolio isLevelsPage isViewMoreActive />
-                            }
-                        />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'

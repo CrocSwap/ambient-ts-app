@@ -115,9 +115,6 @@
 @media only screen and (max-width: 1200px) {
     .main_content {
         background-color: var(--dark1);
-
-        /* width: 90%;
-        margin: 0 auto; */
     }
 
     .swap_route,
@@ -129,6 +126,14 @@
 @media only screen and (max-width: 600px) {
     .main_content {
         overflow-y: scroll;
+        min-height: 50svh;
+        max-height: 80svh;
+        padding: 8px !important;
+        box-shadow: none;
+    }
+
+    .swap_route {
+        background: transparent;
     }
 
     .swap_route,

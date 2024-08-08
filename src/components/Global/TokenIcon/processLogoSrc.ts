@@ -16,7 +16,7 @@ export default function processLogoSrc(args: argsIF): string {
     // early return if no URI was received in args
 
     let localLogoLookupSymbol =
-        args.token?.symbol.toUpperCase() ?? args.symbol?.toUpperCase();
+        args.token?.symbol?.toUpperCase() ?? args.symbol?.toUpperCase();
     if (localLogoLookupSymbol === 'USD+') localLogoLookupSymbol = 'USDPLUS';
     if (localLogoLookupSymbol === 'PUNKETH-20')
         localLogoLookupSymbol = 'PUNKETH20';

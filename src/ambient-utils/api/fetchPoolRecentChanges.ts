@@ -13,11 +13,6 @@ interface argsIF {
     quote: string;
     poolIdx: number;
     chainId: string;
-    annotate: boolean;
-    addValue: boolean;
-    simpleCalc: boolean;
-    annotateMEV: boolean;
-    ensResolution: boolean;
     n?: number;
     page?: number;
     period?: number;
@@ -38,11 +33,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         quote,
         poolIdx,
         chainId,
-        annotate,
-        addValue,
-        simpleCalc,
-        annotateMEV,
-        ensResolution,
         n,
         period,
         time,
@@ -67,11 +57,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
                       chainId: chainId,
-                      annotate: annotate.toString(),
-                      addValue: addValue.toString(),
-                      simpleCalc: simpleCalc.toString(),
-                      annotateMEV: annotateMEV.toString(),
-                      ensResolution: ensResolution.toString(),
                       n: n ? n.toString() : '',
                       period: period.toString(),
                       time: time.toString(),
@@ -82,11 +67,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                       quote: quote.toLowerCase(),
                       poolIdx: poolIdx.toString(),
                       chainId: chainId,
-                      annotate: annotate.toString(),
-                      addValue: addValue.toString(),
-                      simpleCalc: simpleCalc.toString(),
-                      annotateMEV: annotateMEV.toString(),
-                      ensResolution: ensResolution.toString(),
                       n: n ? n.toString() : '',
                       // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                       // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.

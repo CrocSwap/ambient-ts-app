@@ -5,6 +5,7 @@ import {
     getLimitOrderData,
     getPositionData,
     querySpotPrice,
+    filterLimitArray,
 } from '../dataLayer';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Provider } from 'ethers';
@@ -30,10 +31,6 @@ interface RecordRequestIF {
     user: string;
     chainId: string;
     gcUrl?: string;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
     tokenUniv?: TokenIF[];
     crocEnv?: CrocEnv;
     provider?: Provider;
@@ -48,19 +45,11 @@ const fetchUserPositions = async ({
     user,
     chainId,
     gcUrl,
-    ensResolution = true,
-    annotate = true,
-    omitKnockout = true,
-    addValue = true,
 }: {
     recordType: RecordType;
     user: string;
     chainId: string;
     gcUrl?: string;
-    ensResolution?: boolean;
-    annotate?: boolean;
-    omitKnockout?: boolean;
-    addValue?: boolean;
 }): Promise<Response> => {
     let selectedEndpoint;
     if (recordType == RecordType.LimitOrder) {
@@ -74,10 +63,6 @@ const fetchUserPositions = async ({
             new URLSearchParams({
                 user: user,
                 chainId: chainId,
-                ensResolution: ensResolution.toString(),
-                annotate: annotate.toString(),
-                omitKnockout: omitKnockout.toString(),
-                addValue: addValue.toString(),
             }),
     );
     return res;
@@ -125,7 +110,14 @@ const decorateUserPositions = async ({
                     );
                 },
             ),
-        );
+        ).then((updatedLimitOrderStates) => {
+            if (updatedLimitOrderStates.length > 0) {
+                const filteredData = filterLimitArray(updatedLimitOrderStates);
+                return filteredData;
+            } else {
+                return [];
+            }
+        });
     } else {
         // default to 'PositionIF'
         return await Promise.all(
@@ -154,10 +146,6 @@ const fetchDecorated = async ({
     user,
     chainId,
     gcUrl,
-    ensResolution = true,
-    annotate = true,
-    omitKnockout = true,
-    addValue = true,
     tokenUniv,
     crocEnv,
     provider,
@@ -171,10 +159,6 @@ const fetchDecorated = async ({
         user,
         chainId,
         gcUrl,
-        ensResolution,
-        annotate,
-        omitKnockout,
-        addValue,
     });
     const json = await response?.json();
     // Compromise between reusing RecordRequestIF and ensuring that these variables are safely assigned.
@@ -218,10 +202,6 @@ const fetchSimpleDecorated = async ({
     chainId,
     gcUrl,
     provider,
-    ensResolution = true,
-    annotate = true,
-    omitKnockout = true,
-    addValue = true,
     tokenUniv,
     crocEnv,
     cachedFetchTokenPrice,
@@ -256,12 +236,6 @@ const fetchSimpleDecorated = async ({
         provider: sess.provider,
         tokenUniv: sess.tokenUniv,
         crocEnv: sess.crocEnv,
-
-        // Control flags:
-        ensResolution,
-        annotate,
-        omitKnockout,
-        addValue,
 
         // Data Sources
         cachedFetchTokenPrice,

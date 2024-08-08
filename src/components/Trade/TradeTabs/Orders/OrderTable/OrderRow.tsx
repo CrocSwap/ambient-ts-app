@@ -155,24 +155,13 @@ function OrderRow(props: propsIF) {
             window.open(
                 `/${
                     isOwnerActiveAccount
-                        ? 'account'
+                        ? 'account' + '/limits'
                         : ensName
-                          ? ensName
-                          : ownerId
+                          ? ensName + '/limits'
+                          : ownerId + '/limits'
                 }`,
             );
     }
-
-    const handleAccountClick = () => {
-        if (!isAccountView) {
-            const accountUrl = `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`;
-            window.open(accountUrl);
-        } else {
-            openDetailsModal();
-        }
-    };
 
     const orderRowConstantsProps = {
         posHashTruncated,
@@ -279,11 +268,11 @@ function OrderRow(props: propsIF) {
                         limitOrder={limitOrder}
                         {...orderMenuProps}
                         isAccountView={isAccountView}
-                        handleAccountClick={handleAccountClick}
                         openDetailsModal={openDetailsModal}
                         openActionModal={openActionModal}
                         setLimitModalAction={setLimitModalAction}
                         tableView={tableView}
+                        handleWalletLinkClick={handleWalletLinkClick}
                     />
                 </div>
             </OrderRowStyled>
