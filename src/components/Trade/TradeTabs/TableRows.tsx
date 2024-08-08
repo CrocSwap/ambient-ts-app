@@ -191,10 +191,13 @@ function TableRows({
     const transactionContent = () => {
         return (
             <>
+                {/* <div id='omega'>OMEGA</div> */}
                 {(data as TransactionIF[]).map((tx, idx) => (
                     <TransactionRow
                         key={idx}
-                        idForDOM={`tx_row_${idx}`}
+                        idForDOM={
+                            idx === data.length - 10 ? 'omega' : `tx_row_${idx}`
+                        }
                         tx={tx}
                         tableView={tableView}
                         isAccountView={isAccountView}
