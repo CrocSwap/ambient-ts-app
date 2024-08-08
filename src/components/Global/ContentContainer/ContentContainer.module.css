@@ -115,17 +115,16 @@
     }
 }
 
-
 @media only screen and (max-width: 600px) {
     .main_content {
         overflow-y: scroll;
-       min-height: 50dvh;
-       max-height: 70vh;
-       padding: 8px !important;
-       box-shadow: none;
+        min-height: 50svh;
+        max-height: 80svh;
+        padding: 8px !important;
+        box-shadow: none;
     }
 
-    .swap_route{
+    .swap_route {
         background: transparent;
     }
 
