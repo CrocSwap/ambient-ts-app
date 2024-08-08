@@ -11,7 +11,6 @@ import {
     useMemo,
 } from 'react';
 
-// import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
@@ -19,8 +18,6 @@ import {
     TradeTableContext,
     TradeTableContextIF,
 } from '../../../../contexts/TradeTableContext';
-import usePagination from '../../../Global/Pagination/usePagination';
-// import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
 import {
     CandleContext,
@@ -53,14 +50,8 @@ import {
     SidebarContext,
     SidebarStateIF,
 } from '../../../../contexts/SidebarContext';
-import {
-    TransactionRow as TransactionRowStyled,
-    // ViewMoreButton,
-} from '../../../../styled/Components/TransactionTable';
-import {
-    FlexContainer,
-    // Text
-} from '../../../../styled/Common';
+import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../styled/Common';
 import {
     GraphDataContext,
     GraphDataContextIF,
@@ -84,7 +75,7 @@ interface propsIF {
     filter?: CandleDataIF | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
+    isAccountView: boolean;
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
@@ -117,11 +108,8 @@ function Transactions(props: propsIF) {
         provider,
         chainData: { chainId, poolIndex },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const {
-        // showAllData: showAllDataSelection,
-        // toggleTradeTable,
-        setOutsideControl,
-    } = useContext<TradeTableContextIF>(TradeTableContext);
+    const { setOutsideControl } =
+        useContext<TradeTableContextIF>(TradeTableContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const {
@@ -129,12 +117,6 @@ function Transactions(props: propsIF) {
     } = useContext<SidebarStateIF>(SidebarContext);
 
     const candleTime: candleTimeIF = chartSettings.candleTime.global;
-
-    // only show all data and expand when on trade tab page
-    // const showAllData = !isAccountView && showAllDataSelection;
-    const showAllData = true;
-    // const isTradeTableExpanded: boolean =
-    //     !isAccountView && tradeTableState === 'Expanded';
 
     const dataLoadingStatus =
         useContext<DataLoadingContextIF>(DataLoadingContext);
@@ -157,15 +139,14 @@ function Transactions(props: propsIF) {
         TransactionIF[]
     >([]);
 
+    const showAllData = true;
+
     const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
                 ? activeAccountTransactionData || []
-                : !showAllData
-                  ? userTransactionsByPool.changes
-                  : transactionsByPool.changes,
+                : transactionsByPool.changes,
         [
-            showAllData,
             activeAccountTransactionData,
             userTransactionsByPool,
             transactionsByPool,
@@ -200,9 +181,7 @@ function Transactions(props: propsIF) {
                   ? dataLoadingStatus.isConnectedUserTxDataLoading
                   : isAccountView
                     ? dataLoadingStatus.isLookupUserTxDataLoading
-                    : !showAllData
-                      ? dataLoadingStatus.isConnectedUserPoolTxDataLoading
-                      : dataLoadingStatus.isPoolTxDataLoading,
+                    : dataLoadingStatus.isPoolTxDataLoading,
         [
             isAccountView,
             showAllData,
@@ -316,7 +295,6 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID: JSX.Element = (
         <>
             <p>ID</p>
@@ -462,94 +440,7 @@ function Transactions(props: propsIF) {
         </TransactionRowStyled>
     );
 
-    // const [page, setPage] = useState(1);
-    // const resetPageToFirst = () => setPage(1);
-
-    // const isScreenShort =
-    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
-
-    // const isScreenTall =
-    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
-
-    const _DATA = usePagination(
-        sortedTransactions,
-        // isScreenShort,
-        // isScreenTall,
-    );
-
-    const {
-        // showingFrom,
-        // showingTo,
-        // totalItems,
-        // setCurrentPage,
-        // rowsPerPage,
-        // changeRowsPerPage,
-        // count,
-        fullData,
-    } = _DATA;
     const listRef = useRef<HTMLUListElement>(null);
-
-    // const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-    //     setPage(p);
-    //     _DATA.jump(p);
-    //     const element = document.getElementById('current_row_scroll');
-    //     element?.scrollIntoView({
-    //         behavior: 'smooth',
-    //         block: 'start',
-    //         inline: 'start',
-    //     });
-    // };
-
-    // const handleChangeRowsPerPage = (
-    //     event:
-    //         | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    //         | React.ChangeEvent<HTMLSelectElement>,
-    // ) => {
-    //     changeRowsPerPage(parseInt(event.target.value, 10));
-    // };
-
-    // const tradePageCheck = isTradeTableExpanded && txDataToDisplay.length > 30;
-
-    // const sPagination = useMediaQuery('(max-width: 800px)');
-    // const footerDisplay = rowsPerPage > 0 &&
-    //     ((isAccountView && txDataToDisplay.length > 10) ||
-    //         (!isAccountView && tradePageCheck)) && (
-    //         <FlexContainer
-    //             alignItems='center'
-    //             justifyContent='center'
-    //             gap={isSmallScreen ? 4 : 8}
-    //             margin={isSmallScreen ? '40px auto' : '16px auto'}
-    //             background='dark1'
-    //             flexDirection={isSmallScreen ? 'column' : 'row'}
-    //         >
-    //             <RowsPerPageDropdown
-    //                 rowsPerPage={rowsPerPage}
-    //                 onChange={handleChangeRowsPerPage}
-    //                 itemCount={sortedTransactions.length}
-    //                 setCurrentPage={setCurrentPage}
-    //                 resetPageToFirst={resetPageToFirst}
-    //             />
-    //             <Pagination
-    //                 count={count}
-    //                 page={page}
-    //                 shape='circular'
-    //                 color='secondary'
-    //                 onChange={handleChange}
-    //                 showFirstButton
-    //                 showLastButton
-    //                 size={sPagination ? 'small' : 'medium'}
-    //             />
-    //             {!isSmallScreen && (
-    //                 <Text
-    //                     fontSize='mini'
-    //                     color='text2'
-    //                     style={{ whiteSpace: 'nowrap' }}
-    //                 >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-    //             )}
-    //         </FlexContainer>
-    //     );
 
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
@@ -579,12 +470,6 @@ function Transactions(props: propsIF) {
             }
         }
     };
-
-    // // leaving this intact because we'll still need it
-    // const showViewMoreButton: boolean =
-    //     !isTradeTableExpanded &&
-    //     !isAccountView &&
-    //     sortedTransactions.length > rowsPerPage;
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -719,36 +604,16 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={_DATA.fullData.filter(
+                    data={sortedTransactions.filter(
                         (tx) => tx.changeType !== 'cross',
                     )}
-                    fullData={fullData}
+                    fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />
             </ul>
-            {/* {showViewMoreButton && (
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    padding='8px'
-                >
-                    <ViewMoreButton onClick={() => toggleTradeTable()}>
-                        View More
-                    </ViewMoreButton>
-                </FlexContainer>
-            )} */}
-            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
         </div>
     );
-
-    // useEffect(() => {
-    //     if (_DATA.currentData.length && !isTradeTableExpanded) {
-    //         setCurrentPage(1);
-    //         const mockEvent = {} as React.ChangeEvent<unknown>;
-    //         handleChange(mockEvent, 1);
-    //     }
-    // }, [isTradeTableExpanded]);
 
     return (
         <FlexContainer
@@ -770,8 +635,6 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
-
-            {/* {footerDisplay} */}
         </FlexContainer>
     );
 }
