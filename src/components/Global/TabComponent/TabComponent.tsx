@@ -79,10 +79,14 @@ export default function TabComponent(props: TabPropsIF) {
 
     function removeTxTypesFromEnd(inputString: string) {
         // Regular expression to match "transactions", "limits", or "liquidity" at the end of the string
-        const regex = /(transactions|limits|liquidity|points)$/;
+        const typeRegex =
+            /(transactions|limits|liquidity|points|exchange-balances|wallet-balances)$/;
+        const trailingSlashRegex = /\/$/;
 
         // Replace the matched keyword with an empty string
-        return inputString.replace(regex, '');
+        return inputString
+            .replace(trailingSlashRegex, '')
+            .replace(typeRegex, '');
     }
 
     function ensureEndsWithSlash(inputString: string) {
@@ -101,25 +105,31 @@ export default function TabComponent(props: TabPropsIF) {
 
         const pathNoType = ensureEndsWithSlash(removeTxTypesFromEnd(path));
         if (
-            ['transactions', 'limits', 'liquidity'].includes(
-                item.label.toLowerCase(),
-            )
+            [
+                'transactions',
+                'limits',
+                'liquidity',
+                'exchange balances',
+                'wallet balances',
+                'points',
+            ].includes(item.label.toLowerCase())
         ) {
             setActiveTradeTab(item.label.toLowerCase());
             if (isPortfolio) {
-                console.log({ pathNoType });
-
                 item.label.toLowerCase() === 'transactions'
                     ? navigate(`${pathNoType}transactions`)
                     : item.label.toLowerCase() === 'limits'
                       ? navigate(`${pathNoType}limits`)
                       : item.label.toLowerCase() === 'liquidity'
                         ? navigate(`${pathNoType}liquidity`)
-                        : null;
+                        : item.label.toLowerCase() === 'points'
+                          ? navigate(`${pathNoType}points`)
+                          : item.label.toLowerCase() === 'exchange balances'
+                            ? navigate(`${pathNoType}exchange-balances`)
+                            : item.label.toLowerCase() === 'wallet balances'
+                              ? navigate(`${pathNoType}wallet-balances`)
+                              : null;
             }
-        }
-        if (isPortfolio && item.label.toLowerCase() === 'points') {
-            navigate(`${pathNoType}points`);
         }
         if (tradeTableState === 'Collapsed') toggleTradeTable();
     }
@@ -199,7 +209,7 @@ export default function TabComponent(props: TabPropsIF) {
         cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
-    const mobileView = useMediaQuery('(min-width: 800px)');
+    const desktopView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
         <FlexContainer alignItems='center' justifyContent='space-between'>
@@ -221,7 +231,6 @@ export default function TabComponent(props: TabPropsIF) {
                         }
                         onClick={() => {
                             handleSelectedTab(item);
-                            item.onClick?.();
                         }}
                         aria-describedby={
                             item.label === selectedTab.label
@@ -234,15 +243,13 @@ export default function TabComponent(props: TabPropsIF) {
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        {mobileView && (
+                        {desktopView && (
                             <button
-                                onClick={() => handleSelectedTab(item)}
                                 className={styles.label_button}
                                 role='tab'
                                 aria-selected={item.label === selectedTab.label}
                                 tabIndex={0}
                             >
-                                {' '}
                                 {item.label}
                             </button>
                         )}
@@ -265,7 +272,6 @@ export default function TabComponent(props: TabPropsIF) {
     );
 
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
-
     const fullTabs = (
         <ul
             className={`${styles.tab_ul} ${styles.desktop_tabs}`}
@@ -294,14 +300,13 @@ export default function TabComponent(props: TabPropsIF) {
                     {item.icon
                         ? handleMobileMenuIcon(item.icon, item.label)
                         : null}
-                    {mobileView && (
+                    {desktopView && (
                         <button
                             className={`${styles.item_label} ${
                                 item.label === selectedTab.label
                                     ? styles.selected
                                     : ''
                             }`}
-                            onClick={() => handleSelectedTab(item)}
                             role='tab'
                             aria-selected={item.label === selectedTab.label}
                         >

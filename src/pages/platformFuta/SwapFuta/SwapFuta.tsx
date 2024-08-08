@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
 import Separator from '../../../components/Futa/Separator/Separator';
+import Comments from '../../../components/Futa/Comments/Comments';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 
@@ -19,6 +20,8 @@ import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIs
 // import logo from '../../../assets/futa/logos/homeLogo.svg';
 
 function SwapFuta() {
+    const tradeWrapperID = 'swapFutaTradeWrapper';
+
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
@@ -114,10 +117,16 @@ function SwapFuta() {
             <div style={{ paddingBottom: '4px' }}>
                 <Separator dots={100} />
             </div>
-
             <div>
-                <Divider count={2} />
-                <Swap isOnTradeRoute />
+                <span id={tradeWrapperID}>
+                    <Divider count={2} />
+                    <Swap isOnTradeRoute />
+                </span>
+                <Comments
+                    isForTrade={true}
+                    isSmall={true}
+                    resizeEffectorSelector={tradeWrapperID}
+                />
             </div>
         </section>
     );
