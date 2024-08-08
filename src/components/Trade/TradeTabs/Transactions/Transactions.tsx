@@ -615,6 +615,47 @@ function Transactions(props: propsIF) {
         </div>
     );
 
+    useEffect(() => {
+        // fn to trigger a fetch for more data
+        function getMoreData(): void {
+            // console indication that the event has fired
+            console.log('scrolling');
+            // DOM element to trigger fetch when in viewport
+            const elem = document.getElementById('omega');
+            // this allows mathematical determination if elem is in viewport
+            const bounding = elem ? elem.getBoundingClientRect() : null;
+            // gatekeeping to determine if elem is in viewport
+            if (
+                bounding &&
+                bounding.top >= 0 &&
+                bounding.left >= 0 &&
+                bounding.right <=
+                    (window.innerWidth ||
+                        document.documentElement.clientWidth) &&
+                bounding.bottom <=
+                    (window.innerHeight ||
+                        document.documentElement.clientHeight)
+            ) {
+                // functionality triggered if desired elem is in viewport
+                console.log('need more data');
+            }
+        }
+
+        // logic to add event listener to DOM
+        document.addEventListener('scroll', getMoreData);
+        return () => {
+            document.removeEventListener('scroll', getMoreData);
+        };
+
+        // below: alt logic to attach event listener to the scrollable elem
+
+        // const scrollableElem = document.getElementById('current_row_scroll');
+        // scrollableElem?.addEventListener('scroll', getMoreData);
+        // return () => {
+        //     scrollableElem?.removeEventListener('scroll', getMoreData);
+        // };
+    }, []);
+
     return (
         <FlexContainer
             flexDirection='column'
