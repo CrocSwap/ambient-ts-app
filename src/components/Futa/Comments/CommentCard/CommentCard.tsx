@@ -25,12 +25,20 @@ interface CommentCardProps {
 function CommentCard(props: CommentCardProps) {
     const navigate = useNavigate();
 
+    const getExactDate = (day: Date) => {
+        return (
+            day.getUTCMonth().toString() +
+            day.getUTCDate().toString() +
+            day.getUTCFullYear().toString()
+        );
+    };
+
     const assignDayInfo = () => {
         let hasDayInfo = false;
         const messageDate = new Date(props.message.createdAt);
         if (props.previousMessage) {
             const prevMessageDate = new Date(props.previousMessage.createdAt);
-            if (messageDate.getUTCDate() != prevMessageDate.getUTCDate()) {
+            if (getExactDate(messageDate) !== getExactDate(prevMessageDate)) {
                 hasDayInfo = true;
             }
         } else {
