@@ -181,8 +181,10 @@ export const TradeDataContextProvider = (props: {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
-        localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
-        localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
+        tokenA.symbol &&
+            localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
+        tokenB.symbol &&
+            localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
     }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
