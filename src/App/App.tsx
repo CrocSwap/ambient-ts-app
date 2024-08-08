@@ -249,6 +249,18 @@ export default function App() {
                             element={<Portfolio specificTab='points' />}
                         />
                         <Route
+                            path='account/exchange-balances'
+                            element={
+                                <Portfolio specificTab='exchange-balances' />
+                            }
+                        />
+                        <Route
+                            path='account/wallet-balances'
+                            element={
+                                <Portfolio specificTab='wallet-balances' />
+                            }
+                        />
+                        <Route
                             path='account/xp'
                             element={<Portfolio isLevelsPage />}
                         />
@@ -275,12 +287,24 @@ export default function App() {
                             element={<Portfolio specificTab='liquidity' />}
                         />
                         <Route
-                            path='account/:address/xp'
-                            element={<Portfolio isLevelsPage />}
-                        />
-                        <Route
                             path='account/:address/points'
                             element={<Portfolio specificTab='points' />}
+                        />
+                        <Route
+                            path='account/:address/exchange-balances'
+                            element={
+                                <Portfolio specificTab='exchange-balances' />
+                            }
+                        />
+                        <Route
+                            path='account/:address/wallet-balances'
+                            element={
+                                <Portfolio specificTab='wallet-balances' />
+                            }
+                        />
+                        <Route
+                            path='account/:address/xp'
+                            element={<Portfolio isLevelsPage />}
                         />
                         <Route
                             path='account/:address/xp/history'
@@ -304,6 +328,18 @@ export default function App() {
                         <Route
                             path='/:address/points'
                             element={<Portfolio specificTab='points' />}
+                        />
+                        <Route
+                            path='/:address/exchange-balances'
+                            element={
+                                <Portfolio specificTab='exchange-balances' />
+                            }
+                        />
+                        <Route
+                            path='/:address/wallet-balances'
+                            element={
+                                <Portfolio specificTab='wallet-balances' />
+                            }
                         />
                         <Route
                             path='/:address/xp'
@@ -355,7 +391,6 @@ export default function App() {
                                 element={<ExampleForm />}
                             />
                         )}
-
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'

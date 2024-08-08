@@ -23,6 +23,8 @@
 .dropdown_content {
     display: flex;
     width: 340px;
+    overflow-y: scroll;
+
     flex-direction: column;
 
     gap: 8px;
