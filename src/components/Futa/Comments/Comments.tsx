@@ -358,29 +358,42 @@ function Comments(props: CommentsProps) {
             <div
                 className={`${styles.comments_outer} ${props.isSmall ? styles.small : ' '}`}
             >
-                {userAddress && userAddress.length > 0 && !props.isSmall && (
-                    <div className={styles.connection_status}>
-                        {isWsConnected ? (
-                            <>
-                                <div className={styles.connection_dot}></div>
-                                <div
-                                    className={styles.connection_dot_anim}
-                                ></div>
-                            </>
-                        ) : (
-                            <>
-                                <div className={styles.loading_dots_wrapper}>
-                                    <div className={styles.loading_dot}></div>
-                                    <div className={styles.loading_dot}></div>
-                                    <div className={styles.loading_dot}></div>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                )}
+                {userAddress &&
+                    userAddress.length > 0 &&
+                    !props.isSmall &&
+                    !props.isForTrade && (
+                        <div className={styles.connection_status}>
+                            {isWsConnected ? (
+                                <>
+                                    <div
+                                        className={styles.connection_dot}
+                                    ></div>
+                                    <div
+                                        className={styles.connection_dot_anim}
+                                    ></div>
+                                </>
+                            ) : (
+                                <>
+                                    <div
+                                        className={styles.loading_dots_wrapper}
+                                    >
+                                        <div
+                                            className={styles.loading_dot}
+                                        ></div>
+                                        <div
+                                            className={styles.loading_dot}
+                                        ></div>
+                                        <div
+                                            className={styles.loading_dot}
+                                        ></div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
 
                 <div
-                    className={`${styles.mainContainer} ${props.isSmall ? styles.small : ' '}`}
+                    className={`${styles.mainContainer} ${props.isSmall ? styles.small : ' '}  ${props.isForTrade ? styles.tradePage : ' '}`}
                     style={getMainContainerStyle()}
                 >
                     {isLoading ? (
