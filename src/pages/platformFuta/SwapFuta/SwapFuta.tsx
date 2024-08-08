@@ -78,6 +78,15 @@ function SwapFuta() {
                                 Chart
                             </TradeDropdownButton>
                         )}
+                    {activeMobileComponent !== 'comments' && (
+                        <TradeDropdownButton
+                            onClick={() =>
+                                handleMobileDropdownClick('comments')
+                            }
+                        >
+                            Comments
+                        </TradeDropdownButton>
+                    )}
                 </div>
             )}
         </TradeDropdown>
@@ -101,6 +110,13 @@ function SwapFuta() {
                         <Swap isOnTradeRoute />
                     </div>
                 </ContentContainer>
+            )}
+
+            {activeMobileComponent === 'comments' && (
+                <Comments
+                    isForTrade={true}
+                    resizeEffectorSelector={tradeWrapperID}
+                />
             )}
         </section>
     );
