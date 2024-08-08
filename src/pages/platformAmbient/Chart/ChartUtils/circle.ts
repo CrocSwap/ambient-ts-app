@@ -20,6 +20,8 @@ export function createCircle(
     isSelected = false,
     isTransparent = false,
     isBuy: boolean | undefined = undefined,
+    sellColor = '--accent1',
+    buyColor = '--accent5',
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -34,13 +36,13 @@ export function createCircle(
         .decorate((context: any) => {
             const style = getComputedStyle(context.canvas);
 
-            const circleStrokeColor = style.getPropertyValue('--accent1');
-            const circleBuyStrokeColor = style.getPropertyValue('--accent5');
+            const circleStrokeColor = style.getPropertyValue(sellColor);
+            const circleBuyStrokeColor = style.getPropertyValue(buyColor);
 
             const circleStrokeColorBackground =
-                style.getPropertyValue('--accent1');
+                style.getPropertyValue(sellColor);
             const circleBuyStrokeColorBackground =
-                style.getPropertyValue('--accent5');
+                style.getPropertyValue(buyColor);
 
             const d3BuyStrokeColorBacground = d3.color(
                 circleBuyStrokeColorBackground,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
     lineData,
     renderCanvasArray,
@@ -11,6 +11,7 @@ import * as d3 from 'd3';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
 import { diffHashSig } from '../../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../../ambient-utils/types';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface OrderHistoryCanvasProps {
     scaleData: scaleData;
@@ -49,6 +50,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [bandArea, setBandArea] = useState<any>();
     // const [bandAreaHighlighted, setBandAreaHighlighted] = useState<any>();
+
+    const { platformName } = useContext(BrandContext);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [circleSeries, setCircleSeries] = useState<any>();
@@ -94,6 +97,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                     false,
                     (denomInBase && !order.isBuy) ||
                         (!denomInBase && order.isBuy),
+                    '--accent1',
+                    ['futa'].includes(platformName) ? '--accent2' : '--accent5',
                 );
 
                 circleSerieArray.push(circleSerie);
