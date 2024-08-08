@@ -251,6 +251,10 @@
   .mainContainer{
     height: calc(100svh - 240px);
   }
+
+  .connection_status{
+    display: none;
+  }
   
   
   .mainContainer.tradePage{
@@ -259,7 +263,7 @@
 
   
   .commentsWrapper{
-    max-height: 60svh;
+    max-height: 64svh;
   }
 
   .tradePage .commentsWrapper{
