@@ -53,8 +53,6 @@ interface undoRedoButtonList {
 
 function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 1200px)');
-    const smallScreen = useMediaQuery('(max-width: 500px)');
-
     const {
         toolbarRef,
         setIsMagnetActive,
@@ -81,7 +79,7 @@ function ChartToolbar() {
     const { chartThemeColors } = useContext(ChartContext);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
-    const [isHoveredDown, setIsHoveredDown] = useState(false); /*  */
+    const [isHoveredDown, setIsHoveredDown] = useState(false);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -289,7 +287,11 @@ function ChartToolbar() {
                     : 'auto'
             }
             style={{
-                top: chartContainerOptions.height - xAxisHeightPixel + 'px',
+                top:
+                    chartContainerOptions.height -
+                    (mobileView ? 20 : 0) -
+                    xAxisHeightPixel +
+                    'px',
             }}
         >
             <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
@@ -316,11 +318,7 @@ function ChartToolbar() {
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
-            marginTopValue={
-                chartContainerOptions.top -
-                57 -
-                (mobileView && !smallScreen ? 20 : 0)
-            }
+            marginTopValue={chartContainerOptions.top - 57}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
@@ -331,7 +329,10 @@ function ChartToolbar() {
                 <ScrollableDiv
                     ref={scrollContainerRef}
                     height={
-                        chartContainerOptions.height - xAxisHeightPixel + 'px'
+                        chartContainerOptions.height -
+                        (mobileView ? 20 : 0) -
+                        xAxisHeightPixel +
+                        'px'
                     }
                     isHover={hoveredTool !== undefined}
                 >
