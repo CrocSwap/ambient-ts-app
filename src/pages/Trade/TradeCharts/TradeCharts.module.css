@@ -9,6 +9,7 @@
     justify-content: space-between;
     text-wrap: wrap;
     align-items: center;
+    padding-left: 0px;
 }
 
 .current_data_info {
@@ -68,6 +69,10 @@
 
     .current_data_info{
         font-size: var(--body-size);
+    }
+
+    .chart_tooltips {
+        padding-left: 5px;
     }
 }
 
