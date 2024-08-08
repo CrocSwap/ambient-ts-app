@@ -17,6 +17,12 @@ export const MainContainer = styled.div<StyledProps>`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     right: 0;
     top: 60px;
+
+    @media (max-width: 500px) {
+        width: 350px;
+        font-size: 14px;
+        right: 9px;
+    }
 `;
 
 export const Container = styled(FlexContainer)<StyledProps>`
