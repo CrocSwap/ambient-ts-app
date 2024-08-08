@@ -349,7 +349,7 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            {isUserConnected && !['futa'].includes(platformName) && (
+            {isUserConnected && (
                 <div>
                     <OrderHistoryDisplay
                         setShowHistorical={setShowHistorical}

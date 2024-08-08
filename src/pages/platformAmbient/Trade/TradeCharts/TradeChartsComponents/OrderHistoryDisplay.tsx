@@ -1,8 +1,16 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useRef,
+    memo,
+    useContext,
+} from 'react';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../../ambient-utils/constants';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 
 interface OrderHistoryDisplayPropsIF {
     setShowSwap: Dispatch<SetStateAction<boolean>>;
@@ -21,6 +29,8 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         showLiquidity,
         showHistorical,
     } = props;
+
+    const { platformName } = useContext(BrandContext);
 
     const updateOrderHistoryToggles = (newStatus: {
         isSwapOrderHistoryEnabled: boolean;
@@ -151,9 +161,13 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
                     <button
                         onClick={button.action}
                         className={
-                            button.selected
-                                ? styles.active_selected_button
-                                : styles.non_active_selected_button
+                            ['futa'].includes(platformName)
+                                ? button.selected
+                                    ? styles.futa_active_selected_button
+                                    : styles.futa_non_active_selected_button
+                                : button.selected
+                                  ? styles.active_selected_button
+                                  : styles.non_active_selected_button
                         }
                         aria-label={`${button.selected ? 'hide' : 'show'} ${
                             button.name

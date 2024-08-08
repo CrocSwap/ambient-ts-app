@@ -18,6 +18,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useContext, useState } from 'react';
 import HoveredTooltip from '../Draw/Toolbar/HoveredTooltip';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 export default function OrderHistoryTooltip(props: {
     hoveredOrderHistory: TransactionIF;
@@ -51,6 +52,8 @@ export default function OrderHistoryTooltip(props: {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+
+    const { platformName } = useContext(BrandContext);
 
     const { setCurrentTxActiveInTransactions } = useContext(TradeTableContext);
 
@@ -117,7 +120,9 @@ export default function OrderHistoryTooltip(props: {
                             color={
                                 (denomInBase && !hoveredOrderHistory.isBuy) ||
                                 (!denomInBase && hoveredOrderHistory.isBuy)
-                                    ? 'var(--accent5)'
+                                    ? ['futa'].includes(platformName)
+                                        ? 'var(--negative)'
+                                        : 'var(--accent5)'
                                     : 'var(--accent1)'
                             }
                             size={'15px'}
