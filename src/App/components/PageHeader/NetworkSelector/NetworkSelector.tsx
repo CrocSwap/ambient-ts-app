@@ -20,6 +20,7 @@ import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
 import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
+import zircuitLogo from '../../../../assets/images/networks/zircuit-green-icon.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
 import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
 import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
@@ -192,6 +193,33 @@ export default function NetworkSelector() {
         </NetworkItem>
     );
 
+    const zircuitNetwork: JSX.Element = (
+        <NetworkItem
+            id='zircuit_network_selector'
+            onClick={() => handleClick(chainMap.get('0xbf04'))}
+            key='zircuit'
+            custom={0}
+            variants={ItemEnterAnimation}
+            tabIndex={0}
+        >
+            <ChainNameStatus tabIndex={0} active={chainId === '0xbf04'}>
+                <img
+                    src={zircuitLogo}
+                    alt='scroll network'
+                    width='22px'
+                    height='22px'
+                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
+                />
+                <Text
+                    color={chainId === '0xbf04' ? 'accent1' : 'white'}
+                    style={{ marginLeft: '5px' }}
+                >
+                    {'Zircuit'}
+                </Text>
+            </ChainNameStatus>
+        </NetworkItem>
+    );
+
     // JSX element to select canto network (external link)
     const cantoNetwork: JSX.Element = (
         <NetworkItem
@@ -345,9 +373,13 @@ export default function NetworkSelector() {
                                   ? blastLogo
                                   : lookupChain(chainId)
                                           .displayName.toLowerCase()
-                                          .includes('sepolia')
-                                    ? sepoliaLogo
-                                    : ETH
+                                          .includes('zircuit')
+                                    ? zircuitLogo
+                                    : lookupChain(chainId)
+                                            .displayName.toLowerCase()
+                                            .includes('sepolia')
+                                      ? sepoliaLogo
+                                      : ETH
                     }
                 >
                     <MenuContent
@@ -357,6 +389,7 @@ export default function NetworkSelector() {
                         {chainMap.has('0x1') && ethereumNetwork}
                         {chainMap.has('0x13e31') && blastNetwork}
                         {chainMap.has('0x82750') && scrollNetwork}
+                        {chainMap.has('0xbf04') && zircuitNetwork}
                         {includeCanto &&
                             platformName === 'ambient' &&
                             cantoNetwork}

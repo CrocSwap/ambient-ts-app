@@ -10,6 +10,7 @@ import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
     futaBrandAssets,
+    zircuitBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
 
@@ -67,6 +68,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
                 return blastBrandAssets;
             case 'scroll':
                 return scrollBrandAssets;
+            case 'zircuit':
+                return zircuitBrandAssets;
             case 'futa':
                 return futaBrandAssets;
             case 'ambientProduction':
