@@ -223,7 +223,8 @@ export const TokenQuantityInput = styled.input`
     background-color: transparent;
     background-clip: padding-box;
 
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
@@ -337,8 +338,12 @@ export const ExtraDetailsContainer = styled.div`
 `;
 
 export const ModalContainer = styled(FlexContainer)`
-    width: 400px;
+    width: 100%;
     border-radius: var(--border-radius);
+
+    @media (min-width: 500px) {
+        width: 400px;
+    }
 `;
 
 export const ConfirmationDetailsContainer = styled(FlexContainer)`
@@ -506,6 +511,7 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: var(--dark2);
     background-clip: padding-box;
-    transition: border-color var(--animation-speed) ease-in-out,
+    transition:
+        border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
 `;
