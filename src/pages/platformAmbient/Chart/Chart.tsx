@@ -1479,9 +1479,9 @@ export default function Chart(props: propsIF) {
                             const mousePlacement =
                                 scaleData?.yScale.invert(eventPoint);
 
-                            const isHoverLiqidite = liqMaxActiveLiq
+                            const isHoverLiquidity = liqMaxActiveLiq
                                 ? liqMaxActiveLiq - eventPointX > 10
-                                : false;
+                                : true;
 
                             const limitLineValue = limit;
 
@@ -1513,7 +1513,7 @@ export default function Chart(props: propsIF) {
                                 !isOnLimit &&
                                 !isOnRangeMin &&
                                 !isOnRangeMax &&
-                                isHoverLiqidite
+                                isHoverLiquidity
                             );
                         } else {
                             return !canUserDragRange && !canUserDragLimit;
@@ -2337,11 +2337,11 @@ export default function Chart(props: propsIF) {
         if (event.type.includes('touch') && checkMainCanvas) {
             const eventPointX = event.targetTouches[0].clientX - leftPositin;
 
-            const isHoverLiqidite = liqMaxActiveLiq
+            const isHoverLiquidity = liqMaxActiveLiq
                 ? liqMaxActiveLiq - eventPointX > 10
-                : false;
+                : true;
 
-            return isHoverLiqidite;
+            return isHoverLiquidity;
         }
 
         return true;
