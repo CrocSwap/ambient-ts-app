@@ -221,7 +221,7 @@ input[type='number'] {
     -moz-appearance: textfield;
 }
 .custom_scroll_ambient {
-    overflow-y: scroll !important;
+    overflow-y: auto !important;
 }
 .custom_scroll_ambient::-webkit-scrollbar,
 .content-container::-webkit-scrollbar {
@@ -277,7 +277,7 @@ input[type='number'] {
     .content-container {
         overflow-y: auto;
         overflow-x: hidden;
-        height: 100vh;
+        height: calc(100vh - 56px);
 
         background: var(--dark1);
     }
