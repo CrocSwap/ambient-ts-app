@@ -18,3 +18,24 @@
     align-items: center;
     cursor: default;
 }
+
+.sub_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-weight: 400;
+}
+.sub_container p{
+
+}
+
+.sub_container sub{
+    vertical-align: sub;
+    font-size: 12px;
+    align-items: flex-end;
+    display: flex;
+  
+    height: 100%;
+}
