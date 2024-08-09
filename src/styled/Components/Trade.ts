@@ -19,7 +19,6 @@ export const MainSection = styled.section<{
         props.isDropdown && !props.isSmallScreen
             ? 'calc(100dvh - 85px)'
             : 'calc(100dvh - 150px)'};
-    grid-template-columns: auto 380px;
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
