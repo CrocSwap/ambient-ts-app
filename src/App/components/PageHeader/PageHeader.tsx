@@ -283,6 +283,13 @@ const PageHeader = function () {
         activeTradeTab === 'limits' ? linkGenLimit : linkGenMarket
     ).getFullURL(swapParams);
 
+    const activeTradeTabSlug =
+        activeTradeTab.toLowerCase() === 'exchange balances'
+            ? 'exchange-balances'
+            : activeTradeTab.toLowerCase() === 'wallet balances'
+              ? 'wallet-balances'
+              : activeTradeTab.toLowerCase();
+
     const linkData: linkDataIF[] = [
         {
             title: 'Home',
@@ -311,7 +318,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: `/account${activeTradeTab && '/' + activeTradeTab}`,
+            destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
             shouldDisplay: !!isUserConnected,
         },
         {
