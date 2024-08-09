@@ -280,22 +280,18 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         const checkVisibleCandle = visibleCandleData.length === 0;
 
-        const lastDateLocation = checkVisibleCandle
-            ? 0
-            : scaleData.xScale(visibleCandleData[0].time * 1000);
+        if (!checkVisibleCandle && nearest) {
+            const lastDateLocation = scaleData.xScale(
+                visibleCandleData[0].time * 1000,
+            );
 
-        const firstDateLocation = checkVisibleCandle
-            ? 0
-            : scaleData.xScale(
-                  visibleCandleData[visibleCandleData.length - 1].time * 1000,
-              );
-        if (
-            offsetX > lastDateLocation ||
-            offsetX < firstDateLocation ||
-            checkVisibleCandle
-        ) {
-            valueX = scaleData?.xScale.invert(offsetX);
-            valueY = scaleData?.yScale.invert(offsetY);
+            const firstDateLocation = scaleData.xScale(
+                visibleCandleData[visibleCandleData.length - 1].time * 1000,
+            );
+
+            if (offsetX < lastDateLocation && offsetX > firstDateLocation) {
+                valueX = nearest.time * 1000;
+            }
         }
 
         return { valueX: valueX, valueY: valueY, nearest: nearest };
@@ -511,7 +507,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     offsetY,
                 );
 
-                setCrossHairDataFunc(valueX / 1000, offsetX, offsetY);
+                setCrossHairDataFunc(valueX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 

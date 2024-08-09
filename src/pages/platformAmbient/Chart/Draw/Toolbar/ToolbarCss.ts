@@ -3,8 +3,10 @@ import styled from 'styled-components';
 const ToolbarContainer = styled.div<{
     isActive: boolean;
     isMobile: boolean;
+    isSmallScreen: boolean;
     backgroundColor: string;
     marginTopValue: number;
+    height: number;
 }>`
     ${({ isActive, marginTopValue }) => {
         if (isActive) {
@@ -38,7 +40,8 @@ const ToolbarContainer = styled.div<{
 
     grid-column: 2;
     grid-row: 3;
-
+    margin-left: ${({ isSmallScreen, isMobile }) =>
+        !isSmallScreen && isMobile ? '2rem' : ''};
     transition: all 600ms ease-in-out;
     z-index: 20;
 `;

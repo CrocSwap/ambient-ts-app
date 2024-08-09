@@ -119,103 +119,104 @@ export default function DragCanvas(props: DragCanvasProps) {
         }
     }, [diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
 
-    function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
+    function getXandYvalueOfDrawnShape(
+        offsetX: number,
+        offsetY: number,
+        includeY = true,
+    ) {
         let valueY = scaleData?.yScale.invert(offsetY);
         const nearest = snapForCandle(offsetX, visibleCandleData);
 
-        const high = denomInBase
-            ? nearest?.invMinPriceExclMEVDecimalCorrected
-            : nearest?.minPriceExclMEVDecimalCorrected;
+        if (nearest && includeY) {
+            const high = denomInBase
+                ? nearest?.invMinPriceExclMEVDecimalCorrected
+                : nearest?.minPriceExclMEVDecimalCorrected;
 
-        const low = denomInBase
-            ? nearest?.invMaxPriceExclMEVDecimalCorrected
-            : nearest?.maxPriceExclMEVDecimalCorrected;
+            const low = denomInBase
+                ? nearest?.invMaxPriceExclMEVDecimalCorrected
+                : nearest?.maxPriceExclMEVDecimalCorrected;
 
-        const open = denomInBase
-            ? nearest.invPriceOpenExclMEVDecimalCorrected
-            : nearest.priceOpenExclMEVDecimalCorrected;
+            const open = denomInBase
+                ? nearest.invPriceOpenExclMEVDecimalCorrected
+                : nearest.priceOpenExclMEVDecimalCorrected;
 
-        const close = denomInBase
-            ? nearest.invPriceCloseExclMEVDecimalCorrected
-            : nearest.priceCloseExclMEVDecimalCorrected;
+            const close = denomInBase
+                ? nearest.invPriceCloseExclMEVDecimalCorrected
+                : nearest.priceCloseExclMEVDecimalCorrected;
 
-        const highToCoordinat = scaleData.yScale(high);
-        const lowToCoordinat = scaleData.yScale(low);
-        const openToCoordinat = scaleData.yScale(open);
-        const closeToCoordinat = scaleData.yScale(close);
+            const highToCoordinat = scaleData.yScale(high);
+            const lowToCoordinat = scaleData.yScale(low);
+            const openToCoordinat = scaleData.yScale(open);
+            const closeToCoordinat = scaleData.yScale(close);
 
-        const highDiff = Math.abs(offsetY - highToCoordinat);
-        const lowDiff = Math.abs(offsetY - lowToCoordinat);
-        const openDiff = Math.abs(offsetY - openToCoordinat);
-        const closeDiff = Math.abs(offsetY - closeToCoordinat);
+            const highDiff = Math.abs(offsetY - highToCoordinat);
+            const lowDiff = Math.abs(offsetY - lowToCoordinat);
+            const openDiff = Math.abs(offsetY - openToCoordinat);
+            const closeDiff = Math.abs(offsetY - closeToCoordinat);
 
-        if (
-            isMagnetActive.value &&
-            (highDiff <= 100 ||
-                lowDiff <= 100 ||
-                openDiff <= 100 ||
-                closeDiff <= 100)
-        ) {
-            const minDiffForYValue = Math.min(
-                openDiff,
-                closeDiff,
-                lowDiff,
-                highDiff,
-            );
+            if (
+                isMagnetActive.value &&
+                (highDiff <= 100 ||
+                    lowDiff <= 100 ||
+                    openDiff <= 100 ||
+                    closeDiff <= 100)
+            ) {
+                const minDiffForYValue = Math.min(
+                    openDiff,
+                    closeDiff,
+                    lowDiff,
+                    highDiff,
+                );
 
-            switch (minDiffForYValue) {
-                case highDiff:
-                    valueY = high;
-                    break;
+                switch (minDiffForYValue) {
+                    case highDiff:
+                        valueY = high;
+                        break;
 
-                case lowDiff:
-                    valueY = low;
-                    break;
-                case openDiff:
-                    valueY = open;
-                    break;
+                    case lowDiff:
+                        valueY = low;
+                        break;
+                    case openDiff:
+                        valueY = open;
+                        break;
 
-                case closeDiff:
-                    valueY = close;
-                    break;
+                    case closeDiff:
+                        valueY = close;
+                        break;
+                }
             }
         }
 
-        let valueX = nearest.time * 1000;
         const snappedTime = findSnapTime(
             scaleData?.xScale.invert(offsetX),
-            nearest.period,
+            period,
         );
+
+        let valueX = snappedTime;
+
         const checkVisibleCandle = visibleCandleData.length === 0;
-        const lastDateLocation = checkVisibleCandle
-            ? 0
-            : scaleData.xScale(visibleCandleData[0].time * 1000);
-        const firstDateLocation = checkVisibleCandle
-            ? 0
-            : scaleData.xScale(
-                  visibleCandleData[visibleCandleData.length - 1].time * 1000,
-              );
-        if (
-            offsetX > lastDateLocation ||
-            offsetX < firstDateLocation ||
-            checkVisibleCandle
-        ) {
-            valueX = snappedTime;
-            valueY = scaleData?.yScale.invert(offsetY);
-        } else {
-            valueX = nearest.time * 1000;
+
+        if (!checkVisibleCandle && nearest) {
+            const lastDateLocation = scaleData.xScale(
+                visibleCandleData[0].time * 1000,
+            );
+
+            const firstDateLocation = scaleData.xScale(
+                visibleCandleData[visibleCandleData.length - 1].time * 1000,
+            );
+
+            if (offsetX < lastDateLocation && offsetX > firstDateLocation) {
+                valueX = nearest.time * 1000;
+            }
         }
 
         return { valueX: valueX, valueY: valueY };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dragLine = (
-        centerTime: number,
-        movemementX: number,
-        movemementY: number,
-    ) => {
+    const dragLine = (movementX: number, movemementY: number) => {
         if (hoveredDrawnShape) {
+            let isSnapped = true;
             const index = drawnShapeHistory.findIndex(
                 (item) => item === hoveredDrawnShape?.data,
             );
@@ -239,32 +240,24 @@ export default function DragCanvas(props: DragCanvasProps) {
             );
 
             if (firstPoint > 0 && secondPoint > 0) {
-                const center =
-                    Math.abs(
-                        scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
-                            scaleData.xScale(hoveredDrawnShape.data.data[1].x),
-                    ) / 2;
+                const calPoint0 =
+                    scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
+                    movementX;
 
-                const diff = scaleData.xScale(centerTime) - center;
+                const calPoint1 =
+                    scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
+                    movementX;
 
-                const snapx0 = findSnapTime(
-                    scaleData.xScale.invert(
-                        scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
-                            diff,
-                    ),
-                    period,
-                );
+                const snap0 = getXandYvalueOfDrawnShape(calPoint0, 1, false);
+                const snap1 = getXandYvalueOfDrawnShape(calPoint1, 1, false);
 
-                const snapx1 = findSnapTime(
-                    scaleData.xScale.invert(
-                        scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
-                            diff,
-                    ),
-                    period,
-                );
+                isSnapped =
+                    snap0.valueX !== hoveredDrawnShape?.data?.data[0].x &&
+                    snap1.valueX !== hoveredDrawnShape?.data?.data[1].x;
+
                 const lastData = [
                     {
-                        x: snapx0,
+                        x: snap0.valueX,
                         y: isPointInDenom
                             ? reversedFirstPoint
                             : 1 / reversedFirstPoint,
@@ -272,7 +265,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             hoveredDrawnShape.data?.data[0].denomInBase,
                     },
                     {
-                        x: snapx1,
+                        x: snap1.valueX,
                         y: isPointInDenom
                             ? reversedSecondPoint
                             : 1 / reversedSecondPoint,
@@ -286,6 +279,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             }
 
             render();
+            return isSnapped;
         }
     };
 
@@ -465,10 +459,11 @@ export default function DragCanvas(props: DragCanvasProps) {
 
         let offsetY = 0;
         let offsetX = 0;
-        let movemementX = 0;
+        let movementX = 0;
+        let stackedMovementX = 0;
         let movemementY = 0;
 
-        let tempMovemementX = 0;
+        let tempmovementX = 0;
         let tempMovemementY = 0;
         let rectDragDirection = '';
         let isDragging = false;
@@ -496,7 +491,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 ) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - canvasRect?.top;
-                    tempMovemementX =
+                    tempmovementX =
                         event.sourceEvent.touches[0].clientX - canvasRect?.left;
                 }
 
@@ -563,7 +558,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             offsetX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
-                            movemementX = offsetX - tempMovemementX;
+                            movementX = offsetX - tempmovementX;
                             movemementY = offsetY - tempMovemementY;
                         } else {
                             offsetY =
@@ -571,19 +566,24 @@ export default function DragCanvas(props: DragCanvasProps) {
                             offsetX =
                                 event.sourceEvent.clientX - canvasRect?.left;
 
-                            movemementX = event.sourceEvent.movementX;
+                            movementX =
+                                stackedMovementX + event.sourceEvent.movementX;
                             movemementY = event.sourceEvent.movementY;
                         }
-                        const nearest = snapForCandle(
-                            offsetX,
-                            visibleCandleData,
-                        );
 
-                        const time = setCrossHairDataFunc(
-                            nearest.time,
+                        const { valueX } = getXandYvalueOfDrawnShape(
                             offsetX,
                             offsetY,
+                            false,
                         );
+
+                        const shouldSnap =
+                            movementX < 0
+                                ? valueX > scaleData.xScale.invert(offsetX)
+                                : valueX < scaleData.xScale.invert(offsetX);
+
+                        setCrossHairDataFunc(valueX, offsetY);
+
                         if (
                             hoveredDrawnShape &&
                             (hoveredDrawnShape.data.type === 'Brush' ||
@@ -594,7 +594,15 @@ export default function DragCanvas(props: DragCanvasProps) {
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
                                 setIsUpdatingShape(true);
-                                dragLine(time, movemementX, movemementY);
+                                const isSnapped = dragLine(
+                                    movementX,
+                                    movemementY,
+                                );
+                                if (!isSnapped && shouldSnap) {
+                                    stackedMovementX = movementX;
+                                } else {
+                                    stackedMovementX = 0;
+                                }
                             } else {
                                 setIsUpdatingShape(true);
                                 updateDrawLine(offsetX, offsetY, denomInBase);
@@ -608,7 +616,15 @@ export default function DragCanvas(props: DragCanvasProps) {
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
                                 setIsUpdatingShape(true);
-                                dragLine(time, movemementX, movemementY);
+                                const isSnapped = dragLine(
+                                    movementX,
+                                    movemementY,
+                                );
+                                if (!isSnapped && shouldSnap) {
+                                    stackedMovementX = movementX;
+                                } else {
+                                    stackedMovementX = 0;
+                                }
                             } else {
                                 setIsUpdatingShape(true);
                                 updateDrawRect(
@@ -626,7 +642,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             typeof TouchEvent !== 'undefined' &&
                             event.sourceEvent instanceof TouchEvent
                         ) {
-                            tempMovemementX =
+                            tempmovementX =
                                 event.sourceEvent.touches[0].clientX -
                                 canvasRect?.left;
                             tempMovemementY =
@@ -644,7 +660,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 }
             })
             .on('end', (event) => {
-                tempMovemementX = 0;
+                tempmovementX = 0;
                 tempMovemementY = 0;
                 setIsUpdatingShape(false);
 
