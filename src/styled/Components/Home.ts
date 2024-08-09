@@ -240,7 +240,6 @@ export const MobileMainLogo = styled(FlexContainer)`
     height: 200px;
     background-size: cover;
     background-position: center center;
-    margin-top: 3rem;
 
     img {
         object-fit: contain;
