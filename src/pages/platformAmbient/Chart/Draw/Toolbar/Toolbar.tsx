@@ -84,7 +84,7 @@ function ChartToolbar() {
     const { chartThemeColors } = useContext(ChartContext);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
-    const [isHoveredDown, setIsHoveredDown] = useState(false); /*  */
+    const [isHoveredDown, setIsHoveredDown] = useState(false);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -292,7 +292,11 @@ function ChartToolbar() {
                     : 'auto'
             }
             style={{
-                top: chartContainerOptions.height - xAxisHeightPixel + 'px',
+                top:
+                    chartContainerOptions.height -
+                    (mobileView ? 20 : 0) -
+                    xAxisHeightPixel +
+                    'px',
             }}
         >
             <ArrowContainer degree={135} style={{ marginTop: '3px' }} />
@@ -319,11 +323,9 @@ function ChartToolbar() {
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
-            marginTopValue={
-                chartContainerOptions.top -
-                57 -
-                (mobileView && !smallScreen ? 20 : 0)
-            }
+            isSmallScreen={smallScreen}
+            marginTopValue={chartContainerOptions.top - 57}
+            height={chartContainerOptions.height}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
@@ -338,7 +340,10 @@ function ChartToolbar() {
                 <ScrollableDiv
                     ref={scrollContainerRef}
                     height={
-                        chartContainerOptions.height - xAxisHeightPixel + 'px'
+                        chartContainerOptions.height -
+                        (mobileView && smallScreen ? 20 : 0) -
+                        xAxisHeightPixel +
+                        'px'
                     }
                     isHover={hoveredTool !== undefined}
                 >

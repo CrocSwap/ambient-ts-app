@@ -19,6 +19,8 @@ export const MainSection = styled.section<{
         props.isDropdown && !props.isSmallScreen
             ? 'calc(100dvh - 85px)'
             : 'calc(100dvh - 150px)'};
+    grid-template-columns: auto 380px;
+    height: calc(100dvh - 150px);
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
@@ -31,6 +33,10 @@ export const MainSection = styled.section<{
         display: flex;
         flex-direction: column;
         gap: 4px;
+    }
+
+    @media (max-width: 700px) and (min-width: 500px) {
+        height: calc(100dvh - 85px);
     }
 `;
 
