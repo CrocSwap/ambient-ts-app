@@ -3378,15 +3378,23 @@ export default function Chart(props: propsIF) {
                                         const infoLabelHeight = 66;
                                         const infoLabelWidth = 195;
 
-                                        const infoLabelXAxisData =
-                                            Math.min(
-                                                item.data[0].x,
-                                                item.data[1].x,
-                                            ) +
+                                        const diff =
                                             Math.abs(
-                                                item.data[0].x - item.data[1].x,
-                                            ) /
-                                                2;
+                                                scaleData.xScale(
+                                                    item.data[0].x,
+                                                ) -
+                                                    scaleData.xScale(
+                                                        item.data[1].x,
+                                                    ),
+                                            ) / 2;
+
+                                        const infoLabelXAxisData =
+                                            scaleData.xScale(
+                                                Math.min(
+                                                    item.data[0].x,
+                                                    item.data[1].x,
+                                                ),
+                                            ) + diff;
 
                                         const yAxisLabelPlacement =
                                             scaleData.yScale(
@@ -3443,9 +3451,7 @@ export default function Chart(props: propsIF) {
                                             ctx.beginPath();
                                             ctx.fillStyle = 'rgb(34,44,58)';
                                             ctx.fillRect(
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ) -
+                                                infoLabelXAxisData -
                                                     infoLabelWidth / 2,
                                                 yAxisLabelPlacement,
                                                 infoLabelWidth,
@@ -3493,9 +3499,8 @@ export default function Chart(props: propsIF) {
                                                     heightAsPercentage.toString() +
                                                     '%)  ' +
                                                     dpRangeTickPrice,
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 16,
                                             );
                                             const min = Math.min(
@@ -3518,9 +3523,8 @@ export default function Chart(props: propsIF) {
                                                 showCandleCount +
                                                     ' bars,  ' +
                                                     lengthAsDate,
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 33,
                                             );
                                             ctx.fillText(
@@ -3528,9 +3532,8 @@ export default function Chart(props: propsIF) {
                                                     formatDollarAmountAxis(
                                                         totalVolumeCovered,
                                                     ).replace('$', ''),
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 50,
                                             );
                                         }
