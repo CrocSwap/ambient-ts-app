@@ -405,7 +405,7 @@ const PageHeader = function () {
         <PrimaryHeader
             data-testid={'page-header'}
             fixed={false}
-            style={{ position: 'sticky', top: 0, zIndex: 1000 }}
+            style={{ position: 'sticky', top: 0, zIndex: 10 }}
         >
             <div
                 onClick={(event: React.MouseEvent) => {
