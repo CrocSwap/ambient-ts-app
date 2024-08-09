@@ -10,6 +10,7 @@ import {
     isLinkInCrocodileLabsLinksForInput,
     isValidUrl,
     minToMS,
+    formatURL,
 } from '../../../Chat/ChatUtils';
 import { useNavigate } from 'react-router-dom';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
@@ -29,7 +30,7 @@ function CommentCard(props: CommentCardProps) {
         const messageDate = new Date(props.message.createdAt);
         if (props.previousMessage) {
             const prevMessageDate = new Date(props.previousMessage.createdAt);
-            if (messageDate.getDay() != prevMessageDate.getDay()) {
+            if (messageDate.getUTCDate() != prevMessageDate.getUTCDate()) {
                 hasDayInfo = true;
             }
         } else {
@@ -69,7 +70,7 @@ function CommentCard(props: CommentCardProps) {
                         }}
                         className={`${styles.comment_content_token} ${styles.link_token}`}
                     >
-                        {e}
+                        {formatURL(e)}
                     </span>,
                 );
             } else {

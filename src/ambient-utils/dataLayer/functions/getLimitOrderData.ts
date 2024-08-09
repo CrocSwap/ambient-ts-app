@@ -13,6 +13,7 @@ import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from 'ethers';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../constants';
 import { getMoneynessRankByAddr } from './getMoneynessRank';
+import { getPositionHash } from './getPositionHash';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
@@ -55,6 +56,18 @@ export const getLimitOrderData = async (
         chainId,
         crocEnv,
     );
+
+    const posHash = getPositionHash(undefined, {
+        isPositionTypeAmbient: false,
+        user: order.user ?? '',
+        baseAddress: order.base ?? '',
+        quoteAddress: order.quote ?? '',
+        poolIdx: order.poolIdx ?? 0,
+        bidTick: order.bidTick ?? 0,
+        askTick: order.askTick ?? 0,
+    });
+
+    newOrder.positionHash = posHash;
 
     const baseTokenLogoURI = tokensOnChain.find(
         (token) =>
@@ -322,3 +335,31 @@ export const getLimitOrderData = async (
 
     return newOrder;
 };
+
+export function filterLimitArray(arr: LimitOrderIF[]) {
+    // Step 1: Create a set of positionHash values where claimableLiq is 0
+    const positionHashes = new Set();
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i].claimableLiq !== 0) {
+            positionHashes.add(arr[i].positionHash);
+        }
+    }
+
+    // Step 2: Filter the array based on the conditions
+    const filteredArray = arr.filter((item: LimitOrderIF) => {
+        // Include items where claimableLiq is not 0
+        if (item.claimableLiq !== 0) {
+            return true;
+        }
+
+        // Include items where positionHash does not match a non-zero claimableLiq item
+        if (!positionHashes.has(item.positionHash)) {
+            return true;
+        }
+
+        // Exclude items that do not meet the above conditions
+        return false;
+    });
+
+    return filteredArray;
+}

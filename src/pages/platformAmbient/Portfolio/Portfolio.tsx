@@ -401,7 +401,11 @@ function Portfolio(props: PortfolioPropsIF) {
                   ? 1
                   : specificTab === 'transactions'
                     ? 0
-                    : 0
+                    : specificTab === 'exchange-balances'
+                      ? 4
+                      : specificTab === 'wallet-balances'
+                        ? 5
+                        : 0
           : 0;
 
     useEffect(() => {
