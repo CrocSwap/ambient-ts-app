@@ -7,6 +7,9 @@
     border-radius: var(--border-radius);
     
 }
+.container::-webkit-scrollbar {
+    display: none;
+  }
 
 .no_modal_container{
    
