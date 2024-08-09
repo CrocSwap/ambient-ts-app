@@ -349,7 +349,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 />
                             ))}
                         {showSoloSelectTokenButtons ? (
-                            <div className={styles.scrollable_container}>
+                            <div className='custom_scroll_ambient'>
                                 {removeWrappedNative(chainId, outputTokens)
                                     .slice(0, MAX_TOKEN_COUNT)
                                     .map((token: TokenIF) => {

@@ -153,8 +153,8 @@ export default function FAQPoints() {
                             listStyleType: 'none',
                             marginLeft: '0',
                             marginTop: '10px',
-                            overflowY: 'scroll',
                         }}
+                        className='custom_scroll_ambient'
                     >
                         {questions.map((q: questionIF) => {
                             const answerAsArray: (string | JSX.Element)[] = [

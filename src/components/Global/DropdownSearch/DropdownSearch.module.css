@@ -24,8 +24,8 @@
     display: flex;
     width: 340px;
     min-height: 140px;
-   
-  
+
+    overflow-y: hidden;
 
     flex-direction: column;
 
@@ -46,7 +46,7 @@
     cursor: pointer;
 }
 
-.option_button:hover{
+.option_button:hover {
     border: 1px solid var(--accent, #7371fc);
     color: var(--accent, #7371fc);
     transition: all var(--animation-speed) ease-in-out;
