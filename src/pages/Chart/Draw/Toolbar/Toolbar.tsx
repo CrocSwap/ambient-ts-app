@@ -53,6 +53,8 @@ interface undoRedoButtonList {
 
 function ChartToolbar() {
     const mobileView = useMediaQuery('(max-width: 1200px)');
+    const smallScreen = useMediaQuery('(max-width: 500px)');
+
     const {
         toolbarRef,
         setIsMagnetActive,
@@ -318,7 +320,9 @@ function ChartToolbar() {
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
+            isSmallScreen={smallScreen}
             marginTopValue={chartContainerOptions.top - 57}
+            height={chartContainerOptions.height}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={mobileView ? 'var(--dark1)' : 'var(--dark2)'}
@@ -330,7 +334,7 @@ function ChartToolbar() {
                     ref={scrollContainerRef}
                     height={
                         chartContainerOptions.height -
-                        (mobileView ? 20 : 0) -
+                        (mobileView && smallScreen ? 20 : 0) -
                         xAxisHeightPixel +
                         'px'
                     }
