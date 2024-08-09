@@ -22,12 +22,11 @@ export default function NoTokenIcon(props: propsIF) {
                 <div className={styles.sub_container}>
                     <p>
                         <sub>f</sub>
-                        {tokenInitial ?? ''}
+                        <span>{tokenInitial ?? ''}</span>
                     </p>
                 </div>
             ) : (
                 <div className={styles.sub_container}>
-                    <sub>f</sub>
                     <p>{tokenInitial ?? ''}</p>
                 </div>
             )}
