@@ -3,6 +3,7 @@ import { FlexContainer, Text } from '../Common';
 
 export const HeaderButtons = styled.button<{
     mobileHide?: boolean;
+    isFuta?: boolean;
 }>`
     display: flex;
     flex-direction: row;
@@ -17,7 +18,8 @@ export const HeaderButtons = styled.button<{
     padding: 4px;
 
     &:hover {
-        background-color: var(--dark3);
+        ${({ isFuta }) =>
+            isFuta ? 'transparent' : 'background-color: var(--dark3)'};
     }
 
     &:focus-visible {
@@ -33,6 +35,38 @@ export const HeaderText = styled(Text)`
         font-size: var(--header-size);
         line-height: var(--body-lh);
     }
+`;
+
+export const FutaHeaderButton = styled.div<{
+    isActive?: boolean;
+}>`
+    display: flex;
+    background: var(--dark2);
+    transition: var(--transition);
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    outline: none;
+    position: relative;
+
+    height: 25px;
+    padding: 4px 16px 4px 16px;
+
+    padding: 1px 8px;
+    position: relative;
+
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: var(--dark3);
+        color: var(--accent1);
+    }
+
+    color: ${({ isActive }) => (!isActive ? 'var(--accent1)' : 'var(--text2)')};
+    border: ${({ isActive }) =>
+        !isActive ? '1px solid var(--accent1)' : 'none'};
 `;
 
 export const MainContainer = styled(FlexContainer)`

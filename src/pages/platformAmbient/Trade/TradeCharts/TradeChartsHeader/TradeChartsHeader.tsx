@@ -10,8 +10,8 @@ import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo'
 import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../../styled/Common';
 import {
+    FutaHeaderButton,
     HeaderButtons,
-    // SwitchButton,
 } from '../../../../../styled/Components/Chart';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { CandleContext } from '../../../../../contexts/CandleContext';
@@ -20,6 +20,7 @@ import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import { IoSettingsOutline } from 'react-icons/io5';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { BrandContext } from '../../../../../contexts/BrandContext';
 // import { IoSettingsOutline } from 'react-icons/io5';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
@@ -42,8 +43,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
         isCondensedModeEnabled,
         setIsCondensedModeEnabled,
-        // showFutaCandles,
-        // setShowFutaCandles,
+        showFutaCandles,
+        setShowFutaCandles,
     } = useContext(CandleContext);
 
     const {
@@ -51,6 +52,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const { platformName } = useContext(BrandContext);
 
     const { activeMobileComponent } = useContext(TradeTableContext);
 
@@ -83,21 +86,22 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const graphSettingsContent = (
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
-            {/* {['futa'].includes(platformName) && (
+            {['futa'].includes(platformName) && (
                 <DefaultTooltip
                     interactive
                     title={!showFutaCandles ? 'Candle Chart' : 'Line Chart'}
                     enterDelay={500}
                 >
                     <HeaderButtons
+                        isFuta={['futa'].includes(platformName)}
                         onClick={() => setShowFutaCandles(!showFutaCandles)}
                     >
-                        <SwitchButton isActive={!showFutaCandles}>
-                            CANDLES
-                        </SwitchButton>
+                        <FutaHeaderButton isActive={!showFutaCandles}>
+                            <>CANDLES</>
+                        </FutaHeaderButton>
                     </HeaderButtons>
                 </DefaultTooltip>
-            )} */}
+            )}
 
             <DefaultTooltip
                 interactive
