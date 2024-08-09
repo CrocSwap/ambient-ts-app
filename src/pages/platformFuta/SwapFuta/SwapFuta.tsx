@@ -138,6 +138,7 @@ function SwapFuta() {
                     <Divider count={2} />
                     <Swap isOnTradeRoute />
                 </span>
+                <Divider count={2} />
                 <Comments
                     isForTrade={true}
                     isSmall={true}
