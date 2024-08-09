@@ -195,8 +195,8 @@ export default function Account(props: propsIF) {
             alignItems='center'
         >
             {isUserConnected && walletDisplay}
-            {isUserConnected && <ExchangeBalanceDropdown />}
             {isUserConnected && levelDisplay}
+            {isUserConnected && <ExchangeBalanceDropdown />}
             <NotificationCenter />
 
             <NavItem

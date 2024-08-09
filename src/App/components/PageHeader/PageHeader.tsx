@@ -404,7 +404,8 @@ const PageHeader = function () {
     return (
         <PrimaryHeader
             data-testid={'page-header'}
-            fixed={location.pathname === '/'}
+            fixed={false}
+            style={{ position: 'sticky', top: 0, zIndex: 1000 }}
         >
             <div
                 onClick={(event: React.MouseEvent) => {
