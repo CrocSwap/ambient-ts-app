@@ -11,7 +11,13 @@ interface Props {
 }
 
 export default function FlashingSvg(props: Props) {
-    const { isActionButtonVisible } = useFutaHomeContext();
+    const {
+        isActionButtonVisible,
+        hasVideoPlayedOnce,
+        showHomeVideoLocalStorage,
+    } = useFutaHomeContext();
+
+    const hideFlicker = hasVideoPlayedOnce || !showHomeVideoLocalStorage;
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -67,11 +73,14 @@ export default function FlashingSvg(props: Props) {
         gap: '1rem',
 
         // transform: `scale(${scaleFactor})`,
-        animation: flash
-            ? 'flash 1s infinite'
-            : visible
-              ? 'appear 0.1s forwards'
-              : 'none',
+        animation: hideFlicker
+            ? 'none'
+            : flash
+              ? 'flash 1s infinite'
+              : visible
+                ? 'appear 0.1s forwards'
+                : 'none',
+
         opacity: visible ? 1 : 0,
     };
 
@@ -95,7 +104,7 @@ export default function FlashingSvg(props: Props) {
         styleSheet.insertRule(keyframesDisappear, styleSheet.cssRules.length);
     }, []);
 
-    const textClassName = `${styles.flashingSvgtext} ${flash ? styles.flashingSvgFlash : visible ? styles.flashingSvgAppear : ''}`;
+    const textClassName = `${styles.flashingSvgtext} ${hideFlicker || visible ? styles.flashingSvgAppear : flash ? styles.flashingSvgFlash : ''}`;
 
     return (
         <div style={terminalStyle} className={styles.terminalStyle}>
@@ -120,33 +129,53 @@ export default function FlashingSvg(props: Props) {
                 Memes as public goods.
             </div>
 
-            <AnimatePresence>
-                {isActionButtonVisible && (
-                    <motion.div
-                        className={styles.actionButtonContent}
-                        initial='hidden'
-                        animate='visible'
-                        variants={containerVariants}
-                    >
-                        <motion.div variants={itemVariants}>
+            {isActionButtonVisible &&
+                (hideFlicker ? (
+                    <div className={styles.actionButtonContent}>
+                        <div>
                             <Link
                                 to='/auctions'
                                 className={styles.exploreButton}
                             >
                                 Explore
                             </Link>
-                        </motion.div>
-                        <motion.div variants={itemVariants}>
+                        </div>
+                        <div>
                             <button
                                 onClick={onLearnClick}
                                 className={styles.learnButton}
                             >
                                 Learn
                             </button>
+                        </div>
+                    </div>
+                ) : (
+                    <AnimatePresence>
+                        <motion.div
+                            className={styles.actionButtonContent}
+                            initial='hidden'
+                            animate='visible'
+                            variants={containerVariants}
+                        >
+                            <motion.div variants={itemVariants}>
+                                <Link
+                                    to='/auctions'
+                                    className={styles.exploreButton}
+                                >
+                                    Explore
+                                </Link>
+                            </motion.div>
+                            <motion.div variants={itemVariants}>
+                                <button
+                                    onClick={onLearnClick}
+                                    className={styles.learnButton}
+                                >
+                                    Learn
+                                </button>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    </AnimatePresence>
+                ))}
         </div>
     );
 }
