@@ -150,6 +150,12 @@ export default function App() {
                 flexDirection='column'
                 className={`${containerStyle} `}
                 data-theme={skin}
+                style={{
+                    height:
+                        location.pathname == '/'
+                            ? 'calc(100vh - 56px)'
+                            : '100vh',
+                }}
             >
                 {showPoints &&
                     showPointSystemPopup &&
