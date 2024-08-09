@@ -5966,6 +5966,7 @@ export default function Chart(props: propsIF) {
                         isDiscontinuityScaleEnabled={isCondensedModeEnabled}
                         visibleDateForCandle={visibleDateForCandle}
                         chartThemeColors={chartThemeColors}
+                        showFutaCandles={showFutaCandles}
                     />
                 ) : (
                     <CandleLineChart
@@ -5978,6 +5979,7 @@ export default function Chart(props: propsIF) {
                         prevlastCandleTime={prevlastCandleTime}
                         setPrevLastCandleTime={setPrevLastCandleTime}
                         chartThemeColors={chartThemeColors}
+                        showFutaCandles={showFutaCandles}
                     />
                 )}
 

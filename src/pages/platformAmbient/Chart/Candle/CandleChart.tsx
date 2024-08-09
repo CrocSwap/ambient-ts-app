@@ -32,6 +32,7 @@ interface candlePropsIF {
     isDiscontinuityScaleEnabled: boolean;
     visibleDateForCandle: number;
     chartThemeColors: ChartThemeIF | undefined;
+    showFutaCandles: boolean;
 }
 
 export default function CandleChart(props: candlePropsIF) {
@@ -49,6 +50,7 @@ export default function CandleChart(props: candlePropsIF) {
         isDiscontinuityScaleEnabled,
         visibleDateForCandle,
         chartThemeColors,
+        showFutaCandles,
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
 
@@ -95,7 +97,11 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
-    }, [diffHashSigScaleData(scaleData), diffHashSig(chartThemeColors)]);
+    }, [
+        diffHashSigScaleData(scaleData),
+        diffHashSig(chartThemeColors),
+        diffHashSig(showFutaCandles),
+    ]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -210,6 +216,8 @@ export default function CandleChart(props: candlePropsIF) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candlestick.context(ctx);
                 });
+
+            renderCanvasArray([d3CanvasCandle]);
         }
     }, [data, candlestick]);
 
