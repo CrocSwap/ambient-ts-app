@@ -123,6 +123,12 @@ export default function App() {
                     platformName === 'futa' ? 'futa_main' : containerStyle
                 }
                 data-theme={skin}
+                style={{
+                    height:
+                        location.pathname == '/'
+                            ? 'calc(100vh - 56px)'
+                            : '100vh',
+                }}
             >
                 {showPoints && showPointSystemPopup && (
                     <PointSystemPopup

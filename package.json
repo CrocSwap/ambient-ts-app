@@ -60,6 +60,7 @@
         "start": "yarn install && vite",
         "start-only": "vite",
         "force": "yarn start --force",
+        "futa": "yarn start --force --mode futa --port 3001",
         "build": "tsc && vite build",
         "preview": "vite preview",
         "dev": "vite --host",
