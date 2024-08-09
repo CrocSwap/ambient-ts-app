@@ -3,12 +3,17 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import {
     CandleDataChart,
+    renderCanvasArray,
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { ChartContext, ChartThemeIF } from '../../../../contexts/ChartContext';
 import { CandleDataIF } from '../../../../ambient-utils/types';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../ambient-utils/dataLayer';
 
 interface LineChartIF {
     period: number;
@@ -20,6 +25,7 @@ interface LineChartIF {
     prevlastCandleTime: number;
     setPrevLastCandleTime: React.Dispatch<React.SetStateAction<number>>;
     chartThemeColors: ChartThemeIF | undefined;
+    showFutaCandles: boolean;
 }
 
 export default function CandleLineChart(props: LineChartIF) {
@@ -33,6 +39,7 @@ export default function CandleLineChart(props: LineChartIF) {
         prevlastCandleTime,
         setPrevLastCandleTime,
         chartThemeColors,
+        showFutaCandles,
     } = props;
 
     const d3CanvasArea = useRef(null);
@@ -120,10 +127,20 @@ export default function CandleLineChart(props: LineChartIF) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                     candleLine.context(ctx);
                 });
+
+            renderCanvasArray([d3CanvasArea]);
         }
     }, [data, candleLine]);
 
+    useEffect(() => {
+        renderCanvasArray([d3CanvasArea]);
+    }, [
+        diffHashSigScaleData(scaleData),
+        diffHashSig(chartThemeColors),
+        diffHashSig(showFutaCandles),
+    ]);
+
     return (
-        <d3fc-canvas ref={d3CanvasArea} className='candle-canvas'></d3fc-canvas>
+        <d3fc-canvas ref={d3CanvasArea} className='line-canvas'></d3fc-canvas>
     );
 }
