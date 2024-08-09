@@ -153,6 +153,7 @@ function TokenIcon(props: propsIF) {
                     : alt?.charAt(0).toUpperCase() || ''
             }
             width={getIconWidth(size)}
+            isFutaList={token?.fromList?.includes('futa')}
         />
     );
 
