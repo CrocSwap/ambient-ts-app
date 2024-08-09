@@ -94,7 +94,9 @@ export default function RankTable(props: Props) {
         <div className={styles.main_table}>
             <RankHeader />
             <Divider />
-            <div className={styles.main_table_content}>
+            <div
+                className={`${styles.main_table_content} custom_scroll_ambient`}
+            >
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : formattedConnectedUserData !== undefined ? (

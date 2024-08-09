@@ -283,6 +283,13 @@ const PageHeader = function () {
         activeTradeTab === 'limits' ? linkGenLimit : linkGenMarket
     ).getFullURL(swapParams);
 
+    const activeTradeTabSlug =
+        activeTradeTab.toLowerCase() === 'exchange balances'
+            ? 'exchange-balances'
+            : activeTradeTab.toLowerCase() === 'wallet balances'
+              ? 'wallet-balances'
+              : activeTradeTab.toLowerCase();
+
     const linkData: linkDataIF[] = [
         {
             title: 'Home',
@@ -311,7 +318,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: `/account${activeTradeTab && '/' + activeTradeTab}`,
+            destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
             shouldDisplay: !!isUserConnected,
         },
         {
@@ -397,7 +404,8 @@ const PageHeader = function () {
     return (
         <PrimaryHeader
             data-testid={'page-header'}
-            fixed={location.pathname === '/'}
+            fixed={false}
+            style={{ position: 'sticky', top: 0, zIndex: 1000 }}
         >
             <div
                 onClick={(event: React.MouseEvent) => {

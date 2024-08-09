@@ -1,7 +1,6 @@
 import { memo, useContext } from 'react';
 import Spinner from '../Spinner/Spinner';
 import {
-    ScrollableContainer,
     ShadowBox,
     SpinnerContainer,
     Table,
@@ -131,7 +130,7 @@ function DexTokens(props: propsIF) {
                     : 'calc(100svh - 200px)'
             }
         >
-            <ScrollableContainer>
+            <div className='custom_scroll_ambient'>
                 <ShadowBox>
                     <Table>
                         <TableHeadTokens
@@ -201,7 +200,7 @@ function DexTokens(props: propsIF) {
                         </TableBody>
                     </Table>
                 </ShadowBox>
-            </ScrollableContainer>
+            </div>
         </FlexContainer>
     );
 }

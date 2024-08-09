@@ -114,6 +114,9 @@ export default function App() {
 
     return (
         <>
+            {location.pathname == '/' && platformName !== 'futa' && (
+                <PageHeader />
+            )}
             <FlexContainer
                 flexDirection='column'
                 className={
@@ -127,7 +130,11 @@ export default function App() {
                     />
                 )}
                 <AppOverlay />
-                {platformName === 'futa' ? <Navbar /> : <PageHeader />}
+                {platformName === 'futa' ? (
+                    <Navbar />
+                ) : (
+                    location.pathname !== '/' && <PageHeader />
+                )}
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}

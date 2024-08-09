@@ -32,6 +32,10 @@ export const MainSection = styled.section<{
         flex-direction: column;
         gap: 4px;
     }
+
+    @media (max-width: 700px) and (min-width: 500px) {
+        height: calc(100dvh - 85px);
+    }
 `;
 
 export const TradeDropdown = styled.div`
