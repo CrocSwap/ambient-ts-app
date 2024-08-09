@@ -305,33 +305,38 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 <div style={{ padding: '1rem' }}>
-                    {isWrappedNativeToken(validatedInput) && (
-                        <WarningBox
-                            title=''
-                            details={WETH_WARNING}
-                            noBackground
-                            button={
-                                <button
-                                    onClick={() => {
-                                        try {
-                                            const wethToken =
-                                                tokens.getTokenByAddress(
-                                                    validatedInput,
-                                                );
-                                            if (wethToken) {
-                                                chooseToken(wethToken, false);
+                    {platform !== 'futa' &&
+                        isWrappedNativeToken(validatedInput) && (
+                            <WarningBox
+                                title=''
+                                details={WETH_WARNING}
+                                noBackground
+                                button={
+                                    <button
+                                        onClick={() => {
+                                            try {
+                                                const wethToken =
+                                                    tokens.getTokenByAddress(
+                                                        validatedInput,
+                                                    );
+                                                if (wethToken) {
+                                                    chooseToken(
+                                                        wethToken,
+                                                        false,
+                                                    );
+                                                }
+                                            } catch (err) {
+                                                IS_LOCAL_ENV &&
+                                                    console.warn(err);
+                                                onClose();
                                             }
-                                        } catch (err) {
-                                            IS_LOCAL_ENV && console.warn(err);
-                                            onClose();
-                                        }
-                                    }}
-                                >
-                                    I understand, use WETH
-                                </button>
-                            }
-                        />
-                    )}
+                                        }}
+                                    >
+                                        I understand, use WETH
+                                    </button>
+                                }
+                            />
+                        )}
                 </div>
                 {platform === 'ambient' && (
                     <>
