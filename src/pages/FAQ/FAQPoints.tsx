@@ -125,7 +125,7 @@ export default function FAQPoints() {
     // hook needed to help build URL for link
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
     // fn to build a link and copy it to the clipboard
-    function copyLink(s: typeof questions[number]['slugs'][0]): void {
+    function copyLink(s: (typeof questions)[number]['slugs'][0]): void {
         // domain to use, local vs deployed
         const domain: string = IS_LOCAL_ENV
             ? 'localhost:3000'
@@ -153,8 +153,8 @@ export default function FAQPoints() {
                             listStyleType: 'none',
                             marginLeft: '0',
                             marginTop: '10px',
-                            overflowY: 'scroll',
                         }}
+                        className='custom_scroll_ambient'
                     >
                         {questions.map((q: questionIF) => {
                             const answerAsArray: (string | JSX.Element)[] = [
