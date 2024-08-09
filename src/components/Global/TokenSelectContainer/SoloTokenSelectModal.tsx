@@ -375,6 +375,27 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                 {platform === 'futa' &&
                     tokens
                         .getTokensFromList('/futa-token-list.json')
+                        .filter((tk: TokenIF) => {
+                            // fn to compare name and symbol to search input
+                            function checkForMatches(
+                                ...args: [string, ...string[]]
+                            ): boolean {
+                                const isMatch: boolean = args.some(
+                                    (a: string) =>
+                                        a
+                                            .toLowerCase()
+                                            .includes(
+                                                validatedInput.toLowerCase(),
+                                            ),
+                                );
+                                return isMatch;
+                            }
+                            // if user entered search input text, check for matches,
+                            // ... else return `true` (no tokens filtered out)
+                            return validatedInput
+                                ? checkForMatches(tk.name, tk.symbol)
+                                : true;
+                        })
                         .map((ticker: TokenIF) => (
                             <TokenSelect
                                 key={JSON.stringify(ticker)}
