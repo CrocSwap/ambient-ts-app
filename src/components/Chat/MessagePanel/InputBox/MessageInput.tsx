@@ -150,7 +150,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserConnected) {
+        if (!isUserConnected && !userAddress) {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -179,6 +179,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         messageInputText();
+        handleEmojiPickerHideShow();
     }, [isUserConnected, userAddress]);
 
     useEffect(() => {
