@@ -382,24 +382,47 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         .getTokensFromList('/futa-token-list.json')
                         .filter((tk: TokenIF) => {
                             // fn to compare name and symbol to search input
-                            function checkForMatches(
+                            function matchSymbolOrName(
                                 ...args: [string, ...string[]]
                             ): boolean {
                                 const isMatch: boolean = args.some(
-                                    (a: string) =>
-                                        a
+                                    (a: string) => {
+                                        return a
                                             .toLowerCase()
                                             .includes(
                                                 validatedInput.toLowerCase(),
-                                            ),
+                                            );
+                                    },
                                 );
                                 return isMatch;
                             }
+                            // fn to compare token address to search input
+                            function matchAddress(reference: string): boolean {
+                                let isMatch: boolean;
+                                if (reference.length === 42) {
+                                    isMatch =
+                                        reference.toLowerCase() ===
+                                        validatedInput.toLowerCase();
+                                    console.log(isMatch);
+                                } else if (reference.length === 40) {
+                                    isMatch =
+                                        '0x' + reference.toLowerCase() ===
+                                        validatedInput.toLowerCase();
+                                } else {
+                                    isMatch = false;
+                                }
+                                return isMatch;
+                            }
+                            // logic router for search type: name, symbol, address
+                            function checkForMatches(): boolean {
+                                return validatedInput.length === 40 ||
+                                    validatedInput.length === 42
+                                    ? matchAddress(tk.address)
+                                    : matchSymbolOrName(tk.name, tk.symbol);
+                            }
                             // if user entered search input text, check for matches,
                             // ... else return `true` (no tokens filtered out)
-                            return validatedInput
-                                ? checkForMatches(tk.name, tk.symbol)
-                                : true;
+                            return validatedInput ? checkForMatches() : true;
                         })
                         .map((ticker: TokenIF) => (
                             <TokenSelect
