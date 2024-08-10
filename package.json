@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.7.5",
+    "version": "2.7.6",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -55,6 +55,7 @@
         "@coinbase/wallet-sdk": "npm:@coinbase/wallet-sdk@4.0.3"
     },
     "scripts": {
+        "ambi": "yarn start --force",
         "start": "yarn install && vite",
         "start-only": "vite",
         "build": "tsc && vite build",

@@ -474,6 +474,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 .active
                                         }
                                         style={{
+                                            position: 'relative',
                                             pointerEvents: selectedDrawnShape
                                                 ?.data.line.active
                                                 ? 'auto'
@@ -494,6 +495,53 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                         .line.lineWidth + 'px',
                                             }}
                                         ></LineWidthOptions>
+                                        {selectedDrawnShape &&
+                                            (isLineSizeOptionTabActive ||
+                                                isBorderSizeOptionTabActive) && (
+                                                <OptionsTab
+                                                    style={{
+                                                        transform:
+                                                            'translateY(62%)',
+                                                        position: 'absolute',
+                                                        width: '130px',
+                                                    }}
+                                                >
+                                                    {sizeOptions.map(
+                                                        (item, index) => (
+                                                            <OptionsTabSize
+                                                                backgroundColor={
+                                                                    item.value ===
+                                                                    (isLineSizeOptionTabActive
+                                                                        ? selectedDrawnShape
+                                                                              .data
+                                                                              .line
+                                                                              .lineWidth
+                                                                        : selectedDrawnShape
+                                                                              .data
+                                                                              .border
+                                                                              .lineWidth)
+                                                                        ? '#434c58'
+                                                                        : undefined
+                                                                }
+                                                                key={index}
+                                                                onClick={(
+                                                                    e: MouseEvent<HTMLElement>,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                    handleEditSize(
+                                                                        item.value,
+                                                                        isLineSizeOptionTabActive,
+                                                                        isBorderSizeOptionTabActive,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {item.icon}{' '}
+                                                                {item.name}
+                                                            </OptionsTabSize>
+                                                        ),
+                                                    )}
+                                                </OptionsTab>
+                                            )}
                                     </OptionStyleContainer>
 
                                     <OptionStyleContainer
@@ -502,6 +550,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                 .active
                                         }
                                         style={{
+                                            position: 'relative',
                                             pointerEvents: selectedDrawnShape
                                                 ?.data.line.active
                                                 ? 'auto'
@@ -522,13 +571,66 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     .dash[0]
                                                     ? lineOptionSvg
                                                     : 5 ===
-                                                      selectedDrawnShape.data
-                                                          .line.dash[0]
-                                                    ? dashOptionSvg
-                                                    : dottedOptionSvg)
+                                                        selectedDrawnShape.data
+                                                            .line.dash[0]
+                                                      ? dashOptionSvg
+                                                      : dottedOptionSvg)
                                             }
                                             alt=''
                                         />
+                                        {selectedDrawnShape &&
+                                            (isLineStyleOptionTabActive ||
+                                                isBorderStyleOptionTabActive) && (
+                                                <OptionsTab
+                                                    style={{
+                                                        transform:
+                                                            'translateY(60%)',
+                                                        position: 'absolute',
+                                                        width: '130px',
+                                                    }}
+                                                >
+                                                    {styleOptions.map(
+                                                        (item, index) => (
+                                                            <OptionsTabStyle
+                                                                backgroundColor={
+                                                                    item
+                                                                        .value[0] ===
+                                                                    (isLineStyleOptionTabActive
+                                                                        ? selectedDrawnShape
+                                                                              .data
+                                                                              .line
+                                                                              .dash[0]
+                                                                        : selectedDrawnShape
+                                                                              .data
+                                                                              .border
+                                                                              .dash[0])
+                                                                        ? '#434c58'
+                                                                        : undefined
+                                                                }
+                                                                key={index}
+                                                                onClick={(
+                                                                    e: MouseEvent<HTMLElement>,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                    handleEditStyle(
+                                                                        item.value,
+                                                                        isLineStyleOptionTabActive,
+                                                                        isBorderStyleOptionTabActive,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        item.icon
+                                                                    }
+                                                                    alt=''
+                                                                />{' '}
+                                                                {item.name}
+                                                            </OptionsTabStyle>
+                                                        ),
+                                                    )}
+                                                </OptionsTab>
+                                            )}
                                     </OptionStyleContainer>
                                 </LineSettingsRight>
                             </LineSettings>
@@ -650,10 +752,10 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     .dash[0]
                                                     ? lineOptionSvg
                                                     : 5 ===
-                                                      selectedDrawnShape.data
-                                                          .border.dash[0]
-                                                    ? dashOptionSvg
-                                                    : dottedOptionSvg)
+                                                        selectedDrawnShape.data
+                                                            .border.dash[0]
+                                                      ? dashOptionSvg
+                                                      : dottedOptionSvg)
                                             }
                                             alt=''
                                         />
@@ -936,7 +1038,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    paddingLeft: '8px',
+                                    paddingLeft: '18px',
                                     // justifyContent: 'center',
                                 }}
                             >
@@ -1089,7 +1191,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    paddingLeft: '8px',
+                                    paddingLeft: '18px',
                                     // justifyContent: 'center',
                                 }}
                             >
@@ -1133,8 +1235,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                       (isLineColorPickerTabActive
                                           ? 60
                                           : isBorderColorPickerTabActive
-                                          ? 90
-                                          : 120) + 'px',
+                                            ? 90
+                                            : 120) + 'px',
                                   left: '85px',
                               }
                     }
@@ -1147,8 +1249,8 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                             isLineColorPickerTabActive
                                 ? colorPicker.lineColor
                                 : isBorderColorPickerTabActive
-                                ? colorPicker.borderColor
-                                : colorPicker.background
+                                  ? colorPicker.borderColor
+                                  : colorPicker.background
                         }
                         width={'170px'}
                         onChange={(item, event) => {
@@ -1165,103 +1267,6 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     />
                 </ColorPickerTab>
             )}
-
-            {selectedDrawnShape &&
-                (isLineSizeOptionTabActive || isBorderSizeOptionTabActive) && (
-                    <OptionsTab
-                        style={
-                            isNearestWindow
-                                ? {
-                                      bottom: '70px',
-                                      position: 'absolute',
-                                      left: '100px',
-                                  }
-                                : {
-                                      marginLeft: '70px',
-                                      position: 'absolute',
-                                      top:
-                                          (isLineSizeOptionTabActive
-                                              ? 65
-                                              : 95) + 'px',
-                                      left: '80px',
-                                  }
-                        }
-                    >
-                        {sizeOptions.map((item, index) => (
-                            <OptionsTabSize
-                                backgroundColor={
-                                    item.value ===
-                                    (isLineSizeOptionTabActive
-                                        ? selectedDrawnShape.data.line.lineWidth
-                                        : selectedDrawnShape.data.border
-                                              .lineWidth)
-                                        ? '#434c58'
-                                        : undefined
-                                }
-                                key={index}
-                                onClick={(e: MouseEvent<HTMLElement>) => {
-                                    e.stopPropagation();
-                                    handleEditSize(
-                                        item.value,
-                                        isLineSizeOptionTabActive,
-                                        isBorderSizeOptionTabActive,
-                                    );
-                                }}
-                            >
-                                {item.icon} {item.name}
-                            </OptionsTabSize>
-                        ))}
-                    </OptionsTab>
-                )}
-
-            {selectedDrawnShape &&
-                (isLineStyleOptionTabActive ||
-                    isBorderStyleOptionTabActive) && (
-                    <OptionsTab
-                        style={
-                            isNearestWindow
-                                ? {
-                                      bottom: '70px',
-                                      position: 'absolute',
-                                      left: '140px',
-                                  }
-                                : {
-                                      marginLeft: '70px',
-                                      position: 'absolute',
-                                      top:
-                                          (isLineStyleOptionTabActive
-                                              ? 65
-                                              : 95) + 'px',
-                                      left: '130px',
-                                  }
-                        }
-                    >
-                        {styleOptions.map((item, index) => (
-                            <OptionsTabStyle
-                                backgroundColor={
-                                    item.value[0] ===
-                                    (isLineStyleOptionTabActive
-                                        ? selectedDrawnShape.data.line.dash[0]
-                                        : selectedDrawnShape.data.border
-                                              .dash[0])
-                                        ? '#434c58'
-                                        : undefined
-                                }
-                                key={index}
-                                onClick={(e: MouseEvent<HTMLElement>) => {
-                                    e.stopPropagation();
-                                    handleEditStyle(
-                                        item.value,
-                                        isLineStyleOptionTabActive,
-                                        isBorderStyleOptionTabActive,
-                                    );
-                                }}
-                            >
-                                <img src={item.icon} alt='' /> {item.name}
-                            </OptionsTabStyle>
-                        ))}
-                    </OptionsTab>
-                )}
         </>
     );
 }
