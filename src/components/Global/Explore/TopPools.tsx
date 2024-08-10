@@ -7,7 +7,6 @@ import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../ambient-utils/types';
 import Spinner from '../Spinner/Spinner';
 import {
-    ScrollableContainer,
     ShadowBox,
     SpinnerContainer,
     Table,
@@ -125,9 +124,10 @@ function TopPools(props: propsIF) {
                     ? 'calc(100svh - 240px)'
                     : 'calc(100svh - 200px)'
             }
+            style={{ overflowY: 'hidden' }}
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >
-            <ScrollableContainer>
+            <div className='custom_scroll_ambient'>
                 <ShadowBox>
                     <Table>
                         <TableHead
@@ -169,7 +169,7 @@ function TopPools(props: propsIF) {
                         </TableBody>
                     </Table>
                 </ShadowBox>
-            </ScrollableContainer>
+            </div>
         </FlexContainer>
     );
 }

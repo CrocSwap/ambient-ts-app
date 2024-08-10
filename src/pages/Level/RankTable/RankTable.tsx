@@ -27,8 +27,8 @@ export default function RankTable(props: Props) {
         (selectedXpLeaderboardType === 'Chain'
             ? xpLeaders.byChain
             : selectedXpLeaderboardType === 'Weekly'
-            ? xpLeaders.byWeek
-            : xpLeaders.global
+              ? xpLeaders.byWeek
+              : xpLeaders.global
         )?.data?.map((entry) => ({
             rank: entry.weeklyRank ?? entry.chainRank ?? entry.globalRank ?? 0,
             walletDisplay: trimString(entry.userAddress ?? '', 6, 6, '…'),
@@ -57,12 +57,12 @@ export default function RankTable(props: Props) {
                               ? connectedUserXp.data.weeklyRank
                               : '-'
                           : selectedXpLeaderboardType === 'Chain'
-                          ? connectedUserXp.data.chainRank
-                              ? connectedUserXp.data.chainRank
-                              : '-'
-                          : connectedUserXp.data.globalRank
-                          ? connectedUserXp.data.globalRank
-                          : '-',
+                            ? connectedUserXp.data.chainRank
+                                ? connectedUserXp.data.chainRank
+                                : '-'
+                            : connectedUserXp.data.globalRank
+                              ? connectedUserXp.data.globalRank
+                              : '-',
                   walletDisplay: trimString(
                       connectedUserXp.data.userAddress ?? '',
                       6,
@@ -73,8 +73,8 @@ export default function RankTable(props: Props) {
                   points: (selectedXpLeaderboardType === 'Weekly'
                       ? connectedUserXp.data.weeklyPoints ?? 0
                       : selectedXpLeaderboardType === 'Chain'
-                      ? connectedUserXp.data.chainPoints ?? 0
-                      : connectedUserXp.data.globalPoints ?? 0
+                        ? connectedUserXp.data.chainPoints ?? 0
+                        : connectedUserXp.data.globalPoints ?? 0
                   ).toLocaleString('en-US', {
                       minimumFractionDigits: 0,
                       maximumFractionDigits: 0,
@@ -94,7 +94,9 @@ export default function RankTable(props: Props) {
         <div className={styles.main_table}>
             <RankHeader />
             <Divider />
-            <div className={styles.main_table_content}>
+            <div
+                className={`${styles.main_table_content} custom_scroll_ambient`}
+            >
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : formattedConnectedUserData !== undefined ? (
