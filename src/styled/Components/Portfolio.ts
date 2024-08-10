@@ -9,7 +9,6 @@ export const PortfolioTabsPortfolioTabsContainer = styled.div`
     width: 100%;
     height: 100%;
     overflow: hidden;
-    padding-left: 28px;
 
     border-radius: var(--border-radius);
     background: var(--dark1);
@@ -19,7 +18,7 @@ export const PortfolioTabsPortfolioTabsContainer = styled.div`
     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
         margin: 0 auto;
         width: 100%;
-        padding: 0 1rem;
+        padding: 0 0.1rem;
     }
 `;
 
@@ -59,7 +58,9 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
 
     &::placeholder {
         color: var(--text2);
