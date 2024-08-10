@@ -168,7 +168,7 @@ export default function PortfolioBanner(props: propsIF) {
                     position: 'absolute',
                     bottom: 20,
                     right: 20,
-                    zIndex: 10,
+                    zIndex: 3,
                 }} // Positioned above the NoisyLines component
             >
                 <UserLevelDisplay

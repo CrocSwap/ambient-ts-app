@@ -895,7 +895,10 @@ function Ranges(props: propsIF) {
         >
             <div>{headerColumnsDisplay}</div>
 
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
