@@ -59,7 +59,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'Price',
-            hidden: false,
+            hidden: true,
             align: 'right',
             responsive: 'sm',
             sortable: false,
@@ -73,7 +73,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'APR',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'lg',
             sortable: true,
