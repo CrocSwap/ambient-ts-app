@@ -16,6 +16,7 @@ import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { TradeDataContext } from './TradeDataContext';
 import {
     getFormattedNumber,
+    isBtcPair,
     isETHPair,
     isStablePair,
     isWbtcToken,
@@ -178,13 +179,19 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
             quoteTokenAddress,
         );
         const isPairEthPair = isETHPair(baseTokenAddress, quoteTokenAddress);
+        const isPoolBtcPair = isBtcPair(baseTokenAddress, quoteTokenAddress);
 
         const isPairEthWbtc =
             baseTokenAddress === ZERO_ADDRESS && isWbtcToken(quoteTokenAddress);
 
         if (
             usdPrice !== undefined &&
-            !(isPairStablePair || isPairEthPair || isPairEthWbtc)
+            !(
+                isPairStablePair ||
+                isPairEthPair ||
+                isPoolBtcPair ||
+                isPairEthWbtc
+            )
         ) {
             setIsTradeDollarizationEnabled(true);
         } else {
