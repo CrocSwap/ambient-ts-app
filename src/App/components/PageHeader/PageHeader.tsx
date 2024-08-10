@@ -331,7 +331,11 @@ const PageHeader = function () {
     // Most of this functionality can be achieved by using the NavLink instead of Link and accessing the isActive prop on the
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
-    function isActive(linkDestination: string, locationPathname: string) {
+    function isActive(
+        title: string,
+        linkDestination: string,
+        locationPathname: string,
+    ) {
         const trailingSlashRegex = /\/$/;
         const locationPathnameNoTrailingSlash = locationPathname.replace(
             trailingSlashRegex,
@@ -349,7 +353,8 @@ const PageHeader = function () {
             (locationPathnameNoTrailingSlash.endsWith('/account') &&
                 linkDestination.includes('/account') &&
                 !linkDestination.includes('/points')) ||
-            locationPathname === linkDestination
+            (locationPathname === linkDestination &&
+                !(title === 'Account' && locationPathname.includes('/points')))
         );
     }
 
@@ -364,7 +369,11 @@ const PageHeader = function () {
                         <NavigationLink
                             tabIndex={0}
                             className={
-                                isActive(link.destination, location.pathname)
+                                isActive(
+                                    link.title,
+                                    link.destination,
+                                    location.pathname,
+                                )
                                     ? HeaderClasses.active
                                     : HeaderClasses.inactive
                             }
@@ -373,9 +382,11 @@ const PageHeader = function () {
                         >
                             {link.title}
 
-                            {isActive(link.destination, location.pathname) && (
-                                <UnderlinedMotionDiv layoutId='underline' />
-                            )}
+                            {isActive(
+                                link.title,
+                                link.destination,
+                                location.pathname,
+                            ) && <UnderlinedMotionDiv layoutId='underline' />}
                         </NavigationLink>
                     ) : null,
                 )}
