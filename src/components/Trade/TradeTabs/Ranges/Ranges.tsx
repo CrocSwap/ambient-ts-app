@@ -404,7 +404,9 @@ function Ranges(props: propsIF) {
         {
             name: walID,
             className: 'wallet_id',
-            show: tableView !== 'large',
+            show:
+                tableView === 'medium' ||
+                (!isAccountView && tableView === 'small'),
             slug: 'walletid',
             sortable: !isAccountView,
         },
