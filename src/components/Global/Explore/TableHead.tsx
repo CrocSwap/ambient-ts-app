@@ -7,6 +7,7 @@ import {
     TableHeadWrapper,
 } from '../../../styled/Components/Analytics';
 import AssignSort from './AssignSort';
+import TooltipComponent from '../TooltipComponent/TooltipComponent';
 
 interface propsIF {
     headerItems: HeaderItem[];
@@ -24,7 +25,7 @@ const TableHead = (props: propsIF) => {
                         sortedPools.current === item.label.toLowerCase();
                     return (
                         <TableHeaderCell
-                            key={JSON.stringify(item)}
+                            key={JSON.stringify(item.label)}
                             align={item.align}
                             sortable={item.sortable}
                             pxValue={item.pxValue}
@@ -52,6 +53,12 @@ const TableHead = (props: propsIF) => {
                                 {isActiveSort && (
                                     <AssignSort
                                         direction={sortedPools.direction}
+                                    />
+                                )}
+                                {item.tooltipText && (
+                                    <TooltipComponent
+                                        title={item.tooltipText}
+                                        placement='right'
                                     />
                                 )}
                             </LabelWrapper>

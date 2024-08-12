@@ -2578,14 +2578,19 @@ export default function Chart(props: propsIF) {
             });
             timeGaps.forEach((obj) => (obj.isAddedPixel = false));
 
-            const targetValue = Date.now();
-            const targetPixel = scaleData.xScale.range()[1] * (1 - xAxisBuffer);
+            const canvasDiv = d3.select(d3CanvasMain.current);
 
-            const currentRange = scaleData?.xScale.range();
+            const canvas = canvasDiv
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+            const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
                 centerX - diff * xAxisBuffer,
                 centerX + diff * (1 - xAxisBuffer),
             ];
+
+            const targetValue = Date.now();
+            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
 
             const newDomainMin =
                 targetValue -
@@ -3373,15 +3378,23 @@ export default function Chart(props: propsIF) {
                                         const infoLabelHeight = 66;
                                         const infoLabelWidth = 195;
 
-                                        const infoLabelXAxisData =
-                                            Math.min(
-                                                item.data[0].x,
-                                                item.data[1].x,
-                                            ) +
+                                        const diff =
                                             Math.abs(
-                                                item.data[0].x - item.data[1].x,
-                                            ) /
-                                                2;
+                                                scaleData.xScale(
+                                                    item.data[0].x,
+                                                ) -
+                                                    scaleData.xScale(
+                                                        item.data[1].x,
+                                                    ),
+                                            ) / 2;
+
+                                        const infoLabelXAxisData =
+                                            scaleData.xScale(
+                                                Math.min(
+                                                    item.data[0].x,
+                                                    item.data[1].x,
+                                                ),
+                                            ) + diff;
 
                                         const yAxisLabelPlacement =
                                             scaleData.yScale(
@@ -3438,9 +3451,7 @@ export default function Chart(props: propsIF) {
                                             ctx.beginPath();
                                             ctx.fillStyle = 'rgb(34,44,58)';
                                             ctx.fillRect(
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ) -
+                                                infoLabelXAxisData -
                                                     infoLabelWidth / 2,
                                                 yAxisLabelPlacement,
                                                 infoLabelWidth,
@@ -3488,9 +3499,8 @@ export default function Chart(props: propsIF) {
                                                     heightAsPercentage.toString() +
                                                     '%)  ' +
                                                     dpRangeTickPrice,
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 16,
                                             );
                                             const min = Math.min(
@@ -3513,9 +3523,8 @@ export default function Chart(props: propsIF) {
                                                 showCandleCount +
                                                     ' bars,  ' +
                                                     lengthAsDate,
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 33,
                                             );
                                             ctx.fillText(
@@ -3523,9 +3532,8 @@ export default function Chart(props: propsIF) {
                                                     formatDollarAmountAxis(
                                                         totalVolumeCovered,
                                                     ).replace('$', ''),
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 50,
                                             );
                                         }
@@ -5435,39 +5443,15 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
-    const setCrossHairDataFunc = (
-        nearestTime: number,
-        offsetX: number,
-        offsetY: number,
-    ) => {
-        if (scaleData) {
-            const snapDiff =
-                scaleData?.xScale.invert(offsetX) % (period * 1000);
+    const setCrossHairDataFunc = (nearestTime: number, offsetY: number) => {
+        setCrosshairActive('chart');
 
-            const snappedTime =
-                scaleData?.xScale.invert(offsetX) -
-                (snapDiff > period * 1000 - snapDiff
-                    ? -1 * (period * 1000 - snapDiff)
-                    : snapDiff);
-
-            const crTime =
-                snappedTime <= lastCandleData.time * 1000 &&
-                snappedTime >= firstCandleData.time * 1000 &&
-                nearestTime
-                    ? nearestTime * 1000
-                    : snappedTime;
-
-            setCrosshairActive('chart');
-
-            setCrosshairData([
-                {
-                    x: crTime,
-                    y: scaleData?.yScale.invert(offsetY),
-                },
-            ]);
-
-            return crTime;
-        }
+        setCrosshairData([
+            {
+                x: nearestTime,
+                y: scaleData?.yScale.invert(offsetY),
+            },
+        ]);
     };
 
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
@@ -5482,7 +5466,7 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
+                setCrossHairDataFunc(nearest?.time * 1000, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (

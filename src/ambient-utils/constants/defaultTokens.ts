@@ -207,15 +207,6 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
-export const blastBIG: TokenIF = {
-    address: '0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE',
-    chainId: 81457,
-    decimals: 18,
-    name: 'BIG',
-    symbol: 'BIG',
-    logoURI: '',
-};
-
 export const blastJUICE: TokenIF = {
     address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
     chainId: 81457,
@@ -262,15 +253,6 @@ export const blastALIEN: TokenIF = {
     logoURI: '',
 };
 
-export const blastBAJA: TokenIF = {
-    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
-    chainId: 81457,
-    decimals: 18,
-    name: 'Baja',
-    symbol: 'BAJA',
-    logoURI: '',
-};
-
 export const blastESE: TokenIF = {
     address: '0x491e6DE43b55c8EAE702EDC263E32339da42f58c',
     chainId: 81457,
@@ -296,15 +278,6 @@ export const blastYES: TokenIF = {
     name: 'YES Money v2',
     symbol: 'YES',
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png',
-};
-
-export const blastPACM: TokenIF = {
-    address: '0x0B4d0ee29857c3961b380d4ec138EA5814E346b9',
-    chainId: 81457,
-    decimals: 18,
-    name: 'P@cman Blastoff',
-    symbol: '$PACM',
-    logoURI: 'https://www.pacman.meme/images/tokens/pacman.svg',
 };
 
 export const blastWETH: TokenIF = {
@@ -587,6 +560,15 @@ export const scrollKNC: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
+export const scrollSOLVBTC: TokenIF = {
+    name: 'Free Bridged SolvBTC.b',
+    address: '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4',
+    symbol: 'SolvBTC.b',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/36800/standard/solvBTC.png',
+};
 
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
@@ -649,11 +631,9 @@ export const defaultTokens: TokenIF[] = [
     blastBLAST,
     blastUSDPLUS,
     blastMIA,
-    blastBIG,
     blastMIM,
     blastORBIT,
     blastBAG,
-    blastBAJA,
     blastESE,
     blastBEPE,
     blastALIEN,
@@ -664,7 +644,6 @@ export const defaultTokens: TokenIF[] = [
     blastPUMP,
     blastYES,
     blastYESv1,
-    blastPACM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     scrollETH,
@@ -673,6 +652,7 @@ export const defaultTokens: TokenIF[] = [
     scrollDAI,
     scrollUSDT,
     scrollKNC,
+    scrollSOLVBTC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollUSDE,

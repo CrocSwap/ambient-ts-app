@@ -209,11 +209,6 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
             n: 80,
             period: candleTime.time,
             time: filter?.time,
@@ -716,7 +711,10 @@ function Transactions(props: propsIF) {
         >
             <div>{headerColumnsDisplay}</div>
 
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading

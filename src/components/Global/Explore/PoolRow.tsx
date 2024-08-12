@@ -49,6 +49,14 @@ export default function PoolRow(props: propsIF) {
 
     const mobileScrenView = useMediaQuery('(max-width: 640px)');
 
+    const aprString =
+        pool.apr && pool.apr > 0.01
+            ? getFormattedNumber({
+                  value: pool.apr,
+                  isPercentage: true,
+              }) + '%'
+            : '...';
+
     return (
         <TableRow
             onClick={(event: React.MouseEvent) => {
@@ -84,7 +92,7 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm left>
                 <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
-            <TableCell>
+            <TableCell hidden lg>
                 <p>
                     {isExploreDollarizationEnabled
                         ? pool.usdPriceMoneynessBased !== 0
@@ -94,12 +102,15 @@ export default function PoolRow(props: propsIF) {
                               })
                             : '...'
                         : pool.displayPrice
-                        ? characterToDisplay + pool.displayPrice
-                        : '...'}
+                          ? characterToDisplay + pool.displayPrice
+                          : '...'}
                 </p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
+            </TableCell>
+            <TableCell>
+                <p>{aprString}</p>
             </TableCell>
             <TableCell>
                 <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
@@ -112,8 +123,8 @@ export default function PoolRow(props: propsIF) {
                             !pool.priceChangeStr
                                 ? 'var(--text1)'
                                 : pool.priceChangeStr.startsWith('-')
-                                ? 'var(--negative)'
-                                : 'var(--positive)',
+                                  ? 'var(--negative)'
+                                  : 'var(--positive)',
                     }}
                 >
                     {!pool.priceChangeStr || pool.priceChangeStr.includes('NaN')

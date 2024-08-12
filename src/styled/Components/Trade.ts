@@ -9,10 +9,7 @@ export const MainSection = styled.section<{
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
     grid-template-columns: auto 380px;
-    height: ${(props) =>
-        props.isDropdown && !props.isSmallScreen
-            ? 'calc(100dvh - 85px)'
-            : 'calc(100dvh - 150px)'};
+    height: calc(100dvh - 150px);
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
@@ -21,14 +18,14 @@ export const MainSection = styled.section<{
         flex-direction: column;
     }
 
-    @media only screen and (max-width: 1279px) {
-        padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
-    }
-
     @media (max-width: 600px) {
         display: flex;
         flex-direction: column;
         gap: 4px;
+    }
+
+    @media (max-width: 700px) and (min-width: 500px) {
+        height: calc(100dvh - 85px);
     }
 `;
 
@@ -42,7 +39,6 @@ export const TradeDropdown = styled.div`
     text-transform: capitalize;
     margin: 0 auto;
     background: var(--dark2);
-
     @media (max-width: 500px) {
         width: 95%;
     }

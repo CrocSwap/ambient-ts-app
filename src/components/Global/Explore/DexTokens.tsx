@@ -1,7 +1,6 @@
 import { memo, useContext } from 'react';
 import Spinner from '../Spinner/Spinner';
 import {
-    ScrollableContainer,
     ShadowBox,
     SpinnerContainer,
     Table,
@@ -37,6 +36,7 @@ export interface HeaderItem {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
+    tooltipText?: string | JSX.Element;
 }
 
 interface propsIF {
@@ -91,6 +91,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'lg',
             sortable: true,
+            tooltipText: 'Total trade volume',
         },
         {
             label: 'TVL',
@@ -99,6 +100,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
+            tooltipText: 'Total value locked',
         },
         {
             label: 'Fees',
@@ -107,6 +109,7 @@ function DexTokens(props: propsIF) {
             align: 'right',
             responsive: 'sm',
             sortable: true,
+            tooltipText: 'Total fees collected',
         },
         {
             label: '',
@@ -127,7 +130,7 @@ function DexTokens(props: propsIF) {
                     : 'calc(100svh - 200px)'
             }
         >
-            <ScrollableContainer>
+            <div className='custom_scroll_ambient'>
                 <ShadowBox>
                     <Table>
                         <TableHeadTokens
@@ -197,7 +200,7 @@ function DexTokens(props: propsIF) {
                         </TableBody>
                     </Table>
                 </ShadowBox>
-            </ScrollableContainer>
+            </div>
         </FlexContainer>
     );
 }

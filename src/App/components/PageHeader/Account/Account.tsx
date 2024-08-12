@@ -23,6 +23,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import LevelDropdown from './LevelDropdown/LevelDropdown';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -196,6 +197,8 @@ export default function Account(props: propsIF) {
             {isUserConnected && walletDisplay}
             {isUserConnected && levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
+            <NotificationCenter />
+
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}

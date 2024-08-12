@@ -13,7 +13,7 @@ function TimeFrame(props: propsIF) {
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 968px)');
+    const mobileView = useMediaQuery('(max-width: 968px)');
 
     const wrapperStyle = showTimeFrameDropdown
         ? styles.dropdown_wrapper_active
@@ -34,7 +34,7 @@ function TimeFrame(props: propsIF) {
                 tabIndex={0}
                 aria-label='Open time frame dropdown.'
             >
-                Candle Duration
+                Duration
             </button>
 
             <div className={wrapperStyle}>
@@ -61,7 +61,7 @@ function TimeFrame(props: propsIF) {
         </div>
     );
 
-    if (desktopView) return timeFrameMobile;
+    if (mobileView) return timeFrameMobile;
 
     return (
         <div className={styles.chart_overlay_container}>

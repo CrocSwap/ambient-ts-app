@@ -51,7 +51,7 @@ const metadata = {
 
 const ethersConfig = defaultConfig({
     metadata,
-    defaultChainId: 1,
+    defaultChainId: 534352,
     enableEmail: false,
     rpcUrl: ' ',
     coinbasePreference: 'smartWalletOnly',

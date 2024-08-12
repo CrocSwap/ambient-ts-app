@@ -155,14 +155,6 @@
             "logoURI": "https://miablastsoff.com/images/logo.png"
         },
         {
-            "address": "0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE",
-            "chainId": 81457,
-            "decimals": 18,
-            "name": "BIG",
-            "symbol": "BIG",
-            "logoURI": ""
-        },
-        {
             "address": "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
             "chainId": 81457,
             "decimals": 18,
@@ -207,15 +199,6 @@
             "logoURI": "https://s2.coinmarketcap.com/static/img/coins/64x64/29601.png"
         },
         {
-            "address": "0x0B4d0ee29857c3961b380d4ec138EA5814E346b9",
-            "chainId": 81457,
-            "decimals": 18,
-            "fromList": "/ambient-token-list.json",
-            "name": "P@cman Blastoff",
-            "symbol": "$PACM",
-            "logoURI": "https://www.pacman.meme/images/tokens/pacman.svg"
-        },
-        {
             "chainId": 81457,
             "address": "0x5ffd9ebd27f2fcab044c0f0a26a45cb62fa29c06",
             "name": "PacMoon",
@@ -230,15 +213,6 @@
             "fromList": "/ambient-token-list.json",
             "name": "Alien",
             "symbol": "ALIEN",
-            "logoURI": ""
-        },
-        {
-            "address": "0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204",
-            "chainId": 81457,
-            "decimals": 18,
-            "fromList": "/ambient-token-list.json",
-            "name": "Baja",
-            "symbol": "BAJA",
             "logoURI": ""
         },
         {
@@ -396,6 +370,14 @@
             "decimals": 18,
             "chainId": 534352,
             "logoURI": "https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png"
+        },
+        {
+            "name": "Free Bridged SolvBTC.b",
+            "address": "0x3Ba89d490AB1C0c9CC2313385b30710e838370a4",
+            "symbol": "SolvBTC.b",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/36800/standard/solvBTC.png"
         },
         {
             "name": "Wrapped Kelp DAO Restaked ETH",

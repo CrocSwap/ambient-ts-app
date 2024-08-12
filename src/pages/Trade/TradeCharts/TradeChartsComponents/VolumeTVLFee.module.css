@@ -48,6 +48,7 @@
     padding: 2px 8px;
     border-radius: var(--border-radius);
     border: 1px solid var(--dark3);
+    font-size: 12px;
 }
 
 .dropdown_menu {

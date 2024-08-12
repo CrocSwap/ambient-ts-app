@@ -14,6 +14,9 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { IoSettingsOutline } from 'react-icons/io5';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 // import { IoSettingsOutline } from 'react-icons/io5';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
@@ -25,9 +28,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         chartHeights,
         tradeTableState,
         isCandleDataNull,
-        // contextmenu,
-        // setContextmenu,
-        // setContextMenuPlacement,
+        contextmenu,
+        setContextmenu,
+        setContextMenuPlacement,
     } = useContext(ChartContext);
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
@@ -40,6 +43,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         quoteToken: { symbol: quoteTokenSymbol },
         isDenomBase,
     } = useContext(TradeDataContext);
+
+    const { activeMobileComponent } = useContext(TradeTableContext);
 
     const [, copy] = useCopyToClipboard();
     const {
@@ -83,6 +88,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     onClick={() =>
                         setIsCondensedModeEnabled(!isCondensedModeEnabled)
                     }
+                    mobileHide={activeMobileComponent !== 'chart'}
                 >
                     <AiOutlineAreaChart
                         size={20}
@@ -111,6 +117,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     onClick={() =>
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }
+                    mobileHide={activeMobileComponent !== 'chart'}
                 >
                     <AiOutlineDollarCircle
                         size={20}
@@ -157,7 +164,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     />
                 </HeaderButtons>
             </DefaultTooltip>
-            {/* <DefaultTooltip
+            <DefaultTooltip
                 interactive
                 title={'Open chart settings'}
                 enterDelay={500}
@@ -183,13 +190,16 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                         aria-label='Chart settings button'
                     />
                 </HeaderButtons>
-            </DefaultTooltip> */}
+            </DefaultTooltip>
         </FlexContainer>
     );
 
     return (
         <FlexContainer
             justifyContent='space-between'
+            alignItems={
+                useMediaQuery('(min-width: 2000px)') ? 'center' : 'flex-start'
+            }
             padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
         >
             <TradeChartsTokenInfo />
