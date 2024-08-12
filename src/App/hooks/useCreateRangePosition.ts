@@ -47,8 +47,8 @@ export function useCreateRangePosition() {
     const createRangePosition = async (params: {
         slippageTolerancePercentage: number;
         isAmbient: boolean;
-        tokenAInputQty: number;
-        tokenBInputQty: number;
+        tokenAInputQty: string;
+        tokenBInputQty: string;
         isWithdrawTokenAFromDexChecked: boolean;
         isWithdrawTokenBFromDexChecked: boolean;
         defaultLowTick: number;

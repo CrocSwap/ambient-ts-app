@@ -1086,12 +1086,8 @@ export default function InitPool() {
         const params = {
             slippageTolerancePercentage: 3,
             isAmbient,
-            tokenAInputQty: isTokenAInputDisabled
-                ? 0
-                : parseFloat(tokenACollateral),
-            tokenBInputQty: isTokenBInputDisabled
-                ? 0
-                : parseFloat(tokenBCollateral),
+            tokenAInputQty: isTokenAInputDisabled ? '0' : tokenACollateral,
+            tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBCollateral,
             isWithdrawTokenAFromDexChecked,
             isWithdrawTokenBFromDexChecked,
             defaultLowTick,

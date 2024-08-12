@@ -912,12 +912,8 @@ function Range() {
         createRangePosition({
             slippageTolerancePercentage,
             isAmbient,
-            tokenAInputQty: isTokenAInputDisabled
-                ? 0
-                : parseFloat(tokenAInputQty),
-            tokenBInputQty: isTokenBInputDisabled
-                ? 0
-                : parseFloat(tokenBInputQty),
+            tokenAInputQty: isTokenAInputDisabled ? '0' : tokenAInputQty,
+            tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBInputQty,
             isWithdrawTokenAFromDexChecked,
             isWithdrawTokenBFromDexChecked,
             defaultLowTick,
