@@ -20,6 +20,7 @@ import CircularProgressBarForChat from '../../../Global/OpenOrderStatus/Circular
 import {
     filterMessage,
     formatURL,
+    getEmojiFromUnifiedCode,
     isLink,
     isLinkInCrocodileLabsLinks,
     isLinkInCrocodileLabsLinksForInput,
@@ -94,6 +95,9 @@ export default function MessageInput(props: MessageInputProps) {
 
     const isRoomAdmins = roomId === 'Admins';
 
+    const messageRef = useRef<string>();
+    messageRef.current = message;
+
     useEffect(() => {
         if (props.selectedMessageForReply) {
             if (
@@ -137,7 +141,7 @@ export default function MessageInput(props: MessageInputProps) {
                 emoji = emojiObject.emoji;
             }
 
-            let currentMessage = message;
+            let currentMessage = messageRef.current ? messageRef.current : '';
             if (clearCustomEmojiSearch) {
                 currentMessage = currentMessage.slice(
                     0,
@@ -585,6 +589,17 @@ export default function MessageInput(props: MessageInputProps) {
             filteredEmojis.map((emoji) => {
                 if (customEmojiPickerRef.current) {
                     // customEmojiPickerRef.current.appendChild(emoji.cloneNode(true));
+                    if (!emoji.getAttribute('data-custom-event')) {
+                        const unifiedCode = emoji.getAttribute('data-unified');
+                        emoji.addEventListener('click', () => {
+                            if (unifiedCode) {
+                                const emoji =
+                                    getEmojiFromUnifiedCode(unifiedCode);
+                                handleEmojiClick(emoji, true);
+                            }
+                        });
+                        emoji.setAttribute('data-custom-event', 'true');
+                    }
                     customEmojiPickerRef.current.appendChild(emoji);
                 }
             });
@@ -713,9 +728,8 @@ export default function MessageInput(props: MessageInputProps) {
                 if (emoji) {
                     const unifiedCode = emoji.getAttribute('data-unified');
                     if (unifiedCode) {
-                        const emojiCharacter = String.fromCodePoint(
-                            parseInt(unifiedCode, 16),
-                        );
+                        const emojiCharacter =
+                            getEmojiFromUnifiedCode(unifiedCode);
                         handleEmojiClick(emojiCharacter, true);
                     }
                     resetCustomEmojiPickerStates();

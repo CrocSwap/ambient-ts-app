@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { EmojiClickData, Theme } from 'emoji-picker-react';
+import { EmojiClickData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -37,6 +37,7 @@ import useChatSocket from './Service/useChatSocket';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
+import { getEmojiPack } from './ChatRenderUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -199,6 +200,17 @@ function ChatPanel(props: propsIF) {
     const [messageForNotificationBubble, setMessageForNotificationBubble] =
         useState<Message | undefined>(undefined);
 
+    const reactionCodes = [
+        '1f44d',
+        '2764-fe0f',
+        '1f603',
+        '1f602',
+        '1f622',
+        '1f64f',
+        '1f44e',
+        '1f621',
+    ];
+
     const {
         messages,
         lastMessage,
@@ -331,9 +343,15 @@ function ChatPanel(props: propsIF) {
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
-    const addReactionEmojiPickListener = (data: EmojiClickData) => {
+    const addReactionEmojiPickListener = (data: EmojiClickData | string) => {
         if (focusedMessageRef.current && currentUser) {
-            addReaction(focusedMessageRef.current._id, currentUser, data.emoji);
+            let reaction;
+            if (typeof data == 'string') {
+                reaction = data;
+            } else {
+                reaction = data.emoji;
+            }
+            addReaction(focusedMessageRef.current._id, currentUser, reaction);
             setShowPicker(false);
         }
     };
@@ -831,26 +849,7 @@ function ChatPanel(props: propsIF) {
             ref={reactionsRef}
             style={{ bottom: pickerBottomPos }}
         >
-            <Picker
-                theme={Theme.DARK}
-                onEmojiClick={(emoji) => {
-                    addReactionEmojiPickListener(emoji);
-                }}
-                // style={{ width: '100%', height: '300px' }}
-                searchDisabled={true}
-                reactions={[
-                    '1f44d',
-                    '2764-fe0f',
-                    '1f603',
-                    '1f602',
-                    '1f622',
-                    '1f64f',
-                    '1f44e',
-                    '1f621',
-                ]}
-                reactionsDefaultOpen={true}
-                allowExpandReactions={false}
-            />
+            {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
         </div>
     );
 
@@ -1436,29 +1435,13 @@ function ChatPanel(props: propsIF) {
                             ref={reactionsRef}
                             style={{ bottom: pickerBottomPos }}
                         >
-                            <Picker
-                                theme={Theme.DARK}
-                                onEmojiClick={(emoji) => {
-                                    addReactionEmojiPickListener(emoji);
-                                }}
-                                // style={{ width: '100%', height: '300px' }}
-                                searchDisabled={true}
-                                reactions={[
-                                    '1f44d',
-                                    '2764-fe0f',
-                                    '1f603',
-                                    '1f602',
-                                    '1f622',
-                                    '1f64f',
-                                    '1f44e',
-                                    '1f621',
-                                ]}
-                                reactionsDefaultOpen={true}
-                                allowExpandReactions={false}
-                            />
+                            {getEmojiPack(
+                                reactionCodes,
+                                addReactionEmojiPickListener,
+                                30,
+                            )}
                         </div>
                     )}
-
                     {messageInput}
                     <div id='thelastmessage' />
                 </div>
