@@ -120,14 +120,15 @@ function LimitTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = (value?: string) => {
         let rawTokenBQty = 0;
         if (value !== undefined) {
-            const inputStr = formatTokenInput(value, tokenA);
-            const inputNum = parseFloat(inputStr);
-            const inputBigNum = fromDisplayQty(inputStr, tokenA.decimals);
+            // const inputStr = formatTokenInput(value, tokenA);
+            // value = value || '0.00';
+            const inputNum = parseFloat(value);
+            const inputBigNum = fromDisplayQty(value || '0', tokenA.decimals);
 
             // set token input quantity to be unparsed input
             setTokenAInputQty(value);
             setIsTokenAPrimary(true);
-            setPrimaryQuantity(inputStr);
+            setPrimaryQuantity(value);
 
             if (!isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -167,13 +168,12 @@ function LimitTokenInput(props: propsIF) {
     const handleTokenBChangeEvent = (value?: string) => {
         let rawTokenAQty = 0;
         if (value !== undefined) {
-            const inputStr = formatTokenInput(value, tokenA);
-            const inputNum = parseFloat(inputStr);
+            const inputNum = parseFloat(value);
 
             // set token input quantity to be unparsed input
             setTokenBInputQty(value);
             setIsTokenAPrimary(false);
-            setPrimaryQuantity(inputStr);
+            setPrimaryQuantity(value);
 
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
@@ -186,7 +186,7 @@ function LimitTokenInput(props: propsIF) {
             }
             if (rawTokenAQty === Infinity) return;
             handleLimitButtonMessage(
-                BigInt(rawTokenAQty * 10 ** tokenA.decimals),
+                BigInt((rawTokenAQty || 0) * 10 ** tokenA.decimals),
             );
         } else {
             if (!isDenomBase) {
@@ -200,7 +200,7 @@ function LimitTokenInput(props: propsIF) {
             }
             if (rawTokenAQty === Infinity) return;
             handleLimitButtonMessage(
-                BigInt(rawTokenAQty * 10 ** tokenA.decimals),
+                BigInt((rawTokenAQty || 0) * 10 ** tokenA.decimals),
             );
         }
         const truncatedTokenAQty = rawTokenAQty
