@@ -128,10 +128,17 @@ export default function App() {
 
     return (
         <>
+            {location.pathname == '/' && <PageHeader />}
             <FlexContainer
                 flexDirection='column'
-                className={containerStyle}
+                className={`${containerStyle} `}
                 data-theme={skin}
+                style={{
+                    height:
+                        location.pathname == '/'
+                            ? 'calc(100vh - 56px)'
+                            : '100vh',
+                }}
             >
                 {showPoints && showPointSystemPopup && (
                     <PointSystemPopup
@@ -139,7 +146,7 @@ export default function App() {
                     />
                 )}
                 <AppOverlay />
-                <PageHeader />
+                {location.pathname !== '/' && <PageHeader />}
 
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}

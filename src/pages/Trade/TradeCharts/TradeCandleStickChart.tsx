@@ -56,7 +56,6 @@ interface propsIF {
     ) => void;
     chartItemStates: chartItemStates;
     setCurrentData: Dispatch<SetStateAction<CandleDataIF | undefined>>;
-    setCurrentVolumeData: Dispatch<SetStateAction<number | undefined>>;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
     rescale: boolean | undefined;
@@ -217,6 +216,16 @@ function TradeCandleStickChart(props: propsIF) {
             setFetchCountForEnoughData(0);
         }
     }, [candleDomains.isResetRequest]);
+
+    useEffect(() => {
+        if (selectedDate) {
+            const selectedDateData = unparsedCandleData?.find(
+                (i) => i.time * 1000 === selectedDate,
+            );
+            props.setCurrentData(selectedDateData);
+            props.setShowTooltip(true);
+        }
+    }, [selectedDate]);
 
     useEffect(() => {
         if (isFetchingEnoughData && scaleData) {
@@ -1103,7 +1112,6 @@ function TradeCandleStickChart(props: propsIF) {
                         denomInBase={isDenomBase}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
-                        setCurrentVolumeData={props.setCurrentVolumeData}
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
