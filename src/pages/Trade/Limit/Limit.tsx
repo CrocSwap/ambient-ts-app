@@ -753,8 +753,7 @@ export default function Limit() {
                             amountToReduceNativeTokenQty.toString(),
                             18,
                         ) >
-                        fromDisplayQty(tokenABalance || '0', tokenA.decimals) +
-                            fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
@@ -781,8 +780,7 @@ export default function Limit() {
                             amountToReduceNativeTokenQty.toString(),
                             18,
                         ) >
-                        fromDisplayQty(tokenABalance || '0', tokenA.decimals) +
-                            fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(

@@ -341,10 +341,9 @@ function Swap(props: propsIF) {
                 tokenAQtyCoveredByWalletBalance +
                     fromDisplayQty(
                         amountToReduceNativeTokenQty.toString(),
-                        18,
+                        tokenA.decimals,
                     ) >
-                    fromDisplayQty(tokenABalance, tokenA.decimals) +
-                        fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
+                    fromDisplayQty(tokenABalance, tokenA.decimals)
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(

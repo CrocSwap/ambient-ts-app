@@ -63,8 +63,7 @@ export function useHandleRangeButtonMessage(
                             amountToReduceNativeTokenQty.toString(),
                             token.decimals,
                         ) >
-                        fromDisplayQty(tokenBalance, 18) +
-                            fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
+                        fromDisplayQty(tokenBalance, token.decimals)
                 ) {
                     tokenAllowed = false;
                     rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
