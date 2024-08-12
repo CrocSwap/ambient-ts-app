@@ -4,6 +4,7 @@ import {
     tickToPrice,
     priceHalfAboveTick,
     priceHalfBelowTick,
+    fromDisplayQty,
 } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import {
@@ -183,19 +184,21 @@ export default function Limit() {
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+        fromDisplayQty(tokenADexBalance, tokenA.decimals) -
+        fromDisplayQty(tokenAInputQty, tokenA.decimals);
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenAInputQty || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenAInputQty, tokenA.decimals);
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
     const isTokenAWalletBalanceSufficient =
-        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenABalance, tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
@@ -485,7 +488,9 @@ export default function Limit() {
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
-        handleLimitButtonMessage(parseFloat(tokenAInputQty));
+        handleLimitButtonMessage(
+            fromDisplayQty(tokenAInputQty, tokenA.decimals),
+        );
     }, [
         isOrderValid,
         tokenAInputQty,
@@ -502,7 +507,9 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawFromDexChecked(
+            fromDisplayQty(tokenADexBalance, tokenA.decimals) > 0,
+        );
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
@@ -697,14 +704,14 @@ export default function Limit() {
         }
     };
 
-    const handleLimitButtonMessage = (tokenAAmount: number) => {
+    const handleLimitButtonMessage = (tokenAAmount: bigint) => {
         if (!isPoolInitialized) {
             setLimitAllowed(false);
             if (isPoolInitialized === undefined)
                 setLimitButtonErrorMessage('...');
             if (isPoolInitialized === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+        } else if (tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
         } else if (!isOrderValid) {
@@ -721,7 +728,8 @@ export default function Limit() {
             if (isWithdrawFromDexChecked) {
                 if (
                     tokenAAmount >
-                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                    fromDisplayQty(tokenADexBalance, tokenA.decimals) +
+                        fromDisplayQty(tokenABalance, tokenA.decimals)
                 ) {
                     if (
                         pendingTransactions.some(
@@ -740,8 +748,12 @@ export default function Limit() {
                 } else if (
                     isSellTokenNativeToken &&
                     tokenAQtyCoveredByWalletBalance +
-                        amountToReduceNativeTokenQty >
-                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                        fromDisplayQty(
+                            amountToReduceNativeTokenQty.toString(),
+                            18,
+                        ) >
+                        fromDisplayQty(tokenABalance, tokenA.decimals) +
+                            fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
@@ -753,7 +765,10 @@ export default function Limit() {
                     setLimitAllowed(true);
                 }
             } else {
-                if (tokenAAmount > parseFloat(tokenABalance)) {
+                if (
+                    tokenAAmount >
+                    fromDisplayQty(tokenABalance, tokenA.decimals)
+                ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Wallet Balance`,
@@ -761,8 +776,12 @@ export default function Limit() {
                 } else if (
                     isSellTokenNativeToken &&
                     tokenAQtyCoveredByWalletBalance +
-                        amountToReduceNativeTokenQty >
-                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                        fromDisplayQty(
+                            amountToReduceNativeTokenQty.toString(),
+                            18,
+                        ) >
+                        fromDisplayQty(tokenABalance, tokenA.decimals) +
+                            fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(

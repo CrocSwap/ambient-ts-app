@@ -55,7 +55,11 @@ import {
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Trade/Range/Range';
 
-import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    concDepositSkew,
+    fromDisplayPrice,
+    fromDisplayQty,
+} from '@crocswap-libs/sdk';
 
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
@@ -134,7 +138,9 @@ export default function InitPool() {
     } = useContext(TradeDataContext);
 
     useEffect(() => {
-        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance, tokenA.decimals) > 0n,
+        );
     }, [tokenADexBalance]);
 
     useEffect(() => {

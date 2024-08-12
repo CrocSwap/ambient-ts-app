@@ -1,4 +1,8 @@
-import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
+import {
+    capitalConcFactor,
+    concDepositSkew,
+    fromDisplayQty,
+} from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -410,16 +414,20 @@ function Range() {
     );
 
     const isTokenAWalletBalanceSufficient =
-        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     const isTokenBWalletBalanceSufficient =
-        parseFloat(tokenBBalance) >= tokenBQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenBBalance || '0', tokenB.decimals) >=
+        tokenBQtyCoveredByWalletBalance;
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) >=
+        tokenBQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
 
@@ -539,11 +547,15 @@ function Range() {
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+        );
     }, [tokenADexBalance]);
 
     useEffect(() => {
-        setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
+        setIsWithdrawTokenBFromDexChecked(
+            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0,
+        );
     }, [tokenBDexBalance]);
 
     useEffect(() => {
