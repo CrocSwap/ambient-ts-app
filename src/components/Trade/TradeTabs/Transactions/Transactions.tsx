@@ -471,6 +471,37 @@ function Transactions(props: propsIF) {
         }
     };
 
+    const scrollRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleScroll = (): void => {
+            console.log('scrolling detected!');
+            if (listRef.current) {
+                const { scrollTop, scrollHeight, clientHeight } =
+                    listRef.current;
+                // Check if the user has scrolled at least 2/3 of the way to the bottom
+                if (scrollTop + clientHeight >= (scrollHeight * 2) / 3) {
+                    onScrollTwoThirds();
+                }
+            }
+        };
+
+        const container = listRef.current;
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
+    const onScrollTwoThirds = (): void => {
+        // Your logic when the user scrolls to the bottom
+        console.log('User has scrolled to the bottom');
+    };
+
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
         !txDataToDisplay.length &&
@@ -487,7 +518,7 @@ function Transactions(props: propsIF) {
             }
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction}>
+        <div ref={scrollRef} onKeyDown={handleKeyDownViewTransaction}>
             <ul
                 ref={listRef}
                 id='current_row_scroll'
@@ -635,6 +666,7 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
+            <div>Hi there!!!</div>
         </FlexContainer>
     );
 }
