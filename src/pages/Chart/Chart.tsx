@@ -137,9 +137,6 @@ interface propsIF {
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleDataIF | undefined>
     >;
-    setCurrentVolumeData: React.Dispatch<
-        React.SetStateAction<number | undefined>
-    >;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
     scaleData: scaleData;
@@ -1174,10 +1171,14 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (isCondensedModeEnabled) {
-            const isShowSelectedDate = unparsedCandleData.find(
-                (i: CandleDataChart) => i.time * 1000 === selectedDate,
-            )?.isShowData;
-            !isShowSelectedDate && setSelectedDate(undefined);
+            const isShowSelectedDate = filterCandleWithTransaction(
+                unparsedData.candles,
+                period,
+            ).find((i) => i.isShowData && i.time * 1000 === selectedDate);
+            if (!isShowSelectedDate) {
+                setSelectedDate(undefined);
+                props.setCurrentData(undefined);
+            }
         }
     }, [isCondensedModeEnabled]);
 
@@ -5324,13 +5325,6 @@ export default function Chart(props: propsIF) {
         if (selectedDate === undefined) {
             props.setShowTooltip(true);
             props.setCurrentData(nearest);
-            props.setCurrentVolumeData(nearest?.volumeUSD);
-        } else if (selectedDate) {
-            props.setCurrentVolumeData(
-                visibleCandleData.find(
-                    (item: CandleDataIF) => item.time * 1000 === selectedDate,
-                )?.volumeUSD,
-            );
         }
 
         const checkYLocation =
@@ -5397,14 +5391,6 @@ export default function Chart(props: propsIF) {
         if (isHoverCandleOrVolumeData && nearest) {
             const _selectedDate = nearest?.time * 1000;
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
-                props.setCurrentData(nearest);
-
-                const volumeData = visibleCandleData.find(
-                    (item: CandleDataIF) => item.time * 1000 === _selectedDate,
-                ) as CandleDataIF;
-
-                props.setCurrentVolumeData(volumeData?.volumeUSD);
-
                 setSelectedDate(_selectedDate);
             } else {
                 setSelectedDate(undefined);
