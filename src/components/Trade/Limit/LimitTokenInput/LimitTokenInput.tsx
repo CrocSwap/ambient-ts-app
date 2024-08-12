@@ -113,7 +113,7 @@ function LimitTokenInput(props: propsIF) {
 
     useEffect(() => {
         handleLimitButtonMessage(
-            fromDisplayQty(tokenAInputQty, tokenA.decimals),
+            fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
         );
     }, [isWithdrawFromDexChecked]);
 
@@ -150,7 +150,7 @@ function LimitTokenInput(props: propsIF) {
                     : limitTickDisplayPrice * parseFloat(primaryQuantity);
             }
             handleLimitButtonMessage(
-                fromDisplayQty(tokenAInputQty, tokenA.decimals),
+                fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
             );
         }
 
@@ -184,19 +184,24 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
-            handleLimitButtonMessage(BigInt(rawTokenAQty));
+            if (rawTokenAQty === Infinity) return;
+            handleLimitButtonMessage(
+                BigInt(rawTokenAQty * 10 ** tokenA.decimals),
+            );
         } else {
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
-                    : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                      (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
+                    : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             } else {
                 rawTokenAQty = !isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
-            handleLimitButtonMessage(BigInt(rawTokenAQty));
+            if (rawTokenAQty === Infinity) return;
+            handleLimitButtonMessage(
+                BigInt(rawTokenAQty * 10 ** tokenA.decimals),
+            );
         }
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2

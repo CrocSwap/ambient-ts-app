@@ -184,20 +184,21 @@ export default function Limit() {
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
-        fromDisplayQty(tokenADexBalance, tokenA.decimals) -
-        fromDisplayQty(tokenAInputQty, tokenA.decimals);
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenAInputQty, tokenA.decimals);
+        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     const isTokenAWalletBalanceSufficient =
-        fromDisplayQty(tokenABalance, tokenA.decimals) >=
+        fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
         tokenAQtyCoveredByWalletBalance;
 
     // TODO: @Emily refactor this to take a token data object
@@ -489,7 +490,7 @@ export default function Limit() {
 
     useEffect(() => {
         handleLimitButtonMessage(
-            fromDisplayQty(tokenAInputQty, tokenA.decimals),
+            fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
         );
     }, [
         isOrderValid,
@@ -508,7 +509,7 @@ export default function Limit() {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance, tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
         );
     }, [tokenADexBalance]);
 
@@ -728,8 +729,8 @@ export default function Limit() {
             if (isWithdrawFromDexChecked) {
                 if (
                     tokenAAmount >
-                    fromDisplayQty(tokenADexBalance, tokenA.decimals) +
-                        fromDisplayQty(tokenABalance, tokenA.decimals)
+                    fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) +
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     if (
                         pendingTransactions.some(
@@ -752,7 +753,7 @@ export default function Limit() {
                             amountToReduceNativeTokenQty.toString(),
                             18,
                         ) >
-                        fromDisplayQty(tokenABalance, tokenA.decimals) +
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals) +
                             fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
                 ) {
                     setLimitAllowed(false);
@@ -767,7 +768,7 @@ export default function Limit() {
             } else {
                 if (
                     tokenAAmount >
-                    fromDisplayQty(tokenABalance, tokenA.decimals)
+                    fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
@@ -780,7 +781,7 @@ export default function Limit() {
                             amountToReduceNativeTokenQty.toString(),
                             18,
                         ) >
-                        fromDisplayQty(tokenABalance, tokenA.decimals) +
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals) +
                             fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
                 ) {
                     setLimitAllowed(false);

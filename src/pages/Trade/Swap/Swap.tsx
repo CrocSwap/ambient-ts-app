@@ -206,11 +206,11 @@ function Swap(props: propsIF) {
         : fromDisplayQty(sellQtyString || '0', tokenA.decimals);
 
     const isTokenAWalletBalanceSufficient =
-        fromDisplayQty(tokenABalance, tokenA.decimals) >=
+        fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
         tokenAQtyCoveredByWalletBalance;
 
     const isTokenAAllowanceSufficient =
-        fromDisplayQty(tokenAAllowance, tokenA.decimals) >=
+        fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
         tokenAQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
@@ -307,19 +307,23 @@ function Swap(props: propsIF) {
             setSwapButtonErrorMessage('Liquidity Insufficient');
         } else {
             const hurdleBigInt = isWithdrawFromDexChecked
-                ? fromDisplayQty(tokenADexBalance, tokenA.decimals) +
-                  fromDisplayQty(tokenABalance, tokenA.decimals)
-                : fromDisplayQty(tokenABalance, tokenA.decimals);
+                ? fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) +
+                  fromDisplayQty(tokenABalance || '0', tokenA.decimals)
+                : fromDisplayQty(tokenABalance || '0', tokenA.decimals);
 
             const balanceLabel = isWithdrawFromDexChecked
                 ? 'Combined Wallet and Exchange'
                 : 'Wallet';
 
             setSwapAllowed(
-                fromDisplayQty(sellQtyString, tokenA.decimals) <= hurdleBigInt,
+                fromDisplayQty(sellQtyString || '0', tokenA.decimals) <=
+                    hurdleBigInt,
             );
 
-            if (fromDisplayQty(sellQtyString, tokenA.decimals) > hurdleBigInt) {
+            if (
+                fromDisplayQty(sellQtyString || '0', tokenA.decimals) >
+                hurdleBigInt
+            ) {
                 if (activeTxHashInPendingTxs) {
                     setSellQtyString('');
                     setBuyQtyString('');
@@ -512,7 +516,7 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(
-            fromDisplayQty(tokenADexBalance, tokenA.decimals) > 0,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
         );
     }, [tokenADexBalance]);
 
@@ -867,7 +871,7 @@ function Swap(props: propsIF) {
                 isPoolInitialized &&
                 isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
-                fromDisplayQty(sellQtyString, tokenA.decimals) > 0 &&
+                fromDisplayQty(sellQtyString || '0', tokenA.decimals) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
                         idForDOM='approve_token_a_for_swap_module'

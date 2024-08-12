@@ -268,19 +268,21 @@ function Range() {
     );
 
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const tokenBSurplusMinusTokenBRemainderNum =
-        parseFloat(tokenBDexBalance || '0') - parseFloat(tokenBInputQty || '0');
+        fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
+        fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenAInputQty || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
         ? tokenBSurplusMinusTokenBRemainderNum < 0
-            ? tokenBSurplusMinusTokenBRemainderNum * -1
-            : 0
-        : parseFloat(tokenBInputQty || '0');
+            ? tokenBSurplusMinusTokenBRemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
     const showExtraInfoDropdown =
         tokenAInputQty !== '' || tokenBInputQty !== '';

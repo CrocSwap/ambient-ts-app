@@ -12,7 +12,7 @@ export function useHandleRangeButtonMessage(
     isTokenInputDisabled: boolean,
     isWithdrawTokenFromDexChecked: boolean,
     isPoolInitialized: boolean,
-    tokenQtyCoveredByWalletBalance: number,
+    tokenQtyCoveredByWalletBalance: bigint,
     amountToReduceNativeTokenQty: number,
     activeRangeTxHash: MutableRefObject<string>,
     clearTokenInputs: () => void,
@@ -58,10 +58,7 @@ export function useHandleRangeButtonMessage(
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`;
                 } else if (
                     isNativeToken &&
-                    fromDisplayQty(
-                        tokenQtyCoveredByWalletBalance.toString(),
-                        token.decimals,
-                    ) +
+                    tokenQtyCoveredByWalletBalance +
                         fromDisplayQty(
                             amountToReduceNativeTokenQty.toString(),
                             token.decimals,
@@ -90,16 +87,12 @@ export function useHandleRangeButtonMessage(
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Wallet Balance`;
                 } else if (
                     isNativeToken &&
-                    fromDisplayQty(
-                        tokenQtyCoveredByWalletBalance.toString(),
-                        token.decimals,
-                    ) +
+                    tokenQtyCoveredByWalletBalance +
                         fromDisplayQty(
                             amountToReduceNativeTokenQty.toString(),
                             token.decimals,
                         ) >
-                        fromDisplayQty(tokenBalance, 18) +
-                            fromDisplayQty('0.0000000001', 18) // offset to account for floating point math inconsistencies
+                        fromDisplayQty(tokenBalance, token.decimals)
                 ) {
                     tokenAllowed = false;
                     rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;

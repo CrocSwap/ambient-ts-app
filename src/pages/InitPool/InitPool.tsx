@@ -139,7 +139,7 @@ export default function InitPool() {
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(
-            fromDisplayQty(tokenADexBalance, tokenA.decimals) > 0n,
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
         );
     }, [tokenADexBalance]);
 
@@ -869,31 +869,33 @@ export default function InitPool() {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') -
-        parseFloat(tokenACollateral || '0');
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
     const tokenBSurplusMinusTokenBRemainderNum =
-        parseFloat(tokenBDexBalance || '0') -
-        parseFloat(tokenBCollateral || '0');
+        fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
+        fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenACollateral || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
         ? tokenBSurplusMinusTokenBRemainderNum < 0
-            ? tokenBSurplusMinusTokenBRemainderNum * -1
-            : 0
-        : parseFloat(tokenBCollateral || '0');
+            ? tokenBSurplusMinusTokenBRemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
 
     // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
     // plus a small amount for the initialization transactions
     // if liquidity minting is disabled, then token allowance must be greater than 0
     const isTokenAAllowanceSufficient = isMintLiqEnabled
-        ? parseFloat(tokenAAllowance) > tokenAQtyCoveredByWalletBalance
-        : parseFloat(tokenAAllowance) > 0;
+        ? fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >
+          tokenAQtyCoveredByWalletBalance
+        : fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) > 0;
     const isTokenBAllowanceSufficient = isMintLiqEnabled
-        ? parseFloat(tokenBAllowance) > tokenBQtyCoveredByWalletBalance
-        : parseFloat(tokenBAllowance) > 0;
+        ? fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) >
+          tokenBQtyCoveredByWalletBalance
+        : fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) > 0;
 
     const focusInput = () => {
         const inputField = document.getElementById(
