@@ -1208,7 +1208,7 @@ function ChatPanel(props: propsIF) {
         if (mentions.length > 0 && isChatOpen && isFocusMentions) {
             return (
                 <>
-                    {showPrevMents && (
+                    {showPrevMents && !showEmojiPicker && (
                         <div
                             className={styles.ment_skip_button}
                             onClick={() => {
