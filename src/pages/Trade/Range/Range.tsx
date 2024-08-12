@@ -424,12 +424,16 @@ function Range() {
         tokenBQtyCoveredByWalletBalance;
 
     const isTokenAAllowanceSufficient =
-        fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
-        tokenAQtyCoveredByWalletBalance;
+        tokenAAllowance === ''
+            ? true
+            : fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
+              tokenAQtyCoveredByWalletBalance;
 
     const isTokenBAllowanceSufficient =
-        fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) >=
-        tokenBQtyCoveredByWalletBalance;
+        tokenBAllowance === ''
+            ? true
+            : fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) >=
+              tokenBQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
 

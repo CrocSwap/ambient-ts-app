@@ -194,8 +194,10 @@ export default function Limit() {
             : 0n
         : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const isTokenAAllowanceSufficient =
-        fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
-        tokenAQtyCoveredByWalletBalance;
+        tokenAAllowance === ''
+            ? true
+            : fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
+              tokenAQtyCoveredByWalletBalance;
 
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=

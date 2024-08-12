@@ -21,6 +21,7 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
 
     // useEffect to check if user has approved CrocSwap to sell the token A
     useEffect(() => {
+        setTokenAAllowance('');
         (async () => {
             if (crocEnv && props.userAddress && tokenA.address) {
                 try {
@@ -49,6 +50,7 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
+        setTokenBAllowance('');
         (async () => {
             if (crocEnv && props.userAddress && tokenB.address) {
                 try {

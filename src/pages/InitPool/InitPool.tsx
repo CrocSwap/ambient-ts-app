@@ -888,14 +888,20 @@ export default function InitPool() {
     // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
     // plus a small amount for the initialization transactions
     // if liquidity minting is disabled, then token allowance must be greater than 0
-    const isTokenAAllowanceSufficient = isMintLiqEnabled
-        ? fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >
-          tokenAQtyCoveredByWalletBalance
-        : fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) > 0;
-    const isTokenBAllowanceSufficient = isMintLiqEnabled
-        ? fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) >
-          tokenBQtyCoveredByWalletBalance
-        : fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) > 0;
+    const isTokenAAllowanceSufficient =
+        tokenAAllowance === ''
+            ? true
+            : isMintLiqEnabled
+              ? fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >
+                tokenAQtyCoveredByWalletBalance
+              : fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) > 0;
+    const isTokenBAllowanceSufficient =
+        tokenBAllowance === ''
+            ? true
+            : isMintLiqEnabled
+              ? fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) >
+                tokenBQtyCoveredByWalletBalance
+              : fromDisplayQty(tokenBAllowance || '0', tokenB.decimals) > 0;
 
     const focusInput = () => {
         const inputField = document.getElementById(

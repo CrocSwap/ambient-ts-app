@@ -210,8 +210,10 @@ function Swap(props: propsIF) {
         tokenAQtyCoveredByWalletBalance;
 
     const isTokenAAllowanceSufficient =
-        fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
-        tokenAQtyCoveredByWalletBalance;
+        tokenAAllowance === ''
+            ? true
+            : fromDisplayQty(tokenAAllowance || '0', tokenA.decimals) >=
+              tokenAQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
