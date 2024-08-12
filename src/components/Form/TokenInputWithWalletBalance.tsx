@@ -7,6 +7,7 @@ import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import { fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -70,9 +71,6 @@ function TokenInputWithWalletBalance(props: propsIF) {
               })
             : '';
 
-    const toDecimal = (val: string) =>
-        isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
-
     const walletBalanceBigInt = tokenBalance
         ? stringToBigInt(tokenBalance, token.decimals)
         : BigInt(0);
@@ -81,75 +79,67 @@ function TokenInputWithWalletBalance(props: propsIF) {
         ? stringToBigInt(tokenDexBalance, token.decimals)
         : BigInt(0);
 
-    const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
-    const walletAndExchangeBalance =
+    const walletBalanceDisplay = tokenBalance ? tokenBalance : '...';
+    const walletAndExchangeBalanceDisplay =
         tokenBalance && tokenDexBalance
-            ? toDecimal(
-                  (
-                      parseFloat(tokenBalance) + parseFloat(tokenDexBalance)
-                  ).toString(),
-              )
+            ? (
+                  parseFloat(tokenBalance) + parseFloat(tokenDexBalance)
+              ).toString()
             : '...';
     const walletAndExchangeBalanceBigInt =
         walletBalanceBigInt + dexBalanceBigInt;
-    const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
+    const balanceDisplay = !isDexSelected
+        ? walletBalanceDisplay
+        : walletAndExchangeBalanceDisplay;
     const balanceBigInt = !isDexSelected
         ? walletBalanceBigInt
         : walletAndExchangeBalanceBigInt;
 
-    const balanceBigIntString = balanceBigInt.toString();
-
-    // function to insert character at index from end of string
-    const insertCharAt = (str: string, index: number, char: string) =>
-        str.slice(0, -index) + char + str.slice(-index);
-
-    const balBigIntStringScaled = insertCharAt(
-        balanceBigIntString.padStart(token.decimals, '0'),
-        token.decimals,
-        '.',
-    );
-
     const balanceToDisplay = getFormattedNumber({
-        value: parseFloat(balance) ?? undefined,
+        value: parseFloat(balanceDisplay) ?? undefined,
     });
 
-    const subtractBuffer = (balance: string) =>
+    const subtractBuffer = (balance: bigint) =>
         isTokenEth
-            ? (parseFloat(balance) - amountToReduceNativeTokenQty).toFixed(18)
+            ? balance -
+              fromDisplayQty(
+                  amountToReduceNativeTokenQty.toString(),
+                  token.decimals,
+              )
             : isInitPage
-              ? (parseFloat(balance) - 1e-12).toFixed(token.decimals)
+              ? balance - BigInt(1e6)
               : balance;
 
-    const balanceWithBuffer = balance
-        ? subtractBuffer(balBigIntStringScaled)
-        : '...';
+    const balanceWithBuffer = balanceBigInt
+        ? subtractBuffer(balanceBigInt)
+        : 0n;
 
     const handleMaxButtonClick = () => {
-        if (
-            formatTokenInput(balanceWithBuffer, token, true) !== tokenInput &&
-            parseFloat(balanceWithBuffer) > 0
-        ) {
-            parseTokenInput && parseTokenInput(balanceWithBuffer, true);
-            handleTokenInputEvent(
-                formatTokenInput(balanceWithBuffer, token, true),
-            );
+        if (balanceBigInt.toString() !== tokenInput && balanceWithBuffer > 0n) {
+            const scaledValue =
+                toDisplayQty(balanceWithBuffer, token.decimals) ?? '0';
+            parseTokenInput && parseTokenInput(scaledValue, true);
+            handleTokenInputEvent(formatTokenInput(scaledValue, token, true));
         }
     };
 
     const handleToggleDex = () => {
         // if the sell token quantity is maximized and the user switches to use exchange balance,
         // then the quantity should be updated to the exchange balance maximum
-        if (
-            tokenAorB === 'A' &&
-            parseFloat(formatTokenInput(balanceWithBuffer, token)) ===
-                parseFloat(tokenInput)
-        ) {
+        if (tokenAorB === 'A' && balanceBigInt.toString() !== tokenInput) {
             const balance = subtractBuffer(
-                isDexSelected ? walletBalance : walletAndExchangeBalance,
+                isDexSelected
+                    ? walletBalanceBigInt
+                    : walletBalanceBigInt + dexBalanceBigInt,
             );
-            if (walletBalance !== walletAndExchangeBalance) {
-                parseTokenInput && parseTokenInput(balance);
-                handleTokenInputEvent(balance);
+            if (
+                walletBalanceBigInt !==
+                walletBalanceBigInt + dexBalanceBigInt
+            ) {
+                const scaledValue =
+                    toDisplayQty(balance, token.decimals) ?? '0';
+                parseTokenInput && parseTokenInput(scaledValue);
+                handleTokenInputEvent(scaledValue);
             }
         }
         handleToggleDexSelection();
@@ -172,7 +162,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
-                availableBalance={parseFloat(balanceWithBuffer)}
+                availableBalance={balanceWithBuffer}
                 useExchangeBalance={
                     isDexSelected &&
                     !!tokenDexBalance &&
