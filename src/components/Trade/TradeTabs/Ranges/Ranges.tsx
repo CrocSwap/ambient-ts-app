@@ -714,7 +714,7 @@ function Ranges(props: propsIF) {
                     isSmallScreen
                         ? isAccountView
                             ? { maxHeight: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 350px)' }
+                            : { height: 'calc(100svh - 330px)' }
                         : undefined
                 }
             >
@@ -790,7 +790,7 @@ function Ranges(props: propsIF) {
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%' }}
+            style={{ height: isSmallScreen ? '95%' : '110%' }}
         >
             <div>{headerColumnsDisplay}</div>
 
