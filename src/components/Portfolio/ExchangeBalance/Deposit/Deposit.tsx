@@ -92,7 +92,7 @@ export default function Deposit(props: propsIF) {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
     const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.04 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
