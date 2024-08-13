@@ -705,8 +705,111 @@ function Ranges(props: propsIF) {
             );
         });
 
-    const rangeDataOrNull = !shouldDisplayNoTableData ? (
-        <div>
+    // const rangeDataOrNull = !shouldDisplayNoTableData ? (
+    //     <div>
+    //         <ul
+    //             ref={listRef}
+    //             id='current_row_scroll'
+    //             style={
+    //                 isSmallScreen
+    //                     ? isAccountView
+    //                         ? { maxHeight: 'calc(100svh - 310px)' }
+    //                         : { height: 'calc(100svh - 330px)' }
+    //                     : undefined
+    //             }
+    //         >
+    //             {!isAccountView &&
+    //                 pendingPositionsToDisplayPlaceholder.length > 0 &&
+    //                 pendingPositionsToDisplayPlaceholder
+    //                     .reverse()
+    //                     .map((tx, idx) => (
+    //                         <RangesRowPlaceholder
+    //                             key={idx}
+    //                             transaction={{
+    //                                 hash: tx.txHash,
+    //                                 side: tx.txAction,
+    //                                 type: tx.txType,
+    //                                 details: tx.txDetails,
+    //                             }}
+    //                             tableView={tableView}
+    //                         />
+    //                     ))}
+
+    //             <TableRows
+    //                 type='Range'
+    //                 data={unindexedUpdatedPositions.concat(
+    //                     filteredSortedPositions
+    //                         .filter(
+    //                             (pos) =>
+    //                                 // remove existing row for adds
+    //                                 !unindexedUpdatedPositionHashes.includes(
+    //                                     pos.positionId,
+    //                                 ),
+    //                         )
+    //                         // only show empty positions on account view
+    //                         .filter(
+    //                             (pos) =>
+    //                                 (isAccountView &&
+    //                                     !hideEmptyPositionsOnAccount) ||
+    //                                 pos.positionLiq !== 0,
+    //                         ),
+    //                 )}
+    //                 fullData={unindexedUpdatedPositions.concat(
+    //                     filteredSortedPositions,
+    //                 )}
+    //                 isAccountView={isAccountView}
+    //                 tableView={tableView}
+    //             />
+    //         </ul>
+
+    //     </div>
+    // ) : (
+    //     <NoTableData
+    //         type='liquidity'
+    //         isAccountView={isAccountView}
+    //         activeUserPositionsLength={activeUserPositionsLength}
+    //         activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
+    //     />
+    // );
+
+    const handleKeyDownViewRanges = (
+        event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
+    ): void => {
+        // Opens a modal which displays the contents of a transaction and some other information
+        const { key } = event;
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+            const rows = document.querySelectorAll('.row_container_global');
+            const currentRow = event.target as HTMLLIElement;
+            const index = Array.from(rows).indexOf(currentRow);
+
+            if (key === 'ArrowDown') {
+                event.preventDefault();
+                if (index < rows.length - 1) {
+                    (rows[index + 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[0] as HTMLLIElement).focus();
+                }
+            } else if (key === 'ArrowUp') {
+                event.preventDefault();
+                if (index > 0) {
+                    (rows[index - 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[rows.length - 1] as HTMLLIElement).focus();
+                }
+            }
+        }
+    };
+
+    const rangeDataOrNull = shouldDisplayNoTableData ? (
+        <NoTableData
+            type='liquidity'
+            isAccountView={isAccountView}
+            activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
+        />
+    ) : (
+        <div onKeyDown={handleKeyDownViewRanges}>
             <ul
                 ref={listRef}
                 id='current_row_scroll'
@@ -761,36 +864,13 @@ function Ranges(props: propsIF) {
                     tableView={tableView}
                 />
             </ul>
-            {/* {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                !isTradeTableExpanded &&
-                    !props.isAccountView &&
-                    sortedPositions.length > rowsPerPage && (
-                        <FlexContainer
-                            justifyContent='center'
-                            alignItems='center'
-                            padding='8px'
-                        >
-                            <ViewMoreButton onClick={() => toggleTradeTable()}>
-                                View More
-                            </ViewMoreButton>
-                        </FlexContainer>
-                    )
-            } */}
         </div>
-    ) : (
-        <NoTableData
-            type='liquidity'
-            isAccountView={isAccountView}
-            activeUserPositionsLength={activeUserPositionsLength}
-            activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
-        />
     );
 
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '110%' }}
+            style={{ height: isSmallScreen ? '95%' : '108%' }}
         >
             <div>{headerColumnsDisplay}</div>
 
