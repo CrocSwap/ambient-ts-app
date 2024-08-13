@@ -36,7 +36,9 @@ export function useHandleRangeButtonMessage(
             tokenAllowed = false;
             rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient`;
         } else if (
-            fromDisplayQty(tokenAmount || '0', token.decimals) <= 0 &&
+            (tokenAmount === '0' ||
+                tokenAmount === '0.00' ||
+                tokenAmount === '') &&
             !isTokenInputDisabled
         ) {
             rangeButtonErrorMessage = 'Enter an Amount';
