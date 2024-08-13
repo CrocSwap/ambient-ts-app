@@ -471,25 +471,29 @@ function Transactions(props: propsIF) {
         }
     };
 
+    // logic to prevent multiple fetches from being dispatched concurrently
+    const preventFetch = useRef<boolean>(false);
+    // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
+    // logic to check for needing new data
     useEffect(() => {
+        // scroll event handler
         const handleScroll = (): void => {
-            console.log('scrolling detected!');
-            if (listRef.current) {
+            if (scrollRef.current && !preventFetch.current) {
                 const { scrollTop, scrollHeight, clientHeight } =
-                    listRef.current;
-                // Check if the user has scrolled at least 2/3 of the way to the bottom
+                    scrollRef.current;
                 if (scrollTop + clientHeight >= (scrollHeight * 2) / 3) {
                     onScrollTwoThirds();
+                    preventFetch.current = true;
                 }
             }
         };
-
-        const container = listRef.current;
+        // find scrollable container in the DOM and attach functionality
+        const container = scrollRef.current;
         if (container) {
             container.addEventListener('scroll', handleScroll);
         }
-
+        // cleanup when component dismounts
         return () => {
             if (container) {
                 container.removeEventListener('scroll', handleScroll);
@@ -518,7 +522,7 @@ function Transactions(props: propsIF) {
             }
         />
     ) : (
-        <div ref={scrollRef} onKeyDown={handleKeyDownViewTransaction}>
+        <div onKeyDown={handleKeyDownViewTransaction}>
             <ul
                 ref={listRef}
                 id='current_row_scroll'
@@ -652,10 +656,11 @@ function Transactions(props: propsIF) {
             style={{ height: isSmallScreen ? '95%' : '100%' }}
         >
             <div>{headerColumnsDisplay}</div>
-
             <div
+                ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
+                onScroll={() => console.log('scrolling!')}
             >
                 {(
                     isCandleSelected
