@@ -56,7 +56,7 @@ export default function PointsHistoryDisplay(props: PropsIF) {
             <div
                 className={`${styles.points_history_content} ${
                     hideLevelCardScroll && styles.hide_scroll
-                }`}
+                } custom_scroll_ambient`}
                 style={{ height: !isViewMoreActive ? '101px' : '400px' }}
             >
                 {(isViewMoreActive ? pointsData : pointsData.slice(0, 10)).map(
@@ -95,8 +95,8 @@ export default function PointsHistoryDisplay(props: PropsIF) {
                                 ? '/account/xp'
                                 : '/account/xp/history'
                             : isViewMoreActive
-                            ? pathname.replace('/history', '')
-                            : pathname + '/history'
+                              ? pathname.replace('/history', '')
+                              : pathname + '/history'
                     }
                     className={styles.view_more_link}
                 >

@@ -4,6 +4,7 @@ import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
 import { useAppChain } from '../App/hooks/useAppChain';
 import {
+    isBtcPair,
     isETHPair,
     isStablePair,
     translateTokenSymbol,
@@ -180,8 +181,10 @@ export const TradeDataContextProvider = (props: {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
-        localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
-        localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
+        tokenA.symbol &&
+            localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
+        tokenB.symbol &&
+            localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
     }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
@@ -221,7 +224,8 @@ export const TradeDataContextProvider = (props: {
         // const defaultWidth = isPoolBlastEthUSDB ? 10 : 10;
         const isPoolStable =
             isStablePair(baseAddress, quoteAddress) ||
-            isETHPair(baseAddress, quoteAddress);
+            isETHPair(baseAddress, quoteAddress) ||
+            isBtcPair(baseAddress, quoteAddress);
         const defaultWidth = isPoolStable ? 0.5 : 10;
 
         return defaultWidth;

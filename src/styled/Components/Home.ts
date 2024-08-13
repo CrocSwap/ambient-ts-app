@@ -237,10 +237,9 @@ export const BGImage = styled.img<{ height: number; top: number }>`
 
 // Mobile Landing Sections
 export const MobileMainLogo = styled(FlexContainer)`
-    height: 200px;
+    height: 130px;
     background-size: cover;
     background-position: center center;
-    margin-top: 3rem;
 
     img {
         object-fit: contain;

@@ -117,8 +117,11 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const extraNotes = (
         <Text fontSize='body' color='accent2' style={{ textAlign: 'center' }}>
-            {`${tokenB.symbol} will be available for withdrawal after the limit order is filled.
-        ${tokenA.symbol} can be withdrawn at any time before fill completion.`}
+            <div>
+                {`A button to claim ${tokenB.symbol} will appear in your Limits tab once filled.`}
+            </div>
+            <div>{' '}</div>
+            <div>{` ${tokenA.symbol} can be withdrawn at any time before fill completion.`}</div>
         </Text>
     );
 
