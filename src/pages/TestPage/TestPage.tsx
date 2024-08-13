@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 
-const ScrollComponent: React.FC = () => {
+const ScrollComponent = () => {
     const [enableInfScroll, setEnableInfScroll] = useState(false);
-    const [items, setItems] = useState<string[]>(generateDummyData(20)); //  dummy data
+    const [items, setItems] = useState<string[]>(generateDummyData(20)); // dummy data
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const scrollDivRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +34,27 @@ const ScrollComponent: React.FC = () => {
         }
     };
 
+    const containerStyle = {
+        overflowY: 'scroll' as const,
+        height: '400px',
+        border: '1px solid black',
+        padding: '10px',
+        background: 'var(--dark2)',
+        margin: '1rem 0',
+    };
+
+    const itemStyle = {
+        padding: '10px',
+        borderBottom: '1px solid gray',
+        background: 'var(--dark3)',
+        margin: '8px 0',
+    };
+
+    const statusStyle = {
+        padding: '10px',
+        textAlign: 'center' as const,
+    };
+
     return (
         <section>
             <button onClick={() => setEnableInfScroll(!enableInfScroll)}>
@@ -44,32 +65,16 @@ const ScrollComponent: React.FC = () => {
             <div
                 ref={scrollDivRef}
                 onScroll={enableInfScroll ? handleScroll : undefined}
-                style={{
-                    overflowY: 'scroll',
-                    height: '400px',
-                    border: '1px solid black',
-
-                    padding: '10px',
-                    background: 'var(--dark2)',
-                    margin: '1rem 0',
-                }}
+                style={containerStyle}
                 className='custom_scroll_ambient'
             >
                 <div>
                     {items.map((item, index) => (
-                        <div
-                            key={index}
-                            style={{
-                                padding: '10px',
-                                borderBottom: '1px solid gray',
-                                background: 'var(--dark3)',
-                                margin: '8px 0',
-                            }}
-                        >
+                        <div key={index} style={itemStyle}>
                             {item}
                         </div>
                     ))}
-                    <div style={{ padding: '10px', textAlign: 'center' }}>
+                    <div style={statusStyle}>
                         {isFetching ? 'Fetching more...' : 'Updated'}
                     </div>
                 </div>
