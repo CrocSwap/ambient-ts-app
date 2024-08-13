@@ -674,10 +674,6 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const filterEmojisOnHiddenPicker = (word: string) => {
-        // const elements = document.querySelectorAll<HTMLElement>(
-        //     '#chatCustomEmojiPool button',
-        // );
-
         const filteredElements: HTMLElement[] = [];
         let searchToken = word.split(' ')[0];
 
@@ -691,8 +687,6 @@ export default function MessageInput(props: MessageInputProps) {
         }
 
         emojiPool.forEach((element) => {
-            // if (index >= customEmojiPanelLimit) return;
-            // console.log(index, customEmojiPanelLimit)
             const ariaLabel = element.getAttribute('aria-label');
             if (ariaLabel && ariaLabel.includes(searchToken)) {
                 filteredElements.push(element);
@@ -705,7 +699,6 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const generateCustomEmojiPool = () => {
-        // const selector = '#chatHiddenEmojiSearch li.emoji button';
         const selector = '#chatHiddenEmojiSearch .epr-btn.epr-emoji';
 
         if (emojiPool.length > 0) return;
