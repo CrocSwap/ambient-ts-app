@@ -41,7 +41,7 @@ interface ChartHeights {
     default: number;
 }
 
-interface ChartContextIF {
+export interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;
     isFullScreen: boolean;
     setIsFullScreen: (val: boolean) => void;
