@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.7.6",
+    "version": "2.7.7",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -21,7 +21,7 @@
         "babel-plugin-styled-components": "^2.1.4",
         "d3": "^7.4.4",
         "d3fc": "^15.2.4",
-        "emoji-picker-react": "^3.6.2",
+        "emoji-picker-react": "^4.11.1",
         "ethers": "^6.13.0",
         "framer-motion": "4.1.17",
         "i18next": "^21.8.16",
