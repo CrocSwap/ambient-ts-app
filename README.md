@@ -25,18 +25,6 @@ Note: Node v18+ is required
 
 Configure your build environment by adding a dotfile (e.g. `.env.local`) with variable definitions to the top level directory before starting the server. Please reference `.gitignore` in the root directory for dotfile naming conventions.
 
-Variables currently needed to avoid build warnings (all values can be empty strings):
-
-```
-VITE_META_DESCRIPTION=""
-VITE_META_KEYWORDS=""
-VITE_OG_TITLE=""
-VITE_OG_DESCRIPTION=""
-VITE_OG_URL=""
-VITE_SITE_TITLE=""
-VITE_OG_IMAGE=""
-VITE_TWITTER_SITE=""
-```
 
 #### Infura
 
