@@ -494,8 +494,8 @@ function Transactions(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { height: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 380px)' }
+                            ? { maxHeight: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 330px)' }
                         : undefined
                 }
             >

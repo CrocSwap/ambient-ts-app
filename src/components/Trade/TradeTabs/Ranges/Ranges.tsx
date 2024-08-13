@@ -2,7 +2,6 @@
 import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 
 // START: Import Local Files
-import { Pagination } from '@mui/material';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -10,20 +9,16 @@ import RangeHeader from './RangesTable/RangeHeader';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import usePagination from '../../../Global/Pagination/usePagination';
-import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     HideEmptyPositionContainer,
     RangeRow as RangeRowStyled,
-    ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
@@ -59,7 +54,6 @@ function Ranges(props: propsIF) {
 
     const {
         showAllData: showAllDataSelection,
-        toggleTradeTable,
         hideEmptyPositionsOnAccount,
         setHideEmptyPositionsOnAccount,
     } = useContext(TradeTableContext);
@@ -70,7 +64,6 @@ function Ranges(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
-    const { tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
         provider,
@@ -86,8 +79,6 @@ function Ranges(props: propsIF) {
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded =
-        !isAccountView && tradeTableState === 'Expanded';
 
     const { userAddress } = useContext(UserDataContext);
 
@@ -197,21 +188,6 @@ function Ranges(props: propsIF) {
               ? 'medium'
               : 'large';
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
-
-    const [page, setPage] = useState(1);
-    const resetPageToFirst = () => setPage(1);
-
-    // const isScreenShort =
-    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
-
-    // const isScreenTall =
-    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
-
     const filteredSortedPositions = useMemo(() => {
         // filter out empty positions on account view when hideEmptyPositionsOnAccount is true
         return hideEmptyPositionsOnAccount && isAccountView
@@ -219,43 +195,10 @@ function Ranges(props: propsIF) {
             : sortedPositions;
     }, [hideEmptyPositionsOnAccount, isAccountView, sortedPositions]);
 
-    const _DATA = usePagination(
-        filteredSortedPositions,
-        // , isScreenShort, isScreenTall
-    );
-
-    const {
-        showingFrom,
-        showingTo,
-        totalItems,
-        setCurrentPage,
-        rowsPerPage,
-        changeRowsPerPage,
-        count,
-        fullData,
-    } = _DATA;
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-        const element = document.getElementById('current_row_scroll');
-        element?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'start',
-        });
-    };
-
-    const handleChangeRowsPerPage = (
-        event:
-            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            | React.ChangeEvent<HTMLSelectElement>,
-    ) => {
-        changeRowsPerPage(parseInt(event.target.value, 10));
-    };
-    const tradePageCheck = isTradeTableExpanded && rangeData.length > 10;
+    const _DATA = filteredSortedPositions;
+    // , isScreenShort, isScreenTall
 
     const listRef = useRef<HTMLUListElement>(null);
-    const sPagination = useMediaQuery('(max-width: 800px)');
 
     const userHasEmptyPositions = useMemo(
         () =>
@@ -264,11 +207,6 @@ function Ranges(props: propsIF) {
             ).length > 0,
         [positionsByUser.positions],
     );
-
-    const showPagination =
-        rowsPerPage > 0 &&
-        ((isAccountView && rangeData.length > 10) ||
-            (!isAccountView && tradePageCheck));
 
     const showEmptyToggleButton =
         connectedAccountActive && userHasEmptyPositions;
@@ -281,41 +219,6 @@ function Ranges(props: propsIF) {
             flexDirection={isSmallScreen ? 'column' : 'row'}
             margin={isSmallScreen ? '20px auto' : '16px auto'}
         >
-            {showPagination && (
-                <FlexContainer
-                    fullWidth
-                    alignItems='center'
-                    justifyContent='center'
-                    gap={isSmallScreen ? 4 : 8}
-                    background='dark1'
-                    flexDirection={isSmallScreen ? 'column-reverse' : 'row'}
-                >
-                    <RowsPerPageDropdown
-                        rowsPerPage={rowsPerPage}
-                        onChange={handleChangeRowsPerPage}
-                        itemCount={sortedPositions.length}
-                        setCurrentPage={setCurrentPage}
-                        resetPageToFirst={resetPageToFirst}
-                    />
-                    <Pagination
-                        count={count}
-                        page={page}
-                        shape='circular'
-                        color='secondary'
-                        onChange={handleChange}
-                        showFirstButton
-                        showLastButton
-                        size={sPagination ? 'small' : 'medium'}
-                    />
-                    {!isSmallScreen && (
-                        <Text
-                            fontSize='mini'
-                            color='text2'
-                            style={{ whiteSpace: 'nowrap' }}
-                        >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-                    )}
-                </FlexContainer>
-            )}
             {showEmptyToggleButton && (
                 <HideEmptyPositionContainer
                     onClick={() => {
@@ -327,7 +230,7 @@ function Ranges(props: propsIF) {
                             !hideEmptyPositionsOnAccount,
                         );
                     }}
-                    style={{ width: !showPagination ? '100%' : 'auto' }}
+                    style={{ width: '100%' }}
                 >
                     <p>Hide Empty Positions</p>
 
@@ -504,14 +407,6 @@ function Ranges(props: propsIF) {
             ))}
         </RangeRowStyled>
     );
-
-    useEffect(() => {
-        if (_DATA.currentData.length && !isTradeTableExpanded) {
-            setCurrentPage(1);
-            const mockEvent = {} as React.ChangeEvent<unknown>;
-            handleChange(mockEvent, 1);
-        }
-    }, [isTradeTableExpanded]);
 
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
@@ -818,8 +713,8 @@ function Ranges(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { height: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 380px)' }
+                            ? { maxHeight: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 350px)' }
                         : undefined
                 }
             >
@@ -843,7 +738,7 @@ function Ranges(props: propsIF) {
                 <TableRows
                     type='Range'
                     data={unindexedUpdatedPositions.concat(
-                        _DATA.currentData
+                        filteredSortedPositions
                             .filter(
                                 (pos) =>
                                     // remove existing row for adds
@@ -859,12 +754,14 @@ function Ranges(props: propsIF) {
                                     pos.positionLiq !== 0,
                             ),
                     )}
-                    fullData={unindexedUpdatedPositions.concat(fullData)}
+                    fullData={unindexedUpdatedPositions.concat(
+                        filteredSortedPositions,
+                    )}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />
             </ul>
-            {
+            {/* {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
@@ -879,7 +776,7 @@ function Ranges(props: propsIF) {
                             </ViewMoreButton>
                         </FlexContainer>
                     )
-            }
+            } */}
         </div>
     ) : (
         <NoTableData
