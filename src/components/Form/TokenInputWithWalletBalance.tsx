@@ -88,10 +88,12 @@ function TokenInputWithWalletBalance(props: propsIF) {
             : '...';
     const walletAndExchangeBalanceBigInt =
         walletBalanceBigInt + dexBalanceBigInt;
+
     const balanceDisplay = !isDexSelected
         ? walletBalanceDisplay
         : walletAndExchangeBalanceDisplay;
-    const balanceBigInt = !isDexSelected
+
+    const selectedBalanceBigInt = !isDexSelected
         ? walletBalanceBigInt
         : walletAndExchangeBalanceBigInt;
 
@@ -103,43 +105,65 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isTokenEth
             ? balance -
               fromDisplayQty(
-                  amountToReduceNativeTokenQty.toString(),
+                  (amountToReduceNativeTokenQty * 1.1).toString(), // 10% buffer between amount to reduce and amount used to block user from submitting tx
                   token.decimals,
               )
             : isInitPage
               ? balance - BigInt(1e6)
               : balance;
 
-    const balanceWithBuffer = balanceBigInt
-        ? subtractBuffer(balanceBigInt)
+    const selectedBalanceWithBufferBigInt = selectedBalanceBigInt
+        ? subtractBuffer(selectedBalanceBigInt)
         : 0n;
 
+    const scaledSelectedBalanceWithBuffer = toDisplayQty(
+        selectedBalanceWithBufferBigInt,
+        token.decimals,
+    );
+
     const handleMaxButtonClick = () => {
-        if (balanceBigInt.toString() !== tokenInput && balanceWithBuffer > 0n) {
-            const scaledValue =
-                toDisplayQty(balanceWithBuffer, token.decimals) ?? '0';
-            parseTokenInput && parseTokenInput(scaledValue, true);
-            handleTokenInputEvent(formatTokenInput(scaledValue, token, true));
+        if (
+            scaledSelectedBalanceWithBuffer !== tokenInput &&
+            selectedBalanceWithBufferBigInt > 0n
+        ) {
+            parseTokenInput &&
+                parseTokenInput(scaledSelectedBalanceWithBuffer, true);
+            handleTokenInputEvent(
+                formatTokenInput(scaledSelectedBalanceWithBuffer, token, true),
+            );
         }
     };
 
     const handleToggleDex = () => {
         // if the sell token quantity is maximized and the user switches to use exchange balance,
         // then the quantity should be updated to the exchange balance maximum
-        if (tokenAorB === 'A' && balanceBigInt.toString() !== tokenInput) {
-            const balance = subtractBuffer(
-                isDexSelected
-                    ? walletBalanceBigInt
-                    : walletBalanceBigInt + dexBalanceBigInt,
-            );
+        if (
+            tokenAorB === 'A' &&
+            (scaledSelectedBalanceWithBuffer === tokenInput ||
+                Math.abs(
+                    (parseFloat(tokenInput) -
+                        parseFloat(scaledSelectedBalanceWithBuffer)) /
+                        parseFloat(scaledSelectedBalanceWithBuffer),
+                ) < 0.01) // consider the values equal if the difference is less than 1%
+        ) {
             if (
                 walletBalanceBigInt !==
                 walletBalanceBigInt + dexBalanceBigInt
             ) {
-                const scaledValue =
-                    toDisplayQty(balance, token.decimals) ?? '0';
-                parseTokenInput && parseTokenInput(scaledValue);
-                handleTokenInputEvent(scaledValue);
+                const newBalanceWithBuffer = walletAndExchangeBalanceBigInt
+                    ? subtractBuffer(
+                          isDexSelected
+                              ? walletBalanceBigInt
+                              : walletAndExchangeBalanceBigInt,
+                      )
+                    : 0n;
+
+                const newScaledBalance = toDisplayQty(
+                    newBalanceWithBuffer,
+                    token.decimals,
+                );
+                parseTokenInput && parseTokenInput(newScaledBalance);
+                handleTokenInputEvent(newScaledBalance);
             }
         }
         handleToggleDexSelection();
@@ -162,7 +186,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
-                availableBalance={balanceWithBuffer}
+                availableBalance={selectedBalanceWithBufferBigInt}
                 useExchangeBalance={
                     isDexSelected &&
                     !!tokenDexBalance &&
