@@ -28,7 +28,10 @@ import {
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
-import { ALLOW_MENTIONS } from '../../ChatConstants/ChatConstants';
+import {
+    ALLOW_MENTIONS,
+    CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
+} from '../../ChatConstants/ChatConstants';
 import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
 
 interface MessageInputProps {
@@ -676,7 +679,11 @@ export default function MessageInput(props: MessageInputProps) {
         // );
 
         const filteredElements: HTMLElement[] = [];
-        const searchToken = word.split(' ')[0];
+        let searchToken = word.split(' ')[0];
+
+        CUSTOM_EMOJI_BLACKLIST_CHARACTERS.forEach((char) => {
+            searchToken = searchToken.replaceAll(char, '');
+        });
 
         if (searchToken.length == 0) {
             resetCustomEmojiPickerStates();
