@@ -483,7 +483,7 @@ function Transactions(props: propsIF) {
                 const { scrollTop, scrollHeight, clientHeight } =
                     scrollRef.current;
                 if (scrollTop + clientHeight >= (scrollHeight * 2) / 3) {
-                    onScrollTwoThirds();
+                    console.log('User has scrolled to the bottom');
                     preventFetch.current = true;
                 }
             }
@@ -500,11 +500,6 @@ function Transactions(props: propsIF) {
             }
         };
     }, []);
-
-    const onScrollTwoThirds = (): void => {
-        // Your logic when the user scrolls to the bottom
-        console.log('User has scrolled to the bottom');
-    };
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
