@@ -634,6 +634,7 @@ export default function Limit() {
                 if (isTransactionDeniedError(error) || DISABLE_WORKAROUNDS) {
                     throw error;
                 }
+                // on first attempt try moving limit tick in by 1 tick
                 try {
                     tx = await submitLimitOrder({
                         crocEnv,
@@ -648,20 +649,8 @@ export default function Limit() {
                     });
                 } catch (error2) {
                     if (isTransactionDeniedError(error2)) throw error2;
+                    // on second attempt try reducing the qty by 5 wei
                     try {
-                        tx = await submitLimitOrder({
-                            crocEnv,
-                            qty,
-                            sellTokenAddress: sellToken,
-                            buyTokenAddress: buyToken,
-                            type,
-                            limit: isSellTokenBase
-                                ? limitTick - gridSize
-                                : limitTick + gridSize,
-                            isWithdrawFromDexChecked,
-                        });
-                    } catch (error3) {
-                        if (isTransactionDeniedError(error3)) throw error3;
                         const newQty = isTokenAPrimary
                             ? toDisplayQty(
                                   fromDisplayQty(qty, tokenA.decimals) -
@@ -673,14 +662,28 @@ export default function Limit() {
                                       BigInt(5),
                                   tokenB.decimals,
                               );
+                        tx = await submitLimitOrder({
+                            crocEnv,
+                            qty: newQty,
+                            sellTokenAddress: sellToken,
+                            buyTokenAddress: buyToken,
+                            type,
+                            limit: limitTick,
+                            isWithdrawFromDexChecked,
+                        });
+                    } catch (error3) {
+                        if (isTransactionDeniedError(error3)) throw error3;
+                        // on third attempt try moving limit tick out by 1 tick
                         try {
                             tx = await submitLimitOrder({
                                 crocEnv,
-                                qty: newQty,
+                                qty,
                                 sellTokenAddress: sellToken,
                                 buyTokenAddress: buyToken,
                                 type,
-                                limit: limitTick,
+                                limit: isSellTokenBase
+                                    ? limitTick - gridSize
+                                    : limitTick + gridSize,
                                 isWithdrawFromDexChecked,
                             });
                         } catch (error4) {
