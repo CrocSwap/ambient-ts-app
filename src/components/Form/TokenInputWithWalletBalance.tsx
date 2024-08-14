@@ -24,6 +24,7 @@ interface propsIF {
     parseTokenInput?: (val: string, isMax?: boolean) => void | string;
     fieldId?: string;
     isLoading?: boolean;
+    impactCalculationPending?: boolean;
     showWallet?: boolean;
     hideWalletMaxButton?: boolean;
     tokenBalance?: string;
@@ -49,6 +50,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
         isWithdraw,
         showPulseAnimation,
         isLoading,
+        impactCalculationPending,
         showWallet,
         hideWalletMaxButton,
         disabledContent,
@@ -176,6 +178,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
             <WalletBalanceSubinfo
                 usdValueForDom={
                     isLoading ||
+                    impactCalculationPending ||
                     !usdValueForDom ||
                     disabledContent ||
                     !isPoolInitialized
