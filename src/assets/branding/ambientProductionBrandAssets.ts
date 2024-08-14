@@ -14,11 +14,6 @@ export const ambientProductionBrandAssets: brandIF = {
                 { content: scrollLogo, processAs: 'image' },
             ],
         },
-        // ethereum mainnet
-        '0x1': {
-            color: 'purple_dark',
-            hero: [{ content: 'ambient', processAs: 'text' }],
-        },
         // blast mainnet
         '0x13e31': {
             color: 'purple_dark',
@@ -27,6 +22,11 @@ export const ambientProductionBrandAssets: brandIF = {
                 { content: '×', processAs: 'separator' },
                 { content: blastLogo, processAs: 'image' },
             ],
+        },
+        // ethereum mainnet
+        '0x1': {
+            color: 'purple_dark',
+            hero: [{ content: 'ambient', processAs: 'text' }],
         },
     },
     platformName: 'ambient',
