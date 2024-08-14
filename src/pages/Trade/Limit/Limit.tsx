@@ -661,7 +661,7 @@ export default function Limit() {
                         });
                     } catch (error3) {
                         if (isTransactionDeniedError(error3)) throw error3;
-                        else throw error;
+                        throw error;
                     }
                 }
             }
