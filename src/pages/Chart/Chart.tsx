@@ -5843,6 +5843,27 @@ export default function Chart(props: propsIF) {
         denomInBase,
     ]);
 
+    useEffect(() => {
+        if (lastCandleData) {
+            setsubChartValues((prevState: SubChartValue[]) => {
+                const newData = [...prevState];
+
+                newData.filter(
+                    (target: SubChartValue) => target.name === 'tvl',
+                )[0].value = lastCandleData
+                    ? lastCandleData.tvlData.tvl
+                    : undefined;
+
+                newData.filter(
+                    (target: SubChartValue) => target.name === 'feeRate',
+                )[0].value = lastCandleData
+                    ? lastCandleData.averageLiquidityFee
+                    : undefined;
+                return newData;
+            });
+        }
+    }, [reset]);
+
     return (
         <div
             ref={d3Container}

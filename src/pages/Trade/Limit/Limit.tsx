@@ -509,7 +509,7 @@ export default function Limit() {
         isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeLimit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.08 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     useEffect(() => {

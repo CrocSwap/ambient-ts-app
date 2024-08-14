@@ -14,7 +14,10 @@ interface propsIF {
     isReplyButtonPressed: boolean;
     setSelectedMessageForReply: Dispatch<SetStateAction<Message | undefined>>;
     message: Message | undefined;
-    addReactionListener: (message?: Message) => void;
+    addReactionListener: (
+        e: React.MouseEvent<HTMLDivElement>,
+        message?: Message,
+    ) => void;
     tooltipTop: boolean;
     isUserVerified: boolean;
     isModerator: boolean;
@@ -61,12 +64,7 @@ export default function Options(props: propsIF) {
         />
     );
 
-    const addReaction = (
-        <BsEmojiSmile
-            onClick={() => props.addReactionListener(props.message)}
-            size={14}
-        />
-    );
+    const addReaction = <BsEmojiSmile size={14} />;
 
     const flipCard = (
         <TextOnlyTooltip
@@ -155,6 +153,7 @@ export default function Options(props: propsIF) {
             placement={props.tooltipTop ? 'top' : 'bottom'}
             enterDelay={100}
             leaveDelay={0}
+            onClick={(e) => props.addReactionListener(e, props.message)}
         >
             <p
                 data-label='id'
