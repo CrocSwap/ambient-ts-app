@@ -460,7 +460,7 @@ function Ranges(props: propsIF) {
                     );
 
                     const position = pendingPositionUpdate.txDetails.isAmbient
-                        ? await pos.queryAmbient()
+                        ? await pos.queryAmbientPos()
                         : await pos.queryRangePos(
                               pendingPositionUpdate.txDetails.lowTick || 0,
                               pendingPositionUpdate.txDetails.highTick || 0,
@@ -471,9 +471,7 @@ function Ranges(props: propsIF) {
 
                     if (!pendingPositionUpdate.txDetails)
                         return {} as PositionIF;
-                    const liqBigInt = pendingPositionUpdate.txDetails.isAmbient
-                        ? position.seeds
-                        : position.liq;
+                    const liqBigInt = position.liq;
                     const liqNum = bigIntToFloat(liqBigInt);
                     if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
