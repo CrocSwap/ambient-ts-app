@@ -7,7 +7,11 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../ambient-utils/constants';
+import {
+    DISABLE_WORKAROUNDS,
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+} from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
@@ -117,7 +121,8 @@ export function useCreateRangePosition() {
                 if (
                     (isTokenAPrimary && tokenB.address != ZERO_ADDRESS) ||
                     (!isTokenAPrimary && tokenA.address != ZERO_ADDRESS) ||
-                    isTransactionDeniedError(error)
+                    isTransactionDeniedError(error) ||
+                    DISABLE_WORKAROUNDS
                 ) {
                     throw error;
                 }
