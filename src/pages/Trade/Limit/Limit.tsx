@@ -647,7 +647,22 @@ export default function Limit() {
                     });
                 } catch (error2) {
                     if (isTransactionDeniedError(error2)) throw error2;
-                    else throw error;
+                    try {
+                        tx = await submitLimitOrder({
+                            crocEnv,
+                            qty,
+                            sellTokenAddress: sellToken,
+                            buyTokenAddress: buyToken,
+                            type,
+                            limit: isSellTokenBase
+                                ? limitTick - gridSize
+                                : limitTick + gridSize,
+                            isWithdrawFromDexChecked,
+                        });
+                    } catch (error3) {
+                        if (isTransactionDeniedError(error3)) throw error3;
+                        else throw error;
+                    }
                 }
             }
 
