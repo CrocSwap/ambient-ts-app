@@ -63,6 +63,8 @@ export default function TabComponent(props: TabPropsIF) {
 
     const navigate = useNavigate();
 
+    const isMobile = useMediaQuery('(max-width: 600px)');
+
     const { tradeTableState } = useContext(ChartContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
@@ -347,21 +349,33 @@ export default function TabComponent(props: TabPropsIF) {
                 {/* </AnimateSharedLayout> */}
             </nav>
             <div className={styles.main_tab_content}>
-                <AnimateSharedLayout>
-                    <motion.div
+                {isMobile ? (
+                    <div
                         key={selectedTab ? selectedTab.label : 'empty'}
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -10, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
                         role='tabpanel'
                         tabIndex={0}
                         style={{ height: '100%' }}
                         hidden={!selectedTab}
                     >
                         {selectedTab ? selectedTab.content : null}
-                    </motion.div>
-                </AnimateSharedLayout>
+                    </div>
+                ) : (
+                    <AnimateSharedLayout>
+                        <motion.div
+                            key={selectedTab ? selectedTab.label : 'empty'}
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -10, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            role='tabpanel'
+                            tabIndex={0}
+                            style={{ height: '100%' }}
+                            hidden={!selectedTab}
+                        >
+                            {selectedTab ? selectedTab.content : null}
+                        </motion.div>
+                    </AnimateSharedLayout>
+                )}
             </div>
         </div>
     );

@@ -870,7 +870,7 @@ function Ranges(props: propsIF) {
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '108%' }}
+            style={{ height: isSmallScreen ? '98%' : '108%' }}
         >
             <div>{headerColumnsDisplay}</div>
 
