@@ -175,6 +175,11 @@ function LimitTokenInput(props: propsIF) {
             setIsTokenAPrimary(false);
             setPrimaryQuantity(value);
 
+            if (value === '') {
+                setTokenAInputQty('');
+                return;
+            }
+
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * inputNum
@@ -184,7 +189,7 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
-            if (rawTokenAQty === Infinity) return;
+            if (rawTokenAQty === Infinity || isNaN(rawTokenAQty)) return;
             const formattedRawTokenAQty = formatTokenInput(
                 rawTokenAQty.toString(),
                 tokenA,
@@ -193,6 +198,10 @@ function LimitTokenInput(props: propsIF) {
                 fromDisplayQty(formattedRawTokenAQty, tokenA.decimals),
             );
         } else {
+            if (primaryQuantity === '') {
+                setTokenAInputQty('');
+                return;
+            }
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
@@ -202,7 +211,7 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
-            if (rawTokenAQty === Infinity) return;
+            if (rawTokenAQty === Infinity || isNaN(rawTokenAQty)) return;
             const formattedRawTokenAQty = formatTokenInput(
                 rawTokenAQty.toString(),
                 tokenA,
