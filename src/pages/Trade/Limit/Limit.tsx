@@ -633,17 +633,22 @@ export default function Limit() {
                 if (isTransactionDeniedError(error) || DISABLE_WORKAROUNDS) {
                     throw error;
                 }
-                tx = await submitLimitOrder({
-                    crocEnv,
-                    qty,
-                    sellTokenAddress: sellToken,
-                    buyTokenAddress: buyToken,
-                    type,
-                    limit: isSellTokenBase
-                        ? limitTick + gridSize
-                        : limitTick - gridSize,
-                    isWithdrawFromDexChecked,
-                });
+                try {
+                    tx = await submitLimitOrder({
+                        crocEnv,
+                        qty,
+                        sellTokenAddress: sellToken,
+                        buyTokenAddress: buyToken,
+                        type,
+                        limit: isSellTokenBase
+                            ? limitTick + gridSize
+                            : limitTick - gridSize,
+                        isWithdrawFromDexChecked,
+                    });
+                } catch (error2) {
+                    if (isTransactionDeniedError(error2)) throw error2;
+                    else throw error;
+                }
             }
 
             if (!tx) return;
