@@ -483,7 +483,13 @@ function Transactions(props: propsIF) {
                 const { scrollTop, scrollHeight, clientHeight } =
                     scrollRef.current;
                 if (scrollTop + clientHeight >= (scrollHeight * 2) / 3) {
-                    console.log('User has scrolled to the bottom');
+                    const sorted: TransactionIF[] = sortedTransactions.sort(
+                        (t1: TransactionIF, t2: TransactionIF) =>
+                            t1.txTime - t2.txTime,
+                    );
+                    const lowest: number = sorted[0].txTime;
+                    const highest: number = sorted[sorted.length - 1].txTime;
+                    console.log({ lowest, highest });
                     preventFetch.current = true;
                 }
             }
@@ -655,7 +661,6 @@ function Transactions(props: propsIF) {
                 ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
-                onScroll={() => console.log('scrolling!')}
             >
                 {(
                     isCandleSelected
