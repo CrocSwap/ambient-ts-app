@@ -14,6 +14,15 @@ export const defaultBrandAssets: brandIF = {
                 { content: scrollLogo, processAs: 'image' },
             ],
         },
+        // blast mainnet
+        '0x13e31': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: blastLogo, processAs: 'image' },
+            ],
+        },
         // ethereum mainnet
         '0x1': {
             color: 'purple_dark',
@@ -33,16 +42,7 @@ export const defaultBrandAssets: brandIF = {
                 { content: scrollLogo, processAs: 'image' },
             ],
         },
-        // blast mainnet
-        '0x13e31': {
-            color: 'purple_dark',
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: blastLogo, processAs: 'image' },
-            ],
-        },
-        // blast logo
+        // blast sepolia
         '0xa0c71fd': {
             color: 'purple_dark',
             hero: [
