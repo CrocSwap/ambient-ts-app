@@ -185,8 +185,12 @@ function LimitTokenInput(props: propsIF) {
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
             if (rawTokenAQty === Infinity) return;
+            const formattedRawTokenAQty = formatTokenInput(
+                rawTokenAQty.toString(),
+                tokenA,
+            );
             handleLimitButtonMessage(
-                BigInt((rawTokenAQty || 0) * 10 ** tokenA.decimals),
+                fromDisplayQty(formattedRawTokenAQty, tokenA.decimals),
             );
         } else {
             if (!isDenomBase) {
@@ -199,8 +203,12 @@ function LimitTokenInput(props: propsIF) {
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
             if (rawTokenAQty === Infinity) return;
+            const formattedRawTokenAQty = formatTokenInput(
+                rawTokenAQty.toString(),
+                tokenA,
+            );
             handleLimitButtonMessage(
-                BigInt((rawTokenAQty || 0) * 10 ** tokenA.decimals),
+                fromDisplayQty(formattedRawTokenAQty, tokenA.decimals),
             );
         }
         const truncatedTokenAQty = rawTokenAQty
