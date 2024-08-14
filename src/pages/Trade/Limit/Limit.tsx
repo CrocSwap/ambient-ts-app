@@ -23,6 +23,7 @@ import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTran
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import {
+    DISABLE_WORKAROUNDS,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
     ZERO_ADDRESS,
@@ -37,6 +38,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    isTransactionDeniedError,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
@@ -617,15 +619,32 @@ export default function Limit() {
 
         let tx;
         try {
-            tx = await submitLimitOrder({
-                crocEnv,
-                qty,
-                sellTokenAddress: sellToken,
-                buyTokenAddress: buyToken,
-                type,
-                limit: limitTick,
-                isWithdrawFromDexChecked,
-            });
+            try {
+                tx = await submitLimitOrder({
+                    crocEnv,
+                    qty,
+                    sellTokenAddress: sellToken,
+                    buyTokenAddress: buyToken,
+                    type,
+                    limit: limitTick,
+                    isWithdrawFromDexChecked,
+                });
+            } catch (error) {
+                if (isTransactionDeniedError(error) || DISABLE_WORKAROUNDS) {
+                    throw error;
+                }
+                tx = await submitLimitOrder({
+                    crocEnv,
+                    qty,
+                    sellTokenAddress: sellToken,
+                    buyTokenAddress: buyToken,
+                    type,
+                    limit: isSellTokenBase
+                        ? limitTick + gridSize
+                        : limitTick - gridSize,
+                    isWithdrawFromDexChecked,
+                });
+            }
 
             if (!tx) return;
 
