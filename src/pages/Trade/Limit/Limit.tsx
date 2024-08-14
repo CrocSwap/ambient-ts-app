@@ -5,6 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
     fromDisplayQty,
+    toDisplayQty,
 } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import {
@@ -661,7 +662,31 @@ export default function Limit() {
                         });
                     } catch (error3) {
                         if (isTransactionDeniedError(error3)) throw error3;
-                        throw error;
+                        const newQty = isTokenAPrimary
+                            ? toDisplayQty(
+                                  fromDisplayQty(qty, tokenA.decimals) -
+                                      BigInt(5), // offset by 5 wei to avoid an outstanding unknown issue
+                                  tokenA.decimals,
+                              )
+                            : toDisplayQty(
+                                  fromDisplayQty(qty, tokenB.decimals) -
+                                      BigInt(5),
+                                  tokenB.decimals,
+                              );
+                        try {
+                            tx = await submitLimitOrder({
+                                crocEnv,
+                                qty: newQty,
+                                sellTokenAddress: sellToken,
+                                buyTokenAddress: buyToken,
+                                type,
+                                limit: limitTick,
+                                isWithdrawFromDexChecked,
+                            });
+                        } catch (error4) {
+                            if (isTransactionDeniedError(error4)) throw error4;
+                            throw error;
+                        }
                     }
                 }
             }
