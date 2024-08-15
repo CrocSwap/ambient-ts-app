@@ -41,6 +41,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -81,6 +82,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLiquidity,
         setLiquidityFee,
     } = useContext(GraphDataContext);
+
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
 
@@ -805,7 +808,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         isServerEnabled,
     ]);
 
-    useEffect(() => {
+    const updateLiquidity = () => {
         // Reset existing liquidity data until the fetch completes, because it's a new pool
         const request = {
             baseAddress: baseTokenAddress,
@@ -838,6 +841,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 })
                 .catch(console.error);
         }
+    };
+
+    useEffect(() => {
+        updateLiquidity();
     }, [
         baseTokenAddress +
             quoteTokenAddress +
@@ -847,6 +854,14 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.isChartEnabled,
         props.crocEnv !== undefined,
     ]);
+
+    useEffect(() => {
+        // update liquidity 1 seconds after session receipts are updated
+        const timer = setTimeout(() => {
+            updateLiquidity();
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [sessionReceipts.length]);
 
     return {
         contextMatchesParams,
