@@ -179,7 +179,9 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         messageInputText();
-        handleEmojiPickerHideShow();
+        if (!isUserConnected && !userAddress) {
+            setShowEmojiPicker(false);
+        }
     }, [isUserConnected, userAddress]);
 
     useEffect(() => {
