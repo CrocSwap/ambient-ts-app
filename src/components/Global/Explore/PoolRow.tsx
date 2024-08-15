@@ -63,6 +63,7 @@ export default function PoolRow(props: propsIF) {
                 goToMarket(pool.base.address, pool.quote.address);
                 event?.stopPropagation();
             }}
+
             // onMouseEnter={() => setIsHovered(true)}
             // onMouseLeave={() => setIsHovered(false)}
         >

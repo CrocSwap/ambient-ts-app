@@ -201,9 +201,6 @@ function TradeCharts(props: propsIF) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     const [currentData, setCurrentData] = useState<CandleDataIF | undefined>();
-    const [currentVolumeData, setCurrentVolumeData] = useState<
-        number | undefined
-    >();
 
     const resetAndRescaleDisplay = (
         <div className={styles.chart_overlay_container}>
@@ -299,7 +296,7 @@ function TradeCharts(props: propsIF) {
                                     : currentData.priceCloseExclMEVDecimalCorrected,
                             ).formattedValue +
                             ' V: ' +
-                            formatDollarAmountAxis(currentVolumeData)}
+                            formatDollarAmountAxis(currentData.volumeUSD)}
                 </div>
             ) : (
                 <div className={styles.current_data_info} />
@@ -385,7 +382,6 @@ function TradeCharts(props: propsIF) {
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         setCurrentData={setCurrentData}
-                        setCurrentVolumeData={setCurrentVolumeData}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                         rescale={rescale}
