@@ -299,3 +299,12 @@ export const isChainNameTestnet = (chainName: string) => {
         chainName.indexOf('Sepolia') > -1 || chainName.indexOf('Testnet') > -1
     );
 };
+
+export const getEmojiFromUnifiedCode = (unified: string) => {
+    if (unified) {
+        const emojiCharacter = String.fromCodePoint(parseInt(unified, 16));
+        return emojiCharacter;
+    }
+
+    return '';
+};

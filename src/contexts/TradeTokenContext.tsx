@@ -44,8 +44,8 @@ interface TradeTokenContextIF {
     tokenBDexBalance: string;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
-    tokenAAllowance: string;
-    tokenBAllowance: string;
+    tokenAAllowance: bigint | undefined;
+    tokenBAllowance: bigint | undefined;
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;

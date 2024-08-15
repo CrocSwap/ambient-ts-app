@@ -23,8 +23,8 @@ interface BalancesIF {
     setBaseTokenDexBalance: React.Dispatch<React.SetStateAction<string>>;
     quoteTokenDexBalance: string;
     setQuoteTokenDexBalance: React.Dispatch<React.SetStateAction<string>>;
-    tokenAAllowance: string;
-    tokenBAllowance: string;
+    tokenAAllowance: bigint | undefined;
+    tokenBAllowance: bigint | undefined;
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;

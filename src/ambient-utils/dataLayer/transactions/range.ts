@@ -2,7 +2,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 
 type RangePositionTokenInfo = {
     address: string;
-    qty: number;
+    qty: string;
     isWithdrawFromDexChecked: boolean;
 };
 

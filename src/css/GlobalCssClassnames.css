@@ -227,3 +227,13 @@ aside.emoji-picker-react {
     height: auto !important;
    }
 }
+
+
+.EmojiPickerReact{
+    background: var(--dark2) !important;
+}
+
+.epr-emoji-category-label{
+    background: var(--dark2) !important;
+    font-size: .8rem !important;
+}
