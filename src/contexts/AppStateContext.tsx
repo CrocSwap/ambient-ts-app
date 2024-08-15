@@ -24,7 +24,7 @@ import {
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
 import { useWeb3Modal } from '@web3modal/ethers/react';
 
-interface AppStateContextIF {
+export interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
     appHeaderDropdown: {
         isActive: boolean;

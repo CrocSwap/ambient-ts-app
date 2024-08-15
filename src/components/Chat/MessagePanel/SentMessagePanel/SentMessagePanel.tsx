@@ -36,6 +36,8 @@ import {
     ALLOW_REACTIONS,
     ALLOW_REPLIES,
     BASIC_CHAT_MODE,
+    REGEX_EMOJI,
+    REGEX_NOT_EMOJI,
 } from '../../ChatConstants/ChatConstants';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -78,7 +80,10 @@ interface SentMessageProps {
     isChatOpen: boolean;
     isDeleted: boolean;
     deletedMessageText: string;
-    addReactionListener: (message?: Message) => void;
+    addReactionListener: (
+        e: React.MouseEvent<HTMLDivElement>,
+        message?: Message,
+    ) => void;
     isDeleteMessageButtonPressed: boolean;
     setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
     deleteMsgFromList: (msgId: string) => void;
@@ -126,6 +131,21 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const checkRegex = props.message.message.match(REGEX_EMOJI);
+
+    // if(checkRegex){
+    //     console.log(props.message.message);
+    //     console.log(props.message.message.length);
+    //     console.log('regex len', checkRegex.length);
+    //     console.log('....................');
+    // }
+
+    const onlyEmoji =
+        !REGEX_NOT_EMOJI.test(props.message.message) &&
+        checkRegex != null &&
+        checkRegex.length < 6 &&
+        props.message.message.length < 6;
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
@@ -427,7 +447,9 @@ function SentMessagePanel(props: SentMessageProps) {
                         ' ' +
                         (props.message.isVerified == true
                             ? styles.vrf_msg_dbg
-                            : '')
+                            : '') +
+                        ' ' +
+                        (onlyEmoji ? styles.only_emoji : '')
                     }
                 >
                     {messagesArray.map((e, i) => {

@@ -1,5 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useEffect, useRef, useState, memo, useMemo } from 'react';
+import { useContext, useRef, memo, useMemo } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import { useSortedLimits } from '../useSortedLimits';
@@ -7,18 +7,12 @@ import { LimitOrderIF } from '../../../../ambient-utils/types';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
-import usePagination from '../../../Global/Pagination/usePagination';
-import { Pagination } from '@mui/material';
+
 import Spinner from '../../../Global/Spinner/Spinner';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import {
-    OrderRow as OrderRowStyled,
-    ViewMoreButton,
-} from '../../../../styled/Components/TransactionTable';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
@@ -40,8 +34,7 @@ function Orders(props: propsIF) {
         connectedAccountActive,
         isAccountView,
     } = props;
-    const { showAllData: showAllDataSelection, toggleTradeTable } =
-        useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -50,12 +43,8 @@ function Orders(props: propsIF) {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
 
-    const { tradeTableState } = useContext(ChartContext);
-
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded =
-        !isAccountView && tradeTableState === 'Expanded';
 
     const {
         limitOrdersByUser,
@@ -72,8 +61,6 @@ function Orders(props: propsIF) {
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
-    const baseTokenAddress = baseToken.address;
-    const quoteTokenAddress = quoteToken.address;
 
     const activeUserLimitOrdersByPool = useMemo(
         () =>
@@ -315,103 +302,8 @@ function Orders(props: propsIF) {
             sortable: false,
         },
     ];
-    // ---------------------
-
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
-
-    // Get current tranges
-
-    const [page, setPage] = useState(1);
-    const resetPageToFirst = () => setPage(1);
-
-    // const isScreenShort =
-    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
-
-    // const isScreenTall =
-    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
-
-    const _DATA = usePagination(
-        sortedLimits,
-        // , isScreenShort, isScreenTall
-    );
-
-    const {
-        showingFrom,
-        showingTo,
-        totalItems,
-        setCurrentPage,
-        rowsPerPage,
-        changeRowsPerPage,
-        count,
-        fullData,
-    } = _DATA;
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-        const element = document.getElementById('current_row_scroll');
-        element?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'start',
-        });
-    };
-
-    const handleChangeRowsPerPage = (
-        event:
-            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            | React.ChangeEvent<HTMLSelectElement>,
-    ) => {
-        changeRowsPerPage(parseInt(event.target.value, 10));
-    };
-
-    const tradePageCheck = isTradeTableExpanded && limitOrderData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
-    const sPagination = useMediaQuery('(max-width: 800px)');
-
-    const footerDisplay = rowsPerPage > 0 &&
-        ((isAccountView && limitOrderData.length > 10) ||
-            (!isAccountView && tradePageCheck)) && (
-            <FlexContainer
-                alignItems='center'
-                justifyContent='center'
-                gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? '40px auto' : '16px auto'}
-                background='dark1'
-                flexDirection={isSmallScreen ? 'column' : 'row'}
-            >
-                <RowsPerPageDropdown
-                    rowsPerPage={rowsPerPage}
-                    onChange={handleChangeRowsPerPage}
-                    itemCount={sortedLimits.length}
-                    setCurrentPage={setCurrentPage}
-                    resetPageToFirst={resetPageToFirst}
-                />
-                <Pagination
-                    count={count}
-                    page={page}
-                    shape='circular'
-                    color='secondary'
-                    onChange={handleChange}
-                    showFirstButton
-                    showLastButton
-                    size={sPagination ? 'small' : 'medium'}
-                />
-                {!isSmallScreen && (
-                    <Text
-                        fontSize='mini'
-                        color='text2'
-                        style={{ whiteSpace: 'nowrap' }}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-                )}
-            </FlexContainer>
-        );
-
-    // ----------------------
 
     const headerColumnsDisplay = (
         <OrderRowStyled size={tableView} header account={isAccountView}>
@@ -472,8 +364,8 @@ function Orders(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { height: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 380px)' }
+                            ? { maxHeight: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 330px)' }
                         : undefined
                 }
             >
@@ -495,38 +387,14 @@ function Orders(props: propsIF) {
                     ))}
                 <TableRows
                     type='Order'
-                    data={_DATA.currentData}
-                    fullData={fullData}
+                    data={sortedLimits}
+                    fullData={sortedLimits}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />
             </ul>
-            {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                !isTradeTableExpanded &&
-                    !isAccountView &&
-                    sortedLimits.length > rowsPerPage && (
-                        <FlexContainer
-                            justifyContent='center'
-                            alignItems='center'
-                            padding='8px'
-                        >
-                            <ViewMoreButton onClick={() => toggleTradeTable()}>
-                                View More
-                            </ViewMoreButton>
-                        </FlexContainer>
-                    )
-            }
         </div>
     );
-
-    useEffect(() => {
-        if (_DATA.currentData.length && !isTradeTableExpanded) {
-            setCurrentPage(1);
-            const mockEvent = {} as React.ChangeEvent<unknown>;
-            handleChange(mockEvent, 1);
-        }
-    }, [isTradeTableExpanded]);
 
     return (
         <FlexContainer
@@ -545,8 +413,6 @@ function Orders(props: propsIF) {
                     orderDataOrNull
                 )}
             </div>
-
-            {footerDisplay}
         </FlexContainer>
     );
 }
