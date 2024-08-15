@@ -260,6 +260,10 @@ function SwapTokenInput(props: propsIF) {
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
                 await refreshImpact(truncatedInputStr, true);
+            } else {
+                setBuyQtyString('');
+                setPrimaryQuantity(value);
+                setIsBuyLoading(false);
             }
         } else {
             lastQuery.current = {
@@ -282,6 +286,10 @@ function SwapTokenInput(props: propsIF) {
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
                 await refreshImpact(truncatedInputStr, false);
+            } else {
+                setSellQtyString('');
+                setPrimaryQuantity(value);
+                setIsSellLoading(false);
             }
         } else {
             lastQuery.current = {
