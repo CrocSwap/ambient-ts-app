@@ -42,7 +42,8 @@ export default function Points(props: propsIF) {
               : `/${userAddress}/xp`;
 
     return (
-        <div>
+        <FlexContainer fullHeight flexDirection='column' justifyContent='space-between'>
+            <div>
             <div>
                 <PointsRow
                     shortName={'AMBI'}
@@ -99,11 +100,13 @@ export default function Points(props: propsIF) {
                         />
                     </div>
                 </div>
-            ) : undefined}
+                ) : undefined}
+                </div>
             <FlexContainer
                 fullWidth
-                justifyContent='space-evenly'
-                // style={{ padding: '0 1rem' }}
+                justifyContent='center'
+                gap={16}
+                style={{ marginBottom: '3rem' }}
             >
                 <Link to={linkToNavigateTo}>
                     <FlexContainer
@@ -112,6 +115,15 @@ export default function Points(props: propsIF) {
                         padding='8px'
                     >
                         <ViewMoreButton>View Details</ViewMoreButton>
+                    </FlexContainer>
+                </Link>
+                <Link to={'/xp-leaderboard'}>
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='8px'
+                    >
+                        <ViewMoreButton>View Leaderboard</ViewMoreButton>
                     </FlexContainer>
                 </Link>
                 <Link to={'/faq'}>
@@ -124,6 +136,6 @@ export default function Points(props: propsIF) {
                     </FlexContainer>
                 </Link>
             </FlexContainer>
-        </div>
+        </FlexContainer>
     );
 }

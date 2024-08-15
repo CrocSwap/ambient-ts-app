@@ -283,7 +283,7 @@ export default function PortfolioTabs(props: propsIF) {
         : lookupAccountLimitOrderData;
 
     const activeAccountTransactionData = connectedAccountActive
-        ? _txsByUser?.filter((tx) => {
+        ?[ ..._txsByUser, ..._txsByUser]?.filter((tx) => {
               if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
                   return true;
               } else {
