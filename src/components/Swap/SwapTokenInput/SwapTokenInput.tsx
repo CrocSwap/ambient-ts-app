@@ -250,6 +250,13 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenAChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            if (value === '') {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsBuyLoading(false);
+                return;
+            }
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
                 await refreshImpact(truncatedInputStr, true);
@@ -265,6 +272,13 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenBChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            if (value === '') {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsSellLoading(false);
+                return;
+            }
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
                 await refreshImpact(truncatedInputStr, false);
