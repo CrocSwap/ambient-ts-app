@@ -81,7 +81,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setLiquidity,
         setLiquidityFee,
         positionsByPool,
-        userPositionsByPool,
+        limitOrdersByPool,
     } = useContext(GraphDataContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
@@ -856,12 +856,15 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     const totalPositionLiq = useMemo(
         () =>
-            positionsByPool.positions
-                .concat(userPositionsByPool.positions)
-                .reduce((sum, position) => {
-                    return sum + position.positionLiq;
+            positionsByPool.positions.reduce((sum, position) => {
+                return sum + position.positionLiq;
+            }, 0) +
+            limitOrdersByPool.limitOrders
+                // .concat(limitOrdersByPool.limitOrders)
+                .reduce((sum, order) => {
+                    return sum + order.positionLiq;
                 }, 0),
-        [positionsByPool, userPositionsByPool],
+        [positionsByPool, limitOrdersByPool],
     );
 
     useEffect(() => {
