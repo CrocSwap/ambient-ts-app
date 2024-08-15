@@ -21,3 +21,15 @@
     display: flex;
     flex-direction: row;
 }
+
+.point_value{
+    text-align: end;
+}
+
+
+@media only screen and (min-width: 768px) {
+.point_value{
+    text-align: start;
+}
+
+}
