@@ -9,7 +9,7 @@ import { TokenIF } from '../ambient-utils/types';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenBalanceContext } from './TokenBalanceContext';
 
-interface TokenContextIF {
+export interface TokenContextIF {
     tokens: tokenMethodsIF;
     outputTokens: TokenIF[];
     rawInput: string;

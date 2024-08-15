@@ -56,7 +56,6 @@ interface propsIF {
     ) => void;
     chartItemStates: chartItemStates;
     setCurrentData: Dispatch<SetStateAction<CandleDataIF | undefined>>;
-    setCurrentVolumeData: Dispatch<SetStateAction<number | undefined>>;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
     rescale: boolean | undefined;
@@ -219,6 +218,16 @@ function TradeCandleStickChart(props: propsIF) {
     }, [candleDomains.isResetRequest]);
 
     useEffect(() => {
+        if (selectedDate) {
+            const selectedDateData = unparsedCandleData?.find(
+                (i) => i.time * 1000 === selectedDate,
+            );
+            props.setCurrentData(selectedDateData);
+            props.setShowTooltip(true);
+        }
+    }, [selectedDate]);
+
+    useEffect(() => {
         if (isFetchingEnoughData && scaleData) {
             const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
             scaleData.xScale.discontinuityProvider(newDiscontinuityProvider);
@@ -281,7 +290,13 @@ function TradeCandleStickChart(props: propsIF) {
     //     }
     // };
 
-    // Parse liquidtiy data
+    const sumActiveLiq = unparsedLiquidityData
+        ? unparsedLiquidityData.ranges.reduce((sum, range) => {
+              return sum + (range.activeLiq || 0);
+          }, 0)
+        : 0;
+
+    // Parse liquidity data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
             liqBoundary &&
@@ -604,7 +619,7 @@ function TradeCandleStickChart(props: propsIF) {
         } else {
             return undefined;
         }
-    }, [liqBoundary, baseTokenAddress + quoteTokenAddress]);
+    }, [liqBoundary, baseTokenAddress + quoteTokenAddress, sumActiveLiq]);
 
     useEffect(() => {
         if (unparsedCandleData) {
@@ -1103,7 +1118,6 @@ function TradeCandleStickChart(props: propsIF) {
                         denomInBase={isDenomBase}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
-                        setCurrentVolumeData={props.setCurrentVolumeData}
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}

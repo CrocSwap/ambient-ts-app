@@ -246,7 +246,7 @@ export const getPositionData = async (
                 position.quote,
                 position.user,
             );
-            const liqBigNum = (await pos.queryAmbient()).seeds;
+            const liqBigNum = (await pos.queryAmbientPos()).liq;
             const liqNum = bigIntToFloat(liqBigNum);
             newPosition.positionLiq = liqNum;
         } else {
