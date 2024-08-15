@@ -347,6 +347,7 @@ function SwapTokenInput(props: propsIF) {
                 isTokenEth={isSellTokenEth}
                 isDexSelected={isWithdrawFromDexChecked}
                 isLoading={isSellLoading && buyQtyString !== ''}
+                impactCalculationPending={isBuyLoading && sellQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
@@ -385,6 +386,7 @@ function SwapTokenInput(props: propsIF) {
                 isTokenEth={isBuyTokenEth}
                 isDexSelected={isSaveAsDexSurplusChecked}
                 isLoading={isBuyLoading && sellQtyString !== ''}
+                impactCalculationPending={isSellLoading && buyQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenBChangeEvent}
                 reverseTokens={reverseTokens}

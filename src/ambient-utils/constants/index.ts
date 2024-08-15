@@ -50,6 +50,11 @@ export const VIEW_ONLY =
         ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
         : false;
 
+export const DISABLE_WORKAROUNDS =
+    import.meta.env.VITE_DISABLE_WORKAROUNDS !== undefined
+        ? import.meta.env.VITE_DISABLE_WORKAROUNDS.toLowerCase() === 'true'
+        : false;
+
 export const BLOCK_POLLING_RPC_URL =
     import.meta.env.VITE_BLOCK_POLLING_RPC_URL !== undefined
         ? import.meta.env.VITE_BLOCK_POLLING_RPC_URL

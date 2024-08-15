@@ -21,7 +21,7 @@ interface PropsIF {
     useExchangeBalance: boolean;
     isDexSelected: boolean;
     onToggleDex: () => void;
-    availableBalance?: number;
+    availableBalance?: bigint;
     onMaxButtonClick?: () => void;
     percentDiffUsdValue: number | undefined;
 }
