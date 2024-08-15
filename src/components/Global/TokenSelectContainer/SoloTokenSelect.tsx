@@ -258,6 +258,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     spellCheck='false'
                     type='text'
                     value={rawInput}
+                    autoComplete='off'
                     onChange={(e) => setInput(e.target.value)}
                     placeholder=' Search name or paste address'
                     style={{
