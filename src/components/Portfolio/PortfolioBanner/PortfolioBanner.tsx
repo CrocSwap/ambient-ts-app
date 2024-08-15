@@ -111,6 +111,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
+
     return (
         <PortfolioBannerRectangleContainer
             id={BANNER_ID}
