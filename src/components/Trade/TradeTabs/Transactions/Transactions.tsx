@@ -108,7 +108,8 @@ function Transactions(props: propsIF) {
         provider,
         chainData: { chainId, poolIndex },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { setOutsideControl } =
+
+    const { setOutsideControl, showAllData: showAllDataSelection } =
         useContext<TradeTableContextIF>(TradeTableContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
@@ -139,17 +140,20 @@ function Transactions(props: propsIF) {
         TransactionIF[]
     >([]);
 
-    const showAllData = true;
+    const showAllData = !isAccountView && showAllDataSelection;
 
     const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
                 ? activeAccountTransactionData || []
-                : transactionsByPool.changes,
+                : !showAllData
+                  ? userTransactionsByPool.changes
+                  : transactionsByPool.changes,
         [
             activeAccountTransactionData,
             userTransactionsByPool,
             transactionsByPool,
+            showAllData,
         ],
     );
 
