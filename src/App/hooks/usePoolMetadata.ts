@@ -859,11 +859,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             positionsByPool.positions.reduce((sum, position) => {
                 return sum + position.positionLiq;
             }, 0) +
-            limitOrdersByPool.limitOrders
-                // .concat(limitOrdersByPool.limitOrders)
-                .reduce((sum, order) => {
-                    return sum + order.positionLiq;
-                }, 0),
+            limitOrdersByPool.limitOrders.reduce((sum, order) => {
+                return sum + order.positionLiq;
+            }, 0),
         [positionsByPool, limitOrdersByPool],
     );
 
