@@ -307,12 +307,8 @@ function ChartToolbar() {
     };
 
     const handleOnMouseEnter = (description: string) => {
-        setHoveredTool(() => description);
-
-        if (mobileView) {
-            setTimeout(() => {
-                setHoveredTool(undefined);
-            }, 200);
+        if (!mobileView) {
+            setHoveredTool(() => description);
         }
     };
 

@@ -184,7 +184,7 @@ function RangeDetailsModal(props: propsIF) {
                 setBaseFeesDisplay('...');
                 setQuoteFeesDisplay('...');
 
-                const ambientLiqBigInt = (await pos.queryAmbient()).seeds;
+                const ambientLiqBigInt = (await pos.queryAmbientPos()).liq;
                 const liqNum = bigIntToFloat(ambientLiqBigInt);
                 const liqBaseNum = liqNum * Math.sqrt(poolPriceNonDisplay);
                 const liqQuoteNum = liqNum / Math.sqrt(poolPriceNonDisplay);

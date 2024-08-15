@@ -26,7 +26,7 @@ import {
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
 
-interface CandleContextIF {
+export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
     setCandleData: Dispatch<
         SetStateAction<CandlesByPoolAndDurationIF | undefined>
