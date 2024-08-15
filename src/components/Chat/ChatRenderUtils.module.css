@@ -76,3 +76,26 @@
     left: 50%;
     top: 50%;
 }
+
+.emoji_pack_wrapper{
+    display: flex;
+    padding: .5rem 1rem;
+}
+
+.emoji_pack_node{
+    flex: 1 1;
+    opacity: 0;
+    transition: .2s all ease-in-out;
+    animation: opaAnim .2s ease-in-out forwards;
+    cursor: pointer;
+}
+
+@keyframes opaAnim{
+
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}

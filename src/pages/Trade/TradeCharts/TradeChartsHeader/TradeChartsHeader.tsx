@@ -58,10 +58,10 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
             const blob = isChartFullScreen
-                ? await printDomToImage(chartCanvasRef.current, '#171d27')
+                ? await printDomToImage(chartCanvasRef.current, '')
                 : await printDomToImage(
                       canvasRef.current,
-                      '#171d27',
+                      '',
                       undefined,
                       // height, trade charts header + chart height
                       50 + chartHeights.current,
