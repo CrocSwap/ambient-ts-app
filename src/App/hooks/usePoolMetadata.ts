@@ -474,7 +474,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         quote: quoteTokenAddress,
                         poolIdx: props.chainData.poolIndex,
                         chainId: props.chainData.chainId,
-                        n: 200,
+                        n: 100,
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,

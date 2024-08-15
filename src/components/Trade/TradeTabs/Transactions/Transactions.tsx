@@ -125,6 +125,7 @@ function Transactions(props: propsIF) {
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
+        setTransactionsByPool,
     } = useContext<GraphDataContextIF>(GraphDataContext);
     const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
     const { baseToken, quoteToken } =
@@ -151,6 +152,18 @@ function Transactions(props: propsIF) {
             userTransactionsByPool,
             transactionsByPool,
         ],
+    );
+
+    const oldestTxTime = useMemo(
+        () =>
+            transactionData.length > 0
+                ? transactionData.reduce((min, transaction) => {
+                      return transaction.txTime < min
+                          ? transaction.txTime
+                          : min;
+                  }, transactionData[0].txTime)
+                : 0,
+        [transactionData],
     );
 
     const userTransacionsLength = useMemo<number>(
@@ -233,7 +246,7 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 80,
+            n: 100,
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
@@ -477,20 +490,54 @@ function Transactions(props: propsIF) {
     const scrollRef = useRef<HTMLDivElement>(null);
     // logic to check for needing new data
     useEffect(() => {
+        const fetchMoreData = (): void => {
+            console.log('fetching more data', { oldestTxTime });
+            if (!crocEnv || !provider) return;
+            // retrieve pool recent changes
+            fetchPoolRecentChanges({
+                tokenList: tokens.tokenUniv,
+                base: selectedBaseAddress,
+                quote: selectedQuoteAddress,
+                poolIdx: poolIndex,
+                chainId: chainId,
+                n: 100,
+                timeBefore: oldestTxTime,
+                crocEnv: crocEnv,
+                graphCacheUrl: activeNetwork.graphCacheUrl,
+                provider: provider,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
+            })
+                .then((poolChangesJsonData) => {
+                    if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                        console.log({ poolChangesJsonData });
+                        setTransactionsByPool((prev) => ({
+                            ...prev,
+                            changes: [...prev.changes, ...poolChangesJsonData],
+                        }));
+                    }
+                })
+                .catch(console.error);
+        };
         // scroll event handler
         const handleScroll = (): void => {
-            if (scrollRef.current && !preventFetch.current) {
+            if (scrollRef.current) {
                 const { scrollTop, scrollHeight, clientHeight } =
                     scrollRef.current;
-                if (scrollTop + clientHeight >= (scrollHeight * 2) / 3) {
-                    const sorted: TransactionIF[] = sortedTransactions.sort(
-                        (t1: TransactionIF, t2: TransactionIF) =>
-                            t1.txTime - t2.txTime,
-                    );
-                    const lowest: number = sorted[0].txTime;
-                    const highest: number = sorted[sorted.length - 1].txTime;
-                    console.log({ lowest, highest });
+                if (
+                    !preventFetch.current &&
+                    scrollTop + clientHeight >= (scrollHeight * 5) / 6
+                ) {
+                    fetchMoreData();
                     preventFetch.current = true;
+                } else if (
+                    preventFetch.current &&
+                    scrollTop + clientHeight < (scrollHeight * 5) / 6
+                ) {
+                    console.log('above threshold');
+                    preventFetch.current = false;
                 }
             }
         };
@@ -505,7 +552,7 @@ function Transactions(props: propsIF) {
                 container.removeEventListener('scroll', handleScroll);
             }
         };
-    }, []);
+    }, [oldestTxTime]);
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -651,47 +698,6 @@ function Transactions(props: propsIF) {
         </div>
     );
 
-    useEffect(() => {
-        // fn to trigger a fetch for more data
-        function getMoreData(): void {
-            // console indication that the event has fired
-            console.log('scrolling');
-            // DOM element to trigger fetch when in viewport
-            const elem = document.getElementById('omega');
-            // this allows mathematical determination if elem is in viewport
-            const bounding = elem ? elem.getBoundingClientRect() : null;
-            // gatekeeping to determine if elem is in viewport
-            if (
-                bounding &&
-                bounding.top >= 0 &&
-                bounding.left >= 0 &&
-                bounding.right <=
-                    (window.innerWidth ||
-                        document.documentElement.clientWidth) &&
-                bounding.bottom <=
-                    (window.innerHeight ||
-                        document.documentElement.clientHeight)
-            ) {
-                // functionality triggered if desired elem is in viewport
-                console.log('need more data');
-            }
-        }
-
-        // logic to add event listener to DOM
-        document.addEventListener('scroll', getMoreData);
-        return () => {
-            document.removeEventListener('scroll', getMoreData);
-        };
-
-        // below: alt logic to attach event listener to the scrollable elem
-
-        // const scrollableElem = document.getElementById('current_row_scroll');
-        // scrollableElem?.addEventListener('scroll', getMoreData);
-        // return () => {
-        //     scrollableElem?.removeEventListener('scroll', getMoreData);
-        // };
-    }, []);
-
     return (
         <FlexContainer
             flexDirection='column'
@@ -715,7 +721,7 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
-            <div>Hi there!!!</div>
+            {/* <div>Hi there!!!</div> */}
         </FlexContainer>
     );
 }

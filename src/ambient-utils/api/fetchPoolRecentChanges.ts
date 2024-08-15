@@ -17,6 +17,7 @@ interface argsIF {
     page?: number;
     period?: number;
     time?: number;
+    timeBefore?: number;
     crocEnv: CrocEnv;
     graphCacheUrl: string;
     provider: Provider;
@@ -36,6 +37,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         n,
         period,
         time,
+        timeBefore,
         crocEnv,
         graphCacheUrl,
         provider,
@@ -61,16 +63,27 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                       period: period.toString(),
                       time: time.toString(),
                   })
-            : poolRecentChangesCacheEndpoint +
-                  new URLSearchParams({
-                      base: base.toLowerCase(),
-                      quote: quote.toLowerCase(),
-                      poolIdx: poolIdx.toString(),
-                      chainId: chainId,
-                      n: n ? n.toString() : '',
-                      // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                      // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                  }),
+            : period && timeBefore
+              ? poolRecentChangesCacheEndpoint +
+                new URLSearchParams({
+                    base: base.toLowerCase(),
+                    quote: quote.toLowerCase(),
+                    poolIdx: poolIdx.toString(),
+                    chainId: chainId,
+                    n: n ? n.toString() : '',
+                    period: period.toString(),
+                    timeBefore: timeBefore.toString(),
+                })
+              : poolRecentChangesCacheEndpoint +
+                new URLSearchParams({
+                    base: base.toLowerCase(),
+                    quote: quote.toLowerCase(),
+                    poolIdx: poolIdx.toString(),
+                    chainId: chainId,
+                    n: n ? n.toString() : '',
+                    // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                    // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                }),
     )
         .then((response) => response?.json())
         .then((json) => {
