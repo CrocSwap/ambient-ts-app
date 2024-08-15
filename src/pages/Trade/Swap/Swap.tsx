@@ -359,6 +359,7 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (parseFloat(primaryQuantity) === 0) return;
         if (isTokenAPrimary) {
             setIsBuyLoading(true);
             setSwapButtonErrorMessage('...');
