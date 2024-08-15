@@ -148,16 +148,15 @@ export const PortfolioBannerMainContainer = styled(motion.main)`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    border-radius: 50px 4px 4px 50px;
     background: rgba(18, 18, 26, 0.3);
     padding: 4px;
-    width: 380.16px;
 
     /* blur/card */
     backdrop-filter: blur(2px);
 
-    @media only screen and (max-width: 800px) {
-        padding-top: 20px;
+    @media only screen and (min-width: 768px) {
+        width: 380.16px;
+        border-radius: 50px 4px 4px 50px;
     }
 `;
 
@@ -174,8 +173,6 @@ export const PortfolioBannerRectangleContainer = styled.div`
     justify-content: space-between;
     align-items: flex-end;
 
-    border-radius: 24px 24px 0px 0px;
-
     padding: 1rem;
     position: relative;
 
@@ -183,6 +180,9 @@ export const PortfolioBannerRectangleContainer = styled.div`
     /*overflow: hidden;*/
 
     background-color: var(--dark1);
+    @media only screen and (min-width: 768px) {
+        border-radius: 24px 24px 0px 0px;
+    }
 
     @media only screen and (min-width: 1200px) {
         flex-shrink: 0;
