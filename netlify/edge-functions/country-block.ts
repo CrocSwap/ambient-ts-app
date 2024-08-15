@@ -34,13 +34,13 @@ export default async (request: Request, context: Context) => {
     const blacklist = OFAC_SANCTIONED.concat(
         blacklistArg ? blacklistArg.split(',') : [],
     );
+    console.log(context.geo.country.name);
+    console.log(context.geo.country.code);
 
     // if user not in blocked country, show website
     if (!blacklist.includes(context.geo.country.code)) {
         return;
     }
-
-    console.log(context.geo.country.name);
 
     const html = `
     <!DOCTYPE html>
