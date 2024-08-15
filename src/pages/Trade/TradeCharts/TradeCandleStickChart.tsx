@@ -290,7 +290,13 @@ function TradeCandleStickChart(props: propsIF) {
     //     }
     // };
 
-    // Parse liquidtiy data
+    const sumActiveLiq = unparsedLiquidityData
+        ? unparsedLiquidityData.ranges.reduce((sum, range) => {
+              return sum + (range.activeLiq || 0);
+          }, 0)
+        : 0;
+
+    // Parse liquidity data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
             liqBoundary &&
@@ -613,7 +619,7 @@ function TradeCandleStickChart(props: propsIF) {
         } else {
             return undefined;
         }
-    }, [liqBoundary, baseTokenAddress + quoteTokenAddress]);
+    }, [liqBoundary, baseTokenAddress + quoteTokenAddress, sumActiveLiq]);
 
     useEffect(() => {
         if (unparsedCandleData) {

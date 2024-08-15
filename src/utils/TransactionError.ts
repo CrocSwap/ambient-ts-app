@@ -27,7 +27,10 @@ export interface TransactionFailedError {
 export function isTransactionFailedError(
     error: TransactionError,
 ): error is TransactionError {
-    if (error?.message?.includes('transaction failed')) {
+    if (
+        error?.message?.includes('transaction failed') ||
+        error.code == 'CALL_EXCEPTION'
+    ) {
         // if (error?.message?.includes('-32000')) {
         return true;
     }
