@@ -4,6 +4,8 @@ import {
     tickToPrice,
     priceHalfAboveTick,
     priceHalfBelowTick,
+    fromDisplayQty,
+    toDisplayQty,
 } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, useRef, useMemo } from 'react';
 import {
@@ -22,6 +24,7 @@ import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTran
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import {
+    DISABLE_WORKAROUNDS,
     IS_LOCAL_ENV,
     NUM_GWEI_IN_ETH,
     ZERO_ADDRESS,
@@ -36,6 +39,7 @@ import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
+    isTransactionDeniedError,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { useApprove } from '../../../App/functions/approve';
@@ -183,19 +187,23 @@ export default function Limit() {
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenAInputQty || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+        tokenAAllowance === undefined
+            ? true
+            : tokenAAllowance >= tokenAQtyCoveredByWalletBalance;
 
     const isTokenAWalletBalanceSufficient =
-        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
@@ -485,7 +493,9 @@ export default function Limit() {
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
-        handleLimitButtonMessage(parseFloat(tokenAInputQty));
+        handleLimitButtonMessage(
+            fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+        );
     }, [
         isOrderValid,
         tokenAInputQty,
@@ -502,7 +512,9 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+        );
     }, [tokenADexBalance]);
 
     const [l1GasFeeLimitInGwei] = useState<number>(
@@ -608,15 +620,79 @@ export default function Limit() {
 
         let tx;
         try {
-            tx = await submitLimitOrder({
-                crocEnv,
-                qty,
-                sellTokenAddress: sellToken,
-                buyTokenAddress: buyToken,
-                type,
-                limit: limitTick,
-                isWithdrawFromDexChecked,
-            });
+            try {
+                tx = await submitLimitOrder({
+                    crocEnv,
+                    qty,
+                    sellTokenAddress: sellToken,
+                    buyTokenAddress: buyToken,
+                    type,
+                    limit: limitTick,
+                    isWithdrawFromDexChecked,
+                });
+            } catch (error) {
+                if (isTransactionDeniedError(error) || DISABLE_WORKAROUNDS) {
+                    throw error;
+                }
+                // on first attempt try moving limit tick in by 1 tick
+                try {
+                    tx = await submitLimitOrder({
+                        crocEnv,
+                        qty,
+                        sellTokenAddress: sellToken,
+                        buyTokenAddress: buyToken,
+                        type,
+                        limit: isSellTokenBase
+                            ? limitTick + gridSize
+                            : limitTick - gridSize,
+                        isWithdrawFromDexChecked,
+                    });
+                } catch (error2) {
+                    if (isTransactionDeniedError(error2)) throw error2;
+                    // on second attempt try reducing the qty by 5 wei
+                    try {
+                        const newQty = isTokenAPrimary
+                            ? toDisplayQty(
+                                  fromDisplayQty(qty, tokenA.decimals) -
+                                      BigInt(5), // offset by 5 wei to avoid an outstanding unknown issue
+                                  tokenA.decimals,
+                              )
+                            : toDisplayQty(
+                                  fromDisplayQty(qty, tokenB.decimals) -
+                                      BigInt(5),
+                                  tokenB.decimals,
+                              );
+                        tx = await submitLimitOrder({
+                            crocEnv,
+                            qty: newQty,
+                            sellTokenAddress: sellToken,
+                            buyTokenAddress: buyToken,
+                            type,
+                            limit: limitTick,
+                            isWithdrawFromDexChecked,
+                        });
+                    } catch (error3) {
+                        if (isTransactionDeniedError(error3)) throw error3;
+                        // on third attempt try moving limit tick out by 1 tick
+                        try {
+                            tx = await submitLimitOrder({
+                                crocEnv,
+                                qty,
+                                sellTokenAddress: sellToken,
+                                buyTokenAddress: buyToken,
+                                type,
+                                limit: isSellTokenBase
+                                    ? limitTick - gridSize
+                                    : limitTick + gridSize,
+                                isWithdrawFromDexChecked,
+                            });
+                        } catch (error4) {
+                            if (isTransactionDeniedError(error4)) throw error4;
+                            throw error;
+                        }
+                    }
+                }
+            }
 
             if (!tx) return;
 
@@ -697,14 +773,14 @@ export default function Limit() {
         }
     };
 
-    const handleLimitButtonMessage = (tokenAAmount: number) => {
+    const handleLimitButtonMessage = (tokenAAmount: bigint) => {
         if (!isPoolInitialized) {
             setLimitAllowed(false);
             if (isPoolInitialized === undefined)
                 setLimitButtonErrorMessage('...');
             if (isPoolInitialized === false)
                 setLimitButtonErrorMessage('Pool Not Initialized');
-        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+        } else if (tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
         } else if (!isOrderValid) {
@@ -721,7 +797,8 @@ export default function Limit() {
             if (isWithdrawFromDexChecked) {
                 if (
                     tokenAAmount >
-                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                    fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) +
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     if (
                         pendingTransactions.some(
@@ -740,8 +817,11 @@ export default function Limit() {
                 } else if (
                     isSellTokenNativeToken &&
                     tokenAQtyCoveredByWalletBalance +
-                        amountToReduceNativeTokenQty >
-                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                        fromDisplayQty(
+                            amountToReduceNativeTokenQty.toString(),
+                            18,
+                        ) >
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
@@ -753,7 +833,10 @@ export default function Limit() {
                     setLimitAllowed(true);
                 }
             } else {
-                if (tokenAAmount > parseFloat(tokenABalance)) {
+                if (
+                    tokenAAmount >
+                    fromDisplayQty(tokenABalance || '0', tokenA.decimals)
+                ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
                         `${tokenA.symbol} Amount Exceeds Wallet Balance`,
@@ -761,8 +844,11 @@ export default function Limit() {
                 } else if (
                     isSellTokenNativeToken &&
                     tokenAQtyCoveredByWalletBalance +
-                        amountToReduceNativeTokenQty >
-                        parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                        fromDisplayQty(
+                            amountToReduceNativeTokenQty.toString(),
+                            18,
+                        ) >
+                        fromDisplayQty(tokenABalance || '0', tokenA.decimals)
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(

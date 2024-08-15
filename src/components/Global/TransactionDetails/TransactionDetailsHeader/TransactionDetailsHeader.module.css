@@ -34,6 +34,18 @@
     justify-content: center;
 }
 
+.settings_control_mobile {
+    margin-top: 35px;
+    justify-content: center;
+}
+
+.mobile_close_header {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
 .settings_control div {
     cursor: pointer;
 }
