@@ -41,7 +41,6 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -81,9 +80,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setUserLimitOrdersByPool,
         setLiquidity,
         setLiquidityFee,
+        positionsByPool,
+        userPositionsByPool,
     } = useContext(GraphDataContext);
-
-    const { sessionReceipts } = useContext(ReceiptContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
 
@@ -855,13 +854,19 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.crocEnv !== undefined,
     ]);
 
+    const totalPositionLiq = useMemo(
+        () =>
+            positionsByPool.positions
+                .concat(userPositionsByPool.positions)
+                .reduce((sum, position) => {
+                    return sum + position.positionLiq;
+                }, 0),
+        [positionsByPool, userPositionsByPool],
+    );
+
     useEffect(() => {
-        // update liquidity 1 seconds after session receipts are updated
-        const timer = setTimeout(() => {
-            updateLiquidity();
-        }, 1000);
-        return () => clearTimeout(timer);
-    }, [sessionReceipts.length]);
+        updateLiquidity();
+    }, [totalPositionLiq]);
 
     return {
         contextMatchesParams,
