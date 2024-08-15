@@ -471,6 +471,42 @@ function Transactions(props: propsIF) {
         }
     };
 
+    // logic to prevent multiple fetches from being dispatched concurrently
+    const preventFetch = useRef<boolean>(false);
+    // ref holding scrollable element (to attach event listener)
+    const scrollRef = useRef<HTMLDivElement>(null);
+    // logic to check for needing new data
+    useEffect(() => {
+        // scroll event handler
+        const handleScroll = (): void => {
+            if (scrollRef.current && !preventFetch.current) {
+                const { scrollTop, scrollHeight, clientHeight } =
+                    scrollRef.current;
+                if (scrollTop + clientHeight >= (scrollHeight * 2) / 3) {
+                    const sorted: TransactionIF[] = sortedTransactions.sort(
+                        (t1: TransactionIF, t2: TransactionIF) =>
+                            t1.txTime - t2.txTime,
+                    );
+                    const lowest: number = sorted[0].txTime;
+                    const highest: number = sorted[sorted.length - 1].txTime;
+                    console.log({ lowest, highest });
+                    preventFetch.current = true;
+                }
+            }
+        };
+        // find scrollable container in the DOM and attach functionality
+        const container = scrollRef.current;
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+        // cleanup when component dismounts
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
         !txDataToDisplay.length &&
@@ -662,8 +698,8 @@ function Transactions(props: propsIF) {
             style={{ height: isSmallScreen ? '95%' : '100%' }}
         >
             <div>{headerColumnsDisplay}</div>
-
             <div
+                ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
             >
@@ -679,6 +715,7 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
+            <div>Hi there!!!</div>
         </FlexContainer>
     );
 }
