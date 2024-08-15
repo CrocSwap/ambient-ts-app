@@ -38,8 +38,8 @@ export default function Points(props: propsIF) {
         connectedAccountActive && ensName
             ? `/${ensName}/xp`
             : resolvedAddressFromContext
-            ? `/${resolvedAddressFromContext}/xp`
-            : `/${userAddress}/xp`;
+              ? `/${resolvedAddressFromContext}/xp`
+              : `/${userAddress}/xp`;
 
     return (
         <div>
@@ -55,10 +55,10 @@ export default function Points(props: propsIF) {
                                   ).toLocaleString()
                                 : '...'
                             : resolvedUserXp.dataReceived === true
-                            ? (
-                                  resolvedUserXp.data?.globalPoints ?? 0
-                              ).toLocaleString()
-                            : '...'
+                              ? (
+                                    resolvedUserXp.data?.globalPoints ?? 0
+                                ).toLocaleString()
+                              : '...'
                     }
                     logo={ambiLogo}
                 />
@@ -76,8 +76,8 @@ export default function Points(props: propsIF) {
                                           '0'
                                         : '...'
                                     : resolvedUserBlastXp.dataReceived === true
-                                    ? resolvedUserBlastXp.data?.points ?? '0'
-                                    : '...'
+                                      ? resolvedUserBlastXp.data?.points ?? '0'
+                                      : '...'
                             }
                             logo={blastLogo}
                         />
@@ -92,32 +92,38 @@ export default function Points(props: propsIF) {
                                         ? connectedUserBlastXp.data?.gold ?? '0'
                                         : '...'
                                     : resolvedUserBlastXp.dataReceived === true
-                                    ? resolvedUserBlastXp.data?.gold ?? '0'
-                                    : '...'
+                                      ? resolvedUserBlastXp.data?.gold ?? '0'
+                                      : '...'
                             }
                             logo={blastLogo}
                         />
                     </div>
                 </div>
             ) : undefined}
-            <Link to={linkToNavigateTo}>
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    padding='8px'
-                >
-                    <ViewMoreButton>View Details</ViewMoreButton>
-                </FlexContainer>
-            </Link>
-            <Link to={'/faq'}>
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    padding='8px'
-                >
-                    <ViewMoreButton>View FAQ</ViewMoreButton>
-                </FlexContainer>
-            </Link>
+            <FlexContainer
+                fullWidth
+                justifyContent='space-evenly'
+                // style={{ padding: '0 1rem' }}
+            >
+                <Link to={linkToNavigateTo}>
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='8px'
+                    >
+                        <ViewMoreButton>View Details</ViewMoreButton>
+                    </FlexContainer>
+                </Link>
+                <Link to={'/faq'}>
+                    <FlexContainer
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='8px'
+                    >
+                        <ViewMoreButton>View FAQ</ViewMoreButton>
+                    </FlexContainer>
+                </Link>
+            </FlexContainer>
         </div>
     );
 }

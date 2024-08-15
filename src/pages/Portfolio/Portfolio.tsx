@@ -416,13 +416,12 @@ function Portfolio(props: PortfolioPropsIF) {
     }, [specificTab]);
 
     // end of tab control on account from page header
-
     const mobilePortfolio = (
         <FlexContainer
             flexDirection='column-reverse'
             gap={4}
             margin='0 auto'
-            height='calc(100vh - 8rem)'
+            height='calc(100svh - 112px)'
             style={{
                 padding: ' 0 8px',
             }}
