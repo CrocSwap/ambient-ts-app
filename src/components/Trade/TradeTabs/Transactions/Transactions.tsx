@@ -539,18 +539,19 @@ function Transactions(props: propsIF) {
         };
         // scroll event handler
         const handleScroll = (): void => {
+            const BOTTOM_THRESHOLD = 5/6;
             if (scrollRef.current && showAllData) {
                 const { scrollTop, scrollHeight, clientHeight } =
                     scrollRef.current;
                 if (
                     !preventFetch.current &&
-                    scrollTop + clientHeight >= (scrollHeight * 5) / 6
+                    scrollTop + clientHeight >= (scrollHeight * BOTTOM_THRESHOLD )
                 ) {
                     fetchMoreData();
                     preventFetch.current = true;
                 } else if (
                     preventFetch.current &&
-                    scrollTop + clientHeight < (scrollHeight * 5) / 6
+                    scrollTop + clientHeight < (scrollHeight * BOTTOM_THRESHOLD)
                 ) {
                     console.log('above threshold');
                     preventFetch.current = false;
