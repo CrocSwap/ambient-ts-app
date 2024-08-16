@@ -546,15 +546,13 @@ function Transactions(props: propsIF) {
         const handleScroll = (): void => {
             // fn to move slice down by a given number of txs
             function moveSliceDown(moveBy: number): void {
+                // is there enough data to shift range by desired amount
+                const canIncrease: boolean = dataSlice[1] + moveBy <= sortedTransactions.length;
                 const updated: numberTuple = [
-                    dataSlice[0] + moveBy,
-                    dataSlice[1] + moveBy,
+                    canIncrease ? dataSlice[0] + moveBy : sortedTransactions.length - moveBy,
+                    canIncrease ? dataSlice[1] + moveBy : sortedTransactions.length,
                 ];
-                // console.log(
-                //     'moving data slice',
-                //     'old: ' + JSON.stringify(dataSlice),
-                //     'new: ' + JSON.stringify(updated),
-                // );
+                console.log(updated);
                 setDataSlice(updated);
             };
             // bottom threshold in DOM to trigger a new fetch
@@ -577,7 +575,7 @@ function Transactions(props: propsIF) {
                 ) {
                     false && fetchMoreData();
                     console.log('triggering fetch...');
-                    moveSliceDown(5);
+                    moveSliceDown(30);
                     // gatekeep additional fetches
                     preventFetch.current = true;
                 } else if (
