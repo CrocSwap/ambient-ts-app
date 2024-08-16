@@ -506,8 +506,13 @@ function Transactions(props: propsIF) {
     }, [showAllData]);
 
     type numberTuple = [number, number];
-    // const DEFAULT_DATA_SLICE: numberTuple = [0, 20];
-    const [dataSlice, setDataSlice] = useState<numberTuple>([0, 20]);
+    const SLICE_WIDTH = 40;
+    const DEFAULT_DATA_SLICE: numberTuple = [0, SLICE_WIDTH];
+    const [dataSlice, setDataSlice] = useState<numberTuple>(DEFAULT_DATA_SLICE);
+
+    useEffect(() => {
+        preventFetch.current = false;
+    }, [txDataToDisplay, dataSlice]);
 
     // logic to check for needing new data
     useEffect(() => {
@@ -549,12 +554,24 @@ function Transactions(props: propsIF) {
                 // is there enough data to shift range by desired amount
                 const canIncrease: boolean = dataSlice[1] + moveBy <= sortedTransactions.length;
                 const updated: numberTuple = [
-                    canIncrease ? dataSlice[0] + moveBy : sortedTransactions.length - moveBy,
+                    canIncrease ? dataSlice[0] + moveBy : sortedTransactions.length - SLICE_WIDTH,
                     canIncrease ? dataSlice[1] + moveBy : sortedTransactions.length,
                 ];
+                canIncrease || fetchMoreData();
                 console.log(updated);
                 setDataSlice(updated);
             };
+            function moveSliceUp(moveBy: number) {
+                const canDecrease: boolean = dataSlice[0] - moveBy >= 0;
+                const updated: numberTuple = [
+                    canDecrease ? dataSlice[0] - moveBy : 0,
+                    canDecrease ? dataSlice[1] - moveBy : SLICE_WIDTH,
+                ];
+                console.log(updated);
+                setDataSlice(updated);
+            }
+            // top threshold to re-insert prior data lines
+            const TOP_THRESHOLD = 1/10;
             // bottom threshold in DOM to trigger a new fetch
             const BOTTOM_THRESHOLD = 9/10;
             if (scrollRef.current && showAllData) {
@@ -566,23 +583,42 @@ function Transactions(props: propsIF) {
                     // rendered height (px) of elem in DOM
                     clientHeight
                 } = scrollRef.current;
-                console.log(sortedTransactions.length);
+                const INCREMENT_RANGE_BY = 15;
+                console.log(scrollTop < (scrollHeight * TOP_THRESHOLD));
+                let userIsIn: 'top'|'middle'|'bottom';
+                if (scrollTop < (scrollHeight * TOP_THRESHOLD)) {
+                    userIsIn = 'top';
+                } else if (scrollTop + clientHeight > (scrollHeight * BOTTOM_THRESHOLD)) {
+                    userIsIn = 'bottom';
+                } else {
+                    userIsIn = 'middle';
+                }
                 if (
                     // a new fetch is allowed
                     !preventFetch.current &&
                     // user has scrolled into bottom threshold to trigger fetch
-                    scrollTop + clientHeight >= (scrollHeight * BOTTOM_THRESHOLD)
+                    userIsIn === 'bottom'
                 ) {
-                    false && fetchMoreData();
-                    console.log('triggering fetch...');
-                    moveSliceDown(30);
+                    // false && fetchMoreData();
+                    console.log('moving slice down');
+                    // if (dataSlice[1] + SLICE_WIDTH - 1 <= sortedTransactions.length) {
+                    //     moveSliceDown(SLICE_WIDTH);
+                    //     preventFetch.current = false;
+                    // } else {
+                    //     preventFetch.current = true;
+                    //     // fetchMoreData();
+                    // }
+                    moveSliceDown(INCREMENT_RANGE_BY);
                     // gatekeep additional fetches
                     preventFetch.current = true;
+                } else if (userIsIn === 'top') {
+                    console.log('moving slice up');
+                    moveSliceUp(INCREMENT_RANGE_BY);
                 } else if (
                     // fetching is currently disabled
                     preventFetch.current &&
                     // user has NOT scrolled into bottom threshold to trigger fetch
-                    scrollTop + clientHeight < (scrollHeight * BOTTOM_THRESHOLD)
+                    userIsIn === 'middle'
                 ) {
                     console.log('above threshold');
                     // re-enable new fetches for more data
