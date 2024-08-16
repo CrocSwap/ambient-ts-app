@@ -504,6 +504,10 @@ function Transactions(props: propsIF) {
         scrollToTop();
     }, [showAllData]);
 
+    const DEFAULT_DATA_SLICE: [number, number] = [0, 20];
+    const [dataSlice, setDataSlice] = useState<[number, number]>(DEFAULT_DATA_SLICE);
+    false && setDataSlice;
+
     // logic to check for needing new data
     useEffect(() => {
         const fetchMoreData = (): void => {
@@ -550,11 +554,12 @@ function Transactions(props: propsIF) {
                     // rendered height (px) of elem in DOM
                     clientHeight
                 } = scrollRef.current;
+                console.log(sortedTransactions.length);
                 if (
                     // a new fetch is allowed
                     !preventFetch.current &&
                     // user has scrolled into bottom threshold to trigger fetch
-                    scrollTop + clientHeight >= (scrollHeight * BOTTOM_THRESHOLD )
+                    scrollTop + clientHeight >= (scrollHeight * BOTTOM_THRESHOLD)
                 ) {
                     false && fetchMoreData();
                     console.log('triggering fetch...');
@@ -723,7 +728,7 @@ function Transactions(props: propsIF) {
                     type='Transaction'
                     data={sortedTransactions.filter(
                         (tx) => tx.changeType !== 'cross',
-                    )}
+                    ).slice(...dataSlice)}
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
