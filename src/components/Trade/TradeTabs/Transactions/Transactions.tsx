@@ -529,10 +529,24 @@ function Transactions(props: propsIF) {
                 .then((poolChangesJsonData) => {
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         console.log({ poolChangesJsonData });
-                        setTransactionsByPool((prev) => ({
-                            ...prev,
-                            changes: [...prev.changes, ...poolChangesJsonData],
-                        }));
+                        setTransactionsByPool((prev) => {
+                            const existingChanges = new Set(
+                                prev.changes.map(
+                                    (change) => change.txHash || change.txId,
+                                ),
+                            ); // Adjust if using a different unique identifier
+                            const uniqueChanges = poolChangesJsonData.filter(
+                                (change) =>
+                                    !existingChanges.has(
+                                        change.txHash || change.txId,
+                                    ),
+                            );
+
+                            return {
+                                dataReceived: true,
+                                changes: [...prev.changes, ...uniqueChanges],
+                            };
+                        });
                     }
                 })
                 .catch(console.error);
