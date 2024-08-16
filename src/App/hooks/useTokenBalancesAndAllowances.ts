@@ -22,6 +22,8 @@ interface BalancesIF {
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
 }
+
+// deprecated
 export const useTokenBalancesAndAllowances = (
     baseToken: TokenIF,
     quoteToken: TokenIF,
