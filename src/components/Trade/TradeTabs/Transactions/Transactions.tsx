@@ -539,21 +539,38 @@ function Transactions(props: propsIF) {
         };
         // scroll event handler
         const handleScroll = (): void => {
-            const BOTTOM_THRESHOLD = 5/6;
+            // bottom threshold in DOM to trigger a new fetch
+            const BOTTOM_THRESHOLD = 9/10;
             if (scrollRef.current && showAllData) {
-                const { scrollTop, scrollHeight, clientHeight } =
-                    scrollRef.current;
+                const {
+                    // distance (px) user has scrolled from top of elem
+                    scrollTop,
+                    // total height (px) of scrollable content including overflow
+                    scrollHeight,
+                    // rendered height (px) of elem in DOM
+                    clientHeight
+                } = scrollRef.current;
                 if (
+                    // a new fetch is allowed
                     !preventFetch.current &&
+                    // user has scrolled into bottom threshold to trigger fetch
                     scrollTop + clientHeight >= (scrollHeight * BOTTOM_THRESHOLD )
                 ) {
-                    fetchMoreData();
+                    false && fetchMoreData();
+                    console.log('triggering fetch...');
+                    // gatekeep additional fetches
                     preventFetch.current = true;
                 } else if (
+                    // fetching is currently disabled
                     preventFetch.current &&
+                    // user has NOT scrolled into bottom threshold to trigger fetch
                     scrollTop + clientHeight < (scrollHeight * BOTTOM_THRESHOLD)
                 ) {
                     console.log('above threshold');
+                    // re-enable new fetches for more data
+                    // NOTE: this logic will probably need a different trigger
+                    // ... later, it needs to remain disabled until new data has
+                    // ... been resolved and the DOM updated
                     preventFetch.current = false;
                 }
             }
