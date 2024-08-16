@@ -3,7 +3,6 @@ import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { useTokenPairAllowance } from './useTokenPairAllowance';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
@@ -28,22 +27,17 @@ export const useTokenBalancesAndAllowances = (
     quoteToken: TokenIF,
 ): BalancesIF => {
     const { isUserIdle } = useContext(AppStateContext);
-    const { isTokenABase } = useContext(TradeTokenContext);
-    const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
-
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
-
     const {
+        isTokenABase,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-    } = useTokenPairAllowance({
-        crocEnv,
-        userAddress,
-        lastBlockNumber,
-    });
+    } = useContext(TradeTokenContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     // Calculate token balances within the hook
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
