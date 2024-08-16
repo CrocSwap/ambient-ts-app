@@ -63,7 +63,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                       period: period.toString(),
                       time: time.toString(),
                   })
-            : period && timeBefore
+            : timeBefore
               ? poolRecentChangesCacheEndpoint +
                 new URLSearchParams({
                     base: base.toLowerCase(),
@@ -71,7 +71,6 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                     poolIdx: poolIdx.toString(),
                     chainId: chainId,
                     n: n ? n.toString() : '',
-                    period: period.toString(),
                     timeBefore: timeBefore.toString(),
                 })
               : poolRecentChangesCacheEndpoint +
