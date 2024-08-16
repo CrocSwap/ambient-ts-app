@@ -127,7 +127,7 @@
 
     .swap_route,
     .no_background {
-        width: 95%;
+        /* width: 95%; */
         overflow-y: scroll;
     }
 }
