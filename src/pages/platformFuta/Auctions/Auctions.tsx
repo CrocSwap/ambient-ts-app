@@ -89,10 +89,13 @@ export default function Auctions(props: propsIF) {
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <SearchableTicker
-                auctions={sorted}
-                placeholderTicker={placeholderTicker}
-            />
+
+            <span id='auctions_search_wrapper'>
+                <SearchableTicker
+                    auctions={sorted}
+                    placeholderTicker={placeholderTicker}
+                />
+            </span>
         </div>
     );
 }

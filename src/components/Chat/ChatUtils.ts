@@ -389,3 +389,26 @@ export const dropFromCssClasses = (el: Element, classToDrop: string) => {
     );
     el.className = filteredClasses.join(' ');
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function generateObjectHash(jsonObject: any) {
+    if (!jsonObject) return '';
+
+    // Convert JSON object to string
+    const jsonString = JSON.stringify(jsonObject);
+
+    // Encode the string as a Uint8Array (UTF-8 byte array)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(jsonString);
+
+    // Generate the hash (SHA-256)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+    // Convert the hash buffer to a hex string
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+
+    return hashHex;
+}

@@ -17,6 +17,7 @@ export const CHAT_WHITELISTED_REGEX: RegExp[] = [
 
 export const LS_USER_VERIFY_TOKEN = 'CHAT_user_verify';
 export const LS_USER_NON_VERIFIED_MESSAGES = 'CHAT_non_verified_messages';
+export const LS_TUTO_FUTA_COMMENTS = 'tuto_futa_comments';
 
 export const AVATAR_TYPES = {
     JAZZ: '_jazz_',

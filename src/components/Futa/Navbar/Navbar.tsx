@@ -37,6 +37,8 @@ import {
 } from '../../../utils/hooks/useLinkGen';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
+import TutorialOverlayLS from '../../Global/TutorialOverlay/TutorialOverlayLS';
+import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
 
 // Animation Variants
 const dropdownVariants = {
@@ -204,18 +206,22 @@ export default function Navbar() {
             link: selectedTicker
                 ? `/auctions/v1/${selectedTicker}`
                 : '/auctions',
+            id: 'navbar_auctions',
         },
         {
             label: 'Swap',
             link: linkGenSwap.getFullURL(swapParams),
+            id: 'navbar_swap',
         },
         {
             label: 'Account',
             link: '/account',
+            id: 'navbar_account',
         },
         {
             label: 'Create',
             link: '/create',
+            id: 'navbar_create',
         },
     ];
 
@@ -229,6 +235,7 @@ export default function Navbar() {
         >
             {navbarLinks.map((item, idx) => (
                 <motion.div
+                    id={item.id}
                     key={idx}
                     className={styles.desktopLink}
                     variants={linkItemVariants}
@@ -343,6 +350,10 @@ export default function Navbar() {
                     {/* </AnimatePresence> */}
                 </div>
             </div>
+            <TutorialOverlayLS
+                lsKey='tuto_auctions'
+                steps={futaAuctionsSteps}
+            />
         </div>
     );
 }
