@@ -1,17 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { TokenIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { ChartContext } from '../../contexts/ChartContext';
-import { RangeContext } from '../../contexts/RangeContext';
-import { TokenContext } from '../../contexts/TokenContext';
 import { useTokenPairAllowance } from './useTokenPairAllowance';
-import { usePoolMetadata } from './usePoolMetadata';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import { ReceiptContext } from '../../contexts/ReceiptContext';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
 interface BalancesIF {
     baseTokenBalance: string;
@@ -19,7 +14,6 @@ interface BalancesIF {
     quoteTokenBalance: string;
     setQuoteTokenBalance: React.Dispatch<React.SetStateAction<string>>;
     baseTokenDexBalance: string;
-    baseTokenAddress: string;
     setBaseTokenDexBalance: React.Dispatch<React.SetStateAction<string>>;
     quoteTokenDexBalance: string;
     setQuoteTokenDexBalance: React.Dispatch<React.SetStateAction<string>>;
@@ -33,24 +27,12 @@ export const useTokenBalancesAndAllowances = (
     baseToken: TokenIF,
     quoteToken: TokenIF,
 ): BalancesIF => {
-    const {
-        server: { isEnabled: isServerEnabled },
-        isUserIdle,
-    } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
+    const { isUserIdle } = useContext(AppStateContext);
+    const { isTokenABase } = useContext(TradeTokenContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { isEnabled: isChartEnabled } = useContext(ChartContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
-    const { tokens } = useContext(TokenContext);
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
-    const { sessionReceipts } = useContext(ReceiptContext);
 
     const {
         tokenAAllowance,
@@ -61,24 +43,6 @@ export const useTokenBalancesAndAllowances = (
         crocEnv,
         userAddress,
         lastBlockNumber,
-    });
-
-    const { isTokenABase, baseTokenAddress } = usePoolMetadata({
-        crocEnv,
-        graphCacheUrl: activeNetwork.graphCacheUrl,
-        pathname: location.pathname,
-        chainData,
-        userAddress,
-        searchableTokens: tokens.tokenUniv,
-        receiptCount: sessionReceipts.length,
-        lastBlockNumber,
-        isServerEnabled,
-        cachedFetchTokenPrice,
-        cachedQuerySpotPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-        setSimpleRangeWidth,
-        isChartEnabled,
     });
 
     // Calculate token balances within the hook
@@ -162,6 +126,5 @@ export const useTokenBalancesAndAllowances = (
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
-        baseTokenAddress,
     };
 };

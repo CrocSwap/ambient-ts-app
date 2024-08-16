@@ -100,17 +100,8 @@ export default function InitPool() {
     const { poolPriceDisplay } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
-    const {
-        // Question: should these come from useTokenBalancesAndAllowances
-        // tokenAAllowance,
-        // tokenBAllowance,
-        // isTokenABase,
-
-        tokenABalance,
-        tokenBBalance,
-        tokenADexBalance,
-        tokenBDexBalance,
-    } = useContext(TradeTokenContext);
+    const { tokenABalance, tokenBBalance, tokenADexBalance, tokenBDexBalance } =
+        useContext(TradeTokenContext);
 
     const {
         addPendingTx,
@@ -163,7 +154,6 @@ export default function InitPool() {
         quoteTokenDexBalance,
         tokenAAllowance,
         tokenBAllowance,
-
         isTokenABase,
     } = useTokenBalancesAndAllowances(baseToken, quoteToken);
 
