@@ -2,6 +2,7 @@ import { brandIF } from './types';
 import large from '../images/logos/large.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
+import zircuitLogo from '../../assets/images/logos/zircuit-light-logo.svg';
 
 export const ambientProductionBrandAssets: brandIF = {
     networks: {
@@ -21,6 +22,15 @@ export const ambientProductionBrandAssets: brandIF = {
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
                 { content: blastLogo, processAs: 'image' },
+            ],
+        },
+        // zircuit mainnet
+        '0xbf04': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: zircuitLogo, processAs: 'image' },
             ],
         },
         // ethereum mainnet
