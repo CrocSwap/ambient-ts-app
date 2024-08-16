@@ -492,6 +492,18 @@ function Transactions(props: propsIF) {
     const preventFetch = useRef<boolean>(false);
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    const scrollToTop = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
+            // containerRef.current.scrollTop = 0; // For instant scrolling
+        }
+    };
+
+    useEffect(() => {
+        scrollToTop();
+    }, [showAllData]);
+
     // logic to check for needing new data
     useEffect(() => {
         const fetchMoreData = (): void => {
@@ -527,7 +539,7 @@ function Transactions(props: propsIF) {
         };
         // scroll event handler
         const handleScroll = (): void => {
-            if (scrollRef.current) {
+            if (scrollRef.current && showAllData) {
                 const { scrollTop, scrollHeight, clientHeight } =
                     scrollRef.current;
                 if (
@@ -556,7 +568,7 @@ function Transactions(props: propsIF) {
                 container.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [oldestTxTime]);
+    }, [oldestTxTime, showAllData]);
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
