@@ -511,6 +511,7 @@ function Transactions(props: propsIF) {
     const [dataSlice, setDataSlice] = useState<numberTuple>(DEFAULT_DATA_SLICE);
 
     useEffect(() => {
+        console.log('setting prevent Fetch to false');
         preventFetch.current = false;
     }, [txDataToDisplay, dataSlice]);
 
@@ -552,15 +553,20 @@ function Transactions(props: propsIF) {
             // fn to move slice down by a given number of txs
             function moveSliceDown(moveBy: number): void {
                 // is there enough data to shift range by desired amount
-                const canIncrease: boolean = dataSlice[1] + moveBy <= sortedTransactions.length;
+                const canIncrease: boolean =
+                    dataSlice[1] + moveBy <= sortedTransactions.length;
                 const updated: numberTuple = [
-                    canIncrease ? dataSlice[0] + moveBy : sortedTransactions.length - SLICE_WIDTH,
-                    canIncrease ? dataSlice[1] + moveBy : sortedTransactions.length,
+                    canIncrease
+                        ? dataSlice[0] + moveBy
+                        : sortedTransactions.length - SLICE_WIDTH,
+                    canIncrease
+                        ? dataSlice[1] + moveBy
+                        : sortedTransactions.length,
                 ];
                 canIncrease || fetchMoreData();
                 console.log(updated);
                 setDataSlice(updated);
-            };
+            }
             function moveSliceUp(moveBy: number) {
                 const canDecrease: boolean = dataSlice[0] - moveBy >= 0;
                 const updated: numberTuple = [
@@ -571,9 +577,9 @@ function Transactions(props: propsIF) {
                 setDataSlice(updated);
             }
             // top threshold to re-insert prior data lines
-            const TOP_THRESHOLD = 1/10;
+            const TOP_THRESHOLD = 1 / 10;
             // bottom threshold in DOM to trigger a new fetch
-            const BOTTOM_THRESHOLD = 9/10;
+            const BOTTOM_THRESHOLD = 9 / 10;
             if (scrollRef.current && showAllData) {
                 const {
                     // distance (px) user has scrolled from top of elem
@@ -581,14 +587,17 @@ function Transactions(props: propsIF) {
                     // total height (px) of scrollable content including overflow
                     scrollHeight,
                     // rendered height (px) of elem in DOM
-                    clientHeight
+                    clientHeight,
                 } = scrollRef.current;
                 const INCREMENT_RANGE_BY = 15;
-                console.log(scrollTop < (scrollHeight * TOP_THRESHOLD));
-                let userIsIn: 'top'|'middle'|'bottom';
-                if (scrollTop < (scrollHeight * TOP_THRESHOLD)) {
+                console.log(scrollTop < scrollHeight * TOP_THRESHOLD);
+                let userIsIn: 'top' | 'middle' | 'bottom';
+                if (scrollTop < scrollHeight * TOP_THRESHOLD) {
                     userIsIn = 'top';
-                } else if (scrollTop + clientHeight > (scrollHeight * BOTTOM_THRESHOLD)) {
+                } else if (
+                    scrollTop + clientHeight >
+                    scrollHeight * BOTTOM_THRESHOLD
+                ) {
                     userIsIn = 'bottom';
                 } else {
                     userIsIn = 'middle';
@@ -775,9 +784,9 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={sortedTransactions.filter(
-                        (tx) => tx.changeType !== 'cross',
-                    ).slice(...dataSlice)}
+                    data={sortedTransactions
+                        .filter((tx) => tx.changeType !== 'cross')
+                        .slice(...dataSlice)}
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
