@@ -219,7 +219,7 @@ function TradeTabs2(props: propsIF) {
             fullWidth
             fullHeight
             padding='8px'
-            style={{ position: 'relative', zIndex: 21 }}
+            style={{ position: 'relative', zIndex: 1 }}
         >
             <FlexContainer
                 flexDirection='column'
