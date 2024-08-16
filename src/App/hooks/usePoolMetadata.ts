@@ -209,9 +209,24 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 );
             });
             if (filteredNewTxByPoolData.length > 0) {
-                setTransactionsByPool({
-                    dataReceived: true,
-                    changes: filteredNewTxByPoolData,
+                setTransactionsByPool((prev) => {
+                    // Create a Set of existing transaction identifiers (e.g., txHash or txId)
+                    const existingTxIds = new Set(
+                        prev.changes.map(
+                            (change) => change.txHash || change.txId,
+                        ),
+                    );
+
+                    // Filter out transactions that are already in the state
+                    const newUniqueTxByPoolData =
+                        filteredNewTxByPoolData.filter(
+                            (tx) => !existingTxIds.has(tx.txHash || tx.txId),
+                        );
+
+                    return {
+                        dataReceived: true,
+                        changes: [...prev.changes, ...newUniqueTxByPoolData],
+                    };
                 });
                 setDataLoadingStatus({
                     datasetName: 'isPoolTxDataLoading',
