@@ -9,6 +9,7 @@ import {
     useContext,
     memo,
     useMemo,
+    // useCallback,
 } from 'react';
 
 import TransactionHeader from './TransactionsTable/TransactionHeader';
@@ -504,9 +505,9 @@ function Transactions(props: propsIF) {
         scrollToTop();
     }, [showAllData]);
 
-    const DEFAULT_DATA_SLICE: [number, number] = [0, 20];
-    const [dataSlice, setDataSlice] = useState<[number, number]>(DEFAULT_DATA_SLICE);
-    false && setDataSlice;
+    type numberTuple = [number, number];
+    // const DEFAULT_DATA_SLICE: numberTuple = [0, 20];
+    const [dataSlice, setDataSlice] = useState<numberTuple>([0, 20]);
 
     // logic to check for needing new data
     useEffect(() => {
@@ -543,6 +544,19 @@ function Transactions(props: propsIF) {
         };
         // scroll event handler
         const handleScroll = (): void => {
+            // fn to move slice down by a given number of txs
+            function moveSliceDown(moveBy: number): void {
+                const updated: numberTuple = [
+                    dataSlice[0] + moveBy,
+                    dataSlice[1] + moveBy,
+                ];
+                // console.log(
+                //     'moving data slice',
+                //     'old: ' + JSON.stringify(dataSlice),
+                //     'new: ' + JSON.stringify(updated),
+                // );
+                setDataSlice(updated);
+            };
             // bottom threshold in DOM to trigger a new fetch
             const BOTTOM_THRESHOLD = 9/10;
             if (scrollRef.current && showAllData) {
@@ -563,6 +577,7 @@ function Transactions(props: propsIF) {
                 ) {
                     false && fetchMoreData();
                     console.log('triggering fetch...');
+                    moveSliceDown(5);
                     // gatekeep additional fetches
                     preventFetch.current = true;
                 } else if (
@@ -591,7 +606,7 @@ function Transactions(props: propsIF) {
                 container.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [oldestTxTime, showAllData]);
+    }, [oldestTxTime, showAllData, dataSlice]);
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
