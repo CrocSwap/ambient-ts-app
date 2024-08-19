@@ -273,7 +273,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     }
                 }
 
-                if (candleSeries && candles?.candles.length >= 7) {
+                if (
+                    (candleSeries && candles?.candles.length >= 7) ||
+                    (candleSeries &&
+                        candleSeries.length > 0 &&
+                        candleTimeLocal === 60)
+                ) {
                     setIsFetchingCandle(false);
                 }
                 setIsFirstFetch(false);

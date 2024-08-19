@@ -1035,6 +1035,10 @@ function TradeCandleStickChart(props: propsIF) {
                                 maxRequestCountForCondensed,
                             );
                             setIsFetchingEnoughData(false);
+
+                            if (candles.length < 7) {
+                                setIsCondensedModeEnabled(false);
+                            }
                         }
                     }
                 }
