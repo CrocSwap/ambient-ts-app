@@ -1,8 +1,9 @@
 .nav {
-    position: fixed; /* Ensures the nav is fixed at the bottom */
-    bottom: 0; /* Anchors it to the bottom */
-    left: 0; /* Aligns it to the left edge */
-    width: 100%; /* Ensures it spans the full width of the screen */
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+   
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -12,11 +13,11 @@
     border-top-right-radius: 30px;
     box-shadow: 0px 5px 40px rgba(0, 0, 0, 0.8);
     height: 56px;
-    z-index: 100; /* Keeps it above other content */
+    z-index: 100; 
   }
   
   .navItem {
-    flex: 1; /* Evenly distributes space among items */
+    flex: 1; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,7 +41,7 @@
   .active {
     background: var(--dark2);
     border-radius: 30px;
-    padding: 10px;
+    /* padding: 10px; */
     gap: 4px;
     color: var(--accent1)
   }

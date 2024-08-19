@@ -13,7 +13,6 @@ import { chainNumToString } from '../../../ambient-utils/dataLayer';
 
 const FooterNav: React.FC = () => {
   const location = useLocation();
-  // const currentLocation = location.pathname;
   const [activeIndex, setActiveIndex] = useState(0);
 
   const tradeDestination = location.pathname.includes('trade/market')
