@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { RiHome4Fill, RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
@@ -43,6 +43,25 @@ const FooterNav: React.FC = () => {
     { title: 'Account', destination: '/account/', icon: MdAccountBox },
     { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
   ];
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    if (currentPath.includes('/swap')) {
+      setActiveIndex(1); // Swap
+    } else if (currentPath.includes('/trade')) {
+      setActiveIndex(2); // Trade
+    } else if (currentPath.includes('/explore')) {
+      setActiveIndex(3); // Explore
+    } else if (currentPath.includes('/account') || currentPath.match(/\/[a-zA-Z0-9]+\.(eth|crypto|xyz|dao|eth.link|luxe|kred)$/)) {
+      setActiveIndex(4); // Account
+    } else if (currentPath.includes('/chat')) {
+      setActiveIndex(5); // Chat
+    } else {
+      setActiveIndex(0); // Home
+    }
+  }, [location.pathname]);
+
 
   return (
     <div className={styles.nav}>
