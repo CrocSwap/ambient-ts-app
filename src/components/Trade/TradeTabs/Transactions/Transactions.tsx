@@ -488,101 +488,75 @@ function Transactions(props: propsIF) {
         }
     };
 
-    // logic to prevent multiple fetches from being dispatched concurrently
-    const preventFetch = useRef<boolean>(false);
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    const [showMoreClickedCount, setShowMoreClickedCount] = useState<number>(0);
+
     const scrollToTop = () => {
+        setShowMoreClickedCount(0);
+
         if (scrollRef.current) {
             scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
             // containerRef.current.scrollTop = 0; // For instant scrolling
         }
     };
 
+    const shiftUp = (): void => {
+        if (showMoreClickedCount > 0) {
+            setShowMoreClickedCount((prev) => prev - 1);
+        }
+    };
+
     useEffect(() => {
         scrollToTop();
-    }, [showAllData]);
+    }, [sortBy, showAllData]);
 
-    // logic to check for needing new data
-    useEffect(() => {
-        const fetchMoreData = (): void => {
-            console.log('fetching more data', { oldestTxTime });
-            if (!crocEnv || !provider) return;
-            // retrieve pool recent changes
-            fetchPoolRecentChanges({
-                tokenList: tokens.tokenUniv,
-                base: selectedBaseAddress,
-                quote: selectedQuoteAddress,
-                poolIdx: poolIndex,
-                chainId: chainId,
-                n: 100,
-                timeBefore: oldestTxTime,
-                crocEnv: crocEnv,
-                graphCacheUrl: activeNetwork.graphCacheUrl,
-                provider: provider,
-                cachedFetchTokenPrice: cachedFetchTokenPrice,
-                cachedQuerySpotPrice: cachedQuerySpotPrice,
-                cachedTokenDetails: cachedTokenDetails,
-                cachedEnsResolve: cachedEnsResolve,
-            })
-                .then((poolChangesJsonData) => {
-                    if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                        console.log({ poolChangesJsonData });
-                        setTransactionsByPool((prev) => {
-                            const existingChanges = new Set(
-                                prev.changes.map(
-                                    (change) => change.txHash || change.txId,
+    const addMoreData = (): void => {
+        if (!crocEnv || !provider) return;
+        setShowMoreClickedCount((prev) => prev + 1);
+        // retrieve pool recent changes
+        fetchPoolRecentChanges({
+            tokenList: tokens.tokenUniv,
+            base: selectedBaseAddress,
+            quote: selectedQuoteAddress,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            n: 100,
+            timeBefore: oldestTxTime,
+            crocEnv: crocEnv,
+            graphCacheUrl: activeNetwork.graphCacheUrl,
+            provider: provider,
+            cachedFetchTokenPrice: cachedFetchTokenPrice,
+            cachedQuerySpotPrice: cachedQuerySpotPrice,
+            cachedTokenDetails: cachedTokenDetails,
+            cachedEnsResolve: cachedEnsResolve,
+        })
+            .then((poolChangesJsonData) => {
+                if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                    console.log({ poolChangesJsonData });
+                    setTransactionsByPool((prev) => {
+                        const existingChanges = new Set(
+                            prev.changes.map(
+                                (change) => change.txHash || change.txId,
+                            ),
+                        ); // Adjust if using a different unique identifier
+                        const uniqueChanges = poolChangesJsonData.filter(
+                            (change) =>
+                                !existingChanges.has(
+                                    change.txHash || change.txId,
                                 ),
-                            ); // Adjust if using a different unique identifier
-                            const uniqueChanges = poolChangesJsonData.filter(
-                                (change) =>
-                                    !existingChanges.has(
-                                        change.txHash || change.txId,
-                                    ),
-                            );
+                        );
 
-                            return {
-                                dataReceived: true,
-                                changes: [...prev.changes, ...uniqueChanges],
-                            };
-                        });
-                    }
-                })
-                .catch(console.error);
-        };
-        // scroll event handler
-        const handleScroll = (): void => {
-            if (scrollRef.current && showAllData) {
-                const { scrollTop, scrollHeight, clientHeight } =
-                    scrollRef.current;
-                if (
-                    !preventFetch.current &&
-                    scrollTop + clientHeight >= (scrollHeight * 5) / 6
-                ) {
-                    fetchMoreData();
-                    preventFetch.current = true;
-                } else if (
-                    preventFetch.current &&
-                    scrollTop + clientHeight < (scrollHeight * 5) / 6
-                ) {
-                    console.log('above threshold');
-                    preventFetch.current = false;
+                        return {
+                            dataReceived: true,
+                            changes: [...prev.changes, ...uniqueChanges],
+                        };
+                    });
                 }
-            }
-        };
-        // find scrollable container in the DOM and attach functionality
-        const container = scrollRef.current;
-        if (container) {
-            container.addEventListener('scroll', handleScroll);
-        }
-        // cleanup when component dismounts
-        return () => {
-            if (container) {
-                container.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, [oldestTxTime, showAllData]);
+            })
+            .catch(console.error);
+    };
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -717,9 +691,14 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={sortedTransactions.filter(
-                        (tx) => tx.changeType !== 'cross',
-                    )}
+                    data={
+                        isCandleSelected
+                            ? sortedTransactions
+                            : sortedTransactions.slice(
+                                  showMoreClickedCount * 100,
+                                  showMoreClickedCount * 100 + 100,
+                              )
+                    }
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
@@ -739,6 +718,28 @@ function Transactions(props: propsIF) {
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
             >
+                {showAllData &&
+                    !isCandleSelected &&
+                    showMoreClickedCount > 0 && (
+                        <button
+                            onClick={() => {
+                                shiftUp();
+                            }}
+                        >
+                            Shift up
+                        </button>
+                    )}
+                {showAllData &&
+                    !isCandleSelected &&
+                    showMoreClickedCount > 0 && (
+                        <button
+                            onClick={() => {
+                                scrollToTop();
+                            }}
+                        >
+                            Go to Beginning
+                        </button>
+                    )}
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
@@ -750,8 +751,25 @@ function Transactions(props: propsIF) {
                 ) : (
                     transactionDataOrNull
                 )}
+                {showAllData && !isCandleSelected && (
+                    <button
+                        onClick={() => {
+                            addMoreData();
+                        }}
+                    >
+                        Add More Data
+                    </button>
+                )}
+                {showAllData && !isCandleSelected && (
+                    <button
+                        onClick={() => {
+                            scrollToTop();
+                        }}
+                    >
+                        Scroll to Top
+                    </button>
+                )}
             </div>
-            {/* <div>Hi there!!!</div> */}
         </FlexContainer>
     );
 }
