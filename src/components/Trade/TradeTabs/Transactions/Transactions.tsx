@@ -491,10 +491,20 @@ function Transactions(props: propsIF) {
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const [showMoreClickedCount, setShowMoreClickedCount] = useState<number>(0);
+    const [pageVisible, setPageVisible] = useState<number>(0);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        setPageVisible(0);
+        setExtraPagesAvailable(0);
+        setMoreDataAvailable(true);
+        setMoreDataLoading(false);
+    }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const scrollToTop = () => {
-        setShowMoreClickedCount(0);
+        setPageVisible(0);
 
         if (scrollRef.current) {
             scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
@@ -503,19 +513,26 @@ function Transactions(props: propsIF) {
     };
 
     const shiftUp = (): void => {
-        if (showMoreClickedCount > 0) {
-            setShowMoreClickedCount((prev) => prev - 1);
-        }
+        setPageVisible((prev) => prev - 1);
     };
+
+    const shiftDown = (): void => {
+        setPageVisible((prev) => prev + 1);
+    };
+
+    useEffect(() => {
+        console.log({ pageVisible });
+    }, [pageVisible]);
 
     useEffect(() => {
         scrollToTop();
     }, [sortBy, showAllData]);
 
     const addMoreData = (): void => {
+        console.log({ oldestTxTime });
         if (!crocEnv || !provider) return;
-        setShowMoreClickedCount((prev) => prev + 1);
         // retrieve pool recent changes
+        setMoreDataLoading(true);
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
             base: selectedBaseAddress,
@@ -547,14 +564,23 @@ function Transactions(props: propsIF) {
                                     change.txHash || change.txId,
                                 ),
                         );
-
+                        console.log({ uniqueChanges });
+                        if (uniqueChanges.length > 0) {
+                            setExtraPagesAvailable((prev) => prev + 1);
+                            setPageVisible((prev) => prev + 1);
+                        } else {
+                            setMoreDataAvailable(false);
+                        }
                         return {
                             dataReceived: true,
                             changes: [...prev.changes, ...uniqueChanges],
                         };
                     });
+                } else {
+                    setMoreDataAvailable(false);
                 }
             })
+            .then(() => setMoreDataLoading(false))
             .catch(console.error);
     };
 
@@ -695,8 +721,8 @@ function Transactions(props: propsIF) {
                         isCandleSelected
                             ? sortedTransactions
                             : sortedTransactions.slice(
-                                  showMoreClickedCount * 100,
-                                  showMoreClickedCount * 100 + 100,
+                                  pageVisible * 100,
+                                  pageVisible * 100 + 100,
                               )
                     }
                     fullData={sortedTransactions}
@@ -718,28 +744,24 @@ function Transactions(props: propsIF) {
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
             >
-                {showAllData &&
-                    !isCandleSelected &&
-                    showMoreClickedCount > 0 && (
-                        <button
-                            onClick={() => {
-                                shiftUp();
-                            }}
-                        >
-                            Shift up
-                        </button>
-                    )}
-                {showAllData &&
-                    !isCandleSelected &&
-                    showMoreClickedCount > 0 && (
-                        <button
-                            onClick={() => {
-                                scrollToTop();
-                            }}
-                        >
-                            Go to Beginning
-                        </button>
-                    )}
+                {showAllData && !isCandleSelected && pageVisible > 1 && (
+                    <button
+                        onClick={() => {
+                            shiftUp();
+                        }}
+                    >
+                        Shift up
+                    </button>
+                )}
+                {showAllData && !isCandleSelected && pageVisible > 0 && (
+                    <button
+                        onClick={() => {
+                            scrollToTop();
+                        }}
+                    >
+                        Go to Beginning
+                    </button>
+                )}
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
@@ -751,15 +773,31 @@ function Transactions(props: propsIF) {
                 ) : (
                     transactionDataOrNull
                 )}
-                {showAllData && !isCandleSelected && (
-                    <button
-                        onClick={() => {
-                            addMoreData();
-                        }}
-                    >
-                        Add More Data
-                    </button>
-                )}
+                {showAllData &&
+                    pageVisible < extraPagesAvailable &&
+                    moreDataAvailable &&
+                    !isCandleSelected && (
+                        <button
+                            onClick={() => {
+                                shiftDown();
+                            }}
+                        >
+                            Show More
+                        </button>
+                    )}
+                {showAllData &&
+                    pageVisible == extraPagesAvailable &&
+                    moreDataAvailable &&
+                    !isCandleSelected && (
+                        <button
+                            onClick={() => {
+                                addMoreData();
+                            }}
+                            disabled={moreDataLoading}
+                        >
+                            Load More Data
+                        </button>
+                    )}
                 {showAllData && !isCandleSelected && (
                     <button
                         onClick={() => {
