@@ -1,6 +1,8 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
+import { PiArrowElbowLeftUpBold } from 'react-icons/pi';
+
 import {
     Dispatch,
     useState,
@@ -50,7 +52,7 @@ import {
     SidebarContext,
     SidebarStateIF,
 } from '../../../../contexts/SidebarContext';
-import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
+import { ScrollToTopButton, TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     GraphDataContext,
@@ -828,17 +830,23 @@ function Transactions(props: propsIF) {
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%' }}
+            style={{ height: isSmallScreen ? '95%' : '100%', position: 'relative' }}
         >
             <div>{headerColumnsDisplay}</div>
             {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
-                <button
+                <ScrollToTopButton
                     onClick={() => {
                         scrollToTop();
                     }}
+                    className='scroll_to_top_button'
                 >
-                    Scroll to Top
-                </button>
+                    <PiArrowElbowLeftUpBold color='var(--text1)' size={22}/>
+                    Return to Top
+                  
+
+
+
+                </ScrollToTopButton>
             )}
             <div
                 ref={scrollRef}

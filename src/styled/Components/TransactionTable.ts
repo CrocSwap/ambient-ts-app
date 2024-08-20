@@ -326,3 +326,19 @@ export const HideEmptyPositionContainer = styled.button`
         font-size: 12px;
     }
 `;
+
+export const ScrollToTopButton = styled.button`
+  position: absolute;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent1);
+  border-bottom-left-radius: 4px;
+  color: var(--text1);
+  padding: 8px;
+  outline: none;
+  border: none;
+  z-index: 2;
+`;
