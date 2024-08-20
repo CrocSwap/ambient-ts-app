@@ -222,6 +222,29 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale.isShowLatestCandle,
     ]);
 
+
+
+    useEffect(() => {
+            if (isCandleDataNull) {                
+                setCandleScale((prev) => {
+                    return {
+                        lastCandleDate: undefined,
+                        nCandles: 200,
+                        isFetchForTimeframe: !prev.isFetchForTimeframe,
+                        isShowLatestCandle: true,
+                        isFetchFirst200Candle: true,
+                    };
+                });
+            }
+    }, [
+        isUserIdle
+            ? Math.floor(Date.now() / (CACHE_UPDATE_FREQ_IN_MS/4))
+            : Math.floor(Date.now() / (CACHE_UPDATE_FREQ_IN_MS)),
+
+        isCandleDataNull,
+    ]);
+
+
     const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
@@ -233,7 +256,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsZoomRequestCanceled({ value: true });
 
             const candleTime = candleScale.isShowLatestCandle
-                ? Date.now() / 1000
+                ? Math.floor(Date.now() / 1000)
                 : candleScale.lastCandleDate || 0;
 
             const nCandles = Math.min(
