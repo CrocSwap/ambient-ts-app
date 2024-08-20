@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useState } from 'react';
+import { memo, MutableRefObject, useContext, useEffect, useState } from 'react';
 import {
     LimitModalAction,
     LimitOrderIF,
@@ -26,6 +26,8 @@ interface propsIF {
     isAccountView: boolean;
     isLeaderboard?: boolean;
     positionsByApy?: string[];
+    firstRowRef?: MutableRefObject<HTMLDivElement | null>;
+    lastRowRef?: MutableRefObject<HTMLDivElement | null>;
 }
 
 type ActiveRecord = TransactionIF | LimitOrderIF | PositionIF | undefined;
@@ -38,6 +40,8 @@ function TableRows({
     tableView,
     isLeaderboard,
     positionsByApy,
+    firstRowRef,
+    lastRowRef,
 }: propsIF) {
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();
@@ -195,8 +199,13 @@ function TableRows({
                 {(data as TransactionIF[]).map((tx, idx) => (
                     <TransactionRow
                         key={idx}
-                        idForDOM={
-                            idx === data.length - 10 ? 'omega' : `tx_row_${idx}`
+                        idForDOM={`tx_row_${idx}`}
+                        observedRowRef={
+                            idx === 0
+                                ? firstRowRef
+                                : idx === data.length - 1
+                                  ? lastRowRef
+                                  : undefined
                         }
                         tx={tx}
                         tableView={tableView}

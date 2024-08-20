@@ -488,101 +488,191 @@ function Transactions(props: propsIF) {
         }
     };
 
-    // logic to prevent multiple fetches from being dispatched concurrently
-    const preventFetch = useRef<boolean>(false);
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+
+    const lastRowRef = useRef<HTMLDivElement | null>(null);
+    const firstRowRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (moreDataLoading) return;
+                if (entry.isIntersecting) {
+                    // last row is visible
+                    extraPagesAvailable + 1 > pagesVisible[1]
+                        ? shiftDown()
+                        : moreDataAvailable
+                          ? addMoreData()
+                          : undefined;
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            },
+        );
+
+        const currentElement = lastRowRef.current;
+        if (currentElement) {
+            observer.observe(currentElement);
+        }
+
+        return () => {
+            if (currentElement) {
+                observer.unobserve(currentElement);
+            }
+        };
+    }, [
+        lastRowRef.current,
+        moreDataLoading,
+        moreDataAvailable,
+        extraPagesAvailable,
+        pagesVisible[1],
+    ]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (moreDataLoading) return;
+                if (entry.isIntersecting) {
+                    // first row is visible
+                    pagesVisible[0] > 0 && shiftUp();
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            },
+        );
+
+        const currentElement = firstRowRef.current;
+        if (currentElement) {
+            observer.observe(currentElement);
+        }
+
+        return () => {
+            if (currentElement) {
+                observer.unobserve(currentElement);
+            }
+        };
+    }, [firstRowRef.current, moreDataLoading, pagesVisible[0]]);
+
+    useEffect(() => {
+        setPagesVisible([0, 1]);
+        setExtraPagesAvailable(0);
+        setMoreDataAvailable(true);
+        setMoreDataLoading(false);
+    }, [selectedBaseAddress + selectedQuoteAddress]);
+
     const scrollToTop = () => {
+        setPagesVisible([0, 1]);
+
         if (scrollRef.current) {
-            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
-            // containerRef.current.scrollTop = 0; // For instant scrolling
+            // scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
+            scrollRef.current.scrollTo({
+                top: 0,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    const shiftUp = (): void => {
+        setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
+        if (scrollRef.current) {
+            // scroll to middle of container
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight * 0.49,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    const shiftDown = (): void => {
+        setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
+        if (scrollRef.current) {
+            // scroll to middle of container
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight * 0.4,
+                behavior: 'instant' as ScrollBehavior,
+            });
         }
     };
 
     useEffect(() => {
         scrollToTop();
-    }, [showAllData]);
+    }, [sortBy, showAllData]);
 
-    // logic to check for needing new data
-    useEffect(() => {
-        const fetchMoreData = (): void => {
-            console.log('fetching more data', { oldestTxTime });
-            if (!crocEnv || !provider) return;
-            // retrieve pool recent changes
-            fetchPoolRecentChanges({
-                tokenList: tokens.tokenUniv,
-                base: selectedBaseAddress,
-                quote: selectedQuoteAddress,
-                poolIdx: poolIndex,
-                chainId: chainId,
-                n: 100,
-                timeBefore: oldestTxTime,
-                crocEnv: crocEnv,
-                graphCacheUrl: activeNetwork.graphCacheUrl,
-                provider: provider,
-                cachedFetchTokenPrice: cachedFetchTokenPrice,
-                cachedQuerySpotPrice: cachedQuerySpotPrice,
-                cachedTokenDetails: cachedTokenDetails,
-                cachedEnsResolve: cachedEnsResolve,
-            })
-                .then((poolChangesJsonData) => {
-                    if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                        console.log({ poolChangesJsonData });
-                        setTransactionsByPool((prev) => {
-                            const existingChanges = new Set(
-                                prev.changes.map(
-                                    (change) => change.txHash || change.txId,
+    const addMoreData = (): void => {
+        console.log({ oldestTxTime });
+        if (!crocEnv || !provider) return;
+        // retrieve pool recent changes
+        setMoreDataLoading(true);
+        fetchPoolRecentChanges({
+            tokenList: tokens.tokenUniv,
+            base: selectedBaseAddress,
+            quote: selectedQuoteAddress,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            n: 50,
+            timeBefore: oldestTxTime,
+            crocEnv: crocEnv,
+            graphCacheUrl: activeNetwork.graphCacheUrl,
+            provider: provider,
+            cachedFetchTokenPrice: cachedFetchTokenPrice,
+            cachedQuerySpotPrice: cachedQuerySpotPrice,
+            cachedTokenDetails: cachedTokenDetails,
+            cachedEnsResolve: cachedEnsResolve,
+        })
+            .then((poolChangesJsonData) => {
+                if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                    console.log({ poolChangesJsonData });
+                    setTransactionsByPool((prev) => {
+                        const existingChanges = new Set(
+                            prev.changes.map(
+                                (change) => change.txHash || change.txId,
+                            ),
+                        ); // Adjust if using a different unique identifier
+                        const uniqueChanges = poolChangesJsonData.filter(
+                            (change) =>
+                                !existingChanges.has(
+                                    change.txHash || change.txId,
                                 ),
-                            ); // Adjust if using a different unique identifier
-                            const uniqueChanges = poolChangesJsonData.filter(
-                                (change) =>
-                                    !existingChanges.has(
-                                        change.txHash || change.txId,
-                                    ),
-                            );
-
-                            return {
-                                dataReceived: true,
-                                changes: [...prev.changes, ...uniqueChanges],
-                            };
-                        });
-                    }
-                })
-                .catch(console.error);
-        };
-        // scroll event handler
-        const handleScroll = (): void => {
-            if (scrollRef.current && showAllData) {
-                const { scrollTop, scrollHeight, clientHeight } =
-                    scrollRef.current;
-                if (
-                    !preventFetch.current &&
-                    scrollTop + clientHeight >= (scrollHeight * 5) / 6
-                ) {
-                    fetchMoreData();
-                    preventFetch.current = true;
-                } else if (
-                    preventFetch.current &&
-                    scrollTop + clientHeight < (scrollHeight * 5) / 6
-                ) {
-                    console.log('above threshold');
-                    preventFetch.current = false;
+                        );
+                        console.log({ uniqueChanges });
+                        if (uniqueChanges.length > 0) {
+                            setExtraPagesAvailable((prev) => prev + 1);
+                            setPagesVisible((prev) => [
+                                prev[0] + 1,
+                                prev[1] + 1,
+                            ]);
+                            if (scrollRef.current) {
+                                // scroll to middle of container
+                                scrollRef.current.scrollTo({
+                                    top: scrollRef.current.scrollHeight * 0.4,
+                                    behavior: 'instant' as ScrollBehavior,
+                                });
+                            }
+                        } else {
+                            setMoreDataAvailable(false);
+                        }
+                        return {
+                            dataReceived: true,
+                            changes: [...prev.changes, ...uniqueChanges],
+                        };
+                    });
+                } else {
+                    setMoreDataAvailable(false);
                 }
-            }
-        };
-        // find scrollable container in the DOM and attach functionality
-        const container = scrollRef.current;
-        if (container) {
-            container.addEventListener('scroll', handleScroll);
-        }
-        // cleanup when component dismounts
-        return () => {
-            if (container) {
-                container.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, [oldestTxTime, showAllData]);
+            })
+            .then(() => setMoreDataLoading(false))
+            .catch(console.error);
+    };
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -717,12 +807,19 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={sortedTransactions.filter(
-                        (tx) => tx.changeType !== 'cross',
-                    )}
+                    data={
+                        isCandleSelected
+                            ? sortedTransactions
+                            : sortedTransactions.slice(
+                                  pagesVisible[0] * 50,
+                                  pagesVisible[1] * 50 + 50,
+                              )
+                    }
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
+                    firstRowRef={firstRowRef}
+                    lastRowRef={lastRowRef}
                 />
             </ul>
         </div>
@@ -734,6 +831,15 @@ function Transactions(props: propsIF) {
             style={{ height: isSmallScreen ? '95%' : '100%' }}
         >
             <div>{headerColumnsDisplay}</div>
+            {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
+                <button
+                    onClick={() => {
+                        scrollToTop();
+                    }}
+                >
+                    Scroll to Top
+                </button>
+            )}
             <div
                 ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
@@ -751,7 +857,6 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
-            {/* <div>Hi there!!!</div> */}
         </FlexContainer>
     );
 }
