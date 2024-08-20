@@ -9,7 +9,7 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
-
+import styles from './PortfolioTabs.module.css'
 // START: Import Local Files
 import {
     getPositionData,
@@ -41,7 +41,6 @@ import {
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
@@ -413,7 +412,7 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     return (
-        <PortfolioTabsPortfolioTabsContainer>
+        <div className={styles.portfolio_tabs_container}>
             <TabComponent
                 data={
                     connectedAccountActive
@@ -423,6 +422,6 @@ export default function PortfolioTabs(props: propsIF) {
                 rightTabOptions={false}
                 isPortfolio={true}
             />
-        </PortfolioTabsPortfolioTabsContainer>
+        </div>
     );
 }

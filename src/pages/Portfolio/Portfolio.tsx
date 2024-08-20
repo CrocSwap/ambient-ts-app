@@ -24,11 +24,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { useSimulatedIsUserConnected } from '../../App/hooks/useSimulatedIsUserConnected';
-import {
-    MobileButton,
-    PortfolioContainer,
-    PortfolioTabsContainer,
-} from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
 import {
     BlastUserXpDataIF,
@@ -37,6 +32,7 @@ import {
 } from '../../contexts/UserDataContext';
 import Level from '../Level/Level';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
+import styles from './Portfolio.module.css';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
@@ -283,31 +279,28 @@ function Portfolio(props: PortfolioPropsIF) {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const mobileDataToggle = (
-        <FlexContainer
-            justifyContent='center'
-            alignItems='center'
-            background='dark2'
-            rounded
-            outline='text2'
-            margin='10px auto'
-        >
-            <MobileButton
+        <div className={styles.mobile_data_toggle_container}>
+            <button
                 onClick={() =>
                     setShowTabsAndNotExchange(!showTabsAndNotExchange)
                 }
-                active={!showTabsAndNotExchange}
+                className={`${styles.mobile_button} ${
+                    !showTabsAndNotExchange ? styles.active : styles.inactive
+                }`}
             >
                 Transactions
-            </MobileButton>
-            <MobileButton
+            </button>
+            <button
                 onClick={() =>
                     setShowTabsAndNotExchange(!showTabsAndNotExchange)
                 }
-                active={showTabsAndNotExchange}
+                className={`${styles.mobile_button} ${
+                    showTabsAndNotExchange ? styles.active : styles.inactive
+                }`}
             >
                 Exchange
-            </MobileButton>
-        </FlexContainer>
+            </button>
+        </div>
     );
 
     const notConnectedContent = (
@@ -417,40 +410,35 @@ function Portfolio(props: PortfolioPropsIF) {
 
     // end of tab control on account from page header
     const mobilePortfolio = (
-        <FlexContainer
-            flexDirection='column-reverse'
-            gap={4}
-            margin='0 auto'
-            height='calc(100svh - 112px)'
-            style={{
-                padding: ' 0 8px',
-            }}
-        >
-            {contentToRenderOnMobile}
-            {connectedAccountActive && mobileDataToggle}
-            <PortfolioBanner {...portfolioBannerProps} />
-        </FlexContainer>
+        <div className={styles.mobile_container}>
+            {useMediaQuery('(min-height: 300px)') && (
+                <PortfolioBanner {...portfolioBannerProps} />
+            )}
+            <div className={styles.mobile_content}>
+                {
+                    connectedAccountActive &&
+                    mobileDataToggle}
+                {contentToRenderOnMobile}
+            </div>
+        </div>
     );
+
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
 
     return (
-        <PortfolioContainer
-            data-testid={'portfolio'}
-            padding='32px'
-            background='dark2'
-            flexDirection='column-reverse'
-            gap={16}
-        >
+        <div data-testid={'portfolio'} className={styles.portfolio_container}>
             {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
 
-            <PortfolioTabsContainer
-                active={connectedAccountActive}
-                fullLayoutContainer={
-                    !connectedAccountActive || fullLayoutActive
-                }
+            <div
+                className={`${styles.portfolio_tabs_container}
+                 ${connectedAccountActive ? styles.active : ''} ${
+                     !connectedAccountActive || fullLayoutActive
+                         ? styles.fullLayoutContainer
+                         : ''
+                 }`}
             >
                 {isUserConnected || addressFromParams ? (
                     <PortfolioTabs {...portfolioTabsProps} />
@@ -461,9 +449,9 @@ function Portfolio(props: PortfolioPropsIF) {
                     : !isUserConnected && !addressFromParams
                       ? notConnectedContent
                       : undefined}
-            </PortfolioTabsContainer>
+            </div>
             <PortfolioBanner {...portfolioBannerProps} />
-        </PortfolioContainer>
+        </div>
     );
 }
 

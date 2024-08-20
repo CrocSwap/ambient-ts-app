@@ -5,22 +5,22 @@ import { ContainerStyles, Breakpoint, FlexContainer } from '../Common';
 import { ContainerProps } from '../Common/Container';
 import { BreakpointProps } from '../Common/Breakpoints';
 
-export const PortfolioTabsPortfolioTabsContainer = styled.div`
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+// export const PortfolioTabsPortfolioTabsContainer = styled.div`
+//     width: 100%;
+//     height: 100%;
+//     overflow: hidden;
 
-    border-radius: var(--border-radius);
-    background: var(--dark1);
+//     border-radius: var(--border-radius);
+//     background: var(--dark1);
 
-    align-items: stretch;
+//     align-items: stretch;
 
-    @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
-        margin: 0 auto;
-        width: 100%;
-        padding: 0 0.1rem;
-    }
-`;
+//     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
+//         margin: 0 auto;
+//         width: 100%;
+//         padding: 0 0.1rem;
+//     }
+// `;
 
 export const GasPump = styled.div`
     display: flex;
@@ -163,7 +163,9 @@ export const PortfolioBannerMainContainer = styled(motion.main)`
 export const PortfolioBannerRectangleContainer = styled.div`
     font-family: var(--font-family);
     width: 100%;
-    height: calc(20%);
+    height: 100px;
+    margin-top: 4px;
+ 
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -177,22 +179,16 @@ export const PortfolioBannerRectangleContainer = styled.div`
     position: relative;
 
     display: flex;
-    /*overflow: hidden;*/
 
     background-color: var(--dark1);
     @media only screen and (min-width: 768px) {
         border-radius: 24px 24px 0px 0px;
+        height: 150px;
+        margin-top: 0;
     }
 
-    @media only screen and (min-width: 1200px) {
-        flex-shrink: 0;
-        padding: calc(6svh) 0 0 0;
-    }
 
-    @media only screen and (max-width: 800px) {
-        height: auto;
-        padding: calc(12svh) 0 0 0;
-    }
+
 `;
 
 export const PortfolioBannerLevelContainer = styled.div<{
@@ -224,85 +220,85 @@ export const PortfolioContainer = styled(FlexContainer)`
     background-color: 'red';
 `;
 
-export const PortfolioTabsContainer = styled.div<{
-    fullLayoutContainer: boolean;
-    active: boolean;
-}>`
-    @media (min-width: 1200px) {
-        width: 100%;
-        display: grid;
-        transition: var(--transition);
-        overflow: hidden;
-        flex: 1;
+// export const PortfolioTabsContainer = styled.div<{
+//     fullLayoutContainer: boolean;
+//     active: boolean;
+// }>`
+//     @media (min-width: 1200px) {
+//         width: 100%;
+//         display: grid;
+//         transition: var(--transition);
+//         overflow: hidden;
+//         flex: 1;
 
-        /* FullLayout styles */
-        grid-template-columns: auto 36px;
-        column-gap: 16px;
+//         /* FullLayout styles */
+//         grid-template-columns: auto 36px;
+//         column-gap: 16px;
 
-        /* TabsExchange styles if fullLayoutContainer prop is false */
-        ${(props) =>
-            !props.fullLayoutContainer &&
-            `
-            grid-template-columns: auto 380px;
-            gap: 1rem;
-        `}
+//         /* TabsExchange styles if fullLayoutContainer prop is false */
+//         ${(props) =>
+//             !props.fullLayoutContainer &&
+//             `
+//             grid-template-columns: auto 380px;
+//             gap: 1rem;
+//         `}
 
-        ${({ active, fullLayoutContainer }) => {
-            if (!active) {
-                return `
-                display: grid;
-                grid-template-columns: auto ;
-                column-gap: 16px;
-                overflow: hidden;
-                flex: 1;
-                `;
-            } else if (fullLayoutContainer) {
-                return `
-                    width: 100%;
-                    display: grid;
-                    transition: var(--transition);
-                    overflow: hidden;
-                    grid-template-columns: auto 36px;
-                    column-gap: 16px;
-                    flex: 1;
-                `;
-            } else {
-                return `
-                        width: 100%;
-        flex: 1;
-        grid-template-columns: auto auto;
-        gap: 1rem;
-                width: 100%;
-        display: grid;
-        transition: var(--transition);
-        overflow: hidden;
-                grid-template-columns: auto 380px;
+//         ${({ active, fullLayoutContainer }) => {
+//             if (!active) {
+//                 return `
+//                 display: grid;
+//                 grid-template-columns: auto ;
+//                 column-gap: 16px;
+//                 overflow: hidden;
+//                 flex: 1;
+//                 `;
+//             } else if (fullLayoutContainer) {
+//                 return `
+//                     width: 100%;
+//                     display: grid;
+//                     transition: var(--transition);
+//                     overflow: hidden;
+//                     grid-template-columns: auto 36px;
+//                     column-gap: 16px;
+//                     flex: 1;
+//                 `;
+//             } else {
+//                 return `
+//                         width: 100%;
+//         flex: 1;
+//         grid-template-columns: auto auto;
+//         gap: 1rem;
+//                 width: 100%;
+//         display: grid;
+//         transition: var(--transition);
+//         overflow: hidden;
+//                 grid-template-columns: auto 380px;
 
-                `;
-            }
-        }}
-    }
-`;
+//                 `;
+//             }
+//         }}
+//     }
+// `;
 
-export const MobileButton = styled.button<{ active: boolean }>`
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    padding: 4px 1.5rem;
+// export const MobileButton = styled.button<{ active: boolean }>`
+//     font-size: var(--body-size);
+//     line-height: var(--body-lh);
+//     padding: 4px 1.5rem;
 
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    border: none;
-    outline: none;
+//     cursor: pointer;
+//     transition: all 0.3s ease-in-out;
+//     border: none;
+//     outline: none;
 
-    &:hover {
-        color: var(--text1);
-    }
+//     &:hover {
+//         color: var(--text1);
+//     }
 
-    ${({ active }) => `
-        color: ${active ? 'black' : 'var(--text1)'};
-        background: ${active ? 'var(--accent1)' : 'transparent'};
-    `}
-`;
+//     ${({ active }) => `
+//         color: ${active ? 'black' : 'var(--text1)'};
+//         background: ${active ? 'var(--accent1)' : 'transparent'};
+//     `}
+// `;
 
 export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
     display: flex;

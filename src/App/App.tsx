@@ -23,7 +23,7 @@ import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
-import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
+// import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -46,6 +46,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** ***** React Function *******/
 export default function App() {
@@ -137,7 +138,7 @@ export default function App() {
                     height:
                         location.pathname == '/'
                             ? 'calc(100vh - 56px)'
-                            : '100vh',
+                            : '100dvh',
                 }}
             >
                 {showPoints && showPointSystemPopup && (
@@ -418,6 +419,7 @@ export default function App() {
                     <SidebarFooter />
                 )}
             </div>
+
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}

@@ -123,10 +123,11 @@ export default function PortfolioBanner(props: propsIF) {
                 alignItems='baseline'
                 gap={16}
                 style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    left: 20,
+                    // position: 'absolute',
+                    // bottom: 20,
+                    // left: 20,
                     zIndex: 1,
+                    marginBottom: isSmallScreen ? '0' : '10px'
                 }} // Positioned above the NoisyLines component
             >
                 <PortfolioBannerAccount
