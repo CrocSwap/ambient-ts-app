@@ -25,9 +25,6 @@ import {
 } from '../../Chat/ChatUtils';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useOnBoundryChange from '../../../utils/hooks/useOnBoundryChange';
-import { futaCommentsFullSteps } from '../../../utils/tutorial/Futa/CommentsSteps';
-import TutorialOverlayLS from '../../Global/TutorialOverlay/TutorialOverlayLS';
-import { LS_TUTO_FUTA_COMMENTS } from '../../Chat/ChatConstants/ChatConstants';
 
 type ShimmerListProps = {
     count: number;
@@ -492,11 +489,6 @@ function Comments(props: CommentsProps) {
                         </>
                     )}
                     <DomDebugger />
-                    <TutorialOverlayLS
-                        lsKey={LS_TUTO_FUTA_COMMENTS}
-                        steps={futaCommentsFullSteps}
-                    />
-                    <div id='tutorial_first_step'></div>
                 </div>
             </div>
         </>

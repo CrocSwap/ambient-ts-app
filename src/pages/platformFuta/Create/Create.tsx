@@ -180,6 +180,7 @@ export default function Create() {
         <footer className={styles.footerContainer}>
             {extraInfoDisplay}
             <button
+                id='auctions_create_button'
                 className={
                     !isButtonDisabled
                         ? styles.create_button

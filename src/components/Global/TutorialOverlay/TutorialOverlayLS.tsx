@@ -62,6 +62,7 @@ export default function TutorialOverlayLS(props: TutorialOverlayPropsIF) {
     };
 
     const handleTutoBuild = async () => {
+        console.log('tuto build');
         const filteredSteps = filterRenderedSteps();
         if (filteredSteps.length > 0) {
             const showTutos = await handleShowState(filteredSteps);
@@ -73,10 +74,8 @@ export default function TutorialOverlayLS(props: TutorialOverlayPropsIF) {
     useEffect(() => {
         setTimeout(() => {
             handleTutoBuild();
-        }, 2000);
+        }, 1000);
     }, []);
-
-    console.log(stepsFiltered);
 
     return (
         <>
