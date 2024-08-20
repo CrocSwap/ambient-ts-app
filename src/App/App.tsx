@@ -46,7 +46,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
-import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
+import FooterNav from '../components/Global/FooterNav/FooterNav';
 
 /** ***** React Function *******/
 export default function App() {
@@ -415,8 +415,8 @@ export default function App() {
                     currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && currentLocation !== '/' && (
-                    <SidebarFooter />
+                {showMobileVersion && (
+                    <FooterNav />
                 )}
             </div>
 

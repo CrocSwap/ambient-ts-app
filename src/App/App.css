@@ -8,6 +8,7 @@
     scroll-behavior: smooth;
     font-family: var(--font-family);
     font-weight: 300;
+    /* outline: 1px solid red; */
 
     /* outline: 1px solid red; */
 }
