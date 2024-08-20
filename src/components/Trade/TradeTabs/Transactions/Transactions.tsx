@@ -491,38 +491,51 @@ function Transactions(props: propsIF) {
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const [pageVisible, setPageVisible] = useState<number>(0);
-    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(1);
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        setPageVisible(0);
-        setExtraPagesAvailable(0);
+        setPagesVisible([0, 1]);
+        setExtraPagesAvailable(1);
         setMoreDataAvailable(true);
         setMoreDataLoading(false);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const scrollToTop = () => {
-        setPageVisible(0);
+        setPagesVisible([0, 1]);
 
         if (scrollRef.current) {
-            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
-            // containerRef.current.scrollTop = 0; // For instant scrolling
+            // scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
+            scrollRef.current.scrollTo({
+                top: 0,
+                behavior: 'instant' as ScrollBehavior,
+            });
         }
     };
 
     const shiftUp = (): void => {
-        setPageVisible((prev) => prev - 1);
+        setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
+        if (scrollRef.current) {
+            // scroll to middle of container
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight * 0.49,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
     };
 
     const shiftDown = (): void => {
-        setPageVisible((prev) => prev + 1);
+        setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
+        if (scrollRef.current) {
+            // scroll to middle of container
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight * 0.4,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
     };
-
-    useEffect(() => {
-        console.log({ pageVisible });
-    }, [pageVisible]);
 
     useEffect(() => {
         scrollToTop();
@@ -539,7 +552,7 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 100,
+            n: 50,
             timeBefore: oldestTxTime,
             crocEnv: crocEnv,
             graphCacheUrl: activeNetwork.graphCacheUrl,
@@ -567,7 +580,17 @@ function Transactions(props: propsIF) {
                         console.log({ uniqueChanges });
                         if (uniqueChanges.length > 0) {
                             setExtraPagesAvailable((prev) => prev + 1);
-                            setPageVisible((prev) => prev + 1);
+                            setPagesVisible((prev) => [
+                                prev[0] + 1,
+                                prev[1] + 1,
+                            ]);
+                            if (scrollRef.current) {
+                                // scroll to middle of container
+                                scrollRef.current.scrollTo({
+                                    top: scrollRef.current.scrollHeight * 0.4,
+                                    behavior: 'instant' as ScrollBehavior,
+                                });
+                            }
                         } else {
                             setMoreDataAvailable(false);
                         }
@@ -721,8 +744,8 @@ function Transactions(props: propsIF) {
                         isCandleSelected
                             ? sortedTransactions
                             : sortedTransactions.slice(
-                                  pageVisible * 100,
-                                  pageVisible * 100 + 100,
+                                  pagesVisible[0] * 50,
+                                  pagesVisible[1] * 50 + 50,
                               )
                     }
                     fullData={sortedTransactions}
@@ -744,7 +767,7 @@ function Transactions(props: propsIF) {
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
             >
-                {showAllData && !isCandleSelected && pageVisible > 1 && (
+                {showAllData && !isCandleSelected && pagesVisible[0] > 1 && (
                     <button
                         onClick={() => {
                             shiftUp();
@@ -753,7 +776,7 @@ function Transactions(props: propsIF) {
                         Shift up
                     </button>
                 )}
-                {showAllData && !isCandleSelected && pageVisible > 0 && (
+                {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
                     <button
                         onClick={() => {
                             scrollToTop();
@@ -774,7 +797,7 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
                 {showAllData &&
-                    pageVisible < extraPagesAvailable &&
+                    pagesVisible[1] < extraPagesAvailable &&
                     moreDataAvailable &&
                     !isCandleSelected && (
                         <button
@@ -786,7 +809,7 @@ function Transactions(props: propsIF) {
                         </button>
                     )}
                 {showAllData &&
-                    pageVisible == extraPagesAvailable &&
+                    pagesVisible[1] == extraPagesAvailable &&
                     moreDataAvailable &&
                     !isCandleSelected && (
                         <button
