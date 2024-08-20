@@ -25,6 +25,7 @@ import {
 } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import { chartSettingsIF } from '../App/hooks/useChartSettings';
+import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -72,6 +73,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
+
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const [abortController] = useState<{
         abortController: AbortController | null;
@@ -194,6 +197,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
+        isPoolInitialized,
     ]);
 
     useEffect(() => {
