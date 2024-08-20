@@ -313,6 +313,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const notConnectedContent = (
         <FlexContainer
             fullWidth
+            fullHeight
             flexDirection='column'
             justifyContent='center'
             alignItems='center'
