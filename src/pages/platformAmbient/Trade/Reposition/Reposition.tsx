@@ -754,7 +754,7 @@ function Reposition() {
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
     const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.1 : 0,
+        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     useEffect(() => {

@@ -31,6 +31,8 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
 
     if (noStyle) return <>{children}</>;
 
+
+
     return (
         <section
             className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}

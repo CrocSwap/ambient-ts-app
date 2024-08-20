@@ -57,7 +57,7 @@ export default function ExchangeBalance(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
 
-    const [tokenAllowance, setTokenAllowance] = useState<string>('');
+    const [tokenAllowance, setTokenAllowance] = useState<bigint | undefined>();
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
         useState<boolean>(false);
     const [recheckTokenBalances, setRecheckTokenBalances] =
@@ -127,7 +127,7 @@ export default function ExchangeBalance(props: propsIF) {
                     const allowance = await crocEnv
                         .token(selectedTokenAddress)
                         .allowance(userAddress);
-                    setTokenAllowance(allowance.toString());
+                    setTokenAllowance(allowance);
                 } catch (err) {
                     console.warn(err);
                 }

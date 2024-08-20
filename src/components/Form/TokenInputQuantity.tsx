@@ -113,7 +113,9 @@ function TokenInputQuantity(props: propsIF) {
     };
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-        let inputStringNoCommas = event.target.value.replace(/,/g, '.');
+        let inputStringNoCommas = event.target.value
+            .replace(/,/g, '.')
+            .replace(/\s+/g, '');
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(inputStringNoCommas) > token.decimals;
         if (inputStringNoCommas === '.') inputStringNoCommas = '0.';

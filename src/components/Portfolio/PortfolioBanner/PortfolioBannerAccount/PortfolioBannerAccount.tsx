@@ -242,11 +242,6 @@ export default function PortfolioBannerAccount(
             </FlexContainer>
 
             {showNFTPage && NFTData && (
-                // NFTData.find(
-                //     (nftChainList) => nftChainList.chainId === chainId,
-                // ) &&
-                // NFTData.find((nftChainList) => nftChainList.chainId === chainId)
-                //     ?.userHasNFT &&
                 <NFTBannerAccount
                     setShowNFTPage={setShowNFTPage}
                     showNFTPage={showNFTPage}

@@ -560,6 +560,15 @@ export const scrollKNC: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
+export const scrollSOLVBTC: TokenIF = {
+    name: 'Free Bridged SolvBTC.b',
+    address: '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4',
+    symbol: 'SolvBTC.b',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/36800/standard/solvBTC.png',
+};
 
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
@@ -643,6 +652,7 @@ export const defaultTokens: TokenIF[] = [
     scrollDAI,
     scrollUSDT,
     scrollKNC,
+    scrollSOLVBTC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollUSDE,

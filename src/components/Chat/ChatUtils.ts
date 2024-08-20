@@ -389,3 +389,11 @@ export const dropFromCssClasses = (el: Element, classToDrop: string) => {
     );
     el.className = filteredClasses.join(' ');
 };
+export const getEmojiFromUnifiedCode = (unified: string) => {
+    if (unified) {
+        const emojiCharacter = String.fromCodePoint(parseInt(unified, 16));
+        return emojiCharacter;
+    }
+
+    return '';
+};

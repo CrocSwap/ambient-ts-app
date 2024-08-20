@@ -59,7 +59,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'Price',
-            hidden: false,
+            hidden: true,
             align: 'right',
             responsive: 'sm',
             sortable: false,
@@ -73,7 +73,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'APR',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'lg',
             sortable: true,
@@ -127,8 +127,8 @@ function TopPools(props: propsIF) {
             style={{ overflowY: 'hidden' }}
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >
-            <div className='custom_scroll_ambient'>
-                <ShadowBox>
+            <div style={{ background: 'red' }}>
+                <ShadowBox className='custom_scroll_ambient'>
                     <Table>
                         <TableHead
                             headerItems={topPoolsHeaderItems}

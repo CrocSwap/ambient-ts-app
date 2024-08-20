@@ -43,6 +43,7 @@ import ESE from './ESE.jpg';
 import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
+import SCROLLY from './SCROLLY.webp';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import ZCAT from './ZCAT.webp';
@@ -97,6 +98,7 @@ export {
     BIG,
     PUNKETH20,
     RSETH,
+    SCROLLY,
     WEETH,
     BLAST,
     ZCAT,
