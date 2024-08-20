@@ -831,20 +831,20 @@ function Transactions(props: propsIF) {
             style={{ height: isSmallScreen ? '95%' : '100%' }}
         >
             <div>{headerColumnsDisplay}</div>
+            {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
+                <button
+                    onClick={() => {
+                        scrollToTop();
+                    }}
+                >
+                    Scroll to Top
+                </button>
+            )}
             <div
                 ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
             >
-                {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
-                    <button
-                        onClick={() => {
-                            scrollToTop();
-                        }}
-                    >
-                        Scroll to Top
-                    </button>
-                )}
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
