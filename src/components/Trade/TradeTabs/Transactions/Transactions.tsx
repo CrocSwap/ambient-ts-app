@@ -492,13 +492,80 @@ function Transactions(props: propsIF) {
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
-    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(1);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
+    const lastRowRef = useRef<HTMLDivElement | null>(null);
+    const firstRowRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (moreDataLoading) return;
+                if (entry.isIntersecting) {
+                    // last row is visible
+                    extraPagesAvailable + 1 > pagesVisible[1]
+                        ? shiftDown()
+                        : moreDataAvailable
+                          ? addMoreData()
+                          : undefined;
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            },
+        );
+
+        const currentElement = lastRowRef.current;
+        if (currentElement) {
+            observer.observe(currentElement);
+        }
+
+        return () => {
+            if (currentElement) {
+                observer.unobserve(currentElement);
+            }
+        };
+    }, [
+        lastRowRef.current,
+        moreDataLoading,
+        moreDataAvailable,
+        extraPagesAvailable,
+        pagesVisible[1],
+    ]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (moreDataLoading) return;
+                if (entry.isIntersecting) {
+                    // first row is visible
+                    pagesVisible[0] > 0 && shiftUp();
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            },
+        );
+
+        const currentElement = firstRowRef.current;
+        if (currentElement) {
+            observer.observe(currentElement);
+        }
+
+        return () => {
+            if (currentElement) {
+                observer.unobserve(currentElement);
+            }
+        };
+    }, [firstRowRef.current, moreDataLoading, pagesVisible[0]]);
+
     useEffect(() => {
         setPagesVisible([0, 1]);
-        setExtraPagesAvailable(1);
+        setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setMoreDataLoading(false);
     }, [selectedBaseAddress + selectedQuoteAddress]);
@@ -751,6 +818,8 @@ function Transactions(props: propsIF) {
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
+                    firstRowRef={firstRowRef}
+                    lastRowRef={lastRowRef}
                 />
             </ul>
         </div>
@@ -767,22 +836,13 @@ function Transactions(props: propsIF) {
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
             >
-                {showAllData && !isCandleSelected && pagesVisible[0] > 1 && (
-                    <button
-                        onClick={() => {
-                            shiftUp();
-                        }}
-                    >
-                        Shift up
-                    </button>
-                )}
                 {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
                     <button
                         onClick={() => {
                             scrollToTop();
                         }}
                     >
-                        Go to Beginning
+                        Scroll to Top
                     </button>
                 )}
                 {(
@@ -795,40 +855,6 @@ function Transactions(props: propsIF) {
                     </div>
                 ) : (
                     transactionDataOrNull
-                )}
-                {showAllData &&
-                    pagesVisible[1] < extraPagesAvailable &&
-                    moreDataAvailable &&
-                    !isCandleSelected && (
-                        <button
-                            onClick={() => {
-                                shiftDown();
-                            }}
-                        >
-                            Show More
-                        </button>
-                    )}
-                {showAllData &&
-                    pagesVisible[1] == extraPagesAvailable &&
-                    moreDataAvailable &&
-                    !isCandleSelected && (
-                        <button
-                            onClick={() => {
-                                addMoreData();
-                            }}
-                            disabled={moreDataLoading}
-                        >
-                            Load More Data
-                        </button>
-                    )}
-                {showAllData && !isCandleSelected && (
-                    <button
-                        onClick={() => {
-                            scrollToTop();
-                        }}
-                    >
-                        Scroll to Top
-                    </button>
                 )}
             </div>
         </FlexContainer>
