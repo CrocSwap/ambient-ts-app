@@ -49,7 +49,7 @@ export interface chartSettingsMethodsIF {
 
 // hook to manage user preferences for chart settings
 export const useChartSettings = (
-    numCandlesFetched: {candleCount: number, switchPeriodFlag:boolean} | undefined,
+    numCandlesFetched: {candleCount: number | undefined, switchPeriodFlag:boolean} ,
     currentPoolString: string,
 ): chartSettingsMethodsIF => {
     // fn to get user preference for overlay to display on the chart by module
