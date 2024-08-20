@@ -8,10 +8,8 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
-import {
-    PortfolioBannerMainContainer,
-    ProfileSettingsContainer,
-} from '../../../../styled/Components/Portfolio';
+import styles from './PortfolioBannerAccount.module.css'
+
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
@@ -149,8 +147,8 @@ export default function PortfolioBannerAccount(
     }
 
     return (
-        <PortfolioBannerMainContainer
-            animate={showAccountDetails ? 'open' : 'closed'}
+        <div className={styles.portfolio_banner_main_container}
+            // animate={showAccountDetails ? 'open' : 'closed'}
         >
             <FlexContainer
                 alignItems='flex-end'
@@ -167,9 +165,10 @@ export default function PortfolioBannerAccount(
                         ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
-                    <ProfileSettingsContainer
-                        placement={NFTData ? true : false}
-                    >
+                
+                        <div className={styles.portfolio_settings_container}
+                            style={{transform: NFTData ? 'transform: translate(0%, 23%)' : ''}}
+                        >    
                         {(resolvedAddress || userAddress) &&
                             getAvatarForProfilePage(
                                 resolvedAddress
@@ -196,7 +195,7 @@ export default function PortfolioBannerAccount(
                                       //       )?.userHasNFT &&
                                       true,
                             )}
-                    </ProfileSettingsContainer>
+                    </div>
                 </span>
 
                 <FlexContainer flexDirection='column' gap={4}>
@@ -292,6 +291,6 @@ export default function PortfolioBannerAccount(
                     />
                 </div>
             )}
-        </PortfolioBannerMainContainer>
+        </div>
     );
 }

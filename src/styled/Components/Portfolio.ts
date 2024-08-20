@@ -1,9 +1,5 @@
 import styled from 'styled-components/macro';
-import { motion } from 'framer-motion';
-import { ContainerStyles, Breakpoint, FlexContainer } from '../Common';
 
-import { ContainerProps } from '../Common/Container';
-import { BreakpointProps } from '../Common/Breakpoints';
 
 // export const PortfolioTabsPortfolioTabsContainer = styled.div`
 //     width: 100%;
@@ -96,129 +92,129 @@ export const MaxButton = styled.button<{ disabled?: boolean; width?: string }>`
     }
 `;
 
-export const PortfolioControlContainer = styled.div`
-    cursor: pointer;
-    display: none;
-    position: absolute;
-    right: 8px;
-    top: 8px;
+// export const PortfolioControlContainer = styled.div`
+//     cursor: pointer;
+//     display: none;
+//     position: absolute;
+//     right: 8px;
+//     top: 8px;
 
-    @media only screen and (min-width: 1200px) {
-        display: flex;
-        border-radius: var(--border-radius);
-    }
-`;
+//     @media only screen and (min-width: 1200px) {
+//         display: flex;
+//         border-radius: var(--border-radius);
+//     }
+// `;
 
-export const PortfolioMotionContainer = styled(motion.div)<
-    ContainerProps & BreakpointProps
->`
-    ${(props) => ContainerStyles({ ...props, ...{ display: 'flex' } })}
-    ${Breakpoint}
-`;
+// export const PortfolioMotionContainer = styled(motion.div)<
+//     ContainerProps & BreakpointProps
+// >`
+//     ${(props) => ContainerStyles({ ...props, ...{ display: 'flex' } })}
+//     ${Breakpoint}
+// `;
 
-export const PortfolioMotionSubContainer = styled(motion.div)<
-    ContainerProps & BreakpointProps
->`
-    ${ContainerStyles}
-    ${Breakpoint}
-    @media only screen and (max-width: 600px) {
-        border-radius: var(--border-radius);
-        color: blue;
-    }
-`;
+// export const PortfolioMotionSubContainer = styled(motion.div)<
+//     ContainerProps & BreakpointProps
+// >`
+//     ${ContainerStyles}
+//     ${Breakpoint}
+//     @media only screen and (max-width: 600px) {
+//         border-radius: var(--border-radius);
+//         color: blue;
+//     }
+// `;
 
-export const PortfolioInfoText = styled.div`
-    font-size: var(--body-size);
-    line-height: 22.5px;
-    color: var(--text2);
-    background: var(--dark1);
-    font-weight: 300;
-    text-align: center;
-    padding: 8px;
-    border-radius: var(--border-radius);
-    margin-bottom: 8px;
+// export const PortfolioInfoText = styled.div`
+//     font-size: var(--body-size);
+//     line-height: 22.5px;
+//     color: var(--text2);
+//     background: var(--dark1);
+//     font-weight: 300;
+//     text-align: center;
+//     padding: 8px;
+//     border-radius: var(--border-radius);
+//     margin-bottom: 8px;
 
-    /* prevents the exchange balance sidebar from expanding downward on open */
-    max-height: 80px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-`;
+//     /* prevents the exchange balance sidebar from expanding downward on open */
+//     max-height: 80px;
+//     text-overflow: ellipsis;
+//     overflow: hidden;
+// `;
 
-export const PortfolioBannerMainContainer = styled(motion.main)`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    background: rgba(18, 18, 26, 0.3);
-    padding: 4px;
+// export const PortfolioBannerMainContainer = styled(motion.main)`
+//     display: flex;
+//     flex-direction: column;
+//     gap: 8px;
+//     background: rgba(18, 18, 26, 0.3);
+//     padding: 4px;
 
-    /* blur/card */
-    backdrop-filter: blur(2px);
+//     /* blur/card */
+//     backdrop-filter: blur(2px);
 
-    @media only screen and (min-width: 768px) {
-        width: 380.16px;
-        border-radius: 50px 4px 4px 50px;
-    }
-`;
+//     @media only screen and (min-width: 768px) {
+//         width: 380.16px;
+//         border-radius: 50px 4px 4px 50px;
+//     }
+// `;
 
-export const PortfolioBannerRectangleContainer = styled.div`
-    font-family: var(--font-family);
-    width: 100%;
-    height: 100px;
-    margin-top: 4px;
+// export const PortfolioBannerRectangleContainer = styled.div`
+//     font-family: var(--font-family);
+//     width: 100%;
+//     height: 100px;
+//     margin-top: 4px;
  
 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+//     -webkit-background-size: cover;
+//     -moz-background-size: cover;
+//     -o-background-size: cover;
+//     background-size: cover;
 
-    justify-content: space-between;
-    align-items: flex-end;
+//     justify-content: space-between;
+//     align-items: flex-end;
 
-    padding: 1rem;
-    position: relative;
+//     padding: 1rem;
+//     position: relative;
 
-    display: flex;
+//     display: flex;
 
-    background-color: var(--dark1);
-    @media only screen and (min-width: 768px) {
-        border-radius: 24px 24px 0px 0px;
-        height: 150px;
-        margin-top: 0;
-    }
+//     background-color: var(--dark1);
+//     @media only screen and (min-width: 768px) {
+//         border-radius: 24px 24px 0px 0px;
+//         height: 150px;
+//         margin-top: 0;
+//     }
 
 
 
-`;
+// `;
 
-export const PortfolioBannerLevelContainer = styled.div<{
-    isAccountPage?: boolean;
-}>`
-    display: flex;
-    background: ${({ isAccountPage }) =>
-        isAccountPage ? 'rgba(18, 18, 26, 0.90)' : 'rgba(23, 29, 39, 0.7)'};
-    border-radius: 8px;
-    backdrop-filter: 10px;
-    padding: 4px 8px;
-    height: auto;
-    display: none;
-    z-index: 2;
+// export const PortfolioBannerLevelContainer = styled.div<{
+//     isAccountPage?: boolean;
+// }>`
+//     display: flex;
+//     background: ${({ isAccountPage }) =>
+//         isAccountPage ? 'rgba(18, 18, 26, 0.90)' : 'rgba(23, 29, 39, 0.7)'};
+//     border-radius: 8px;
+//     backdrop-filter: 10px;
+//     padding: 4px 8px;
+//     height: auto;
+//     display: none;
+//     z-index: 2;
 
-    @media only screen and (min-width: 800px) {
-        display: flex;
-        flex-shrink: 0;
-    }
-`;
+//     @media only screen and (min-width: 800px) {
+//         display: flex;
+//         flex-shrink: 0;
+//     }
+// `;
 
-export const PortfolioContainer = styled(FlexContainer)`
-    transition: var(--transition);
-    height: calc(100vh - 56px);
-    @media only screen and (max-width: 600px) {
-        overflow-y: hidden;
-        max-height: calc(100svh - 7.5rem);
-    }
-    background-color: 'red';
-`;
+// export const PortfolioContainer = styled(FlexContainer)`
+//     transition: var(--transition);
+//     height: calc(100vh - 56px);
+//     @media only screen and (max-width: 600px) {
+//         overflow-y: hidden;
+//         max-height: calc(100svh - 7.5rem);
+//     }
+//     background-color: 'red';
+// `;
 
 // export const PortfolioTabsContainer = styled.div<{
 //     fullLayoutContainer: boolean;
@@ -300,34 +296,21 @@ export const PortfolioContainer = styled(FlexContainer)`
 //     `}
 // `;
 
-export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+// export const ProfileSettingsContainer = styled.div<{ placement: boolean }>`
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
 
-    height: 65px;
-    width: 65px;
+//     height: 65px;
+//     width: 65px;
 
-    ${({ placement }) => {
-        if (placement) {
-            return `
-            transform: translate(0%, 23%);
-            `;
-        }
-    }}
-`;
+//     ${({ placement }) => {
+//         if (placement) {
+//             return `
+//             transform: translate(0%, 23%);
+//             `;
+//         }
+//     }}
+// `;
 
-export const UpdateProfileButton = styled.div`
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-
-    color: var(--text1);
-
-    border: none;
-    outline: none;
-
-    &:hover {
-        cursor: pointer;
-    }
-`;

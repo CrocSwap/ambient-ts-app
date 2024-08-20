@@ -6,11 +6,9 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
-import {
-    PortfolioBannerLevelContainer,
-    PortfolioBannerRectangleContainer,
-} from '../../../styled/Components/Portfolio';
+
 import NoisyLines from '../../NoisyLines/NoisyLines';
+import styles from './PortfolioBanner.module.css'
 import {
     UserDataContext,
     UserXpDataIF,
@@ -20,10 +18,8 @@ import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
-import { HeaderButtons } from '../../../styled/Components/Chart';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { FlexContainer } from '../../../styled/Common';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -39,7 +35,6 @@ export default function PortfolioBanner(props: propsIF) {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-    const isSmallScreen = useMediaQuery('(max-width: 800px)');
 
     const xpData =
         connectedAccountActive || location.pathname === '/account/xp'
@@ -113,22 +108,12 @@ export default function PortfolioBanner(props: propsIF) {
     if (!addressOfAccountDisplayed) return null;
 
     return (
-        <PortfolioBannerRectangleContainer
-            id={BANNER_ID}
-            style={{ position: 'relative' }}
-        >
+   
+        <div className={styles.portfolio_banner_rectangle_container} id={BANNER_ID}>
+
+          
             {noisyLines}
-            <FlexContainer
-                justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
-                alignItems='baseline'
-                gap={16}
-                style={{
-                    // position: 'absolute',
-                    // bottom: 20,
-                    // left: 20,
-                    zIndex: 1,
-                    marginBottom: isSmallScreen ? '0' : '10px'
-                }} // Positioned above the NoisyLines component
+            <div className={styles.portfolio_banner_rectangle_content}
             >
                 <PortfolioBannerAccount
                     ensName={ensName}
@@ -143,8 +128,7 @@ export default function PortfolioBanner(props: propsIF) {
                     title={'Toggle USD Price Estimates'}
                     enterDelay={500}
                 >
-                    <HeaderButtons
-                        mobileHide
+                    <button className={styles.header_button}
                         onClick={() =>
                             setIsTradeDollarizationEnabled((prev) => !prev)
                         }
@@ -160,25 +144,19 @@ export default function PortfolioBanner(props: propsIF) {
                                     : undefined,
                             }}
                         />
-                    </HeaderButtons>
+                    </button>
                 </DefaultTooltip>
-            </FlexContainer>
+            </div>
 
-            <PortfolioBannerLevelContainer
-                isAccountPage
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    zIndex: 3,
-                }} // Positioned above the NoisyLines component
-            >
+            <div className={styles.portfolio_banner_level_container}>
+                
+     
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}
                     user={userLink}
                 />
-            </PortfolioBannerLevelContainer>
-        </PortfolioBannerRectangleContainer>
+            </div>
+            </div>
     );
 }
