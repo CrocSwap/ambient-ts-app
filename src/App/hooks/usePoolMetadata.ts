@@ -80,6 +80,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setUserLimitOrdersByPool,
         setLiquidity,
         setLiquidityFee,
+        positionsByPool,
+        limitOrdersByPool,
     } = useContext(GraphDataContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
@@ -805,7 +807,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         isServerEnabled,
     ]);
 
-    useEffect(() => {
+    const updateLiquidity = () => {
         // Reset existing liquidity data until the fetch completes, because it's a new pool
         const request = {
             baseAddress: baseTokenAddress,
@@ -838,6 +840,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 })
                 .catch(console.error);
         }
+    };
+
+    useEffect(() => {
+        updateLiquidity();
     }, [
         baseTokenAddress +
             quoteTokenAddress +
@@ -847,6 +853,21 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.isChartEnabled,
         props.crocEnv !== undefined,
     ]);
+
+    const totalPositionLiq = useMemo(
+        () =>
+            positionsByPool.positions.reduce((sum, position) => {
+                return sum + position.positionLiq;
+            }, 0) +
+            limitOrdersByPool.limitOrders.reduce((sum, order) => {
+                return sum + order.positionLiq;
+            }, 0),
+        [positionsByPool, limitOrdersByPool],
+    );
+
+    useEffect(() => {
+        updateLiquidity();
+    }, [totalPositionLiq]);
 
     return {
         contextMatchesParams,

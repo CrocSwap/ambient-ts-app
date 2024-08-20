@@ -31,7 +31,7 @@ export async function submitLimitOrder(params: SubmitLimitOrderParams) {
         ko = order.atLimit(buyTokenAddress, limit);
     }
 
-    if (await ko.willMintFail()) return null;
+    if (await ko.willMintFail()) throw new Error('Mint will fail');
 
     const tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
 

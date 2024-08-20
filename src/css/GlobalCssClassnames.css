@@ -205,10 +205,10 @@ aside.emoji-picker-react {
 }
 
 @media (max-width: 500px) {
-    #current_row_scroll {
+    /* #current_row_scroll {
         overflow-y: scroll;
         height: 45dvh;
-    }
+    } */
     .css-th9gsg-MuiPaper-root-MuiAlert-root{
         margin: 0 auto !important;
         text-wrap:wrap !important;
@@ -226,4 +226,14 @@ aside.emoji-picker-react {
    .mobile_auto_height{
     height: auto !important;
    }
+}
+
+
+.EmojiPickerReact{
+    background: var(--dark2) !important;
+}
+
+.epr-emoji-category-label{
+    background: var(--dark2) !important;
+    font-size: .8rem !important;
 }

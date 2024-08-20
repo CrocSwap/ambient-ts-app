@@ -46,7 +46,7 @@ interface PoolRequestParams {
     chainId: string;
 }
 
-interface GraphDataContextIF {
+export interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
     limitOrdersByUser: LimitOrdersByUser;
     transactionsByUser: Changes;

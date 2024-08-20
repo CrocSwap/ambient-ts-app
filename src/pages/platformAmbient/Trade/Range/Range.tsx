@@ -1,4 +1,8 @@
-import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
+import {
+    capitalConcFactor,
+    concDepositSkew,
+    fromDisplayQty,
+} from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../../components/Form/Button';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -263,19 +267,21 @@ function Range() {
     );
 
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const tokenBSurplusMinusTokenBRemainderNum =
-        parseFloat(tokenBDexBalance || '0') - parseFloat(tokenBInputQty || '0');
+        fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
+        fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenAInputQty || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
         ? tokenBSurplusMinusTokenBRemainderNum < 0
-            ? tokenBSurplusMinusTokenBRemainderNum * -1
-            : 0
-        : parseFloat(tokenBInputQty || '0');
+            ? tokenBSurplusMinusTokenBRemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
     const showExtraInfoDropdown =
         tokenAInputQty !== '' || tokenBInputQty !== '';
@@ -409,16 +415,22 @@ function Range() {
     );
 
     const isTokenAWalletBalanceSufficient =
-        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     const isTokenBWalletBalanceSufficient =
-        parseFloat(tokenBBalance) >= tokenBQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenBBalance || '0', tokenB.decimals) >=
+        tokenBQtyCoveredByWalletBalance;
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+        tokenAAllowance === undefined
+            ? true
+            : tokenAAllowance >= tokenAQtyCoveredByWalletBalance;
 
     const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
+        tokenBAllowance === undefined
+            ? true
+            : tokenBAllowance >= tokenBQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
 
@@ -538,11 +550,15 @@ function Range() {
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+        );
     }, [tokenADexBalance]);
 
     useEffect(() => {
-        setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
+        setIsWithdrawTokenBFromDexChecked(
+            fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) > 0,
+        );
     }, [tokenBDexBalance]);
 
     useEffect(() => {
@@ -823,7 +839,7 @@ function Range() {
         isScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 0.01 : isActiveNetworkBlast ? 0.08 : 0,
+        isScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const amountToReduceNativeTokenQty =
@@ -897,12 +913,8 @@ function Range() {
         createRangePosition({
             slippageTolerancePercentage,
             isAmbient,
-            tokenAInputQty: isTokenAInputDisabled
-                ? 0
-                : parseFloat(tokenAInputQty),
-            tokenBInputQty: isTokenBInputDisabled
-                ? 0
-                : parseFloat(tokenBInputQty),
+            tokenAInputQty: isTokenAInputDisabled ? '0' : tokenAInputQty,
+            tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBInputQty,
             isWithdrawTokenAFromDexChecked,
             isWithdrawTokenBFromDexChecked,
             defaultLowTick,

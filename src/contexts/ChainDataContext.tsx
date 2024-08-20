@@ -44,6 +44,7 @@ import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import { Network, Alchemy } from 'alchemy-sdk';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
+import { ReceiptContext } from './ReceiptContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -74,6 +75,8 @@ export const ChainDataContextProvider = (props: {
         NFTFetchSettings,
         setNFTFetchSettings,
     } = useContext(TokenBalanceContext);
+
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
@@ -392,7 +395,7 @@ export const ChainDataContextProvider = (props: {
                         await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
-                            everyFiveMinutes,
+                            lastBlockNumber,
                             cachedTokenDetails,
                             crocEnv,
                             activeNetwork.graphCacheUrl,
@@ -426,6 +429,7 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
         everyFiveMinutes,
         activeNetwork.graphCacheUrl,
+        sessionReceipts.length,
     ]);
 
     const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<

@@ -32,7 +32,7 @@ import {
 } from '../ambient-utils/dataLayer';
 import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
-interface CachedDataIF {
+export interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;

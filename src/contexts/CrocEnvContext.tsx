@@ -43,7 +43,7 @@ interface UrlRoutesTemplate {
     pool: string;
 }
 
-interface CrocEnvContextIF {
+export interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
     selectedNetwork: NetworkIF;
