@@ -56,8 +56,8 @@ export interface ChartContextIF {
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
     isCandleDataNull: boolean;
-    setNumCandlesFetched: React.Dispatch<number | undefined>;
-    numCandlesFetched: number | undefined;
+    setNumCandlesFetched: React.Dispatch<{candleCount:number,switchPeriodFlag:boolean} | undefined>;
+    numCandlesFetched: {candleCount:number,switchPeriodFlag:boolean} | undefined;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -342,7 +342,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         useState<boolean>(initialIsToolbarOpen);
 
     const [numCandlesFetched, setNumCandlesFetched] = useState<
-        number | undefined
+        {candleCount: number, switchPeriodFlag:boolean} | undefined
     >();
 
     const currentPoolString =

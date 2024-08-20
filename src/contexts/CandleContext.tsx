@@ -62,6 +62,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
+        numCandlesFetched,
         setNumCandlesFetched,
     } = useContext(ChartContext);
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
@@ -94,6 +95,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
+    const [isFinishRequest, setIsFinishRequest] = useState(false);
     const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -102,27 +104,33 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     });
 
     useEffect(() => {
-        // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
-        if (
-            candleData?.candles.length === 0 &&
-            candleScale?.isFetchFirst200Candle !== true
-        ) {
-            setCandleData(undefined);
-            setCandleScale((prev) => {
-                return {
-                    lastCandleDate: undefined,
-                    nCandles: 200,
-                    isFetchForTimeframe: !prev.isFetchForTimeframe,
-                    isShowLatestCandle: true,
-                    isFetchFirst200Candle: true,
-                };
-            });
-        } else {
-            // If there are no candles in the first 200 candles, it changes timeframe
-            if (candleData?.candles)
-                setNumCandlesFetched(candleData?.candles.length || 0);
+        if (isFinishRequest) {
+            // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
+            if (
+                candleData?.candles.length === 0 &&
+                candleScale?.isFetchFirst200Candle !== true
+            ) {
+                setCandleData(undefined);
+                setCandleScale((prev) => {
+                    return {
+                        lastCandleDate: undefined,
+                        nCandles: 200,
+                        isFetchForTimeframe: !prev.isFetchForTimeframe,
+                        isShowLatestCandle: true,
+                        isFetchFirst200Candle: true,
+                    };
+                });
+            } else {
+                // If there are no candles in the first 200 candles, it changes timeframe
+                if (candleData?.candles) {
+                    setNumCandlesFetched({
+                        candleCount: candleData?.candles.length || 0,
+                        switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
+                    });          
+                }
+            }
         }
-    }, [candleData?.candles.length]);
+    }, [isFinishRequest]);
 
     const [candleScale, setCandleScale] = useState<CandleScaleIF>({
         lastCandleDate: undefined,
@@ -233,6 +241,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 2999,
             );
 
+            setIsFinishRequest(false);
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
 
@@ -268,7 +277,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     }
                     setIsCandleDataNull(false);
                 } else {
-                    if (candleScale?.isFetchFirst200Candle) {
+                    if (candleScale?.isFetchFirst200Candle && candleTimeLocal === 60) {
                         setIsCandleDataNull(true);
                     }
                 }
@@ -282,6 +291,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setIsFetchingCandle(false);
                 }
                 setIsFirstFetch(false);
+
+                return candles;
+            }).then(()=>{
+                setIsFinishRequest(true);
+
             });
         } else {
             setIsFetchingCandle(true);
