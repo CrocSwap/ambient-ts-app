@@ -37,38 +37,36 @@ export default function TopPools(props: TopPoolsPropsIF) {
 
     const poolPriceCacheTime = Math.floor(Date.now() / 5000); // 15 second cache
 
+    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
+
+    useEffect(() => {
+        if (!crocEnv) return;
+
+        const fetchSpotPrices = async () => {
+            const spotPricePromises = poolData.map((pool) =>
+                cachedQuerySpotPrice(
+                    crocEnv,
+                    pool.base.address,
+                    pool.quote.address,
+                    chainId,
+                    poolPriceCacheTime,
+                ).catch((error) => {
+                    console.error(
+                        `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                        error,
+                    );
+                    return undefined; // Handle the case where fetching spot price fails
+                }),
+            );
+
+            const results = await Promise.all(spotPricePromises);
+            results && setSpotPrices(results);
+        };
+
+        fetchSpotPrices();
+    }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
+
     const PoolCardsList: React.FC = () => {
-        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
-            [],
-        );
-
-        useEffect(() => {
-            if (!crocEnv) return;
-
-            const fetchSpotPrices = async () => {
-                const spotPricePromises = poolData.map((pool) =>
-                    cachedQuerySpotPrice(
-                        crocEnv,
-                        pool.base.address,
-                        pool.quote.address,
-                        chainId,
-                        poolPriceCacheTime,
-                    ).catch((error) => {
-                        console.error(
-                            `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                            error,
-                        );
-                        return undefined; // Handle the case where fetching spot price fails
-                    }),
-                );
-
-                const results = await Promise.all(spotPricePromises);
-                setSpotPrices(results);
-            };
-
-            fetchSpotPrices();
-        }, [poolData, crocEnv, chainId, poolPriceCacheTime]);
-
         return (
             <>
                 {poolData.map((pool, idx) => (
