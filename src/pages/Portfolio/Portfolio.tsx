@@ -313,6 +313,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const notConnectedContent = (
         <FlexContainer
             fullWidth
+            fullHeight
             flexDirection='column'
             justifyContent='center'
             alignItems='center'
@@ -375,7 +376,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const contentToRenderOnMobile = (() => {
         switch (true) {
             case (!showTabsAndNotExchange && isUserConnected) ||
-                addressFromParams !== undefined:
+                (addressFromParams !== undefined && !connectedAccountActive):
                 return <PortfolioTabs {...portfolioTabsProps} />;
             case showTabsAndNotExchange &&
                 isUserConnected &&
