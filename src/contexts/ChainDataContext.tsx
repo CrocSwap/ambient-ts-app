@@ -154,7 +154,6 @@ export const ChainDataContextProvider = (props: {
     }
 
     useEffect(() => {
-        console.log('initial fetch');
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();
 
@@ -166,7 +165,6 @@ export const ChainDataContextProvider = (props: {
         // wait for 1 second before starting polling
         setTimeout(() => {
             const interval = setInterval(async () => {
-                console.log('interval fetch');
                 pollBlockNum();
             }, BLOCK_NUM_POLL_MS);
             return () => clearInterval(interval);
