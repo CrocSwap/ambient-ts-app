@@ -1,4 +1,4 @@
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
@@ -11,8 +11,12 @@ interface PoolPricingPropsIF {
 export function useTokenPairAllowance(props: PoolPricingPropsIF) {
     const crocEnv = props.crocEnv;
     const { tokenA, tokenB } = useContext(TradeDataContext);
-    const [tokenAAllowance, setTokenAAllowance] = useState<string>('');
-    const [tokenBAllowance, setTokenBAllowance] = useState<string>('');
+    const [tokenAAllowance, setTokenAAllowance] = useState<
+        bigint | undefined
+    >();
+    const [tokenBAllowance, setTokenBAllowance] = useState<
+        bigint | undefined
+    >();
 
     const [recheckTokenAApproval, setRecheckTokenAApproval] =
         useState<boolean>(false);
@@ -27,12 +31,9 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
                     const allowance = await crocEnv
                         .token(tokenA.address)
                         .allowance(props.userAddress);
-                    const newTokenAllowance = toDisplayQty(
-                        allowance,
-                        tokenA.decimals,
-                    );
-                    if (tokenAAllowance !== newTokenAllowance) {
-                        setTokenAAllowance(newTokenAllowance);
+
+                    if (tokenAAllowance !== allowance) {
+                        setTokenAAllowance(allowance);
                     }
                 } catch (err) {
                     console.warn(err);
@@ -55,12 +56,9 @@ export function useTokenPairAllowance(props: PoolPricingPropsIF) {
                     const allowance = await crocEnv
                         .token(tokenB.address)
                         .allowance(props.userAddress);
-                    const newTokenAllowance = toDisplayQty(
-                        allowance,
-                        tokenB.decimals,
-                    );
-                    if (tokenBAllowance !== newTokenAllowance) {
-                        setTokenBAllowance(newTokenAllowance);
+
+                    if (tokenBAllowance !== allowance) {
+                        setTokenBAllowance(allowance);
                     }
                 } catch (err) {
                     console.warn(err);

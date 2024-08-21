@@ -1,6 +1,6 @@
 import React, { createContext } from 'react';
 
-interface ReceiptContextIF {
+export interface ReceiptContextIF {
     sessionReceipts: Array<string>;
     allReceipts: Array<string>;
     pendingTransactions: Array<string>;
