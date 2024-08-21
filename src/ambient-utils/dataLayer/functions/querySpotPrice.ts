@@ -14,6 +14,20 @@ export const querySpotPrice = async (
     return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
 };
 
+export const querySpotTick = async (
+    crocEnv: CrocEnv,
+    baseTokenAddress: string,
+    quoteTokenAddress: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _chainId: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _lastBlockNumber: number,
+) => {
+    if (!crocEnv) return;
+    console.log(_lastBlockNumber);
+    return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotTick();
+};
+
 export const queryPoolGrowth = async (
     crocEnv: CrocEnv,
     baseTokenAddress: string,
@@ -39,6 +53,10 @@ export type SpotPriceFn = PoolQueryFn;
 
 export function memoizeQuerySpotPrice(): PoolQueryFn {
     return memoizeCrocEnvFn(querySpotPrice) as PoolQueryFn;
+}
+
+export function memoizeQuerySpotTick(): PoolQueryFn {
+    return memoizeCrocEnvFn(querySpotTick) as PoolQueryFn;
 }
 
 export function memoizeQueryPoolGrowth(): PoolQueryFn {
