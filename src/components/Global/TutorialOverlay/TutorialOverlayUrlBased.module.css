@@ -1,0 +1,27 @@
+
+.replay_tuto_btn{
+    position: fixed;
+    z-index: 99999;
+    top: 1.2rem;
+    right: 4rem;
+    line-height: 1.5rem;
+    text-align: center;
+    /* background-color: var(--accent1); */
+    border-radius: 100vw;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
+.not_connected{
+    right: 14rem;
+}
+
+.replay_tuto_btn svg{
+    /* color: black; */
+}
+
+@media only screen and (max-width: 600px){
+
+}
+
+    

@@ -9,6 +9,7 @@ interface propsIF {
     steps: Step[] | TutorialStepIF[];
     showSteps?: boolean;
     initialStep?: number;
+    onComplete?: () => void;
 }
 
 let instanceCounter = 0;
@@ -16,7 +17,7 @@ let instanceCounter = 0;
 function TutorialComponent(props: propsIF) {
     const [instanceId, setInstanceId] = useState(0);
 
-    const { steps, tutoKey, initialStep, showSteps } = props;
+    const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
     const hasTriggeredRef = useRef<boolean>(false);
@@ -64,6 +65,12 @@ function TutorialComponent(props: propsIF) {
     const prevStep = () => {
         if (stepIndex > 0) {
             setStepIndex(stepIndex - 1);
+        }
+    };
+
+    const completeTutorial = () => {
+        if (onComplete) {
+            onComplete();
         }
     };
 
@@ -217,6 +224,7 @@ function TutorialComponent(props: propsIF) {
                         className={
                             styles.step_btn + ' ' + styles.complete_button
                         }
+                        onClick={completeTutorial}
                     >
                         Complete
                     </div>

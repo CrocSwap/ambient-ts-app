@@ -1,18 +1,22 @@
 import { Step } from 'intro.js-react';
-import 'intro.js/introjs.css';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
 import { futaCreateSteps } from '../../../utils/tutorial/Futa/FutaCreateSteps';
 import { TutorialIF } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
+import styles from './TutorialOverlayUrlBased.module.css';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 // import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
     checkStepHash?: boolean;
 }
-function TutorialOverlayUrlDetect2(props: TutorialOverlayPropsIF) {
+function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
+    const { isUserConnected } = useContext(UserDataContext);
+
     const { checkStepHash } = props;
 
     const [showTutorial, setShowTutorial] = useState<boolean>(false);
@@ -25,6 +29,8 @@ function TutorialOverlayUrlDetect2(props: TutorialOverlayPropsIF) {
     selectedTutorialRef.current = selectedTutorial;
     const [isTutoBuild, setIsTutoBuild] = useState<boolean>(false);
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
+
+    const [replayTutorial, setReplayTutorial] = useState<boolean>(false);
 
     const getTutorialObjectForPage = (page: string) => {
         switch (page) {
@@ -80,6 +86,7 @@ function TutorialOverlayUrlDetect2(props: TutorialOverlayPropsIF) {
     };
 
     const handleTutoFinish = async () => {
+        console.log('handle tuto finish');
         let lsValue = '';
         if (selectedTutorialRef.current) {
             if (checkStepHash) {
@@ -95,6 +102,7 @@ function TutorialOverlayUrlDetect2(props: TutorialOverlayPropsIF) {
         }
 
         setShowTutorial(false);
+        setReplayTutorial(false);
     };
 
     const filterRenderedSteps = () => {
@@ -140,45 +148,46 @@ function TutorialOverlayUrlDetect2(props: TutorialOverlayPropsIF) {
 
     useEffect(() => {
         handleTutoBuild();
+        setReplayTutorial(false);
     }, [selectedTutorial]);
+
+    const replayBtnListener = () => {
+        setReplayTutorial(true);
+    };
+
+    const shouldTutoComponentShown =
+        validateURL() &&
+        stepsFiltered.length > 0 &&
+        showTutorial &&
+        isTutoBuild;
 
     return (
         <>
-            {validateURL() &&
-                selectedTutorialRef.current &&
-                stepsFiltered.length > 0 &&
-                showTutorial &&
-                isTutoBuild && (
+            {(shouldTutoComponentShown || replayTutorial) &&
+                selectedTutorialRef.current && (
                     <>
-                        {/* <Steps
-                        key={selectedTutorialRef.current.lsKey}
-                        enabled={showTutorial}
-                        steps={filterRenderedSteps()}
-                        initialStep={0}
-                        // onChange={(nextStepIndex, nextElement) => {console.log('nextStepIndex', nextStepIndex); console.log('nextElement', nextElement, '---------------------------------'); filterRenderedSteps()}}
-                        onComplete={() => handleTutoFinish()}
-                        onExit={() => {
-                            console.log('finish', showTutorial); 
-                            if(filterRenderedSteps().length > 0 && initialRenderRef.current && userInteractRef.current){
-                                setInitialRender(false);
-                            } 
-                        }}
-                        onStart={ () => {console.log('starttttttttttttttttttttttttttttt')}}
-                        onChange={ () => {setUserInteract(true)}}
-                        options={{
-                            showStepNumbers: true,
-                        }}
-                    /> */}
                         <TutorialComponent
                             key={selectedTutorialRef.current.lsKey}
                             tutoKey={selectedTutorialRef.current.lsKey}
                             steps={filterRenderedSteps()}
                             showSteps={true}
+                            onComplete={handleTutoFinish}
                         />
                     </>
                 )}
+
+            {!shouldTutoComponentShown && (
+                <div
+                    className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected : ' '}`}
+                    onClick={replayBtnListener}
+                >
+                    {' '}
+                    <AiOutlineQuestionCircle />
+                </div>
+            )}
+            {/* {(<div className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected  : ' ' }`} onClick={replayBtnListener}> <AiOutlineQuestionCircle /></div>)} */}
         </>
     );
 }
 
-export default memo(TutorialOverlayUrlDetect2);
+export default memo(TutorialOverlayUrlBased);

@@ -36,7 +36,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Toggle from '../../Form/Toggle';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
-import TutorialOverlayUrlDetect2 from '../../Global/TutorialOverlay/TutorialOverlayUrlDetech2';
+import TutorialOverlayUrlBased from '../../Global/TutorialOverlay/TutorialOverlayUrlBased';
 import styles from './Navbar.module.css';
 
 // Animation Variants
@@ -357,7 +357,7 @@ export default function Navbar() {
                     />
                 )
             } */}
-            <TutorialOverlayUrlDetect2 />
+            <TutorialOverlayUrlBased />
         </div>
     );
 }
