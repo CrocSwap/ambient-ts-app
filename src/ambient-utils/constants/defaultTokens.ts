@@ -475,7 +475,7 @@ export const scrollSKY: TokenIF = {
 export const scrollSOL: TokenIF = {
     name: 'Wrapped SOL',
     address: '0xCDf95E1F720caade4b1DC83ABfE15400D2a458AD',
-    symbol: 'SCROLLY',
+    symbol: 'SOL',
     decimals: 9,
     chainId: 534352,
     logoURI: '',
