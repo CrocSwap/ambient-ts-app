@@ -244,9 +244,16 @@ function TradeCandleStickChart(props: propsIF) {
                     return isDenomBase
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
-                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
+                              liq.lowerBoundInvPriceDecimalCorrected !==
+                                  '-inf' &&
+                              Number.isFinite(
+                                  liq.lowerBoundInvPriceDecimalCorrected,
+                              )
                         : liq.upperBoundPriceDecimalCorrected > barThreshold &&
-                              liq.upperBoundPriceDecimalCorrected !== '+inf';
+                              liq.upperBoundPriceDecimalCorrected !== '+inf' &&
+                              Number.isFinite(
+                                  liq.upperBoundPriceDecimalCorrected,
+                              );
                 },
             );
 
@@ -256,6 +263,7 @@ function TradeCandleStickChart(props: propsIF) {
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
                         : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
+
             const liqBoundary =
                 typeof liqBoundaryArg === 'number'
                     ? liqBoundaryArg
