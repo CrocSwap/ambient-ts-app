@@ -25,7 +25,6 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useSendInit } from '../../App/hooks/useSendInit';
 
-import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
@@ -101,15 +100,13 @@ export default function InitPool() {
 
     const { tokens } = useContext(TokenContext);
     const {
-        // Question: should these come from useTokenBalancesAndAllowances
-        // tokenAAllowance,
-        // tokenBAllowance,
-        // isTokenABase,
-
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        tokenAAllowance,
+        tokenBAllowance,
+        isTokenABase,
     } = useContext(TradeTokenContext);
 
     const {
@@ -158,14 +155,12 @@ export default function InitPool() {
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
 
-    const {
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        tokenAAllowance,
-        tokenBAllowance,
-
-        isTokenABase,
-    } = useTokenBalancesAndAllowances(baseToken, quoteToken);
+    const baseTokenDexBalance = isTokenABase
+        ? tokenADexBalance
+        : tokenBDexBalance;
+    const quoteTokenDexBalance = isTokenABase
+        ? tokenBDexBalance
+        : tokenADexBalance;
 
     const isBaseTokenMoneynessGreaterOrEqual =
         baseToken.symbol && quoteToken.symbol

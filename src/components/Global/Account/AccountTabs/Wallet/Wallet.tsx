@@ -107,7 +107,7 @@ export default function Wallet(props: propsIF) {
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <WalletCard
-                            key={JSON.stringify(token)}
+                            key={token.address}
                             token={token}
                             cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
