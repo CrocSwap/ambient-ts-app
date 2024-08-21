@@ -90,7 +90,8 @@ export const mainnetPENDLE: TokenIF = {
     address: '0x808507121b80c02388fad14726482e061b8da827',
     chainId: 1,
     decimals: 18,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/15069/thumb/Pendle_Logo_Normal-03.png',
     name: 'Pendle',
     symbol: 'PENDLE',
 };
@@ -448,7 +449,8 @@ export const scrollSTG: TokenIF = {
     symbol: 'STG',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png',
 };
 
 export const scrollSCRIBES: TokenIF = {
@@ -466,7 +468,8 @@ export const scrollSKY: TokenIF = {
     symbol: 'SKY',
     decimals: 18,
     chainId: 534352,
-    logoURI: '',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670',
 };
 
 export const scrollSOL: TokenIF = {
