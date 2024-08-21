@@ -472,6 +472,15 @@ export const scrollSKY: TokenIF = {
         'https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670',
 };
 
+export const scrollPANDA: TokenIF = {
+    name: 'PANDA',
+    address: '0x61a9cC561b6c1F9C31bcDeb447aFeCf25f33Bbf9',
+    symbol: 'PANDA',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://assets.coingecko.com/coins/images/35746/thumb/panda.jpeg',
+};
+
 export const scrollSOL: TokenIF = {
     name: 'Wrapped SOL',
     address: '0xCDf95E1F720caade4b1DC83ABfE15400D2a458AD',

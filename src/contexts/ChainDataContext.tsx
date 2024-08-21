@@ -154,6 +154,7 @@ export const ChainDataContextProvider = (props: {
     }
 
     useEffect(() => {
+        console.log('initial fetch');
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();
 
@@ -162,10 +163,14 @@ export const ChainDataContextProvider = (props: {
             return;
         }
 
-        const interval = setInterval(async () => {
-            pollBlockNum();
-        }, BLOCK_NUM_POLL_MS);
-        return () => clearInterval(interval);
+        // wait for 1 second before starting polling
+        setTimeout(() => {
+            const interval = setInterval(async () => {
+                console.log('interval fetch');
+                pollBlockNum();
+            }, BLOCK_NUM_POLL_MS);
+            return () => clearInterval(interval);
+        }, 1000);
     }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
@@ -202,6 +207,7 @@ export const ChainDataContextProvider = (props: {
                 if (lastBlockNumberHex) {
                     const newBlockNum = parseInt(lastBlockNumberHex);
                     if (lastBlockNumber !== newBlockNum) {
+                        console.log({ lastBlockNumberHex });
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
                     }
                 }
