@@ -52,7 +52,10 @@ import {
     SidebarContext,
     SidebarStateIF,
 } from '../../../../contexts/SidebarContext';
-import { ScrollToTopButton, TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
+import {
+    ScrollToTopButton,
+    TransactionRow as TransactionRowStyled,
+} from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     GraphDataContext,
@@ -611,7 +614,6 @@ function Transactions(props: propsIF) {
     }, [sortBy, showAllData]);
 
     const addMoreData = (): void => {
-        console.log({ oldestTxTime });
         if (!crocEnv || !provider) return;
         // retrieve pool recent changes
         setMoreDataLoading(true);
@@ -633,7 +635,6 @@ function Transactions(props: propsIF) {
         })
             .then((poolChangesJsonData) => {
                 if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                    console.log({ poolChangesJsonData });
                     setTransactionsByPool((prev) => {
                         const existingChanges = new Set(
                             prev.changes.map(
@@ -646,7 +647,6 @@ function Transactions(props: propsIF) {
                                     change.txHash || change.txId,
                                 ),
                         );
-                        console.log({ uniqueChanges });
                         if (uniqueChanges.length > 0) {
                             setExtraPagesAvailable((prev) => prev + 1);
                             setPagesVisible((prev) => [
@@ -830,7 +830,10 @@ function Transactions(props: propsIF) {
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%', position: 'relative' }}
+            style={{
+                height: isSmallScreen ? '95%' : '100%',
+                position: 'relative',
+            }}
         >
             <div>{headerColumnsDisplay}</div>
             {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
@@ -840,12 +843,8 @@ function Transactions(props: propsIF) {
                     }}
                     className='scroll_to_top_button'
                 >
-                    <PiArrowElbowLeftUpBold color='var(--text1)' size={22}/>
+                    <PiArrowElbowLeftUpBold color='var(--text1)' size={22} />
                     Return to Top
-                  
-
-
-
                 </ScrollToTopButton>
             )}
             <div
