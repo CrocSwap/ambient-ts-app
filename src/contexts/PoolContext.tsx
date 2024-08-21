@@ -122,7 +122,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg, false, true);
+    const poolData = useFetchPoolStats(poolArg, true, true);
 
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
