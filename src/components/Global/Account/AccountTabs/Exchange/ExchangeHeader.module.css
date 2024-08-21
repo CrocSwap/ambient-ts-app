@@ -1,7 +1,7 @@
 .exchange_row {
     display: grid;
     color: white;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1.5fr;
     align-items: center;
     padding-bottom: 4px;
     border-bottom: 1px solid var(--dark2);
