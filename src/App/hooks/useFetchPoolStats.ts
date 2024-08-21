@@ -20,7 +20,11 @@ import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
-const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
+const useFetchPoolStats = (
+    pool: PoolIF,
+    isTradePair = false,
+    enableTotalSupply = false,
+): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
@@ -288,8 +292,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.tokenUniv,
-                true,
+                tokens.allDefaultTokens,
+                enableTotalSupply,
             );
 
             const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -313,7 +317,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.tokenUniv,
+                tokens.allDefaultTokens,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
