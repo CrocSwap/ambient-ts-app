@@ -289,6 +289,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
                 tokens.tokenUniv,
+                true,
             );
 
             const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
