@@ -86,6 +86,7 @@ const useFetchPoolStats = (
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
+        console.log({ spotPriceRetrieved });
         if (isServerEnabled && crocEnv) {
             (async () => {
                 const spotPrice =
@@ -97,7 +98,7 @@ const useFetchPoolStats = (
                         chainId,
                         poolPriceCacheTime,
                     ));
-
+                console.log({ spotPrice });
                 if (spotPrice) {
                     setIsPoolInitialized(true);
 
