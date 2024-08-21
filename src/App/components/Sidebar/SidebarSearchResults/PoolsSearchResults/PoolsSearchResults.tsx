@@ -1,13 +1,11 @@
 import { PoolIF } from '../../../../../ambient-utils/types';
-import { PoolStatsFn } from '../../../../../ambient-utils/dataLayer';
 import PoolSearchResult from './PoolSearchResult';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../../../ambient-utils/api';
 import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
 import {
     FlexContainer,
@@ -16,21 +14,22 @@ import {
 } from '../../../../../styled/Common';
 import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 
 interface propsIF {
     searchedPools: PoolIF[];
-    cachedPoolStatsFetch: PoolStatsFn;
-    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
-        props;
+    const { searchedPools } = props;
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -43,10 +42,10 @@ export default function PoolsSearchResults(props: propsIF) {
             tokenA.address.toLowerCase() === baseAddr.toLowerCase()
                 ? [baseAddr, quoteAddr]
                 : tokenA.address.toLowerCase() === quoteAddr.toLowerCase()
-                ? [quoteAddr, baseAddr]
-                : tokenB.address.toLowerCase() === baseAddr.toLowerCase()
-                ? [quoteAddr, baseAddr]
-                : [baseAddr, quoteAddr];
+                  ? [quoteAddr, baseAddr]
+                  : tokenB.address.toLowerCase() === baseAddr.toLowerCase()
+                    ? [quoteAddr, baseAddr]
+                    : [baseAddr, quoteAddr];
 
         // navigate user to the new appropriate URL path
         linkGenMarket.navigate({
@@ -54,6 +53,60 @@ export default function PoolsSearchResults(props: propsIF) {
             tokenA: addrTokenA,
             tokenB: addrTokenB,
         });
+    };
+
+    const PoolSearchResultList: React.FC = () => {
+        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
+            [],
+        );
+
+        useEffect(() => {
+            if (!crocEnv) return;
+
+            const fetchSpotPrices = async () => {
+                const spotPricePromises = searchedPools
+                    .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                    // max five elements before content overflows container
+                    .slice(0, 5)
+                    .map((pool) =>
+                        cachedQuerySpotPrice(
+                            crocEnv,
+                            pool.base.address,
+                            pool.quote.address,
+                            chainId,
+                            poolPriceCacheTime,
+                        ).catch((error) => {
+                            console.error(
+                                `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                                error,
+                            );
+                            return undefined; // Handle the case where fetching spot price fails
+                        }),
+                    );
+
+                const results = await Promise.all(spotPricePromises);
+                setSpotPrices(results);
+            };
+
+            fetchSpotPrices();
+        }, [searchedPools, crocEnv, chainId, poolPriceCacheTime]);
+
+        return (
+            <>
+                {searchedPools
+                    .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                    // max five elements before content overflows container
+                    .slice(0, 5)
+                    .map((pool, idx) => (
+                        <PoolSearchResult
+                            pool={pool}
+                            key={idx}
+                            handleClick={handleClick}
+                            spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                        />
+                    ))}
+            </>
+        );
     };
 
     return (
@@ -90,24 +143,7 @@ export default function PoolsSearchResults(props: propsIF) {
                         ))}
                     </GridContainer>
                     <ResultsContainer flexDirection='column'>
-                        {searchedPools
-                            .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                            // max five elements before content overflows container
-                            .slice(0, 5)
-                            .map((pool: PoolIF) => (
-                                <PoolSearchResult
-                                    key={`sidebar_searched_pool_${JSON.stringify(
-                                        pool,
-                                    )}`}
-                                    handleClick={handleClick}
-                                    pool={pool}
-                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                    cachedFetchTokenPrice={
-                                        cachedFetchTokenPrice
-                                    }
-                                    crocEnv={crocEnv}
-                                />
-                            ))}
+                        <PoolSearchResultList />
                     </ResultsContainer>
                 </FlexContainer>
             ) : (

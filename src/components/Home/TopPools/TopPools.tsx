@@ -1,5 +1,5 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -9,6 +9,7 @@ import {
     TopPoolContainer,
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -17,7 +18,12 @@ interface TopPoolsPropsIF {
 
 // eslint-disable-next-line
 export default function TopPools(props: TopPoolsPropsIF) {
-    const { topPools } = useContext(CrocEnvContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const {
+        topPools,
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const show4TopPools = useMediaQuery('(max-width: 1500px)');
     const show3TopPools = useMediaQuery('(min-height: 700px)');
@@ -26,8 +32,55 @@ export default function TopPools(props: TopPoolsPropsIF) {
             ? topPools.slice(0, 3)
             : topPools.slice(0, 2)
         : show4TopPools
-        ? topPools.slice(0, 4)
-        : topPools;
+          ? topPools.slice(0, 4)
+          : topPools;
+
+    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+
+    const PoolCardsList: React.FC = () => {
+        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
+            [],
+        );
+
+        useEffect(() => {
+            if (!crocEnv) return;
+
+            const fetchSpotPrices = async () => {
+                const spotPricePromises = poolData.map((pool) =>
+                    cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base.address,
+                        pool.quote.address,
+                        chainId,
+                        poolPriceCacheTime,
+                    ).catch((error) => {
+                        console.error(
+                            `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                            error,
+                        );
+                        return undefined; // Handle the case where fetching spot price fails
+                    }),
+                );
+
+                const results = await Promise.all(spotPricePromises);
+                setSpotPrices(results);
+            };
+
+            fetchSpotPrices();
+        }, [poolData, crocEnv, chainId, poolPriceCacheTime]);
+
+        return (
+            <>
+                {poolData.map((pool, idx) => (
+                    <PoolCard
+                        key={idx}
+                        pool={pool}
+                        spotPrice={spotPrices[idx]}
+                    /> // Pass the corresponding spot price
+                ))}
+            </>
+        );
+    };
 
     return (
         <TopPoolContainer flexDirection='column' gap={16}>
@@ -35,9 +88,7 @@ export default function TopPools(props: TopPoolsPropsIF) {
                 Top Pools
             </HomeTitle>
             <HomeContent>
-                {poolData.map((pool, idx) => (
-                    <PoolCard key={idx} pool={pool} />
-                ))}
+                <PoolCardsList />
             </HomeContent>
             <HomeContent
                 justifyContent='center'

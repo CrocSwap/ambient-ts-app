@@ -1,7 +1,6 @@
-import { PoolStatsFn } from '../../../ambient-utils/dataLayer';
-import { useContext } from 'react';
+import { PoolQueryFn } from '../../../ambient-utils/dataLayer';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../ambient-utils/api';
 import PoolsListItem from './PoolsListItem';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
@@ -13,18 +12,68 @@ import {
 } from '../../../styled/Components/Sidebar';
 
 interface propsIF {
-    cachedPoolStatsFetch: PoolStatsFn;
-    cachedFetchTokenPrice: TokenPriceFn;
+    cachedQuerySpotPrice: PoolQueryFn;
 }
 
 export default function TopPools(props: propsIF) {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
+    const { cachedQuerySpotPrice } = props;
 
-    const { topPools } = useContext(CrocEnvContext);
+    const {
+        topPools,
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const location = useLocation();
     const onExploreRoute = location.pathname.includes('explore');
 
     const linkGenExplore = useLinkGen('explore');
+
+    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+
+    const PoolsList: React.FC = () => {
+        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
+            [],
+        );
+
+        useEffect(() => {
+            if (!crocEnv) return;
+
+            const fetchSpotPrices = async () => {
+                const spotPricePromises = topPools.map((pool) =>
+                    cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base.address,
+                        pool.quote.address,
+                        chainId,
+                        poolPriceCacheTime,
+                    ).catch((error) => {
+                        console.error(
+                            `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                            error,
+                        );
+                        return undefined; // Handle the case where fetching spot price fails
+                    }),
+                );
+
+                const results = await Promise.all(spotPricePromises);
+                setSpotPrices(results);
+            };
+
+            fetchSpotPrices();
+        }, [topPools, crocEnv, chainId, poolPriceCacheTime]);
+
+        return (
+            <>
+                {topPools.map((pool, idx) => (
+                    <PoolsListItem
+                        pool={pool}
+                        key={idx}
+                        spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                    />
+                ))}
+            </>
+        );
+    };
 
     return (
         <FlexContainer
@@ -41,14 +90,7 @@ export default function TopPools(props: propsIF) {
                 )}
             </ItemHeaderContainer>
             <ItemsContainer>
-                {topPools.map((pool, idx) => (
-                    <PoolsListItem
-                        pool={pool}
-                        key={idx}
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
-                ))}
+                <PoolsList />
                 {onExploreRoute ? undefined : (
                     <ViewMoreFlex
                         justifyContent='center'

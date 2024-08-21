@@ -22,6 +22,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 const useFetchPoolStats = (
     pool: PoolIF,
+    spotPriceRetrieved: number | undefined,
     isTradePair = false,
     enableTotalSupply = false,
 ): PoolStatIF => {
@@ -87,13 +88,15 @@ const useFetchPoolStats = (
     useEffect(() => {
         if (isServerEnabled && crocEnv) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
-                    chainId,
-                    poolPriceCacheTime,
-                );
+                const spotPrice =
+                    spotPriceRetrieved ??
+                    (await cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base.address,
+                        pool.quote.address,
+                        chainId,
+                        poolPriceCacheTime,
+                    ));
 
                 if (spotPrice) {
                     setIsPoolInitialized(true);
@@ -150,6 +153,7 @@ const useFetchPoolStats = (
         pool.base.address,
         pool.quote.address,
         isTradePair,
+        spotPriceRetrieved,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();

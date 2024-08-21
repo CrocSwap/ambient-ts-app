@@ -117,7 +117,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg, true, true);
+    const poolData = useFetchPoolStats(poolArg, undefined, true, true);
 
     const [dailyVol] = useState<number | undefined>();
 
