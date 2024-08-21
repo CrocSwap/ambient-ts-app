@@ -11,10 +11,10 @@ export default async (request: Request, context: Context) => {
     const invertGeofenceArg = Netlify.env.get(
         'NETLIFY_EDGE_IS_GEOFENCE_WHITELIST',
     );
-    const invertertGeofence = !!invertGeofenceArg;
+    const invertedGeofence = !!invertGeofenceArg;
 
-    if (invertertGeofence) {
-        // If geofence is whitelis, show website if the user is in the country list
+    if (invertedGeofence) {
+        // If geofence is whitelisted, show website if the user is in the country list
         if (geofenced.includes(context.geo.country.code)) {
             return;
         }
@@ -35,6 +35,8 @@ export default async (request: Request, context: Context) => {
     const geofencedUrl = Netlify.env.get('NETLIFY_EDGE_GEOFENCED_REDIRECT');
 
     if (geofencedUrl) {
+        console.log(context.geo.country.name);
+        console.log({ context, request });
         const url = new URL(geofencedUrl + path, request.url);
 
         return Response.redirect(url);
