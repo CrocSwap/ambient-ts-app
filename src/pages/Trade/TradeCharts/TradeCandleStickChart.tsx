@@ -235,7 +235,13 @@ function TradeCandleStickChart(props: propsIF) {
     }, [isFetchingEnoughData]);
 
     useEffect(() => {
-        if (unparsedLiquidityData !== undefined) {
+        if (
+            unparsedLiquidityData !== undefined &&
+            candleData &&
+            (candleData?.pool.baseAddress + candleData?.pool.quoteAddress).toUpperCase() ===
+                (unparsedLiquidityData.curveState.base +
+                    unparsedLiquidityData.curveState.quote).toUpperCase()
+        ) {
             const barThreshold =
                 poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
