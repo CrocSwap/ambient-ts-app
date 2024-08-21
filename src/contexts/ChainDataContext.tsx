@@ -368,7 +368,8 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId
+                chainData.chainId &&
+                lastBlockNumber
             ) {
                 try {
                     const tokenBalances: TokenIF[] =
