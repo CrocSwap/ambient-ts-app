@@ -243,7 +243,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         isFetchFirst200Candle: true,
                     };
                 });
-            }, 15000);
+            }, 10000);
 
             offlineFetcherRef.current = newInt;
             setOfflineFetcher(newInt);
