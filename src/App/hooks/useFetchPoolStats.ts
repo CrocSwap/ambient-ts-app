@@ -89,14 +89,15 @@ const useFetchPoolStats = (
         if (isServerEnabled && crocEnv) {
             (async () => {
                 const spotPrice =
-                    spotPriceRetrieved ??
-                    (await cachedQuerySpotPrice(
-                        crocEnv,
-                        pool.base.address,
-                        pool.quote.address,
-                        chainId,
-                        poolPriceCacheTime,
-                    ));
+                    spotPriceRetrieved !== undefined
+                        ? spotPriceRetrieved
+                        : await cachedQuerySpotPrice(
+                              crocEnv,
+                              pool.base.address,
+                              pool.quote.address,
+                              chainId,
+                              poolPriceCacheTime,
+                          );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
 
@@ -143,6 +144,7 @@ const useFetchPoolStats = (
             })();
         }
     }, [
+        spotPriceRetrieved,
         isServerEnabled,
         chainId,
         crocEnv !== undefined,
@@ -152,7 +154,6 @@ const useFetchPoolStats = (
         pool.base.address,
         pool.quote.address,
         isTradePair,
-        spotPriceRetrieved,
     ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();

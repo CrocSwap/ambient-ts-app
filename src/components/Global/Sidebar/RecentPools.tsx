@@ -24,50 +24,33 @@ function RecentPools(props: propsIF) {
 
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
-    const PoolsList: React.FC = () => {
-        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
-            [],
-        );
+    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
+    useEffect(() => {
+        if (!crocEnv) return;
 
-        useEffect(() => {
-            if (!crocEnv) return;
+        const fetchSpotPrices = async () => {
+            const spotPricePromises = recentPools.get(5).map((pool) =>
+                cachedQuerySpotPrice(
+                    crocEnv,
+                    pool.base.address,
+                    pool.quote.address,
+                    chainId,
+                    poolPriceCacheTime,
+                ).catch((error) => {
+                    console.error(
+                        `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                        error,
+                    );
+                    return undefined; // Handle the case where fetching spot price fails
+                }),
+            );
 
-            const fetchSpotPrices = async () => {
-                const spotPricePromises = recentPools.get(5).map((pool) =>
-                    cachedQuerySpotPrice(
-                        crocEnv,
-                        pool.base.address,
-                        pool.quote.address,
-                        chainId,
-                        poolPriceCacheTime,
-                    ).catch((error) => {
-                        console.error(
-                            `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                            error,
-                        );
-                        return undefined; // Handle the case where fetching spot price fails
-                    }),
-                );
+            const results = await Promise.all(spotPricePromises);
+            setSpotPrices(results);
+        };
 
-                const results = await Promise.all(spotPricePromises);
-                setSpotPrices(results);
-            };
-
-            fetchSpotPrices();
-        }, [recentPools, crocEnv, chainId, poolPriceCacheTime]);
-
-        return (
-            <>
-                {recentPools.get(5).map((pool, idx) => (
-                    <PoolsListItem
-                        pool={pool}
-                        key={idx}
-                        spotPrice={spotPrices[idx]} // Pass the corresponding spot price
-                    />
-                ))}
-            </>
-        );
-    };
+        fetchSpotPrices();
+    }, [recentPools, crocEnv, chainId, poolPriceCacheTime]);
 
     return (
         <FlexContainer
@@ -85,7 +68,13 @@ function RecentPools(props: propsIF) {
             </ItemHeaderContainer>
 
             <ItemsContainer>
-                <PoolsList />
+                {recentPools.get(5).map((pool, idx) => (
+                    <PoolsListItem
+                        pool={pool}
+                        key={idx}
+                        spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                    />
+                ))}
             </ItemsContainer>
         </FlexContainer>
     );

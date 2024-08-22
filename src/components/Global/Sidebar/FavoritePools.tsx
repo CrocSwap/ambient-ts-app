@@ -33,55 +33,38 @@ export default function FavoritePools(props: propsIF) {
         poolId,
     );
 
-    const PoolsList: React.FC = () => {
-        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
-            [],
-        );
-        const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
 
-        useEffect(() => {
-            if (!crocEnv) return;
+    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
-            const fetchSpotPrices = async () => {
-                const spotPricePromises = favePools.pools
-                    .filter((pool) => pool.chainId === chainId)
-                    .map((pool) =>
-                        cachedQuerySpotPrice(
-                            crocEnv,
-                            pool.base.address,
-                            pool.quote.address,
-                            chainId,
-                            poolPriceCacheTime,
-                        ).catch((error) => {
-                            console.error(
-                                `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                                error,
-                            );
-                            return undefined; // Handle the case where fetching spot price fails
-                        }),
-                    );
+    useEffect(() => {
+        if (!crocEnv) return;
 
-                const results = await Promise.all(spotPricePromises);
-                setSpotPrices(results);
-            };
+        const fetchSpotPrices = async () => {
+            const spotPricePromises = favePools.pools
+                .filter((pool) => pool.chainId === chainId)
+                .map((pool) =>
+                    cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base.address,
+                        pool.quote.address,
+                        chainId,
+                        poolPriceCacheTime,
+                    ).catch((error) => {
+                        console.error(
+                            `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                            error,
+                        );
+                        return undefined; // Handle the case where fetching spot price fails
+                    }),
+                );
 
-            fetchSpotPrices();
-        }, [favePools.pools, crocEnv, chainId, poolPriceCacheTime]);
+            const results = await Promise.all(spotPricePromises);
+            setSpotPrices(results);
+        };
 
-        return (
-            <>
-                {favePools.pools
-                    .filter((pool) => pool.chainId === chainId)
-                    .map((pool, idx) => (
-                        <PoolsListItem
-                            pool={pool}
-                            key={idx}
-                            spotPrice={spotPrices[idx]} // Pass the corresponding spot price
-                        />
-                    ))}
-            </>
-        );
-    };
+        fetchSpotPrices();
+    }, [favePools.pools, crocEnv, chainId, poolPriceCacheTime]);
 
     return (
         <FlexContainer
@@ -108,7 +91,17 @@ export default function FavoritePools(props: propsIF) {
                     Add Current Pool
                 </ViewMoreFlex>
             )}
-            <ItemsContainer>{<PoolsList />}</ItemsContainer>
+            <ItemsContainer>
+                {favePools.pools
+                    .filter((pool) => pool.chainId === chainId)
+                    .map((pool, idx) => (
+                        <PoolsListItem
+                            pool={pool}
+                            key={idx}
+                            spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                        />
+                    ))}
+            </ItemsContainer>
         </FlexContainer>
     );
 }

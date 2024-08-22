@@ -66,9 +66,12 @@ export default function TopPools(props: TopPoolsPropsIF) {
         fetchSpotPrices();
     }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
 
-    const PoolCardsList: React.FC = () => {
-        return (
-            <>
+    return (
+        <TopPoolContainer flexDirection='column' gap={16}>
+            <HomeTitle tabIndex={0} aria-label='Top Pools'>
+                Top Pools
+            </HomeTitle>
+            <HomeContent>
                 {poolData.map((pool, idx) => (
                     <PoolCard
                         key={idx}
@@ -76,17 +79,6 @@ export default function TopPools(props: TopPoolsPropsIF) {
                         spotPrice={spotPrices[idx]}
                     /> // Pass the corresponding spot price
                 ))}
-            </>
-        );
-    };
-
-    return (
-        <TopPoolContainer flexDirection='column' gap={16}>
-            <HomeTitle tabIndex={0} aria-label='Top Pools'>
-                Top Pools
-            </HomeTitle>
-            <HomeContent>
-                <PoolCardsList />
             </HomeContent>
             <HomeContent
                 justifyContent='center'
