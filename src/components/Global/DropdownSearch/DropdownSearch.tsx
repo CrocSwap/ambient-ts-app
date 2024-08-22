@@ -45,8 +45,7 @@ interface optionItem {
 }
 
 const DropdownSearch = () => {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
-        useContext(CachedDataContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
@@ -163,32 +162,17 @@ const DropdownSearch = () => {
         {
             id: 1,
             name: 'Top Pools',
-            data: (
-                <TopPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
         {
             id: 2,
             name: 'Favorites',
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <FavoritePools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
         {
             id: 3,
             name: 'Recent Pairs',
-            data: (
-                <RecentPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
     ];
 
@@ -243,11 +227,7 @@ const DropdownSearch = () => {
                     transition={{ type: 'spring', stiffness: 200 }}
                 >
                     {searchData.isInputValid ? (
-                        <SidebarSearchResults
-                            searchData={searchData}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
+                        <SidebarSearchResults searchData={searchData} />
                     ) : (
                         activeOption?.data
                     )}

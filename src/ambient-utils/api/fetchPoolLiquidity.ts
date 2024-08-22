@@ -17,7 +17,6 @@ export const fetchPoolLiquidity = async (
     const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
         : graphCacheUrl + '/pool_liq_curve?';
-
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({
@@ -60,9 +59,19 @@ async function expandLiquidityData(
 ): Promise<LiquidityDataIF> {
     const pool = crocEnv.pool(base, quote);
     const everyOneMinute = Math.floor(Date.now() / 60000);
-    const curveTick =
-        currentPoolPriceTick ??
-        cachedQuerySpotTick(crocEnv, base, quote, chainId, everyOneMinute);
+
+    let curveTick: number;
+    if (currentPoolPriceTick) {
+        curveTick = currentPoolPriceTick;
+    } else {
+        curveTick = await cachedQuerySpotTick(
+            crocEnv,
+            base,
+            quote,
+            chainId,
+            everyOneMinute,
+        );
+    }
 
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
@@ -72,7 +81,7 @@ async function expandLiquidityData(
 
     const ranges = bumpsToRanges(
         liq,
-        await curveTick,
+        curveTick,
         await pool.baseDecimals,
         await pool.quoteDecimals,
         basePrice,
