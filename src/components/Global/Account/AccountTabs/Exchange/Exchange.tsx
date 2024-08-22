@@ -101,7 +101,7 @@ export default function Exchange(props: propsIF) {
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <ExchangeCard
-                            key={JSON.stringify(token)}
+                            key={token.address}
                             token={token}
                             cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
