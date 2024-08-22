@@ -238,9 +238,13 @@ function TradeCandleStickChart(props: propsIF) {
         if (
             unparsedLiquidityData !== undefined &&
             candleData &&
-            (candleData?.pool.baseAddress + candleData?.pool.quoteAddress).toUpperCase() ===
-                (unparsedLiquidityData.curveState.base +
-                    unparsedLiquidityData.curveState.quote).toUpperCase()
+            (
+                candleData?.pool.baseAddress + candleData?.pool.quoteAddress
+            ).toUpperCase() ===
+                (
+                    unparsedLiquidityData.curveState.base +
+                    unparsedLiquidityData.curveState.quote
+                ).toUpperCase()
         ) {
             const barThreshold =
                 poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
@@ -281,28 +285,9 @@ function TradeCandleStickChart(props: propsIF) {
         diffHashSigLiquidity(unparsedLiquidityData),
         isDenomBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
+        candleData?.pool?.baseAddress,
+        candleData?.pool?.quoteAddress,
     ]);
-
-    // temporarily commented to prevent unexpected scaling of liquidity curve after pool change
-
-    // useEffect(() => {
-    //     if (unparsedCandleData === undefined) {
-    //         clearLiquidityData();
-    //     }
-    // }, [baseTokenAddress + quoteTokenAddress]);
-
-    // const clearLiquidityData = () => {
-    //     if (liquidityData) {
-    //         liquidityData.liqAskData = [];
-    //         liquidityData.liqBidData = [];
-    //         liquidityData.depthLiqBidData = [];
-    //         liquidityData.depthLiqAskData = [];
-    //         liquidityData.topBoundary = 0;
-    //         liquidityData.lowBoundary = 0;
-    //         liquidityData.liqTransitionPointforCurve = 0;
-    //         liquidityData.liqTransitionPointforDepth = 0;
-    //     }
-    // };
 
     const sumActiveLiq = unparsedLiquidityData
         ? unparsedLiquidityData.ranges.reduce((sum, range) => {
