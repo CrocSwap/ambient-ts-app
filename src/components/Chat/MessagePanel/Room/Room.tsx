@@ -387,7 +387,7 @@ export default function Room(props: propsIF) {
             {isActive && (
                 <div
                     id='chat-dropdown-content'
-                    className={styles.dropdow_content}
+                    className={styles.dropdown_content}
                 >
                     <div id='chat-rooms' className={styles.item}>
                         {roomList
