@@ -33,6 +33,8 @@ import {
     CUSTOM_EMOJI_BLACKLIST_CHARACTERS,
 } from '../../ChatConstants/ChatConstants';
 import { domDebug } from '../../DomDebugger/DomDebuggerUtils';
+import { emojiMeta } from '../../EmojiMeta';
+import { getSingleEmoji } from '../../ChatRenderUtils';
 
 interface MessageInputProps {
     currentUser: string;
@@ -70,6 +72,8 @@ interface MessageInputProps {
     isMobile?: boolean;
     userMap?: Map<string, User>;
 }
+
+
 
 export default function MessageInput(props: MessageInputProps) {
     const inputRef = useRef<HTMLInputElement | null>(null);
@@ -564,7 +568,7 @@ export default function MessageInput(props: MessageInputProps) {
     const customEmojiPickerRef = useRef<HTMLDivElement>(null);
     const customEmojiPoolRef = useRef<HTMLDivElement>(null);
 
-    const [filteredEmojis, setFilteredEmojis] = useState<HTMLElement[]>([]);
+    const [filteredEmojis, setFilteredEmojis] = useState<JSX.Element[]>([]);
     const [showCustomEmojiPanel, setShowCustomEmojiPanel] = useState(false);
     const [customEmojiPickerSelectedIndex, setCustomEmojiPickerSelectedIndex] =
         useState(0);
@@ -575,38 +579,8 @@ export default function MessageInput(props: MessageInputProps) {
     useEffect(() => {
         const needToShowCustomEmojiPanel =
             filteredEmojis.length > 0 && message.includes(':');
-
-        if (customEmojiPickerRef.current) {
-            const emojis =
-                customEmojiPickerRef.current.querySelectorAll('button');
-            emojis.forEach((e) => {
-                document.getElementById('chatCustomEmojiPool')?.appendChild(e);
-            });
-        }
-
         setShowCustomEmojiPanel(needToShowCustomEmojiPanel);
-        if (
-            needToShowCustomEmojiPanel &&
-            customEmojiPickerRef.current != null
-        ) {
-            filteredEmojis.map((emoji) => {
-                if (customEmojiPickerRef.current) {
-                    // customEmojiPickerRef.current.appendChild(emoji.cloneNode(true));
-                    if (!emoji.getAttribute('data-custom-event')) {
-                        const unifiedCode = emoji.getAttribute('data-unified');
-                        emoji.addEventListener('click', () => {
-                            if (unifiedCode) {
-                                const emoji =
-                                    getEmojiFromUnifiedCode(unifiedCode);
-                                handleEmojiClick(emoji, true);
-                            }
-                        });
-                        emoji.setAttribute('data-custom-event', 'true');
-                    }
-                    customEmojiPickerRef.current.appendChild(emoji);
-                }
-            });
-        }
+        domDebug('filteredEmojis', filteredEmojis.length)
     }, [filteredEmojis]);
 
     useEffect(() => {
@@ -626,7 +600,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         const emojis = document.querySelectorAll(
-            '#chatCustomEmojiPicker button',
+            '#chatCustomEmojiPicker span',
         );
         emojis.forEach((emoji, index) => {
             if (index == customEmojiPickerSelectedIndex) {
@@ -673,8 +647,11 @@ export default function MessageInput(props: MessageInputProps) {
         setFilteredEmojis([]);
     };
 
+
+
     const filterEmojisOnHiddenPicker = (word: string) => {
-        const filteredElements: HTMLElement[] = [];
+
+        const filteredElements: JSX.Element[] = [];
         let searchToken = word.split(' ')[0];
 
         CUSTOM_EMOJI_BLACKLIST_CHARACTERS.forEach((char) => {
@@ -686,15 +663,26 @@ export default function MessageInput(props: MessageInputProps) {
             return;
         }
 
-        emojiPool.forEach((element) => {
-            const ariaLabel = element.getAttribute('aria-label');
-            if (ariaLabel && ariaLabel.includes(searchToken)) {
-                filteredElements.push(element);
+
+        const limit = 3;
+        let foundEmojis = 0;
+
+        emojiMeta.forEach((meta) => {
+            if (meta.ariaLabel.includes(searchToken) && foundEmojis < limit) {
+                foundEmojis++;
+                const emojiEl = getSingleEmoji(meta.unifiedChar, 
+                    () => {  const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
+                            handleEmojiClick(emoji, true)});
+                console.log('adding', meta.unifiedChar)
+                console.log('el', emojiEl)
+                filteredElements.push(emojiEl);
             }
-        });
+        })
+
 
         domDebug('filtered emojis', filteredElements.length);
         domDebug('emojipool', emojiPool.length);
+        console.log('filtered elements', filteredElements)
         setFilteredEmojis([...filteredElements]);
     };
 
@@ -725,14 +713,18 @@ export default function MessageInput(props: MessageInputProps) {
         } else if (e.key === 'Enter' || e.key === 'Tab') {
             if (filteredEmojis.length > 0) {
                 const emoji = filteredEmojis[customEmojiPickerSelectedIndex];
+                
                 if (emoji) {
-                    const unifiedCode = emoji.getAttribute('data-unified');
-                    if (unifiedCode) {
-                        const emojiCharacter =
-                            getEmojiFromUnifiedCode(unifiedCode);
-                        handleEmojiClick(emojiCharacter, true);
-                    }
-                    resetCustomEmojiPickerStates();
+
+                    // TODO 
+                    console.log(emoji)
+                    // const unifiedCode = emoji.getAttribute('data-unified');
+                    // if (unifiedCode) {
+                    //     const emojiCharacter =
+                    //     getEmojiFromUnifiedCode(unifiedCode);
+                    //     handleEmojiClick(emojiCharacter, true);
+                    //     resetCustomEmojiPickerStates();
+                    // }
                 }
             }
             shouldSkip = true;
@@ -926,7 +918,7 @@ export default function MessageInput(props: MessageInputProps) {
                         ref={customEmojiPickerRef}
                         id='chatCustomEmojiPicker'
                         className={`${styles.custom_emoji_picker_wrapper} ${showCustomEmojiPanel ? styles.active : ' '}`}
-                    ></div>
+                    >{...filteredEmojis}</div>
 
                     <div
                         ref={customEmojiPoolRef}
