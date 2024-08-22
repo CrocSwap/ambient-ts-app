@@ -205,7 +205,6 @@ export const ChainDataContextProvider = (props: {
                 if (lastBlockNumberHex) {
                     const newBlockNum = parseInt(lastBlockNumberHex);
                     if (lastBlockNumber !== newBlockNum) {
-                        console.log({ lastBlockNumberHex });
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
                     }
                 }
