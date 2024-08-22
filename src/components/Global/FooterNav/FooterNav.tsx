@@ -8,7 +8,10 @@ import { motion } from 'framer-motion';
 import styles from './FooterNav.module.css';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
-import { chainNumToString } from '../../../ambient-utils/dataLayer';
+import {
+    chainNumToString,
+    checkEoaHexAddress,
+} from '../../../ambient-utils/dataLayer';
 // import { SidebarContext } from '../../contexts/SidebarContext';
 
 const FooterNav: React.FC = () => {
@@ -52,6 +55,11 @@ const FooterNav: React.FC = () => {
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
     ];
 
+    const path = location.pathname;
+
+    const isAddressEns = path?.includes('.eth');
+    const isAddressHex = checkEoaHexAddress(path);
+
     useEffect(() => {
         const currentPath = location.pathname;
 
@@ -63,9 +71,8 @@ const FooterNav: React.FC = () => {
             setActiveIndex(3); // Explore
         } else if (
             currentPath.includes('/account') ||
-            currentPath.match(
-                /\/[a-zA-Z0-9]+\.(eth|crypto|xyz|dao|eth.link|luxe|kred)$/,
-            )
+            isAddressEns ||
+            isAddressHex
         ) {
             setActiveIndex(4); // Account
         } else if (currentPath.includes('/chat')) {

@@ -152,6 +152,9 @@ export default function App() {
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
+                    onTouchMoveCapture={() =>
+                        appHeaderDropdown.setIsActive(false)
+                    }
                 />
                 <section className={`${swapBodyStyle}`}>
                     {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
@@ -415,9 +418,7 @@ export default function App() {
                     currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && (
-                    <FooterNav />
-                )}
+                {showMobileVersion && <FooterNav />}
             </div>
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />

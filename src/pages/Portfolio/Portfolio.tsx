@@ -376,7 +376,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const contentToRenderOnMobile = (() => {
         switch (true) {
             case (!showTabsAndNotExchange && isUserConnected) ||
-                addressFromParams !== undefined:
+                (addressFromParams !== undefined && !connectedAccountActive):
                 return <PortfolioTabs {...portfolioTabsProps} />;
             case showTabsAndNotExchange &&
                 isUserConnected &&
