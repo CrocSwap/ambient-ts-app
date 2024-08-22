@@ -1,15 +1,21 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
-import { useAppChain } from '../App/hooks/useAppChain';
 import {
     isBtcPair,
     isETHPair,
     isStablePair,
     translateTokenSymbol,
 } from '../ambient-utils/dataLayer';
-import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
+import { TokenBalanceContext } from './TokenBalanceContext';
+import { TokenContext } from './TokenContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -69,7 +75,10 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
+    const { chainData, activeNetwork, chooseNetwork } =
+        useContext(TokenBalanceContext);
+
+    const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
@@ -80,8 +89,6 @@ export const TradeDataContextProvider = (props: {
 
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
-
-    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 
     const tokensMatchingA =
         savedTokenASymbol === 'ETH'

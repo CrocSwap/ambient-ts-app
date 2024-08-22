@@ -18,10 +18,11 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     pool: PoolIF;
+    spotPrice: number | undefined;
 }
 
 export default function PoolCard(props: propsIF) {
-    const { pool } = props;
+    const { pool, spotPrice } = props;
 
     const {
         chainData: { chainId },
@@ -29,7 +30,7 @@ export default function PoolCard(props: propsIF) {
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
-    const poolData = useFetchPoolStats(pool);
+    const poolData = useFetchPoolStats(pool, spotPrice);
 
     const {
         poolVolume24h,

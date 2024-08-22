@@ -1,8 +1,4 @@
-import {
-    capitalConcFactor,
-    concDepositSkew,
-    fromDisplayQty,
-} from '@crocswap-libs/sdk';
+import { concDepositSkew, fromDisplayQty } from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../../components/Form/Button';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -63,7 +59,7 @@ function Range() {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, isActiveNetworkBlast } =
         useContext(ChainDataContext);
-    const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
+    const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
     const {
         advancedHighTick,
         advancedLowTick,
@@ -312,15 +308,15 @@ function Range() {
         ? 'Infinity'
         : pinnedMaxPriceDisplayTruncated;
 
-    let aprPercentage = ambientApy;
-    if (!isAmbient && ambientApy && poolPriceNonDisplay) {
-        const concFactor = capitalConcFactor(
-            poolPriceNonDisplay,
-            rangeLowBoundNonDisplayPrice,
-            rangeHighBoundNonDisplayPrice,
-        );
-        aprPercentage = ambientApy * concFactor;
-    }
+    // let aprPercentage = ambientApy;
+    // if (!isAmbient && ambientApy && poolPriceNonDisplay) {
+    //     const concFactor = capitalConcFactor(
+    //         poolPriceNonDisplay,
+    //         rangeLowBoundNonDisplayPrice,
+    //         rangeHighBoundNonDisplayPrice,
+    //     );
+    //     aprPercentage = ambientApy * concFactor;
+    // }
     let daysInRange = isAmbient ? Infinity : 0;
     if (!isAmbient && dailyVol && poolPriceNonDisplay) {
         const upperPercent = Math.log(
@@ -1006,7 +1002,7 @@ function Range() {
         }),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
-        aprPercentage: aprPercentage,
+        // aprPercentage: aprPercentage,
         daysInRange: daysInRange,
         isTokenABase: isTokenABase,
         poolPriceCharacter: poolPriceCharacter,
@@ -1044,7 +1040,7 @@ function Range() {
         isTokenABase: isTokenABase,
         showExtraInfoDropdown: showExtraInfoDropdown,
         isBalancedMode: !advancedMode,
-        aprPercentage: aprPercentage,
+        // aprPercentage: aprPercentage,
         daysInRange: daysInRange,
     };
 

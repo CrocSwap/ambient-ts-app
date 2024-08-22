@@ -58,8 +58,17 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const { isDenomBase } = useContext(TradeDataContext);
+    const {
+        isDenomBase,
+        currentPoolPriceTick,
+        baseToken: baseOnTrade,
+        quoteToken: quoteOnTrade,
+    } = useContext(TradeDataContext);
     const { chartThemeColors } = useContext(ChartContext);
+
+    const txPoolMatchesTrade =
+        baseTokenAddress.toLowerCase() === baseOnTrade.address.toLowerCase() &&
+        quoteTokenAddress.toLowerCase() === quoteOnTrade.address.toLowerCase();
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -1532,6 +1541,11 @@ export default function TransactionDetailsGraph(
                                 }
                                 setIsDataLoading={setIsDataLoading}
                                 chartThemeColors={chartThemeColors}
+                                currentPoolPriceTick={
+                                    isAccountView && !txPoolMatchesTrade
+                                        ? undefined
+                                        : currentPoolPriceTick
+                                }
                             />
                         )}
                         <d3fc-svg

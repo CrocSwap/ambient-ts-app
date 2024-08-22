@@ -5,7 +5,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-
 // import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
@@ -151,6 +150,9 @@ export default function App() {
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
+                    onTouchMoveCapture={() =>
+                        appHeaderDropdown.setIsActive(false)
+                    }
                 />
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
