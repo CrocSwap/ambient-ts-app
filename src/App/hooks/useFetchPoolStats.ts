@@ -86,7 +86,6 @@ const useFetchPoolStats = (
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        console.log({ spotPriceRetrieved });
         if (isServerEnabled && crocEnv) {
             (async () => {
                 const spotPrice =
@@ -98,7 +97,6 @@ const useFetchPoolStats = (
                         chainId,
                         poolPriceCacheTime,
                     ));
-                console.log({ spotPrice });
                 if (spotPrice) {
                     setIsPoolInitialized(true);
 
@@ -187,7 +185,6 @@ const useFetchPoolStats = (
 
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
-        console.log('resetting pool stats');
         setPoolVolume(undefined);
         setPoolVolume24h(undefined);
         setPoolTvl(undefined);

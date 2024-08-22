@@ -35,7 +35,7 @@ export default function TopPools(props: TopPoolsPropsIF) {
           ? topPools.slice(0, 4)
           : topPools;
 
-    const poolPriceCacheTime = Math.floor(Date.now() / 5000); // 15 second cache
+    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
 
