@@ -6,6 +6,7 @@ import {
     useMemo,
     useState,
     useContext,
+    useRef,
 } from 'react';
 import { fetchCandleSeriesHybrid } from '../ambient-utils/api';
 import {
@@ -105,6 +106,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isAbortedRequest: false,
         isResetRequest: false,
     });
+
+    const [offlineFetcher, setOfflineFetcher] = useState<NodeJS.Timer>();
+    const offlineFetcherRef = useRef<NodeJS.Timer>();
+    offlineFetcherRef.current = offlineFetcher;
 
     useEffect(() => {
         if (isFinishRequest) {
@@ -226,10 +231,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale.isShowLatestCandle,
     ]);
 
-
-
     useEffect(() => {
-            if (isCandleDataNull) {                
+        if (isCandleDataNull) {
+            const newInt = setInterval(() => {
                 setCandleScale((prev) => {
                     return {
                         lastCandleDate: undefined,
@@ -239,15 +243,18 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         isFetchFirst200Candle: true,
                     };
                 });
-            }
-    }, [
-        isUserIdle
-            ? Math.floor(Date.now() / (CACHE_UPDATE_FREQ_IN_MS/4))
-            : Math.floor(Date.now() / (CACHE_UPDATE_FREQ_IN_MS)),
+            }, 15000);
 
-        isCandleDataNull,
-    ]);
+            offlineFetcherRef.current = newInt;
+            setOfflineFetcher(newInt);
+        } else {
+            clearInterval(offlineFetcherRef.current);
+        }
 
+        return () => {
+            clearInterval(offlineFetcherRef.current);
+        };
+    }, [isCandleDataNull]);
 
     const fetchCandles = (bypassSpinner = false) => {
         if (
@@ -290,40 +297,44 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 crocEnv,
                 cachedFetchTokenPrice,
                 cachedQuerySpotPrice,
-            ).then((candles) => {
-                setCandleData(candles);
+            )
+                .then((candles) => {
+                    setCandleData(candles);
+                    const candleSeries = candles?.candles;
+                    if (candleSeries && candleSeries.length > 0) {
+                        if (candles?.candles.length < nCandles) {
+                            const localCandles = candles?.candles;
 
-                const candleSeries = candles?.candles;
-                if (candleSeries && candleSeries.length > 0) {
-                    if (candles?.candles.length < nCandles) {
-                        const localCandles = candles?.candles;
-
-                        setTimeOfEndCandle(
-                            localCandles[localCandles.length - 1].time * 1000,
-                        );
+                            setTimeOfEndCandle(
+                                localCandles[localCandles.length - 1].time *
+                                    1000,
+                            );
+                        }
+                        setIsCandleDataNull(false);
+                    } else {
+                        if (
+                            candleScale?.isFetchFirst200Candle &&
+                            candleTimeLocal === 60
+                        ) {
+                            setIsCandleDataNull(true);
+                        }
                     }
-                    setIsCandleDataNull(false);
-                } else {
-                    if (candleScale?.isFetchFirst200Candle && candleTimeLocal === 60) {
-                        setIsCandleDataNull(true);
+
+                    if (
+                        (candleSeries && candles?.candles.length >= 7) ||
+                        (candleSeries &&
+                            candleSeries.length > 0 &&
+                            candleTimeLocal === 60)
+                    ) {
+                        setIsFetchingCandle(false);
                     }
-                }
+                    setIsFirstFetch(false);
 
-                if (
-                    (candleSeries && candles?.candles.length >= 7) ||
-                    (candleSeries &&
-                        candleSeries.length > 0 &&
-                        candleTimeLocal === 60)
-                ) {
-                    setIsFetchingCandle(false);
-                }
-                setIsFirstFetch(false);
-
-                return candles;
-            }).then(()=>{
-                setIsFinishRequest(true);
-
-            });
+                    return candles;
+                })
+                .then(() => {
+                    setIsFinishRequest(true);
+                });
         } else {
             setIsFetchingCandle(true);
         }
