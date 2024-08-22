@@ -613,6 +613,7 @@ export default function MessageInput(props: MessageInputProps) {
                         />
                         {inputLength >= 100 && (
                             <div
+                                id='chat-progress-bar'
                                 className={styles.message_input_field}
                                 style={{
                                     fontSize:
@@ -628,15 +629,18 @@ export default function MessageInput(props: MessageInputProps) {
                                 </div>
                             </div>
                         )}
-
-                        <BsEmojiSmile
-                            className={
-                                isUserConnected
-                                    ? styles.svgButton
-                                    : styles.not_LoggedIn_svgButton
-                            }
+                        <span
+                            id='chat-emoji-button'
                             onClick={handleEmojiPickerHideShow}
-                        />
+                        >
+                            <BsEmojiSmile
+                                className={
+                                    isUserConnected
+                                        ? styles.svgButton
+                                        : styles.not_LoggedIn_svgButton
+                                }
+                            />
+                        </span>
                         {}
                         <div
                             className={
@@ -644,30 +648,33 @@ export default function MessageInput(props: MessageInputProps) {
                                     ? styles.send_message_button
                                     : styles.not_LoggedIn_send_message_button
                             }
+                            id='chat-send-message-button'
                             onClick={() => handleSendMessageButton()}
                         >
-                            <svg
-                                width='16'
-                                height='16'
-                                viewBox='0 0 16 16'
-                                fill='none'
-                                xmlns='http://www.w3.org/2000/svg'
-                            >
-                                <path
-                                    d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
-                                    stroke='#EBEBFF'
-                                    strokeOpacity='0.25'
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                    className={
-                                        isUserConnected
-                                            ? styles.svgButton
-                                            : styles.not_LoggedIn_svgButton
-                                    }
-                                    id='send message button'
-                                />
-                                <title>Send Message</title>
-                            </svg>
+                            <span>
+                                <svg
+                                    width='16'
+                                    height='16'
+                                    viewBox='0 0 16 16'
+                                    fill='none'
+                                    xmlns='http://www.w3.org/2000/svg'
+                                >
+                                    <path
+                                        d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
+                                        stroke='#EBEBFF'
+                                        strokeOpacity='0.25'
+                                        strokeLinecap='round'
+                                        strokeLinejoin='round'
+                                        className={
+                                            isUserConnected
+                                                ? styles.svgButton
+                                                : styles.not_LoggedIn_svgButton
+                                        }
+                                        id='send message button'
+                                    />
+                                    <title>Send Message</title>
+                                </svg>
+                            </span>
                         </div>
                     </div>
                     {showEmojiPicker && (
@@ -710,13 +717,11 @@ export default function MessageInput(props: MessageInputProps) {
                                 </ul>
                             ) : (
                                 <div>
-                                    <>
-                                        <Picker
-                                            pickerStyle={{ width: '100%' }}
-                                            onEmojiClick={handleEmojiClick}
-                                            disableSkinTonePicker={true}
-                                        />
-                                    </>
+                                    <Picker
+                                        pickerStyle={{ width: '100%' }}
+                                        onEmojiClick={handleEmojiClick}
+                                        disableSkinTonePicker={true}
+                                    />
                                 </div>
                             )}
                         </div>
