@@ -663,9 +663,10 @@ function Transactions(props: propsIF) {
                         } else {
                             setMoreDataAvailable(false);
                         }
+                        const newTxData = [...prev.changes, ...uniqueChanges];
                         return {
                             dataReceived: true,
-                            changes: [...prev.changes, ...uniqueChanges],
+                            changes: newTxData,
                         };
                     });
                 } else {

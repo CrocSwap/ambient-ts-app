@@ -218,16 +218,26 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             (change) => change.txHash || change.txId,
                         ),
                     );
-
                     // Filter out transactions that are already in the state
                     const newUniqueTxByPoolData =
                         filteredNewTxByPoolData.filter(
                             (tx) => !existingTxIds.has(tx.txHash || tx.txId),
                         );
+                    // Sort and remove the oldest transactions if necessary
+                    const prevChangesCopy = [...prev.changes]; // Create a copy to avoid mutating state directly
+                    if (newUniqueTxByPoolData.length > 0) {
+                        prevChangesCopy.sort((a, b) => a.txTime - b.txTime);
+                        prevChangesCopy.splice(0, newUniqueTxByPoolData.length);
+                    }
+
+                    const newTxsArray = [
+                        ...prevChangesCopy,
+                        ...newUniqueTxByPoolData,
+                    ];
 
                     return {
                         dataReceived: true,
-                        changes: [...prev.changes, ...newUniqueTxByPoolData],
+                        changes: newTxsArray,
                     };
                 });
                 setDataLoadingStatus({

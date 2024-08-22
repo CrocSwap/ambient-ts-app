@@ -86,15 +86,15 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
     )
         .then((response) => response?.json())
         .then((json) => {
-            const userTransactions = json?.data;
+            const poolTransactions = json?.data;
 
-            if (!userTransactions) {
+            if (!poolTransactions) {
                 return [];
             }
 
             const skipENSFetch = true;
             return Promise.all(
-                userTransactions.map((tx: TransactionServerIF) => {
+                poolTransactions.map((tx: TransactionServerIF) => {
                     return getTransactionData(
                         tx,
                         tokenList,
