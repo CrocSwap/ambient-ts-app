@@ -12,7 +12,7 @@ import {
     isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
 // import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
-import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
@@ -183,13 +183,11 @@ const useFetchPoolStats = (
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-        pool?.base.address,
-        pool?.quote.address,
-    );
+    const [baseAddr, quoteAddr] = [pool?.base.address, pool?.quote.address];
 
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
+        console.log('resetting pool stats');
         setPoolVolume(undefined);
         setPoolVolume24h(undefined);
         setPoolTvl(undefined);

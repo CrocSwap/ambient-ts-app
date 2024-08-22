@@ -59,20 +59,6 @@ export default function TopPools(props: propsIF) {
         fetchSpotPrices();
     }, [crocEnv === undefined, chainId, poolPriceCacheTime]);
 
-    const PoolsList: React.FC = () => {
-        return (
-            <>
-                {topPools.map((pool, idx) => (
-                    <PoolsListItem
-                        pool={pool}
-                        key={idx}
-                        spotPrice={spotPrices[idx]} // Pass the corresponding spot price
-                    />
-                ))}
-            </>
-        );
-    };
-
     return (
         <FlexContainer
             flexDirection='column'
@@ -88,7 +74,13 @@ export default function TopPools(props: propsIF) {
                 )}
             </ItemHeaderContainer>
             <ItemsContainer>
-                <PoolsList />
+                {topPools.map((pool, idx) => (
+                    <PoolsListItem
+                        pool={pool}
+                        key={idx}
+                        spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                    />
+                ))}
                 {onExploreRoute ? undefined : (
                     <ViewMoreFlex
                         justifyContent='center'
