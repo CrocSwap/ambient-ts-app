@@ -1150,11 +1150,14 @@ function ChatPanel(props: propsIF) {
     );
 
     const sendingLink = (
-        <div className={styles.pop_up}>
-            <p>{popUpText}</p>
-            <div className={styles.close_button}>
+        <div className={styles.pop_up} id='chat-popup'>
+            <p id='chat-popup-text'>{popUpText}</p>
+            <div
+                className={styles.close_button}
+                id='chat-close-popup-button'
+                onClick={() => closePopUp()}
+            >
                 <IoIosClose
-                    onClick={() => closePopUp()}
                     size={20}
                     role='button'
                     tabIndex={0}
