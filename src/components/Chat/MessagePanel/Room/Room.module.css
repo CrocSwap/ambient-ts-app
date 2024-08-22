@@ -101,15 +101,15 @@
 }
 
 .dropdown .dropdown_content {
-    position: absolute;
-    top: 110%;
-    padding: 15px;
-    background: white;
+    background: var(--dark3);
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
     color: var(--text2);
     width: 95%;
-    text-align: center;
+    max-height: 140px;
+    overflow-y: auto; 
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
 .star_icon {
