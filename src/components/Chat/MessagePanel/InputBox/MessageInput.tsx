@@ -573,7 +573,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [customEmojiPickerSelectedIndex, setCustomEmojiPickerSelectedIndex] =
         useState(0);
     const [emojiPool, setEmojiPool] = useState<HTMLElement[]>([]);
-    // const customEmojiPanelLimit = 20;
+    const customEmojiPanelLimit = 20;
     const customEmojiStartShiftIndex = 7;
 
     useEffect(() => {
@@ -664,15 +664,14 @@ export default function MessageInput(props: MessageInputProps) {
         }
 
 
-        const limit = 3;
         let foundEmojis = 0;
 
         emojiMeta.forEach((meta) => {
-            if (meta.ariaLabel.includes(searchToken) && foundEmojis < limit) {
+            if (meta.ariaLabel.includes(searchToken) && foundEmojis < customEmojiPanelLimit) {
                 foundEmojis++;
                 const emojiEl = getSingleEmoji(meta.unifiedChar, 
                     () => {  const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
-                            handleEmojiClick(emoji, true)});
+                            handleEmojiClick(emoji, true)}, 30);
                 console.log('adding', meta.unifiedChar)
                 console.log('el', emojiEl)
                 filteredElements.push(emojiEl);
@@ -718,6 +717,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                     // TODO 
                     console.log(emoji)
+                    console.log(emoji.props)
                     // const unifiedCode = emoji.getAttribute('data-unified');
                     // if (unifiedCode) {
                     //     const emojiCharacter =
@@ -925,22 +925,6 @@ export default function MessageInput(props: MessageInputProps) {
                         id='chatCustomEmojiPool'
                         className={styles.custom_emoji_pool}
                     ></div>
-
-                    <div
-                        id='chatHiddenEmojiSearch'
-                        className={styles.hidden_picker_wrapper}
-                    >
-                        <Picker
-                            theme={Theme.DARK}
-                            style={{
-                                width: '100%',
-                            }}
-                            onEmojiClick={(emoji) => {
-                                return handleEmojiClick(emoji, true);
-                            }}
-                            lazyLoadEmojis={false}
-                        />
-                    </div>
 
                     {props.isChatOpen && ALLOW_MENTIONS && mentionAutoComplete}
                 </div>
