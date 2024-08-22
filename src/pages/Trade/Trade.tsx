@@ -259,7 +259,9 @@ function Trade() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding noStyle={smallScreen}>
+                <ContentContainer noPadding
+                    noStyle={smallScreen}
+                >
                     <Outlet
                         context={{
                             urlParamMap: urlParamMap,

@@ -19,6 +19,7 @@ import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModul
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import {
     IS_LOCAL_ENV,
+    L1_GAS_CALC_ENABLED,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
     ZERO_ADDRESS,
@@ -400,7 +401,7 @@ function Swap(props: propsIF) {
         isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkBlast ? 0.01 : 0,
+        isActiveNetworkBlast ? 0.01 : 0.01,
     );
 
     // calculate price of gas for swap
@@ -464,7 +465,7 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv) return;
+            if (!crocEnv || !L1_GAS_CALC_ENABLED) return;
 
             const qty = isTokenAPrimary
                 ? sellQtyString.replaceAll(',', '')
@@ -517,6 +518,7 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         ethMainnetUsdPrice,
+        L1_GAS_CALC_ENABLED,
     ]);
 
     useEffect(() => {

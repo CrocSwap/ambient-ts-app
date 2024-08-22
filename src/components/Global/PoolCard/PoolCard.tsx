@@ -19,10 +19,11 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     pool: PoolIF;
+    spotPrice: number | undefined;
 }
 
 export default function PoolCard(props: propsIF) {
-    const { pool } = props;
+    const { pool, spotPrice } = props;
 
     const {
         chainData: { chainId },
@@ -31,7 +32,7 @@ export default function PoolCard(props: propsIF) {
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
-    const poolData = useFetchPoolStats(pool);
+    const poolData = useFetchPoolStats(pool, spotPrice);
 
     const {
         poolVolume24h,
