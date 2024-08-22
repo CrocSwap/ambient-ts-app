@@ -123,7 +123,7 @@ export const ChainDataContextProvider = (props: {
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
-    const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
+    const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
     async function pollBlockNum(): Promise<void> {
         const nodeUrl = ['0x1'].includes(chainData.chainId)
@@ -154,6 +154,7 @@ export const ChainDataContextProvider = (props: {
     }
 
     useEffect(() => {
+        console.log({ BLOCK_NUM_POLL_MS });
         // Grab block right away, then poll on periodic basis; useful for initial load
         pollBlockNum();
 
