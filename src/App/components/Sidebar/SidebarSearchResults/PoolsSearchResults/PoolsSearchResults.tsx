@@ -29,7 +29,7 @@ export default function PoolsSearchResults(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
+    const poolPriceCacheTime = Math.floor(Date.now() / 60000); // 60 second cache
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -55,59 +55,38 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
-    const PoolSearchResultList: React.FC = () => {
-        const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>(
-            [],
-        );
+    const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
 
-        useEffect(() => {
-            if (!crocEnv) return;
+    useEffect(() => {
+        if (!crocEnv) return;
 
-            const fetchSpotPrices = async () => {
-                const spotPricePromises = searchedPools
-                    .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                    // max five elements before content overflows container
-                    .slice(0, 5)
-                    .map((pool) =>
-                        cachedQuerySpotPrice(
-                            crocEnv,
-                            pool.base.address,
-                            pool.quote.address,
-                            chainId,
-                            poolPriceCacheTime,
-                        ).catch((error) => {
-                            console.error(
-                                `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
-                                error,
-                            );
-                            return undefined; // Handle the case where fetching spot price fails
-                        }),
-                    );
+        const fetchSpotPrices = async () => {
+            const spotPricePromises = searchedPools
+                .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                // max five elements before content overflows container
+                .slice(0, 5)
+                .map((pool) =>
+                    cachedQuerySpotPrice(
+                        crocEnv,
+                        pool.base.address,
+                        pool.quote.address,
+                        chainId,
+                        poolPriceCacheTime,
+                    ).catch((error) => {
+                        console.error(
+                            `Failed to fetch spot price for pool ${pool.base.address}-${pool.quote.address}:`,
+                            error,
+                        );
+                        return undefined; // Handle the case where fetching spot price fails
+                    }),
+                );
 
-                const results = await Promise.all(spotPricePromises);
-                setSpotPrices(results);
-            };
+            const results = await Promise.all(spotPricePromises);
+            setSpotPrices(results);
+        };
 
-            fetchSpotPrices();
-        }, [searchedPools, crocEnv, chainId, poolPriceCacheTime]);
-
-        return (
-            <>
-                {searchedPools
-                    .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                    // max five elements before content overflows container
-                    .slice(0, 5)
-                    .map((pool, idx) => (
-                        <PoolSearchResult
-                            pool={pool}
-                            key={idx}
-                            handleClick={handleClick}
-                            spotPrice={spotPrices[idx]} // Pass the corresponding spot price
-                        />
-                    ))}
-            </>
-        );
-    };
+        fetchSpotPrices();
+    }, [searchedPools, crocEnv === undefined, chainId, poolPriceCacheTime]);
 
     return (
         <FlexContainer
@@ -143,7 +122,18 @@ export default function PoolsSearchResults(props: propsIF) {
                         ))}
                     </GridContainer>
                     <ResultsContainer flexDirection='column'>
-                        <PoolSearchResultList />
+                        {searchedPools
+                            .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                            // max five elements before content overflows container
+                            .slice(0, 5)
+                            .map((pool, idx) => (
+                                <PoolSearchResult
+                                    pool={pool}
+                                    key={idx}
+                                    handleClick={handleClick}
+                                    spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                                />
+                            ))}
                     </ResultsContainer>
                 </FlexContainer>
             ) : (
