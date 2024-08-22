@@ -229,7 +229,20 @@ function Trade() {
     const isFuta = ['futa'].includes(platformName);
 
     const mobileTrade = (
-        <MainSection isDropdown isSmallScreen={smallScreen} isFill={isFuta}>
+        <MainSection
+            isDropdown
+            isSmallScreen={smallScreen}
+            isFill={isFuta}
+            style={
+                activeMobileComponent === 'trade'
+                    ? {
+                          height: '100dvh',
+                          overflowY: 'scroll',
+                          marginBottom: '64px',
+                      }
+                    : {}
+            }
+        >
             {mobileTradeDropdown}
 
             <Text
@@ -262,9 +275,7 @@ function Trade() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding
-                    noStyle={smallScreen}
-                >
+                <ContentContainer noPadding noStyle={smallScreen}>
                     <Outlet
                         context={{
                             urlParamMap: urlParamMap,
