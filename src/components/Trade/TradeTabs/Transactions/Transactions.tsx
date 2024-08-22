@@ -146,6 +146,17 @@ function Transactions(props: propsIF) {
         TransactionIF[]
     >([]);
 
+    // ref holding scrollable element (to attach event listener)
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+
+    const lastRowRef = useRef<HTMLDivElement | null>(null);
+    const firstRowRef = useRef<HTMLDivElement | null>(null);
+
     const showAllData = !isAccountView && showAllDataSelection;
 
     const transactionData = useMemo<TransactionIF[]>(
@@ -447,6 +458,15 @@ function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', txDataToDisplay);
 
+    const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
+        return isCandleSelected || isAccountView
+            ? sortedTransactions
+            : sortedTransactions.slice(
+                  pagesVisible[0] * 50,
+                  pagesVisible[1] * 50 + 50,
+              );
+    }, [sortedTransactions, pagesVisible, isCandleSelected, isAccountView]);
+
     const headerColumnsDisplay: JSX.Element = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
@@ -492,17 +512,6 @@ function Transactions(props: propsIF) {
             }
         }
     };
-
-    // ref holding scrollable element (to attach event listener)
-    const scrollRef = useRef<HTMLDivElement>(null);
-
-    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
-    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
-    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
-    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
-
-    const lastRowRef = useRef<HTMLDivElement | null>(null);
-    const firstRowRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -810,14 +819,7 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={
-                        isCandleSelected
-                            ? sortedTransactions
-                            : sortedTransactions.slice(
-                                  pagesVisible[0] * 50,
-                                  pagesVisible[1] * 50 + 50,
-                              )
-                    }
+                    data={sortedTxDataToDisplay}
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
