@@ -878,7 +878,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             quoteTokenAddress +
             props.chainData.chainId +
             props.chainData.poolIndex,
-        poolPriceNonDisplay,
+        currentPoolPriceTick,
         props.isChartEnabled,
         props.crocEnv !== undefined,
     ]);

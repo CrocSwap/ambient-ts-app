@@ -6,8 +6,6 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { estimateFrom24HrAmbientApr } from '../ambient-utils/api';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
@@ -35,7 +33,6 @@ interface PoolContextIF {
     poolPriceDisplay: number | undefined;
     isPoolPriceChangePositive: boolean;
     poolPriceChangePercent: string | undefined;
-    ambientApy: number | undefined;
     dailyVol: number | undefined;
     poolData: PoolStatIF;
     usdPrice: number | undefined;
@@ -52,9 +49,7 @@ interface PoolContextIF {
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
-    const { crocEnv, provider, chainData, activeNetwork } =
-        useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -122,9 +117,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg, true);
+    const poolData = useFetchPoolStats(poolArg, undefined, true, true);
 
-    const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
 
     const {
@@ -200,35 +194,35 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     }, [baseTokenAddress, quoteTokenAddress, usdPrice !== undefined]);
 
     // Asynchronously query the APY and volatility estimates from the backend
-    useEffect(() => {
-        (async () => {
-            if (
-                crocEnv &&
-                provider &&
-                baseTokenAddress &&
-                quoteTokenAddress &&
-                lastBlockNumber > 0
-            ) {
-                const annualizedGrowth = estimateFrom24HrAmbientApr(
-                    baseTokenAddress,
-                    quoteTokenAddress,
-                    crocEnv,
-                    provider,
-                    lastBlockNumber,
-                );
+    // useEffect(() => {
+    //     (async () => {
+    //         if (
+    //             crocEnv &&
+    //             provider &&
+    //             baseTokenAddress &&
+    //             quoteTokenAddress &&
+    //             lastBlockNumber > 0
+    //         ) {
+    //             const annualizedGrowth = estimateFrom24HrAmbientApr(
+    //                 baseTokenAddress,
+    //                 quoteTokenAddress,
+    //                 crocEnv,
+    //                 provider,
+    //                 lastBlockNumber,
+    //             );
 
-                setAmbientApy(await annualizedGrowth);
-            }
-        })();
-    }, [
-        lastBlockNumber == 0,
-        baseTokenAddress,
-        quoteTokenAddress,
-        chainData.chainId,
-        chainData.poolIndex,
-        !!crocEnv,
-        !!provider,
-    ]);
+    //             setAmbientApy(await annualizedGrowth);
+    //         }
+    //     })();
+    // }, [
+    //     lastBlockNumber == 0,
+    //     baseTokenAddress,
+    //     quoteTokenAddress,
+    //     chainData.chainId,
+    //     chainData.poolIndex,
+    //     !!crocEnv,
+    //     !!provider,
+    // ]);
 
     const poolContext = {
         poolList,
@@ -238,7 +232,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolPriceDisplay,
         isPoolPriceChangePositive,
         poolPriceChangePercent,
-        ambientApy,
         dailyVol,
         fdvOfDenomTokenDisplay,
         baseTokenFdvDisplay,

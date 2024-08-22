@@ -2,8 +2,6 @@ import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
-import { PoolStatsFn } from '../../../../ambient-utils/dataLayer';
-import { TokenPriceFn } from '../../../../ambient-utils/api';
 import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
 import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
 import { Text } from '../../../../styled/Common';
@@ -12,13 +10,11 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import WalletSearchResults from './WalletSearchResults';
 
 interface propsIF {
-    cachedPoolStatsFetch: PoolStatsFn;
-    cachedFetchTokenPrice: TokenPriceFn;
     searchData: sidebarSearchIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
-    const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
+    const { searchData } = props;
     const { isUserConnected } = useContext(UserDataContext);
 
     return (
@@ -33,11 +29,7 @@ export default function SidebarSearchResults(props: propsIF) {
             </Text>
             {searchData.contentGroup === 'token' && (
                 <>
-                    <PoolsSearchResults
-                        searchedPools={searchData.pools}
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
+                    <PoolsSearchResults searchedPools={searchData.pools} />
                     {isUserConnected && (
                         <>
                             <TxSearchResults searchedTxs={searchData.txs} />
