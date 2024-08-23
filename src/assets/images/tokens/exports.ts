@@ -47,6 +47,7 @@ import SCROLLY from './SCROLLY.webp';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import ZCAT from './ZCAT.webp';
+import SINU from './SINU.webp';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
 import NURI from './NURI.svg';
@@ -102,6 +103,7 @@ export {
     WEETH,
     BLAST,
     ZCAT,
+    SINU,
     USDE,
     SUSDE,
     NURI,
