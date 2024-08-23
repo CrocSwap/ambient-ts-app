@@ -278,7 +278,11 @@ export const getSingleEmoji = (
                 }
             }}
         >
-            <Emoji unified={unified} size={size ? size : 25} />
+            {size && size == -1 ? 
+            (<Emoji unified={unified} />) 
+            : 
+            (<Emoji unified={unified} size={size ? size : 25} />)} 
+            
         </span>
     );
 };
