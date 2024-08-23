@@ -51,6 +51,7 @@ export default function Button(props: propsIF) {
                           borderRadius: '0.6rem',
                       }
                     : {}),
+                textTransform: 'none',
             }}
             onClick={action}
             disabled={disabled}
