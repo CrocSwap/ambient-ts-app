@@ -105,6 +105,13 @@
     transform: translateX(-70%);
 }
 
+.tooltip_buttons_wrapper{
+    display: flex;
+    
+    justify-content: center;
+    padding-bottom: 1rem;
+}
+
 .step_btn{
     transition: all .2s ease-in-out;
     padding: .5rem 1rem;

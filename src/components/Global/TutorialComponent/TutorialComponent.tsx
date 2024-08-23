@@ -25,6 +25,9 @@ function TutorialComponent(props: propsIF) {
     const [stepIndex, setStepIndex] = useState<number>(
         initialStep ? initialStep : 0,
     );
+
+    const stepIndexRef = useRef<number>();
+    stepIndexRef.current = stepIndex;
     const [step, setStep] = useState<Step | TutorialStepIF | undefined>(
         steps.length > 0 && steps[stepIndex] ? steps[stepIndex] : undefined,
     );
@@ -58,13 +61,23 @@ function TutorialComponent(props: propsIF) {
     }, []);
 
     const nextStep = () => {
-        if (stepIndex < steps.length - 1) {
-            setStepIndex(stepIndex + 1);
+        const refVal =
+            stepIndexRef && stepIndexRef.current
+                ? stepIndexRef.current
+                : stepIndex;
+
+        if (refVal < steps.length - 1) {
+            setStepIndex(refVal + 1);
         }
     };
     const prevStep = () => {
-        if (stepIndex > 0) {
-            setStepIndex(stepIndex - 1);
+        const refVal =
+            stepIndexRef && stepIndexRef.current
+                ? stepIndexRef.current
+                : stepIndex;
+
+        if (refVal > 0) {
+            setStepIndex(refVal - 1);
         }
     };
 
@@ -176,6 +189,21 @@ function TutorialComponent(props: propsIF) {
     }, [stepIndex]);
 
     useEffect(() => {
+        const keyDownListener = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') {
+                prevStep();
+            } else if (e.key === 'ArrowRight') {
+                nextStep();
+            }
+        };
+        document.addEventListener('keydown', keyDownListener);
+
+        return () => {
+            document.removeEventListener('keydown', keyDownListener);
+        };
+    }, []);
+
+    useEffect(() => {
         handleFocusOverlay();
         handleTooltip();
     }, [step]);
@@ -183,6 +211,41 @@ function TutorialComponent(props: propsIF) {
     const triggerTutorial = () => {
         setHasTriggered(true);
     };
+
+    const navButtons = (showSteps?: boolean) => (
+        <>
+            {showSteps && (
+                <div className={styles.steps_indicator}>
+                    {stepIndex + 1}{' '}
+                    <span style={{ opacity: 0.5 }}>/ {steps.length}</span>
+                </div>
+            )}
+            {
+                <div
+                    className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                    onClick={prevStep}
+                >
+                    Prev
+                </div>
+            }
+            {stepIndex < steps.length - 1 && (
+                <div
+                    className={styles.step_btn + ' ' + styles.next_button}
+                    onClick={nextStep}
+                >
+                    Next
+                </div>
+            )}
+            {stepIndex == steps.length - 1 && (
+                <div
+                    className={styles.step_btn + ' ' + styles.complete_button}
+                    onClick={completeTutorial}
+                >
+                    Complete
+                </div>
+            )}
+        </>
+    );
 
     return (
         <div>
@@ -193,43 +256,14 @@ function TutorialComponent(props: propsIF) {
                 <div ref={tooltipWrapper} className={styles.tooltip_wrapper}>
                     <div className={styles.tooltip_title}>{step.title}</div>
                     <div className={styles.tooltip_content}>{step.intro}</div>
+
+                    <div className={styles.tooltip_buttons_wrapper}>
+                        {navButtons(false)}
+                    </div>
                 </div>
             )}
 
-            <div className={styles.tutorial_steps}>
-                {showSteps && (
-                    <div className={styles.steps_indicator}>
-                        {stepIndex + 1}{' '}
-                        <span style={{ opacity: 0.5 }}>/ {steps.length}</span>
-                    </div>
-                )}
-                {
-                    <div
-                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
-                        onClick={prevStep}
-                    >
-                        Prev
-                    </div>
-                }
-                {stepIndex < steps.length - 1 && (
-                    <div
-                        className={styles.step_btn + ' ' + styles.next_button}
-                        onClick={nextStep}
-                    >
-                        Next
-                    </div>
-                )}
-                {stepIndex == steps.length - 1 && (
-                    <div
-                        className={
-                            styles.step_btn + ' ' + styles.complete_button
-                        }
-                        onClick={completeTutorial}
-                    >
-                        Complete
-                    </div>
-                )}
-            </div>
+            <div className={styles.tutorial_steps}>{navButtons(showSteps)}</div>
         </div>
     );
 }
