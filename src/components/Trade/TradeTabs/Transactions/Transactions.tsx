@@ -621,9 +621,27 @@ function Transactions(props: propsIF) {
 
     const yes = true
 
+    const [screenHeight, setScreenHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const handleResize = () => {
+          setScreenHeight(window.innerHeight);
+        };
+    
+        window.addEventListener('resize', handleResize);
+    
+        // Cleanup event listener on component unmount
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    
+    console.log({ screenHeight })
+    
+    const exHeight = screenHeight / 1.8
+
+
 
     if (yes) return (
-        <div style={{height: '100%',  overflow: 'scroll', maxHeight: '65dvh'}}>
+        <div style={{  overflow: 'scroll', height: exHeight}}>
             <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '2'}}>
             {headerColumnsDisplay}
 
