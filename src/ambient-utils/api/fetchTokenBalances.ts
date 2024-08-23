@@ -101,12 +101,12 @@ export const fetchTokenBalances = async (
         };
     };
 
-    for (const token of combinedTokenList) {
+    const balancePromises = combinedTokenList.map(async (token) => {
         const tokenInWallet = (
             await crocEnv.token(token.address).wallet(address)
         ).toString();
 
-        const newToken = {
+        return {
             chainId: token.chainId,
             logoURI: '',
             name: token.name,
@@ -115,8 +115,9 @@ export const fetchTokenBalances = async (
             decimals: token.decimals,
             walletBalance: tokenInWallet,
         };
-        combinedBalances.push(newToken);
-    }
+    });
+
+    combinedBalances.push(...(await Promise.all(balancePromises)));
 
     await fetchDexBalances();
 

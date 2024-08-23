@@ -1,6 +1,7 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../constants';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { SpotPriceFn } from '../dataLayer';
 
 export const fetchPoolLiquidity = async (
     chainId: string,
@@ -10,11 +11,12 @@ export const fetchPoolLiquidity = async (
     crocEnv: CrocEnv,
     graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedQuerySpotTick: SpotPriceFn,
+    currentPoolPriceTick?: number | undefined,
 ): Promise<LiquidityDataIF | undefined> => {
     const poolLiquidityCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/pool_liq_curve?'
         : graphCacheUrl + '/pool_liq_curve?';
-
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({
@@ -38,6 +40,8 @@ export const fetchPoolLiquidity = async (
                 chainId,
                 crocEnv,
                 cachedFetchTokenPrice,
+                cachedQuerySpotTick,
+                currentPoolPriceTick,
             );
         });
 };
@@ -50,9 +54,24 @@ async function expandLiquidityData(
     chainId: string,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    cachedQuerySpotTick: SpotPriceFn,
+    currentPoolPriceTick?: number | undefined,
 ): Promise<LiquidityDataIF> {
     const pool = crocEnv.pool(base, quote);
-    const curveTick = pool.spotTick();
+    const everyOneMinute = Math.floor(Date.now() / 60000);
+
+    let curveTick: number;
+    if (currentPoolPriceTick) {
+        curveTick = currentPoolPriceTick;
+    } else {
+        curveTick = await cachedQuerySpotTick(
+            crocEnv,
+            base,
+            quote,
+            chainId,
+            everyOneMinute,
+        );
+    }
 
     const basePricePromise = cachedFetchTokenPrice(base, chainId, crocEnv);
     const quotePricePromise = cachedFetchTokenPrice(quote, chainId, crocEnv);
@@ -62,7 +81,7 @@ async function expandLiquidityData(
 
     const ranges = bumpsToRanges(
         liq,
-        await curveTick,
+        curveTick,
         await pool.baseDecimals,
         await pool.quoteDecimals,
         basePrice,
