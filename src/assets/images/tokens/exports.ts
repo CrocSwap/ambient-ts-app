@@ -49,6 +49,7 @@ import BLAST from './BLAST.png';
 import GOON from './GOON.svg';
 import GNUSD from './GNUSD.svg';
 import ZCAT from './ZCAT.webp';
+import SINU from './SINU.webp';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
 import NURI from './NURI.svg';
@@ -106,6 +107,7 @@ export {
     GOON,
     GNUSD,
     ZCAT,
+    SINU,
     USDE,
     SUSDE,
     NURI,

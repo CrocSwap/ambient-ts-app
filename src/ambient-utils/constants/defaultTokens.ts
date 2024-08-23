@@ -627,6 +627,14 @@ export const scrollKNC: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
+export const scrollSINU: TokenIF = {
+    name: 'Scroll Inu',
+    address: '0x3660020acc6e993bbdc618dd63b15ad2a3a6d139',
+    symbol: 'SINU',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
 export const scrollSOLVBTC: TokenIF = {
     name: 'Free Bridged SolvBTC.b',
     address: '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4',
@@ -777,6 +785,7 @@ export const defaultTokens: TokenIF[] = [
     scrollDAI,
     scrollUSDT,
     scrollKNC,
+    scrollSINU,
     scrollSOLVBTC,
     scrollBalancer,
     scrollAxlUSDC,

@@ -345,7 +345,7 @@ section[class^="emoji-scroll-wrapper"]{
     bottom: 3rem;
 }
 
-.custom_emoji_picker_wrapper button{
+.custom_emoji_picker_wrapper button, .custom_emoji_picker_wrapper span{
     transition: all .2s ease-in-out;
     /* flex:  1 1; */
     display: inline-block;
@@ -357,13 +357,13 @@ section[class^="emoji-scroll-wrapper"]{
     width: 2rem;
 }
 
-.custom_emoji_picker_wrapper button.focused{
+.custom_emoji_picker_wrapper button.focused, .custom_emoji_picker_wrapper span.focused{
 
     background-color: color-mix(in srgb, var(--accent1) 70%, transparent);
     transform: scale(1.3);
 }
 
-.custom_emoji_picker_wrapper button img{
+.custom_emoji_picker_wrapper button img, .custom_emoji_picker_wrapper span img{
     max-height: 100%;
     max-width: 100%;
     padding: .2rem;
