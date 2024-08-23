@@ -19,6 +19,7 @@ import {
     memoizePoolStats,
     SpotPriceFn,
     memoizeQuerySpotPrice,
+    memoizeQuerySpotTick,
     memoizeGet24hChange,
     Change24Fn,
     memoizeGetLiquidityFee,
@@ -33,6 +34,7 @@ export interface CachedDataIF {
     cachedGet24hChange: Change24Fn;
     cachedGetLiquidityFee: LiquidityFeeFn;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedQuerySpotTick: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
     cachedFetchTopPairedToken: FetchTopPairedTokenFn;
@@ -55,6 +57,7 @@ export const CachedDataContextProvider = (props: {
         cachedGet24hChange: memoizeGet24hChange(),
         cachedGetLiquidityFee: memoizeGetLiquidityFee(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
+        cachedQuerySpotTick: memoizeQuerySpotTick(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
         cachedFetchTopPairedToken: memoizeFetchTopPairedToken(),

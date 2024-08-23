@@ -56,6 +56,7 @@ interface PoolParamsHookIF {
     isChartEnabled: boolean;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedQuerySpotTick: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -68,6 +69,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tokenB,
         defaultRangeWidthForActivePool,
         poolPriceNonDisplay,
+        currentPoolPriceTick,
     } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
@@ -832,6 +834,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
+                props.cachedQuerySpotTick,
+                currentPoolPriceTick,
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
@@ -849,7 +853,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             quoteTokenAddress +
             props.chainData.chainId +
             props.chainData.poolIndex,
-        poolPriceNonDisplay,
+        currentPoolPriceTick,
         props.isChartEnabled,
         props.crocEnv !== undefined,
     ]);
