@@ -9,8 +9,7 @@
             rgba(13, 17, 23, 0.9),
             rgba(13, 17, 23, 1)
         ),
-        url('../../../../src/assets/images/home/home_wallpaper_compressed.png')
-            no-repeat;
+        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat;
 }
 
 .purple_waves {
@@ -22,8 +21,8 @@
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('../../../../src/assets/images/home/home_wallpaper_compressed.png')
-            no-repeat center center;
+        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat
+            center center;
 }
 
 .stars {

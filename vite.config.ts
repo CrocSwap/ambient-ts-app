@@ -26,5 +26,17 @@ export default defineConfig({
     },
     build: {
         outDir: 'build',
+        rollupOptions: {
+            output: {
+                assetFileNames: (assetInfo) => {
+                    if (assetInfo.name && assetInfo.name.endsWith('.png')) {
+                        // Keep the original name without a hash
+                        return 'assets/[name][extname]';
+                    }
+                    // Default behavior for other assets (keep the hash)
+                    return 'assets/[name]-[hash][extname]';
+                },
+            },
+        },
     },
 });
