@@ -15,7 +15,7 @@
 
 .exchange_row {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1.5fr;
     align-items: center;
     height: 48px;
     font-size: var(--body-size);

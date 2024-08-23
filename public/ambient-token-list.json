@@ -433,7 +433,7 @@
             "symbol": "SCROLLY",
             "decimals": 18,
             "chainId": 534352,
-            "logoURI": "https://scrolly.xyz/img/logo.png"
+            "logoURI": ""
         },
         {
             "name": "Ethena USDe",
@@ -466,6 +466,22 @@
             "decimals": 8,
             "chainId": 11155111,
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+        },
+        {
+            "name": "ZirCat",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "ZCAT",
+            "decimals": 18,
+            "chainId": 11155111,
+            "logoURI": "https://ambient.finance/zcat_32.png"
+        },
+        {
+            "name": "ZirCat",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "ZCAT",
+            "decimals": 18,
+            "chainId": 168587773,
+            "logoURI": "https://ambient.finance/zcat_32.png"
         },
         {
             "name": "Bridged Tether USD",
