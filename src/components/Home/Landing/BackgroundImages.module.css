@@ -1,5 +1,6 @@
 .home_wallpaper_mobile {
-    background: linear-gradient(
+    background:
+        linear-gradient(
             to bottom,
             rgba(13, 17, 23, 0),
             rgba(13, 17, 23, 0.1) 80%,
@@ -8,31 +9,33 @@
             rgba(13, 17, 23, 0.9),
             rgba(13, 17, 23, 1)
         ),
-        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat;
+        url('../../../../src/assets/images/home/home_wallpaper_compressed.png')
+            no-repeat;
 }
 
 .purple_waves {
-    background: linear-gradient(
+    background:
+        linear-gradient(
             180deg,
             var(--dark1) 0%,
             var(--dark1) 0%,
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('/src/assets/images/home/home_wallpaper_compressed.png') no-repeat
-            center center;
+        url('../../../../src/assets/images/home/home_wallpaper_compressed.png')
+            no-repeat center center;
 }
 
 .stars {
-    background: linear-gradient(
+    background:
+        linear-gradient(
             180deg,
             var(--dark1) 0%,
             var(--dark1) 0%,
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('/src/assets/images/home/stars.png') no-repeat
-            center center;
+        url('/src/assets/images/home/stars.png') no-repeat center center;
 }
 
 .home2 {
