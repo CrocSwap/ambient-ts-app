@@ -584,7 +584,7 @@ export default function MessageInput(props: MessageInputProps) {
     useEffect(() => {
         if (message.includes(':')) {
             setTokenForEmojiSearch(
-                message.split(':')[message.split(':').length - 1],
+                message.split(':')[message.split(':').length - 1].toLocaleLowerCase(),
             );
         } else {
             setTokenForEmojiSearch('');
@@ -592,7 +592,7 @@ export default function MessageInput(props: MessageInputProps) {
     }, [message]);
 
     useEffect(() => {
-        filterEmojisOnHiddenPicker(tokenForEmojiSearch);
+        filterEmojisForCustomPicker(tokenForEmojiSearch);
         setCustomEmojiPickerSelectedIndex(0);
     }, [tokenForEmojiSearch]);
 
@@ -642,7 +642,7 @@ export default function MessageInput(props: MessageInputProps) {
 
 
 
-    const filterEmojisOnHiddenPicker = (word: string) => {
+    const filterEmojisForCustomPicker = (word: string) => {
 
         const filteredElements: JSX.Element[] = [];
         let searchToken = word.split(' ')[0];
