@@ -18,7 +18,7 @@ interface RangeBoundsProps {
 
     // Props for Range Price Info
     spotPriceDisplay: string;
-    aprPercentage: number | undefined;
+    // aprPercentage: number | undefined;
     poolPriceCharacter: string;
     isTokenABase: boolean;
     pinnedDisplayPrices:
@@ -64,7 +64,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         inputId,
         //
         poolPriceCharacter,
-        aprPercentage,
+        // aprPercentage,
         pinnedDisplayPrices,
         isTokenABase,
         isAmbient,
@@ -102,7 +102,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         spotPriceDisplay,
         // maxPriceDisplay: maxPriceDisplay,
         // minPriceDisplay: minPriceDisplay,
-        aprPercentage,
+        // aprPercentage,
         // daysInRange: daysInRange,
         isTokenABase,
         poolPriceCharacter,
