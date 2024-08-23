@@ -915,6 +915,26 @@ function TradeCandleStickChart(props: propsIF) {
         }
     };
 
+    useEffect(() => {
+        if (
+            (unparsedCandleData !== undefined &&
+                unparsedCandleData.length === 0) ||
+            (scaleData === undefined &&
+                unparsedCandleData &&
+                unparsedCandleData.length < 7)
+        ) {
+            setCandleScale((prev: CandleScaleIF) => {
+                return {
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isShowLatestCandle: true,
+                    isFetchFirst200Candle: false,
+                };
+            });
+        }
+    }, [period]);
+
     const isLoading = useMemo(
         () =>
             scaleData === undefined ||
@@ -933,25 +953,12 @@ function TradeCandleStickChart(props: propsIF) {
     );
 
     useEffect(() => {
-        if (prevPeriod === undefined) {
-            setCandleScale((prev: CandleScaleIF) => {
-                return {
-                    isFetchForTimeframe: !prev.isFetchForTimeframe,
-                    lastCandleDate: prev.lastCandleDate,
-                    nCandles: prev.nCandles,
-                    isShowLatestCandle: true,
-                    isFetchFirst200Candle: prev.isFetchFirst200Candle,
-                };
-            });
-        }
-    }, [chartSettings.candleTime.global.defaults.length]);
-
-    useEffect(() => {
         if (isCondensedModeEnabled) {
             if (
                 unparsedCandleData &&
                 unparsedCandleData.length > 0 &&
                 period &&
+                candleData.duration === period &&
                 unparsedCandleData[0].period === period &&
                 isFetchingEnoughData
             ) {
@@ -1034,6 +1041,10 @@ function TradeCandleStickChart(props: propsIF) {
                                 maxRequestCountForCondensed,
                             );
                             setIsFetchingEnoughData(false);
+
+                            if (candles.length < 7) {
+                                setIsCondensedModeEnabled(false);
+                            }
                         }
                     }
                 }

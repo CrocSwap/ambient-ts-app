@@ -24,7 +24,6 @@ export const querySpotTick = async (
     _lastBlockNumber: number,
 ) => {
     if (!crocEnv) return;
-    console.log(_lastBlockNumber);
     return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotTick();
 };
 

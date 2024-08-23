@@ -2,6 +2,7 @@ import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
+    ZERO_ADDRESS,
     ethereumMainnet,
     mainnetETH,
 } from '../../constants';
@@ -110,6 +111,7 @@ export async function expandPoolStats(
     cachedTokenDetails: FetchContractDetailsFn,
     cachedQuerySpotPrice: PoolQueryFn,
     tokenList: TokenIF[],
+    enableTotalSupply?: boolean,
 ): Promise<PoolStatsIF> {
     const provider = (await crocEnv.context).provider;
 
@@ -119,12 +121,18 @@ export async function expandPoolStats(
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
-    const baseTokenListedDecimals = tokenList.find(
+    const baseTokenListed = tokenList.find(
         (token) => token.address.toLowerCase() === base.toLowerCase(),
-    )?.decimals;
-    const quoteTokenListedDecimals = tokenList.find(
+    );
+    const quoteTokenListed = tokenList.find(
         (token) => token.address.toLowerCase() === quote.toLowerCase(),
-    )?.decimals;
+    );
+
+    const baseTokenListedDecimals = baseTokenListed?.decimals;
+    const quoteTokenListedDecimals = quoteTokenListed?.decimals;
+
+    const baseTokenListedTotalSupply = baseTokenListed?.totalSupply;
+    const quoteTokenListedTotalSupply = quoteTokenListed?.totalSupply;
 
     const DEFAULT_DECIMALS = 18;
 
@@ -138,13 +146,16 @@ export async function expandPoolStats(
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
         DEFAULT_DECIMALS;
 
-    const baseTotalSupplyBigInt = (
-        await cachedTokenDetails(provider, base, chainId)
-    )?.totalSupply;
+    const baseTotalSupplyBigInt =
+        !enableTotalSupply || base === ZERO_ADDRESS
+            ? undefined
+            : baseTokenListedTotalSupply ||
+              (await cachedTokenDetails(provider, base, chainId))?.totalSupply;
 
-    const quoteTotalSupplyBigInt = (
-        await cachedTokenDetails(provider, quote, chainId)
-    )?.totalSupply;
+    const quoteTotalSupplyBigInt = !enableTotalSupply
+        ? undefined
+        : quoteTokenListedTotalSupply ||
+          (await cachedTokenDetails(provider, quote, chainId))?.totalSupply;
 
     const baseTotalSupplyNum = baseTotalSupplyBigInt
         ? bigIntToFloat(baseTotalSupplyBigInt)
@@ -182,17 +193,17 @@ export async function expandPoolStats(
     const basePrice = baseUsdPrice
         ? baseUsdPrice
         : isETHorStakedEthToken(base)
-        ? (await getEthPrice()) || 0.0
-        : quoteUsdPrice
-        ? quoteUsdPrice / (await getSpotPrice())
-        : 0.0;
+          ? (await getEthPrice()) || 0.0
+          : quoteUsdPrice
+            ? quoteUsdPrice / (await getSpotPrice())
+            : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
         : isETHorStakedEthToken(quote)
-        ? (await getEthPrice()) || 0.0
-        : baseUsdPrice
-        ? baseUsdPrice * (await getSpotPrice())
-        : 0.0;
+          ? (await getEthPrice()) || 0.0
+          : baseUsdPrice
+            ? baseUsdPrice * (await getSpotPrice())
+            : 0.0;
 
     return decoratePoolStats(
         payload,

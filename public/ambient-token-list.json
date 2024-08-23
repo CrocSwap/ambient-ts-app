@@ -372,6 +372,14 @@
             "logoURI": "https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png"
         },
         {
+            "name": "Scroll Inu",
+            "address": "0x3660020acc6e993bbdc618dd63b15ad2a3a6d139",
+            "symbol": "SINU",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
             "name": "Free Bridged SolvBTC.b",
             "address": "0x3Ba89d490AB1C0c9CC2313385b30710e838370a4",
             "symbol": "SolvBTC.b",
