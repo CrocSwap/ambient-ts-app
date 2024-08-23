@@ -636,12 +636,12 @@ function Transactions(props: propsIF) {
     
     console.log({ screenHeight })
     
-    const exHeight = screenHeight / 1.8
+    const exHeight = screenHeight / 1.44
 
 
 
     if (yes) return (
-        <div style={{  overflow: 'scroll', height: exHeight}}>
+        <div style={{  overflow: 'scroll', height: exHeight, maxHeight: '600px'}}>
             <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '2'}}>
             {headerColumnsDisplay}
 
