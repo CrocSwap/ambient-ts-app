@@ -34,6 +34,9 @@ export default function PortfolioBanner(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
 
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
+
+
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
@@ -73,7 +76,7 @@ export default function PortfolioBanner(props: propsIF) {
     // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
         // early return if address is not available (first render)
-        if (!addressOfAccountDisplayed) return null;
+        if (!addressOfAccountDisplayed || !desktopScreen) return null;
         // locate rendered parent element in DOM by element ID
         const parentElem: HTMLElement | null =
             document.getElementById(BANNER_ID);
@@ -109,7 +112,6 @@ export default function PortfolioBanner(props: propsIF) {
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
 
-    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
 
     return (
@@ -117,7 +119,7 @@ export default function PortfolioBanner(props: propsIF) {
         <div className={styles.portfolio_banner_rectangle_container} id={BANNER_ID}>
 
           
-            {desktopScreen && noisyLines}
+            { noisyLines}
             <div className={styles.portfolio_banner_rectangle_content}
             >
                 <PortfolioBannerAccount
