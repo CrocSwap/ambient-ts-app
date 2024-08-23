@@ -53,8 +53,7 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 function Sidebar() {
     const { sidebar, hideOnMobile } = useContext(SidebarContext);
 
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
-        useContext(CachedDataContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
@@ -230,8 +229,8 @@ function Sidebar() {
                                 isLocked
                                     ? 'Sidebar locked'
                                     : sidebar.isOpen
-                                    ? 'Close Sidebar'
-                                    : 'Open Sidebar'
+                                      ? 'Close Sidebar'
+                                      : 'Open Sidebar'
                             }
                         >
                             <svg
@@ -281,12 +280,7 @@ function Sidebar() {
             <SidebarAccordion
                 name='Top Pools'
                 icon={<TopPoolsIcon open={sidebar.isOpen} size={20} />}
-                data={
-                    <TopPools
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
-                }
+                data={<TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />}
                 sidebar={sidebar}
                 shouldDisplayContentWhenUserNotLoggedIn={true}
                 openAllDefault={openAllDefault}
@@ -297,8 +291,7 @@ function Sidebar() {
                 icon={<FavoritePoolsIcon open={sidebar.isOpen} size={20} />}
                 data={
                     <FavoritePools
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
                     />
                 }
                 sidebar={sidebar}
@@ -310,10 +303,7 @@ function Sidebar() {
                 name='Recent Pools'
                 icon={<RecentPoolsIcon open={sidebar.isOpen} size={20} />}
                 data={
-                    <RecentPools
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
+                    <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />
                 }
                 sidebar={sidebar}
                 shouldDisplayContentWhenUserNotLoggedIn={true}
@@ -385,11 +375,7 @@ function Sidebar() {
                 >
                     {searchContainerDisplay}
                     {searchData.isInputValid && sidebar.isOpen ? (
-                        <SidebarSearchResults
-                            searchData={searchData}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
+                        <SidebarSearchResults searchData={searchData} />
                     ) : (
                         regularSidebarDisplay
                     )}

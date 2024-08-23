@@ -66,6 +66,7 @@ export const TradeTokenContextProvider = (props: {
 
     const {
         cachedQuerySpotPrice,
+        cachedQuerySpotTick,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
@@ -113,6 +114,7 @@ export const TradeTokenContextProvider = (props: {
         isServerEnabled,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
+        cachedQuerySpotTick,
         cachedTokenDetails,
         cachedEnsResolve,
         setSimpleRangeWidth,

@@ -34,7 +34,7 @@ import {
 import { UserDataContext } from './UserDataContext';
 import { TradeDataContext } from './TradeDataContext';
 import { translateTokenSymbol } from '../ambient-utils/dataLayer';
-import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
+import { TokenContext } from './TokenContext';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -90,6 +90,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { userAddress, walletChain } = useContext(UserDataContext);
     const { walletProvider } = useWeb3ModalProvider();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+    const { tokens } = useContext(TokenContext);
 
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
@@ -101,8 +102,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-
-    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
         const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
