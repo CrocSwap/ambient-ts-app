@@ -378,7 +378,7 @@ export default function Room(props: propsIF) {
                 </div>
             </div>
             {isActive && (
-                <div className={styles.dropdow_content}>
+                <div className={styles.dropdown_content}>
                     <div className={styles.item}>
                         {roomList
                             .filter((e) => e.name !== props.selectedRoom)
