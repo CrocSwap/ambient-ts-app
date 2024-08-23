@@ -15,8 +15,18 @@
   margin: 0 auto;
   padding: 0 8px;
   /* height: calc(100dvh - 112px); */
-  overflow-y: hidden !important;
+  /* overflow-y: hidden !important; */
+
+  display: grid;
+  grid-template-rows: 100px 1fr ;
+  gap: 8px;
+
+
   
+}
+
+.mobile_container > *{
+  outline: 1px solid green;
 }
 .portfolio_tabs_container {
     width: 100%;
