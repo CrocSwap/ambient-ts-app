@@ -1,5 +1,5 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { blastETH, blastUSDB, blastEzETH, blastBLAST } from '../defaultTokens';
+import { blastETH, blastUSDB, blastBLAST, blastYES } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from 'ethers';
@@ -30,7 +30,7 @@ export const blast: NetworkIF = {
     topPools: [
         new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
         new TopPool(blastETH, blastBLAST, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastEzETH, blastETH, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastYES, blastETH, lookupChain('0x13e31').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

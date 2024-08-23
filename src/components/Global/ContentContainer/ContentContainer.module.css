@@ -130,6 +130,6 @@
         width: 95%;
     
      
-        overflow-y: scroll;
+        /* overflow-y: scroll; */
     }
 }
