@@ -477,7 +477,6 @@ const useFetchPoolStats = (
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
-        lastBlockNumber === 0,
         !!crocEnv,
         !!provider,
         poolIndex,

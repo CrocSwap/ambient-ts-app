@@ -630,7 +630,7 @@ export const scrollKNC: TokenIF = {
 export const scrollSINU: TokenIF = {
     name: 'Scroll Inu',
     address: '0x3660020acc6e993bbdc618dd63b15ad2a3a6d139',
-    symbol: 'SINU',
+    symbol: 'Sinu',
     decimals: 18,
     chainId: 534352,
     logoURI: '',
