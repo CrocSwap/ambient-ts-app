@@ -623,7 +623,7 @@ function Transactions(props: propsIF) {
 
 
     if (yes) return (
-        <div style={{height: '100%', background: 'red', overflow: 'scroll'}}>
+        <div style={{height: '100%', background: 'red', overflow: 'scroll', maxHeight: '200px'}}>
             {headerColumnsDisplay}
 
             <div onKeyDown={handleKeyDownViewTransaction} style={{height: '100%'}}>
