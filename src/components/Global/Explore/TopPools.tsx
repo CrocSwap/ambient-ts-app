@@ -136,7 +136,7 @@ function TopPools(props: propsIF) {
                         />
 
                         <TableBody>
-                            {sortedPools.pools.length ? (
+                            {!sortedPools.pools.length ? (
                                 sortedPools.pools
                                     .filter(
                                         (pool: PoolIF) =>

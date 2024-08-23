@@ -190,7 +190,9 @@ function TableRows({
 
     const transactionContent = () => {
         return (
-            <>
+            <div style={{
+                height: '50dvh', background: 'red', overflowY: 'scroll'
+            }}>
                 {(data as TransactionIF[]).map((tx, idx) => (
                     <TransactionRow
                         key={idx}
@@ -211,7 +213,7 @@ function TableRows({
                         onClose={closeTransactionModal}
                     />
                 )}
-            </>
+            </div>
         );
     };
 
