@@ -297,6 +297,7 @@ input[type='number'] {
     grid-template-rows: 105px 1fr;
     gap: 4px;
     outline: 1px solid green;
+    overflow: hidden;
 }
 .trial_work > *{
 outline: 1px solid blue;
