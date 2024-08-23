@@ -584,7 +584,7 @@ export default function MessageInput(props: MessageInputProps) {
     useEffect(() => {
         if (message.includes(':')) {
             setTokenForEmojiSearch(
-                message.split(':')[message.split(':').length - 1].toLocaleLowerCase(),
+                message.split(':')[message.split(':').length - 1].toLocaleLowerCase('en-US'),
             );
         } else {
             setTokenForEmojiSearch('');
@@ -665,15 +665,12 @@ export default function MessageInput(props: MessageInputProps) {
                 const emojiEl = getSingleEmoji(meta.unifiedChar, 
                     () => {  const emoji = getEmojiFromUnifiedCode(meta.unifiedChar);
                             handleEmojiClick(emoji, true)}, -1);
-                console.log('adding', meta.unifiedChar)
-                console.log('el', emojiEl)
                 filteredElements.push(emojiEl);
             }
         })
 
 
         domDebug('filtered emojis', filteredElements.length);
-        console.log('filtered elements', filteredElements)
         setFilteredEmojis([...filteredElements]);
     };
 
