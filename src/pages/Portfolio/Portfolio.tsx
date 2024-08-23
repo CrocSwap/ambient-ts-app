@@ -424,6 +424,15 @@ function Portfolio(props: PortfolioPropsIF) {
         </div>
     );
 
+    const yes = true
+
+    if (yes) return(
+        <div className='trial_work'>
+        <PortfolioBanner {...portfolioBannerProps} />
+        <PortfolioTabs {...portfolioTabsProps} />
+        </div>
+    );
+
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
 

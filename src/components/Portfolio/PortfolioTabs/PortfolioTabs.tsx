@@ -411,6 +411,10 @@ export default function PortfolioTabs(props: propsIF) {
         },
     ];
 
+    const yes = true
+
+
+    if ( yes) return <Transactions {...transactionsProps} />
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent

@@ -14,7 +14,7 @@
 
     display: flex;
 
-    background-color: var(--dark1);
+    background: radial-gradient(45.48% 70.71% at 0% 100%, rgba(115, 113, 252, 0.20) 0%, rgba(115, 113, 252, 0.20) 11.79%, rgba(115, 113, 252, 0.19) 21.38%, rgba(115, 113, 252, 0.19) 29.12%, rgba(115, 113, 252, 0.18) 35.34%, rgba(115, 113, 252, 0.16) 40.37%, rgba(115, 113, 252, 0.15) 44.56%, rgba(115, 113, 252, 0.13) 48.24%, rgba(115, 113, 252, 0.12) 51.76%, rgba(115, 113, 252, 0.10) 55.44%, rgba(115, 113, 252, 0.08) 59.63%, rgba(115, 113, 252, 0.07) 64.66%, rgba(115, 113, 252, 0.05) 70.88%, rgba(115, 113, 252, 0.03) 78.62%, rgba(115, 113, 252, 0.01) 88.21%, rgba(115, 113, 252, 0.00) 100%), #06060C;
 }
 
 .portfolio_banner_rectangle_content{
@@ -74,6 +74,7 @@
         border-radius: 24px 24px 0px 0px;
         height: 150px;
         margin-top: 0;
+        background: var(--dark1);
     }
     .portfolio_banner_rectangle_content{
 justify-content: flex-end;

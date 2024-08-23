@@ -19,6 +19,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { PoolContext } from '../../../contexts/PoolContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     ensName: string;
@@ -100,6 +101,7 @@ export default function PortfolioBanner(props: propsIF) {
                 noiseMidPosition={0.8}
                 seed={addressOfAccountDisplayed}
                 animationDuration={3000}
+               
             />
         );
     }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
@@ -107,12 +109,15 @@ export default function PortfolioBanner(props: propsIF) {
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
 
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
+
+
     return (
    
         <div className={styles.portfolio_banner_rectangle_container} id={BANNER_ID}>
 
           
-            {noisyLines}
+            {desktopScreen && noisyLines}
             <div className={styles.portfolio_banner_rectangle_content}
             >
                 <PortfolioBannerAccount

@@ -19,7 +19,11 @@
 
   display: grid;
   grid-template-rows: 100px 1fr ;
+  
   gap: 8px;
+  height: 70dvh;
+  margin-bottom: 56px;
+overflow: hidden !important;
 
 
   
