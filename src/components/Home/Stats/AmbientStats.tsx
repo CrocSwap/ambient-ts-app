@@ -159,7 +159,7 @@ export default function Stats() {
                 scrollCrocEnv,
                 GCGO_SCROLL_URL,
                 cachedFetchTokenPrice,
-                15,
+                20,
                 allDefaultTokens,
             ).then((dexStats) => {
                 if (!dexStats) {

@@ -7,7 +7,6 @@ import React, {
     useState,
 } from 'react';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF, TokenIF } from '../ambient-utils/types';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
@@ -50,10 +49,6 @@ export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
-    const {
-        baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
-    } = useContext(TradeTokenContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -169,14 +164,15 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const isPairStablePair = isStablePair(
-            baseTokenAddress,
-            quoteTokenAddress,
+            baseToken.address,
+            quoteToken.address,
         );
-        const isPairEthPair = isETHPair(baseTokenAddress, quoteTokenAddress);
-        const isPoolBtcPair = isBtcPair(baseTokenAddress, quoteTokenAddress);
+        const isPairEthPair = isETHPair(baseToken.address, quoteToken.address);
+        const isPoolBtcPair = isBtcPair(baseToken.address, quoteToken.address);
 
         const isPairEthWbtc =
-            baseTokenAddress === ZERO_ADDRESS && isWbtcToken(quoteTokenAddress);
+            baseToken.address === ZERO_ADDRESS &&
+            isWbtcToken(quoteToken.address);
 
         if (
             usdPrice !== undefined &&
@@ -191,7 +187,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         } else {
             setIsTradeDollarizationEnabled(false);
         }
-    }, [baseTokenAddress, quoteTokenAddress, usdPrice !== undefined]);
+    }, [baseToken.address, quoteToken.address, usdPrice !== undefined]);
 
     // Asynchronously query the APY and volatility estimates from the backend
     // useEffect(() => {
@@ -199,13 +195,13 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     //         if (
     //             crocEnv &&
     //             provider &&
-    //             baseTokenAddress &&
-    //             quoteTokenAddress &&
+    //             baseToken.address &&
+    //             quoteToken.address &&
     //             lastBlockNumber > 0
     //         ) {
     //             const annualizedGrowth = estimateFrom24HrAmbientApr(
-    //                 baseTokenAddress,
-    //                 quoteTokenAddress,
+    //                 baseToken.address,
+    //                 quoteToken.address,
     //                 crocEnv,
     //                 provider,
     //                 lastBlockNumber,
@@ -216,8 +212,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     //     })();
     // }, [
     //     lastBlockNumber == 0,
-    //     baseTokenAddress,
-    //     quoteTokenAddress,
+    //     baseToken.address,
+    //     quoteToken.address,
     //     chainData.chainId,
     //     chainData.poolIndex,
     //     !!crocEnv,
