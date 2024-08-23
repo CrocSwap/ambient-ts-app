@@ -20,6 +20,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { FlexContainer } from '../../../styled/Common';
+import { useNavigate } from 'react-router-dom';
 
 type tabData = {
     label: string;
@@ -35,8 +36,8 @@ interface TabPropsIF {
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
     shouldSyncWithTradeModules?: boolean;
-    transparent?: boolean;
-    // this props is for components that do not need outside control such as exchange balance
+    transparent?: boolean; // this prop is for components that do not need outside control such as exchange balance
+    isPortfolio?: boolean;
 }
 
 export default function TabComponent(props: TabPropsIF) {
@@ -46,6 +47,7 @@ export default function TabComponent(props: TabPropsIF) {
         isModalView = false,
         shouldSyncWithTradeModules = true,
         transparent = false,
+        isPortfolio = false,
     } = props;
     const {
         outsideControl,
@@ -58,6 +60,10 @@ export default function TabComponent(props: TabPropsIF) {
         // activeTradeTab,
         setActiveTradeTab,
     } = useContext(TradeTableContext);
+
+    const navigate = useNavigate();
+
+    const isMobile = useMediaQuery('(max-width: 600px)');
 
     const { tradeTableState } = useContext(ChartContext);
 
@@ -73,15 +79,59 @@ export default function TabComponent(props: TabPropsIF) {
     //     resetActiveRow();
     // }, [selectedTab.label]);
 
+    function removeTxTypesFromEnd(inputString: string) {
+        // Regular expression to match "transactions", "limits", or "liquidity" at the end of the string
+        const typeRegex =
+            /(transactions|limits|liquidity|points|exchange-balances|wallet-balances)$/;
+        const trailingSlashRegex = /\/$/;
+
+        // Replace the matched keyword with an empty string
+        return inputString
+            .replace(trailingSlashRegex, '')
+            .replace(typeRegex, '');
+    }
+
+    function ensureEndsWithSlash(inputString: string) {
+        // Check if the string already ends with a forward slash
+        if (!inputString.endsWith('/')) {
+            // If not, add a forward slash to the end
+            inputString += '/';
+        }
+        return inputString;
+    }
+
     function handleSelectedTab(item: tabData) {
         setOutsideControl(false);
         setSelectedTab(item);
+        const path = location.pathname;
+
+        const pathNoType = ensureEndsWithSlash(removeTxTypesFromEnd(path));
         if (
-            ['transactions', 'limits', 'liquidity'].includes(
-                item.label.toLowerCase(),
-            )
+            [
+                'transactions',
+                'limits',
+                'liquidity',
+                'exchange balances',
+                'wallet balances',
+                'points',
+            ].includes(item.label.toLowerCase())
         ) {
             setActiveTradeTab(item.label.toLowerCase());
+            if (isPortfolio) {
+                item.label.toLowerCase() === 'transactions'
+                    ? navigate(`${pathNoType}transactions`)
+                    : item.label.toLowerCase() === 'limits'
+                      ? navigate(`${pathNoType}limits`)
+                      : item.label.toLowerCase() === 'liquidity'
+                        ? navigate(`${pathNoType}liquidity`)
+                        : item.label.toLowerCase() === 'points'
+                          ? navigate(`${pathNoType}points`)
+                          : item.label.toLowerCase() === 'exchange balances'
+                            ? navigate(`${pathNoType}exchange-balances`)
+                            : item.label.toLowerCase() === 'wallet balances'
+                              ? navigate(`${pathNoType}wallet-balances`)
+                              : null;
+            }
         }
         if (tradeTableState === 'Collapsed') toggleTradeTable();
     }
@@ -161,7 +211,7 @@ export default function TabComponent(props: TabPropsIF) {
         cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
-    const mobileView = useMediaQuery('(min-width: 800px)');
+    const desktopView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
         <FlexContainer alignItems='center' justifyContent='space-between'>
@@ -183,7 +233,6 @@ export default function TabComponent(props: TabPropsIF) {
                         }
                         onClick={() => {
                             handleSelectedTab(item);
-                            item.onClick?.();
                         }}
                         aria-describedby={
                             item.label === selectedTab.label
@@ -196,15 +245,13 @@ export default function TabComponent(props: TabPropsIF) {
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        {mobileView && (
+                        {desktopView && (
                             <button
-                                onClick={() => handleSelectedTab(item)}
                                 className={styles.label_button}
                                 role='tab'
                                 aria-selected={item.label === selectedTab.label}
                                 tabIndex={0}
                             >
-                                {' '}
                                 {item.label}
                             </button>
                         )}
@@ -227,7 +274,6 @@ export default function TabComponent(props: TabPropsIF) {
     );
 
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
-
     const fullTabs = (
         <ul
             className={`${styles.tab_ul} ${styles.desktop_tabs}`}
@@ -256,14 +302,13 @@ export default function TabComponent(props: TabPropsIF) {
                     {item.icon
                         ? handleMobileMenuIcon(item.icon, item.label)
                         : null}
-                    {mobileView && (
+                    {desktopView && (
                         <button
                             className={`${styles.item_label} ${
                                 item.label === selectedTab.label
                                     ? styles.selected
                                     : ''
                             }`}
-                            onClick={() => handleSelectedTab(item)}
                             role='tab'
                             aria-selected={item.label === selectedTab.label}
                         >
@@ -304,21 +349,33 @@ export default function TabComponent(props: TabPropsIF) {
                 {/* </AnimateSharedLayout> */}
             </nav>
             <div className={styles.main_tab_content}>
-                <AnimateSharedLayout>
-                    <motion.div
+                {isMobile ? (
+                    <div
                         key={selectedTab ? selectedTab.label : 'empty'}
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -10, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
                         role='tabpanel'
                         tabIndex={0}
                         style={{ height: '100%' }}
                         hidden={!selectedTab}
                     >
                         {selectedTab ? selectedTab.content : null}
-                    </motion.div>
-                </AnimateSharedLayout>
+                    </div>
+                ) : (
+                    <AnimateSharedLayout>
+                        <motion.div
+                            key={selectedTab ? selectedTab.label : 'empty'}
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -10, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            role='tabpanel'
+                            tabIndex={0}
+                            style={{ height: '100%' }}
+                            hidden={!selectedTab}
+                        >
+                            {selectedTab ? selectedTab.content : null}
+                        </motion.div>
+                    </AnimateSharedLayout>
+                )}
             </div>
         </div>
     );

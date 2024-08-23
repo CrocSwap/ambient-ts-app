@@ -16,6 +16,7 @@ import { BsFullscreen } from 'react-icons/bs';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { IoSettingsOutline } from 'react-icons/io5';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 // import { IoSettingsOutline } from 'react-icons/io5';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
@@ -43,6 +44,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         isDenomBase,
     } = useContext(TradeDataContext);
 
+    const { activeMobileComponent } = useContext(TradeTableContext);
+
     const [, copy] = useCopyToClipboard();
     const {
         snackbar: { open: openSnackbar },
@@ -55,10 +58,10 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
             const blob = isChartFullScreen
-                ? await printDomToImage(chartCanvasRef.current, '#171d27')
+                ? await printDomToImage(chartCanvasRef.current, '')
                 : await printDomToImage(
                       canvasRef.current,
-                      '#171d27',
+                      '',
                       undefined,
                       // height, trade charts header + chart height
                       50 + chartHeights.current,
@@ -85,6 +88,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     onClick={() =>
                         setIsCondensedModeEnabled(!isCondensedModeEnabled)
                     }
+                    mobileHide={activeMobileComponent !== 'chart'}
                 >
                     <AiOutlineAreaChart
                         size={20}
@@ -113,6 +117,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     onClick={() =>
                         setIsTradeDollarizationEnabled((prev) => !prev)
                     }
+                    mobileHide={activeMobileComponent !== 'chart'}
                 >
                     <AiOutlineDollarCircle
                         size={20}

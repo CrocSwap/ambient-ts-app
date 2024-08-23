@@ -38,6 +38,12 @@
     color: var(--text1);
 }
 
+.swap_page_container h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text1);
+}
+
 .arrow_container {
     width: 50px;
     height: 50px;
@@ -61,5 +67,9 @@
 
     .swap_page_content h2 {
         font-size: 30px;
+    }
+
+    .swap_page_content h3 {
+        font-size: 15px;
     }
 }

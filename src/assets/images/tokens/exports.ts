@@ -43,12 +43,16 @@ import ESE from './ESE.jpg';
 import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
+import SCROLLY from './SCROLLY.webp';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import GOON from './GOON.svg';
 import GNUSD from './GNUSD.svg';
+import ZCAT from './ZCAT.webp';
+import SINU from './SINU.webp';
 import USDE from './USDe-Black.svg';
 import SUSDE from './SUSDE.svg';
+import NURI from './NURI.svg';
 
 // export { DAI, ETH, PEPE, USDC, USDT, WBTC, FRAX, BAL };
 export {
@@ -97,10 +101,14 @@ export {
     BIG,
     PUNKETH20,
     RSETH,
+    SCROLLY,
     WEETH,
     BLAST,
     GOON,
     GNUSD,
+    ZCAT,
+    SINU,
     USDE,
     SUSDE,
+    NURI,
 };

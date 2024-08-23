@@ -1,4 +1,4 @@
-import { CrocImpact, bigIntToFloat } from '@crocswap-libs/sdk';
+import { CrocImpact, bigIntToFloat, fromDisplayQty } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -19,6 +19,7 @@ import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModul
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import {
     IS_LOCAL_ENV,
+    L1_GAS_CALC_ENABLED,
     NUM_GWEI_IN_ETH,
     NUM_WEI_IN_GWEI,
     ZERO_ADDRESS,
@@ -199,20 +200,24 @@ function Swap(props: propsIF) {
     }, [priceImpactNum]);
 
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(sellQtyString || '0', tokenA.decimals);
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(sellQtyString || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(sellQtyString || '0', tokenA.decimals);
 
     const isTokenAWalletBalanceSufficient =
-        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+        fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
+        tokenAQtyCoveredByWalletBalance;
 
     const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+        tokenAAllowance === undefined
+            ? true
+            : tokenAAllowance >= tokenAQtyCoveredByWalletBalance;
 
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = useMemo(() => {
@@ -270,6 +275,7 @@ function Swap(props: propsIF) {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
+        if (tokenABalance === '') return;
         if (
             (sellQtyString === '' && buyQtyString === '') ||
             (isTokenAPrimary &&
@@ -306,16 +312,24 @@ function Swap(props: propsIF) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Liquidity Insufficient');
         } else {
-            const hurdle = isWithdrawFromDexChecked
-                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                : parseFloat(tokenABalance);
+            const hurdleBigInt = isWithdrawFromDexChecked
+                ? fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) +
+                  fromDisplayQty(tokenABalance || '0', tokenA.decimals)
+                : fromDisplayQty(tokenABalance || '0', tokenA.decimals);
+
             const balanceLabel = isWithdrawFromDexChecked
                 ? 'Combined Wallet and Exchange'
                 : 'Wallet';
 
-            setSwapAllowed(parseFloat(sellQtyString) <= hurdle);
+            setSwapAllowed(
+                fromDisplayQty(sellQtyString || '0', tokenA.decimals) <=
+                    hurdleBigInt,
+            );
 
-            if (parseFloat(sellQtyString) > hurdle) {
+            if (
+                fromDisplayQty(sellQtyString || '0', tokenA.decimals) >
+                hurdleBigInt
+            ) {
                 if (activeTxHashInPendingTxs) {
                     setSellQtyString('');
                     setBuyQtyString('');
@@ -330,8 +344,12 @@ function Swap(props: propsIF) {
                 }
             } else if (
                 isSellTokenNativeToken &&
-                tokenAQtyCoveredByWalletBalance + amountToReduceNativeTokenQty >
-                    parseFloat(tokenABalance) + 0.0000000001 // offset to account for floating point math inconsistencies
+                tokenAQtyCoveredByWalletBalance +
+                    fromDisplayQty(
+                        amountToReduceNativeTokenQty.toString(),
+                        tokenA.decimals,
+                    ) >
+                    fromDisplayQty(tokenABalance, tokenA.decimals)
             ) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
@@ -363,6 +381,7 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (parseFloat(primaryQuantity) === 0) return;
         if (isTokenAPrimary) {
             setIsBuyLoading(true);
             setSwapButtonErrorMessage('...');
@@ -382,7 +401,7 @@ function Swap(props: propsIF) {
         isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeeSwap, setExtraL1GasFeeSwap] = useState(
-        isActiveNetworkBlast ? 0.1 : 0,
+        isActiveNetworkBlast ? 0.01 : 0.01,
     );
 
     // calculate price of gas for swap
@@ -446,7 +465,7 @@ function Swap(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (!crocEnv) return;
+            if (!crocEnv || !L1_GAS_CALC_ENABLED) return;
 
             const qty = isTokenAPrimary
                 ? sellQtyString.replaceAll(',', '')
@@ -499,10 +518,13 @@ function Swap(props: propsIF) {
         isWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         ethMainnetUsdPrice,
+        L1_GAS_CALC_ENABLED,
     ]);
 
     useEffect(() => {
-        setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0,
+        );
     }, [tokenADexBalance]);
 
     const resetConfirmation = () => {
@@ -862,7 +884,7 @@ function Swap(props: propsIF) {
                 isPoolInitialized &&
                 isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
-                parseFloat(sellQtyString) > 0 &&
+                fromDisplayQty(sellQtyString || '0', tokenA.decimals) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
                         idForDOM='approve_token_a_for_swap_module'

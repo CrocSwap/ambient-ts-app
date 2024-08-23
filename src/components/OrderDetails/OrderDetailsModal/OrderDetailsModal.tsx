@@ -123,8 +123,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         chainId: chainId,
                         pivotTime: pivotTime.toString(),
                         positionType: positionType,
-                        addValue: 'true',
-                        omitAPY: 'false',
                     }),
             )
                 .then((response) => response?.json())

@@ -44,8 +44,8 @@ interface TradeTokenContextIF {
     tokenBDexBalance: string;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
-    tokenAAllowance: string;
-    tokenBAllowance: string;
+    tokenAAllowance: bigint | undefined;
+    tokenBAllowance: bigint | undefined;
     setRecheckTokenAApproval: (val: boolean) => void;
     setRecheckTokenBApproval: (val: boolean) => void;
     isTokenABase: boolean;
@@ -66,6 +66,7 @@ export const TradeTokenContextProvider = (props: {
 
     const {
         cachedQuerySpotPrice,
+        cachedQuerySpotTick,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
@@ -113,6 +114,7 @@ export const TradeTokenContextProvider = (props: {
         isServerEnabled,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
+        cachedQuerySpotTick,
         cachedTokenDetails,
         cachedEnsResolve,
         setSimpleRangeWidth,

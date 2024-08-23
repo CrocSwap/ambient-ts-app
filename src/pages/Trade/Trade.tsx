@@ -85,8 +85,13 @@ function Trade() {
         setActiveMobileComponent,
     } = useContext(TradeTableContext);
 
-    const { baseToken, quoteToken, isDenomBase, limitTick } =
-        useContext(TradeDataContext);
+    const {
+        baseToken,
+        quoteToken,
+        isDenomBase,
+        limitTick,
+        toggleDidUserFlipDenom,
+    } = useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -221,7 +226,12 @@ function Trade() {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection isDropdown isSmallScreen={smallScreen}>
+        <MainSection isDropdown isSmallScreen={smallScreen}
+        style={
+            activeMobileComponent === 'trade'
+              ? { height: '100dvh', overflowY: 'scroll', marginBottom: '64px' }
+              : {}
+          }        >
             {mobileTradeDropdown}
 
             <Text
@@ -234,6 +244,7 @@ function Trade() {
                     alignItems: 'center',
                     gap: '8px',
                 }}
+                onClick={() => toggleDidUserFlipDenom()}
             >
                 <MdAutoGraph size={22} color='var(--accent5)' />
                 {conversionRate}
@@ -253,7 +264,9 @@ function Trade() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding noStyle={smallScreen}>
+                <ContentContainer noPadding
+                    noStyle={smallScreen}
+                >
                     <Outlet
                         context={{
                             urlParamMap: urlParamMap,

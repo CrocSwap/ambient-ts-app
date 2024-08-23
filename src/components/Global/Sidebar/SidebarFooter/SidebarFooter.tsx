@@ -8,19 +8,14 @@ import { memo, useContext } from 'react';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import { chainNumToString } from '../../../../ambient-utils/dataLayer';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+// import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 function SidebarFooter() {
     const location = useLocation();
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const currentLocation = location.pathname;
-
-    const sidebarPositionStyle =
-        currentLocation === '/'
-            ? styles.position_sticky
-            : styles.position_sticky;
 
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
@@ -40,7 +35,7 @@ function SidebarFooter() {
         tokenB: tokenB.address,
     });
 
-    const { hideOnMobile } = useContext(SidebarContext);
+    // const { hideOnMobile } = useContext(SidebarContext);
 
     const linksData = [
         {
@@ -70,8 +65,8 @@ function SidebarFooter() {
     if (isActiveNetworkPlume) return null;
     return (
         <div
-            className={`${styles.sidebar_footer} ${sidebarPositionStyle}`}
-            style={{ paddingLeft: !hideOnMobile ? '1.5rem' : '' }}
+            className={`${styles.sidebar_footer} `}
+            // style={{ paddingLeft: !hideOnMobile ? '1.5rem' : '' }}
         >
             {linksData.map((link) =>
                 link.destination ? (

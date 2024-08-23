@@ -176,7 +176,7 @@ function RangeActionModal(props: propsIF) {
             );
 
             const liqBigInt = isAmbient
-                ? (await pos.queryAmbient()).seeds
+                ? (await pos.queryAmbientPos()).liq
                 : (await pos.queryRangePos(position.bidTick, position.askTick))
                       .liq;
             setCurrentLiquidity(liqBigInt);
@@ -215,7 +215,6 @@ function RangeActionModal(props: propsIF) {
                             askTick: position.askTick
                                 ? position.askTick.toString()
                                 : '0',
-                            addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )

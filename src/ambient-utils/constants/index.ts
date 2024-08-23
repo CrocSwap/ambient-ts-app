@@ -45,9 +45,19 @@ export const CHAT_ENABLED =
         ? import.meta.env.VITE_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const L1_GAS_CALC_ENABLED =
+    import.meta.env.VITE_L1_GAS_CALC_ENABLED !== undefined
+        ? import.meta.env.VITE_L1_GAS_CALC_ENABLED.toLowerCase() === 'true'
+        : false;
+
 export const VIEW_ONLY =
     import.meta.env.VITE_VIEW_ONLY !== undefined
         ? import.meta.env.VITE_VIEW_ONLY.toLowerCase() === 'true'
+        : false;
+
+export const DISABLE_WORKAROUNDS =
+    import.meta.env.VITE_DISABLE_WORKAROUNDS !== undefined
+        ? import.meta.env.VITE_DISABLE_WORKAROUNDS.toLowerCase() === 'true'
         : false;
 
 export const BLOCK_POLLING_RPC_URL =

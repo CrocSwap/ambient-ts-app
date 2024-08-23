@@ -86,6 +86,16 @@ export const mainnetSYN: TokenIF = {
     symbol: 'SYN',
 };
 
+export const mainnetPENDLE: TokenIF = {
+    address: '0x808507121b80c02388fad14726482e061b8da827',
+    chainId: 1,
+    decimals: 18,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/15069/thumb/Pendle_Logo_Normal-03.png',
+    name: 'Pendle',
+    symbol: 'PENDLE',
+};
+
 export const mainnetDAI: TokenIF = {
     address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     chainId: 1,
@@ -207,15 +217,6 @@ export const blastMIA: TokenIF = {
     logoURI: 'https://miablastsoff.com/images/logo.png',
 };
 
-export const blastBIG: TokenIF = {
-    address: '0x76D6556758365e63e48A0DFAfd19C8DBa15F97eE',
-    chainId: 81457,
-    decimals: 18,
-    name: 'BIG',
-    symbol: 'BIG',
-    logoURI: '',
-};
-
 export const blastJUICE: TokenIF = {
     address: '0x818a92bc81aad0053d72ba753fb5bc3d0c5c0923',
     chainId: 81457,
@@ -262,15 +263,6 @@ export const blastALIEN: TokenIF = {
     logoURI: '',
 };
 
-export const blastBAJA: TokenIF = {
-    address: '0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204',
-    chainId: 81457,
-    decimals: 18,
-    name: 'Baja',
-    symbol: 'BAJA',
-    logoURI: '',
-};
-
 export const blastESE: TokenIF = {
     address: '0x491e6DE43b55c8EAE702EDC263E32339da42f58c',
     chainId: 81457,
@@ -296,15 +288,6 @@ export const blastYES: TokenIF = {
     name: 'YES Money v2',
     symbol: 'YES',
     logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/29620.png',
-};
-
-export const blastPACM: TokenIF = {
-    address: '0x0B4d0ee29857c3961b380d4ec138EA5814E346b9',
-    chainId: 81457,
-    decimals: 18,
-    name: 'P@cman Blastoff',
-    symbol: '$PACM',
-    logoURI: 'https://www.pacman.meme/images/tokens/pacman.svg',
 };
 
 export const blastWETH: TokenIF = {
@@ -440,6 +423,7 @@ export const scrollWstETH: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
+
 export const scrollWeETH: TokenIF = {
     name: 'Wrapped eETH',
     address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
@@ -448,6 +432,62 @@ export const scrollWeETH: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
+};
+
+export const scrollSCROLLY: TokenIF = {
+    name: 'Scrolly The Map',
+    address: '0xb65aD8d81d1E4Cb2975352338805AF6e39BA8Be8',
+    symbol: 'SCROLLY',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scrollscan.com/token/images/scrollythemap_32.png',
+};
+
+export const scrollSTG: TokenIF = {
+    name: 'StargateToken',
+    address: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
+    symbol: 'STG',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png',
+};
+
+export const scrollSCRIBES: TokenIF = {
+    name: 'SCRIBES',
+    address: '0x750351a9F75F98f2c2E91D4eDb3BeB14e719557E',
+    symbol: 'SCRIBES',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollSKY: TokenIF = {
+    name: 'Skydrome',
+    address: '0x95a52EC1d60e74CD3Eb002fE54A2c74b185A4C16',
+    symbol: 'SKY',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670',
+};
+
+export const scrollPANDA: TokenIF = {
+    name: 'PANDA',
+    address: '0x61a9cC561b6c1F9C31bcDeb447aFeCf25f33Bbf9',
+    symbol: 'PANDA',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://assets.coingecko.com/coins/images/35746/thumb/panda.jpeg',
+};
+
+export const scrollSOL: TokenIF = {
+    name: 'Wrapped SOL',
+    address: '0xCDf95E1F720caade4b1DC83ABfE15400D2a458AD',
+    symbol: 'SOL',
+    decimals: 9,
+    chainId: 534352,
+    logoURI: '',
 };
 
 export const scrollWrsETH: TokenIF = {
@@ -587,6 +627,23 @@ export const scrollKNC: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
+export const scrollSINU: TokenIF = {
+    name: 'Scroll Inu',
+    address: '0x3660020acc6e993bbdc618dd63b15ad2a3a6d139',
+    symbol: 'SINU',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+export const scrollSOLVBTC: TokenIF = {
+    name: 'Free Bridged SolvBTC.b',
+    address: '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4',
+    symbol: 'SolvBTC.b',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/36800/standard/solvBTC.png',
+};
 
 export const scrollUSDT: TokenIF = {
     chainId: 534352,
@@ -691,6 +748,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetDAI,
     mainnetFRAX,
     mainnetSYN,
+    mainnetPENDLE,
     mainnetUSDT,
     mainnetRPL,
     mainnetWstETH,
@@ -706,11 +764,9 @@ export const defaultTokens: TokenIF[] = [
     blastBLAST,
     blastUSDPLUS,
     blastMIA,
-    blastBIG,
     blastMIM,
     blastORBIT,
     blastBAG,
-    blastBAJA,
     blastESE,
     blastBEPE,
     blastALIEN,
@@ -721,7 +777,6 @@ export const defaultTokens: TokenIF[] = [
     blastPUMP,
     blastYES,
     blastYESv1,
-    blastPACM,
     blastSepoliaETH,
     blastSepoliaUSDB,
     scrollETH,
@@ -730,6 +785,8 @@ export const defaultTokens: TokenIF[] = [
     scrollDAI,
     scrollUSDT,
     scrollKNC,
+    scrollSINU,
+    scrollSOLVBTC,
     scrollBalancer,
     scrollAxlUSDC,
     scrollUSDE,
@@ -740,6 +797,11 @@ export const defaultTokens: TokenIF[] = [
     scrollWrappedETH,
     scrollWstETH,
     scrollWeETH,
+    scrollSCROLLY,
+    scrollSTG,
+    scrollSCRIBES,
+    scrollSKY,
+    scrollSOL,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,

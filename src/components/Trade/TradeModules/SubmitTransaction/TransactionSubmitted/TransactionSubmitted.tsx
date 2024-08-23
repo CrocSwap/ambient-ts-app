@@ -64,7 +64,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         <Button
             idForDOM='import_token_B_into_wallet_button'
             flat
-            title={`Import ${tokenBSymbol} into Connected Wallet`}
+            title={`Import ${tokenBSymbol} Into Connected Wallet`}
             action={handleAddToMetaMask}
             disabled={false}
         />
@@ -100,7 +100,7 @@ export default function TransactionSubmitted(props: PropsIF) {
                 )}
             </div>
 
-            <h2 style={{ marginBottom: '15px' }}>
+            <h3 style={{ marginBottom: '15px' }}>
                 {type === 'Limit'
                     ? `Limit Order ${
                           isTransactionFailed
@@ -164,7 +164,7 @@ export default function TransactionSubmitted(props: PropsIF) {
                                             ? 'Success!'
                                             : 'Submitted'
                                   }`}
-            </h2>
+            </h3>
             <div
                 className={`${styles.action_buttons} ${
                     noAnimation && styles.bypass_buttons

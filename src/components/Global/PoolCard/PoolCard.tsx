@@ -5,6 +5,7 @@ import TokenIcon from '../TokenIcon/TokenIcon';
 import {
     getFormattedNumber,
     isETHPair,
+    isBtcPair,
     isStableToken,
     isWbtcToken,
     uriToHttp,
@@ -18,10 +19,11 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     pool: PoolIF;
+    spotPrice: number | undefined;
 }
 
 export default function PoolCard(props: propsIF) {
-    const { pool } = props;
+    const { pool, spotPrice } = props;
 
     const {
         chainData: { chainId },
@@ -30,7 +32,7 @@ export default function PoolCard(props: propsIF) {
     const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
-    const poolData = useFetchPoolStats(pool);
+    const poolData = useFetchPoolStats(pool, spotPrice);
 
     const {
         poolVolume24h,
@@ -53,6 +55,7 @@ export default function PoolCard(props: propsIF) {
         : isWbtcToken(pool.base.address);
 
     const isEthStakedEthPair = isETHPair(pool.base.address, pool.quote.address);
+    const isPoolBtcPair = isBtcPair(pool.base.address, pool.quote.address);
 
     const usdPrice =
         poolPriceDisplay && basePrice && quotePrice
@@ -64,7 +67,7 @@ export default function PoolCard(props: propsIF) {
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
             {isHovered || denomTokenIsStableToken
-                ? denomTokenIsWBTCToken || isEthStakedEthPair
+                ? denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
                     ? `${
                           usdPrice
                               ? getFormattedNumber({
@@ -76,7 +79,7 @@ export default function PoolCard(props: propsIF) {
                     : poolPrice === undefined
                       ? '…'
                       : poolPrice
-                : denomTokenIsWBTCToken || isEthStakedEthPair
+                : denomTokenIsWBTCToken || isEthStakedEthPair || isPoolBtcPair
                   ? poolPrice === undefined
                       ? '…'
                       : poolPrice

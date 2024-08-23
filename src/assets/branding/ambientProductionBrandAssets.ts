@@ -5,11 +5,6 @@ import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const ambientProductionBrandAssets: brandIF = {
     networks: {
-        // ethereum mainnet
-        '0x1': {
-            color: 'purple_dark',
-            hero: [{ content: 'ambient', processAs: 'text' }],
-        },
         // scroll mainnet
         '0x82750': {
             color: 'purple_dark',
@@ -27,6 +22,11 @@ export const ambientProductionBrandAssets: brandIF = {
                 { content: '×', processAs: 'separator' },
                 { content: blastLogo, processAs: 'image' },
             ],
+        },
+        // ethereum mainnet
+        '0x1': {
+            color: 'purple_dark',
+            hero: [{ content: 'ambient', processAs: 'text' }],
         },
     },
     platformName: 'ambient',

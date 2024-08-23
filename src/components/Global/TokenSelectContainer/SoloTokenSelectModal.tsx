@@ -250,6 +250,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         spellCheck='false'
                         type='text'
                         value={rawInput}
+                        autoComplete='off'
                         onChange={(e) => setInput(e.target.value)}
                         placeholder=' Search name or paste address'
                         style={{
@@ -310,7 +311,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         ),
                     )}
                 {showSoloSelectTokenButtons ? (
-                    <div className={styles.scrollable_container}>
+                    <div className='custom_scroll_ambient'>
                         {removeWrappedNative(chainId, outputTokens)
                             .slice(0, MAX_TOKEN_COUNT)
                             .map((token: TokenIF) => {

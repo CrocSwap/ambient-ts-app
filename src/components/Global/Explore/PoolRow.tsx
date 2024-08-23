@@ -63,6 +63,7 @@ export default function PoolRow(props: propsIF) {
                 goToMarket(pool.base.address, pool.quote.address);
                 event?.stopPropagation();
             }}
+
             // onMouseEnter={() => setIsHovered(true)}
             // onMouseLeave={() => setIsHovered(false)}
         >
@@ -92,7 +93,7 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm left>
                 <p style={{ textTransform: 'none' }}>{pool.name}</p>
             </TableCell>
-            <TableCell>
+            <TableCell hidden lg>
                 <p>
                     {isExploreDollarizationEnabled
                         ? pool.usdPriceMoneynessBased !== 0
@@ -109,7 +110,7 @@ export default function PoolRow(props: propsIF) {
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
             </TableCell>
-            <TableCell hidden lg>
+            <TableCell>
                 <p>{aprString}</p>
             </TableCell>
             <TableCell>

@@ -11,40 +11,71 @@ import {
     useMemo,
 } from 'react';
 
-import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import usePagination from '../../../Global/Pagination/usePagination';
-import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import {
+    TradeTableContext,
+    TradeTableContextIF,
+} from '../../../../contexts/TradeTableContext';
 import Spinner from '../../../Global/Spinner/Spinner';
-import { CandleContext } from '../../../../contexts/CandleContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
+import {
+    CandleContext,
+    CandleContextIF,
+} from '../../../../contexts/CandleContext';
+import {
+    ChartContext,
+    ChartContextIF,
+} from '../../../../contexts/ChartContext';
 import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import {
+    TokenContext,
+    TokenContextIF,
+} from '../../../../contexts/TokenContext';
+import {
+    CachedDataContext,
+    CachedDataIF,
+} from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import {
-    TransactionRow as TransactionRowStyled,
-    ViewMoreButton,
-} from '../../../../styled/Components/TransactionTable';
-import { FlexContainer, Text } from '../../../../styled/Common';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
-import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+    SidebarContext,
+    SidebarStateIF,
+} from '../../../../contexts/SidebarContext';
+import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    GraphDataContext,
+    GraphDataContextIF,
+} from '../../../../contexts/GraphDataContext';
+import {
+    DataLoadingContext,
+    DataLoadingContextIF,
+} from '../../../../contexts/DataLoadingContext';
+import {
+    TradeDataContext,
+    TradeDataContextIF,
+} from '../../../../contexts/TradeDataContext';
+import {
+    ReceiptContext,
+    ReceiptContextIF,
+} from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
+import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
+    isAccountView: boolean;
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
@@ -62,57 +93,56 @@ function Transactions(props: propsIF) {
 
     const {
         server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
-    const { isCandleSelected } = useContext(CandleContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
+    const { isCandleSelected } = useContext<CandleContextIF>(CandleContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { chartSettings, tradeTableState } = useContext(ChartContext);
+    } = useContext<CachedDataIF>(CachedDataContext);
+    const { chartSettings } = useContext<ChartContextIF>(ChartContext);
     const {
         crocEnv,
         activeNetwork,
         provider,
         chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
-    const { showAllData: showAllDataSelection, toggleTradeTable } =
-        useContext(TradeTableContext);
-    const { setOutsideControl } = useContext(TradeTableContext);
-    const { tokens } = useContext(TokenContext);
+    } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
+    const { setOutsideControl, showAllData: showAllDataSelection } =
+        useContext<TradeTableContextIF>(TradeTableContext);
+    const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const {
         sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
+    } = useContext<SidebarStateIF>(SidebarContext);
 
-    const candleTime = chartSettings.candleTime.global;
+    const candleTime: candleTimeIF = chartSettings.candleTime.global;
 
-    // only show all data and expand when on trade tab page
-    const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded =
-        !isAccountView && tradeTableState === 'Expanded';
-
-    const dataLoadingStatus = useContext(DataLoadingContext);
+    const dataLoadingStatus =
+        useContext<DataLoadingContextIF>(DataLoadingContext);
     const {
         transactionsByUser,
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
-    } = useContext(GraphDataContext);
-    const { transactionsByType } = useContext(ReceiptContext);
-    const { baseToken, quoteToken } = useContext(TradeDataContext);
+    } = useContext<GraphDataContextIF>(GraphDataContext);
+    const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
+    const { baseToken, quoteToken } =
+        useContext<TradeDataContextIF>(TradeDataContext);
 
-    const selectedBaseAddress = baseToken.address;
-    const selectedQuoteAddress = quoteToken.address;
-    const quoteTokenSymbol = quoteToken?.symbol;
-    const baseTokenSymbol = baseToken?.symbol;
+    const selectedBaseAddress: string = baseToken.address;
+    const selectedQuoteAddress: string = quoteToken.address;
+    const quoteTokenSymbol: string = quoteToken?.symbol;
+    const baseTokenSymbol: string = baseToken?.symbol;
 
     const [candleTransactionData, setCandleTransactionData] = useState<
         TransactionIF[]
     >([]);
 
-    const transactionData = useMemo(
+    const showAllData = !isAccountView && showAllDataSelection;
+
+    const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
                 ? activeAccountTransactionData || []
@@ -120,14 +150,14 @@ function Transactions(props: propsIF) {
                   ? userTransactionsByPool.changes
                   : transactionsByPool.changes,
         [
-            showAllData,
             activeAccountTransactionData,
             userTransactionsByPool,
             transactionsByPool,
+            showAllData,
         ],
     );
 
-    const userTransacionsLength = useMemo(
+    const userTransacionsLength = useMemo<number>(
         () =>
             isAccountView
                 ? activeAccountTransactionData
@@ -147,7 +177,7 @@ function Transactions(props: propsIF) {
         }
     }, [isCandleSelected]);
 
-    const isLoading = useMemo(
+    const isLoading = useMemo<boolean>(
         () =>
             isCandleSelected
                 ? dataLoadingStatus.isCandleDataLoading
@@ -155,9 +185,7 @@ function Transactions(props: propsIF) {
                   ? dataLoadingStatus.isConnectedUserTxDataLoading
                   : isAccountView
                     ? dataLoadingStatus.isLookupUserTxDataLoading
-                    : !showAllData
-                      ? dataLoadingStatus.isConnectedUserPoolTxDataLoading
-                      : dataLoadingStatus.isPoolTxDataLoading,
+                    : dataLoadingStatus.isPoolTxDataLoading,
         [
             isAccountView,
             showAllData,
@@ -182,10 +210,10 @@ function Transactions(props: propsIF) {
     );
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 800px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+    const isSmallScreen: boolean = useMediaQuery('(max-width: 800px)');
+    const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
-    const tableView =
+    const tableView: 'small' | 'medium' | 'large' =
         isSmallScreen ||
         (isAccountView &&
             !isLargeScreen &&
@@ -200,7 +228,7 @@ function Transactions(props: propsIF) {
               ? 'medium'
               : 'large';
 
-    const getCandleData = () =>
+    const getCandleData = (): Promise<void> | undefined =>
         crocEnv &&
         provider &&
         fetchPoolRecentChanges({
@@ -209,11 +237,6 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
             n: 80,
             period: candleTime.time,
             time: filter?.time,
@@ -276,14 +299,13 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
+    const walID: JSX.Element = (
         <>
             <p>ID</p>
             Wallet
         </>
     );
-    const sideType = (
+    const sideType: JSX.Element = (
         <>
             <p>Type</p>
             <p>Side</p>
@@ -400,14 +422,14 @@ function Transactions(props: propsIF) {
         },
     ];
 
-    const txDataToDisplay = isCandleSelected
+    const txDataToDisplay: TransactionIF[] = isCandleSelected
         ? candleTransactionData
         : transactionData;
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', txDataToDisplay);
 
-    const headerColumnsDisplay = (
+    const headerColumnsDisplay: JSX.Element = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
                 <TransactionHeader
@@ -422,98 +444,11 @@ function Transactions(props: propsIF) {
         </TransactionRowStyled>
     );
 
-    const [page, setPage] = useState(1);
-    const resetPageToFirst = () => setPage(1);
-
-    // const isScreenShort =
-    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
-
-    // const isScreenTall =
-    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
-
-    const _DATA = usePagination(
-        sortedTransactions,
-        // isScreenShort,
-        // isScreenTall,
-    );
-
-    const {
-        showingFrom,
-        showingTo,
-        totalItems,
-        setCurrentPage,
-        rowsPerPage,
-        changeRowsPerPage,
-        count,
-        fullData,
-    } = _DATA;
     const listRef = useRef<HTMLUListElement>(null);
-
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-        const element = document.getElementById('current_row_scroll');
-        element?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'start',
-        });
-    };
-
-    const handleChangeRowsPerPage = (
-        event:
-            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            | React.ChangeEvent<HTMLSelectElement>,
-    ) => {
-        changeRowsPerPage(parseInt(event.target.value, 10));
-    };
-
-    const tradePageCheck = isTradeTableExpanded && txDataToDisplay.length > 30;
-
-    const sPagination = useMediaQuery('(max-width: 800px)');
-    const footerDisplay = rowsPerPage > 0 &&
-        ((isAccountView && txDataToDisplay.length > 10) ||
-            (!isAccountView && tradePageCheck)) && (
-            <FlexContainer
-                alignItems='center'
-                justifyContent='center'
-                gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? '40px auto' : '16px auto'}
-                background='dark1'
-                flexDirection={isSmallScreen ? 'column' : 'row'}
-            >
-                <RowsPerPageDropdown
-                    rowsPerPage={rowsPerPage}
-                    onChange={handleChangeRowsPerPage}
-                    itemCount={sortedTransactions.length}
-                    setCurrentPage={setCurrentPage}
-                    resetPageToFirst={resetPageToFirst}
-                />
-                <Pagination
-                    count={count}
-                    page={page}
-                    shape='circular'
-                    color='secondary'
-                    onChange={handleChange}
-                    showFirstButton
-                    showLastButton
-                    size={sPagination ? 'small' : 'medium'}
-                />
-                {!isSmallScreen && (
-                    <Text
-                        fontSize='mini'
-                        color='text2'
-                        style={{ whiteSpace: 'nowrap' }}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-                )}
-            </FlexContainer>
-        );
 
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
-    ) => {
+    ): void => {
         // Opens a modal which displays the contents of a transaction and some other information
         const { key } = event;
 
@@ -540,17 +475,12 @@ function Transactions(props: propsIF) {
         }
     };
 
-    const showViewMoreButton =
-        !isTradeTableExpanded &&
-        !isAccountView &&
-        sortedTransactions.length > rowsPerPage;
-
-    const shouldDisplayNoTableData =
+    const shouldDisplayNoTableData: boolean =
         !isLoading &&
         !txDataToDisplay.length &&
         unindexedNonFailedTransactions.length === 0;
 
-    const transactionDataOrNull = shouldDisplayNoTableData ? (
+    const transactionDataOrNull: JSX.Element = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
             type='transactions'
@@ -568,8 +498,8 @@ function Transactions(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { height: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 380px)' }
+                            ? { maxHeight: 'calc(100svh - 310px)' }
+                            : { height: 'calc(100svh - 330px)' }
                         : undefined
                 }
             >
@@ -678,36 +608,16 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={_DATA.currentData.filter(
+                    data={sortedTransactions.filter(
                         (tx) => tx.changeType !== 'cross',
                     )}
-                    fullData={fullData}
+                    fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
                 />
             </ul>
-            {showViewMoreButton && (
-                <FlexContainer
-                    justifyContent='center'
-                    alignItems='center'
-                    padding='8px'
-                >
-                    <ViewMoreButton onClick={() => toggleTradeTable()}>
-                        View More
-                    </ViewMoreButton>
-                </FlexContainer>
-            )}
-            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
         </div>
     );
-
-    useEffect(() => {
-        if (_DATA.currentData.length && !isTradeTableExpanded) {
-            setCurrentPage(1);
-            const mockEvent = {} as React.ChangeEvent<unknown>;
-            handleChange(mockEvent, 1);
-        }
-    }, [isTradeTableExpanded]);
 
     return (
         <FlexContainer
@@ -716,7 +626,10 @@ function Transactions(props: propsIF) {
         >
             <div>{headerColumnsDisplay}</div>
 
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
@@ -729,8 +642,6 @@ function Transactions(props: propsIF) {
                     transactionDataOrNull
                 )}
             </div>
-
-            {footerDisplay}
         </FlexContainer>
     );
 }

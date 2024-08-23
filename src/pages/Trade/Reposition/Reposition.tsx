@@ -492,8 +492,6 @@ function Reposition() {
                     poolIdx: poolIndex.toString(),
                     chainId: position.chainId,
                     positionType: position.positionType,
-                    addValue: 'true',
-                    omitAPY: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -754,7 +752,7 @@ function Reposition() {
     //     isScroll ? 0.0009 * 1e9 : 0,
     // );
     const [extraL1GasFeePool] = useState(
-        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.2 : 0,
+        isActiveNetworkScroll ? 0.03 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     useEffect(() => {

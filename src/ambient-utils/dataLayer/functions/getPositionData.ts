@@ -246,7 +246,7 @@ export const getPositionData = async (
                 position.quote,
                 position.user,
             );
-            const liqBigNum = (await pos.queryAmbient()).seeds;
+            const liqBigNum = (await pos.queryAmbientPos()).liq;
             const liqNum = bigIntToFloat(liqBigNum);
             newPosition.positionLiq = liqNum;
         } else {
@@ -396,7 +396,6 @@ export type PositionStatsFn = (
     poolIdx: number,
     chainId: string,
     positionType: string,
-    addValue: boolean,
     time: number, // arbitrary number to cache for an amount of time
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;

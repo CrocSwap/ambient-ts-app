@@ -48,7 +48,7 @@ import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
-    tokenAllowance: string;
+    tokenAllowance: bigint | undefined;
     tokenWalletBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
@@ -92,7 +92,7 @@ export default function Deposit(props: propsIF) {
         isActiveNetworkL2 ? 0.0002 * 1e9 : 0,
     );
     const [extraL1GasFeeDeposit] = useState(
-        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.05 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const [depositGasPriceinDollars, setDepositGasPriceinDollars] = useState<
@@ -167,7 +167,7 @@ export default function Deposit(props: propsIF) {
     const isTokenAllowanceSufficient = useMemo(
         () =>
             tokenAllowance && isDepositQtyValid && !!depositQtyNonDisplay
-                ? BigInt(tokenAllowance) >= BigInt(depositQtyNonDisplay)
+                ? tokenAllowance >= BigInt(depositQtyNonDisplay)
                 : false,
         [tokenAllowance, isDepositQtyValid, depositQtyNonDisplay],
     );

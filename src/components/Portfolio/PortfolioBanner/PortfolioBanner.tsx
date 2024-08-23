@@ -111,6 +111,7 @@ export default function PortfolioBanner(props: propsIF) {
 
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
+
     return (
         <PortfolioBannerRectangleContainer
             id={BANNER_ID}
@@ -125,7 +126,7 @@ export default function PortfolioBanner(props: propsIF) {
                     position: 'absolute',
                     bottom: 20,
                     left: 20,
-                    zIndex: 10,
+                    zIndex: 1,
                 }} // Positioned above the NoisyLines component
             >
                 <PortfolioBannerAccount
@@ -168,7 +169,7 @@ export default function PortfolioBanner(props: propsIF) {
                     position: 'absolute',
                     bottom: 20,
                     right: 20,
-                    zIndex: 10,
+                    zIndex: 3,
                 }} // Positioned above the NoisyLines component
             >
                 <UserLevelDisplay

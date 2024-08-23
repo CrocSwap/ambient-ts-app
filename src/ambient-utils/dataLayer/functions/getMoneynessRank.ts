@@ -3,7 +3,9 @@ import { defaultTokens } from '../../constants/defaultTokens';
 export const getTranslatedSymbol = (tokenSymbol: string) =>
     tokenSymbol.toUpperCase() === 'USD+'
         ? 'USDPLUS'
-        : tokenSymbol.toUpperCase();
+        : tokenSymbol.toUpperCase() === 'SOLVBTC.B'
+          ? 'SOLVBTC'
+          : tokenSymbol.toUpperCase();
 
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
@@ -34,6 +36,7 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         USDT: 80,
         FRAX: 70,
         WBTC: 60,
+        SOLVBTC: 55,
         ETH: 50,
         WSTETH: 45,
         WRSETH: 45,
