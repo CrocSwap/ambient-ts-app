@@ -469,7 +469,7 @@ const useFetchPoolStats = (
     });
 
     useEffect(() => {
-        if (isServerEnabled) fetchPoolStats();
+        if (isServerEnabled && lastBlockNumber !== 0) fetchPoolStats();
     }, [
         isUserIdle
             ? Math.floor(Date.now() / 120000)
@@ -477,6 +477,7 @@ const useFetchPoolStats = (
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
+        lastBlockNumber !== 0,
         !!crocEnv,
         !!provider,
         poolIndex,
