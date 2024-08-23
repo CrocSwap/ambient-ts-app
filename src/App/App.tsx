@@ -437,7 +437,7 @@ export default function App() {
                     currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && <FooterNav />}
+                {showMobileVersion && !isActiveNetworkPlume && <FooterNav />}
             </div>
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
