@@ -492,11 +492,11 @@ function Transactions(props: propsIF) {
             }
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction} style={{flex: 1,  height: '100%'}}>
+        <div onKeyDown={handleKeyDownViewTransaction} style={{ height: '100%'}}>
         <ul
         ref={listRef}
         // id='current_row_scroll'
-        style={{flex: 1,  height: '100%'}}
+        style={{height: '100%'}}
     >
         {!isAccountView &&
             unindexedNonFailedTransactions.length > 0 &&
@@ -624,7 +624,7 @@ function Transactions(props: propsIF) {
 
     if (isSmallScreen) return (
         <div style={{  overflow: 'scroll', height:  '100%'}}>
-            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '2'}}>
+            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
             {headerColumnsDisplay}
 
             </div>

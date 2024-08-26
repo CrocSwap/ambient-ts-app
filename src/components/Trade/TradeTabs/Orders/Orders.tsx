@@ -150,7 +150,7 @@ function Orders(props: propsIF) {
         useSortedLimits('time', limitOrderData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 750px)');
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
     const tableView =
@@ -357,17 +357,11 @@ function Orders(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewOrder}>
+        <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%'}}>
             <ul
                 ref={listRef}
-                id='current_row_scroll'
-                style={
-                    isSmallScreen
-                        ? isAccountView
-                            ? { maxHeight: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 330px)' }
-                        : undefined
-                }
+                // id='current_row_scroll'
+                style={{height: '100%'}}
             >
                 {!isAccountView &&
                     relevantTransactionsByType.length > 0 &&
@@ -395,6 +389,19 @@ function Orders(props: propsIF) {
             </ul>
         </div>
     );
+
+    if (isSmallScreen) return (
+        <div style={{  overflow: 'scroll', height:  '100%'}}>
+            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
+            {headerColumnsDisplay}
+
+            </div>
+            <div style={{overflowY: 'scroll', height: '100%'}}>
+                
+            {orderDataOrNull}   
+</div>
+        </div>
+    )
 
     return (
         <FlexContainer
