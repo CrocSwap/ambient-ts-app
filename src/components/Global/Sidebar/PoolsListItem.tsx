@@ -1,9 +1,5 @@
 import { PoolIF } from '../../../ambient-utils/types';
-import {
-    PoolStatsFn,
-    getMoneynessRank,
-    uriToHttp,
-} from '../../../ambient-utils/dataLayer';
+import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -12,7 +8,6 @@ import {
     linkGenMethodsIF,
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../ambient-utils/api';
 import {
     ItemContainer,
     MainItemContainer,
@@ -29,12 +24,11 @@ import { BrandContextIF, BrandContext } from '../../../contexts/BrandContext';
 
 interface propsIF {
     pool: PoolIF;
-    cachedPoolStatsFetch: PoolStatsFn;
-    cachedFetchTokenPrice: TokenPriceFn;
+    spotPrice: number | undefined;
 }
 
 export default function PoolsListItem(props: propsIF) {
-    const { pool } = props;
+    const { pool, spotPrice } = props;
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
@@ -79,7 +73,7 @@ export default function PoolsListItem(props: propsIF) {
     }
 
     // hook to get human-readable values for pool volume and TVL
-    const poolData = useFetchPoolStats(pool);
+    const poolData = useFetchPoolStats(pool, spotPrice);
 
     const {
         poolPrice,

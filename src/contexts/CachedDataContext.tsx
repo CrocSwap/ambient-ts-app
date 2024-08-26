@@ -19,6 +19,7 @@ import {
     memoizePoolStats,
     SpotPriceFn,
     memoizeQuerySpotPrice,
+    memoizeQuerySpotTick,
     memoizeGet24hChange,
     Change24Fn,
     memoizeGetLiquidityFee,
@@ -32,7 +33,7 @@ import {
 } from '../ambient-utils/dataLayer';
 import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
-interface CachedDataIF {
+export interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
@@ -42,6 +43,7 @@ interface CachedDataIF {
     cachedGetAuctionStatus: AuctionStatusQueryFn;
     cachedGetUserAuctionsList: UserAuctionListQueryFn;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedQuerySpotTick: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
     cachedFetchTopPairedToken: FetchTopPairedTokenFn;
@@ -67,6 +69,7 @@ export const CachedDataContextProvider = (props: {
         cachedGetAuctionStatus: memoizeGetAuctionStatus(),
         cachedGetUserAuctionsList: memoizeGetUserAuctionsList(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
+        cachedQuerySpotTick: memoizeQuerySpotTick(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
         cachedFetchTopPairedToken: memoizeFetchTopPairedToken(),

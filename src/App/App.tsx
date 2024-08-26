@@ -5,8 +5,7 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 
 /** ***** Import JSX Files *******/
 import PageHeader from './components/PageHeader/PageHeader';
-
-import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
+// import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -23,6 +22,7 @@ import { BrandContext } from '../contexts/BrandContext';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import FooterNav from '../components/Global/FooterNav/FooterNav';
 
 import { RouteRenderer } from '../routes';
 import Navbar from '../components/Futa/Navbar/Navbar';
@@ -97,18 +97,24 @@ export default function App() {
         }
     }, [isEscapePressed]);
     const showMobileVersion = useMediaQuery('(max-width: 500px)');
-    const showChatPanel =
-        currentLocation !== '/' &&
-        currentLocation !== '/404' &&
-        currentLocation !== '/terms' &&
-        currentLocation !== '/privacy' &&
-        currentLocation !== '/faq' &&
-        !currentLocation.includes('/chat') &&
-        isChatEnabled;
+    // const showChatPanel =
+    //     currentLocation !== '/' &&
+    //     currentLocation !== '/404' &&
+    //     currentLocation !== '/terms' &&
+    //     currentLocation !== '/privacy' &&
+    //     currentLocation !== '/faq' &&
+    //     !currentLocation.includes('/chat') &&
+    //     isChatEnabled;
     const ambientFooter = (
         <div data-theme={skin} className='footer_container'>
-            {showChatPanel && <ChatPanel isFullScreen={false} />}
-            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
+            {currentLocation !== '/' &&
+                currentLocation !== '/404' &&
+                currentLocation !== '/terms' &&
+                currentLocation !== '/privacy' &&
+                currentLocation !== '/faq' &&
+                !currentLocation.includes('/chat') &&
+                isChatEnabled && <ChatPanel isFullScreen={false} />}
+            {showMobileVersion && <FooterNav />}
         </div>
     );
 
@@ -144,6 +150,9 @@ export default function App() {
                 <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
+                    onTouchMoveCapture={() =>
+                        appHeaderDropdown.setIsActive(false)
+                    }
                 />
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
@@ -152,6 +161,7 @@ export default function App() {
             ) : (
                 ambientFooter
             )}
+
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}

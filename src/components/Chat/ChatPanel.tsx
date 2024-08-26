@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import { EmojiClickData } from 'emoji-picker-react';
 import React, { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlineCheck, AiOutlineClose, AiOutlineUser } from 'react-icons/ai';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -36,6 +36,8 @@ import useChatApi from './Service/ChatApi';
 import useChatSocket from './Service/useChatSocket';
 import { domDebug } from './DomDebugger/DomDebuggerUtils';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
+import { getEmojiPack } from './ChatRenderUtils';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -63,6 +65,7 @@ function ChatPanel(props: propsIF) {
     const { selectedNetwork } = useContext(CrocEnvContext);
 
     const messageListWrapper = useRef<HTMLDivElement>(null);
+    const reactionsRef = useRef<HTMLDivElement>(null);
     const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
     const [isModerator, setIsModerator] = useState(false);
@@ -197,6 +200,17 @@ function ChatPanel(props: propsIF) {
     const [messageForNotificationBubble, setMessageForNotificationBubble] =
         useState<Message | undefined>(undefined);
 
+    const reactionCodes = [
+        '1f44d',
+        '2764-fe0f',
+        '1f603',
+        '1f602',
+        '1f622',
+        '1f64f',
+        '1f44e',
+        '1f621',
+    ];
+
     const {
         messages,
         lastMessage,
@@ -239,7 +253,10 @@ function ChatPanel(props: propsIF) {
     } = useChatApi();
 
     const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
+    const focusedMessageRef = useRef<Message | undefined>();
+    focusedMessageRef.current = focusedMessage;
     const [showPicker, setShowPicker] = useState(false);
+    const [pickerBottomPos, setPickerBottomPos] = useState(0);
 
     const defaultEnsName = 'defaultValue';
 
@@ -250,6 +267,10 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const lastScrollListenerRef = useRef<boolean>();
     lastScrollListenerRef.current = lastScrollListenerActive;
+
+    useOnClickOutside(reactionsRef, () => {
+        setShowPicker(false);
+    });
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') {
@@ -312,16 +333,25 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const reactionBtnListener = (focusedMessage?: Message) => {
+    const reactionBtnListener = (
+        e: React.MouseEvent<HTMLDivElement>,
+        focusedMessage?: Message,
+    ) => {
+        setPickerBottomPos(
+            window.innerHeight - (e.clientY + (isMobile ? 50 : 0)),
+        );
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
-    const addReactionEmojiPickListener = (
-        event: React.MouseEvent,
-        data: IEmojiData,
-    ) => {
-        if (focusedMessage && currentUser) {
-            addReaction(focusedMessage._id, currentUser, data.emoji);
+    const addReactionEmojiPickListener = (data: EmojiClickData | string) => {
+        if (focusedMessageRef.current && currentUser) {
+            let reaction;
+            if (typeof data == 'string') {
+                reaction = data;
+            } else {
+                reaction = data.emoji;
+            }
+            addReaction(focusedMessageRef.current._id, currentUser, reaction);
             setShowPicker(false);
         }
     };
@@ -811,6 +841,17 @@ function ChatPanel(props: propsIF) {
         setIsReplyButtonPressed(false);
         setSelectedMessageForReply(undefined);
     };
+
+    const reactionPicker = (
+        <div
+            id='chatReactionWrapper'
+            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+            ref={reactionsRef}
+            style={{ bottom: pickerBottomPos }}
+        >
+            {getEmojiPack(reactionCodes, addReactionEmojiPickListener, 30)}
+        </div>
+    );
 
     domDebug('isUserConnected', isUserConnected);
 
@@ -1322,6 +1363,7 @@ function ChatPanel(props: propsIF) {
                     }
                     setSelectedMessageForReply={setSelectedMessageForReply}
                     setIsReplyButtonPressed={setIsReplyButtonPressed}
+                    reactionPicker={reactionPicker}
                 />
             </>
         );
@@ -1386,28 +1428,20 @@ function ChatPanel(props: propsIF) {
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
-                    {isChatOpen && showPicker && (
+                    {isChatOpen && (
                         <div
                             id='chatReactionWrapper'
-                            className={styles.reaction_picker_wrapper}
+                            className={`${styles.reaction_picker_wrapper} ${showPicker ? styles.active : ' '}`}
+                            ref={reactionsRef}
+                            style={{ bottom: pickerBottomPos }}
                         >
-                            <div
-                                className={styles.reaction_picker_close}
-                                onClick={() => {
-                                    setShowPicker(false);
-                                }}
-                            >
-                                {' '}
-                                X{' '}
-                            </div>
-                            <Picker
-                                onEmojiClick={addReactionEmojiPickListener}
-                                pickerStyle={{ width: '100%' }}
-                                disableSkinTonePicker={true}
-                            />
+                            {getEmojiPack(
+                                reactionCodes,
+                                addReactionEmojiPickListener,
+                                30,
+                            )}
                         </div>
                     )}
-
                     {messageInput}
                     <div id='thelastmessage' />
                 </div>

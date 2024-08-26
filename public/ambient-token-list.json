@@ -372,6 +372,22 @@
             "logoURI": "https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png"
         },
         {
+            "name": "Scroll Inu",
+            "address": "0x3660020acc6e993bbdc618dd63b15ad2a3a6d139",
+            "symbol": "SINU",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": ""
+        },
+        {
+            "name": "Free Bridged SolvBTC.b",
+            "address": "0x3Ba89d490AB1C0c9CC2313385b30710e838370a4",
+            "symbol": "SolvBTC.b",
+            "decimals": 18,
+            "chainId": 534352,
+            "logoURI": "https://assets.coingecko.com/coins/images/36800/standard/solvBTC.png"
+        },
+        {
             "name": "Wrapped Kelp DAO Restaked ETH",
             "address": "0xa25b25548b4c98b0c7d3d27dca5d5ca743d68b7f",
             "symbol": "wrsETH",
@@ -425,7 +441,7 @@
             "symbol": "SCROLLY",
             "decimals": 18,
             "chainId": 534352,
-            "logoURI": "https://scrolly.xyz/img/logo.png"
+            "logoURI": ""
         },
         {
             "name": "Ethena USDe",
@@ -458,6 +474,22 @@
             "decimals": 8,
             "chainId": 11155111,
             "logoURI": "https://scroll-tech.github.io/token-list/data/WBTC/logo.svg"
+        },
+        {
+            "name": "ZirCat",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "ZCAT",
+            "decimals": 18,
+            "chainId": 11155111,
+            "logoURI": "https://ambient.finance/zcat_32.png"
+        },
+        {
+            "name": "ZirCat",
+            "address": "0x3211dFB6c2d3F7f15D7568049a86a38fcF1b00D3",
+            "symbol": "ZCAT",
+            "decimals": 18,
+            "chainId": 168587773,
+            "logoURI": "https://ambient.finance/zcat_32.png"
         },
         {
             "name": "Bridged Tether USD",

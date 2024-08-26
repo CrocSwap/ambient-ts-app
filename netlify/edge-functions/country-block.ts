@@ -39,7 +39,6 @@ export default async (request: Request, context: Context) => {
     if (!blacklist.includes(context.geo.country.code)) {
         return;
     }
-
     console.log(context.geo.country.name);
 
     const html = `

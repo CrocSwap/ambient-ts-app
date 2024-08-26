@@ -44,6 +44,7 @@ import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import { Network, Alchemy } from 'alchemy-sdk';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
+import { ReceiptContext } from './ReceiptContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -74,6 +75,8 @@ export const ChainDataContextProvider = (props: {
         NFTFetchSettings,
         setNFTFetchSettings,
     } = useContext(TokenBalanceContext);
+
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
@@ -132,7 +135,7 @@ export const ChainDataContextProvider = (props: {
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
-    const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
+    const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
     async function pollBlockNum(): Promise<void> {
         const nodeUrl = ['0x1'].includes(chainData.chainId)
@@ -179,11 +182,14 @@ export const ChainDataContextProvider = (props: {
             return;
         }
 
-        const interval = setInterval(async () => {
+        const interval = setInterval(() => {
             pollBlockNum();
         }, BLOCK_NUM_POLL_MS);
+
+        // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
+    }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
+
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 
@@ -385,14 +391,15 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId
+                chainData.chainId &&
+                lastBlockNumber
             ) {
                 try {
                     const tokenBalances: TokenIF[] =
                         await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
-                            everyFiveMinutes,
+                            lastBlockNumber,
                             cachedTokenDetails,
                             crocEnv,
                             activeNetwork.graphCacheUrl,
@@ -426,6 +433,7 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
         everyFiveMinutes,
         activeNetwork.graphCacheUrl,
+        sessionReceipts.length,
     ]);
 
     const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<

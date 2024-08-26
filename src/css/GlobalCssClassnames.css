@@ -212,10 +212,10 @@ aside.emoji-picker-react {
 }
 
 @media (max-width: 500px) {
-    #current_row_scroll {
+    /* #current_row_scroll {
         overflow-y: scroll;
         height: 45dvh;
-    }
+    } */
     .css-th9gsg-MuiPaper-root-MuiAlert-root{
         margin: 0 auto !important;
         text-wrap:wrap !important;
@@ -235,20 +235,12 @@ aside.emoji-picker-react {
    }
 }
 
-#tutorial_first_step{
-    position: fixed;
-    left: 50vw;
-    top: 30vh;
-    display: block;
-    width: 0;
-    height: 0;
+
+.EmojiPickerReact{
+    background: var(--dark2) !important;
 }
 
-.tutoTooltipClass{
-    background: var(--dark1) !important;
-}
-
-.tutoHighlightClass{
-    box-shadow: color-mix(in srgb, var(--accent1) 50%, transparent) 0px 0px 1px 2px, color-mix(in srgb, var(--accent1) 10%, transparent) 0px 0px 0px 5000px !important;
-    /* box-shadow: color-mix(in srgb, var(--accent1) 50%, transparent) 0px 0px 1px 2px, color-mix(in srgb, black 80%, transparent) 0px 0px 0px 5000px !important; */
+.epr-emoji-category-label{
+    background: var(--dark2) !important;
+    font-size: .8rem !important;
 }

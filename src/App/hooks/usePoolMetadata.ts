@@ -56,6 +56,7 @@ interface PoolParamsHookIF {
     isChartEnabled: boolean;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedQuerySpotTick: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
     setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
@@ -68,6 +69,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tokenB,
         defaultRangeWidthForActivePool,
         poolPriceNonDisplay,
+        currentPoolPriceTick,
     } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
@@ -80,6 +82,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setUserLimitOrdersByPool,
         setLiquidity,
         setLiquidityFee,
+        positionsByPool,
+        limitOrdersByPool,
     } = useContext(GraphDataContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
@@ -805,7 +809,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         isServerEnabled,
     ]);
 
-    useEffect(() => {
+    const updateLiquidity = () => {
         // Reset existing liquidity data until the fetch completes, because it's a new pool
         const request = {
             baseAddress: baseTokenAddress,
@@ -830,6 +834,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 props.crocEnv,
                 props.graphCacheUrl,
                 props.cachedFetchTokenPrice,
+                props.cachedQuerySpotTick,
+                currentPoolPriceTick,
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
@@ -838,15 +844,34 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 })
                 .catch(console.error);
         }
+    };
+
+    useEffect(() => {
+        updateLiquidity();
     }, [
         baseTokenAddress +
             quoteTokenAddress +
             props.chainData.chainId +
             props.chainData.poolIndex,
-        poolPriceNonDisplay,
+        currentPoolPriceTick,
         props.isChartEnabled,
         props.crocEnv !== undefined,
     ]);
+
+    const totalPositionLiq = useMemo(
+        () =>
+            positionsByPool.positions.reduce((sum, position) => {
+                return sum + position.positionLiq;
+            }, 0) +
+            limitOrdersByPool.limitOrders.reduce((sum, order) => {
+                return sum + order.positionLiq;
+            }, 0),
+        [positionsByPool, limitOrdersByPool],
+    );
+
+    useEffect(() => {
+        updateLiquidity();
+    }, [totalPositionLiq]);
 
     return {
         contextMatchesParams,

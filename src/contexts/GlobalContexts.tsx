@@ -40,12 +40,12 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                     <UserDataContextProvider>
                         <ReceiptContextProvider>
                             <RangeContextProvider>
-                                <TradeDataContextProvider>
-                                    {/* Everything above here has no context dependencies */}
-                                    <BrandContextProvider>
-                                        <TokenBalanceContextProvider>
-                                            <CrocEnvContextProvider>
-                                                <TokenContextProvider>
+                                {/* Everything above here has no context dependencies */}
+                                <TokenBalanceContextProvider>
+                                    <TokenContextProvider>
+                                        <TradeDataContextProvider>
+                                            <BrandContextProvider>
+                                                <CrocEnvContextProvider>
                                                     <ChainDataContextProvider>
                                                         <AuctionsContextProvider>
                                                             <XpLeadersContextProvider>
@@ -77,12 +77,12 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                                             </XpLeadersContextProvider>
                                                         </AuctionsContextProvider>
                                                     </ChainDataContextProvider>
-                                                </TokenContextProvider>
-                                            </CrocEnvContextProvider>
-                                        </TokenBalanceContextProvider>
-                                    </BrandContextProvider>
-                                    {/* Everything below here has no context dependencies */}
-                                </TradeDataContextProvider>
+                                                </CrocEnvContextProvider>
+                                            </BrandContextProvider>
+                                        </TradeDataContextProvider>
+                                    </TokenContextProvider>
+                                </TokenBalanceContextProvider>
+                                {/* Everything below here has no context dependencies */}
                             </RangeContextProvider>
                         </ReceiptContextProvider>
                     </UserDataContextProvider>

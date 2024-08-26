@@ -389,6 +389,14 @@ export const dropFromCssClasses = (el: Element, classToDrop: string) => {
     );
     el.className = filteredClasses.join(' ');
 };
+export const getEmojiFromUnifiedCode = (unified: string) => {
+    if (unified) {
+        const emojiCharacter = String.fromCodePoint(parseInt(unified, 16));
+        return emojiCharacter;
+    }
+
+    return '';
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function generateObjectHash(jsonObject: any) {

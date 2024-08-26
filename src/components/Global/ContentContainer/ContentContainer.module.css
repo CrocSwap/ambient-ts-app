@@ -114,9 +114,9 @@
 
 @media only screen and (max-width: 600px) {
     .main_content {
-        overflow-y: scroll;
+        /* overflow-y: scroll;
         min-height: 50svh;
-        max-height: 80svh;
+        max-height: 80svh; */
         padding: 8px !important;
         box-shadow: none;
     }
@@ -128,6 +128,8 @@
     .swap_route,
     .no_background {
         width: 95%;
-        overflow-y: scroll;
+    
+     
+        /* overflow-y: scroll; */
     }
 }
