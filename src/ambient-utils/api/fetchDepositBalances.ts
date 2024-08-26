@@ -2,9 +2,6 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../constants';
 import { TokenIF } from '../types';
 import { FetchContractDetailsFn } from './fetchContractDetails';
-// import { FetchContractDetailsFn } from './fetchContractDetails';
-// import { IDepositedTokenBalance } from './fetchTokenBalances';
-// import { TokenIF } from '../types';
 
 interface IFetchDepositBalancesProps {
     user: string;
@@ -27,6 +24,7 @@ export const expandTokenBalances = async (
     chainId: string,
 ): Promise<TokenIF> => {
     const tokenAddress = tokenBalances.tokenAddress;
+
     const tokenListedSymbol = tokenList.find(
         (listedToken) =>
             listedToken.address.toLowerCase() === tokenAddress.toLowerCase(),
