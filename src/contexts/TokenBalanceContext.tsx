@@ -89,7 +89,7 @@ export const TokenBalanceContextProvider = (props: {
                     token.address.toLowerCase() ===
                     params.tokenAddress.toLowerCase(),
             );
-            if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
+            if (newTokenBalances && tokenIndex !== -1) {
                 const newTokenBalance = newTokenBalances[tokenIndex];
                 if (params.walletBalance) {
                     newTokenBalance.walletBalance = params.walletBalance;
