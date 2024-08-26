@@ -144,6 +144,8 @@ function TableRows({
         isActionModalOpen,
     ]);
 
+    console.log(data)
+
     const rangeContent = () => {
         return (
             <>

@@ -85,7 +85,8 @@ overflow: hidden !important;
     height: calc(100dvh - 115px);
 
     display: grid;
-    grid-template-rows: 105px 1fr;
+    grid-template-rows: 105px 1fr ;
+    margin-bottom: 65px;
   
     outline: 1px solid green;
     overflow: hidden;

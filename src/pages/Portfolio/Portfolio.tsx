@@ -276,7 +276,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
-    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
     const mobileDataToggle = (
         <div className={styles.mobile_data_toggle_container}>
@@ -341,6 +341,8 @@ function Portfolio(props: PortfolioPropsIF) {
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
         resolvedUserXp: resolvedUserXp,
+        showTabsAndNotExchange: showTabsAndNotExchange,
+        setShowTabsAndNotExchange: setShowTabsAndNotExchange
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -366,11 +368,14 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
     };
 
+    
+
     const contentToRenderOnMobile = (() => {
         switch (true) {
             case (!showTabsAndNotExchange && isUserConnected) ||
                 (addressFromParams !== undefined && !connectedAccountActive):
                 return <PortfolioTabs {...portfolioTabsProps} />;
+
             case showTabsAndNotExchange &&
                 isUserConnected &&
                 connectedAccountActive:
@@ -379,6 +384,32 @@ function Portfolio(props: PortfolioPropsIF) {
                 return notConnectedContent;
         }
     })();
+
+    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const calculateHeight = () => {
+          const totalHeight = window.innerHeight;
+          const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+          setAvailableHeight(totalHeight - heightToSubtract);
+        };
+    
+        calculateHeight(); // Calculate initial height
+        window.addEventListener('resize', calculateHeight);
+    
+        return () => window.removeEventListener('resize', calculateHeight);
+      }, []);
+
+    const mobilePortfolio = (
+        <div className={styles.mobile_layout} style={{ height: `${availableHeight}px` }}>
+        
+            <PortfolioBanner {...portfolioBannerProps} />
+            <div style={{height: '300px', overflowY: 'hidden'}}>
+
+        {contentToRenderOnMobile}
+            </div>
+        </div>
+    );
 
     // tab control on account from pageheader
     const onTradeRoute = location.pathname.includes('trade');
@@ -410,28 +441,23 @@ function Portfolio(props: PortfolioPropsIF) {
     }, [specificTab]);
 
     // end of tab control on account from page header
-    const mobilePortfolio = (
-        <div className={styles.mobile_container}>
-            {useMediaQuery('(min-height: 300px)') && (
-                <PortfolioBanner {...portfolioBannerProps} />
-            )}
-            <div className={styles.mobile_content}>
-                {
-                    connectedAccountActive &&
-                    mobileDataToggle}
-                {contentToRenderOnMobile}
-            </div>
-        </div>
-    );
+    // const mobilePortfolio = (
+    //     <div className={styles.mobile_container}>
+    //         {useMediaQuery('(min-height: 300px)') && (
+    //             <PortfolioBanner {...portfolioBannerProps} />
+    //         )}
+    //         <div className={styles.mobile_content}>
+    //             {
+    //                 connectedAccountActive &&
+    //                 mobileDataToggle}
+    //             {contentToRenderOnMobile}
+    //         </div>
+    //     </div>
+    // );
 
-    const yes = true
+    // const yes = false
 
-    if (yes) return(
-        <div className={styles.mobile_layout}>
-        <PortfolioBanner {...portfolioBannerProps} />
-        <PortfolioTabs {...portfolioTabsProps} />
-        </div>
-    );
+ 
 
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;

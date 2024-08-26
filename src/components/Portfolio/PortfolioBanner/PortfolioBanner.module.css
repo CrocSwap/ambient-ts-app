@@ -9,7 +9,7 @@
     justify-content: space-between;
     align-items: flex-end;
 
-    padding: 1rem;
+    padding: 8px;
     position: relative;
 
     display: flex;
@@ -75,6 +75,7 @@
         height: 150px;
         margin-top: 0;
         background: var(--dark1);
+        padding: 1rem;
     }
     .portfolio_banner_rectangle_content{
 justify-content: flex-end;

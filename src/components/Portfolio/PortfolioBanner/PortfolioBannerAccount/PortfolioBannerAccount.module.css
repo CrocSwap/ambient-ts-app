@@ -16,9 +16,25 @@
         width: 65px;
     }
 
+    .deposit_button{
+        font-size: 12px;
+        outline: none;
+        background: transparent;
+        border: 1px solid var(--accent1);
+        color: var(--accent1);
+        padding: 4px;
+        border-radius: 20px;
+
+    }
+
     @media only screen and (min-width: 768px) {
         .portfolio_banner_main_container{
             width: 380.16px;
             border-radius: 50px 4px 4px 50px;
+        }
+
+        .portfolio_settings_container{
+            height: 65px;
+        width: 65px;
         }
     }

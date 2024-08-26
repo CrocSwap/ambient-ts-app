@@ -13,7 +13,7 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import { useContext, useMemo } from 'react';
+import { Dispatch, SetStateAction, useContext, useMemo } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
@@ -26,10 +26,12 @@ interface propsIF {
     resolvedAddress: string;
     connectedAccountActive: boolean;
     resolvedUserXp: UserXpDataIF;
+    showTabsAndNotExchange: boolean;
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
+    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp, showTabsAndNotExchange, setShowTabsAndNotExchange } =
         props;
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
@@ -129,8 +131,10 @@ export default function PortfolioBanner(props: propsIF) {
                     truncatedAccountAddress={truncatedAccountAddress}
                     jazziconsToDisplay={jazziconsToDisplay}
                     connectedAccountActive={connectedAccountActive}
+                    showTabsAndNotExchange={showTabsAndNotExchange}
+                    setShowTabsAndNotExchange={setShowTabsAndNotExchange}
                 />
-                <DefaultTooltip
+         {desktopScreen &&       <DefaultTooltip
                     interactive
                     title={'Toggle USD Price Estimates'}
                     enterDelay={500}
@@ -152,7 +156,7 @@ export default function PortfolioBanner(props: propsIF) {
                             }}
                         />
                     </button>
-                </DefaultTooltip>
+                </DefaultTooltip>}
             </div>
 
             <div className={styles.portfolio_banner_level_container}>

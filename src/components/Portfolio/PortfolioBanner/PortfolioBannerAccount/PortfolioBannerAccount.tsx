@@ -1,5 +1,5 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
-import { useContext, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
@@ -22,6 +22,8 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     jazziconsToDisplay: JSX.Element | null;
     connectedAccountActive: boolean;
+    showTabsAndNotExchange: boolean;
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
 }
 
 export default function PortfolioBannerAccount(
@@ -36,6 +38,8 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
         connectedAccountActive,
+        showTabsAndNotExchange,
+        setShowTabsAndNotExchange
     } = props;
 
     const {
@@ -58,7 +62,7 @@ export default function PortfolioBannerAccount(
         // chainData: { blockExplorer, chainId },
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
-    const isSmallScreen = useMediaQuery('(max-width: 800px)');
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
     const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
 
@@ -182,17 +186,7 @@ export default function PortfolioBannerAccount(
                                     resolvedAddress.length > 0 &&
                                     !connectedAccountActive
                                     ? false
-                                    : // NFTData &&
-                                      //       NFTData.find(
-                                      //           (nftChainList) =>
-                                      //               nftChainList.chainId ===
-                                      //               chainId,
-                                      //       ) &&
-                                      //       NFTData.find(
-                                      //           (nftChainList) =>
-                                      //               nftChainList.chainId ===
-                                      //               chainId,
-                                      //       )?.userHasNFT &&
+                                    : 
                                       true,
                             )}
                     </div>
@@ -201,7 +195,7 @@ export default function PortfolioBannerAccount(
                 <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer
                         fontWeight='300'
-                        fontSize='header1'
+                        fontSize={isSmallScreen ? 'body' : 'header1'}
                         cursor='pointer'
                         letterSpacing
                         color='text1'
@@ -238,6 +232,11 @@ export default function PortfolioBannerAccount(
                         ) : null}
                     </FlexContainer>
                 </FlexContainer>
+
+                {isSmallScreen && connectedAccountActive && <button
+                    onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                
+                    className={styles.deposit_button}>Deposit/Withdraw</button>}
             </FlexContainer>
 
             {showNFTPage && NFTData && (

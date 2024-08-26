@@ -50,6 +50,7 @@ import {
 } from '../../../contexts/UserDataContext';
 import medal from '../../../assets/images/icons/medal.svg';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component props
 interface propsIF {
@@ -85,6 +86,8 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
+
     const {
         crocEnv,
         activeNetwork,
@@ -411,17 +414,54 @@ export default function PortfolioTabs(props: propsIF) {
         },
     ];
 
-    const yes = true
+    const dataToUse = connectedAccountActive
+    ? accountTabDataWithTokens
+    : accountTabDataWithoutTokens
+
+    const [activeTab, setActiveTab] = useState<string>('Transactions'); // Default to 'Transactions'
+
+    const formatLabel = (label: string) => {
+        return label.replace(/\s+/g, '-').toLowerCase();
+    };
+    const renderTabContent = () => {
+        const selectedTabData =dataToUse.find(
+            (tab) => tab.label === activeTab
+        );
+        return selectedTabData ? selectedTabData.content : null;
+    };
 
 
-    if ( yes) return <Transactions {...transactionsProps} />
+    const mobileTabs = (
+        <div className={styles.mobile_tabs_container}>
+            <div className={styles.mobile_tabs_button_container}>
+                {dataToUse.map((tab) => (
+                    <button
+                        key={tab.label}
+                        onClick={() => setActiveTab(tab.label)}
+                        style={{
+                            color: tab.label === activeTab ? 'var(--accent1)' : 'var(--text2)',
+                            borderBottom: tab.label === activeTab ? '1px solid var(--accent1)' : '1px solid transparent'
+                        }}
+                    >
+                        <span className={styles.tabLabel}>{tab.label}</span>
+                    </button>
+                ))}
+            </div>
+            <div className={styles.tabContent}>
+                {renderTabContent()}
+            </div>
+        </div>
+    );
+
+
+
+
+    if ( isSmallScreen) return mobileTabs
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent
                 data={
-                    connectedAccountActive
-                        ? accountTabDataWithTokens
-                        : accountTabDataWithoutTokens
+                    dataToUse
                 }
                 rightTabOptions={false}
                 isPortfolio={true}
