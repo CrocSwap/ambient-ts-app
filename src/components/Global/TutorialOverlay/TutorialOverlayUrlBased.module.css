@@ -21,7 +21,13 @@
 }
 
 @media only screen and (max-width: 600px){
+    .replay_tuto_btn{
+        right: 7rem;
+    }
 
+    .not_connected{
+        right: 12rem;
+    }
 }
 
     

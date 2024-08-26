@@ -70,12 +70,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
             if (checkStepHash) {
                 const currentStepsHash =
                     await generateObjectHash(filteredSteps);
-                if (lsVal != currentStepsHash) {
-                    console.log(handleTutoFinish);
-                    console.log(lsVal);
-                    console.log(currentStepsHash);
-                    console.log('check diff  .ç. . . . ... ');
-                }
                 return lsVal != currentStepsHash;
             } else {
                 return !lsVal;
@@ -86,7 +80,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     };
 
     const handleTutoFinish = async () => {
-        console.log('handle tuto finish');
         let lsValue = '';
         if (selectedTutorialRef.current) {
             if (checkStepHash) {
@@ -120,8 +113,6 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                 });
             }
         }
-        console.log('filteredSteps', filteredSteps);
-
         return filteredSteps;
     };
 

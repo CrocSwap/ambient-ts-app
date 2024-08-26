@@ -12,11 +12,7 @@ interface propsIF {
     onComplete?: () => void;
 }
 
-let instanceCounter = 0;
-
 function TutorialComponent(props: propsIF) {
-    const [instanceId, setInstanceId] = useState(0);
-
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
@@ -46,19 +42,6 @@ function TutorialComponent(props: propsIF) {
             triggerTutorial();
         }
     }, [tutoKey]);
-
-    useEffect(() => {
-        console.log(instanceId, setStepIndex, setStep, step);
-        console.log('.......................');
-        console.log(steps);
-        console.log('.......................');
-
-        instanceCounter++;
-        setInstanceId(instanceCounter);
-        return () => {
-            instanceCounter--;
-        };
-    }, []);
 
     const nextStep = () => {
         const refVal =
@@ -194,12 +177,26 @@ function TutorialComponent(props: propsIF) {
                 prevStep();
             } else if (e.key === 'ArrowRight') {
                 nextStep();
+            } else if (e.key === 'Escape') {
+                completeTutorial();
+                e.preventDefault();
             }
         };
+
+        const resizeListener = () => {
+            setTimeout(() => {
+                handleFocusOverlay();
+                handleTooltip();
+            }, 300);
+        };
+
         document.addEventListener('keydown', keyDownListener);
+
+        window.addEventListener('resize', resizeListener);
 
         return () => {
             document.removeEventListener('keydown', keyDownListener);
+            window.removeEventListener('resize', resizeListener);
         };
     }, []);
 
@@ -267,7 +264,5 @@ function TutorialComponent(props: propsIF) {
         </div>
     );
 }
-
-console.log('TUTOCOMPONENT instances', instanceCounter);
 
 export default memo(TutorialComponent);

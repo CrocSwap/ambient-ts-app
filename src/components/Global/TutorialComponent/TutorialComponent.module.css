@@ -154,3 +154,18 @@
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
 }
+
+@media only screen and (max-width: 600px){
+
+    .tooltip_wrapper{
+        max-width: 80vw;
+    }   
+
+    .steps_indicator{
+        white-space: nowrap;
+    }
+
+    .tutorial_steps{
+        transform: translateX(-50%);
+    }
+}
