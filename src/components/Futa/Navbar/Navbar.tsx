@@ -1,43 +1,43 @@
 // Imports
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { motion } from 'framer-motion';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { FiMoreHorizontal } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import {
-    DISCORD_LINK,
-    DOCS_LINK,
-    TWITTER_LINK,
-} from '../../../ambient-utils/constants';
+import { FiMoreHorizontal } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
+import styles from './Navbar.module.css';
+import Logo from '../../../assets/futa/images/futaLogo.svg';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { UserDataContext } from '../../../contexts/UserDataContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     chainNumToString,
     openInNewTab,
     trimString,
 } from '../../../ambient-utils/dataLayer';
-import NetworkSelector from '../../../App/components/PageHeader/NetworkSelector/NetworkSelector';
-import Logo from '../../../assets/futa/images/futaLogo.svg';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import {
+    DISCORD_LINK,
+    DOCS_LINK,
+    TWITTER_LINK,
+} from '../../../ambient-utils/constants';
 import { AuctionsContext } from '../../../contexts/AuctionsContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import Toggle from '../../Form/Toggle';
 import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { UserDataContext } from '../../../contexts/UserDataContext';
 import {
     linkGenMethodsIF,
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import Toggle from '../../Form/Toggle';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import NotificationCenter from '../../Global/NotificationCenter/NotificationCenter';
 import TutorialOverlayUrlBased from '../../Global/TutorialOverlay/TutorialOverlayUrlBased';
-import styles from './Navbar.module.css';
 
 // Animation Variants
 const dropdownVariants = {
@@ -209,7 +209,7 @@ export default function Navbar() {
         },
         {
             label: 'Swap',
-            link: linkGenSwap.getFullURL(swapParams),
+            link: linkGenSwap.getFullURL(swapParams), 
             id: 'navbar_swap',
         },
         {
@@ -349,14 +349,6 @@ export default function Navbar() {
                     {/* </AnimatePresence> */}
                 </div>
             </div>
-            {/* {
-                selectedTuto && (
-                    <TutorialOverlayLS
-                        lsKey={selectedTuto.lsKey}
-                        steps={selectedTuto.steps}
-                    />
-                )
-            } */}
             <TutorialOverlayUrlBased />
         </div>
     );
