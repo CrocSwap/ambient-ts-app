@@ -311,13 +311,3 @@
     --border: #cacbcd;
     --select: #acb6c4;
 }
-
-
-.tutoTooltipClass{
-    background: var(--dark1) !important;
-}
-
-.tutoHighlightClass{
-    box-shadow: color-mix(in srgb, var(--accent1) 50%, transparent) 0px 0px 1px 2px, color-mix(in srgb, var(--accent1) 10%, transparent) 0px 0px 0px 5000px !important;
-    /* box-shadow: color-mix(in srgb, var(--accent1) 50%, transparent) 0px 0px 1px 2px, color-mix(in srgb, black 80%, transparent) 0px 0px 0px 5000px !important; */
-}
