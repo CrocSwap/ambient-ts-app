@@ -427,7 +427,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const yes = true
 
     if (yes) return(
-        <div className='trial_work'>
+        <div className={styles.mobile_layout}>
         <PortfolioBanner {...portfolioBannerProps} />
         <PortfolioTabs {...portfolioTabsProps} />
         </div>

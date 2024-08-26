@@ -289,16 +289,3 @@ input[type='number'] {
 }
 
 
-.trial_work{
-    width: 100vw;
-    height: calc(100dvh - 115px);
-
-    display: grid;
-    grid-template-rows: 105px 1fr;
-  
-    outline: 1px solid green;
-    overflow: hidden;
-}
-.trial_work > *{
-outline: 1px solid blue;
-}

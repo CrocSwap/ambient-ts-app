@@ -80,6 +80,19 @@ overflow: hidden !important;
     background: transparent;
   }
   
+  .mobile_layout{
+    width: 100vw;
+    height: calc(100dvh - 115px);
+
+    display: grid;
+    grid-template-rows: 105px 1fr;
+  
+    outline: 1px solid green;
+    overflow: hidden;
+}
+.mobile_layout > *{
+outline: 1px solid blue;
+}
   @media (min-width: 1200px) {
     .portfolio_tabs_container.fullLayoutContainer {
       grid-template-columns: auto 36px;
