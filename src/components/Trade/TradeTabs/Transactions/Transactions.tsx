@@ -636,7 +636,7 @@ function Transactions(props: propsIF) {
     
     console.log({ screenHeight })
     
-    const exHeight = screenHeight / 1.8
+    const exHeight = screenHeight / 1.5
 
 
 
