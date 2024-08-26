@@ -623,7 +623,7 @@ function Transactions(props: propsIF) {
 
 
     if (isSmallScreen) return (
-        <div style={{  overflow: 'hidden', height:  '100%'}}>
+        <div style={{  overflow: 'scroll', height:  '100%'}}>
             <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '2'}}>
             {headerColumnsDisplay}
 

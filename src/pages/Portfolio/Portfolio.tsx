@@ -377,7 +377,7 @@ function Portfolio(props: PortfolioPropsIF) {
         return () => window.removeEventListener('resize', calculateHeight);
     }, []);
     
-    const bannerHeight = 105;
+    const bannerHeight = 115;
     const contentHeight = availableHeight - bannerHeight;
 
 

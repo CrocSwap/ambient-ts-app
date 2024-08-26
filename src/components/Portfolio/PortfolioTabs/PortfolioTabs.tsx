@@ -452,15 +452,11 @@ export default function PortfolioTabs(props: propsIF) {
     );
 
 
-
-
     if ( isSmallScreen) return mobileTabs
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent
-                data={
-                    dataToUse
-                }
+                data={dataToUse}
                 rightTabOptions={false}
                 isPortfolio={true}
             />
