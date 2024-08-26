@@ -418,11 +418,9 @@ export default function PortfolioTabs(props: propsIF) {
     ? accountTabDataWithTokens
     : accountTabDataWithoutTokens
 
-    const [activeTab, setActiveTab] = useState<string>('Transactions'); // Default to 'Transactions'
+    const [activeTab, setActiveTab] = useState<string>('Transactions'); 
 
-    const formatLabel = (label: string) => {
-        return label.replace(/\s+/g, '-').toLowerCase();
-    };
+
     const renderTabContent = () => {
         const selectedTabData =dataToUse.find(
             (tab) => tab.label === activeTab
@@ -447,7 +445,7 @@ export default function PortfolioTabs(props: propsIF) {
                     </button>
                 ))}
             </div>
-            <div className={styles.tabContent}>
+            <div className={styles.tabContent} style={{height: '100%'}}>
                 {renderTabContent()}
             </div>
         </div>

@@ -278,30 +278,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
-    const mobileDataToggle = (
-        <div className={styles.mobile_data_toggle_container}>
-            <button
-                onClick={() =>
-                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                }
-                className={`${styles.mobile_button} ${
-                    !showTabsAndNotExchange ? styles.active : styles.inactive
-                }`}
-            >
-                Transactions
-            </button>
-            <button
-                onClick={() =>
-                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                }
-                className={`${styles.mobile_button} ${
-                    showTabsAndNotExchange ? styles.active : styles.inactive
-                }`}
-            >
-                Exchange
-            </button>
-        </div>
-    );
+
 
     const notConnectedContent = (
         <FlexContainer
@@ -398,15 +375,20 @@ function Portfolio(props: PortfolioPropsIF) {
         window.addEventListener('resize', calculateHeight);
     
         return () => window.removeEventListener('resize', calculateHeight);
-      }, []);
+    }, []);
+    
+    const bannerHeight = 105;
+    const contentHeight = availableHeight - bannerHeight;
+
+
 
     const mobilePortfolio = (
         <div className={styles.mobile_layout} style={{ height: `${availableHeight}px` }}>
         
             <PortfolioBanner {...portfolioBannerProps} />
-            <div style={{height: '300px', overflowY: 'hidden'}}>
+            <div style={{ height: `${contentHeight}px`, overflowY: 'hidden' }}>
 
-        {contentToRenderOnMobile}
+                {contentToRenderOnMobile}
             </div>
         </div>
     );
