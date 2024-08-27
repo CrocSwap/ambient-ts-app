@@ -8,10 +8,6 @@ import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 import { ChartThemeIF } from '../../../contexts/ChartContext';
@@ -132,7 +128,7 @@ function TvlChart(props: TvlData) {
                 return yScale;
             });
         }
-    }, [diffHashSig(tvlData)]);
+    }, [tvlData]);
 
     useEffect(() => {
         if (scaleData !== undefined && tvlData !== undefined && !isChartZoom) {
@@ -169,11 +165,7 @@ function TvlChart(props: TvlData) {
                 );
             }
         }
-    }, [
-        diffHashSig(tvlData),
-        diffHashSigScaleData(scaleData, 'x'),
-        isChartZoom,
-    ]);
+    }, [tvlData, scaleData, isChartZoom]);
 
     useEffect(() => {
         if (tvlyScale !== undefined) {
@@ -296,13 +288,7 @@ function TvlChart(props: TvlData) {
                 });
             }
         }
-    }, [
-        d3CanvasArea,
-        diffHashSig(tvlyScale),
-        buffer,
-        resizeHeight,
-        colorChangeTrigger,
-    ]);
+    }, [d3CanvasArea, tvlyScale, buffer, resizeHeight, colorChangeTrigger]);
 
     useEffect(() => {
         if (d3CanvasArea) {
@@ -431,13 +417,7 @@ function TvlChart(props: TvlData) {
         }
 
         renderCanvasArray([d3CanvasArea]);
-    }, [
-        areaSeries,
-        lineSeries,
-        diffHashSig(tvlData),
-        crDataIndicator,
-        xAxisActiveTooltip,
-    ]);
+    }, [areaSeries, lineSeries, tvlData, crDataIndicator, xAxisActiveTooltip]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && mainZoom !== undefined) {
@@ -478,7 +458,7 @@ function TvlChart(props: TvlData) {
                 });
         }
     }, [
-        diffHashSig(tvlyScale),
+        tvlyScale,
         crosshairVerticalCanvas,
         crosshairForSubChart,
         crosshairHorizontalCanvas,
@@ -498,7 +478,7 @@ function TvlChart(props: TvlData) {
         ) {
             drawChart(tvlData, tvlyScale);
         }
-    }, [scaleData, period, tvlData, diffHashSig(tvlyScale)]);
+    }, [scaleData, period, tvlData, tvlyScale]);
 
     const drawChart = useCallback(
         (tvlData: any, tvlyScale: any) => {

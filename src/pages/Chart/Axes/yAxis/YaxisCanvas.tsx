@@ -15,10 +15,7 @@ import {
 } from '../../../../utils/numbers';
 import { createRectLabel } from './YaxisUtils';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
+import { diffHashSigScaleData } from '../../../../ambient-utils/dataLayer';
 import {
     crosshair,
     fillLiqAdvanced,
@@ -887,7 +884,7 @@ function YAxisCanvas(props: yAxisIF) {
         }
     }, [
         market,
-        diffHashSig(crosshairData),
+        crosshairData,
         limit,
         isLineDrag,
         ranges,

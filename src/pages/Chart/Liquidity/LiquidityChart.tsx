@@ -7,10 +7,6 @@ import {
     useState,
 } from 'react';
 import * as d3 from 'd3';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../ambient-utils/dataLayer';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
@@ -244,7 +240,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqDataDepthAsk,
         scaleData && liquidityDepthScale && liquidityScale,
         liqMode,
-        diffHashSigScaleData(scaleData, 'y'),
+        (scaleData),
     ]);
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
@@ -255,7 +251,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [
         liquidityScale === undefined,
         liquidityDepthScale === undefined,
-        diffHashSig(chartThemeColors),
+        chartThemeColors,
     ]);
 
     useEffect(() => {
@@ -693,8 +689,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         ? liqTooltipSelectedLiqBar?.upperBound
                         : liqTooltipSelectedLiqBar?.lowerBound
                     : isDenomBase
-                    ? liqTooltipSelectedLiqBar?.lowerBound
-                    : liqTooltipSelectedLiqBar?.upperBound;
+                      ? liqTooltipSelectedLiqBar?.lowerBound
+                      : liqTooltipSelectedLiqBar?.upperBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
@@ -878,7 +874,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             console.error({ error });
         }
     }, [
-        diffHashSigScaleData(scaleData, 'y'),
+        (scaleData),
         liquidityData?.depthLiqAskData,
         liquidityData?.depthLiqBidData,
     ]);
@@ -940,11 +936,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     useEffect(() => {
         renderCanvasArray([d3CanvasLiq]);
     }, [
-        diffHashSig(liquidityData),
+        liquidityData,
         ranges,
         liqMode,
         location.pathname,
-        diffHashSig(chartThemeColors),
+        chartThemeColors,
         chartThemeColors,
     ]);
 

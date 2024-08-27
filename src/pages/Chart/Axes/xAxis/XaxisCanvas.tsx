@@ -3,10 +3,6 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useLocation } from 'react-router-dom';
 import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
-import {
     crosshair,
     renderCanvasArray,
     scaleData,
@@ -433,7 +429,7 @@ function XAxisCanvas(props: xAxisIF) {
         }
     }, [
         timeOfEndCandle,
-        diffHashSig(crosshairData),
+        crosshairData,
         isLineDrag,
         reset,
         location,
@@ -528,12 +524,7 @@ function XAxisCanvas(props: xAxisIF) {
                 return xAxisZoom;
             });
         }
-    }, [
-        diffHashSigScaleData(scaleData),
-        firstCandleData,
-        lastCandleData,
-        isChartZoom,
-    ]);
+    }, [scaleData, firstCandleData, lastCandleData, isChartZoom]);
 
     useEffect(() => {
         if (xAxis && xAxisZoom && d3Xaxis.current) {

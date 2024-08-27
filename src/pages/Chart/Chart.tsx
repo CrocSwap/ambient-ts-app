@@ -24,9 +24,6 @@ import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
 import {
-    diffHashSig,
-    diffHashSigChart,
-    diffHashSigScaleData,
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -479,7 +476,7 @@ export default function Chart(props: propsIF) {
 
     const isShowLatestCandle = useMemo(() => {
         return checkShowLatestCandle(period, scaleData?.xScale);
-    }, [period, diffHashSigScaleData(scaleData, 'x')]);
+    }, [period, scaleData]);
 
     /**
      * This function processes a given data array to calculate discontinuities in time intervals and updates them.
@@ -655,11 +652,11 @@ export default function Chart(props: propsIF) {
             mobileView ? 300 : 100,
         ) as CandleDataChart[];
     }, [
-        diffHashSigChart(unparsedData.candles),
+        unparsedData.candles,
         poolPriceWithoutDenom,
         isShowLatestCandle,
         isCondensedModeEnabled,
-        diffHashSigScaleData(scaleData, 'x'),
+        scaleData,
     ]);
     const visibleCandleData = useMemo(() => {
         const data = calculateVisibleCandles(
@@ -674,11 +671,7 @@ export default function Chart(props: propsIF) {
         );
 
         return filtered;
-    }, [
-        diffHashSigScaleData(scaleData),
-        unparsedCandleData,
-        isCondensedModeEnabled,
-    ]);
+    }, [scaleData, unparsedCandleData, isCondensedModeEnabled]);
 
     const lastCandleData = unparsedData.candles?.reduce(
         function (prev, current) {
@@ -991,11 +984,7 @@ export default function Chart(props: propsIF) {
                 render();
             }
         });
-    }, [
-        diffHashSig(timeGaps),
-        diffHashSigScaleData(scaleData, 'x'),
-        isCondensedModeEnabled,
-    ]);
+    }, [timeGaps, scaleData, isCondensedModeEnabled]);
 
     useEffect(() => {
         if (discontinuityProvider) {
@@ -1080,11 +1069,7 @@ export default function Chart(props: propsIF) {
                 );
             }
         }
-    }, [
-        chartZoomEvent,
-        diffHashSig(cursorStyleTrigger),
-        isOnCandleOrVolumeMouseLocation,
-    ]);
+    }, [chartZoomEvent, cursorStyleTrigger, isOnCandleOrVolumeMouseLocation]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -1165,7 +1150,7 @@ export default function Chart(props: propsIF) {
                 };
             });
         }
-    }, [diffHashSigScaleData(scaleData, 'x'), period, isChartZoom]);
+    }, [scaleData, period, isChartZoom]);
 
     useEffect(() => {
         if (scaleData) {
@@ -1179,7 +1164,7 @@ export default function Chart(props: propsIF) {
             );
             setPrevCandleCount(showCandleCount);
         }
-    }, [diffHashSigScaleData(scaleData, 'x')]);
+    }, [scaleData]);
 
     useEffect(() => {
         if (isCondensedModeEnabled) {
@@ -1524,7 +1509,7 @@ export default function Chart(props: propsIF) {
         lastCandleData,
         rescale,
         location,
-        diffHashSigScaleData(scaleData),
+        scaleData,
         showLatest,
         liquidityData,
         simpleRangeWidth,
@@ -1547,7 +1532,7 @@ export default function Chart(props: propsIF) {
         if (!isChartZoom) {
             render();
         }
-    }, [diffHashSigScaleData(scaleData)]);
+    }, [scaleData]);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('timeframe changed');
@@ -1697,12 +1682,7 @@ export default function Chart(props: propsIF) {
         } else {
             setBoundaries(denomInBase);
         }
-    }, [
-        advancedMode,
-        ranges,
-        liquidityData?.liqBidData,
-        diffHashSigScaleData(scaleData, 'y'),
-    ]);
+    }, [advancedMode, ranges, liquidityData?.liqBidData, scaleData]);
 
     // *** LIMIT ***
     /**
@@ -4061,7 +4041,7 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [
-        diffHashSig(drawnShapeHistory),
+        drawnShapeHistory,
         lineSeries,
         annotationLineSeries,
         hoveredDrawnShape,
@@ -4416,7 +4396,7 @@ export default function Chart(props: propsIF) {
         }
     }, [
         period,
-        diffHashSigChart(visibleCandleData),
+        visibleCandleData,
         prevPeriod === period,
         candleTimeInSeconds === period,
     ]);
@@ -4495,13 +4475,13 @@ export default function Chart(props: propsIF) {
             );
         }
     }, [
-        diffHashSigChart(visibleCandleData),
+        visibleCandleData,
         lastCandleData,
         mainCanvasBoundingClientRect,
         selectedDate,
         bandwidth,
         isChartZoom,
-        diffHashSig(drawnShapeHistory),
+        drawnShapeHistory,
         isLineDrag,
         period,
         currentPool,
@@ -5548,12 +5528,7 @@ export default function Chart(props: propsIF) {
                 scaleData?.volumeScale.domain(domain);
             }
         }
-    }, [
-        diffHashSigScaleData(scaleData, 'x'),
-        diffHashSigChart(visibleCandleData),
-        reset,
-        latest,
-    ]);
+    }, [scaleData, visibleCandleData, reset, latest]);
 
     // Candle transactions
     useEffect(() => {
@@ -5852,9 +5827,9 @@ export default function Chart(props: propsIF) {
     }, [
         isSelectedOrderHistory,
         isHoveredOrderHistory,
-        diffHashSig(selectedOrderHistory),
-        diffHashSig(hoveredOrderHistory),
-        diffHashSigScaleData(scaleData),
+        selectedOrderHistory,
+        hoveredOrderHistory,
+        scaleData,
         reset,
         denomInBase,
     ]);

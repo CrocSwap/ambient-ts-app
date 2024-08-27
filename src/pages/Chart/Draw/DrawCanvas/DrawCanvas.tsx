@@ -19,10 +19,6 @@ import {
     selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../ambient-utils/dataLayer';
 import { createCircle } from '../../ChartUtils/circle';
 import {
     createAnnotationLineSeries,
@@ -171,7 +167,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             );
             setAnnotationLineSeries(() => annotationLineSeries);
         }
-    }, [scaleData, denomInBase, diffHashSig(drawSettings), activeDrawingType]);
+    }, [scaleData, denomInBase, drawSettings, activeDrawingType]);
 
     useEffect(() => {
         if (scaleData !== undefined && !isChartZoom) {
@@ -204,7 +200,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                 { passive: true },
             );
         }
-    }, [diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
+    }, [scaleData, isChartZoom]);
 
     function getXandYvalueOfDrawnShape(offsetX: number, offsetY: number) {
         let valueY = scaleData?.yScale.invert(offsetY);
@@ -726,7 +722,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), lineSeries, denomInBase]);
+    }, [lineData, lineSeries, denomInBase]);
 
     useEffect(() => {
         const canvas = d3
@@ -967,13 +963,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [
-        diffHashSig(lineData),
-        denomInBase,
-        bandArea,
-        borderLineSeries,
-        lineSeries,
-    ]);
+    }, [lineData, denomInBase, bandArea, borderLineSeries, lineSeries]);
 
     useEffect(() => {
         const canvas = d3
@@ -1187,7 +1177,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), denomInBase, bandArea]);
+    }, [lineData, denomInBase, bandArea]);
 
     useEffect(() => {
         const canvas = d3
@@ -1214,7 +1204,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), denomInBase]);
+    }, [lineData, denomInBase]);
 
     return <d3fc-canvas ref={d3DrawCanvas} />;
 }

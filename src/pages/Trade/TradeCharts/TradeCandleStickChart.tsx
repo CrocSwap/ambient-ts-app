@@ -15,7 +15,6 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
-    diffHashSig,
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
@@ -880,7 +879,13 @@ function TradeCandleStickChart(props: propsIF) {
             setPrevFirsCandle(() => firtCandleTimeState);
             setPrevPeriod(() => period);
         }
-    }, [period, diffHashSig(unparsedCandleData)]);
+    }, [
+        period,
+        unparsedCandleData !== undefined
+            ? unparsedCandleData[0]?.time
+            : undefined,
+        unparsedCandleData?.length,
+    ]);
 
     const resetXScale = (xScale: any) => {
         if (!period) return;

@@ -9,7 +9,6 @@ import { createCircle } from '../ChartUtils/circle';
 import { createLinearLineSeries } from '../Draw/DrawCanvas/LinearLineSeries';
 import * as d3 from 'd3';
 import { createBandArea } from '../Draw/DrawCanvas/BandArea';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
 import { TransactionIF } from '../../../ambient-utils/types';
 
 interface OrderHistoryCanvasProps {
@@ -131,7 +130,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 }
             });
         }
-    }, [diffHashSig(userTransactionData)]);
+    }, [userTransactionData]);
 
     // useEffect(() => {
     //     if (
@@ -454,7 +453,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
         renderCanvasArray([d3OrderCanvas]);
     }, [
-        diffHashSig(userTransactionData),
+        userTransactionData,
         lineSeries,
         denomInBase,
         bandArea,

@@ -6,10 +6,6 @@ import '../Chart.css';
 import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 import { CandleDataIF } from '../../../ambient-utils/types';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../ambient-utils/dataLayer';
 import { ChartThemeIF } from '../../../contexts/ChartContext';
 
 interface FreeRateData {
@@ -164,11 +160,7 @@ function FeeRateChart(props: FreeRateData) {
                 { passive: true },
             );
         }
-    }, [
-        diffHashSig(feeData),
-        diffHashSigScaleData(scaleData, 'x'),
-        isChartZoom,
-    ]);
+    }, [feeData, scaleData, isChartZoom]);
 
     useEffect(() => {
         if (
