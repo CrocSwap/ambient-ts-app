@@ -109,7 +109,7 @@ export const useSortedLimits = (
     // array of positions sorted by the relevant column
     const sortedLimitOrders = useMemo<LimitOrderIF[]>(
         () => sortData(limitOrders),
-        [sortBy, reverseSort, limitOrders],
+        [sortBy, reverseSort, limitOrders[0]?.limitOrderId, limitOrders.length],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimitOrders];
