@@ -120,6 +120,13 @@
     margin-left: .4rem;
 }
 
+.step_btn.navigate{
+    background: var(--accent1);
+    color: black;
+    font-weight: bold;
+
+}
+
 .step_btn:not(.disabled){
     
     /* border: 1px solid color-mix(in srgb, white 30%, transparent); */
@@ -162,6 +169,10 @@
     }   
 
     .steps_indicator{
+        white-space: nowrap;
+    }
+
+    .step_btn{
         white-space: nowrap;
     }
 

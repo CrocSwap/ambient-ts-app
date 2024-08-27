@@ -68,4 +68,7 @@ export interface TutorialStepIF {
     title?: string;
     tooltipClass?: string;
     highlightClass?: string;
+    assignment?: string;
+    actionTrigger?: string;
+    navigate?: { label: string; path: string };
 }

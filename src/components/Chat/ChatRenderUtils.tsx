@@ -309,3 +309,10 @@ export const getEmojiPack = (
         </>
     );
 };
+
+
+export const getActionTrigger = ( id: string, action: () => void) => {
+    return (
+        <span id={id} onClick={() => action()} style={{display: 'none'}}></span>
+    );
+};

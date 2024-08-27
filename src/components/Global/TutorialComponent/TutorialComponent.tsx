@@ -1,12 +1,13 @@
-import { Step } from 'intro.js-react';
 import { memo, useEffect, useRef, useState } from 'react';
 import { TutorialStepIF } from '../../Chat/ChatIFs';
 import styles from './TutorialComponent.module.css';
+import { useNavigate } from 'react-router-dom';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
     tutoKey: string;
-    steps: Step[] | TutorialStepIF[];
+    steps: TutorialStepIF[];
     showSteps?: boolean;
     initialStep?: number;
     onComplete?: () => void;
@@ -24,7 +25,7 @@ function TutorialComponent(props: propsIF) {
 
     const stepIndexRef = useRef<number>();
     stepIndexRef.current = stepIndex;
-    const [step, setStep] = useState<Step | TutorialStepIF | undefined>(
+    const [step, setStep] = useState<| TutorialStepIF | undefined>(
         steps.length > 0 && steps[stepIndex] ? steps[stepIndex] : undefined,
     );
     hasTriggeredRef.current = hasTriggered;
@@ -34,6 +35,9 @@ function TutorialComponent(props: propsIF) {
 
     const focusOffsetH = 20;
     const tooltipOffsetV = 20;
+
+    
+    const isMobile = useMediaQuery('(max-width: 800px)');
     // const focusOffsetV = 20;
 
     useEffect(() => {
@@ -200,39 +204,94 @@ function TutorialComponent(props: propsIF) {
         };
     }, []);
 
+    const handleAssignments = () => {
+        if(step?.assignment){
+            const assignments = step.assignment.split(';');
+            assignments.map((assign) => {
+                const selector = assign.split('>')[0];
+                const value = assign.split('>')[1];
+                const el = document.querySelector(selector);
+                if(el && el instanceof HTMLInputElement){
+                    el.value = value;
+                }
+            })
+        }
+    }
+
+    const handleActionTriggers = () => { 
+        if(step?.actionTrigger){
+            const el = document.querySelector(step.actionTrigger);
+            if(el && el instanceof HTMLElement){
+                el.click();
+            }
+        }
+    }
+
+    
+    const navigate = useNavigate();
+
+    const handlenNavigate = (url: string) => {
+        navigate(url);
+    }
+
+    const renderNavigate = () => {
+        if(step && step.navigate){
+            const path = step.navigate.path;
+            return (
+                <div
+                className={styles.step_btn + ' ' + styles.navigate}
+                onClick={() => handlenNavigate(path)}
+            >
+                {'>>'} {step.navigate.label}
+            </div>
+            )
+        }
+    }
+
     useEffect(() => {
         handleFocusOverlay();
         handleTooltip();
+        handleAssignments();
+        handleActionTriggers();
     }, [step]);
 
     const triggerTutorial = () => {
         setHasTriggered(true);
     };
 
-    const navButtons = (showSteps?: boolean) => (
+    const navButtons = (forTooltip?: boolean) => (
         <>
             {showSteps && (
-                <div className={styles.steps_indicator}>
-                    {stepIndex + 1}{' '}
-                    <span style={{ opacity: 0.5 }}>/ {steps.length}</span>
-                </div>
+                // <div className={styles.steps_indicator}>
+                //     {stepIndex + 1}{' '}
+                //     <span style={{ opacity: 0.5 }}>/ {steps.length}</span>
+                // </div>
+                <></>
             )}
             {
-                <div
-                    className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
-                    onClick={prevStep}
-                >
-                    Prev
-                </div>
+                forTooltip && isMobile ?
+                (<> </>)
+                :
+                (<>
+                    {
+                    <div
+                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                        onClick={prevStep}
+                    >
+                        {'<'} Prev
+                    </div>
+                }
+                {stepIndex < steps.length - 1 && (
+                    <div
+                        className={styles.step_btn + ' ' + styles.next_button}
+                        onClick={nextStep}
+                    >
+                        Next {'>'}
+                    </div>
+                )}
+                </>)
             }
-            {stepIndex < steps.length - 1 && (
-                <div
-                    className={styles.step_btn + ' ' + styles.next_button}
-                    onClick={nextStep}
-                >
-                    Next
-                </div>
-            )}
+            
             {stepIndex == steps.length - 1 && (
                 <div
                     className={styles.step_btn + ' ' + styles.complete_button}
@@ -252,15 +311,16 @@ function TutorialComponent(props: propsIF) {
             {step && (
                 <div ref={tooltipWrapper} className={styles.tooltip_wrapper}>
                     <div className={styles.tooltip_title}>{step.title}</div>
-                    <div className={styles.tooltip_content}>{step.intro}</div>
+                    <div className={styles.tooltip_content}>{step.intro}</div>  
 
                     <div className={styles.tooltip_buttons_wrapper}>
-                        {navButtons(false)}
+                        {navButtons(true)}
+                        {renderNavigate()}
                     </div>
                 </div>
             )}
 
-            <div className={styles.tutorial_steps}>{navButtons(showSteps)}</div>
+            <div className={styles.tutorial_steps}>{navButtons(false)}</div>
         </div>
     );
 }
