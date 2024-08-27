@@ -65,6 +65,7 @@
     width: 100%;
     background-color: color-mix(in srgb, var(--accent1) 5%, transparent);
     border-bottom: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
+    position: relative;
 }
 
 .tooltip_content{
@@ -109,7 +110,6 @@
     display: flex;
     
     justify-content: center;
-    padding-bottom: 1rem;
 }
 
 .step_btn{
@@ -150,6 +150,38 @@
     background: var(--dark1);
     padding: .5rem 1rem;
     border: 1px solid color-mix(in srgb, white 30%, transparent);
+}
+
+.steps_on_tooltip{
+    position: absolute;
+    right: 1rem;
+    top: .5rem;
+    font-size: .8rem;
+
+}
+
+
+.step_dots_wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+}
+
+.step_dot{
+    transition: all .2s ease-in-out;
+    display: inline-block;
+    width: .25rem;
+    height: .25rem;
+    background-color: rgba(255,255,255, .2);
+    margin: .5rem;
+    border-radius: 100vw;
+}
+
+.step_dot.active{
+    transform: scale(1.5);
+    background-color: var(--accent1);
 }
 
 .next_button{

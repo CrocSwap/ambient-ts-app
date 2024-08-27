@@ -310,12 +310,36 @@ function TutorialComponent(props: propsIF) {
 
             {step && (
                 <div ref={tooltipWrapper} className={styles.tooltip_wrapper}>
-                    <div className={styles.tooltip_title}>{step.title}</div>
+                   
+                    <div className={styles.tooltip_title}>{step.title}
+
+
+                    {showSteps && (
+                        <span className={styles.steps_on_tooltip}>
+                            {stepIndex + 1}
+                            <span style={{ opacity: 0.5 }}>/{steps.length}</span>
+                        </span>
+                    )}
+
+                    </div>
                     <div className={styles.tooltip_content}>{step.intro}</div>  
 
                     <div className={styles.tooltip_buttons_wrapper}>
                         {navButtons(true)}
                         {renderNavigate()}
+                    </div>
+
+                    <div className={styles.step_dots_wrapper}>
+                        {steps.map((_, i) => (
+                            <div
+                                key={i}
+                                className={
+                                    styles.step_dot +
+                                    ' ' +
+                                    (i === stepIndex ? styles.active : '')
+                                }
+                            ></div>
+                        ))}
                     </div>
                 </div>
             )}
