@@ -760,6 +760,8 @@ export default function Chart(props: propsIF) {
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
 
+    const [shouldResetBuffer, setShouldResetBuffer] = useState(true);
+
     const [
         isOnCandleOrVolumeMouseLocation,
         setIsOnCandleOrVolumeMouseLocation,
@@ -902,6 +904,12 @@ export default function Chart(props: propsIF) {
             setXScaleDefault();
         }
     }, []);
+
+    useEffect(() => {
+        if (shouldResetBuffer) {
+            setXScaleDefault();
+        }
+    }, [liqMode, shouldResetBuffer]);
 
     useEffect(() => {
         (async () => {
@@ -1404,6 +1412,7 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
+                        setShouldResetBuffer(false);
                         if (event.sourceEvent.type !== 'wheel') {
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
@@ -2686,6 +2695,7 @@ export default function Chart(props: propsIF) {
             resetFunc();
             setReset(false);
             setShowLatest(false);
+            setShouldResetBuffer(true);
         }
     }, [reset, minTickForLimit, maxTickForLimit, liqMode]);
 
