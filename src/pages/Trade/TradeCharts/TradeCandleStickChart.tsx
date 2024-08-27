@@ -13,7 +13,6 @@ import './TradeCandleStickChart.css';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
@@ -240,7 +239,6 @@ function TradeCandleStickChart(props: propsIF) {
     }, [isFetchingEnoughData]);
 
     useEffect(() => {
-        console.log('parsing liquidity data');
         if (
             unparsedLiquidityData !== undefined &&
             candleData &&
@@ -303,11 +301,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     // Parse liquidity data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
-        console.log({
-            liqBoundary,
-            sumActiveLiq,
-            addresses: baseTokenAddress + quoteTokenAddress,
-        });
         if (
             liqBoundary &&
             unparsedLiquidityData &&
@@ -320,7 +313,6 @@ function TradeCandleStickChart(props: propsIF) {
             unparsedLiquidityData.curveState.poolIdx === chainData.poolIndex &&
             unparsedLiquidityData.curveState.chainId === chainData.chainId
         ) {
-            console.log('parsing liquidity data 2');
             const liqAskData: LiquidityDataLocal[] = [];
             const liqBidData: LiquidityDataLocal[] = [];
             const depthLiqBidData: LiquidityDataLocal[] = [];
@@ -633,16 +625,12 @@ function TradeCandleStickChart(props: propsIF) {
     }, [liqBoundary, baseTokenAddress + quoteTokenAddress, sumActiveLiq]);
 
     useEffect(() => {
-        console.log({ unparsedCandleData });
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
     }, [unparsedCandleData === undefined, mobileView, isDenomBase, period]);
 
     useEffect(() => {
-        console.log({
-            isFetchFirst200Candle: candleScale.isFetchFirst200Candle,
-        });
         if (candleScale.isFetchFirst200Candle === true) {
             scaleData && setScaleData(undefined);
         } else {
@@ -652,7 +640,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     // Liq Scale
     useEffect(() => {
-        console.log({ liquidityData, liquidityScale });
         if (liquidityData !== undefined) {
             if (liquidityScale === undefined) {
                 setScaleForChartLiquidity(liquidityData);
@@ -665,8 +652,6 @@ function TradeCandleStickChart(props: propsIF) {
     }, [liquidityData === undefined, liquidityScale === undefined]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
-        console.log('setting scale for chart liquidity');
-        IS_LOCAL_ENV && console.debug('parse Liq Scale');
         if (liquidityData !== undefined) {
             const liquidityScale = d3.scaleLinear();
             const liquidityDepthScale = d3.scaleLinear();
@@ -696,7 +681,6 @@ function TradeCandleStickChart(props: propsIF) {
 
     // Scale
     const setScaleForChart = (unparsedCandleData: any) => {
-        console.log('setting scale for chart');
         if (
             unparsedCandleData !== undefined &&
             unparsedCandleData.length > 0 &&
