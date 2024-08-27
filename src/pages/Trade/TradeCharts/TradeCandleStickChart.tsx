@@ -55,7 +55,6 @@ interface propsIF {
         candleData: CandleDataIF | undefined,
     ) => void;
     chartItemStates: chartItemStates;
-    setCurrentData: Dispatch<SetStateAction<CandleDataIF | undefined>>;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
     rescale: boolean | undefined;
@@ -66,7 +65,6 @@ interface propsIF {
     setReset: Dispatch<SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: Dispatch<SetStateAction<boolean>>;
-    setShowTooltip: Dispatch<SetStateAction<boolean>>;
     updateURL: (changes: updatesIF) => void;
 }
 
@@ -99,6 +97,7 @@ function TradeCandleStickChart(props: propsIF) {
         [chartSettings.candleTime.global.time, location.pathname],
     );
 
+    const [currentData, setCurrentData] = useState<CandleDataIF | undefined>();
     const periodToReadableTime = useMemo(() => {
         if (period) {
             const readableTime = chartSettings.candleTime.global.defaults.find(
@@ -145,6 +144,8 @@ function TradeCandleStickChart(props: propsIF) {
         undefined,
     );
     const [prevCandleCount, setPrevCandleCount] = useState<number>(0);
+
+    const [showTooltip, setShowTooltip] = useState(false);
 
     const [chartResetStatus, setChartResetStatus] = useState<{
         isResetChart: boolean;
@@ -222,8 +223,8 @@ function TradeCandleStickChart(props: propsIF) {
             const selectedDateData = unparsedCandleData?.find(
                 (i) => i.time * 1000 === selectedDate,
             );
-            props.setCurrentData(selectedDateData);
-            props.setShowTooltip(true);
+            setCurrentData(selectedDateData);
+            setShowTooltip(true);
         }
     }, [selectedDate]);
 
@@ -1085,6 +1086,7 @@ function TradeCandleStickChart(props: propsIF) {
         <>
             <div
                 style={{
+                    marginTop: '2px',
                     height: '100%',
                     width: '100%',
                     display: 'grid',
@@ -1127,7 +1129,8 @@ function TradeCandleStickChart(props: propsIF) {
                         changeState={props.changeState}
                         denomInBase={isDenomBase}
                         chartItemStates={props.chartItemStates}
-                        setCurrentData={props.setCurrentData}
+                        setCurrentData={setCurrentData}
+                        currentData={currentData}
                         isCandleAdded={isCandleAdded}
                         setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
@@ -1144,7 +1147,7 @@ function TradeCandleStickChart(props: propsIF) {
                         setReset={props.setReset}
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
-                        setShowTooltip={props.setShowTooltip}
+                        setShowTooltip={setShowTooltip}
                         liquidityScale={liquidityScale}
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
@@ -1158,6 +1161,7 @@ function TradeCandleStickChart(props: propsIF) {
                         setIsCompletedFetchData={setIsCompletedFetchData}
                         setChartResetStatus={setChartResetStatus}
                         chartResetStatus={chartResetStatus}
+                        showTooltip={showTooltip}
                     />
                 )}
             </div>
