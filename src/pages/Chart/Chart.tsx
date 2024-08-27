@@ -2697,7 +2697,7 @@ export default function Chart(props: propsIF) {
             setShowLatest(false);
             setShouldResetBuffer(true);
         }
-    }, [reset, minTickForLimit, maxTickForLimit, liqMode]);
+    }, [reset, minTickForLimit, maxTickForLimit]);
 
     // when click latest
     useEffect(() => {
