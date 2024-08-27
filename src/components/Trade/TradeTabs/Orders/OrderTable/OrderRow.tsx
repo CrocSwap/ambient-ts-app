@@ -1,13 +1,6 @@
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
-import {
-    Dispatch,
-    SetStateAction,
-    memo,
-    useContext,
-    useEffect,
-    useRef,
-} from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from 'react';
 import {
     LimitModalAction,
     LimitOrderIF,
@@ -280,4 +273,4 @@ function OrderRow(props: propsIF) {
     );
 }
 
-export default memo(OrderRow);
+export default OrderRow;

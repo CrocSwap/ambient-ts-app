@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TransactionIF } from '../../../../../ambient-utils/types';
@@ -255,4 +255,4 @@ function TransactionRow(props: propsIF) {
     );
 }
 
-export default memo(TransactionRow);
+export default TransactionRow;

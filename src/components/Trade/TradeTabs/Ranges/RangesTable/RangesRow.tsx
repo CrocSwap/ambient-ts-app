@@ -1,11 +1,4 @@
-import {
-    useEffect,
-    useRef,
-    useContext,
-    memo,
-    Dispatch,
-    SetStateAction,
-} from 'react';
+import { useEffect, useRef, useContext, Dispatch, SetStateAction } from 'react';
 import {
     PositionIF,
     RangeModalAction,
@@ -287,4 +280,4 @@ function RangesRow(props: propsIF) {
     );
 }
 
-export default memo(RangesRow);
+export default RangesRow;
