@@ -124,6 +124,7 @@ import {
 import { filterCandleWithTransaction } from './ChartUtils/discontinuityScaleUtils';
 import ChartSettings from './ChartSettings/ChartSettings';
 import useOnClickOutside, { Event } from '../../utils/hooks/useOnClickOutside';
+import ChartTooltip from './ChartTooltip/ChartTooltip';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -137,6 +138,7 @@ interface propsIF {
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleDataIF | undefined>
     >;
+    currentData: CandleDataIF | undefined;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
     scaleData: scaleData;
@@ -173,6 +175,7 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
+    showTooltip: boolean;
 }
 
 export default function Chart(props: propsIF) {
@@ -204,6 +207,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
+        showTooltip,
     } = props;
 
     const {
@@ -762,6 +766,8 @@ export default function Chart(props: propsIF) {
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
 
+    const [shouldResetBuffer, setShouldResetBuffer] = useState(true);
+
     const [
         isOnCandleOrVolumeMouseLocation,
         setIsOnCandleOrVolumeMouseLocation,
@@ -904,6 +910,12 @@ export default function Chart(props: propsIF) {
             setXScaleDefault();
         }
     }, []);
+
+    useEffect(() => {
+        if (shouldResetBuffer) {
+            setXScaleDefault();
+        }
+    }, [liqMode, shouldResetBuffer]);
 
     useEffect(() => {
         (async () => {
@@ -1406,6 +1418,7 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
+                        setShouldResetBuffer(false);
                         if (event.sourceEvent.type !== 'wheel') {
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
@@ -2564,9 +2577,11 @@ export default function Chart(props: propsIF) {
             const snapDiff = nowDate % (period * 1000);
             const snappedTime = nowDate + (period * 1000 - snapDiff);
 
+            const liqBuffer = liqMode === 'none' ? 0.95 : xAxisBuffer;
+
             const centerX = snappedTime;
             const diff =
-                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+                (localInitialDisplayCandleCount * period * 1000) / liqBuffer;
 
             setPrevLastCandleTime(snappedTime / 1000);
 
@@ -2588,12 +2603,12 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
             const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
-                centerX - diff * xAxisBuffer,
-                centerX + diff * (1 - xAxisBuffer),
+                centerX - diff * liqBuffer,
+                centerX + diff * (1 - liqBuffer),
             ];
 
             const targetValue = Date.now();
-            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
+            const targetPixel = currentRange[1] * (1 - liqBuffer);
 
             const newDomainMin =
                 targetValue -
@@ -2686,6 +2701,7 @@ export default function Chart(props: propsIF) {
             resetFunc();
             setReset(false);
             setShowLatest(false);
+            setShouldResetBuffer(true);
         }
     }, [reset, minTickForLimit, maxTickForLimit]);
 
@@ -5881,6 +5897,10 @@ export default function Chart(props: propsIF) {
                 paddingLeft: toolbarWidth + 'px',
             }}
         >
+            <ChartTooltip
+                currentData={props.currentData}
+                showTooltip={showTooltip}
+            />
             <d3fc-group
                 id='d3fc_group'
                 auto-resize
