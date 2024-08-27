@@ -12,12 +12,12 @@ import {
     CACHE_UPDATE_FREQ_IN_MS,
 } from '../../ambient-utils/constants';
 import {
-    LimitOrderIF,
+    // LimitOrderIF,
     LimitOrderServerIF,
     PositionIF,
     PositionServerIF,
     TokenIF,
-    TransactionIF,
+    // TransactionIF,
     TransactionServerIF,
 } from '../../ambient-utils/types';
 import {
@@ -178,124 +178,124 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         !!props.crocEnv,
     ]);
 
-    const [newTxByPoolData, setNewTxByPoolData] = useState<
-        TransactionIF[] | undefined
-    >([]);
+    // const [newTxByPoolData, setNewTxByPoolData] = useState<
+    //     TransactionIF[] | undefined
+    // >([]);
 
-    const [newLimitsByPoolData, setNewLimitsByPoolData] = useState<
-        LimitOrderIF[] | undefined
-    >([]);
+    // const [newLimitsByPoolData, setNewLimitsByPoolData] = useState<
+    //     LimitOrderIF[] | undefined
+    // >([]);
 
-    const [newRangesByPoolData, setNewRangesByPoolData] = useState<
-        PositionIF[] | undefined
-    >([]);
+    // const [newRangesByPoolData, setNewRangesByPoolData] = useState<
+    //     PositionIF[] | undefined
+    // >([]);
 
-    const [newLeaderboardByPoolData, setNewLeaderboardByPoolData] = useState<
-        PositionIF[] | undefined
-    >([]);
+    // const [newLeaderboardByPoolData, setNewLeaderboardByPoolData] = useState<
+    //     PositionIF[] | undefined
+    // >([]);
 
     useEffect(() => {
         // reset new data when switching pairs
-        setNewTxByPoolData(undefined);
-        setNewLimitsByPoolData(undefined);
-        setNewRangesByPoolData(undefined);
-        setNewLeaderboardByPoolData(undefined);
+        // setNewTxByPoolData(undefined);
+        // setNewLimitsByPoolData(undefined);
+        // setNewRangesByPoolData(undefined);
+        // setNewLeaderboardByPoolData(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
 
-    useEffect(() => {
-        if (newTxByPoolData) {
-            const filteredNewTxByPoolData = newTxByPoolData.filter((tx) => {
-                return (
-                    tx.base.toLowerCase() === baseTokenAddress.toLowerCase() &&
-                    tx.quote.toLowerCase() === quoteTokenAddress.toLowerCase()
-                );
-            });
-            if (filteredNewTxByPoolData.length > 0) {
-                setTransactionsByPool({
-                    dataReceived: true,
-                    changes: filteredNewTxByPoolData,
-                });
-                setDataLoadingStatus({
-                    datasetName: 'isPoolTxDataLoading',
-                    loadingStatus: false,
-                });
-            }
-        }
-    }, [newTxByPoolData, baseTokenAddress + quoteTokenAddress]);
+    // useEffect(() => {
+    //     if (newTxByPoolData) {
+    //         const filteredNewTxByPoolData = newTxByPoolData.filter((tx) => {
+    //             return (
+    //                 tx.base.toLowerCase() === baseTokenAddress.toLowerCase() &&
+    //                 tx.quote.toLowerCase() === quoteTokenAddress.toLowerCase()
+    //             );
+    //         });
+    //         if (filteredNewTxByPoolData.length > 0) {
+    //             setTransactionsByPool({
+    //                 dataReceived: true,
+    //                 changes: filteredNewTxByPoolData,
+    //             });
+    //             setDataLoadingStatus({
+    //                 datasetName: 'isPoolTxDataLoading',
+    //                 loadingStatus: false,
+    //             });
+    //         }
+    //     }
+    // }, [newTxByPoolData, baseTokenAddress + quoteTokenAddress]);
 
-    useEffect(() => {
-        if (newLimitsByPoolData) {
-            const filteredNewLimitsByPoolData = newLimitsByPoolData.filter(
-                (limit) => {
-                    return (
-                        limit.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        limit.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase()
-                    );
-                },
-            );
-            if (filteredNewLimitsByPoolData.length > 0) {
-                setLimitOrdersByPool({
-                    dataReceived: true,
-                    limitOrders: filteredNewLimitsByPoolData,
-                });
-                setDataLoadingStatus({
-                    datasetName: 'isPoolOrderDataLoading',
-                    loadingStatus: false,
-                });
-            }
-        }
-    }, [newLimitsByPoolData, baseTokenAddress + quoteTokenAddress]);
+    // useEffect(() => {
+    //     if (newLimitsByPoolData) {
+    //         const filteredNewLimitsByPoolData = newLimitsByPoolData.filter(
+    //             (limit) => {
+    //                 return (
+    //                     limit.base.toLowerCase() ===
+    //                         baseTokenAddress.toLowerCase() &&
+    //                     limit.quote.toLowerCase() ===
+    //                         quoteTokenAddress.toLowerCase()
+    //                 );
+    //             },
+    //         );
+    //         if (filteredNewLimitsByPoolData.length > 0) {
+    //             setLimitOrdersByPool({
+    //                 dataReceived: true,
+    //                 limitOrders: filteredNewLimitsByPoolData,
+    //             });
+    //             setDataLoadingStatus({
+    //                 datasetName: 'isPoolOrderDataLoading',
+    //                 loadingStatus: false,
+    //             });
+    //         }
+    //     }
+    // }, [newLimitsByPoolData, baseTokenAddress + quoteTokenAddress]);
 
-    useEffect(() => {
-        if (newRangesByPoolData) {
-            const filteredNewRangesByPoolData = newRangesByPoolData.filter(
-                (position) => {
-                    return (
-                        position.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        position.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase()
-                    );
-                },
-            );
-            if (filteredNewRangesByPoolData.length > 0) {
-                setPositionsByPool({
-                    dataReceived: true,
-                    positions: filteredNewRangesByPoolData,
-                });
-                setDataLoadingStatus({
-                    datasetName: 'isPoolRangeDataLoading',
-                    loadingStatus: false,
-                });
-            }
-        }
-    }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
+    // useEffect(() => {
+    //     if (newRangesByPoolData) {
+    //         const filteredNewRangesByPoolData = newRangesByPoolData.filter(
+    //             (position) => {
+    //                 return (
+    //                     position.base.toLowerCase() ===
+    //                         baseTokenAddress.toLowerCase() &&
+    //                     position.quote.toLowerCase() ===
+    //                         quoteTokenAddress.toLowerCase()
+    //                 );
+    //             },
+    //         );
+    //         if (filteredNewRangesByPoolData.length > 0) {
+    //             setPositionsByPool({
+    //                 dataReceived: true,
+    //                 positions: filteredNewRangesByPoolData,
+    //             });
+    //             setDataLoadingStatus({
+    //                 datasetName: 'isPoolRangeDataLoading',
+    //                 loadingStatus: false,
+    //             });
+    //         }
+    //     }
+    // }, [newRangesByPoolData, baseTokenAddress + quoteTokenAddress]);
 
-    useEffect(() => {
-        if (newLeaderboardByPoolData) {
-            const filteredNewLeaderboardByPoolData =
-                newLeaderboardByPoolData.filter((position) => {
-                    return (
-                        position.base.toLowerCase() ===
-                            baseTokenAddress.toLowerCase() &&
-                        position.quote.toLowerCase() ===
-                            quoteTokenAddress.toLowerCase()
-                    );
-                });
-            if (filteredNewLeaderboardByPoolData.length > 0) {
-                setLeaderboardByPool({
-                    dataReceived: true,
-                    positions: filteredNewLeaderboardByPoolData,
-                });
-                setDataLoadingStatus({
-                    datasetName: 'isPoolRangeDataLoading',
-                    loadingStatus: false,
-                });
-            }
-        }
-    }, [newLeaderboardByPoolData, baseTokenAddress + quoteTokenAddress]);
+    // useEffect(() => {
+    //     if (newLeaderboardByPoolData) {
+    //         const filteredNewLeaderboardByPoolData =
+    //             newLeaderboardByPoolData.filter((position) => {
+    //                 return (
+    //                     position.base.toLowerCase() ===
+    //                         baseTokenAddress.toLowerCase() &&
+    //                     position.quote.toLowerCase() ===
+    //                         quoteTokenAddress.toLowerCase()
+    //                 );
+    //             });
+    //         if (filteredNewLeaderboardByPoolData.length > 0) {
+    //             setLeaderboardByPool({
+    //                 dataReceived: true,
+    //                 positions: filteredNewLeaderboardByPoolData,
+    //             });
+    //             setDataLoadingStatus({
+    //                 datasetName: 'isPoolRangeDataLoading',
+    //                 loadingStatus: false,
+    //             });
+    //         }
+    //     }
+    // }, [newLeaderboardByPoolData, baseTokenAddress + quoteTokenAddress]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
@@ -363,11 +363,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 )
                                     .then((updatedPositions) => {
                                         if (updatedPositions.length > 0) {
-                                            setNewRangesByPoolData(
-                                                updatedPositions,
-                                            );
+                                            // setNewRangesByPoolData(
+                                            //     updatedPositions,
+                                            // );
                                         } else {
-                                            setNewRangesByPoolData(undefined);
+                                            // setNewRangesByPoolData(undefined);
                                             setPositionsByPool({
                                                 dataReceived: false,
                                                 positions: [],
@@ -381,7 +381,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     })
                                     .catch(console.error);
                             } else {
-                                setNewRangesByPoolData(undefined);
+                                // setNewRangesByPoolData(undefined);
                                 setPositionsByPool({
                                     dataReceived: false,
                                     positions: [],
@@ -450,13 +450,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             .slice(0, 10);
 
                                         if (top10Positions.length > 0) {
-                                            setNewLeaderboardByPoolData(
-                                                top10Positions,
-                                            );
+                                            // setNewLeaderboardByPoolData(
+                                            //     top10Positions,
+                                            // );
                                         } else {
-                                            setNewLeaderboardByPoolData(
-                                                undefined,
-                                            );
+                                            // setNewLeaderboardByPoolData(
+                                            //     undefined,
+                                            // );
                                         }
                                     })
                                     .catch(console.error);
@@ -490,9 +490,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 poolChangesJsonData &&
                                 poolChangesJsonData.length > 0
                             ) {
-                                setNewTxByPoolData(poolChangesJsonData);
+                                // setNewTxByPoolData(poolChangesJsonData);
                             } else {
-                                setNewTxByPoolData(undefined);
+                                // setNewTxByPoolData(undefined);
                                 setTransactionsByPool({
                                     dataReceived: true,
                                     changes: [],
@@ -546,12 +546,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     ),
                                 ).then((updatedLimitOrderStates) => {
                                     if (updatedLimitOrderStates.length > 0) {
-                                        const filteredData = filterLimitArray(
-                                            updatedLimitOrderStates,
-                                        );
-                                        setNewLimitsByPoolData(filteredData);
+                                        // const filteredData = filterLimitArray(
+                                        //     updatedLimitOrderStates,
+                                        // );
+                                        // setNewLimitsByPoolData(filteredData);
                                     } else {
-                                        setNewLimitsByPoolData(undefined);
+                                        // setNewLimitsByPoolData(undefined);
                                         setLimitOrdersByPool({
                                             dataReceived: false,
                                             limitOrders: [],
@@ -564,7 +564,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     }
                                 });
                             } else {
-                                setNewLimitsByPoolData(undefined);
+                                // setNewLimitsByPoolData(undefined);
                                 setLimitOrdersByPool({
                                     dataReceived: false,
                                     limitOrders: [],
