@@ -104,7 +104,7 @@ export const useSortedTxs = (
     // array of positions sorted by the relevant column
     const sortedTransactions = useMemo<TransactionIF[]>(() => {
         return sortData(transactions);
-    }, [sortBy, reverseSort, transactions]);
+    }, [sortBy, reverseSort, transactions[0]?.txHash, transactions.length]);
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];
 };
