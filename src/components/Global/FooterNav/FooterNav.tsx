@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { RiHome4Fill, RiSwapBoxFill } from 'react-icons/ri';
+import { RiHome4Fill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
 import { BsFillChatDotsFill } from 'react-icons/bs';
@@ -40,11 +40,11 @@ const FooterNav: React.FC = () => {
 
     const linksData = [
         { title: 'Home', destination: '/', icon: RiHome4Fill },
-        {
-            title: 'Swap',
-            destination: `/swap/${paramsSlug}`,
-            icon: RiSwapBoxFill,
-        },
+        // {
+        //     title: 'Swap',
+        //     destination: `/swap/${paramsSlug}`,
+        //     icon: RiSwapBoxFill,
+        // },
         {
             title: 'Trade',
             destination: `${tradeDestination}${paramsSlug}`,
@@ -63,20 +63,21 @@ const FooterNav: React.FC = () => {
     useEffect(() => {
         const currentPath = location.pathname;
 
-        if (currentPath.includes('/swap')) {
-            setActiveIndex(1); // Swap
-        } else if (currentPath.includes('/trade')) {
-            setActiveIndex(2); // Trade
+        // if (currentPath.includes('/swap')) {
+        //     setActiveIndex(1); // Swap
+        // } else
+            if (currentPath.includes('/trade')) {
+            setActiveIndex(1); // Trade
         } else if (currentPath.includes('/explore')) {
-            setActiveIndex(3); // Explore
+            setActiveIndex(2); // Explore
         } else if (
             currentPath.includes('/account') ||
             isAddressEns ||
             isAddressHex
         ) {
-            setActiveIndex(4); // Account
+            setActiveIndex(3); // Account
         } else if (currentPath.includes('/chat')) {
-            setActiveIndex(5); // Chat
+            setActiveIndex(4); // Chat
         } else {
             setActiveIndex(0); // Home
         }

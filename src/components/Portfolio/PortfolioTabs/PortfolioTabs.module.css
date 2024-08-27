@@ -13,6 +13,7 @@
     flex-direction: column;
     height: 100%;
     gap: 8px;
+    border: 1px solid var(--dark3)
   }
 
   .mobile_tabs_button_container{

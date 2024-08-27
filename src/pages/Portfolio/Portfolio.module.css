@@ -29,9 +29,7 @@ overflow: hidden !important;
   
 }
 
-.mobile_container > *{
-  outline: 1px solid green;
-}
+
 .portfolio_tabs_container {
     width: 100%;
     display: grid;
@@ -87,10 +85,8 @@ overflow: hidden !important;
     display: grid;
     grid-template-rows: 105px 1fr ;
     gap: 4px;
-
-  
-   
     overflow: hidden;
+    padding: 0 1rem;
 }
 
   @media (min-width: 1200px) {

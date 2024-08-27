@@ -36,6 +36,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useDollarPrice from '../../Chart/ChartUtils/getDollarPrice';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { SidebarContext } from '../../../contexts/SidebarContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -96,6 +97,8 @@ function TradeCharts(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const { pathname } = useLocation();
+    const smallScreen = useMediaQuery('(max-width: 768px)');
+
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -352,6 +355,7 @@ function TradeCharts(props: propsIF) {
                 fullWidth
                 style={{
                     background: isChartFullScreen ? 'var(--dark2)' : '',
+                    padding: smallScreen ? '0 1rem' : ''
                 }}
                 ref={chartCanvasRef}
             >

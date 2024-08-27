@@ -693,8 +693,10 @@ export default function Chart(props: propsIF) {
     );
 
     const [bandwidth, setBandwidth] = useState(5);
+    const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const toolbarWidth = isToolbarOpen ? 38 : 15;
+
+    const toolbarWidth = smallScreen ? 0 :  isToolbarOpen ? 38 : 15;
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,

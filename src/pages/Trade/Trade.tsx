@@ -10,7 +10,6 @@ import {
     memo,
     useRef,
 } from 'react';
-import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -28,24 +27,25 @@ import { getFormattedNumber } from '../../ambient-utils/dataLayer';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import { FlexContainer, Text } from '../../styled/Common';
+import { FlexContainer } from '../../styled/Common';
 import {
     ChartContainer,
     MainSection,
     ResizableContainer,
-    TradeDropdown,
-    TradeDropdownButton,
+
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../contexts/PoolContext';
-import { MdAutoGraph } from 'react-icons/md';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
+import styles from './Trade.module.css';
 
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { BrandContext } from '../../contexts/BrandContext';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import TableInfo from '../../components/Trade/TableInfo/TableInfo';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -79,8 +79,8 @@ function Trade() {
     const {
         setOutsideControl,
         setSelectedOutsideTab,
-        activeMobileComponent,
-        setActiveMobileComponent,
+     
+       
     } = useContext(TradeTableContext);
 
     const {
@@ -88,7 +88,7 @@ function Trade() {
         quoteToken,
         isDenomBase,
         limitTick,
-        toggleDidUserFlipDenom,
+       
     } = useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
@@ -113,65 +113,6 @@ function Trade() {
         [],
     );
 
-    const [showMobileDropdown, setMobileDropdown] = useState(false);
-
-    const handleMobileDropdownClick = (component: string) => {
-        setActiveMobileComponent(component);
-        setMobileDropdown(false);
-    };
-
-    const mobileTradeDropdown = (
-        <TradeDropdown>
-            <TradeDropdownButton
-                onClick={() => setMobileDropdown(!showMobileDropdown)}
-                activeText
-            >
-                {activeMobileComponent}
-
-                <BsCaretDownFill />
-            </TradeDropdownButton>
-
-            {showMobileDropdown && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        marginTop: '8px',
-                        width: '100%',
-                        background: 'var(--dark2)',
-                    }}
-                >
-                    {activeMobileComponent !== 'trade' && (
-                        <TradeDropdownButton
-                            onClick={() => handleMobileDropdownClick('trade')}
-                        >
-                            Trade
-                        </TradeDropdownButton>
-                    )}
-
-                    {!isCandleDataNull &&
-                        isPoolInitialized &&
-                        activeMobileComponent !== 'chart' && (
-                            <TradeDropdownButton
-                                onClick={() =>
-                                    handleMobileDropdownClick('chart')
-                                }
-                            >
-                                Chart
-                            </TradeDropdownButton>
-                        )}
-                    {activeMobileComponent !== 'transactions' && (
-                        <TradeDropdownButton
-                            onClick={() =>
-                                handleMobileDropdownClick('transactions')
-                            }
-                        >
-                            Transactions
-                        </TradeDropdownButton>
-                    )}
-                </div>
-            )}
-        </TradeDropdown>
-    );
 
     const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
@@ -183,8 +124,7 @@ function Trade() {
         unselectCandle();
     }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
-    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+    const smallScreen = useMediaQuery('(max-width: 768px)');
 
     const tradeChartsProps = {
         changeState: changeState,
@@ -222,66 +162,96 @@ function Trade() {
     const conversionRate = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+    // -----------------------------------------------------------------------
 
-    const mobileTrade = (
-        <MainSection isDropdown isSmallScreen={smallScreen}
-        style={
-            activeMobileComponent === 'trade'
-              ? { height: '100dvh', overflowY: 'scroll', marginBottom: '64px' }
-              : {}
-          }        >
-            {mobileTradeDropdown}
+    const [activeTab, setActiveTab] = useState('Order');
 
-            <Text
-                fontWeight='500'
-                fontSize='body'
-                color='accent5'
-                style={{
-                    margin: '0 auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}
-                onClick={() => toggleDidUserFlipDenom()}
-            >
-                <MdAutoGraph size={22} color='var(--accent5)' />
-                {conversionRate}
-            </Text>
-            {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
-                    <TradeChartsHeader />
-                    {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
-                </div>
-            )}
-
-            {activeMobileComponent === 'transactions' && (
-                <div style={{ marginLeft: smallScreen ? '' : '2rem', flex: 1 }}>
-                    <TradeChartsHeader />
-                    <TradeTabs2 {...tradeTabsProps} />
-                </div>
-            )}
-
-            {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding
-                    noStyle={smallScreen}
+    const tabs = [
+        { id: 'Order', label: 'Order', data: <ContentContainer noPadding noStyle={smallScreen}>
+        <Outlet
+            context={{
+                urlParamMap: urlParamMap,
+                limitTick: limitTick,
+                updateURL: updateURL,
+            }}
+        />
+    </ContentContainer> },
+        { id: 'Chart', label: 'Chart', data: isPoolInitialized &&
+            !isCandleDataNull && <TradeCharts {...tradeChartsProps} /> },
+        { id: 'Txns', label: 'Txns', data: <TradeTabs2 {...tradeTabsProps} /> },
+        { id: 'Info', label: 'Info', data: <TableInfo/>},
+    ];
+    const mobileTabs = (
+        <div className={styles.mobile_tabs_container}>
+            {tabs.map((tab) => (
+                <button
+                    key={tab.id}
+                    className={`${styles.tabButton} ${activeTab === tab.id ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab(tab.id)}
+                    style={{
+                        color:
+                            activeTab === tab.id
+                                ? 'var(--accent1)'
+                                : 'var(--text2)',
+                        border:
+                            activeTab === tab.id
+                                ? '1px solid var(--accent1)'
+                                : '1px solid transparent',
+                    }}
                 >
-                    <Outlet
-                        context={{
-                            urlParamMap: urlParamMap,
-                            limitTick: limitTick,
-                            updateURL: updateURL,
-                        }}
-                    />
-                </ContentContainer>
-            )}
-
-            {!isChartHeightMinimum && activeMobileComponent === 'chart' && (
-                <ChartToolbar />
-            )}
-        </MainSection>
+                    {tab.label}
+                </button>
+            ))}
+        </div>
     );
 
-    if (showActiveMobileComponent) return mobileTrade;
+    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const calculateHeight = () => {
+          const totalHeight = window.innerHeight;
+          const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+          setAvailableHeight(totalHeight - heightToSubtract);
+        };
+    
+        calculateHeight(); // Calculate initial height
+        window.addEventListener('resize', calculateHeight);
+    
+        return () => window.removeEventListener('resize', calculateHeight);
+    }, []);
+    
+    const contentHeight = availableHeight - 75;
+    const activeTabData = tabs.find(tab => tab.id === activeTab)?.data;
+
+    const mobileComponent = (
+        <div className={styles.mobile_container} style={{ height: `${availableHeight}px` }}>
+            {mobileTabs}
+            <div className={styles.mobile_header}>
+                <div className={styles.mobile_token_icons}>
+                    <TokenIcon
+                        token={baseToken}
+                        src={baseToken.logoURI}
+                        alt={baseToken.symbol}
+                        size={'s'}
+                    />
+                    <TokenIcon
+                        token={quoteToken}
+                        src={quoteToken.logoURI}
+                        alt={quoteToken.symbol}
+                        size={'s'}
+                    />
+                    {baseToken.symbol} / {quoteToken.symbol}
+                </div>
+                <p className={styles.conv_rate}>{conversionRate}</p>
+            </div>
+            <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
+
+            {activeTabData}
+            </div>
+        </div>
+    );
+
+    if (smallScreen) return mobileComponent;
 
     return (
         <>
