@@ -2562,9 +2562,11 @@ export default function Chart(props: propsIF) {
             const snapDiff = nowDate % (period * 1000);
             const snappedTime = nowDate + (period * 1000 - snapDiff);
 
+            const liqBuffer = liqMode === 'none' ? 0.95 : xAxisBuffer;
+
             const centerX = snappedTime;
             const diff =
-                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+                (localInitialDisplayCandleCount * period * 1000) / liqBuffer;
 
             setPrevLastCandleTime(snappedTime / 1000);
 
@@ -2586,12 +2588,12 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
             const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
-                centerX - diff * xAxisBuffer,
-                centerX + diff * (1 - xAxisBuffer),
+                centerX - diff * liqBuffer,
+                centerX + diff * (1 - liqBuffer),
             ];
 
             const targetValue = Date.now();
-            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
+            const targetPixel = currentRange[1] * (1 - liqBuffer);
 
             const newDomainMin =
                 targetValue -
@@ -2685,7 +2687,7 @@ export default function Chart(props: propsIF) {
             setReset(false);
             setShowLatest(false);
         }
-    }, [reset, minTickForLimit, maxTickForLimit]);
+    }, [reset, minTickForLimit, maxTickForLimit, liqMode]);
 
     // when click latest
     useEffect(() => {
