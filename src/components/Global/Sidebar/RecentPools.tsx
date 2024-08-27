@@ -8,6 +8,7 @@ import {
 } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -22,6 +23,9 @@ function RecentPools(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
+      const {
+          tokens: { allDefaultTokens: defaultTokens },
+      } = useContext(TokenContext);
     const poolPriceCacheTime = Math.floor(Date.now() / 15000); // 15 second cache
 
     const [spotPrices, setSpotPrices] = useState<(number | undefined)[]>([]);
@@ -73,6 +77,7 @@ function RecentPools(props: propsIF) {
                         pool={pool}
                         key={idx}
                         spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                        defaultTokens={defaultTokens}
                     />
                 ))}
             </ItemsContainer>

@@ -1,4 +1,4 @@
-import { PoolIF } from '../../../../../ambient-utils/types';
+import { PoolIF, TokenIF } from '../../../../../ambient-utils/types';
 import { Results } from '../../../../../styled/Components/Sidebar';
 import useFetchPoolStats from '../../../../hooks/useFetchPoolStats';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
@@ -8,14 +8,15 @@ interface propsIF {
     pool: PoolIF;
     handleClick: (baseAddr: string, quoteAddr: string) => void;
     spotPrice: number | undefined;
+    defaultTokens: TokenIF[];
 }
 
 export default function PoolSearchResult(props: propsIF) {
-    const { pool, handleClick, spotPrice } = props;
+    const { pool, handleClick, spotPrice, defaultTokens } = props;
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
-    const poolData = useFetchPoolStats(pool, spotPrice);
+    const poolData = useFetchPoolStats(pool, spotPrice, defaultTokens);
 
     function handleClickFunction() {
         handleClick(pool.base.address, pool.quote.address);

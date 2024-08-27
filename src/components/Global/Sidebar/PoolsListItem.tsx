@@ -1,4 +1,4 @@
-import { PoolIF } from '../../../ambient-utils/types';
+import { PoolIF, TokenIF } from '../../../ambient-utils/types';
 import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { useContext, useMemo } from 'react';
@@ -24,10 +24,11 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 interface propsIF {
     pool: PoolIF;
     spotPrice: number | undefined;
+    defaultTokens: TokenIF[];
 }
 
 export default function PoolsListItem(props: propsIF) {
-    const { pool, spotPrice } = props;
+    const { pool, spotPrice, defaultTokens } = props;
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
@@ -70,7 +71,7 @@ export default function PoolsListItem(props: propsIF) {
     }
 
     // hook to get human-readable values for pool volume and TVL
-    const poolData = useFetchPoolStats(pool, spotPrice);
+    const poolData = useFetchPoolStats(pool, spotPrice, defaultTokens);
 
     const {
         poolPrice,

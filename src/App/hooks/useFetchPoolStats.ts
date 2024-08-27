@@ -15,14 +15,14 @@ import {
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
+import { PoolIF, PoolStatIF, TokenIF } from '../../ambient-utils/types';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
-import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 const useFetchPoolStats = (
     pool: PoolIF,
     spotPriceRetrieved: number | undefined,
+    defaultTokens: TokenIF[],
     isTradePair = false,
     enableTotalSupply = false,
 ): PoolStatIF => {
@@ -46,7 +46,6 @@ const useFetchPoolStats = (
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { tokens } = useContext(TokenContext);
 
     const [poolPriceDisplayNum, setPoolPriceDisplayNum] = useState<
         number | undefined
@@ -295,7 +294,7 @@ const useFetchPoolStats = (
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.allDefaultTokens,
+                defaultTokens,
                 enableTotalSupply,
             );
 
@@ -320,7 +319,7 @@ const useFetchPoolStats = (
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.allDefaultTokens,
+                defaultTokens,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;

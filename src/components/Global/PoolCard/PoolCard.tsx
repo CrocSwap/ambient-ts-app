@@ -15,6 +15,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -27,10 +28,16 @@ export default function PoolCard(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const {
+        tokens: { allDefaultTokens: defaultTokens },
+    } = useContext(TokenContext);
+
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
-    const poolData = useFetchPoolStats(pool, spotPrice);
+
+    const poolData = useFetchPoolStats(pool, spotPrice, defaultTokens);
 
     const {
         poolVolume24h,

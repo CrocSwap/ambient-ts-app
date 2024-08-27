@@ -10,6 +10,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -23,6 +24,9 @@ export default function TopPools(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const {
+        tokens: { allDefaultTokens: defaultTokens },
+    } = useContext(TokenContext);
     const location = useLocation();
     const onExploreRoute = location.pathname.includes('explore');
 
@@ -79,6 +83,7 @@ export default function TopPools(props: propsIF) {
                         pool={pool}
                         key={idx}
                         spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                        defaultTokens={defaultTokens}
                     />
                 ))}
                 {onExploreRoute ? undefined : (

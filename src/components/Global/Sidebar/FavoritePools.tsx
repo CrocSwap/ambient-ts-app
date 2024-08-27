@@ -10,6 +10,7 @@ import {
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     cachedQuerySpotPrice: PoolQueryFn;
@@ -19,6 +20,10 @@ export default function FavoritePools(props: propsIF) {
     const { cachedQuerySpotPrice } = props;
 
     const { baseToken, quoteToken } = useContext(TradeDataContext);
+
+    const {
+        tokens: { allDefaultTokens: defaultTokens },
+    } = useContext(TokenContext);
 
     const {
         chainData: { chainId, poolIndex: poolId },
@@ -99,6 +104,7 @@ export default function FavoritePools(props: propsIF) {
                             pool={pool}
                             key={idx}
                             spotPrice={spotPrices[idx]} // Pass the corresponding spot price
+                            defaultTokens={defaultTokens}
                         />
                     ))}
             </ItemsContainer>

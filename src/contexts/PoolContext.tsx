@@ -20,6 +20,7 @@ import {
     isWrappedNativeToken,
 } from '../ambient-utils/dataLayer';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
+import { TokenContext } from './TokenContext';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -49,6 +50,9 @@ export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
 
 export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
+    const {
+        tokens: { allDefaultTokens: defaultTokens },
+    } = useContext(TokenContext);
 
     const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
 
@@ -112,7 +116,13 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolIdx: chainData.poolIndex,
     };
 
-    const poolData = useFetchPoolStats(poolArg, undefined, true, true);
+    const poolData = useFetchPoolStats(
+        poolArg,
+        undefined,
+        defaultTokens,
+        true,
+        true,
+    );
 
     const [dailyVol] = useState<number | undefined>();
 
