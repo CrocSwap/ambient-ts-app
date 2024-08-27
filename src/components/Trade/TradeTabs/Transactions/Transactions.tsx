@@ -174,6 +174,10 @@ function Transactions(props: propsIF) {
         ],
     );
 
+    const [lastSeenTxID, setLastSeenTxID] = useState<string>('');
+    const lastSeenTxIDRef = useRef<string>();
+    lastSeenTxIDRef.current = lastSeenTxID;
+
     const oldestTxTime = useMemo(
         () =>
             transactionData.length > 0
@@ -622,7 +626,44 @@ function Transactions(props: propsIF) {
         scrollToTop();
     }, [sortBy, showAllData]);
 
+
+    const findTableElementByTxID = (txID: string):void => {
+        const txSpans = document.querySelectorAll('#current_row_scroll > div > div:nth-child(2) > div > span'); 
+
+        txSpans.forEach((span) => {
+            if(span.textContent === txID){
+                const row = span.parentElement?.parentElement as HTMLDivElement;
+                row.style.backgroundColor = 'red';
+
+                const parent = row.parentElement as HTMLDivElement;
+                parent.style.background = 'blue';
+
+                parent.scrollIntoView({behavior: 'instant' as ScrollBehavior});
+
+            }
+        });
+    }
+
+    const bindLastSeenRow = (): void => {
+    const rows = document.querySelectorAll('#current_row_scroll > div');
+    if(rows.length > 0){
+        // const lastRow = rows[rows.length - 1] as HTMLDivElement;
+        const lastRow = rows[rows.length - 1] as HTMLDivElement;
+        lastRow.style.backgroundColor = 'red';
+
+        const txDiv =  lastRow.querySelector('div:nth-child(2)');
+        if(txDiv){
+            const txText = txDiv.querySelector('span')?.textContent;
+            setLastSeenTxID(txText || '');
+        }
+    }
+    }
+
     const addMoreData = (): void => {
+        console.log('addMoreData');
+        if(scrollRef.current){
+            bindLastSeenRow();
+        }
         if (!crocEnv || !provider) return;
         // retrieve pool recent changes
         setMoreDataLoading(true);
@@ -681,10 +722,20 @@ function Transactions(props: propsIF) {
                 } else {
                     setMoreDataAvailable(false);
                 }
+
+                setTimeout(() => {
+                    findTableElementByTxID(lastSeenTxIDRef.current || '')
+                }, 1000)
+                
             })
             .then(() => setMoreDataLoading(false))
+            // .then(() => findTableElementByTxID(lastSeenTxIDRef.current || ''))
             .catch(console.error);
-    };
+        };
+        
+    // useEffect(() => {
+    //         findTableElementByTxID(lastSeenTxIDRef.current || '');
+    // }, [transactionsByPool])
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -854,6 +905,7 @@ function Transactions(props: propsIF) {
                 ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
+                // onScroll={(e) => {console.log('scroll', e.currentTarget.scrollTop)}}
             >
                 {(
                     isCandleSelected
