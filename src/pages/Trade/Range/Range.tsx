@@ -26,7 +26,6 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
     getFormattedNumber,
     getUnicodeCharacter,
-    diffHashSig,
     isStablePair,
     truncateDecimals,
     getPinnedPriceValuesFromDisplayPrices,
@@ -255,12 +254,7 @@ function Range() {
                     return false;
                 }
             }),
-        [
-            diffHashSig(userPositions),
-            isAmbient,
-            defaultLowTick,
-            defaultHighTick,
-        ],
+        [userPositions, isAmbient, defaultLowTick, defaultHighTick],
     );
 
     const tokenASurplusMinusTokenARemainderNum =
