@@ -6,7 +6,6 @@ import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import {
     limitParamsIF,
     linkGenMethodsIF,
@@ -56,6 +55,8 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
+    baseToken: TokenIF | undefined;
+    quoteToken: TokenIF | undefined;
 }
 
 // * This file contains constants used in the rendering of order rows in the order table.
@@ -88,8 +89,6 @@ export const orderRowConstants = (props: propsIF) => {
         sideType,
         sideCharacter,
         isOrderFilled,
-        baseTokenAddress,
-        quoteTokenAddress,
         isLimitOrderPartiallyFilled,
         originalPositionLiqBase,
         originalPositionLiqQuote,
@@ -97,15 +96,12 @@ export const orderRowConstants = (props: propsIF) => {
         expectedPositionLiqQuote,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
+        baseToken,
+        quoteToken,
     } = props;
 
-    const { tokens } = useContext(TokenContext);
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const { tokenA, setIsTokenAPrimary } = useContext(TradeDataContext);
-    const baseToken: TokenIF | undefined =
-        tokens.getTokenByAddress(baseTokenAddress);
-    const quoteToken: TokenIF | undefined =
-        tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
     const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';

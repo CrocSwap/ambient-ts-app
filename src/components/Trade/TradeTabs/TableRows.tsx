@@ -17,6 +17,7 @@ import TransactionDetailsModal from '../../Global/TransactionDetails/Transaction
 import { getMoneynessRank } from '../../../ambient-utils/dataLayer';
 import OrderRow from './Orders/OrderTable/OrderRow';
 import OrderDetailsModal from '../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -52,6 +53,8 @@ function TableRows({
         currentLimitOrderActive,
         setCurrentLimitOrderActive,
     } = useContext(TradeTableContext);
+
+    const { tokens } = useContext(TokenContext);
 
     // Range Modal Controls
     const [rangeModalAction, setRangeModalAction] =
@@ -167,6 +170,8 @@ function TableRows({
                             openRangeModal(position.positionId, 'action')
                         }
                         setRangeModalAction={setRangeModalAction}
+                        baseToken={tokens.getTokenByAddress(position.base)}
+                        quoteToken={tokens.getTokenByAddress(position.quote)}
                     />
                 ))}
                 {isDetailsModalOpen && activeRecord && (
@@ -199,6 +204,8 @@ function TableRows({
                         tableView={tableView}
                         isAccountView={isAccountView}
                         openDetailsModal={() => openTransactionModal(tx.txId)}
+                        baseToken={tokens.getTokenByAddress(tx.base)}
+                        quoteToken={tokens.getTokenByAddress(tx.quote)}
                     />
                 ))}
                 {isDetailsModalOpen && activeRecord && (
@@ -231,6 +238,8 @@ function TableRows({
                             openLimitModal(order.limitOrderId, 'action')
                         }
                         setLimitModalAction={setLimitModalAction}
+                        baseToken={tokens.getTokenByAddress(order.base)}
+                        quoteToken={tokens.getTokenByAddress(order.quote)}
                     />
                 ))}
                 {isDetailsModalOpen && activeRecord && (

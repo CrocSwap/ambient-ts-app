@@ -9,6 +9,7 @@ import {
 import {
     PositionIF,
     RangeModalAction,
+    TokenIF,
 } from '../../../../../ambient-utils/types';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
@@ -30,6 +31,8 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setRangeModalAction: Dispatch<SetStateAction<RangeModalAction>>;
+    baseToken: TokenIF | undefined;
+    quoteToken: TokenIF | undefined;
 }
 
 function RangesRow(props: propsIF) {
@@ -42,6 +45,8 @@ function RangesRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setRangeModalAction,
+        baseToken,
+        quoteToken,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -214,6 +219,8 @@ function RangesRow(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         isBaseTokenMoneynessGreaterOrEqual,
+        baseToken,
+        quoteToken,
     };
 
     const {

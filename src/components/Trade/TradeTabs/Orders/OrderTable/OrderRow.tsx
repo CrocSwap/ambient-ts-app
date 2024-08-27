@@ -11,6 +11,7 @@ import {
 import {
     LimitModalAction,
     LimitOrderIF,
+    TokenIF,
 } from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
@@ -26,6 +27,8 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setLimitModalAction: Dispatch<SetStateAction<LimitModalAction>>;
+    baseToken: TokenIF | undefined;
+    quoteToken: TokenIF | undefined;
 }
 
 function OrderRow(props: propsIF) {
@@ -36,6 +39,8 @@ function OrderRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setLimitModalAction,
+        baseToken,
+        quoteToken,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -201,6 +206,8 @@ function OrderRow(props: propsIF) {
         expectedPositionLiqQuote,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
+        baseToken,
+        quoteToken,
     };
 
     const {

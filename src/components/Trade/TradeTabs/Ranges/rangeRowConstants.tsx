@@ -12,7 +12,6 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
@@ -58,6 +57,8 @@ interface propsIF {
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
+    baseToken: TokenIF | undefined;
+    quoteToken: TokenIF | undefined;
 }
 
 export default function rangeRowConstants(props: propsIF) {
@@ -93,9 +94,10 @@ export default function rangeRowConstants(props: propsIF) {
         apyClassname,
         apyString,
         isPositionInRange,
-        baseTokenAddress,
-        quoteTokenAddress,
+
         isBaseTokenMoneynessGreaterOrEqual,
+        baseToken,
+        quoteToken,
     } = props;
 
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
@@ -109,12 +111,6 @@ export default function rangeRowConstants(props: propsIF) {
         setAdvancedLowTick,
         setAdvancedMode,
     } = useContext(RangeContext);
-
-    const { tokens } = useContext(TokenContext);
-    const baseToken: TokenIF | undefined =
-        tokens.getTokenByAddress(baseTokenAddress);
-    const quoteToken: TokenIF | undefined =
-        tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
     const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';

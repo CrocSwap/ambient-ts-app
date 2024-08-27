@@ -1,7 +1,7 @@
 import { memo, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import { TransactionIF } from '../../../../../ambient-utils/types';
+import { TokenIF, TransactionIF } from '../../../../../ambient-utils/types';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { txRowConstants } from '../txRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -16,9 +16,19 @@ interface propsIF {
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     openDetailsModal: () => void;
+    baseToken: TokenIF | undefined;
+    quoteToken: TokenIF | undefined;
 }
 function TransactionRow(props: propsIF) {
-    const { idForDOM, tableView, tx, isAccountView, openDetailsModal } = props;
+    const {
+        idForDOM,
+        tableView,
+        tx,
+        isAccountView,
+        openDetailsModal,
+        baseToken,
+        quoteToken,
+    } = props;
 
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
@@ -186,6 +196,8 @@ function TransactionRow(props: propsIF) {
         handleWalletClick,
         handleWalletCopy,
         isBaseTokenMoneynessGreaterOrEqual,
+        baseToken,
+        quoteToken,
     };
 
     const {

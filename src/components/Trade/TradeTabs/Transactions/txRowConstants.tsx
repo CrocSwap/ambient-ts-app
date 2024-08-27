@@ -11,7 +11,6 @@ import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import React, { useContext } from 'react';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { Link } from 'react-router-dom';
@@ -63,6 +62,8 @@ interface propsIF {
     handleWalletCopy: () => void;
     tx: TransactionIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
+    baseToken: TokenIF | undefined;
+    quoteToken: TokenIF | undefined;
 }
 
 // * This file contains constants used in the rendering of transaction rows in the transaction table.
@@ -112,8 +113,9 @@ export const txRowConstants = (props: propsIF) => {
         handleWalletClick,
         handleWalletCopy,
         isBaseTokenMoneynessGreaterOrEqual,
+        baseToken,
+        quoteToken,
     } = props;
-    const { tokens } = useContext(TokenContext);
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
@@ -127,8 +129,8 @@ export const txRowConstants = (props: propsIF) => {
 
     const { tokenA, setShouldSwapDirectionReverse } =
         useContext(TradeDataContext);
-    const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
-    const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
+    // const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
+    // const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
     const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';
