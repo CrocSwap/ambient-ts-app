@@ -15,7 +15,6 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { IS_LOCAL_ENV } from '../../../ambient-utils/constants';
 import {
-    diffHashSig,
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
 } from '../../../ambient-utils/dataLayer';
@@ -131,7 +130,7 @@ function TradeCandleStickChart(props: propsIF) {
         d3.ScaleLinear<number, number> | undefined
     >();
     const [prevPeriod, setPrevPeriod] = useState<any>();
-    const [prevFirsCandle, setPrevFirsCandle] = useState<any>();
+    const [prevFirstCandle, setPrevFirstCandle] = useState<any>();
 
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
 
@@ -768,22 +767,21 @@ function TradeCandleStickChart(props: propsIF) {
     };
 
     useEffect(() => {
-        console.log({ period, diff: diffHashSig(unparsedCandleData) });
         if (
             unparsedCandleData &&
             unparsedCandleData.length > 0 &&
             period &&
             (prevPeriod === undefined || period !== prevPeriod)
         ) {
-            const firtCandleTimeState = d3.max(
+            const firstCandleTimeState = d3.max(
                 unparsedCandleData,
                 (d) => d.time,
             );
             if (
                 scaleData &&
                 prevPeriod &&
-                prevFirsCandle &&
-                firtCandleTimeState
+                prevFirstCandle &&
+                firstCandleTimeState
             ) {
                 const newDiscontinuityProvider = d3fc.discontinuityRange(...[]);
                 scaleData.xScale.discontinuityProvider(
@@ -897,7 +895,7 @@ function TradeCandleStickChart(props: propsIF) {
                     }
                 }
             }
-            setPrevFirsCandle(() => firtCandleTimeState);
+            setPrevFirstCandle(() => firstCandleTimeState);
             setPrevPeriod(() => period);
         }
     }, [
