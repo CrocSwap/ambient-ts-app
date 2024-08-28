@@ -5,16 +5,10 @@ import { ethers } from 'ethers';
 export function memoizePromiseFn(fn: any) {
     const cache = new Map();
 
-    // Set an interval to clear the cache every 3 minutes (180000 milliseconds)
+    // Set an interval to clear the cache every 15 minutes (900000 milliseconds)
     setInterval(() => {
         cache.clear();
-        console.log('Cache cleared');
-    }, 180000);
-    // // Set an interval to clear the cache every 30 minutes (1800000 milliseconds)
-    // setInterval(() => {
-    //     cache.clear();
-    //     console.log('Cache cleared');
-    // }, 1800000);
+    }, 900000);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (...args: any[]) => {
@@ -42,16 +36,10 @@ export function memoizePromiseFn(fn: any) {
 export const memoizeProviderFn = (fn: any) => {
     const cache = new Map();
 
-    // Set an interval to clear the cache every 3 minutes (180000 milliseconds)
+    // Set an interval to clear the cache every 15 minutes (900000 milliseconds)
     setInterval(() => {
         cache.clear();
-        console.log('Cache cleared');
-    }, 180000);
-    // // Set an interval to clear the cache every 30 minutes (1800000 milliseconds)
-    // setInterval(() => {
-    //     cache.clear();
-    //     console.log('Cache cleared');
-    // }, 1800000);
+    }, 900000);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (provider: ethers.Provider, ...args: any[]) => {
@@ -78,16 +66,10 @@ export const memoizeProviderFn = (fn: any) => {
 export const memoizeCrocEnvFn = (fn: any) => {
     const cache = new Map();
 
-    // Set an interval to clear the cache every 3 minutes (180000 milliseconds)
+    // Set an interval to clear the cache every 15 minutes (900000 milliseconds)
     setInterval(() => {
         cache.clear();
-        console.log('Cache cleared');
-    }, 180000);
-    // // Set an interval to clear the cache every 30 minutes (1800000 milliseconds)
-    // setInterval(() => {
-    //     cache.clear();
-    //     console.log('Cache cleared');
-    // }, 1800000);
+    }, 900000);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (crocEnv: CrocEnv, ...args: any[]) => {
@@ -114,16 +96,10 @@ export const memoizeCrocEnvFn = (fn: any) => {
 export const memoizeCacheQueryFn = (fn: any) => {
     const cache = new Map();
 
-    // Set an interval to clear the cache every 3 minutes (180000 milliseconds)
+    // Set an interval to clear the cache every 15 minutes (900000 milliseconds)
     setInterval(() => {
         cache.clear();
-        console.log('Cache cleared');
-    }, 180000);
-    // // Set an interval to clear the cache every 30 minutes (1800000 milliseconds)
-    // setInterval(() => {
-    //     cache.clear();
-    //     console.log('Cache cleared');
-    // }, 1800000);
+    }, 900000);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (...args: any[]) => {
@@ -151,16 +127,10 @@ export const memoizeCacheQueryFn = (fn: any) => {
 export function memoizeTransactionGraphFn(fn: any) {
     const cache = new Map();
 
-    // Set an interval to clear the cache every 3 minutes (180000 milliseconds)
+    // Set an interval to clear the cache every 15 minutes (900000 milliseconds)
     setInterval(() => {
         cache.clear();
-        console.log('Cache cleared');
-    }, 180000);
-    // // Set an interval to clear the cache every 30 minutes (1800000 milliseconds)
-    // setInterval(() => {
-    //     cache.clear();
-    //     console.log('Cache cleared');
-    // }, 1800000);
+    }, 900000);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (...args: any[]) => {
