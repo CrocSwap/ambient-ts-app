@@ -1,108 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenIF } from '../types/token/TokenIF';
-import { fetchDepositBalances } from './fetchDepositBalances';
+import {
+    fetchDepositBalances,
+    IDexTokenBalances,
+} from './fetchDepositBalances';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
-import { FetchContractDetailsFn } from './fetchContractDetails';
 import ambientTokenList from '../constants/ambient-token-list.json';
-import testnetTokenList from '../constants/testnet-token-list.json';
 
 export interface IDepositedTokenBalance {
     token: string;
     symbol: string;
     decimals: number;
     balance: string;
+    chain: string;
 }
 
-export const fetchTokenBalances = async (
-    address: string,
-    chain: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _refreshTime: number,
-    cachedTokenDetails: FetchContractDetailsFn,
-    crocEnv: CrocEnv | undefined,
-    graphCacheUrl: string,
-    tokenList: TokenIF[],
+export interface IAmbientListBalanceQueryProps {
+    address: string;
+    chain: string;
+    crocEnv: CrocEnv | undefined;
+    _refreshTime: number;
+}
+
+export interface IDexBalanceQueryProps {
+    address: string;
+    chain: string;
+    crocEnv: CrocEnv | undefined;
+    graphCacheUrl: string;
+    _refreshTime: number;
+}
+
+export const fetchAmbientListWalletBalances = async (
+    props: IAmbientListBalanceQueryProps,
 ): Promise<TokenIF[] | undefined> => {
+    const { address, crocEnv } = props;
+
     if (!crocEnv) return;
 
-    const combinedTokenList = ambientTokenList.tokens
-        .concat(testnetTokenList.tokens)
-        .filter((token: any) => token.chainId === parseInt(chain));
+    const ambientTokensOnActiveChain = ambientTokenList.tokens.filter(
+        (token: any) => token.chainId === parseInt(props.chain),
+    );
 
-    const combinedBalances: TokenIF[] = [];
-
-    async function fetchDexBalances() {
-        if (!crocEnv) return;
-        const dexBalancesFromCache = await fetchDepositBalances({
-            chainId: chain,
-            user: address,
-            crocEnv: crocEnv,
-            graphCacheUrl: graphCacheUrl,
-            cachedTokenDetails: cachedTokenDetails,
-            tokenList: tokenList,
-        });
-        if (dexBalancesFromCache !== undefined) {
-            await Promise.all(
-                dexBalancesFromCache.map(
-                    async (balanceFromCache: IDepositedTokenBalance) => {
-                        const indexOfExistingToken = (
-                            combinedBalances ?? []
-                        ).findIndex(
-                            (existingToken) =>
-                                existingToken.address.toLowerCase() ===
-                                balanceFromCache.token.toLowerCase(),
-                        );
-
-                        const newToken =
-                            getTokenInfoFromCacheBalance(balanceFromCache);
-
-                        if (indexOfExistingToken === -1) {
-                            const tokenBalanceInWallet = (
-                                await crocEnv
-                                    .token(newToken.address)
-                                    .wallet(address)
-                            ).toString();
-                            const updatedToken = {
-                                ...newToken,
-                                walletBalance: tokenBalanceInWallet,
-                            };
-                            combinedBalances.push(updatedToken);
-                        } else {
-                            const existingToken =
-                                combinedBalances[indexOfExistingToken];
-
-                            const updatedToken = { ...existingToken };
-
-                            updatedToken.dexBalance = newToken.dexBalance;
-
-                            combinedBalances[indexOfExistingToken] =
-                                updatedToken;
-                        }
-                    },
-                ),
-            );
-        }
-    }
-
-    const getTokenInfoFromCacheBalance = (
-        tokenBalance: IDepositedTokenBalance,
-    ): TokenIF => {
-        const dexBalance = tokenBalance.balance;
-
-        return {
-            chainId: parseInt(chain),
-            logoURI: '',
-            name: '',
-            address: tokenBalance.token,
-            symbol: tokenBalance.symbol,
-            decimals: tokenBalance.decimals,
-            dexBalance: dexBalance,
-        };
-    };
-
-    const balancePromises = combinedTokenList.map(async (token) => {
-        const tokenInWallet = (
+    const balancePromises = ambientTokensOnActiveChain.map(async (token) => {
+        const walletBalance = (
             await crocEnv.token(token.address).wallet(address)
         ).toString();
 
@@ -113,27 +54,43 @@ export const fetchTokenBalances = async (
             address: token.address,
             symbol: token.symbol,
             decimals: token.decimals,
-            walletBalance: tokenInWallet,
+            walletBalance: walletBalance,
         };
     });
 
-    combinedBalances.push(...(await Promise.all(balancePromises)));
+    const AmbientListWalletBalances = await Promise.all(balancePromises);
 
-    await fetchDexBalances();
-
-    return combinedBalances;
+    return AmbientListWalletBalances;
 };
 
-export type TokenBalancesQueryFn = (
-    address: string,
-    chain: string,
-    refreshTime: number,
-    cachedTokenDetails: FetchContractDetailsFn,
-    crocEnv: CrocEnv | undefined,
-    graphCacheUrl: string,
-    tokenList: TokenIF[],
+async function fetchDexBalances(props: IDexBalanceQueryProps) {
+    const { address, crocEnv, chain, graphCacheUrl } = props;
+
+    if (!crocEnv) return;
+
+    const dexBalancesFromCache = await fetchDepositBalances({
+        user: address,
+        chainId: chain,
+        graphCacheUrl: graphCacheUrl,
+        crocEnv: crocEnv,
+    });
+    return dexBalancesFromCache;
+}
+
+export type AmbientListBalancesQueryFn = (
+    props: IAmbientListBalanceQueryProps,
 ) => Promise<TokenIF[]>;
 
-export function memoizeFetchTokenBalances(): TokenBalancesQueryFn {
-    return memoizePromiseFn(fetchTokenBalances) as TokenBalancesQueryFn;
+export type DexBalancesQueryFn = (
+    props: IDexBalanceQueryProps,
+) => Promise<IDexTokenBalances[] | undefined>;
+
+export function memoizeFetchAmbientListWalletBalances(): AmbientListBalancesQueryFn {
+    return memoizePromiseFn(
+        fetchAmbientListWalletBalances,
+    ) as AmbientListBalancesQueryFn;
+}
+
+export function memoizeFetchDexBalances(): DexBalancesQueryFn {
+    return memoizePromiseFn(fetchDexBalances) as DexBalancesQueryFn;
 }
