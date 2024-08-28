@@ -134,7 +134,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setNumCandlesFetched({
                         candleCount: candleData?.candles.length || 0,
                         switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
-                    });          
+                    });
                 }
             }
         }
@@ -234,25 +234,25 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         if (isCandleDataNull) {
             const newInt = setInterval(() => {
-                setCandleScale((prev) => {
-                    return {
-                        lastCandleDate: undefined,
-                        nCandles: 200,
-                        isFetchForTimeframe: !prev.isFetchForTimeframe,
-                        isShowLatestCandle: true,
-                        isFetchFirst200Candle: true,
-                    };
-                });
+                setCandleScale((prev) => ({
+                    lastCandleDate: undefined,
+                    nCandles: 200,
+                    isFetchForTimeframe: !prev.isFetchForTimeframe,
+                    isShowLatestCandle: true,
+                    isFetchFirst200Candle: true,
+                }));
             }, 10000);
 
             offlineFetcherRef.current = newInt;
             setOfflineFetcher(newInt);
         } else {
             clearInterval(offlineFetcherRef.current);
+            offlineFetcherRef.current = undefined;
         }
 
         return () => {
             clearInterval(offlineFetcherRef.current);
+            offlineFetcherRef.current = undefined;
         };
     }, [isCandleDataNull]);
 

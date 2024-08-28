@@ -30,40 +30,19 @@ export default function ChartTooltip(props: propsIF) {
 
     const chartTooltip = (
         <ChartTooltipDiv>
-            {showTooltip || !showTooltip ? (
+            {showTooltip && currentData ? (
                 <CurrentDataDiv>
                     <p>
                         {`${topToken.symbol} / ${bottomToken.symbol} • ${matchingCandleTime?.readable} • `}
                     </p>
-
                     <p>
-                        {currentData &&
-                            'O: ' +
-                                getDollarPrice(
-                                    isDenomBase
-                                        ? currentData.invPriceOpenExclMEVDecimalCorrected
-                                        : currentData.priceOpenExclMEVDecimalCorrected,
-                                ).formattedValue +
-                                ' H: ' +
-                                getDollarPrice(
-                                    isDenomBase
-                                        ? currentData.invMinPriceExclMEVDecimalCorrected
-                                        : currentData.maxPriceExclMEVDecimalCorrected,
-                                ).formattedValue +
-                                ' L: ' +
-                                getDollarPrice(
-                                    isDenomBase
-                                        ? currentData.invMaxPriceExclMEVDecimalCorrected
-                                        : currentData.minPriceExclMEVDecimalCorrected,
-                                ).formattedValue +
-                                ' C: ' +
-                                getDollarPrice(
-                                    isDenomBase
-                                        ? currentData.invPriceCloseExclMEVDecimalCorrected
-                                        : currentData.priceCloseExclMEVDecimalCorrected,
-                                ).formattedValue +
-                                ' V: ' +
-                                formatDollarAmountAxis(currentData.volumeUSD)}
+                        {`O: ${getDollarPrice(isDenomBase ? currentData.invPriceOpenExclMEVDecimalCorrected : currentData.priceOpenExclMEVDecimalCorrected).formattedValue} `}
+                        {`H: ${getDollarPrice(isDenomBase ? currentData.invMinPriceExclMEVDecimalCorrected : currentData.maxPriceExclMEVDecimalCorrected).formattedValue} `}
+                    </p>
+                    <p>
+                        {`L: ${getDollarPrice(isDenomBase ? currentData.invMaxPriceExclMEVDecimalCorrected : currentData.minPriceExclMEVDecimalCorrected).formattedValue} `}
+                        {`C: ${getDollarPrice(isDenomBase ? currentData.invPriceCloseExclMEVDecimalCorrected : currentData.priceCloseExclMEVDecimalCorrected).formattedValue} `}
+                        {`V: ${formatDollarAmountAxis(currentData.volumeUSD)}`}
                     </p>
                 </CurrentDataDiv>
             ) : (
