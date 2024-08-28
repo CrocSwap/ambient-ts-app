@@ -46,9 +46,9 @@ export function useHandleRangeButtonMessage(
             if (isWithdrawTokenFromDexChecked) {
                 if (
                     !isTokenInputDisabled &&
-                    fromDisplayQty(tokenAmount, token.decimals) >
-                        fromDisplayQty(tokenDexBalance, token.decimals) +
-                            fromDisplayQty(tokenBalance, token.decimals)
+                    fromDisplayQty(tokenAmount || '0', token.decimals) >
+                        fromDisplayQty(tokenDexBalance || '0', token.decimals) +
+                            fromDisplayQty(tokenBalance || '0', token.decimals)
                 ) {
                     if (
                         pendingTransactions.some(
@@ -65,7 +65,7 @@ export function useHandleRangeButtonMessage(
                             amountToReduceNativeTokenQty.toString(),
                             token.decimals,
                         ) >
-                        fromDisplayQty(tokenBalance, token.decimals)
+                        fromDisplayQty(tokenBalance || '0', token.decimals)
                 ) {
                     tokenAllowed = false;
                     rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
@@ -93,7 +93,7 @@ export function useHandleRangeButtonMessage(
                             amountToReduceNativeTokenQty.toString(),
                             token.decimals,
                         ) >
-                        fromDisplayQty(tokenBalance, token.decimals)
+                        fromDisplayQty(tokenBalance || '0', token.decimals)
                 ) {
                     tokenAllowed = false;
                     rangeButtonErrorMessage = `${token.symbol} Wallet Balance Insufficient to Cover Gas`;
