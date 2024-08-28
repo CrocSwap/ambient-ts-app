@@ -75,6 +75,7 @@ import {
 } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -612,6 +613,7 @@ function Transactions(props: propsIF) {
     };
 
     const shiftDown = (): void => {
+        console.log('shift down')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         if (scrollRef.current) {
             // scroll to middle of container
@@ -649,21 +651,22 @@ function Transactions(props: propsIF) {
     if(rows.length > 0){
         // const lastRow = rows[rows.length - 1] as HTMLDivElement;
         const lastRow = rows[rows.length - 1] as HTMLDivElement;
-        lastRow.style.backgroundColor = 'red';
+        lastRow.style.backgroundColor = 'blue';
 
         const txDiv =  lastRow.querySelector('div:nth-child(2)');
         if(txDiv){
             const txText = txDiv.querySelector('span')?.textContent;
             setLastSeenTxID(txText || '');
+            domDebug('lastSeenTxID', txText);
         }
     }
     }
 
     const addMoreData = (): void => {
         console.log('addMoreData');
-        if(scrollRef.current){
-            bindLastSeenRow();
-        }
+        // if(scrollRef.current){
+        //     bindLastSeenRow();
+        // }
         if (!crocEnv || !provider) return;
         // retrieve pool recent changes
         setMoreDataLoading(true);
@@ -723,9 +726,9 @@ function Transactions(props: propsIF) {
                     setMoreDataAvailable(false);
                 }
 
-                setTimeout(() => {
-                    findTableElementByTxID(lastSeenTxIDRef.current || '')
-                }, 1000)
+                // setTimeout(() => {
+                //     findTableElementByTxID(lastSeenTxIDRef.current || '')
+                // }, 1000)
                 
             })
             .then(() => setMoreDataLoading(false))
@@ -736,6 +739,29 @@ function Transactions(props: propsIF) {
     // useEffect(() => {
     //         findTableElementByTxID(lastSeenTxIDRef.current || '');
     // }, [transactionsByPool])
+
+    const logData = () => {
+        domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
+        if(sortedTxDataToDisplay.length > 0){
+            domDebug('sortedTxDataDisp LAST', sortedTxDataToDisplay[sortedTxDataToDisplay.length - 1].txHash);
+        }
+        if(sortedTxDataToDisplay.length > 0){
+            domDebug('sortedTxDataDisp FIRST', sortedTxDataToDisplay[0].txHash);
+        }
+        domDebug('sortedTransactions', sortedTransactions.length);
+        if(sortedTransactions.length > 0){
+            domDebug('sortedTransactions LAST ', sortedTransactions[sortedTransactions.length - 1].txHash);
+        }
+        if(sortedTransactions.length > 0){
+            domDebug('sortedTransactions FIRST ', sortedTransactions[0].txHash);
+        }
+    }
+    
+    useEffect(() => {
+        logData();
+        bindLastSeenRow();
+        findTableElementByTxID(lastSeenTxIDRef.current || '')
+    }, [sortedTxDataToDisplay, sortedTransactions])
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
