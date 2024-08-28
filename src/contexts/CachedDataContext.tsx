@@ -6,12 +6,14 @@ import {
     FetchTopPairedTokenFn,
     FetchContractDetailsFn,
     memoizeFetchContractDetails,
-    TokenBalancesQueryFn,
-    memoizeFetchTokenBalances,
+    memoizeFetchAmbientListWalletBalances,
+    memoizeFetchDexBalances,
     TokenPriceFn,
     memoizeTokenPrice,
     FetchBlockTimeFn,
     memoizeFetchBlockTime,
+    AmbientListBalancesQueryFn,
+    DexBalancesQueryFn,
 } from '../ambient-utils/api';
 
 import {
@@ -28,7 +30,8 @@ import {
 import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
 export interface CachedDataIF {
-    cachedFetchTokenBalances: TokenBalancesQueryFn;
+    cachedFetchAmbientListWalletBalances: AmbientListBalancesQueryFn;
+    cachedFetchDexBalances: DexBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedGet24hChange: Change24Fn;
@@ -51,7 +54,9 @@ export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const cachedDataState: CachedDataIF = {
-        cachedFetchTokenBalances: memoizeFetchTokenBalances(),
+        cachedFetchAmbientListWalletBalances:
+            memoizeFetchAmbientListWalletBalances(),
+        cachedFetchDexBalances: memoizeFetchDexBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedGet24hChange: memoizeGet24hChange(),
