@@ -1,0 +1,28 @@
+.mobile_container{
+    width: 100%;
+  
+    
+   
+    align-items: center;
+    height: 35px;
+
+    display: grid;
+    grid-template-columns: 1fr 50px;
+    gap: 8px;
+
+   
+    
+}
+
+.icon_container{
+    outline: transparent;
+    border: transparent;
+    background: var(--dark2);
+  display: flex;
+ 
+    justify-content: center;
+    align-items: center;
+    padding: 2px 0;
+    border-radius: var(--border-radius);
+}
+

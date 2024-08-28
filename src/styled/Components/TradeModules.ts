@@ -1,24 +1,8 @@
 import styled from 'styled-components/macro';
-import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Common/Animations';
 
-export const TradeModuleLink = styled(Link)<{ isActive: boolean }>`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--text1);
-    width: 116px;
-    height: 25px;
-    font-size: 18px;
-    background: ${({ isActive }) =>
-        isActive ? 'var(--accent1)' : 'var(--dark2)'};
-    border-radius: var(--border-radius);
-    transition: all var(--animation-speed) ease-in-out;
-    & a:hover {
-        background: var(--accent1);
-    }
-`;
+
 
 export const WarningContainer = styled(FlexContainer)`
     border: 1px solid var(--dark3);

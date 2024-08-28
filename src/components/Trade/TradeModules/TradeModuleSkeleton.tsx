@@ -18,6 +18,7 @@ import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface PropsIF {
     chainId: string;
@@ -75,6 +76,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         return !tokens.verify(tokenB.address);
     }, [tokenB.address, tokens]);
 
+    const smallScreen = useMediaQuery('(max-width: 768px)');
+
+
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         // !Important   any changes to verbiage in this code block must be approved
@@ -122,7 +126,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 isOnTradeRoute={!isSwapPage}
             >
                 {header}
-                {isSwapPage || (
+                {!isSwapPage && !smallScreen && (
                     <TradeLinks
                         chainId={chainId}
                         tokenA={tokenA}
