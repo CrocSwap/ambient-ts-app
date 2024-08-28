@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.8.4",
+    "version": "2.8.5",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -15,7 +15,7 @@
         "@types/react-blockies": "^1.4.4",
         "@types/react-color": "^3.0.12",
         "@vitejs/plugin-react": "^4.3.1",
-        "@web3modal/ethers": "^4.2.3",
+        "@web3modal/ethers": "4.2.1",
         "alchemy-sdk": "^3.2.0",
         "alea": "^1.0.1",
         "babel-plugin-styled-components": "^2.1.4",
