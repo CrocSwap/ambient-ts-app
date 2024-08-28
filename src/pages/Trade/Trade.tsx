@@ -167,7 +167,7 @@ function Trade() {
     const [activeTab, setActiveTab] = useState('Order');
 
     const tabs = [
-        { id: 'Order', label: 'Order', data: <ContentContainer noPadding noStyle={smallScreen}>
+        { id: 'Order', label: 'Order', data: <ContentContainer isOnTradeRoute  style={{padding: '1rem'}}>
         <Outlet
             context={{
                 urlParamMap: urlParamMap,

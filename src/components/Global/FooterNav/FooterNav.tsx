@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { RiHome4Fill } from 'react-icons/ri';
-import { GiTrade } from 'react-icons/gi';
-import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
-import { BsFillChatDotsFill } from 'react-icons/bs';
+import { RiChat3Line, RiHome2Line } from 'react-icons/ri';
+import {  MdOutlineExplore } from 'react-icons/md';
+import { HiArrowsRightLeft } from 'react-icons/hi2';
+import { VscAccount } from 'react-icons/vsc';
+
 import { motion } from 'framer-motion';
 import styles from './FooterNav.module.css';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -39,7 +40,7 @@ const FooterNav: React.FC = () => {
     // const { hideOnMobile } = useContext(SidebarContext);
 
     const linksData = [
-        { title: 'Home', destination: '/', icon: RiHome4Fill },
+        { title: 'Home', destination: '/', icon: RiHome2Line },
         // {
         //     title: 'Swap',
         //     destination: `/swap/${paramsSlug}`,
@@ -48,11 +49,11 @@ const FooterNav: React.FC = () => {
         {
             title: 'Trade',
             destination: `${tradeDestination}${paramsSlug}`,
-            icon: GiTrade,
+            icon: HiArrowsRightLeft,
         },
         { title: 'Explore', destination: '/explore', icon: MdOutlineExplore },
-        { title: 'Account', destination: '/account/', icon: MdAccountBox },
-        { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
+        { title: 'Account', destination: '/account/', icon: VscAccount },
+        { title: 'Chat', destination: '/chat/', icon: RiChat3Line },
     ];
 
     const path = location.pathname;
@@ -98,7 +99,7 @@ const FooterNav: React.FC = () => {
                         <link.icon
                             size={24}
                             color={
-                                index === activeIndex ? 'var(--accent1)' : ''
+                                index === activeIndex ? 'var(--accent1)' : 'var(--text1)'
                             }
                             className={styles.icon}
                         />

@@ -125,7 +125,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
-    const showMobileVersion = useMediaQuery('(max-width: 500px)');
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     return (
         <>

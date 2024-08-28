@@ -17,7 +17,6 @@ import Button from '../../Form/Button';
 import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface PropsIF {
@@ -104,7 +103,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
-    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     return (
         <>
@@ -122,7 +120,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             )}{' '}
             <ContentContainer
                 isOnTradeRoute={!isSwapPage}
-                noPadding={smallScreen && !isSwapPage}
             >
                 {header}
                 {isSwapPage || (
@@ -146,6 +143,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     gap={8}
                     margin='8px 0 0 0'
                     padding='0 32px'
+                    
                 >
                     {transactionDetails}
                     <SmolRefuelLink />
