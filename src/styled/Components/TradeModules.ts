@@ -25,19 +25,7 @@ export const HoverableIcon = styled.svg`
     }
 `;
 
-export const TradeModuleHeaderContainer = styled(FlexContainer).attrs({
-    as: 'header',
-})`
-    & svg {
-        color: var(--text2);
-        height: 20px;
-        width: 20px;
-    }
 
-    & svg:hover {
-        color: var(--accent1) !important;
-    }
-`;
 
 export const AdvancedModeSection = styled(FlexContainer)<{ disabled: boolean }>`
     ${({ disabled }) =>

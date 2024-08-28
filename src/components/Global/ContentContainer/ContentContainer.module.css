@@ -25,7 +25,7 @@
 
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 1rem;
     
     
 }
@@ -52,6 +52,7 @@
 
      .main_content{
         padding: 8px 16px 16px 16px;
+        gap: 8px;
 
     }
 
