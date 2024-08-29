@@ -25,7 +25,7 @@ import {
     FetchAddrFn,
     FetchContractDetailsFn,
     fetchPoolRecentChanges,
-    fetchPoolLiquidity,
+    // fetchPoolLiquidity,
 } from '../../ambient-utils/api';
 import {
     SpotPriceFn,
@@ -68,8 +68,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         tokenA,
         tokenB,
         defaultRangeWidthForActivePool,
-        poolPriceNonDisplay,
-        currentPoolPriceTick,
+        // poolPriceNonDisplay,
+        // currentPoolPriceTick,
     } = useContext(TradeDataContext);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
@@ -80,10 +80,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setTransactionsByPool,
         setLimitOrdersByPool,
         setUserLimitOrdersByPool,
-        setLiquidity,
+        // setLiquidity,
         setLiquidityFee,
-        positionsByPool,
-        limitOrdersByPool,
+        // positionsByPool,
+        // limitOrdersByPool,
     } = useContext(GraphDataContext);
 
     const { cachedGetLiquidityFee } = useContext(CachedDataContext);
@@ -809,69 +809,69 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         isServerEnabled,
     ]);
 
-    const updateLiquidity = () => {
-        // Reset existing liquidity data until the fetch completes, because it's a new pool
-        const request = {
-            baseAddress: baseTokenAddress,
-            quoteAddress: quoteTokenAddress,
-            chainId: props.chainData.chainId,
-            poolIndex: props.chainData.poolIndex,
-        };
+    // const updateLiquidity = () => {
+    //     // Reset existing liquidity data until the fetch completes, because it's a new pool
+    //     const request = {
+    //         baseAddress: baseTokenAddress,
+    //         quoteAddress: quoteTokenAddress,
+    //         chainId: props.chainData.chainId,
+    //         poolIndex: props.chainData.poolIndex,
+    //     };
 
-        if (
-            props.isChartEnabled &&
-            poolPriceNonDisplay !== 0 &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            props.chainData.poolIndex &&
-            props.crocEnv
-        ) {
-            fetchPoolLiquidity(
-                props.chainData.chainId,
-                baseTokenAddress.toLowerCase(),
-                quoteTokenAddress.toLowerCase(),
-                props.chainData.poolIndex,
-                props.crocEnv,
-                props.graphCacheUrl,
-                props.cachedFetchTokenPrice,
-                props.cachedQuerySpotTick,
-                currentPoolPriceTick,
-            )
-                .then((liqCurve) => {
-                    if (liqCurve) {
-                        setLiquidity(liqCurve, request);
-                    }
-                })
-                .catch(console.error);
-        }
-    };
+    //     if (
+    //         props.isChartEnabled &&
+    //         poolPriceNonDisplay !== 0 &&
+    //         baseTokenAddress &&
+    //         quoteTokenAddress &&
+    //         props.chainData.poolIndex &&
+    //         props.crocEnv
+    //     ) {
+    //         fetchPoolLiquidity(
+    //             props.chainData.chainId,
+    //             baseTokenAddress.toLowerCase(),
+    //             quoteTokenAddress.toLowerCase(),
+    //             props.chainData.poolIndex,
+    //             props.crocEnv,
+    //             props.graphCacheUrl,
+    //             props.cachedFetchTokenPrice,
+    //             props.cachedQuerySpotTick,
+    //             currentPoolPriceTick,
+    //         )
+    //             .then((liqCurve) => {
+    //                 if (liqCurve) {
+    //                     setLiquidity(liqCurve, request);
+    //                 }
+    //             })
+    //             .catch(console.error);
+    //     }
+    // };
 
-    useEffect(() => {
-        updateLiquidity();
-    }, [
-        baseTokenAddress +
-            quoteTokenAddress +
-            props.chainData.chainId +
-            props.chainData.poolIndex,
-        currentPoolPriceTick,
-        props.isChartEnabled,
-        props.crocEnv !== undefined,
-    ]);
+    // useEffect(() => {
+    //     updateLiquidity();
+    // }, [
+    //     baseTokenAddress +
+    //         quoteTokenAddress +
+    //         props.chainData.chainId +
+    //         props.chainData.poolIndex,
+    //     currentPoolPriceTick,
+    //     props.isChartEnabled,
+    //     props.crocEnv !== undefined,
+    // ]);
 
-    const totalPositionLiq = useMemo(
-        () =>
-            positionsByPool.positions.reduce((sum, position) => {
-                return sum + position.positionLiq;
-            }, 0) +
-            limitOrdersByPool.limitOrders.reduce((sum, order) => {
-                return sum + order.positionLiq;
-            }, 0),
-        [positionsByPool, limitOrdersByPool],
-    );
+    // const totalPositionLiq = useMemo(
+    //     () =>
+    //         positionsByPool.positions.reduce((sum, position) => {
+    //             return sum + position.positionLiq;
+    //         }, 0) +
+    //         limitOrdersByPool.limitOrders.reduce((sum, order) => {
+    //             return sum + order.positionLiq;
+    //         }, 0),
+    //     [positionsByPool, limitOrdersByPool],
+    // );
 
-    useEffect(() => {
-        updateLiquidity();
-    }, [totalPositionLiq]);
+    // useEffect(() => {
+    //     updateLiquidity();
+    // }, [totalPositionLiq]);
 
     return {
         contextMatchesParams,
