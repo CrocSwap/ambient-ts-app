@@ -506,76 +506,77 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool limit order states
-                    const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
-                        : props.graphCacheUrl + '/pool_limit_orders?';
+                    // const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
+                    //     ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
+                    //     : props.graphCacheUrl + '/pool_limit_orders?';
 
-                    fetch(
-                        poolLimitOrderStatesCacheEndpoint +
-                            new URLSearchParams({
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
-                                n: '200',
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolLimitOrderStates = json?.data;
-                            const crocEnv = props.crocEnv;
-                            const provider = props.provider;
-                            const skipENSFetch = true;
-                            if (poolLimitOrderStates && crocEnv && provider) {
-                                Promise.all(
-                                    poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderServerIF) => {
-                                            return getLimitOrderData(
-                                                limitOrder,
-                                                props.searchableTokens,
-                                                crocEnv,
-                                                provider,
-                                                props.chainData.chainId,
-                                                props.cachedFetchTokenPrice,
-                                                props.cachedQuerySpotPrice,
-                                                props.cachedTokenDetails,
-                                                props.cachedEnsResolve,
-                                                skipENSFetch,
-                                            );
-                                        },
-                                    ),
-                                ).then((updatedLimitOrderStates) => {
-                                    if (updatedLimitOrderStates.length > 0) {
-                                        const filteredData = filterLimitArray(
-                                            updatedLimitOrderStates,
-                                        );
-                                        setNewLimitsByPoolData(filteredData);
-                                    } else {
-                                        setNewLimitsByPoolData(undefined);
-                                        setLimitOrdersByPool({
-                                            dataReceived: false,
-                                            limitOrders: [],
-                                        });
-                                        setDataLoadingStatus({
-                                            datasetName:
-                                                'isPoolOrderDataLoading',
-                                            loadingStatus: false,
-                                        });
-                                    }
-                                });
-                            } else {
-                                setNewLimitsByPoolData(undefined);
-                                setLimitOrdersByPool({
-                                    dataReceived: false,
-                                    limitOrders: [],
-                                });
-                                setDataLoadingStatus({
-                                    datasetName: 'isPoolOrderDataLoading',
-                                    loadingStatus: false,
-                                });
-                            }
-                        })
-                        .catch(console.error);
+                    // fetch(
+                    //     poolLimitOrderStatesCacheEndpoint +
+                    //         new URLSearchParams({
+                    //             base: baseTokenAddress.toLowerCase(),
+                    //             quote: quoteTokenAddress.toLowerCase(),
+                    //             poolIdx: props.chainData.poolIndex.toString(),
+                    //             chainId: props.chainData.chainId,
+                    //             n: '200',
+                    //         }),
+                    // )
+                    //     .then((response) => response?.json())
+                    //     .then((json) => {
+                    //         const poolLimitOrderStates = json?.data;
+                    //         const crocEnv = props.crocEnv;
+                    //         const provider = props.provider;
+                    //         const skipENSFetch = true;
+                    //         if (poolLimitOrderStates && crocEnv && provider) {
+                    //             Promise.all(
+                    //                 poolLimitOrderStates.map(
+                    //                     (limitOrder: LimitOrderServerIF) => {
+                    //                         return getLimitOrderData(
+                    //                             limitOrder,
+                    //                             props.searchableTokens,
+                    //                             crocEnv,
+                    //                             provider,
+                    //                             props.chainData.chainId,
+                    //                             props.cachedFetchTokenPrice,
+                    //                             props.cachedQuerySpotPrice,
+                    //                             props.cachedTokenDetails,
+                    //                             props.cachedEnsResolve,
+                    //                             skipENSFetch,
+                    //                         );
+                    //                     },
+                    //                 ),
+                    //             ).then((updatedLimitOrderStates) => {
+                    //                 if (updatedLimitOrderStates.length > 0) {
+                    //                     const filteredData = filterLimitArray(
+                    //                         updatedLimitOrderStates,
+                    //                     );
+                    //                     setNewLimitsByPoolData(filteredData);
+                    //                 } else {
+                    //                     setNewLimitsByPoolData(undefined);
+                    //                     setLimitOrdersByPool({
+                    //                         dataReceived: false,
+                    //                         limitOrders: [],
+                    //                     });
+                    //                     setDataLoadingStatus({
+                    //                         datasetName:
+                    //                             'isPoolOrderDataLoading',
+                    //                         loadingStatus: false,
+                    //                     });
+                    //                 }
+                    //             });
+                    //         } else {
+                    //             setNewLimitsByPoolData(undefined);
+                    //             setLimitOrdersByPool({
+                    //                 dataReceived: false,
+                    //                 limitOrders: [],
+                    //             });
+                    //             setDataLoadingStatus({
+                    //                 datasetName: 'isPoolOrderDataLoading',
+                    //                 loadingStatus: false,
+                    //             });
+                    //         }
+                    //     })
+                    //     .catch(console.error);
+
                     if (props.userAddress) {
                         const userPoolTransactionsCacheEndpoint =
                             GCGO_OVERRIDE_URL
