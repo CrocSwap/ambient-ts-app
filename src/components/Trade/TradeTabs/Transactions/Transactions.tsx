@@ -519,14 +519,19 @@ function Transactions(props: propsIF) {
     };
 
     useEffect(() => {
+
+        console.log('add more data check')
+        console.log(lastRowRef.current)
+        console.log('moreDataLoading', moreDataLoading , ' ' , 'moreDataAvailable', moreDataAvailable, ' ', 'extraPagesAvailable', extraPagesAvailable, ' ', 'pagesVisible[1]', pagesVisible[1]);
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
                 if (moreDataLoading) return;
                 if (entry.isIntersecting) {
+                    console.log(entry);
                     // last row is visible
                     extraPagesAvailable + 1 > pagesVisible[1]
-                        ? shiftDown()
+                    ? shiftDown()
                         : moreDataAvailable
                           ? addMoreData()
                           : undefined;
@@ -536,11 +541,13 @@ function Transactions(props: propsIF) {
                 threshold: 0.1, // Trigger when 10% of the element is visible
             },
         );
-
+        
         const currentElement = lastRowRef.current;
         if (currentElement) {
             observer.observe(currentElement);
         }
+
+        console.log('...............................................................................................................');
 
         return () => {
             if (currentElement) {
@@ -602,26 +609,27 @@ function Transactions(props: propsIF) {
     };
 
     const shiftUp = (): void => {
+        console.log('shiftUp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ')
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
-        if (scrollRef.current) {
-            // scroll to middle of container
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight * 0.49,
-                behavior: 'instant' as ScrollBehavior,
-            });
-        }
+        // if (scrollRef.current) {
+            //     // scroll to middle of container
+            //     scrollRef.current.scrollTo({
+                //         top: scrollRef.current.scrollHeight * 0.49,
+        //         behavior: 'instant' as ScrollBehavior,
+        //     });
+        // }
     };
-
+    
     const shiftDown = (): void => {
-        console.log('shift down')
+        console.log('shiftDown >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
-        if (scrollRef.current) {
-            // scroll to middle of container
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight * 0.4,
-                behavior: 'instant' as ScrollBehavior,
-            });
-        }
+        // if (scrollRef.current) {
+        //     // scroll to middle of container
+        //     scrollRef.current.scrollTo({
+        //         top: scrollRef.current.scrollHeight * 0.4,
+        //         behavior: 'instant' as ScrollBehavior,
+        //     });
+        // }
     };
 
     useEffect(() => {
@@ -635,12 +643,12 @@ function Transactions(props: propsIF) {
         txSpans.forEach((span) => {
             if(span.textContent === txID){
                 const row = span.parentElement?.parentElement as HTMLDivElement;
-                row.style.backgroundColor = 'red';
+                // row.style.backgroundColor = 'red';
 
                 const parent = row.parentElement as HTMLDivElement;
                 parent.style.background = 'blue';
 
-                parent.scrollIntoView({behavior: 'instant' as ScrollBehavior});
+                parent.scrollIntoView({block: 'end' , behavior: 'instant' as ScrollBehavior});
 
             }
         });
@@ -663,12 +671,12 @@ function Transactions(props: propsIF) {
     }
 
     const addMoreData = (): void => {
-        console.log('addMoreData');
         // if(scrollRef.current){
-        //     bindLastSeenRow();
-        // }
-        if (!crocEnv || !provider) return;
-        // retrieve pool recent changes
+            //     bindLastSeenRow();
+            // }
+            if (!crocEnv || !provider) return;
+            // retrieve pool recent changes
+        console.log('ADD MORE DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
         setMoreDataLoading(true);
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
@@ -706,13 +714,13 @@ function Transactions(props: propsIF) {
                                 prev[0] + 1,
                                 prev[1] + 1,
                             ]);
-                            if (scrollRef.current) {
-                                // scroll to middle of container
-                                scrollRef.current.scrollTo({
-                                    top: scrollRef.current.scrollHeight * 0.4,
-                                    behavior: 'instant' as ScrollBehavior,
-                                });
-                            }
+                            // if (scrollRef.current) {
+                            //     // scroll to middle of container
+                            //     scrollRef.current.scrollTo({
+                            //         top: scrollRef.current.scrollHeight * 0.4,
+                            //         behavior: 'instant' as ScrollBehavior,
+                            //     });
+                            // }
                         } else {
                             setMoreDataAvailable(false);
                         }
@@ -741,20 +749,20 @@ function Transactions(props: propsIF) {
     // }, [transactionsByPool])
 
     const logData = () => {
-        domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
-        if(sortedTxDataToDisplay.length > 0){
-            domDebug('sortedTxDataDisp LAST', sortedTxDataToDisplay[sortedTxDataToDisplay.length - 1].txHash);
-        }
-        if(sortedTxDataToDisplay.length > 0){
-            domDebug('sortedTxDataDisp FIRST', sortedTxDataToDisplay[0].txHash);
-        }
-        domDebug('sortedTransactions', sortedTransactions.length);
-        if(sortedTransactions.length > 0){
-            domDebug('sortedTransactions LAST ', sortedTransactions[sortedTransactions.length - 1].txHash);
-        }
-        if(sortedTransactions.length > 0){
-            domDebug('sortedTransactions FIRST ', sortedTransactions[0].txHash);
-        }
+        // domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
+        // if(sortedTxDataToDisplay.length > 0){
+        //     domDebug('sortedTxDataDisp LAST', sortedTxDataToDisplay[sortedTxDataToDisplay.length - 1].txHash);
+        // }
+        // if(sortedTxDataToDisplay.length > 0){
+        //     domDebug('sortedTxDataDisp FIRST', sortedTxDataToDisplay[0].txHash);
+        // }
+        // domDebug('sortedTransactions', sortedTransactions.length);
+        // if(sortedTransactions.length > 0){
+        //     domDebug('sortedTransactions LAST ', sortedTransactions[sortedTransactions.length - 1].txHash);
+        // }
+        // if(sortedTransactions.length > 0){
+        //     domDebug('sortedTransactions FIRST ', sortedTransactions[0].txHash);
+        // }
     }
     
     useEffect(() => {
