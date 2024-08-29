@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import TopPools from '../../components/Global/Explore/TopPools';
 import DexTokens from '../../components/Global/Explore/DexTokens';
 import { ExploreContext } from '../../contexts/ExploreContext';
@@ -11,8 +11,9 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { PoolIF } from '../../ambient-utils/types';
-import styles from './Explore.module.css'
+import styles from './Explore.module.css';
 import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -119,75 +120,100 @@ export default function Explore(props: ExploreIF) {
         }
     }
 
- 
-
     const [searchQueryPool, setSearchQueryPool] = useState<string>('');
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
+    const filteredPools =
+        searchQueryPool.length >= 2
+            ? pools.all.filter((pool: PoolIF) => {
+                  const lowerCaseQuery = searchQueryPool.toLowerCase();
+                  return (
+                      pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
+                      pool.base.symbol.toLowerCase().includes(lowerCaseQuery) ||
+                      pool.quote.name.toLowerCase().includes(lowerCaseQuery) ||
+                      pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
+                  );
+              })
+            : pools.all;
 
-    const filteredPools = searchQueryPool.length >= 2
-        ? pools.all.filter((pool: PoolIF) => {
-            const lowerCaseQuery = searchQueryPool.toLowerCase();
-            return (
-                pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
-                pool.base.symbol.toLowerCase().includes(lowerCaseQuery) ||
-                pool.quote.name.toLowerCase().includes(lowerCaseQuery) ||
-                pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
-            );
-        })
-        : pools.all; 
+    const filteredTokens =
+        searchQueryToken.length >= 2
+            ? tokens.data.filter((token) => {
+                  const lowerCaseQuery = searchQueryToken.toLowerCase();
+                  return (
+                      token.tokenMeta?.name
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      token.tokenMeta?.symbol
+                          .toLowerCase()
+                          .includes(lowerCaseQuery)
+                  );
+              })
+            : tokens.data;
     
-    
-        const filteredTokens = searchQueryToken.length >= 2
-        ? tokens.data.filter((token) => {
-            const lowerCaseQuery = searchQueryToken.toLowerCase();
-            return (
-                token.tokenMeta?.name.toLowerCase().includes(lowerCaseQuery) ||
-                token.tokenMeta?.symbol.toLowerCase().includes(lowerCaseQuery)
-            );
-        })
-        : tokens.data;
+            const searchInputRef = useRef<HTMLDivElement>(null);
 
-    
+            const clickOutsideInputHandler = () => {
+                const searchQuery = view === 'pools' ? searchQueryPool : searchQueryToken;
+                const filteredItems = view === 'pools' ? filteredPools : filteredTokens;
+                const setSearchQuery = view === 'pools' ? setSearchQueryPool : setSearchQueryToken;
+            
+                if (!searchQuery || filteredItems.length) {
+                    return null;
+                }
+            
+                setSearchQuery('');
+            };
+            
+            useOnClickOutside(searchInputRef, clickOutsideInputHandler);
+
+            
+
     const inputContainer = (
-        <div className={styles.input_container}>
-      
-                <div className={styles.input_wrapper}>
-                     <LuSearch />
+        <div className={styles.input_container} ref={searchInputRef}>
+            <div className={styles.input_wrapper}>
+                <LuSearch />
                 <input
-                    type="text"
+                    type='text'
                     placeholder={`Search ${view === 'pools' ? 'pools' : 'tokens'} by name or symbol`}
-                    value={view === 'pools' ? searchQueryPool : searchQueryToken}
-                        onChange={
-                            view === 'pools' ?
-                                (e) => setSearchQueryPool(e.target.value) :
-                                (e) => setSearchQueryToken(e.target.value)
-                        }
+                    value={
+                        view === 'pools' ? searchQueryPool : searchQueryToken
+                    }
+                    onChange={
+                        view === 'pools'
+                            ? (e) => setSearchQueryPool(e.target.value)
+                            : (e) => setSearchQueryToken(e.target.value)
+                    }
                     className={styles.input}
                 />
             </div>
-       
-    </div>
-    )
+        </div>
+    );
+
     return (
         <section className={styles.main_container}>
             <div className={styles.main_wrapper}>
                 <h2 className={styles.title_text}>{titleTextForDOM}</h2>
             </div>
             <div className={styles.options_wrapper}>
-                <div className={styles.options_content}
-                >
+                <div className={styles.options_content}>
                     <Text>Pools</Text>
                     <Toggle
                         isOn={view === 'tokens'}
                         id={'explore_page_'}
-                        handleToggle={() => changeView(view)}
+                        handleToggle={() => {
+                            changeView(view);
+            
+                                setSearchQueryToken('');
+                                setSearchQueryPool('');
+                            
+                        }}
                     />
+
                     <Text>Tokens</Text>
                 </div>
 
-                <div className={styles.options_content}
-                >
+                <div className={styles.options_content}>
                     {inputContainer}
                     {view === 'pools' && (
                         <DefaultTooltip
@@ -200,7 +226,8 @@ export default function Explore(props: ExploreIF) {
                             enterDelay={500}
                         >
                             <div className={styles.refresh_container}>
-                                <button className={styles.refresh_button}
+                                <button
+                                    className={styles.refresh_button}
                                     onClick={() =>
                                         setIsExploreDollarizationEnabled(
                                             (prev) => !prev,
@@ -233,9 +260,11 @@ export default function Explore(props: ExploreIF) {
                         enterDelay={500}
                     >
                         <div className={styles.refresh_container}>
-                            <button className={styles.refresh_button} onClick={() => handleRefresh()}>
+                            <button
+                                className={styles.refresh_button}
+                                onClick={() => handleRefresh()}
+                            >
                                 <LuRefreshCcw size={20} />
-                                
                             </button>
                         </div>
                     </DefaultTooltip>
@@ -249,18 +278,19 @@ export default function Explore(props: ExploreIF) {
                     isExploreDollarizationEnabled={
                         isExploreDollarizationEnabled
                     }
+                    searchQuery={searchQueryPool}
+                    setSearchQuery={setSearchQueryPool}
                 />
             )}
             {view === 'tokens' && (
                 <DexTokens
-                dexTokens={filteredTokens}
-                chainId={chainData.chainId}
+                    dexTokens={filteredTokens}
+                    chainId={chainData.chainId}
                     goToMarket={goToMarket}
+                    searchQuery={searchQueryToken}
+                    setSearchQuery={setSearchQueryToken}
                 />
             )}
         </section>
     );
 }
-
-
-
