@@ -15,18 +15,17 @@ import {
     CandleScaleIF,
     CandlesByPoolAndDurationIF,
 } from '../ambient-utils/types';
-import { AppStateContext } from './AppStateContext';
+// import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import {
-    CACHE_UPDATE_FREQ_IN_MS,
-    LS_KEY_CHART_SETTINGS,
-} from '../ambient-utils/constants';
-import { getLocalStorageItem } from '../ambient-utils/dataLayer';
-import { chartSettingsIF } from '../App/hooks/useChartSettings';
-import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
+import {} from // CACHE_UPDATE_FREQ_IN_MS,
+// LS_KEY_CHART_SETTINGS,
+'../ambient-utils/constants';
+// import { getLocalStorageItem } from '../ambient-utils/dataLayer';
+// import { chartSettingsIF } from '../App/hooks/useChartSettings';
+// import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 
 export interface CandleContextIF {
     candleData: CandlesByPoolAndDurationIF | undefined;
@@ -55,13 +54,13 @@ export const CandleContext = createContext<CandleContextIF>(
 );
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
-    const {
-        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
-        isUserIdle,
-    } = useContext(AppStateContext);
+    // const {
+    // server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
+    // isUserIdle,
+    // } = useContext(AppStateContext);
     const {
         chartSettings,
-        isEnabled: isChartEnabled,
+        // isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
         numCandlesFetched,
@@ -75,7 +74,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const { cachedFetchTokenPrice, cachedQuerySpotPrice } =
         useContext(CachedDataContext);
 
-    const isPoolInitialized = useSimulatedIsPoolInitialized();
+    // const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const [abortController] = useState<{
         abortController: AbortController | null;
@@ -99,7 +98,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
-    const [isFinishRequest, setIsFinishRequest] = useState(false);
+    const [
+        isFinishRequest,
+        //  setIsFinishRequest
+    ] = useState(false);
     const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -192,44 +194,44 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsFirstFetch(true);
     }, [isFirstFetch]);
 
-    useEffect(() => {
-        isChartEnabled && isUserOnline && fetchCandles();
-        if (isManualCandleFetchRequested)
-            setIsManualCandleFetchRequested(false);
-    }, [
-        isManualCandleFetchRequested,
-        isChartEnabled,
-        isUserOnline,
-        baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
-        isPoolInitialized,
-    ]);
+    // useEffect(() => {
+    //     isChartEnabled && isUserOnline && fetchCandles();
+    //     if (isManualCandleFetchRequested)
+    //         setIsManualCandleFetchRequested(false);
+    // }, [
+    //     isManualCandleFetchRequested,
+    //     isChartEnabled,
+    //     isUserOnline,
+    //     baseTokenAddress + quoteTokenAddress,
+    //     candleScale?.isFetchForTimeframe,
+    //     isPoolInitialized,
+    // ]);
 
-    useEffect(() => {
-        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            if (
-                candleData &&
-                candleData.candles &&
-                candleTimeLocal &&
-                !isCandleDataNull
-            ) {
-                const nowTime = Math.floor(Date.now() / 1000);
+    // useEffect(() => {
+    //     if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
+    //         if (
+    //             candleData &&
+    //             candleData.candles &&
+    //             candleTimeLocal &&
+    //             !isCandleDataNull
+    //         ) {
+    //             const nowTime = Math.floor(Date.now() / 1000);
 
-                fetchCandlesByNumDurations(200, nowTime);
-            }
-        }
-    }, [
-        isChartEnabled,
-        isUserOnline,
+    //             fetchCandlesByNumDurations(200, nowTime);
+    //         }
+    //     }
+    // }, [
+    //     isChartEnabled,
+    //     isUserOnline,
 
-        isUserIdle
-            ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
-            : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
-        baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
-        // candleScale.nCandles,
-        candleScale.isShowLatestCandle,
-    ]);
+    //     isUserIdle
+    //         ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
+    //         : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
+    //     baseTokenAddress + quoteTokenAddress,
+    //     candleScale?.isFetchForTimeframe,
+    //     // candleScale.nCandles,
+    //     candleScale.isShowLatestCandle,
+    // ]);
 
     useEffect(() => {
         if (isCandleDataNull) {
@@ -256,89 +258,89 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         };
     }, [isCandleDataNull]);
 
-    const fetchCandles = (bypassSpinner = false) => {
-        if (
-            isServerEnabled &&
-            isUserOnline &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            crocEnv
-        ) {
-            setIsZoomRequestCanceled({ value: true });
+    // const fetchCandles = (bypassSpinner = false) => {
+    //     if (
+    //         isServerEnabled &&
+    //         isUserOnline &&
+    //         baseTokenAddress &&
+    //         quoteTokenAddress &&
+    //         crocEnv
+    //     ) {
+    //         setIsZoomRequestCanceled({ value: true });
 
-            const candleTime = candleScale.isShowLatestCandle
-                ? Math.floor(Date.now() / 1000)
-                : candleScale.lastCandleDate || 0;
+    //         const candleTime = candleScale.isShowLatestCandle
+    //             ? Math.floor(Date.now() / 1000)
+    //             : candleScale.lastCandleDate || 0;
 
-            const nCandles = Math.min(
-                Math.max(candleScale?.nCandles || 7, 7),
-                2999,
-            );
+    //         const nCandles = Math.min(
+    //             Math.max(candleScale?.nCandles || 7, 7),
+    //             2999,
+    //         );
 
-            setIsFinishRequest(false);
-            !bypassSpinner && setIsFetchingCandle(true);
-            setTimeOfEndCandle(undefined);
+    //         setIsFinishRequest(false);
+    //         !bypassSpinner && setIsFetchingCandle(true);
+    //         setTimeOfEndCandle(undefined);
 
-            const chartSettings: chartSettingsIF | null = JSON.parse(
-                getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
-            );
+    //         const chartSettings: chartSettingsIF | null = JSON.parse(
+    //             getLocalStorageItem(LS_KEY_CHART_SETTINGS) ?? '{}',
+    //         );
 
-            const defaultCandleDuration =
-                chartSettings?.candleTimeGlobal || 3600;
-            fetchCandleSeriesHybrid(
-                true,
-                chainData,
-                activeNetwork.graphCacheUrl,
-                candleTimeLocal || defaultCandleDuration,
-                baseTokenAddress,
-                quoteTokenAddress,
-                candleTime,
-                nCandles,
-                crocEnv,
-                cachedFetchTokenPrice,
-                cachedQuerySpotPrice,
-            )
-                .then((candles) => {
-                    setCandleData(candles);
-                    const candleSeries = candles?.candles;
-                    if (candleSeries && candleSeries.length > 0) {
-                        if (candles?.candles.length < nCandles) {
-                            const localCandles = candles?.candles;
+    //         const defaultCandleDuration =
+    //             chartSettings?.candleTimeGlobal || 3600;
+    //         fetchCandleSeriesHybrid(
+    //             true,
+    //             chainData,
+    //             activeNetwork.graphCacheUrl,
+    //             candleTimeLocal || defaultCandleDuration,
+    //             baseTokenAddress,
+    //             quoteTokenAddress,
+    //             candleTime,
+    //             nCandles,
+    //             crocEnv,
+    //             cachedFetchTokenPrice,
+    //             cachedQuerySpotPrice,
+    //         )
+    //             .then((candles) => {
+    //                 setCandleData(candles);
+    //                 const candleSeries = candles?.candles;
+    //                 if (candleSeries && candleSeries.length > 0) {
+    //                     if (candles?.candles.length < nCandles) {
+    //                         const localCandles = candles?.candles;
 
-                            setTimeOfEndCandle(
-                                localCandles[localCandles.length - 1].time *
-                                    1000,
-                            );
-                        }
-                        setIsCandleDataNull(false);
-                    } else {
-                        if (
-                            candleScale?.isFetchFirst200Candle &&
-                            candleTimeLocal === 60
-                        ) {
-                            setIsCandleDataNull(true);
-                        }
-                    }
+    //                         setTimeOfEndCandle(
+    //                             localCandles[localCandles.length - 1].time *
+    //                                 1000,
+    //                         );
+    //                     }
+    //                     setIsCandleDataNull(false);
+    //                 } else {
+    //                     if (
+    //                         candleScale?.isFetchFirst200Candle &&
+    //                         candleTimeLocal === 60
+    //                     ) {
+    //                         setIsCandleDataNull(true);
+    //                     }
+    //                 }
 
-                    if (
-                        (candleSeries && candles?.candles.length >= 7) ||
-                        (candleSeries &&
-                            candleSeries.length > 0 &&
-                            candleTimeLocal === 60)
-                    ) {
-                        setIsFetchingCandle(false);
-                    }
-                    setIsFirstFetch(false);
+    //                 if (
+    //                     (candleSeries && candles?.candles.length >= 7) ||
+    //                     (candleSeries &&
+    //                         candleSeries.length > 0 &&
+    //                         candleTimeLocal === 60)
+    //                 ) {
+    //                     setIsFetchingCandle(false);
+    //                 }
+    //                 setIsFirstFetch(false);
 
-                    return candles;
-                })
-                .then(() => {
-                    setIsFinishRequest(true);
-                });
-        } else {
-            setIsFetchingCandle(true);
-        }
-    };
+    //                 return candles;
+    //             })
+    //             .then(() => {
+    //                 setIsFinishRequest(true);
+    //             });
+    //     } else {
+    //         setIsFetchingCandle(true);
+    //     }
+    // };
 
     const domainBoundaryInSeconds = Math.floor(
         (candleDomains?.domainBoundry || 0) / 1000,
