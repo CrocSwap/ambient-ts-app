@@ -118,6 +118,7 @@ export default function Explore(props: ExploreIF) {
         }
     }
 
+
     return (
         <Section>
             <MainWrapper>

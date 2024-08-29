@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
@@ -115,6 +115,8 @@ function TopPools(props: propsIF) {
             sortable: false,
         },
     ];
+
+
 
     return (
         <FlexContainer

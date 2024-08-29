@@ -87,6 +87,9 @@ overflow: hidden !important;
     gap: 4px;
     overflow: hidden;
     padding: 0 1rem;
+   
+ 
+    
 }
 
   @media (min-width: 1200px) {
