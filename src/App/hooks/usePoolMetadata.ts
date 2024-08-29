@@ -24,7 +24,7 @@ import {
     TokenPriceFn,
     FetchAddrFn,
     FetchContractDetailsFn,
-    fetchPoolRecentChanges,
+    // fetchPoolRecentChanges,
     fetchPoolLiquidity,
 } from '../../ambient-utils/api';
 import {
@@ -470,40 +470,40 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     //     .catch(console.error);
 
                     // retrieve pool recent changes
-                    fetchPoolRecentChanges({
-                        tokenList: props.searchableTokens,
-                        base: baseTokenAddress,
-                        quote: quoteTokenAddress,
-                        poolIdx: props.chainData.poolIndex,
-                        chainId: props.chainData.chainId,
-                        n: 200,
-                        crocEnv: props.crocEnv,
-                        graphCacheUrl: props.graphCacheUrl,
-                        provider: props.provider,
-                        cachedFetchTokenPrice: props.cachedFetchTokenPrice,
-                        cachedQuerySpotPrice: props.cachedQuerySpotPrice,
-                        cachedTokenDetails: props.cachedTokenDetails,
-                        cachedEnsResolve: props.cachedEnsResolve,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (
-                                poolChangesJsonData &&
-                                poolChangesJsonData.length > 0
-                            ) {
-                                setNewTxByPoolData(poolChangesJsonData);
-                            } else {
-                                setNewTxByPoolData(undefined);
-                                setTransactionsByPool({
-                                    dataReceived: true,
-                                    changes: [],
-                                });
-                                setDataLoadingStatus({
-                                    datasetName: 'isPoolTxDataLoading',
-                                    loadingStatus: false,
-                                });
-                            }
-                        })
-                        .catch(console.error);
+                    // fetchPoolRecentChanges({
+                    //     tokenList: props.searchableTokens,
+                    //     base: baseTokenAddress,
+                    //     quote: quoteTokenAddress,
+                    //     poolIdx: props.chainData.poolIndex,
+                    //     chainId: props.chainData.chainId,
+                    //     n: 200,
+                    //     crocEnv: props.crocEnv,
+                    //     graphCacheUrl: props.graphCacheUrl,
+                    //     provider: props.provider,
+                    //     cachedFetchTokenPrice: props.cachedFetchTokenPrice,
+                    //     cachedQuerySpotPrice: props.cachedQuerySpotPrice,
+                    //     cachedTokenDetails: props.cachedTokenDetails,
+                    //     cachedEnsResolve: props.cachedEnsResolve,
+                    // })
+                    //     .then((poolChangesJsonData) => {
+                    //         if (
+                    //             poolChangesJsonData &&
+                    //             poolChangesJsonData.length > 0
+                    //         ) {
+                    //             setNewTxByPoolData(poolChangesJsonData);
+                    //         } else {
+                    //             setNewTxByPoolData(undefined);
+                    //             setTransactionsByPool({
+                    //                 dataReceived: true,
+                    //                 changes: [],
+                    //             });
+                    //             setDataLoadingStatus({
+                    //                 datasetName: 'isPoolTxDataLoading',
+                    //                 loadingStatus: false,
+                    //             });
+                    //         }
+                    //     })
+                    //     .catch(console.error);
 
                     // retrieve pool limit order states
                     // const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
