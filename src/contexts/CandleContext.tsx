@@ -21,7 +21,7 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import {
-    CACHE_UPDATE_FREQ_IN_MS,
+    // CACHE_UPDATE_FREQ_IN_MS,
     LS_KEY_CHART_SETTINGS,
 } from '../ambient-utils/constants';
 import { getLocalStorageItem } from '../ambient-utils/dataLayer';
@@ -57,15 +57,15 @@ export const CandleContext = createContext<CandleContextIF>(
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
         server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
-        isUserIdle,
+        // isUserIdle,
     } = useContext(AppStateContext);
     const {
         chartSettings,
         isEnabled: isChartEnabled,
         isCandleDataNull,
         setIsCandleDataNull,
-        numCandlesFetched,
-        setNumCandlesFetched,
+        // numCandlesFetched,
+        // setNumCandlesFetched,
     } = useContext(ChartContext);
     const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const {
@@ -99,7 +99,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [isCondensedModeEnabled, setIsCondensedModeEnabled] = useState(true);
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
-    const [isFinishRequest, setIsFinishRequest] = useState(false);
+    // const [isFinishRequest, setIsFinishRequest] = useState(false);
     const [candleDomains, setCandleDomains] = useState<CandleDomainIF>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -111,34 +111,34 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const offlineFetcherRef = useRef<NodeJS.Timer>();
     offlineFetcherRef.current = offlineFetcher;
 
-    useEffect(() => {
-        if (isFinishRequest) {
-            // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
-            if (
-                candleData?.candles.length === 0 &&
-                candleScale?.isFetchFirst200Candle !== true
-            ) {
-                setCandleData(undefined);
-                setCandleScale((prev) => {
-                    return {
-                        lastCandleDate: undefined,
-                        nCandles: 200,
-                        isFetchForTimeframe: !prev.isFetchForTimeframe,
-                        isShowLatestCandle: true,
-                        isFetchFirst200Candle: true,
-                    };
-                });
-            } else {
-                // If there are no candles in the first 200 candles, it changes timeframe
-                if (candleData?.candles) {
-                    setNumCandlesFetched({
-                        candleCount: candleData?.candles.length || 0,
-                        switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
-                    });
-                }
-            }
-        }
-    }, [isFinishRequest]);
+    // useEffect(() => {
+    //     if (isFinishRequest) {
+    //         // If there is no data in the range in which the data is received, it will send a pull request for the first 200 candles
+    //         if (
+    //             candleData?.candles.length === 0 &&
+    //             candleScale?.isFetchFirst200Candle !== true
+    //         ) {
+    //             setCandleData(undefined);
+    //             setCandleScale((prev) => {
+    //                 return {
+    //                     lastCandleDate: undefined,
+    //                     nCandles: 200,
+    //                     isFetchForTimeframe: !prev.isFetchForTimeframe,
+    //                     isShowLatestCandle: true,
+    //                     isFetchFirst200Candle: true,
+    //                 };
+    //             });
+    //         } else {
+    //             // If there are no candles in the first 200 candles, it changes timeframe
+    //             if (candleData?.candles) {
+    //                 setNumCandlesFetched({
+    //                     candleCount: candleData?.candles.length || 0,
+    //                     switchPeriodFlag: !numCandlesFetched?.switchPeriodFlag,
+    //                 });
+    //             }
+    //         }
+    //     }
+    // }, [isFinishRequest]);
 
     const [candleScale, setCandleScale] = useState<CandleScaleIF>({
         lastCandleDate: undefined,
@@ -205,31 +205,31 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isPoolInitialized,
     ]);
 
-    useEffect(() => {
-        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
-            if (
-                candleData &&
-                candleData.candles &&
-                candleTimeLocal &&
-                !isCandleDataNull
-            ) {
-                const nowTime = Math.floor(Date.now() / 1000);
+    // useEffect(() => {
+    //     if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
+    //         if (
+    //             candleData &&
+    //             candleData.candles &&
+    //             candleTimeLocal &&
+    //             !isCandleDataNull
+    //         ) {
+    //             const nowTime = Math.floor(Date.now() / 1000);
 
-                fetchCandlesByNumDurations(200, nowTime);
-            }
-        }
-    }, [
-        isChartEnabled,
-        isUserOnline,
+    //             fetchCandlesByNumDurations(200, nowTime);
+    //         }
+    //     }
+    // }, [
+    //     isChartEnabled,
+    //     isUserOnline,
 
-        isUserIdle
-            ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
-            : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
-        baseTokenAddress + quoteTokenAddress,
-        candleScale?.isFetchForTimeframe,
-        // candleScale.nCandles,
-        candleScale.isShowLatestCandle,
-    ]);
+    //     isUserIdle
+    //         ? Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS)
+    //         : Math.floor(Date.now() / (2 * CACHE_UPDATE_FREQ_IN_MS)),
+    //     baseTokenAddress + quoteTokenAddress,
+    //     candleScale?.isFetchForTimeframe,
+    //     // candleScale.nCandles,
+    //     candleScale.isShowLatestCandle,
+    // ]);
 
     useEffect(() => {
         if (isCandleDataNull) {
@@ -275,7 +275,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 2999,
             );
 
-            setIsFinishRequest(false);
+            // setIsFinishRequest(false);
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
 
@@ -333,7 +333,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     return candles;
                 })
                 .then(() => {
-                    setIsFinishRequest(true);
+                    // setIsFinishRequest(true);
                 });
         } else {
             setIsFetchingCandle(true);
