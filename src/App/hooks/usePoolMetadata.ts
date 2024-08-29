@@ -323,151 +323,151 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .catch(console.error);
 
                     // retrieve pool_positions
-                    const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/pool_positions?'
-                        : props.graphCacheUrl + '/pool_positions?';
-                    fetch(
-                        allPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
-                                n: '200',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const poolPositions = json.data;
-                            const crocEnv = props.crocEnv;
-                            const provider = props.provider;
-                            const skipENSFetch = true;
-                            if (poolPositions && crocEnv && provider) {
-                                Promise.all(
-                                    poolPositions.map(
-                                        (position: PositionServerIF) => {
-                                            return getPositionData(
-                                                position,
-                                                props.searchableTokens,
-                                                crocEnv,
-                                                provider,
-                                                props.chainData.chainId,
-                                                props.cachedFetchTokenPrice,
-                                                props.cachedQuerySpotPrice,
-                                                props.cachedTokenDetails,
-                                                props.cachedEnsResolve,
-                                                skipENSFetch,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        if (updatedPositions.length > 0) {
-                                            setNewRangesByPoolData(
-                                                updatedPositions,
-                                            );
-                                        } else {
-                                            setNewRangesByPoolData(undefined);
-                                            setPositionsByPool({
-                                                dataReceived: false,
-                                                positions: [],
-                                            });
-                                            setDataLoadingStatus({
-                                                datasetName:
-                                                    'isPoolRangeDataLoading',
-                                                loadingStatus: false,
-                                            });
-                                        }
-                                    })
-                                    .catch(console.error);
-                            } else {
-                                setNewRangesByPoolData(undefined);
-                                setPositionsByPool({
-                                    dataReceived: false,
-                                    positions: [],
-                                });
-                                setDataLoadingStatus({
-                                    datasetName: 'isPoolRangeDataLoading',
-                                    loadingStatus: false,
-                                });
-                            }
-                        })
-                        .catch(console.error);
+                    // const allPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                    //     ? GCGO_OVERRIDE_URL + '/pool_positions?'
+                    //     : props.graphCacheUrl + '/pool_positions?';
+                    // fetch(
+                    //     allPositionsCacheEndpoint +
+                    //         new URLSearchParams({
+                    //             base: baseTokenAddress.toLowerCase(),
+                    //             quote: quoteTokenAddress.toLowerCase(),
+                    //             poolIdx: props.chainData.poolIndex.toString(),
+                    //             chainId: props.chainData.chainId,
+                    //             n: '200',
+                    //         }),
+                    // )
+                    //     .then((response) => response.json())
+                    //     .then((json) => {
+                    //         const poolPositions = json.data;
+                    //         const crocEnv = props.crocEnv;
+                    //         const provider = props.provider;
+                    //         const skipENSFetch = true;
+                    //         if (poolPositions && crocEnv && provider) {
+                    //             Promise.all(
+                    //                 poolPositions.map(
+                    //                     (position: PositionServerIF) => {
+                    //                         return getPositionData(
+                    //                             position,
+                    //                             props.searchableTokens,
+                    //                             crocEnv,
+                    //                             provider,
+                    //                             props.chainData.chainId,
+                    //                             props.cachedFetchTokenPrice,
+                    //                             props.cachedQuerySpotPrice,
+                    //                             props.cachedTokenDetails,
+                    //                             props.cachedEnsResolve,
+                    //                             skipENSFetch,
+                    //                         );
+                    //                     },
+                    //                 ),
+                    //             )
+                    //                 .then((updatedPositions) => {
+                    //                     if (updatedPositions.length > 0) {
+                    //                         setNewRangesByPoolData(
+                    //                             updatedPositions,
+                    //                         );
+                    //                     } else {
+                    //                         setNewRangesByPoolData(undefined);
+                    //                         setPositionsByPool({
+                    //                             dataReceived: false,
+                    //                             positions: [],
+                    //                         });
+                    //                         setDataLoadingStatus({
+                    //                             datasetName:
+                    //                                 'isPoolRangeDataLoading',
+                    //                             loadingStatus: false,
+                    //                         });
+                    //                     }
+                    //                 })
+                    //                 .catch(console.error);
+                    //         } else {
+                    //             setNewRangesByPoolData(undefined);
+                    //             setPositionsByPool({
+                    //                 dataReceived: false,
+                    //                 positions: [],
+                    //             });
+                    //             setDataLoadingStatus({
+                    //                 datasetName: 'isPoolRangeDataLoading',
+                    //                 loadingStatus: false,
+                    //             });
+                    //         }
+                    //     })
+                    //     .catch(console.error);
 
                     // retrieve positions for leaderboard
-                    const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
-                        : props.graphCacheUrl + '/pool_position_apy_leaders?';
-                    fetch(
-                        poolPositionsCacheEndpoint +
-                            new URLSearchParams({
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
-                                n: '50',
-                            }),
-                    )
-                        .then((response) => response.json())
-                        .then((json) => {
-                            const leaderboardPositions = json.data;
-                            const crocEnv = props.crocEnv;
-                            const provider = props.provider;
-                            const skipENSFetch = true;
+                    // const poolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
+                    //     ? GCGO_OVERRIDE_URL + '/pool_position_apy_leaders?'
+                    //     : props.graphCacheUrl + '/pool_position_apy_leaders?';
+                    // fetch(
+                    //     poolPositionsCacheEndpoint +
+                    //         new URLSearchParams({
+                    //             base: baseTokenAddress.toLowerCase(),
+                    //             quote: quoteTokenAddress.toLowerCase(),
+                    //             poolIdx: props.chainData.poolIndex.toString(),
+                    //             chainId: props.chainData.chainId,
+                    //             n: '50',
+                    //         }),
+                    // )
+                    //     .then((response) => response.json())
+                    //     .then((json) => {
+                    //         const leaderboardPositions = json.data;
+                    //         const crocEnv = props.crocEnv;
+                    //         const provider = props.provider;
+                    //         const skipENSFetch = true;
 
-                            if (leaderboardPositions && crocEnv && provider) {
-                                Promise.all(
-                                    leaderboardPositions.map(
-                                        (position: PositionServerIF) => {
-                                            return getPositionData(
-                                                position,
-                                                props.searchableTokens,
-                                                crocEnv,
-                                                provider,
-                                                props.chainData.chainId,
-                                                props.cachedFetchTokenPrice,
-                                                props.cachedQuerySpotPrice,
-                                                props.cachedTokenDetails,
-                                                props.cachedEnsResolve,
-                                                skipENSFetch,
-                                            );
-                                        },
-                                    ),
-                                )
-                                    .then((updatedPositions) => {
-                                        const top10Positions = updatedPositions
-                                            .filter(
-                                                (
-                                                    updatedPosition: PositionIF,
-                                                ) => {
-                                                    return (
-                                                        updatedPosition.isPositionInRange &&
-                                                        updatedPosition.apy !==
-                                                            0
-                                                    );
-                                                },
-                                            )
-                                            .slice(0, 10);
+                    //         if (leaderboardPositions && crocEnv && provider) {
+                    //             Promise.all(
+                    //                 leaderboardPositions.map(
+                    //                     (position: PositionServerIF) => {
+                    //                         return getPositionData(
+                    //                             position,
+                    //                             props.searchableTokens,
+                    //                             crocEnv,
+                    //                             provider,
+                    //                             props.chainData.chainId,
+                    //                             props.cachedFetchTokenPrice,
+                    //                             props.cachedQuerySpotPrice,
+                    //                             props.cachedTokenDetails,
+                    //                             props.cachedEnsResolve,
+                    //                             skipENSFetch,
+                    //                         );
+                    //                     },
+                    //                 ),
+                    //             )
+                    //                 .then((updatedPositions) => {
+                    //                     const top10Positions = updatedPositions
+                    //                         .filter(
+                    //                             (
+                    //                                 updatedPosition: PositionIF,
+                    //                             ) => {
+                    //                                 return (
+                    //                                     updatedPosition.isPositionInRange &&
+                    //                                     updatedPosition.apy !==
+                    //                                         0
+                    //                                 );
+                    //                             },
+                    //                         )
+                    //                         .slice(0, 10);
 
-                                        if (top10Positions.length > 0) {
-                                            setNewLeaderboardByPoolData(
-                                                top10Positions,
-                                            );
-                                        } else {
-                                            setNewLeaderboardByPoolData(
-                                                undefined,
-                                            );
-                                        }
-                                    })
-                                    .catch(console.error);
-                            } else {
-                                setLeaderboardByPool({
-                                    dataReceived: false,
-                                    positions: [],
-                                });
-                            }
-                        })
-                        .catch(console.error);
+                    //                     if (top10Positions.length > 0) {
+                    //                         setNewLeaderboardByPoolData(
+                    //                             top10Positions,
+                    //                         );
+                    //                     } else {
+                    //                         setNewLeaderboardByPoolData(
+                    //                             undefined,
+                    //                         );
+                    //                     }
+                    //                 })
+                    //                 .catch(console.error);
+                    //         } else {
+                    //             setLeaderboardByPool({
+                    //                 dataReceived: false,
+                    //                 positions: [],
+                    //             });
+                    //         }
+                    //     })
+                    //     .catch(console.error);
 
                     // retrieve pool recent changes
                     fetchPoolRecentChanges({
