@@ -190,6 +190,49 @@ export default function Explore(props: ExploreIF) {
         </div>
     );
 
+    const yes = true
+
+    console.log({ view })
+    
+    function handleToggle() {
+        changeView(view)
+        setSearchQueryToken('');
+        setSearchQueryPool('');
+    }
+
+    if (yes) return (
+        <section className={styles.mobile_container}>
+               <div className={styles.mobile_tabs_container}>
+                <button onClick={handleToggle} className={view === 'pools' ? styles.active_button : ''}>Pool</button>
+                <button onClick={handleToggle} className={view === 'tokens' ? styles.active_button : ''}>Tokens</button>
+            {inputContainer}
+        </div>
+
+
+        {view === 'pools' && (
+                <TopPools
+                    allPools={filteredPools}
+                    goToMarket={goToMarket}
+                    isExploreDollarizationEnabled={
+                        isExploreDollarizationEnabled
+                    }
+                    searchQuery={searchQueryPool}
+                    setSearchQuery={setSearchQueryPool}
+                />
+            )}
+            {view === 'tokens' && (
+                <DexTokens
+                    dexTokens={filteredTokens}
+                    chainId={chainData.chainId}
+                    goToMarket={goToMarket}
+                    searchQuery={searchQueryToken}
+                    setSearchQuery={setSearchQueryToken}
+                />
+            )}
+        </section>
+    )
+
+
     return (
         <section className={styles.main_container}>
             <div className={styles.main_wrapper}>
@@ -201,13 +244,7 @@ export default function Explore(props: ExploreIF) {
                     <Toggle
                         isOn={view === 'tokens'}
                         id={'explore_page_'}
-                        handleToggle={() => {
-                            changeView(view);
-            
-                                setSearchQueryToken('');
-                                setSearchQueryPool('');
-                            
-                        }}
+                        handleToggle={handleToggle}
                     />
 
                     <Text>Tokens</Text>
