@@ -286,7 +286,6 @@ function TvlChart(props: TvlData) {
                         ? d3TvlGradientStart
                         : 'rgba(115, 113, 252, 0)',
                 );
-                console.log({ colorStop, d3TvlGradient });
                 tvlGradient.addColorStop(
                     colorStop,
                     d3TvlGradient ? d3TvlGradient : 'rgba(115, 113, 252, 0.7)',
