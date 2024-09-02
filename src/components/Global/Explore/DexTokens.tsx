@@ -6,7 +6,7 @@ import {
     Table,
     TableBody,
 } from '../../../styled/Components/Analytics';
-import styles from './DexTokens.module.css'
+import styles from './DexTokens.module.css';
 import { FlexContainer } from '../../../styled/Common';
 import TokenRow from './TokenRow';
 import { useSortedDexTokens, sortedDexTokensIF } from './useSortedDexTokens';
@@ -45,11 +45,12 @@ interface propsIF {
     chainId: string;
     goToMarket: (tknA: string, tknB: string) => void;
     searchQuery: string;
-    setSearchQuery: Dispatch<SetStateAction<string>>
+    setSearchQuery: Dispatch<SetStateAction<string>>;
 }
 
 function DexTokens(props: propsIF) {
-    const { dexTokens, chainId, goToMarket, searchQuery, setSearchQuery } = props;
+    const { dexTokens, chainId, goToMarket, searchQuery, setSearchQuery } =
+        props;
 
     const { findPool } = useContext(PoolContext);
 
@@ -126,13 +127,11 @@ function DexTokens(props: propsIF) {
 
     const noResults = (
         <div className={styles.no_results}>
-        No pools match the search query: {searchQuery}
-        <button onClick={() => setSearchQuery('')}>View all Tokens</button>
-            
+            No tokens match the search query: {searchQuery}
+            <button onClick={() => setSearchQuery('')}>View all Tokens</button>
         </div>
-    )
+    );
 
-   
     return (
         <FlexContainer
             fullWidth
@@ -150,8 +149,9 @@ function DexTokens(props: propsIF) {
                             sortedTokens={sortedTokens}
                         />
                         <TableBody>
-                        {!sortedTokens.data.length && searchQuery ? noResults :
-                            sortedTokens.data.length ? (
+                            {!sortedTokens.data.length && searchQuery ? (
+                                noResults
+                            ) : sortedTokens.data.length ? (
                                 sortedTokens.data.map((token: dexTokenData) => {
                                     const samplePool: PoolIF | undefined =
                                         findPool(
@@ -193,8 +193,7 @@ function DexTokens(props: propsIF) {
                                         />
                                     );
                                 })
-                            ) :  
-                                (
+                            ) : (
                                 <SpinnerContainer
                                     fullHeight
                                     fullWidth
