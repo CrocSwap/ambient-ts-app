@@ -17,7 +17,7 @@ interface propsIF {
     samplePool: PoolIF | undefined;
     backupPool: GCServerPoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
-    smallScreen: boolean;
+    
 }
 
 export default function TokenRow(props: propsIF) {
@@ -26,11 +26,10 @@ export default function TokenRow(props: propsIF) {
         tokenMeta,
         samplePool,
         goToMarket,
-
         backupPool,
     } = props;
 
-    const mobileScrenView: boolean = useMediaQuery('(max-width: 640px)');
+    
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     const handleClick = (
@@ -62,7 +61,7 @@ export default function TokenRow(props: propsIF) {
                 token={tokenMeta}
                 src={uriToHttp(tokenMeta.logoURI ?? '')}
                 alt={tokenMeta.symbol ?? ''}
-                size={mobileScrenView ? 's' : '2xl'}
+                size={!desktopView ? 's' : '2xl'}
             />
             <p>{tokenMeta.symbol}</p>
         </div>

@@ -31,9 +31,6 @@ export type columnSlugs =
 export interface HeaderItem {
     label: string;
     slug: columnSlugs;
-    hidden: boolean;
-    align: string;
-    responsive?: string;
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
@@ -62,7 +59,6 @@ function DexTokens(props: propsIF) {
 
     const sortedTokens: sortedDexTokensIF = useSortedDexTokens(dexTokens);
 
-    const smallScreen: boolean = useMediaQuery('(max-width: 640px)');
     const desktopView = useMediaQuery('(min-width: 768px)');
     // this logic is here to patch cases where existing logic to identify a token pool fails,
     // ... this is not an optimal location but works as a stopgap that minimizes needing to
@@ -78,9 +74,6 @@ function DexTokens(props: propsIF) {
         {
             label: 'Token',
             slug: 'token',
-            hidden: false,
-            align: 'left',
-            responsive: 'sm',
             sortable: false,
             classname: styles.tokens,
         },
@@ -88,9 +81,6 @@ function DexTokens(props: propsIF) {
             ? {
                   label: 'Name',
                   slug: 'name',
-                  hidden: smallScreen,
-                  align: 'left',
-                  responsive: 'sm',
                   sortable: true,
                   classname: styles.poolName,
               }
@@ -98,36 +88,25 @@ function DexTokens(props: propsIF) {
         {
             label: 'Volume',
             slug: 'volume',
-            hidden: false,
-            align: 'right',
-            responsive: 'lg',
             sortable: true,
             tooltipText: 'Total trade volume',
         },
         {
             label: 'TVL',
             slug: 'tvl',
-            hidden: false,
-            align: 'right',
-            responsive: 'sm',
             sortable: true,
             tooltipText: 'Total value locked',
         },
         {
             label: 'Fees',
             slug: 'fees',
-            hidden: smallScreen,
-            align: 'right',
-            responsive: 'sm',
             sortable: true,
             tooltipText: 'Total fees collected',
         },
         {
             label: '',
             slug: 'tradeBtn',
-            hidden: false,
-            align: 'right',
-            responsive: 'sm',
+          
             sortable: false,
         },
     ];
@@ -145,6 +124,8 @@ function DexTokens(props: propsIF) {
                             className={`${styles.gridHeaderItem} ${item.classname} ${styles.headerItems}`}
                             style={{
                                 cursor: item.sortable ? 'pointer' : 'default',
+                                paddingRight: item?.tooltipText && desktopView ? '16px' : '0'
+
                             }}
                             onClick={() =>
                                 item.sortable && sortedTokens.update(item.slug)
@@ -160,7 +141,7 @@ function DexTokens(props: propsIF) {
                                     }
                                 />
                             )}
-                            {item.tooltipText && (
+                            {item.tooltipText &&  desktopView && (
                                 <TooltipComponent
                                     title={item.tooltipText}
                                     placement='right'
@@ -222,7 +203,7 @@ function DexTokens(props: propsIF) {
                                 samplePool={samplePool}
                                 backupPool={backupPool}
                                 goToMarket={goToMarket}
-                                smallScreen={smallScreen}
+                                
                             />
                         );
                     })

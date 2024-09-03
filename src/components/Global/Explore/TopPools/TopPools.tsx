@@ -18,9 +18,6 @@ import ExploreToggle from '../ExploreToggle/ExploreToggle';
 
 export type HeaderItem = {
     label: string;
-    hidden: boolean;
-    align: string;
-    responsive?: string;
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
@@ -35,7 +32,7 @@ interface propsIF {
     searchQuery: string;
     setSearchQuery: Dispatch<SetStateAction<string>>;
     view: 'pools' | 'tokens';
-    handleToggle(): void
+    handleToggle(): void;
 }
 
 function TopPools(props: propsIF) {
@@ -46,47 +43,40 @@ function TopPools(props: propsIF) {
         searchQuery,
         setSearchQuery,
         view,
-        handleToggle
+        handleToggle,
     } = props;
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
-    const mobileScrenView = useMediaQuery('(max-width: 640px)');
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
 
     const topPoolsHeaderItems: (HeaderItem | null)[] = [
-        mobileScrenView
+        !desktopView
             ? null
             : {
                   label: 'Tokens',
-                  hidden: false,
-                  align: 'left',
+
                   sortable: false,
                   pxValue: 8,
                   classname: styles.tokens,
               },
         {
             label: 'Pool',
-            hidden: true,
-            align: 'left',
-            responsive: 'sm',
+
             sortable: false,
             classname: styles.poolName,
         },
         {
             label: 'Price',
-            hidden: true,
-            align: 'right',
-            responsive: 'sm',
+
             sortable: false,
         },
         {
-            label: '24h Vol.',
-            hidden: false,
-            align: 'right',
+            label: desktopView ? '24h Vol.' : 'Vol',
+
             sortable: true,
             tooltipText: 'Total volume in the last 24 hours',
         },
@@ -94,9 +84,7 @@ function TopPools(props: propsIF) {
             ? null
             : {
                   label: 'APR',
-                  hidden: false,
-                  align: 'right',
-                  responsive: 'lg',
+
                   sortable: true,
                   tooltipText: (
                       <>
@@ -114,25 +102,19 @@ function TopPools(props: propsIF) {
               },
         {
             label: 'TVL',
-            hidden: false,
-            align: 'right',
-            responsive: 'sm',
+
             sortable: true,
             tooltipText: 'Total value locked',
         },
         {
-            label: '24h Price Δ',
-            hidden: true,
-            align: 'right',
-            responsive: 'lg',
+            label:desktopView ? '24h Price Δ' : 'Price',
+
             sortable: true,
             tooltipText: 'The change in price over the last 24 hours',
         },
         {
             label: '',
-            hidden: true,
-            responsive: 'sm',
-            align: 'right',
+
             sortable: false,
             classname: styles.tradeButton,
         },
@@ -163,7 +145,7 @@ function TopPools(props: propsIF) {
                             {isActiveSort && (
                                 <AssignSort direction={sortedPools.direction} />
                             )}
-                            {item.tooltipText && (
+                            {item.tooltipText && desktopView &&(
                                 <TooltipComponent
                                     title={item.tooltipText}
                                     placement='right'
@@ -177,7 +159,7 @@ function TopPools(props: propsIF) {
 
     return (
         <div className={styles.mainContainer}>
-            <ExploreToggle view={view} handleToggle={handleToggle}/>
+            <ExploreToggle view={view} handleToggle={handleToggle} />
             {headerDisplay}
             <div className={`${styles.contentContainer} custom_scroll_ambient`}>
                 <div className={styles.borderRight} />

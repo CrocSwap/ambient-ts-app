@@ -44,7 +44,6 @@ export default function PoolRow(props: propsIF) {
         [pool],
     );
 
-    const mobileScrenView = useMediaQuery('(max-width: 640px)');
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     const aprString =
@@ -129,7 +128,7 @@ export default function PoolRow(props: propsIF) {
     );
 
     const displayItems = [
-        mobileScrenView
+        !desktopView
             ? null
             : {
                   element: (

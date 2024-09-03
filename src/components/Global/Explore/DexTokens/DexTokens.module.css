@@ -61,13 +61,10 @@
     min-height: 0;
     align-items: center;
     gap: 2px;
-    
-    /* width: 133px; */
-   
-    padding: 0 8px;
     font-size: var(--body-size);
     width: 60px;
-    /* justify-content: center; */
+    justify-content: end;
+
    
 
    
@@ -98,6 +95,7 @@
    
    display: flex;
    justify-content: flex-start !important;
+   padding-left: 8px;
 }
 
 
