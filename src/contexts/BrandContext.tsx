@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
@@ -83,6 +83,18 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     }, [brand]);
 
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
+
+    useEffect(() => {
+        if (userAddress) {
+            const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
+            const premiumTheme1: string[] = [emilyAddr.toLowerCase()];
+            if (premiumTheme1.includes(userAddress.toLowerCase())) {
+                setSkin('orange_dark');
+            }
+        } else if (skin === 'orange_dark') {
+            setSkin('purple_dark');
+        }
+    }, [userAddress]);
 
     function getAvailableSkins(): skins[] {
         const networkSettings = brandAssets.networks[chainData.chainId as chainIds];

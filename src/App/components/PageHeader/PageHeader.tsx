@@ -10,8 +10,6 @@ import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-// import { BiGitBranch } from 'react-icons/bi';
-// import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -134,6 +132,7 @@ const PageHeader = function () {
     const quoteSymbol = quoteToken.symbol;
     const baseAddressInRtk = baseToken.address;
     const quoteAddressInRtk = quoteToken.address;
+    const { chainData } = useContext(CrocEnvContext);
 
     useEffect(() => {
         if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
@@ -437,10 +436,10 @@ const PageHeader = function () {
             </div>
             {routeDisplay}
             <RightSide>
-                <select onChange={(e) => skin.set(e.target.value as skins)}>
-                    <option value={'purple_dark'}>1</option>
-                    <option value={'purple_light'}>2</option>
-                </select>
+                {chainData.chainId === '0x1' && <select onChange={(e) => skin.set(e.target.value as skins)}>
+                    <option value={'purple_dark'}>Purple Dark</option>
+                    <option value={'purple_light'}>Purple Light</option>
+                </select>}
                 {show ? (
                     <TradeNowDiv justifyContent='flex-end' alignItems='center'>
                         <TradeNowButton
@@ -455,21 +454,6 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
                             <NetworkSelector />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
