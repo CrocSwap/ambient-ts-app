@@ -17,6 +17,10 @@
     height: calc(100vh - 64px);
     overflow-y: hidden;
     background: var(--dark1);
+    border: 1px solid var(--dark3);
+    border-radius: 4px;
+    
+    
    
 }
 
@@ -104,7 +108,10 @@
 
 
  .poolName{
-   justify-content: flex-start !important; 
+   /* justify-content: flex-start !important; */
+   width: 30px;
+  
+  
 }
 .no_results{
     width: 100%;
@@ -147,6 +154,10 @@
 
 
 @media only screen and (min-width: 768px) {
+
+    .mainContainer{
+        border: none;
+    }
     .no_results{
         height: 70%;
     }
@@ -165,7 +176,7 @@
 }
 
 
-.tradeButton{
+.tradeButton, .poolName{
     width: 70px;
 }
 }

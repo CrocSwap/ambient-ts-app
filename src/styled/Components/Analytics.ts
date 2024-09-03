@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components/macro';
-import { HeaderItem } from '../../components/Global/Explore/TopPools';
 import { FlexContainer } from '../Common';
 
 export const ScrollableContainer = styled.div`
@@ -117,48 +116,7 @@ export const TableHeadRow = styled.tr`
     height: 100%;
 `;
 
-export const TableHeaderCell = styled.th<HeaderItem>`
-    width: 100%;
-    height: 25px;
 
-    display: table-cell;
-
-    text-align: ${({ align }) => align};
-    cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
-
-    color: var(--text2);
-    font-size: var(--body-size);
-    font-weight: 300;
-    white-space: nowrap;
-    border-collapse: collapse;
-    transition: background-color 0.3s ease-in-out;
-
-    ${({ hidden }) => hidden && 'display: none;'}
-
-    @media (min-width: 640px) {
-        ${({ responsive }) =>
-            responsive === 'sm' &&
-            `
-            display: table-cell;
-          `}
-    }
-
-    @media (min-width: 1024px) {
-        ${({ responsive }) =>
-            responsive === 'lg' &&
-            `
-            display: table-cell;
-          `}
-    }
-
-    @media (min-width: 1280px) {
-        ${({ responsive }) =>
-            responsive === 'xl' &&
-            `
-            display: table-cell;
-          `}
-    }
-`;
 
 interface LabelWrapperProps {
     align: string;

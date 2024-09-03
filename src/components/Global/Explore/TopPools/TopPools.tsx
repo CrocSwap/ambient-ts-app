@@ -1,19 +1,20 @@
 import { Dispatch, memo, SetStateAction } from 'react';
-import PoolRow from './PoolRow';
-import { PoolDataIF } from '../../../contexts/ExploreContext';
+import PoolRow from '../PoolRow/PoolRow';
+import { PoolDataIF } from '../../../../contexts/ExploreContext';
 import {
     SortedPoolMethodsIF,
     sortType,
     useSortedPools,
-} from './useSortedPools';
-import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
-import { PoolIF } from '../../../ambient-utils/types';
-import Spinner from '../Spinner/Spinner';
-import { SpinnerContainer } from '../../../styled/Components/Analytics';
+} from '../useSortedPools';
+import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
+import { PoolIF } from '../../../../ambient-utils/types';
+import Spinner from '../../Spinner/Spinner';
+import { SpinnerContainer } from '../../../../styled/Components/Analytics';
 import styles from './TopPools.module.css';
-import AssignSort from './AssignSort';
-import TooltipComponent from '../TooltipComponent/TooltipComponent';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import AssignSort from '../AssignSort';
+import TooltipComponent from '../../TooltipComponent/TooltipComponent';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import ExploreToggle from '../ExploreToggle/ExploreToggle';
 
 export type HeaderItem = {
     label: string;
@@ -25,7 +26,7 @@ export type HeaderItem = {
     onClick?: () => void;
     tooltipText?: string | JSX.Element;
     classname?: boolean;
-} | null;
+};
 
 interface propsIF {
     allPools: Array<PoolDataIF>;
@@ -33,6 +34,8 @@ interface propsIF {
     isExploreDollarizationEnabled: boolean;
     searchQuery: string;
     setSearchQuery: Dispatch<SetStateAction<string>>;
+    view: 'pools' | 'tokens';
+    handleToggle(): void
 }
 
 function TopPools(props: propsIF) {
@@ -42,6 +45,8 @@ function TopPools(props: propsIF) {
         isExploreDollarizationEnabled,
         searchQuery,
         setSearchQuery,
+        view,
+        handleToggle
     } = props;
 
     // logic to take raw pool list and sort them based on user input
@@ -52,7 +57,7 @@ function TopPools(props: propsIF) {
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
 
-    const topPoolsHeaderItems: HeaderItem[] = [
+    const topPoolsHeaderItems: (HeaderItem | null)[] = [
         mobileScrenView
             ? null
             : {
@@ -136,31 +141,29 @@ function TopPools(props: propsIF) {
     const headerDisplay = (
         <div className={styles.headerContainer}>
             {topPoolsHeaderItems
-                .filter((item) => item !== null)
+                .filter((item): item is HeaderItem => item !== null)
                 .map((item: HeaderItem) => {
                     const isActiveSort: boolean =
-                        sortedPools.current === item?.label.toLowerCase();
+                        sortedPools.current === item.label.toLowerCase();
                     return (
                         <div
-                            key={JSON.stringify(item?.label)}
-                            className={`${styles.gridHeaderItem} ${item?.classname} ${styles.headerItems}`}
+                            key={JSON.stringify(item.label)}
+                            className={`${styles.gridHeaderItem} ${item.classname} ${styles.headerItems}`}
                             style={{
-                                cursor: item?.sortable ? 'pointer' : 'default',
+                                cursor: item.sortable ? 'pointer' : 'default',
                             }}
                             onClick={() => {
-                                item?.sortable &&
+                                item.sortable &&
                                     sortedPools.updateSort(
-                                        (item?.label
-                                            ? item?.label.toLowerCase()
-                                            : '') as sortType,
+                                        item.label.toLowerCase() as sortType,
                                     );
                             }}
                         >
-                            {item?.label}
+                            {item.label}
                             {isActiveSort && (
                                 <AssignSort direction={sortedPools.direction} />
                             )}
-                            {item?.tooltipText && (
+                            {item.tooltipText && (
                                 <TooltipComponent
                                     title={item.tooltipText}
                                     placement='right'
@@ -174,11 +177,11 @@ function TopPools(props: propsIF) {
 
     return (
         <div className={styles.mainContainer}>
+            <ExploreToggle view={view} handleToggle={handleToggle}/>
             {headerDisplay}
             <div className={`${styles.contentContainer} custom_scroll_ambient`}>
-                <div className={styles.borderRight}/>
+                <div className={styles.borderRight} />
 
-               
                 {sortedPools.pools.length ? (
                     sortedPools.pools
                         .filter((pool: PoolIF) => !checkPoolForWETH(pool))
@@ -209,8 +212,7 @@ function TopPools(props: propsIF) {
                         <Spinner size={100} bg='var(--dark1)' centered />
                     </SpinnerContainer>
                 )}
-                </div>
-                
+            </div>
         </div>
     );
 }
