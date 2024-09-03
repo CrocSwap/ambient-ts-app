@@ -154,6 +154,18 @@ function Transactions(props: propsIF) {
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+    
+    const moreDataLoadingRef = useRef<boolean>();
+    moreDataLoadingRef.current = moreDataLoading;
+
+    const extraPagesAvailableRef = useRef<number>();
+    extraPagesAvailableRef.current = extraPagesAvailable;
+
+    const moreDataAvailableRef = useRef<boolean>();
+    moreDataAvailableRef.current = moreDataAvailable;
+    
+    const pagesVisibleRef = useRef<[number, number]>();
+    pagesVisibleRef.current = pagesVisible;
 
     const lastRowRef = useRef<HTMLDivElement | null>(null);
     const firstRowRef = useRef<HTMLDivElement | null>(null);
@@ -520,19 +532,23 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
 
-        console.log('add more data check')
-        console.log(lastRowRef.current)
-        console.log('moreDataLoading', moreDataLoading , ' ' , 'moreDataAvailable', moreDataAvailable, ' ', 'extraPagesAvailable', extraPagesAvailable, ' ', 'pagesVisible[1]', pagesVisible[1]);
         const observer = new IntersectionObserver(
             (entries) => {
+
+                const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
+                const moreDataAvailableVal = moreDataAvailableRef.current ? moreDataAvailableRef.current : moreDataAvailable;
+                const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
+                const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
+
                 const entry = entries[0];
-                if (moreDataLoading) return;
+                if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
-                    console.log(entry);
+                    console.log('entry == lastRowRef | ', entry.target == lastRowRef.current);
+                    bindLastSeenRow();
                     // last row is visible
-                    extraPagesAvailable + 1 > pagesVisible[1]
+                    extraPagesAvailableVal + 1 > pagesVisibleVal[1]
                     ? shiftDown()
-                        : moreDataAvailable
+                        : moreDataAvailableVal
                           ? addMoreData()
                           : undefined;
                 }
@@ -547,8 +563,6 @@ function Transactions(props: propsIF) {
             observer.observe(currentElement);
         }
 
-        console.log('...............................................................................................................');
-
         return () => {
             if (currentElement) {
                 observer.unobserve(currentElement);
@@ -559,7 +573,7 @@ function Transactions(props: propsIF) {
         moreDataLoading,
         moreDataAvailable,
         extraPagesAvailable,
-        pagesVisible[1],
+        // pagesVisible[1],
     ]);
 
     useEffect(() => {
@@ -609,7 +623,6 @@ function Transactions(props: propsIF) {
     };
 
     const shiftUp = (): void => {
-        console.log('shiftUp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ')
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         // if (scrollRef.current) {
             //     // scroll to middle of container
@@ -621,7 +634,6 @@ function Transactions(props: propsIF) {
     };
     
     const shiftDown = (): void => {
-        console.log('shiftDown >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         // if (scrollRef.current) {
         //     // scroll to middle of container
@@ -656,18 +668,21 @@ function Transactions(props: propsIF) {
 
     const bindLastSeenRow = (): void => {
     const rows = document.querySelectorAll('#current_row_scroll > div');
-    if(rows.length > 0){
-        // const lastRow = rows[rows.length - 1] as HTMLDivElement;
-        const lastRow = rows[rows.length - 1] as HTMLDivElement;
-        lastRow.style.backgroundColor = 'blue';
+        if(rows.length > 0){
+            // const lastRow = rows[rows.length - 1] as HTMLDivElement;
+            rows.forEach((row) => {
+                (row as HTMLDivElement).style.backgroundColor = 'transparent';
+            })
+            const lastRow = rows[rows.length - 1] as HTMLDivElement;
+            lastRow.style.backgroundColor = 'blue';
 
-        const txDiv =  lastRow.querySelector('div:nth-child(2)');
-        if(txDiv){
-            const txText = txDiv.querySelector('span')?.textContent;
-            setLastSeenTxID(txText || '');
-            domDebug('lastSeenTxID', txText);
+            const txDiv =  lastRow.querySelector('div:nth-child(2)');
+            if(txDiv){
+                const txText = txDiv.querySelector('span')?.textContent;
+                setLastSeenTxID(txText || '');
+                domDebug('lastSeenTxID', txText);
+            }
         }
-    }
     }
 
     const addMoreData = (): void => {
@@ -749,14 +764,15 @@ function Transactions(props: propsIF) {
     // }, [transactionsByPool])
 
     const logData = () => {
-        // domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
+        domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
         // if(sortedTxDataToDisplay.length > 0){
         //     domDebug('sortedTxDataDisp LAST', sortedTxDataToDisplay[sortedTxDataToDisplay.length - 1].txHash);
         // }
         // if(sortedTxDataToDisplay.length > 0){
         //     domDebug('sortedTxDataDisp FIRST', sortedTxDataToDisplay[0].txHash);
         // }
-        // domDebug('sortedTransactions', sortedTransactions.length);
+        domDebug('sortedTransactions', sortedTransactions.length);
+        domDebug('pagesVisible', pagesVisible[0] + ' ' + pagesVisible[1]);
         // if(sortedTransactions.length > 0){
         //     domDebug('sortedTransactions LAST ', sortedTransactions[sortedTransactions.length - 1].txHash);
         // }
@@ -767,7 +783,6 @@ function Transactions(props: propsIF) {
     
     useEffect(() => {
         logData();
-        bindLastSeenRow();
         findTableElementByTxID(lastSeenTxIDRef.current || '')
     }, [sortedTxDataToDisplay, sortedTransactions])
 
