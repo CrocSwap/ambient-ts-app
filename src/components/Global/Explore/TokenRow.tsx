@@ -10,7 +10,8 @@ import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { dexTokenData } from '../../../pages/Explore/useTokenStats';
 import { GCServerPoolIF, PoolIF, TokenIF } from '../../../ambient-utils/types';
-
+import { GrLineChart } from 'react-icons/gr';
+import styles from './TokenRow.module.css'
 interface propsIF {
     token: dexTokenData;
     tokenMeta: TokenIF;
@@ -31,6 +32,8 @@ export default function TokenRow(props: propsIF) {
     } = props;
 
     const mobileScrenView: boolean = useMediaQuery('(max-width: 640px)');
+    const desktopView = useMediaQuery('(min-width: 768px)');
+
 
     const handleClick = (
         event:
@@ -46,6 +49,103 @@ export default function TokenRow(props: propsIF) {
         }
         event.stopPropagation();
     };
+
+    const tokenDisplay = (
+        <div
+        style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: '12px',
+            textTransform: 'none',
+        }}
+    >
+        <TokenIcon
+            token={tokenMeta}
+            src={uriToHttp(tokenMeta.logoURI ?? '')}
+            alt={tokenMeta.symbol ?? ''}
+            size={mobileScrenView ? 's' : '2xl'}
+        />
+        <p>{tokenMeta.symbol}</p>
+    </div>
+    )
+
+    const poolNameDisplay =   <p>{tokenMeta.name}</p>
+
+
+    const volumeDisplay = <p>{token.normalized?.dexVolNorm.display}</p>
+
+    const tvlDisplay = <p style={{ textTransform: 'none' }}>
+    {token.normalized?.dexTvlNorm.display}
+    </p>
+    
+    const feesDisplay = <p>{token.normalized?.dexFeesNorm.display}</p>
+
+    const buttonDisplay = (
+        <button className={styles.tradeIcon}onClick={handleClick}>
+            <GrLineChart size={18} />
+        </button>
+    );
+
+
+    const ResponsiveRow: React.FC = () => {
+        const displayItems = [
+            // mobileScrenView ? null :
+                {
+                      element: (
+                          <div className={styles.tokenIcon}>
+                              {tokenDisplay}
+                          </div>
+                      ),
+                     
+                  },
+                  desktopView ?  {
+                element:
+                  
+                    <div>{poolNameDisplay}</div> ,
+                classname: styles.poolName,
+            }: null,
+            {
+                element: <div>{volumeDisplay}</div>,
+               
+            },
+            {
+                element: <div>{tvlDisplay}</div>,
+               
+            },
+            {
+             element: <div>{feesDisplay}</div>,
+                    
+            }
+                ,
+  
+            {
+                element: <div> {buttonDisplay}</div>,
+              
+                classname: styles.tradeButton,
+            },
+        ];
+
+        return (
+            <div className={styles.gridContainer}>
+                {displayItems
+                    .filter((item) => item !== null) // Filter out null values
+                    .map((item, idx) => (
+                        <div
+                            key={idx}
+                            className={`${styles.gridItem} ${item.classname}`}
+                        >
+                            {item?.element} {/* Safely access element */}
+                        </div>
+                    ))}
+            </div>
+        );
+    };
+
+    const yes = true;
+
+    if (yes) return <ResponsiveRow />;
+
 
     return (
         <TableRow onClick={handleClick}>

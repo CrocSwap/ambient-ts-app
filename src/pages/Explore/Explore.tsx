@@ -190,6 +190,9 @@ export default function Explore(props: ExploreIF) {
         </div>
     );
 
+
+  
+
     return (
         <section className={styles.main_container}>
             <div className={styles.main_wrapper}>

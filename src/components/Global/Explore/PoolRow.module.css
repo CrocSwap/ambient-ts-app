@@ -46,7 +46,8 @@
 
 
 .poolName{
-   justify-content: flex-start !important;
+   justify-content: flex-start;
+   width: 30px;
   
   
 }
@@ -73,7 +74,7 @@
         width: 70px;
         justify-content: flex-end;
     }
-    .tradeButton{
+    .tradeButton, .poolName{
 width: 70px;
     }
 
