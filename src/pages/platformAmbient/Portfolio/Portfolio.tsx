@@ -11,9 +11,11 @@ import ProfileSettings from '../../../components/Portfolio/ProfileSettings/Profi
 // START: Import Other Local Files
 import { TokenIF } from '../../../ambient-utils/types';
 import {
+    expandTokenBalances,
     fetchBlastUserXpData,
     fetchEnsAddress,
     fetchUserXpData,
+    IDexTokenBalances,
 } from '../../../ambient-utils/api';
 import { Navigate, useParams } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -59,8 +61,11 @@ function Portfolio(props: PortfolioPropsIF) {
     const {
         walletModal: { open: openModalWallet },
     } = useContext(AppStateContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchAmbientListWalletBalances,
+        cachedFetchDexBalances,
+        cachedTokenDetails,
+    } = useContext(CachedDataContext);
     const {
         crocEnv,
         activeNetwork,
@@ -231,38 +236,85 @@ function Portfolio(props: PortfolioPropsIF) {
             ) {
                 try {
                     setResolvedAddressTokens([]);
-                    const updatedTokens: TokenIF[] = [];
+                    const combinedBalances: TokenIF[] = [];
 
-                    const tokenBalanceResults = await cachedFetchTokenBalances(
-                        resolvedAddress,
-                        chainId,
-                        everyFiveMinutes,
-                        cachedTokenDetails,
-                        crocEnv,
-                        activeNetwork.graphCacheUrl,
-                        tokens.tokenUniv,
-                    );
+                    // fetch wallet balances for tokens in ambient token list
+                    const AmbientListWalletBalances: TokenIF[] | undefined =
+                        await cachedFetchAmbientListWalletBalances({
+                            address: resolvedAddress,
+                            chain: chainId,
+                            crocEnv: crocEnv,
+                            _refreshTime: everyFiveMinutes,
+                        });
 
-                    const tokensWithLogos = tokenBalanceResults.map((token) => {
+                    combinedBalances.push(...AmbientListWalletBalances);
+
+                    // fetch exchange balances and wallet balances for tokens in user's exchange balances
+                    const dexBalancesFromCache = await cachedFetchDexBalances({
+                        address: resolvedAddress,
+                        chain: chainId,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        _refreshTime: everyFiveMinutes,
+                    });
+
+                    if (dexBalancesFromCache !== undefined) {
+                        await Promise.all(
+                            dexBalancesFromCache.map(
+                                async (tokenBalances: IDexTokenBalances) => {
+                                    const indexOfExistingToken = (
+                                        combinedBalances ?? []
+                                    ).findIndex(
+                                        (existingToken) =>
+                                            existingToken.address.toLowerCase() ===
+                                            tokenBalances.tokenAddress.toLowerCase(),
+                                    );
+                                    const newToken = await expandTokenBalances(
+                                        tokenBalances,
+                                        tokens.tokenUniv,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        chainId,
+                                    );
+
+                                    if (indexOfExistingToken === -1) {
+                                        const updatedToken = {
+                                            ...newToken,
+                                        };
+                                        combinedBalances.push(updatedToken);
+                                    } else {
+                                        const existingToken =
+                                            combinedBalances[
+                                                indexOfExistingToken
+                                            ];
+
+                                        const updatedToken = {
+                                            ...existingToken,
+                                        };
+
+                                        updatedToken.dexBalance =
+                                            newToken.dexBalance;
+
+                                        combinedBalances[indexOfExistingToken] =
+                                            updatedToken;
+                                    }
+                                },
+                            ),
+                        );
+                    }
+
+                    const tokensWithLogos = combinedBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
                         newToken.name = oldToken ? oldToken.name : '';
                         newToken.logoURI = oldToken ? oldToken.logoURI : '';
+                        newToken.symbol =
+                            oldToken?.symbol || newToken.symbol || '';
                         return newToken;
                     });
 
-                    tokensWithLogos.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = updatedTokens.findIndex(
-                            (existingToken) =>
-                                existingToken.address === newToken.address,
-                        );
-
-                        if (indexOfExistingToken === -1) {
-                            updatedTokens.push(newToken);
-                        }
-                    });
-                    setResolvedAddressTokens(updatedTokens);
+                    setResolvedAddressTokens(tokensWithLogos);
                 } catch (error) {
                     console.error({ error });
                 }

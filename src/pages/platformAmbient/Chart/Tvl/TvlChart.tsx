@@ -262,7 +262,7 @@ function TvlChart(props: TvlData) {
                 const DFLT_COLOR_STOP = 0.2;
                 const calcStop = 1 / (startPoint + 1);
                 const colorStop = isFinite(calcStop)
-                    ? calcStop
+                    ? Math.min(calcStop, 1)
                     : DFLT_COLOR_STOP;
 
                 const tvlGradient = ctx.createLinearGradient(

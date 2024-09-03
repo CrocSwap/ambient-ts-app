@@ -34,10 +34,12 @@ import {
     TokenBalanceContext,
 } from './TokenBalanceContext';
 import {
+    expandTokenBalances,
     fetchBlastUserXpData,
     fetchBlockNumber,
     fetchUserXpData,
     RpcNodeStatus,
+    IDexTokenBalances,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
@@ -81,12 +83,12 @@ export const ChainDataContextProvider = (props: {
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
     const {
-        cachedFetchTokenBalances,
-        cachedTokenDetails,
+        cachedFetchAmbientListWalletBalances,
+        cachedFetchDexBalances,
         cachedFetchTokenPrice,
+        cachedTokenDetails,
         cachedFetchNFT,
     } = useContext(CachedDataContext);
-
     const { tokens } = useContext(TokenContext);
 
     const {
@@ -395,17 +397,74 @@ export const ChainDataContextProvider = (props: {
                 lastBlockNumber
             ) {
                 try {
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            lastBlockNumber,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            tokens.tokenUniv,
+                    const combinedBalances: TokenIF[] = [];
+
+                    // fetch wallet balances for tokens in ambient token list
+                    const AmbientListWalletBalances: TokenIF[] | undefined =
+                        await cachedFetchAmbientListWalletBalances({
+                            address: userAddress,
+                            chain: chainData.chainId,
+                            crocEnv: crocEnv,
+                            _refreshTime: lastBlockNumber,
+                        });
+
+                    combinedBalances.push(...AmbientListWalletBalances);
+
+                    // fetch exchange balances and wallet balances for tokens in user's exchange balances
+                    const dexBalancesFromCache = await cachedFetchDexBalances({
+                        address: userAddress,
+                        chain: chainData.chainId,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        _refreshTime: lastBlockNumber,
+                    });
+
+                    if (dexBalancesFromCache !== undefined) {
+                        await Promise.all(
+                            dexBalancesFromCache.map(
+                                async (tokenBalances: IDexTokenBalances) => {
+                                    const indexOfExistingToken = (
+                                        combinedBalances ?? []
+                                    ).findIndex(
+                                        (existingToken) =>
+                                            existingToken.address.toLowerCase() ===
+                                            tokenBalances.tokenAddress.toLowerCase(),
+                                    );
+                                    const newToken = await expandTokenBalances(
+                                        tokenBalances,
+                                        tokens.tokenUniv,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        chainData.chainId,
+                                    );
+
+                                    if (indexOfExistingToken === -1) {
+                                        const updatedToken = {
+                                            ...newToken,
+                                        };
+                                        combinedBalances.push(updatedToken);
+                                    } else {
+                                        const existingToken =
+                                            combinedBalances[
+                                                indexOfExistingToken
+                                            ];
+
+                                        const updatedToken = {
+                                            ...existingToken,
+                                        };
+
+                                        updatedToken.dexBalance =
+                                            newToken.dexBalance;
+
+                                        combinedBalances[indexOfExistingToken] =
+                                            updatedToken;
+                                    }
+                                },
+                            ),
                         );
-                    const tokensWithLogos = tokenBalances.map((token) => {
+                    }
+
+                    const tokensWithLogos = combinedBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
