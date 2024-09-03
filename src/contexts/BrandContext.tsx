@@ -23,6 +23,7 @@ type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 export interface BrandContextIF {
     skin: {
         active: skins,
+        available: skins[],
         set: (s: skins) => void,
     };
     fontSet: fontSets;
@@ -83,10 +84,15 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
-    function getDefaultSkin(): skins {
+    function getAvailableSkins(): skins[] {
         const networkSettings = brandAssets.networks[chainData.chainId as chainIds];
-        const defaultSkin: skins = networkSettings?.color[0] ?? 'purple_dark';
-        return defaultSkin;
+        const available = networkSettings?.color ?? ['purple_dark'];
+        return available;
+    }
+
+    function getDefaultSkin(): skins {
+        const defaultSkin: skins[] = getAvailableSkins();
+        return defaultSkin[0];
     }
 
     function getHero(): heroItem[] {
@@ -101,6 +107,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     const brandData: BrandContextIF = {
         skin: {
             active: skin,
+            available: getAvailableSkins(),
             set: (s: skins) => setSkin(s),
         },
         fontSet: brandAssets.fontSet,
