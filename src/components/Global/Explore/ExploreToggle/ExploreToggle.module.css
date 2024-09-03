@@ -19,3 +19,16 @@ padding: 4px;
    color: var(--accent1) !important ;
    border-bottom: 1px solid var(--accent1) !important;
 }
+
+@media only screen and (max-width: 768px) {
+.container{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.container button{
+    width: 100%;
+}
+
+}
