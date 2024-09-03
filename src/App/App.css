@@ -223,10 +223,11 @@ input[type='number'] {
 }
 .custom_scroll_ambient {
     overflow-y: auto !important;
+   
 }
 .custom_scroll_ambient::-webkit-scrollbar,
 .content-container::-webkit-scrollbar {
-    width: 12px !important; /* Adjust the width as needed */
+    width: 8px !important; /* Adjust the width as needed */
 }
 .custom_scroll_ambient::-webkit-scrollbar-thumb,
 .content-container::-webkit-scrollbar-thumb {
