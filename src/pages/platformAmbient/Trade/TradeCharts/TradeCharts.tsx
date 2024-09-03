@@ -23,7 +23,7 @@ import {
     LS_KEY_SUBCHART_SETTINGS,
 } from '../../../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../../../ambient-utils/dataLayer';
-import { CandleDataIF, TokenIF } from '../../../../ambient-utils/types';
+import { CandleDataIF } from '../../../../ambient-utils/types';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';
@@ -32,9 +32,6 @@ import { TutorialButton } from '../../../../styled/Components/Tutorial';
 import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './TradeCharts.module.css';
-import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import useDollarPrice from '../../Chart/ChartUtils/getDollarPrice';
-import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
 // interface for React functional component props
@@ -74,15 +71,9 @@ export interface LiqSnap {
 // React functional component
 function TradeCharts(props: propsIF) {
     const { selectedDate, setSelectedDate, updateURL } = props;
-    const getDollarPrice = useDollarPrice();
 
-    const { isDenomBase, baseToken, quoteToken } = useContext(TradeDataContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
-
-    const [topToken, bottomToken]: [TokenIF, TokenIF] = isDenomBase
-        ? [baseToken, quoteToken]
-        : [quoteToken, baseToken];
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -110,7 +101,6 @@ function TradeCharts(props: propsIF) {
     const [rescale, setRescale] = useState(true);
     const [latest, setLatest] = useState(false);
     const [showLatest, setShowLatest] = useState(false);
-    const [showTooltip, setShowTooltip] = useState(false);
     const [reset, setReset] = useState(false);
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
@@ -203,8 +193,6 @@ function TradeCharts(props: propsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    const [currentData, setCurrentData] = useState<CandleDataIF | undefined>();
-
     const resetAndRescaleDisplay = (
         <div
             className={
@@ -277,51 +265,6 @@ function TradeCharts(props: propsIF) {
                     Auto
                 </button>
             </div>
-        </div>
-    );
-
-    const candleTime = chartSettings.candleTime.global;
-    const matchingCandleTime = candleTime.defaults.find(
-        (item) => item.seconds === candleTime.time,
-    );
-
-    const chartTooltip = (
-        <div className={styles.chart_tooltips}>
-            {showTooltip ? (
-                <div className={styles.current_data_info}>
-                    {`${topToken.symbol} / ${bottomToken.symbol} • ${matchingCandleTime?.readable} • `}
-
-                    {currentData &&
-                        'O: ' +
-                            getDollarPrice(
-                                isDenomBase
-                                    ? currentData.invPriceOpenExclMEVDecimalCorrected
-                                    : currentData.priceOpenExclMEVDecimalCorrected,
-                            ).formattedValue +
-                            ' H: ' +
-                            getDollarPrice(
-                                isDenomBase
-                                    ? currentData.invMinPriceExclMEVDecimalCorrected
-                                    : currentData.maxPriceExclMEVDecimalCorrected,
-                            ).formattedValue +
-                            ' L: ' +
-                            getDollarPrice(
-                                isDenomBase
-                                    ? currentData.invMaxPriceExclMEVDecimalCorrected
-                                    : currentData.minPriceExclMEVDecimalCorrected,
-                            ).formattedValue +
-                            ' C: ' +
-                            getDollarPrice(
-                                isDenomBase
-                                    ? currentData.invPriceCloseExclMEVDecimalCorrected
-                                    : currentData.priceCloseExclMEVDecimalCorrected,
-                            ).formattedValue +
-                            ' V: ' +
-                            formatDollarAmountAxis(currentData.volumeUSD)}
-                </div>
-            ) : (
-                <div className={styles.current_data_info} />
-            )}
         </div>
     );
 
@@ -404,7 +347,6 @@ function TradeCharts(props: propsIF) {
                 )}
                 {isChartFullScreen && <TradeChartsHeader />}
                 {timeFrameContent}
-                {chartTooltip}
                 <div
                     style={{ width: '100%', height: '100%' }}
                     onClick={() => {
@@ -414,7 +356,6 @@ function TradeCharts(props: propsIF) {
                     <TradeCandleStickChart
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        setCurrentData={setCurrentData}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                         rescale={rescale}
@@ -425,7 +366,6 @@ function TradeCharts(props: propsIF) {
                         setReset={setReset}
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
-                        setShowTooltip={setShowTooltip}
                         updateURL={updateURL}
                     />
                 </div>

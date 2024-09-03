@@ -11,6 +11,7 @@ export * from './getLimitOrderData';
 export * from './getLimitPrice';
 export * from './getLocalStorageItem';
 export * from './getMoneynessRank';
+export * from './getObjectSize';
 export * from './getPoolStats';
 export * from './getAuctionData';
 export * from './getPositionData';
