@@ -138,7 +138,7 @@ export default function App() {
                     height:
                         location.pathname == '/'
                             ? 'calc(100vh - 56px)'
-                            : '100vh',
+                            : '100dvh',
                 }}
             >
                 {showPoints && showPointSystemPopup && (
@@ -420,6 +420,7 @@ export default function App() {
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
                 {showMobileVersion && <FooterNav />}
             </div>
+
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
