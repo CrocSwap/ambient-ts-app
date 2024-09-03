@@ -1,6 +1,5 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import Spinner from '../../Spinner/Spinner';
-import { SpinnerContainer } from '../../../../styled/Components/Analytics';
 import styles from './DexTokens.module.css';
 import { useSortedDexTokens, sortedDexTokensIF } from '../useSortedDexTokens';
 import { dexTokenData } from '../../../../pages/Explore/useTokenStats';
@@ -210,14 +209,9 @@ function DexTokens(props: propsIF) {
                 ) : searchQuery ? (
                     noResults
                 ) : (
-                    <SpinnerContainer
-                        fullHeight
-                        fullWidth
-                        alignItems='center'
-                        justifyContent='center'
-                    >
+                    <div className={styles.spinner_container}>
                         <Spinner size={100} bg='var(--dark1)' centered />
-                    </SpinnerContainer>
+                    </div>
                 )}
             </div>
         </div>

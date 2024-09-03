@@ -9,7 +9,6 @@ import {
 import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
 import Spinner from '../../Spinner/Spinner';
-import { SpinnerContainer } from '../../../../styled/Components/Analytics';
 import styles from './TopPools.module.css';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
@@ -107,7 +106,7 @@ function TopPools(props: propsIF) {
             tooltipText: 'Total value locked',
         },
         {
-            label:desktopView ? '24h Price Δ' : 'Price',
+            label: desktopView ? '24h Price Δ' : 'Price',
 
             sortable: true,
             tooltipText: 'The change in price over the last 24 hours',
@@ -145,7 +144,7 @@ function TopPools(props: propsIF) {
                             {isActiveSort && (
                                 <AssignSort direction={sortedPools.direction} />
                             )}
-                            {item.tooltipText && desktopView &&(
+                            {item.tooltipText && desktopView && (
                                 <TooltipComponent
                                     title={item.tooltipText}
                                     placement='right'
@@ -185,14 +184,9 @@ function TopPools(props: propsIF) {
                         </button>
                     </div>
                 ) : (
-                    <SpinnerContainer
-                        fullHeight
-                        fullWidth
-                        alignItems='center'
-                        justifyContent='center'
-                    >
+                    <div className={styles.spinner_container}>
                         <Spinner size={100} bg='var(--dark1)' centered />
-                    </SpinnerContainer>
+                    </div>
                 )}
             </div>
         </div>
