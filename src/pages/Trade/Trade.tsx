@@ -32,7 +32,6 @@ import {
     ChartContainer,
     MainSection,
     ResizableContainer,
-
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
@@ -76,19 +75,15 @@ function Trade() {
 
     const { showTopPtsBanner, dismissTopBannerPopup } =
         useContext(AppStateContext);
-    const {
-        setOutsideControl,
-        setSelectedOutsideTab,
-     
-       
-    } = useContext(TradeTableContext);
+    const { setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const {
         baseToken,
         quoteToken,
         isDenomBase,
         limitTick,
-       
+        toggleDidUserFlipDenom,
     } = useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
@@ -112,7 +107,6 @@ function Trade() {
         },
         [],
     );
-
 
     const unselectCandle = useCallback(() => {
         setSelectedDate(undefined);
@@ -167,19 +161,30 @@ function Trade() {
     const [activeTab, setActiveTab] = useState('Order');
 
     const tabs = [
-        { id: 'Order', label: 'Order', data: <ContentContainer isOnTradeRoute style={{padding: '0 1rem'}} >
-        <Outlet
-            context={{
-                urlParamMap: urlParamMap,
-                limitTick: limitTick,
-                updateURL: updateURL,
-            }}
-        />
-    </ContentContainer> },
-        { id: 'Chart', label: 'Chart', data: isPoolInitialized &&
-            !isCandleDataNull && <TradeCharts {...tradeChartsProps} /> },
+        {
+            id: 'Order',
+            label: 'Order',
+            data: (
+                <ContentContainer isOnTradeRoute style={{ padding: '0 1rem' }}>
+                    <Outlet
+                        context={{
+                            urlParamMap: urlParamMap,
+                            limitTick: limitTick,
+                            updateURL: updateURL,
+                        }}
+                    />
+                </ContentContainer>
+            ),
+        },
+        {
+            id: 'Chart',
+            label: 'Chart',
+            data: isPoolInitialized && !isCandleDataNull && (
+                <TradeCharts {...tradeChartsProps} />
+            ),
+        },
         { id: 'Txns', label: 'Txns', data: <TradeTabs2 {...tradeTabsProps} /> },
-        { id: 'Info', label: 'Info', data: <TableInfo/>},
+        { id: 'Info', label: 'Info', data: <TableInfo /> },
     ];
     const mobileTabs = (
         <div className={styles.mobile_tabs_container}>
@@ -209,44 +214,59 @@ function Trade() {
 
     useEffect(() => {
         const calculateHeight = () => {
-          const totalHeight = window.innerHeight;
-          const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
-          setAvailableHeight(totalHeight - heightToSubtract);
+            const totalHeight = window.innerHeight;
+            const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+            setAvailableHeight(totalHeight - heightToSubtract);
         };
-    
+
         calculateHeight(); // Calculate initial height
         window.addEventListener('resize', calculateHeight);
-    
+
         return () => window.removeEventListener('resize', calculateHeight);
     }, []);
-    
+
     const contentHeight = availableHeight - 75;
-    const activeTabData = tabs.find(tab => tab.id === activeTab)?.data;
+    const activeTabData = tabs.find((tab) => tab.id === activeTab)?.data;
 
     const mobileComponent = (
-        <div className={styles.mobile_container} style={{ height: `${availableHeight}px` }}>
+        <div
+            className={styles.mobile_container}
+            style={{ height: `${availableHeight}px` }}
+        >
             {mobileTabs}
             <div className={styles.mobile_header}>
-                <div className={styles.mobile_token_icons}>
+                <div
+                    className={styles.mobile_token_icons}
+                    onClick={toggleDidUserFlipDenom}
+                >
                     <TokenIcon
-                        token={baseToken}
-                        src={baseToken.logoURI}
-                        alt={baseToken.symbol}
+                        token={isDenomBase ? baseToken : quoteToken}
+                        src={
+                            isDenomBase ? baseToken.logoURI : quoteToken.logoURI
+                        }
+                        alt={isDenomBase ? baseToken.symbol : quoteToken.symbol}
                         size={'s'}
                     />
                     <TokenIcon
-                        token={quoteToken}
-                        src={quoteToken.logoURI}
-                        alt={quoteToken.symbol}
+                        token={isDenomBase ? quoteToken : baseToken}
+                        src={
+                            isDenomBase ? quoteToken.logoURI : baseToken.logoURI
+                        }
+                        alt={isDenomBase ? quoteToken.symbol : baseToken.symbol}
                         size={'s'}
                     />
-                    {baseToken.symbol} / {quoteToken.symbol}
+                    {isDenomBase ? baseToken.symbol : quoteToken.symbol} /
+                    {isDenomBase ? quoteToken.symbol : baseToken.symbol}
                 </div>
-                <p className={styles.conv_rate}>{conversionRate}</p>
+                <p
+                    className={styles.conv_rate}
+                    onClick={toggleDidUserFlipDenom}
+                >
+                    {conversionRate}
+                </p>
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
-
-            {activeTabData}
+                {activeTabData}
             </div>
         </div>
     );
