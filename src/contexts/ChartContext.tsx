@@ -29,7 +29,7 @@ import {
     getCssVariable,
     selectedDrawnData,
 } from '../pages/Chart/ChartUtils/chartUtils';
-import { BrandContext } from './BrandContext';
+import { BrandContext, BrandContextIF } from './BrandContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -241,7 +241,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         default: CHART_DEFAULT_HEIGHT,
     });
 
-    const { skin } = useContext(BrandContext);
+    const { skin } = useContext<BrandContextIF>(BrandContext);
 
     const [chartThemeColors, setChartThemeColors] = useState<
         ChartThemeIF | undefined
@@ -447,43 +447,42 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const upCandleBodyColor =
             contextChartColors && contextChartColors.upCandleBodyColor
                 ? d3.color(contextChartColors.upCandleBodyColor)
-                : getCssVariable(skin, '--accent5');
+                : getCssVariable(skin.active, '--accent5');
         const downCandleBodyColor =
             contextChartColors && contextChartColors.downCandleBodyColor
                 ? d3.color(contextChartColors.downCandleBodyColor)
-                : getCssVariable(skin, '--dark2');
+                : getCssVariable(skin.active, '--dark2');
         const selectedDateFillColor =
             contextChartColors && contextChartColors.selectedDateFillColor
                 ? d3.color(contextChartColors.selectedDateFillColor)
-                : getCssVariable(skin, '--accent2');
-
+                : getCssVariable(skin.active, '--accent2');
         const downCandleBorderColor =
             contextChartColors && contextChartColors.downCandleBorderColor
                 ? d3.color(contextChartColors.downCandleBorderColor)
-                : getCssVariable(skin, '--accent1');
+                : getCssVariable(skin.active, '--accent1');
         const upCandleBorderColor =
             contextChartColors && contextChartColors.upCandleBorderColor
                 ? d3.color(contextChartColors.upCandleBorderColor)
-                : getCssVariable(skin, '--accent5');
+                : getCssVariable(skin.active, '--accent5');
 
         const liqAskColor =
             contextChartColors && contextChartColors.liqAskColor
                 ? d3.color(contextChartColors.liqAskColor)
-                : getCssVariable(skin, '--accent5');
+                : getCssVariable(skin.active, '--accent5');
         const liqBidColor =
             contextChartColors && contextChartColors.liqBidColor
                 ? d3.color(contextChartColors.liqBidColor)
-                : getCssVariable(skin, '--accent1');
+                : getCssVariable(skin.active, '--accent1');
 
         const selectedDateStrokeColor =
             contextChartColors && contextChartColors.selectedDateStrokeColor
                 ? d3.color(contextChartColors.selectedDateStrokeColor)
-                : getCssVariable(skin, '--accent2');
+                : getCssVariable(skin.active, '--accent2');
 
         const drawngShapeDefaultColor =
             contextChartColors && contextChartColors.drawngShapeDefaultColor
                 ? d3.color(contextChartColors.drawngShapeDefaultColor)
-                : getCssVariable(skin, '--accent1');
+                : getCssVariable(skin.active, '--accent1');
 
         const chartThemeColors = {
             upCandleBodyColor: upCandleBodyColor,
@@ -501,7 +500,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         };
 
         setChartThemeColors(() => chartThemeColors);
-    }, [skin]);
+    }, [skin.active]);
 
     return (
         <ChartContext.Provider value={chartContext}>

@@ -37,7 +37,7 @@ import {
 } from '../Draw/FloatingToolbar/FloatingToolbarSettingsCss';
 import { SketchPicker } from 'react-color';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import { LS_KEY_CHART_CONTEXT_SETTINGS } from '../ChartUtils/chartConstants';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -105,7 +105,7 @@ export default function ChartSettings(props: ContextMenuIF) {
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
 
-    const { skin } = useContext(BrandContext);
+    const { skin } = useContext<BrandContextIF>(BrandContext);
 
     const [isSaving, setIsSaving] = useState(false);
     const [applyDefault, setApplyDefault] = useState(false);
@@ -202,48 +202,48 @@ export default function ChartSettings(props: ContextMenuIF) {
         );
 
         const upCandleBodyColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.upCandleBodyColor)
+            ? getCssVariable(skin.active, chartSettings.chartColors.upCandleBodyColor)
             : d3.color(chartSettings.chartColors.upCandleBodyColor);
 
         const downCandleBodyColor = isDefault
             ? getCssVariable(
-                  skin,
+                skin.active,
                   chartSettings.chartColors.downCandleBodyColor,
               )
             : d3.color(chartSettings.chartColors.downCandleBodyColor);
 
         const selectedDateFillColor = isDefault
             ? getCssVariable(
-                  skin,
+                skin.active,
                   chartSettings.chartColors.selectedDateFillColor,
               )
             : d3.color(chartSettings.chartColors.selectedDateFillColor);
 
         const downCandleBorderColor = isDefault
             ? getCssVariable(
-                  skin,
+                skin.active,
                   chartSettings.chartColors.downCandleBorderColor,
               )
             : d3.color(chartSettings.chartColors.downCandleBorderColor);
 
         const upCandleBorderColor = isDefault
             ? getCssVariable(
-                  skin,
+                skin.active,
                   chartSettings.chartColors.upCandleBorderColor,
               )
             : d3.color(chartSettings.chartColors.upCandleBorderColor);
 
         const liqAskColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.liqAskColor)
+            ? getCssVariable(skin.active, chartSettings.chartColors.liqAskColor)
             : d3.color(chartSettings.chartColors.liqAskColor);
 
         const liqBidColor = isDefault
-            ? getCssVariable(skin, chartSettings.chartColors.liqBidColor)
+            ? getCssVariable(skin.active, chartSettings.chartColors.liqBidColor)
             : d3.color(chartSettings.chartColors.liqBidColor);
 
         const selectedDateStrokeColor = isDefault
             ? getCssVariable(
-                  skin,
+                skin.active,
                   chartSettings.chartColors.selectedDateStrokeColor,
               )
             : d3.color(chartSettings.chartColors.selectedDateStrokeColor);

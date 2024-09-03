@@ -51,7 +51,8 @@ import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
+import { skins } from '../../hooks/useSkin';
 
 const PageHeader = function () {
     const {
@@ -59,7 +60,7 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
-    const { headerImage } = useContext(BrandContext);
+    const { headerImage, skin } = useContext<BrandContextIF>(BrandContext);
 
     const {
         walletModal: { open: openWalletModal },
@@ -436,6 +437,10 @@ const PageHeader = function () {
             </div>
             {routeDisplay}
             <RightSide>
+                <select onChange={(e) => skin.set(e.target.value as skins)}>
+                    <option value={'purple_dark'}>1</option>
+                    <option value={'purple_light'}>2</option>
+                </select>
                 {show ? (
                     <TradeNowDiv justifyContent='flex-end' alignItems='center'>
                         <TradeNowButton

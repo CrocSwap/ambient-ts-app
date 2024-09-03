@@ -5,7 +5,7 @@ import blastLogo from '../../assets/images/logos/blast_logo.svg';
 export const blastBrandAssets: brandIF = {
     networks: {
         '0x13e31': {
-            color: 'purple_dark',
+            color: ['purple_dark'],
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },

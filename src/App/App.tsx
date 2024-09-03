@@ -133,7 +133,7 @@ export default function App() {
             <FlexContainer
                 flexDirection='column'
                 className={`${containerStyle} `}
-                data-theme={skin}
+                data-theme={skin.active}
                 style={{
                     height:
                         location.pathname == '/'

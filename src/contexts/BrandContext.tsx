@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useMemo } from 'react';
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
@@ -20,8 +20,11 @@ const PREMIUM_THEMES_IN_ENV = {
 
 type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
-interface BrandContextIF {
-    skin: skins;
+export interface BrandContextIF {
+    skin: {
+        active: skins,
+        set: (s: skins) => void,
+    };
     fontSet: fontSets;
     colorAndFont: string;
     platformName: string;
@@ -78,17 +81,12 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         }
     }, [brand]);
 
-    // hook to manage the active color theme in the app
-    // const skin: skinMethodsIF = useSkin(
-    //     brandAssets.color,
-    //     chainData.chainId as chainIds,
-    // );
+    const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
-    function getSkin(): skins {
-        const networkPrefs =
-            brandAssets.networks[chainData.chainId as chainIds];
-        return networkPrefs ? networkPrefs.color : 'purple_dark';
-        // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
+    function getDefaultSkin(): skins {
+        const networkSettings = brandAssets.networks[chainData.chainId as chainIds];
+        const defaultSkin: skins = networkSettings?.color[0] ?? 'purple_dark';
+        return defaultSkin;
     }
 
     function getHero(): heroItem[] {
@@ -101,9 +99,12 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     // data to be returned to the app
     const brandData: BrandContextIF = {
-        skin: getSkin(),
+        skin: {
+            active: skin,
+            set: (s: skins) => setSkin(s),
+        },
         fontSet: brandAssets.fontSet,
-        colorAndFont: getSkin() + '+' + brandAssets.fontSet,
+        colorAndFont: getDefaultSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
         networks: Object.keys(brandAssets.networks) as chainIds[],
         headerImage: brandAssets.headerImage,
