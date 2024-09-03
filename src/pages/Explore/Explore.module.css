@@ -138,6 +138,11 @@
         gap: 4px;
     }
 
+    .pools_options_content{
+        grid-template-columns: 1fr 30px !important;
+       
+    }
+
     .title_text{
         display: none;
     }

@@ -42,6 +42,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
+    padding-left: 8px;
    
     
 }
@@ -79,6 +80,7 @@
    
     
     padding-right: 1rem;
+    padding-bottom: 1rem;
 
 }
 

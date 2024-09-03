@@ -189,7 +189,7 @@ export default function Explore(props: ExploreIF) {
     );
 
     const optionsContent = (
-        <div className={styles.options_content}>
+        <div className={`${styles.options_content} ${view === 'tokens' ? styles.pools_options_content: ''}`}>
         {inputContainer}
         {view === 'pools' && (
             <DefaultTooltip
