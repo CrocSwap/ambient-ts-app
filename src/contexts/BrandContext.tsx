@@ -87,7 +87,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         if (userAddress) {
             const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
-            const premiumTheme1: string[] = [emilyAddr.toLowerCase()];
+            const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
+            const premiumTheme1: string[] = [emilyAddr.toLowerCase(), benAddr.toLowerCase()];
             if (premiumTheme1.includes(userAddress.toLowerCase())) {
                 setSkin('orange_dark');
             }
