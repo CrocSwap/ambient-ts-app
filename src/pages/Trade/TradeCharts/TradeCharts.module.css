@@ -3,36 +3,8 @@
     justify-content: flex-end;
     align-items: flex-end;
 }
-.chart_tooltips {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    text-wrap: wrap;
-    align-items: center;
-    padding-left: 0px;
-}
 
-.current_data_info {
-    /* extra small */
 
-    font-family: 'Lexend Deca';
-    font-style: normal;
-    font-weight: 300;
-    font-size: var(--mini-size);
-    line-height: var(--mini-lh);
-
-    /* text/grey light */
-    text-wrap: wrap;
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    /* gap: 4px; */
-
-    color: var(--text2);
-    min-height: 30px;
-    padding-left: 4px;
-}
 
 .active_selected_button,
 .non_active_selected_button {
