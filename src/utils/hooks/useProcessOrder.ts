@@ -5,7 +5,6 @@ import {
     trimString,
     getMoneynessRank,
     getElapsedTime,
-    diffHashSig,
     getFormattedNumber,
     uriToHttp,
 } from '../../ambient-utils/dataLayer';
@@ -532,13 +531,7 @@ export const useProcessOrder = (
                     : invIntialTokenQtyTruncated,
             );
         }
-    }, [
-        diffHashSig(limitOrder),
-        isDenomBase,
-        isAccountView,
-        basePrice,
-        quotePrice,
-    ]);
+    }, [limitOrder, isDenomBase, isAccountView, basePrice, quotePrice]);
 
     return {
         // wallet and id data
