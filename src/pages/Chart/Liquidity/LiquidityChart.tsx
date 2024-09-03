@@ -13,7 +13,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
+import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts/TradeCharts';
 import {
     getXandYLocationForChart,
     lineValue,
@@ -693,8 +693,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                         ? liqTooltipSelectedLiqBar?.upperBound
                         : liqTooltipSelectedLiqBar?.lowerBound
                     : isDenomBase
-                    ? liqTooltipSelectedLiqBar?.lowerBound
-                    : liqTooltipSelectedLiqBar?.upperBound;
+                      ? liqTooltipSelectedLiqBar?.lowerBound
+                      : liqTooltipSelectedLiqBar?.upperBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),

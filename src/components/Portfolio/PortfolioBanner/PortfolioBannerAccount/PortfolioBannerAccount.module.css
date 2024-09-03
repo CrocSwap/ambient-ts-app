@@ -24,6 +24,7 @@
         color: var(--accent1);
         padding: 4px;
         border-radius: 20px;
+        min-width: 120px;
 
     }
 

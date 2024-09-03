@@ -9,30 +9,31 @@ import {
 } from 'react';
 
 // START: Import Local Files
-import TradeCandleStickChart from './TradeCandleStickChart';
-import TimeFrame from './TradeChartsComponents/TimeFrame';
-import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
-import CurveDepth from './TradeChartsComponents/CurveDepth';
+import TimeFrame from '../TradeChartsComponents/TimeFrame';
+import VolumeTVLFee from '../TradeChartsComponents/VolumeTVLFee';
+import CurveDepth from '../TradeChartsComponents/CurveDepth';
 import { useLocation } from 'react-router-dom';
-import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
-import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { ChartContext } from '../../../contexts/ChartContext';
+import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 import {
     LS_KEY_ORDER_HISTORY_SETTINGS,
     LS_KEY_SUBCHART_SETTINGS,
-} from '../../../ambient-utils/constants';
-import { getLocalStorageItem } from '../../../ambient-utils/dataLayer';
-import { CandleDataIF } from '../../../ambient-utils/types';
-import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
-import { updatesIF } from '../../../utils/hooks/useUrlParams';
-import { FlexContainer } from '../../../styled/Common';
-import { MainContainer } from '../../../styled/Components/Chart';
-import { TutorialButton } from '../../../styled/Components/Tutorial';
-import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
-import { UserDataContext } from '../../../contexts/UserDataContext';
+} from '../../../../ambient-utils/constants';
+import { getLocalStorageItem } from '../../../../ambient-utils/dataLayer';
+import { CandleDataIF } from '../../../../ambient-utils/types';
+import { TradeChartsHeader } from '../TradeChartsHeader/TradeChartsHeader';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import { FlexContainer } from '../../../../styled/Common';
+import { MainContainer } from '../../../../styled/Components/Chart';
+import { TutorialButton } from '../../../../styled/Components/Tutorial';
+import OrderHistoryDisplay from '../TradeChartsComponents/OrderHistoryDisplay';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './TradeCharts.module.css';
-import { SidebarContext } from '../../../contexts/SidebarContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import TradeCandleStickChart from '../TradeCandleStickChart/TradeCandleStickChart';
+import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -87,6 +88,7 @@ function TradeCharts(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const { pathname } = useLocation();
+    const smallScreen = useMediaQuery('(max-width: 768px)');
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -295,6 +297,7 @@ function TradeCharts(props: propsIF) {
                 fullWidth
                 style={{
                     background: isChartFullScreen ? 'var(--dark2)' : '',
+                    padding: smallScreen ? '0 1rem' : '',
                 }}
                 ref={chartCanvasRef}
             >

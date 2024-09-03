@@ -236,7 +236,7 @@ export default function PortfolioBannerAccount(
                 {isSmallScreen && connectedAccountActive && <button
                     onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
                 
-                    className={styles.deposit_button}>Deposit/Withdraw</button>}
+                    className={styles.deposit_button}>{showTabsAndNotExchange ? 'Transactions' : 'Deposit/Withdraw'}</button>}
             </FlexContainer>
 
             {showNFTPage && NFTData && (

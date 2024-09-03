@@ -8,7 +8,6 @@ export const ButtonBase = styled.button<{
     style?: React.CSSProperties;
 }>`
     width: ${({ width }) => width || '100%'};
-    max-width: 500px;
     height: ${({ height }) => height || 'auto'};
     outline: none;
     padding: 12px 16px;

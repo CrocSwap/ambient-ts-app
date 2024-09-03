@@ -8,7 +8,6 @@ import {
 } from '../../../styled/Components/Analytics';
 import AssignSort from './AssignSort';
 import TooltipComponent from '../TooltipComponent/TooltipComponent';
-
 interface propsIF {
     headerItems: HeaderItem[];
     sortedPools: SortedPoolMethodsIF;
@@ -16,6 +15,8 @@ interface propsIF {
 
 const TableHead = (props: propsIF) => {
     const { headerItems, sortedPools } = props;
+
+  
 
     return (
         <TableHeadWrapper>

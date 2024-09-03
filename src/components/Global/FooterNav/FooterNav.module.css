@@ -17,6 +17,7 @@
     z-index: 100; 
     width: 98%;
     margin: 0 auto;
+    padding: 10px;
 
   }
   
@@ -27,6 +28,7 @@
     align-items: center;
     cursor: pointer !important;
     transition: all 0.2s ease-out;
+    padding: 8px 10px;
   }
   
   .link {
@@ -39,6 +41,7 @@
   
   .icon {
     transition: color 0.3s ease;
+    font-size: 10px;
   }
   
   
@@ -52,17 +55,4 @@
   
   
   
-  @media (max-width: 480px) {
-    .nav {
-      padding: 10px;
-    }
-  
-    .navItem {
-      padding: 8px 10px;
-    }
-  
-    .icon {
-      font-size: 20px;
-    }
-  }
-  
+ 

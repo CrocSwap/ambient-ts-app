@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
@@ -12,6 +12,7 @@ import {
     Table,
     TableBody,
 } from '../../../styled/Components/Analytics';
+import styles from './TopPools.module.css'
 import { FlexContainer } from '../../../styled/Common';
 import { useMediaQuery } from '@material-ui/core';
 
@@ -30,10 +31,12 @@ interface propsIF {
     allPools: Array<PoolDataIF>;
     goToMarket: (tknA: string, tknB: string) => void;
     isExploreDollarizationEnabled: boolean;
+    searchQuery: string;
+    setSearchQuery: Dispatch<SetStateAction<string>>
 }
 
 function TopPools(props: propsIF) {
-    const { allPools, goToMarket, isExploreDollarizationEnabled } = props;
+    const { allPools, goToMarket, isExploreDollarizationEnabled, searchQuery, setSearchQuery } = props;
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
@@ -116,6 +119,8 @@ function TopPools(props: propsIF) {
         },
     ];
 
+
+
     return (
         <FlexContainer
             fullWidth
@@ -128,6 +133,7 @@ function TopPools(props: propsIF) {
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >
             <div style={{ position: 'relative' }}>
+                <p>{ searchQuery}</p>
                 <ShadowBox className='custom_scroll_ambient'>
                     <Table>
                         <TableHead
@@ -153,18 +159,26 @@ function TopPools(props: propsIF) {
                                         />
                                     ))
                             ) : (
-                                <SpinnerContainer
-                                    fullHeight
-                                    fullWidth
-                                    alignItems='center'
-                                    justifyContent='center'
-                                >
-                                    <Spinner
-                                        size={100}
-                                        bg='var(--dark1)'
-                                        centered
-                                    />
-                                </SpinnerContainer>
+                                searchQuery ? (
+                                    <div className={styles.no_results}>
+                                            No pools match the search query: {searchQuery}
+                                            <button onClick={() => setSearchQuery('')}>View all Pools</button>
+                                            
+                                    </div>
+                                ) : (
+                                    <SpinnerContainer
+                                        fullHeight
+                                        fullWidth
+                                        alignItems='center'
+                                        justifyContent='center'
+                                    >
+                                        <Spinner
+                                            size={100}
+                                            bg='var(--dark1)'
+                                            centered
+                                        />
+                                    </SpinnerContainer>
+                                )
                             )}
                         </TableBody>
                     </Table>
