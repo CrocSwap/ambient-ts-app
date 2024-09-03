@@ -29,6 +29,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export default function NetworkSelector() {
     const {
@@ -38,6 +39,8 @@ export default function NetworkSelector() {
     } = useContext(CrocEnvContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { switchNetwork } = useSwitchNetwork();
+    const smallScreen = useMediaQuery('(max-width: 600px)');
+
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();
@@ -323,6 +326,7 @@ export default function NetworkSelector() {
             >
                 <DropdownMenu2
                     marginTop={'50px'}
+                    marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
                     expandable={networks.length > 1}
