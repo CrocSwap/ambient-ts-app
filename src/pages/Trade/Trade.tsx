@@ -12,7 +12,6 @@ import {
 } from 'react';
 
 // START: Import JSX Components
-import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -45,6 +44,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { BrandContext } from '../../contexts/BrandContext';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import TableInfo from '../../components/Trade/TableInfo/TableInfo';
+import TradeCharts from './TradeCharts/TradeCharts/TradeCharts';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 

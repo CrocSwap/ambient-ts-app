@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts/TradeCharts';
 import { LiquidityRangeIF } from '../../../../ambient-utils/types';
 import { getActiveLiqDepth } from './AreaSeries';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';

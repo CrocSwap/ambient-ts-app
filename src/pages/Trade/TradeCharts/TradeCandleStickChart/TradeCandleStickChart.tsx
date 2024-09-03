@@ -7,7 +7,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import Chart from '../../Chart/Chart';
+import Chart from '../../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -16,35 +16,35 @@ import * as d3fc from 'd3fc';
 import {
     diffHashSigLiquidity,
     getPinnedPriceValuesFromTicks,
-} from '../../../ambient-utils/dataLayer';
-import { CandleContext } from '../../../contexts/CandleContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChartContext } from '../../../contexts/ChartContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import Spinner from '../../../components/Global/Spinner/Spinner';
-import { LiquidityDataLocal } from './TradeCharts';
+} from '../../../../ambient-utils/dataLayer';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
+import { LiquidityDataLocal } from '../TradeCharts/TradeCharts';
 import {
     CandleDataIF,
     CandleDomainIF,
     CandleScaleIF,
     TransactionIF,
-} from '../../../ambient-utils/types';
+} from '../../../../ambient-utils/types';
 import {
     chartItemStates,
     getInitialDisplayCandleCount,
     liquidityChartData,
     scaleData,
-} from '../../Chart/ChartUtils/chartUtils';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { updatesIF } from '../../../utils/hooks/useUrlParams';
-import { GraphDataContext } from '../../../contexts/GraphDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+} from '../../../Chart/ChartUtils/chartUtils';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import {
     maxRequestCountForCondensed,
     xAxisBuffer,
-} from '../../Chart/ChartUtils/chartConstants';
-import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
+} from '../../../Chart/ChartUtils/chartConstants';
+import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {

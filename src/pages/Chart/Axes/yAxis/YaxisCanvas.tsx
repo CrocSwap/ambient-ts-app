@@ -14,7 +14,7 @@ import {
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
 import { createRectLabel } from './YaxisUtils';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts/TradeCharts';
 import {
     diffHashSig,
     diffHashSigScaleData,
