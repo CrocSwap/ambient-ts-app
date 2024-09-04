@@ -1,21 +1,65 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GCGO_OVERRIDE_URL } from '../constants';
-import { FetchContractDetailsFn } from './fetchContractDetails';
-import { IDepositedTokenBalance } from './fetchTokenBalances';
 import { TokenIF } from '../types';
+import { FetchContractDetailsFn } from './fetchContractDetails';
 
 interface IFetchDepositBalancesProps {
-    chainId: string;
     user: string;
-    crocEnv: CrocEnv;
     graphCacheUrl: string;
-    cachedTokenDetails: FetchContractDetailsFn;
-    tokenList: TokenIF[];
+    chainId: string;
+    crocEnv: CrocEnv;
 }
 
+export interface IDexTokenBalances {
+    tokenAddress: string;
+    dexBalance: bigint;
+    walletBalance: bigint;
+}
+
+export const expandTokenBalances = async (
+    tokenBalances: IDexTokenBalances,
+    tokenList: TokenIF[],
+    cachedTokenDetails: FetchContractDetailsFn,
+    crocEnv: CrocEnv,
+    chainId: string,
+): Promise<TokenIF> => {
+    const tokenAddress = tokenBalances.tokenAddress;
+
+    const tokenListedSymbol = tokenList.find(
+        (listedToken) =>
+            listedToken.address.toLowerCase() === tokenAddress.toLowerCase(),
+    )?.symbol;
+
+    const tokenListedDecimals = tokenList.find(
+        (listedToken) =>
+            listedToken.address.toLowerCase() === tokenAddress.toLowerCase(),
+    )?.decimals;
+
+    const symbol = tokenListedSymbol
+        ? tokenListedSymbol
+        : cachedTokenDetails(
+              (await crocEnv.context).provider,
+              tokenAddress,
+              chainId,
+          ).then((d) => d?.symbol || '');
+
+    const decimals = tokenListedDecimals
+        ? tokenListedDecimals
+        : crocEnv.token(tokenAddress).decimals;
+
+    return {
+        chainId: parseInt(chainId),
+        logoURI: '',
+        name: '',
+        address: tokenBalances.tokenAddress,
+        symbol: await symbol,
+        decimals: await decimals,
+        dexBalance: tokenBalances.dexBalance.toString(),
+    };
+};
 export async function fetchDepositBalances(
     props: IFetchDepositBalancesProps,
-): Promise<undefined | IDepositedTokenBalance[]> {
+): Promise<IDexTokenBalances[] | undefined> {
     const { chainId, user } = props;
 
     const depositBalancesCacheEndpoint = GCGO_OVERRIDE_URL
@@ -36,8 +80,11 @@ export async function fetchDepositBalances(
             }
 
             const tokens = json.data.tokens as string[];
-
-            return Promise.all(tokens.map((t) => expandTokenBalance(t, props)));
+            return Promise.all(
+                tokens.map((t) =>
+                    addTokenBalances(t, props.crocEnv, props.user),
+                ),
+            );
         })
         .catch((e) => {
             console.warn(e);
@@ -45,39 +92,14 @@ export async function fetchDepositBalances(
         });
 }
 
-async function expandTokenBalance(
-    token: string,
-    props: IFetchDepositBalancesProps,
-): Promise<IDepositedTokenBalance> {
-    const tokenListedSymbol = props.tokenList.find(
-        (listedToken) =>
-            listedToken.address.toLowerCase() === token.toLowerCase(),
-    )?.symbol;
-
-    const tokenListedDecimals = props.tokenList.find(
-        (listedToken) =>
-            listedToken.address.toLowerCase() === token.toLowerCase(),
-    )?.decimals;
-
-    const symbol = tokenListedSymbol
-        ? tokenListedSymbol
-        : props
-              .cachedTokenDetails(
-                  (await props.crocEnv.context).provider,
-                  token,
-                  props.chainId,
-              )
-              .then((d) => d?.symbol || '');
-
-    const decimals = tokenListedDecimals
-        ? tokenListedDecimals
-        : props.crocEnv.token(token).decimals;
-    const balance = props.crocEnv.token(token).balance(props.user);
-
+async function addTokenBalances(
+    tokenAddress: string,
+    crocEnv: CrocEnv,
+    user: string,
+): Promise<IDexTokenBalances> {
     return {
-        token: token,
-        symbol: await symbol,
-        decimals: await decimals,
-        balance: (await balance).toString(),
+        tokenAddress: tokenAddress,
+        dexBalance: await crocEnv.token(tokenAddress).balance(user),
+        walletBalance: await crocEnv.token(tokenAddress).wallet(user),
     };
 }

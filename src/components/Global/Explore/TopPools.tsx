@@ -127,7 +127,7 @@ function TopPools(props: propsIF) {
             style={{ overflowY: 'hidden' }}
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >
-            <div style={{ background: 'red' }}>
+            <div style={{ position: 'relative' }}>
                 <ShadowBox className='custom_scroll_ambient'>
                     <Table>
                         <TableHead
@@ -144,7 +144,7 @@ function TopPools(props: propsIF) {
                                     )
                                     .map((pool: PoolDataIF, idx: number) => (
                                         <PoolRow
-                                            key={JSON.stringify(pool) + idx}
+                                            key={idx}
                                             pool={pool}
                                             goToMarket={goToMarket}
                                             isExploreDollarizationEnabled={
