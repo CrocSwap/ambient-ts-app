@@ -437,8 +437,18 @@ const PageHeader = function () {
             {routeDisplay}
             <RightSide>
                 {chainData.chainId === '0x1' && <select onChange={(e) => skin.set(e.target.value as skins)}>
-                    <option value={'purple_dark'}>Purple Dark</option>
-                    <option value={'purple_light'}>Purple Light</option>
+                    {/* <option value={'purple_dark'}>Purple Dark</option>
+                    <option value={'purple_light'}>Purple Light</option> */}
+                    {
+                        skin.available.map((s: skins) => (
+                            <option
+                                key={s}
+                                value={s}
+                            >
+                                {s}
+                            </option>
+                        ))
+                    }
                 </select>}
                 {show ? (
                     <TradeNowDiv justifyContent='flex-end' alignItems='center'>

@@ -7,6 +7,7 @@ export const scrollBrandAssets: brandIF = {
         // scroll mainnet
         '0x82750': {
             color: ['purple_dark'],
+            premiumColor: [],
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },

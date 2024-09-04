@@ -8,11 +8,13 @@ export const ambientTestnetBrandAssets: brandIF = {
         // ethereum sepolia
         '0xaa36a7': {
             color: ['purple_dark'],
+            premiumColor: ['orange_dark'],
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // scroll sepolia
         '0x8274f': {
             color: ['purple_dark'],
+            premiumColor: [],
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },
@@ -22,6 +24,7 @@ export const ambientTestnetBrandAssets: brandIF = {
         // blast sepolia
         '0xa0c71fd': {
             color: ['purple_dark'],
+            premiumColor: [],
             hero: [
                 { content: 'ambient', processAs: 'text' },
                 { content: '×', processAs: 'separator' },

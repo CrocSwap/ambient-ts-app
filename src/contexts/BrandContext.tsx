@@ -84,23 +84,30 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
+    const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
+    const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
+    const premiumTheme1: string[] = [emilyAddr.toLowerCase(), benAddr.toLowerCase()];
+
     useEffect(() => {
+        const hasPremium = !!(
+            userAddress && premiumTheme1.includes(userAddress.toLowerCase())
+        );
         if (userAddress) {
-            const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
-            const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
-            const premiumTheme1: string[] = [emilyAddr.toLowerCase(), benAddr.toLowerCase()];
-            if (premiumTheme1.includes(userAddress.toLowerCase())) {
-                setSkin('orange_dark');
-            }
-        } else if (skin === 'orange_dark') {
+            setSkin(hasPremium ? 'orange_dark' : 'purple_dark');
+        } else {
             setSkin('purple_dark');
         }
+        
     }, [userAddress]);
 
     function getAvailableSkins(): skins[] {
         const networkSettings = brandAssets.networks[chainData.chainId as chainIds];
         const available = networkSettings?.color ?? ['purple_dark'];
-        return available;
+        const premium = networkSettings?.premiumColor ?? [];
+        const hasPremium = !!(
+            userAddress && premiumTheme1.includes(userAddress.toLowerCase())
+        );
+        return hasPremium ? available : available.concat(premium);
     }
 
     function getDefaultSkin(): skins {

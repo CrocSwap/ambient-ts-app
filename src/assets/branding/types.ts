@@ -13,6 +13,7 @@ export type networkPrefs = Partial<
         chainIds,
         {
             color: skins[];
+            premiumColor: skins[];
             hero: heroItem[];
         }
     >
