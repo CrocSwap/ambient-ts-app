@@ -139,7 +139,7 @@ function Trade() {
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
-    const { poolPriceDisplay } = useContext(PoolContext);
+    const { poolPriceDisplay, poolPriceChangePercent, isPoolPriceChangePositive } = useContext(PoolContext);
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
     const displayPriceWithDenom =
@@ -153,9 +153,7 @@ function Trade() {
           })
         : '…';
 
-    const conversionRate = isDenomBase
-        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
+
     // -----------------------------------------------------------------------
 
     const [activeTab, setActiveTab] = useState('Order');
@@ -258,12 +256,16 @@ function Trade() {
                     {isDenomBase ? baseToken.symbol : quoteToken.symbol} /
                     {isDenomBase ? quoteToken.symbol : baseToken.symbol}
                 </div>
-                <p
+                <div
                     className={styles.conv_rate}
                     onClick={toggleDidUserFlipDenom}
                 >
-                    {conversionRate}
-                </p>
+                    {`${displayPriceString} ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}`}
+                    <p style={{color: isPoolPriceChangePositive ? 'var(--positive)' : 'var(--negative)'}}>
+
+                    {poolPriceChangePercent}
+                    </p>
+                </div>
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
                 {activeTabData}
