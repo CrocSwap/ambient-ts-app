@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
@@ -22,9 +29,9 @@ type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
 export interface BrandContextIF {
     skin: {
-        active: skins,
-        available: skins[],
-        set: (s: skins) => void,
+        active: skins;
+        available: skins[];
+        set: (s: skins) => void;
     };
     fontSet: fontSets;
     colorAndFont: string;
@@ -82,11 +89,14 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         }
     }, [brand]);
 
-    const [skin, setSkin] = useState<skins>(getDefaultSkin());
-
     const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
     const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
-    const premiumTheme1: string[] = [emilyAddr.toLowerCase(), benAddr.toLowerCase()];
+    const premiumTheme1: string[] = [
+        emilyAddr.toLowerCase(),
+        benAddr.toLowerCase(),
+    ];
+
+    const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
     useEffect(() => {
         const hasPremium = !!(
@@ -97,11 +107,11 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         } else {
             setSkin('purple_dark');
         }
-        
     }, [userAddress]);
 
     function getAvailableSkins(): skins[] {
-        const networkSettings = brandAssets.networks[chainData.chainId as chainIds];
+        const networkSettings =
+            brandAssets.networks[chainData.chainId as chainIds];
         const available = networkSettings?.color ?? ['purple_dark'];
         const premium = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
