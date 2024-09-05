@@ -246,6 +246,8 @@ export default function Chart(props: propsIF) {
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
+        shouldResetBuffer,
+        setShouldResetBuffer,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -703,8 +705,6 @@ export default function Chart(props: propsIF) {
     );
 
     const [bandwidth, setBandwidth] = useState(5);
-
-    const [shouldResetBuffer, setShouldResetBuffer] = useState(true);
 
     const toolbarWidth = isToolbarOpen ? 38 : 15;
 

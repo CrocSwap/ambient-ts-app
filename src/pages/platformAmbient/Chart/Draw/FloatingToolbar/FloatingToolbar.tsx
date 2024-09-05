@@ -83,8 +83,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [isDragged, setIsDragged] = useState(false);
 
-    const [divLeft, setDivLeft] = useState(0);
-    const [divTop, setDivTop] = useState(0);
+    const [divLeft, setDivLeft] = useState<number | undefined>(undefined);
+    const [divTop, setDivTop] = useState<number | undefined>(undefined);
 
     const [colorPicker, setColorPicker] = useState({
         lineColor: '#7371fc',
@@ -221,36 +221,38 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     };
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const canvasDiv = d3.select(floatingMenuDivRef.current) as any;
+        if (divTop) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const canvasDiv = d3.select(floatingMenuDivRef.current) as any;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const resizeObserver = new ResizeObserver(async (result: any) => {
-            const height = result[0].contentRect.height;
-            const screenHeight = window.innerHeight;
-            const diffBottom = Math.abs(divTop - screenHeight);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const resizeObserver = new ResizeObserver(async (result: any) => {
+                const height = result[0].contentRect.height;
+                const screenHeight = window.innerHeight;
+                const diffBottom = Math.abs(divTop - screenHeight);
 
-            if (!isDragging) {
-                if (
-                    diffBottom < 100 ||
-                    diffBottom + 60 < height + floatingToolbarHeight
-                ) {
-                    setIsNearestWindow(true);
-                } else {
-                    setIsNearestWindow(false);
+                if (!isDragging) {
+                    if (
+                        diffBottom < 100 ||
+                        diffBottom + 60 < height + floatingToolbarHeight
+                    ) {
+                        setIsNearestWindow(true);
+                    } else {
+                        setIsNearestWindow(false);
+                    }
                 }
-            }
 
-            setSettingsDivHeight(height);
+                setSettingsDivHeight(height);
 
-            requestAnimationFrame(() => {
-                setIsDropdownHeightCalculated(true);
+                requestAnimationFrame(() => {
+                    setIsDropdownHeightCalculated(true);
+                });
             });
-        });
 
-        resizeObserver.observe(canvasDiv.node());
+            resizeObserver.observe(canvasDiv.node());
 
-        return () => resizeObserver.unobserve(canvasDiv.node());
+            return () => resizeObserver.unobserve(canvasDiv.node());
+        }
     }, [divTop, isDragging]);
 
     useEffect(() => {
@@ -1024,7 +1026,9 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
             const containerDivSize =
                 floatingDivContainer.getBoundingClientRect();
+
             const containerDivHeight = containerDivSize.height;
+
             containerDivHeight &&
                 setDivLeft(
                     mainCanvasBoundingClientRect.x +
@@ -1032,6 +1036,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         floatingDiv.getBoundingClientRect().width / 2 +
                         yAxis.getBoundingClientRect().width / 2,
                 );
+
             setDivTop(divTopLocal - 40);
         }
     }, [
@@ -1082,156 +1087,162 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         ),
                 )}
             </FloatingDiv>
-            <FloatingDropdownOptions
-                ref={floatingMenuDivRef}
-                style={{
-                    position: 'fixed',
-                    top:
-                        (isNearestWindow
-                            ? divTop - settingsDivHeight
-                            : divTop + floatingToolbarHeight) + 'px',
-                }}
-            >
-                {isLayoutTabActive && layoutTab}
+            {divTop && (
+                <FloatingDropdownOptions
+                    ref={floatingMenuDivRef}
+                    style={{
+                        position: 'fixed',
+                        top:
+                            (isNearestWindow
+                                ? divTop - settingsDivHeight
+                                : divTop + floatingToolbarHeight) + 'px',
+                    }}
+                >
+                    {isLayoutTabActive && layoutTab}
 
-                {(isLineColorPickerTabActive ||
-                    isBorderColorPickerTabActive ||
-                    isBackgroundColorPickerTabActive) && (
-                    <ColorPickerTab
-                        style={{
-                            visibility: isDropdownHeightCalculated
-                                ? 'visible'
-                                : 'hidden',
-                        }}
-                    >
-                        <SketchPicker
-                            color={
-                                isLineColorPickerTabActive
-                                    ? colorPicker.lineColor
-                                    : isBorderColorPickerTabActive
-                                      ? colorPicker.borderColor
-                                      : colorPicker.background
+                    {(isLineColorPickerTabActive ||
+                        isBorderColorPickerTabActive ||
+                        isBackgroundColorPickerTabActive) && (
+                        <ColorPickerTab
+                            style={{
+                                visibility: isDropdownHeightCalculated
+                                    ? 'visible'
+                                    : 'hidden',
+                            }}
+                        >
+                            <SketchPicker
+                                color={
+                                    isLineColorPickerTabActive
+                                        ? colorPicker.lineColor
+                                        : isBorderColorPickerTabActive
+                                          ? colorPicker.borderColor
+                                          : colorPicker.background
+                                }
+                                width={'170px'}
+                                onChange={(item) =>
+                                    handleEditColor(
+                                        item,
+                                        isLineColorPickerTabActive,
+                                        isBorderColorPickerTabActive,
+                                        isBackgroundColorPickerTabActive,
+                                    )
+                                }
+                            />
+                        </ColorPickerTab>
+                    )}
+
+                    {isSizeOptionTabActive && selectedDrawnShape && (
+                        <OptionsTab
+                            style={{
+                                marginLeft: '70px',
+                                width: '150px',
+                                visibility: isDropdownHeightCalculated
+                                    ? 'visible'
+                                    : 'hidden',
+                            }}
+                        >
+                            {sizeOptions.map((item, index) => (
+                                <OptionsTabSize
+                                    backgroundColor={
+                                        item.value ===
+                                        (!['Rect'].includes(
+                                            selectedDrawnShape?.data.type,
+                                        )
+                                            ? selectedDrawnShape.data.line
+                                                  .lineWidth
+                                            : selectedDrawnShape.data.border
+                                                  .lineWidth)
+                                            ? '#434c58'
+                                            : undefined
+                                    }
+                                    key={index}
+                                    onClick={() =>
+                                        handleEditSize(
+                                            item.value,
+                                            !['Rect'].includes(
+                                                selectedDrawnShape?.data.type,
+                                            ),
+                                            ['Rect'].includes(
+                                                selectedDrawnShape?.data.type,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    {item.icon} {item.name}
+                                </OptionsTabSize>
+                            ))}
+                        </OptionsTab>
+                    )}
+
+                    {isStyleOptionTabActive && selectedDrawnShape && (
+                        <OptionsTab
+                            style={{
+                                marginLeft: '80px',
+                                width: '150px',
+                                visibility: isDropdownHeightCalculated
+                                    ? 'visible'
+                                    : 'hidden',
+                            }}
+                        >
+                            {styleOptions.map((item, index) => (
+                                <OptionsTabStyle
+                                    backgroundColor={
+                                        item.value[0] ===
+                                        (!['Rect'].includes(
+                                            selectedDrawnShape?.data.type,
+                                        )
+                                            ? selectedDrawnShape.data.line
+                                                  .dash[0]
+                                            : selectedDrawnShape.data.border
+                                                  .dash[0])
+                                            ? '#434c58'
+                                            : undefined
+                                    }
+                                    key={index}
+                                    onClick={() =>
+                                        handleEditStyle(
+                                            item.value,
+                                            !['Rect'].includes(
+                                                selectedDrawnShape?.data.type,
+                                            ),
+                                            ['Rect'].includes(
+                                                selectedDrawnShape?.data.type,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    <img src={item.icon} alt='' /> {item.name}
+                                </OptionsTabStyle>
+                            ))}
+                        </OptionsTab>
+                    )}
+
+                    {isSettingsTabActive && (
+                        <FloatingToolbarSettings
+                            selectedDrawnShape={selectedDrawnShape}
+                            handleEditColor={handleEditColor}
+                            handleEditSize={handleEditSize}
+                            handleEditStyle={handleEditStyle}
+                            handleEditLabel={handleEditLabel}
+                            sizeOptions={sizeOptions}
+                            styleOptions={styleOptions}
+                            handleEditLines={handleEditLines}
+                            setIsShapeEdited={setIsShapeEdited}
+                            setDrawnShapeHistory={setDrawnShapeHistory}
+                            addDrawActionStack={addDrawActionStack}
+                            colorPicker={colorPicker}
+                            isNearestWindow={isNearestWindow}
+                            floatingToolbarHeight={floatingToolbarHeight}
+                            settingsDivHeight={settingsDivHeight}
+                            drawnShapeHistory={drawnShapeHistory}
+                            isDropdownHeightCalculated={
+                                isDropdownHeightCalculated
                             }
-                            width={'170px'}
-                            onChange={(item) =>
-                                handleEditColor(
-                                    item,
-                                    isLineColorPickerTabActive,
-                                    isBorderColorPickerTabActive,
-                                    isBackgroundColorPickerTabActive,
-                                )
-                            }
+                            divTop={divTop}
                         />
-                    </ColorPickerTab>
-                )}
-
-                {isSizeOptionTabActive && selectedDrawnShape && (
-                    <OptionsTab
-                        style={{
-                            marginLeft: '70px',
-                            width: '150px',
-                            visibility: isDropdownHeightCalculated
-                                ? 'visible'
-                                : 'hidden',
-                        }}
-                    >
-                        {sizeOptions.map((item, index) => (
-                            <OptionsTabSize
-                                backgroundColor={
-                                    item.value ===
-                                    (!['Rect'].includes(
-                                        selectedDrawnShape?.data.type,
-                                    )
-                                        ? selectedDrawnShape.data.line.lineWidth
-                                        : selectedDrawnShape.data.border
-                                              .lineWidth)
-                                        ? '#434c58'
-                                        : undefined
-                                }
-                                key={index}
-                                onClick={() =>
-                                    handleEditSize(
-                                        item.value,
-                                        !['Rect'].includes(
-                                            selectedDrawnShape?.data.type,
-                                        ),
-                                        ['Rect'].includes(
-                                            selectedDrawnShape?.data.type,
-                                        ),
-                                    )
-                                }
-                            >
-                                {item.icon} {item.name}
-                            </OptionsTabSize>
-                        ))}
-                    </OptionsTab>
-                )}
-
-                {isStyleOptionTabActive && selectedDrawnShape && (
-                    <OptionsTab
-                        style={{
-                            marginLeft: '80px',
-                            width: '150px',
-                            visibility: isDropdownHeightCalculated
-                                ? 'visible'
-                                : 'hidden',
-                        }}
-                    >
-                        {styleOptions.map((item, index) => (
-                            <OptionsTabStyle
-                                backgroundColor={
-                                    item.value[0] ===
-                                    (!['Rect'].includes(
-                                        selectedDrawnShape?.data.type,
-                                    )
-                                        ? selectedDrawnShape.data.line.dash[0]
-                                        : selectedDrawnShape.data.border
-                                              .dash[0])
-                                        ? '#434c58'
-                                        : undefined
-                                }
-                                key={index}
-                                onClick={() =>
-                                    handleEditStyle(
-                                        item.value,
-                                        !['Rect'].includes(
-                                            selectedDrawnShape?.data.type,
-                                        ),
-                                        ['Rect'].includes(
-                                            selectedDrawnShape?.data.type,
-                                        ),
-                                    )
-                                }
-                            >
-                                <img src={item.icon} alt='' /> {item.name}
-                            </OptionsTabStyle>
-                        ))}
-                    </OptionsTab>
-                )}
-
-                {isSettingsTabActive && (
-                    <FloatingToolbarSettings
-                        selectedDrawnShape={selectedDrawnShape}
-                        handleEditColor={handleEditColor}
-                        handleEditSize={handleEditSize}
-                        handleEditStyle={handleEditStyle}
-                        handleEditLabel={handleEditLabel}
-                        sizeOptions={sizeOptions}
-                        styleOptions={styleOptions}
-                        handleEditLines={handleEditLines}
-                        setIsShapeEdited={setIsShapeEdited}
-                        setDrawnShapeHistory={setDrawnShapeHistory}
-                        addDrawActionStack={addDrawActionStack}
-                        colorPicker={colorPicker}
-                        isNearestWindow={isNearestWindow}
-                        floatingToolbarHeight={floatingToolbarHeight}
-                        settingsDivHeight={settingsDivHeight}
-                        drawnShapeHistory={drawnShapeHistory}
-                        isDropdownHeightCalculated={isDropdownHeightCalculated}
-                        divTop={divTop}
-                    />
-                )}
-            </FloatingDropdownOptions>
+                    )}
+                </FloatingDropdownOptions>
+            )}
         </FloatingDivContainer>
     );
 }
