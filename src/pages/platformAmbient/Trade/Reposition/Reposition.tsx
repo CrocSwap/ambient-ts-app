@@ -34,6 +34,7 @@ import {
     getPositionData,
     getFormattedNumber,
     getPinnedPriceValuesFromTicks,
+    trimString,
     isStablePair,
 } from '../../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../../contexts/TokenContext';
@@ -48,7 +49,6 @@ import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
-import { useProcessRange } from '../../../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import SmolRefuelLink from '../../../../components/Global/SmolRefuelLink/SmolRefuelLink';
@@ -115,33 +115,23 @@ function Reposition() {
     const isRepositionSent = newRepositionTransactionHash !== '';
 
     const locationHook = useLocation();
+    const locationState = locationHook.state;
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    // navigate the user to the redirect URL path if locationHook.state has no data
-    // ... this value will be truthy if the user arrived here by clicking a link
-    // ... inside the app, but will be empty if they navigated manually to the path
-    if (!locationHook.state) {
-        // log in console if conditions are such to trigger an automatic URL redirect
-        // this will help troubleshoot if we ever break functionality to link this page
-        console.assert(
-            locationHook.state,
-            `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in locationHook.state as returned by the uselocationHook() hook. Actual value received is <<${locationHook.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
-        );
-        // IMPORTANT!! we must use this pathway, other implementations will not immediately
-        // ... stop code in the rest of the file from running
-        return <Navigate to={linkGenPool.getFullURL(params ?? '')} replace />;
-    }
+    const { position } = (locationState || {}) as { position?: PositionIF };
 
-    const { position } = locationHook.state as { position: PositionIF };
+    const slippageTolerancePercentage = position
+        ? isStablePair(position.base, position.quote)
+            ? repoSlippage.stable
+            : repoSlippage.volatile
+        : 0;
 
-    const slippageTolerancePercentage = isStablePair(
-        position.base,
-        position.quote,
-    )
-        ? repoSlippage.stable
-        : repoSlippage.volatile;
-
-    const { posHashTruncated } = useProcessRange(position, crocEnv);
+    const posHashTruncated = trimString(
+        getPositionHash(position).toString(),
+        9,
+        0,
+        '…',
+    );
 
     useEffect(() => {
         setCurrentRangeInReposition('');
@@ -184,12 +174,13 @@ function Reposition() {
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
 
-    const isPositionInRange =
-        position.bidTick <= currentPoolPriceTick &&
-        currentPoolPriceTick <= position.askTick;
+    const isPositionInRange = position
+        ? position.bidTick <= currentPoolPriceTick &&
+          currentPoolPriceTick <= position.askTick
+        : false;
 
-    const baseTokenDecimals = position.baseDecimals || 18;
-    const quoteTokenDecimals = position.quoteDecimals || 18;
+    const baseTokenDecimals = position?.baseDecimals || 18;
+    const quoteTokenDecimals = position?.quoteDecimals || 18;
 
     const currentPoolDisplayPriceInBase =
         1 /
@@ -232,7 +223,7 @@ function Reposition() {
     // if chart is at ambient width, keep ambient width, otherwise use the default
     // otherwise the the width rapidly switches back and forth between the two when returning to an in progress reposition
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(
-        simpleRangeWidth === 100
+        simpleRangeWidth === 100 || !position
             ? 100
             : getDefaultRangeWidthForTokenPair(
                   position.chainId,
@@ -251,6 +242,7 @@ function Reposition() {
     }, []);
 
     useEffect(() => {
+        if (!position) return;
         setSimpleRangeWidth(
             getDefaultRangeWidthForTokenPair(
                 position.chainId,
@@ -284,7 +276,7 @@ function Reposition() {
         setNewValueNum(undefined);
         setNewBaseQtyDisplay('...');
         setNewQuoteQtyDisplay('...');
-    }, [position.positionId, rangeWidthPercentage]);
+    }, [position, rangeWidthPercentage]);
 
     useEffect(() => {
         if (!position) {
@@ -315,7 +307,7 @@ function Reposition() {
             setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-    }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
+    }, [position, rangeWidthPercentage, currentPoolPriceTick]);
 
     function mintArgsForReposition(
         lowTick: number,
@@ -329,7 +321,7 @@ function Reposition() {
     }
 
     const sendRepositionTransaction = async () => {
-        if (!crocEnv) return;
+        if (!crocEnv || !position) return;
         let tx;
         setTxError(undefined);
 
@@ -428,7 +420,9 @@ function Reposition() {
     const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
     const pinnedDisplayPrices =
-        Math.abs(lowTick) !== Infinity && Math.abs(highTick) !== Infinity
+        position &&
+        Math.abs(lowTick) !== Infinity &&
+        Math.abs(highTick) !== Infinity
             ? getPinnedPriceValuesFromTicks(
                   isDenomBase,
                   position?.baseDecimals || 18,
@@ -480,62 +474,68 @@ function Reposition() {
     const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/position_stats?'
         : activeNetwork.graphCacheUrl + '/position_stats?';
-    const poolIndex = lookupChain(position.chainId).poolIndex;
+    const poolIndex = position ? lookupChain(position.chainId).poolIndex : 0;
 
     const fetchCurrentCollateral = () => {
-        fetch(
-            positionStatsCacheEndpoint +
-                new URLSearchParams({
-                    user: position.user,
-                    bidTick: position.bidTick.toString(),
-                    askTick: position.askTick.toString(),
-                    base: position.base,
-                    quote: position.quote,
-                    poolIdx: poolIndex.toString(),
-                    chainId: position.chainId,
-                    positionType: position.positionType,
-                }),
-        )
-            .then((response) => response?.json())
-            .then(async (json) => {
-                if (!crocEnv || !provider || !json?.data) {
-                    setCurrentBaseQtyDisplayTruncated('...');
-                    setCurrentQuoteQtyDisplayTruncated('...');
-                    return;
-                }
-                // temporarily skip ENS fetch
-                const skipENSFetch = true;
-                const positionStats = await getPositionData(
-                    json.data as PositionServerIF,
-                    tokens.tokenUniv,
-                    crocEnv,
-                    provider,
-                    position.chainId,
-                    cachedFetchTokenPrice,
-                    cachedQuerySpotPrice,
-                    cachedTokenDetails,
-                    cachedEnsResolve,
-                    skipENSFetch,
-                );
-                const liqBaseNum =
-                    positionStats.positionLiqBaseDecimalCorrected;
-                const liqQuoteNum =
-                    positionStats.positionLiqQuoteDecimalCorrected;
-                const rewardsBaseNum =
-                    positionStats.feesLiqBaseDecimalCorrected;
-                const rewardsQuoteNum =
-                    positionStats.feesLiqQuoteDecimalCorrected;
-                const liqBaseDisplay = getFormattedNumber({
-                    value: liqBaseNum + (rewardsBaseNum || 0),
-                });
-                setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
+        position
+            ? fetch(
+                  positionStatsCacheEndpoint +
+                      new URLSearchParams({
+                          user: position.user,
+                          bidTick: position.bidTick.toString(),
+                          askTick: position.askTick.toString(),
+                          base: position.base,
+                          quote: position.quote,
+                          poolIdx: poolIndex.toString(),
+                          chainId: position.chainId,
+                          positionType: position.positionType,
+                      }),
+              )
+                  .then((response) => response?.json())
+                  .then(async (json) => {
+                      if (!crocEnv || !provider || !json?.data) {
+                          setCurrentBaseQtyDisplayTruncated('...');
+                          setCurrentQuoteQtyDisplayTruncated('...');
+                          return;
+                      }
+                      // temporarily skip ENS fetch
+                      const skipENSFetch = true;
+                      const positionStats = await getPositionData(
+                          json.data as PositionServerIF,
+                          tokens.tokenUniv,
+                          crocEnv,
+                          provider,
+                          position.chainId,
+                          cachedFetchTokenPrice,
+                          cachedQuerySpotPrice,
+                          cachedTokenDetails,
+                          cachedEnsResolve,
+                          skipENSFetch,
+                      );
+                      const liqBaseNum =
+                          positionStats.positionLiqBaseDecimalCorrected;
+                      const liqQuoteNum =
+                          positionStats.positionLiqQuoteDecimalCorrected;
+                      const rewardsBaseNum =
+                          positionStats.feesLiqBaseDecimalCorrected;
+                      const rewardsQuoteNum =
+                          positionStats.feesLiqQuoteDecimalCorrected;
+                      const liqBaseDisplay = getFormattedNumber({
+                          value: liqBaseNum + (rewardsBaseNum || 0),
+                      });
+                      setCurrentBaseQtyDisplayTruncated(
+                          liqBaseDisplay || '0.00',
+                      );
 
-                const liqQuoteDisplay = getFormattedNumber({
-                    value: liqQuoteNum + (rewardsQuoteNum || 0),
-                });
-                setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
-            })
-            .catch(console.error);
+                      const liqQuoteDisplay = getFormattedNumber({
+                          value: liqQuoteNum + (rewardsQuoteNum || 0),
+                      });
+                      setCurrentQuoteQtyDisplayTruncated(
+                          liqQuoteDisplay || '0.00',
+                      );
+                  })
+                  .catch(console.error)
+            : null;
     };
 
     useEffect(() => {
@@ -549,15 +549,15 @@ function Reposition() {
     const [newValueNum, setNewValueNum] = useState<number | undefined>();
 
     const valueLossExceedsThreshold = useMemo(() => {
-        if (newValueNum === undefined) return false;
+        if (newValueNum === undefined || !position) return false;
         const priceImpactNum =
             (newValueNum - position.totalValueUSD) / position.totalValueUSD;
         return priceImpactNum < -0.02;
         // change color to red if value loss greater than 2%
-    }, [newValueNum, position.totalValueUSD]);
+    }, [newValueNum, position]);
 
     const valueImpactString = useMemo(() => {
-        if (newValueNum === undefined) return '...';
+        if (newValueNum === undefined || !position) return '...';
         const priceImpactNum =
             (newValueNum - position.totalValueUSD) / position.totalValueUSD;
         const isNegative = priceImpactNum < 0;
@@ -569,7 +569,7 @@ function Reposition() {
             ? `(${formattedNum}%)`
             : `${formattedNum}%`;
         return formattedDisplayString;
-    }, [newValueNum, position.totalValueUSD]);
+    }, [newValueNum, position]);
 
     const newValueString = useMemo(() => {
         if (newValueNum === undefined) return '...';
@@ -597,7 +597,7 @@ function Reposition() {
                 setQuotePrice(quotePrice?.usdPrice);
             },
         );
-    }, [position.base + position.quote, crocEnv !== undefined]);
+    }, [position, crocEnv !== undefined]);
 
     const calcNewValue = async () => {
         if (
@@ -631,7 +631,6 @@ function Reposition() {
     }, [
         currentPoolDisplayPriceInQuote,
         rangeWidthPercentage,
-        position.base + position.quote,
         newBaseQtyNum,
         newQuoteQtyNum,
         basePrice,
@@ -643,14 +642,16 @@ function Reposition() {
 
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
         () =>
-            getPinnedPriceValuesFromTicks(
-                true,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+            position
+                ? getPinnedPriceValuesFromTicks(
+                      true,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      debouncedLowTick,
+                      debouncedHighTick,
+                      lookupChain(position.chainId).gridSize,
+                  ).pinnedMinPriceDisplayTruncated
+                : '',
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -661,14 +662,16 @@ function Reposition() {
 
     const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
         () =>
-            getPinnedPriceValuesFromTicks(
-                false,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMinPriceDisplayTruncated,
+            position
+                ? getPinnedPriceValuesFromTicks(
+                      false,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      debouncedLowTick,
+                      debouncedHighTick,
+                      lookupChain(position.chainId).gridSize,
+                  ).pinnedMinPriceDisplayTruncated
+                : '',
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -679,14 +682,16 @@ function Reposition() {
 
     const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
         () =>
-            getPinnedPriceValuesFromTicks(
-                true,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+            position
+                ? getPinnedPriceValuesFromTicks(
+                      true,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      debouncedLowTick,
+                      debouncedHighTick,
+                      lookupChain(position.chainId).gridSize,
+                  ).pinnedMaxPriceDisplayTruncated
+                : '',
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -697,14 +702,16 @@ function Reposition() {
 
     const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
         () =>
-            getPinnedPriceValuesFromTicks(
-                false,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                debouncedLowTick,
-                debouncedHighTick,
-                lookupChain(position.chainId).gridSize,
-            ).pinnedMaxPriceDisplayTruncated,
+            position
+                ? getPinnedPriceValuesFromTicks(
+                      false,
+                      baseTokenDecimals,
+                      quoteTokenDecimals,
+                      debouncedLowTick,
+                      debouncedHighTick,
+                      lookupChain(position.chainId).gridSize,
+                  ).pinnedMaxPriceDisplayTruncated
+                : '',
         [
             baseTokenDecimals,
             quoteTokenDecimals,
@@ -715,6 +722,7 @@ function Reposition() {
 
     useEffect(() => {
         if (
+            !position ||
             !crocEnv ||
             Math.abs(debouncedLowTick) === Infinity ||
             Math.abs(debouncedHighTick) === Infinity ||
@@ -773,6 +781,22 @@ function Reposition() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, extraL1GasFeePool]);
+
+    // navigate the user to the redirect URL path if locationHook.state has no data
+    // ... this value will be truthy if the user arrived here by clicking a link
+    // ... inside the app, but will be empty if they navigated manually to the path
+    if (!position) {
+        // log in console if conditions are such to trigger an automatic URL redirect
+        // this will help troubleshoot if we ever break functionality to link this page
+        console.assert(
+            position,
+            `Component Reposition() did not receive position data on load. Expected to receive a data object conforming to the shape of PositionIF in locationHook.state as returned by the uselocationHook() hook. Actual value received is <<${locationHook.state}>>. App will redirect to a page with generic functionality. Refer to Reposition.tsx for troubleshooting. This is expected behavior should a user navigate to the '/trade/reposition/:params' pathway any other way than clicking an in-app <Link/> element.`,
+        );
+        // IMPORTANT!! we must use this pathway, other implementations will not immediately
+        // ... stop code in the rest of the file from running
+        // Navigate({ to: linkGenPool.getFullURL(params ?? ''), replace: true });
+        return <Navigate to={linkGenPool.getFullURL(params ?? '')} replace />;
+    }
 
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 
