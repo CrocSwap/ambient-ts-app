@@ -63,14 +63,16 @@ export default function Auctions(props: propsIF) {
                             : '1fr 4px 390px',
                     }}
                 >
-                    <div style={{ height: 'calc(100vh - 80px)' }}>
-                        <SearchableTicker
-                            auctions={sorted}
-                            title='AUCTIONS'
-                            setIsFullLayoutActive={setIsFullLayoutActive}
-                            placeholderTicker={placeholderTicker}
-                        />
-                    </div>
+                    <span id='auctions_search_wrapper'>
+                        <div style={{ height: 'calc(100vh - 80px)' }}>
+                            <SearchableTicker
+                                auctions={sorted}
+                                title='AUCTIONS'
+                                setIsFullLayoutActive={setIsFullLayoutActive}
+                                placeholderTicker={placeholderTicker}
+                            />
+                        </div>
+                    </span>
 
                     <Separator dots={100} />
                     <div className={styles.flexColumn}>
@@ -89,10 +91,13 @@ export default function Auctions(props: propsIF) {
     return (
         <div className={styles.mobileContainer}>
             <h3>AUCTIONS</h3>
-            <SearchableTicker
-                auctions={sorted}
-                placeholderTicker={placeholderTicker}
-            />
+
+            <span id='auctions_search_wrapper'>
+                <SearchableTicker
+                    auctions={sorted}
+                    placeholderTicker={placeholderTicker}
+                />
+            </span>
         </div>
     );
 }

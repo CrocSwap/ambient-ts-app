@@ -393,6 +393,7 @@ function Comments(props: CommentsProps) {
                     )}
 
                 <div
+                    id='futa_comments_wrapper'
                     className={`${styles.mainContainer} ${props.isSmall ? styles.small : ' '}  ${props.isForTrade ? styles.tradePage : ' '}`}
                     style={getMainContainerStyle()}
                 >

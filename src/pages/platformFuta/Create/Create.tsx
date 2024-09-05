@@ -19,6 +19,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { useNavigate } from 'react-router-dom';
 import { CURRENT_AUCTION_VERSION } from '../../../ambient-utils/constants';
 import SynthwaveGrid from '../Home/Animations/SynthwaveGrid';
+import { getActionTrigger } from '../../../components/Chat/ChatRenderUtils';
 
 export default function Create() {
     const desktopScreen = useMediaQuery('(min-width: 1080px)');
@@ -87,11 +88,13 @@ export default function Create() {
     const networkFee = 0.01;
     const extraInfoData = [
         {
+            id: 'auctions_create_liquidity',
             title: 'LIQUIDITY',
             tooltipTitle: 'liquidity',
             data: liquidity,
         },
         {
+            id: 'auctions_create_network_fee',
             title: 'NETWORK FEE',
             tooltipTitle: 'NETWORK FEE PAID IN ORDER TO TRANSACT',
             data: networkFee ? '~' + networkFee : '...',
@@ -112,7 +115,7 @@ export default function Create() {
     const extraInfoDisplay = (
         <div className={styles.extraInfoContainer}>
             {extraInfoData.map((item, idx) => (
-                <div className={styles.justifyRow} key={idx}>
+                <div id={item.id} className={styles.justifyRow} key={idx}>
                     <TooltipLabel
                         itemTitle={item.title}
                         tooltipTitle={item.tooltipTitle}
@@ -180,6 +183,7 @@ export default function Create() {
         <footer className={styles.footerContainer}>
             {extraInfoDisplay}
             <button
+                id={!isUserConnected ? 'auctions_create_connect_button' : 'auctions_create_button'}
                 className={
                     !isButtonDisabled
                         ? styles.create_button
@@ -225,6 +229,8 @@ export default function Create() {
             </div>
 
             <SynthwaveGrid hasVideoPlayedOnce isCreatePage />
+            {getActionTrigger('create_auction_input_trigger', () => {setTickerInput('MY TOKEN')})}
+            {getActionTrigger('create_auction_reset', () => {setTickerInput('')})}
         </section>
     );
 }

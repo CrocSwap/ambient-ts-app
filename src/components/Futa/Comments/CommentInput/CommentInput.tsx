@@ -68,6 +68,7 @@ export default function CommentInput(props: CommentInputProps) {
                 {props.currentUserID && props.currentUserID.length > 0 ? (
                     <>
                         <input
+                            id='futa_comments_input'
                             ref={inputRef}
                             placeholder='ENTER MESSAGE...'
                             onKeyUp={_onKeyUp}
@@ -101,6 +102,7 @@ export default function CommentInput(props: CommentInputProps) {
                 ) : (
                     <>
                         <div
+                            id='futa_comments_connect_wallet'
                             className={styles.connect_to_chat_placeholder}
                             onClick={openWalletModal}
                         >
