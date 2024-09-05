@@ -7,7 +7,6 @@ import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../ambient-utils/types';
 import Spinner from '../Spinner/Spinner';
 import {
-    ScrollableContainer,
     ShadowBox,
     SpinnerContainer,
     Table,
@@ -60,7 +59,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'Price',
-            hidden: false,
+            hidden: true,
             align: 'right',
             responsive: 'sm',
             sortable: false,
@@ -74,7 +73,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'APR',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'lg',
             sortable: true,
@@ -125,10 +124,11 @@ function TopPools(props: propsIF) {
                     ? 'calc(100svh - 240px)'
                     : 'calc(100svh - 200px)'
             }
+            style={{ overflowY: 'hidden' }}
             // height={showMobileVersion ? '85%' : 'calc(100vh - 220px)'}
         >
-            <ScrollableContainer>
-                <ShadowBox>
+            <div style={{ position: 'relative' }}>
+                <ShadowBox className='custom_scroll_ambient'>
                     <Table>
                         <TableHead
                             headerItems={topPoolsHeaderItems}
@@ -144,7 +144,7 @@ function TopPools(props: propsIF) {
                                     )
                                     .map((pool: PoolDataIF, idx: number) => (
                                         <PoolRow
-                                            key={JSON.stringify(pool) + idx}
+                                            key={idx}
                                             pool={pool}
                                             goToMarket={goToMarket}
                                             isExploreDollarizationEnabled={
@@ -169,7 +169,7 @@ function TopPools(props: propsIF) {
                         </TableBody>
                     </Table>
                 </ShadowBox>
-            </ScrollableContainer>
+            </div>
         </FlexContainer>
     );
 }

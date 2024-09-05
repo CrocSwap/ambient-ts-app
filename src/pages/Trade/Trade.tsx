@@ -224,7 +224,12 @@ function Trade() {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     const mobileTrade = (
-        <MainSection isDropdown isSmallScreen={smallScreen}>
+        <MainSection isDropdown isSmallScreen={smallScreen}
+        style={
+            activeMobileComponent === 'trade'
+              ? { height: '100dvh', overflowY: 'scroll', marginBottom: '64px' }
+              : {}
+          }        >
             {mobileTradeDropdown}
 
             <Text
@@ -257,7 +262,9 @@ function Trade() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding noStyle={smallScreen}>
+                <ContentContainer noPadding
+                    noStyle={smallScreen}
+                >
                     <Outlet
                         context={{
                             urlParamMap: urlParamMap,

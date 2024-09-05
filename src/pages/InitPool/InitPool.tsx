@@ -25,7 +25,6 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useSendInit } from '../../App/hooks/useSendInit';
 
-import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
@@ -55,7 +54,11 @@ import {
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Trade/Range/Range';
 
-import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    concDepositSkew,
+    fromDisplayPrice,
+    fromDisplayQty,
+} from '@crocswap-libs/sdk';
 
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
@@ -97,15 +100,13 @@ export default function InitPool() {
 
     const { tokens } = useContext(TokenContext);
     const {
-        // Question: should these come from useTokenBalancesAndAllowances
-        // tokenAAllowance,
-        // tokenBAllowance,
-        // isTokenABase,
-
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        tokenAAllowance,
+        tokenBAllowance,
+        isTokenABase,
     } = useContext(TradeTokenContext);
 
     const {
@@ -134,7 +135,9 @@ export default function InitPool() {
     } = useContext(TradeDataContext);
 
     useEffect(() => {
-        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+        setIsWithdrawTokenAFromDexChecked(
+            fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) > 0n,
+        );
     }, [tokenADexBalance]);
 
     useEffect(() => {
@@ -152,14 +155,12 @@ export default function InitPool() {
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
 
-    const {
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        tokenAAllowance,
-        tokenBAllowance,
-
-        isTokenABase,
-    } = useTokenBalancesAndAllowances(baseToken, quoteToken);
+    const baseTokenDexBalance = isTokenABase
+        ? tokenADexBalance
+        : tokenBDexBalance;
+    const quoteTokenDexBalance = isTokenABase
+        ? tokenBDexBalance
+        : tokenADexBalance;
 
     const isBaseTokenMoneynessGreaterOrEqual =
         baseToken.symbol && quoteToken.symbol
@@ -863,31 +864,37 @@ export default function InitPool() {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
     const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') -
-        parseFloat(tokenACollateral || '0');
+        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+        fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
     const tokenBSurplusMinusTokenBRemainderNum =
-        parseFloat(tokenBDexBalance || '0') -
-        parseFloat(tokenBCollateral || '0');
+        fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
+        fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenACollateral || '0');
+            ? tokenASurplusMinusTokenARemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenACollateral || '0', tokenA.decimals);
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
         ? tokenBSurplusMinusTokenBRemainderNum < 0
-            ? tokenBSurplusMinusTokenBRemainderNum * -1
-            : 0
-        : parseFloat(tokenBCollateral || '0');
+            ? tokenBSurplusMinusTokenBRemainderNum * -1n
+            : 0n
+        : fromDisplayQty(tokenBCollateral || '0', tokenB.decimals);
 
     // if liquidity miniting is enabled, tthen oken allowance must be greater than the amount of tokens the user is depositing,
     // plus a small amount for the initialization transactions
     // if liquidity minting is disabled, then token allowance must be greater than 0
-    const isTokenAAllowanceSufficient = isMintLiqEnabled
-        ? parseFloat(tokenAAllowance) > tokenAQtyCoveredByWalletBalance
-        : parseFloat(tokenAAllowance) > 0;
-    const isTokenBAllowanceSufficient = isMintLiqEnabled
-        ? parseFloat(tokenBAllowance) > tokenBQtyCoveredByWalletBalance
-        : parseFloat(tokenBAllowance) > 0;
+    const isTokenAAllowanceSufficient =
+        tokenAAllowance === undefined
+            ? true
+            : isMintLiqEnabled
+              ? tokenAAllowance > tokenAQtyCoveredByWalletBalance
+              : tokenAAllowance > 0;
+    const isTokenBAllowanceSufficient =
+        tokenBAllowance === undefined
+            ? true
+            : isMintLiqEnabled
+              ? tokenBAllowance > tokenBQtyCoveredByWalletBalance
+              : tokenBAllowance > 0;
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -1078,12 +1085,8 @@ export default function InitPool() {
         const params = {
             slippageTolerancePercentage: 3,
             isAmbient,
-            tokenAInputQty: isTokenAInputDisabled
-                ? 0
-                : parseFloat(tokenACollateral),
-            tokenBInputQty: isTokenBInputDisabled
-                ? 0
-                : parseFloat(tokenBCollateral),
+            tokenAInputQty: isTokenAInputDisabled ? '0' : tokenACollateral,
+            tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBCollateral,
             isWithdrawTokenAFromDexChecked,
             isWithdrawTokenBFromDexChecked,
             defaultLowTick,

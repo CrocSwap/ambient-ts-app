@@ -152,18 +152,14 @@ function RangeTokenInput(props: propsIF) {
           };
 
     const handleTokenAChangeEvent = (value: string) => {
-        const inputStr = formatTokenInput(value, tokenA);
-
         setIsTokenAPrimary(true);
-        setPrimaryQuantity(inputStr);
+        setPrimaryQuantity(value);
         setTokenQtyValue(value, 'A');
     };
 
     const handleTokenBChangeEvent = (value: string) => {
-        const inputStr = formatTokenInput(value, tokenB);
-
         setIsTokenAPrimary(false);
-        setPrimaryQuantity(inputStr);
+        setPrimaryQuantity(value);
         setTokenQtyValue(value, 'B');
     };
 

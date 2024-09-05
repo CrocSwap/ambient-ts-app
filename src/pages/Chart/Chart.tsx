@@ -124,6 +124,7 @@ import {
 import { filterCandleWithTransaction } from './ChartUtils/discontinuityScaleUtils';
 import ChartSettings from './ChartSettings/ChartSettings';
 import useOnClickOutside, { Event } from '../../utils/hooks/useOnClickOutside';
+import ChartTooltip from './ChartTooltip/ChartTooltip';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -137,9 +138,7 @@ interface propsIF {
     setCurrentData: React.Dispatch<
         React.SetStateAction<CandleDataIF | undefined>
     >;
-    setCurrentVolumeData: React.Dispatch<
-        React.SetStateAction<number | undefined>
-    >;
+    currentData: CandleDataIF | undefined;
     isCandleAdded: boolean | undefined;
     setIsCandleAdded: React.Dispatch<boolean>;
     scaleData: scaleData;
@@ -176,6 +175,7 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
+    showTooltip: boolean;
 }
 
 export default function Chart(props: propsIF) {
@@ -207,6 +207,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
+        showTooltip,
     } = props;
 
     const {
@@ -243,6 +244,8 @@ export default function Chart(props: propsIF) {
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
+        shouldResetBuffer, 
+        setShouldResetBuffer
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -907,6 +910,12 @@ export default function Chart(props: propsIF) {
     }, []);
 
     useEffect(() => {
+        if (shouldResetBuffer) {
+            setXScaleDefault();
+        }
+    }, [liqMode, shouldResetBuffer]);
+
+    useEffect(() => {
         (async () => {
             if (scaleData && timeGaps.length > 0) {
                 const canvas = d3
@@ -1174,10 +1183,14 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (isCondensedModeEnabled) {
-            const isShowSelectedDate = unparsedCandleData.find(
-                (i: CandleDataChart) => i.time * 1000 === selectedDate,
-            )?.isShowData;
-            !isShowSelectedDate && setSelectedDate(undefined);
+            const isShowSelectedDate = filterCandleWithTransaction(
+                unparsedData.candles,
+                period,
+            ).find((i) => i.isShowData && i.time * 1000 === selectedDate);
+            if (!isShowSelectedDate) {
+                setSelectedDate(undefined);
+                props.setCurrentData(undefined);
+            }
         }
     }, [isCondensedModeEnabled]);
 
@@ -1403,6 +1416,7 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
+                        setShouldResetBuffer(false);
                         if (event.sourceEvent.type !== 'wheel') {
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
@@ -2561,9 +2575,11 @@ export default function Chart(props: propsIF) {
             const snapDiff = nowDate % (period * 1000);
             const snappedTime = nowDate + (period * 1000 - snapDiff);
 
+            const liqBuffer = liqMode === 'none' ? 0.95 : xAxisBuffer;
+
             const centerX = snappedTime;
             const diff =
-                (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+                (localInitialDisplayCandleCount * period * 1000) / liqBuffer;
 
             setPrevLastCandleTime(snappedTime / 1000);
 
@@ -2585,12 +2601,12 @@ export default function Chart(props: propsIF) {
                 .node() as HTMLCanvasElement;
             const currentRange = [0, canvas.getBoundingClientRect().width];
             const currentDomain = [
-                centerX - diff * xAxisBuffer,
-                centerX + diff * (1 - xAxisBuffer),
+                centerX - diff * liqBuffer,
+                centerX + diff * (1 - liqBuffer),
             ];
 
             const targetValue = Date.now();
-            const targetPixel = currentRange[1] * (1 - xAxisBuffer);
+            const targetPixel = currentRange[1] * (1 - liqBuffer);
 
             const newDomainMin =
                 targetValue -
@@ -2683,6 +2699,7 @@ export default function Chart(props: propsIF) {
             resetFunc();
             setReset(false);
             setShowLatest(false);
+            setShouldResetBuffer(true);
         }
     }, [reset, minTickForLimit, maxTickForLimit]);
 
@@ -3378,15 +3395,23 @@ export default function Chart(props: propsIF) {
                                         const infoLabelHeight = 66;
                                         const infoLabelWidth = 195;
 
-                                        const infoLabelXAxisData =
-                                            Math.min(
-                                                item.data[0].x,
-                                                item.data[1].x,
-                                            ) +
+                                        const diff =
                                             Math.abs(
-                                                item.data[0].x - item.data[1].x,
-                                            ) /
-                                                2;
+                                                scaleData.xScale(
+                                                    item.data[0].x,
+                                                ) -
+                                                    scaleData.xScale(
+                                                        item.data[1].x,
+                                                    ),
+                                            ) / 2;
+
+                                        const infoLabelXAxisData =
+                                            scaleData.xScale(
+                                                Math.min(
+                                                    item.data[0].x,
+                                                    item.data[1].x,
+                                                ),
+                                            ) + diff;
 
                                         const yAxisLabelPlacement =
                                             scaleData.yScale(
@@ -3443,9 +3468,7 @@ export default function Chart(props: propsIF) {
                                             ctx.beginPath();
                                             ctx.fillStyle = 'rgb(34,44,58)';
                                             ctx.fillRect(
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ) -
+                                                infoLabelXAxisData -
                                                     infoLabelWidth / 2,
                                                 yAxisLabelPlacement,
                                                 infoLabelWidth,
@@ -3493,9 +3516,8 @@ export default function Chart(props: propsIF) {
                                                     heightAsPercentage.toString() +
                                                     '%)  ' +
                                                     dpRangeTickPrice,
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 16,
                                             );
                                             const min = Math.min(
@@ -3518,9 +3540,8 @@ export default function Chart(props: propsIF) {
                                                 showCandleCount +
                                                     ' bars,  ' +
                                                     lengthAsDate,
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 33,
                                             );
                                             ctx.fillText(
@@ -3528,9 +3549,8 @@ export default function Chart(props: propsIF) {
                                                     formatDollarAmountAxis(
                                                         totalVolumeCovered,
                                                     ).replace('$', ''),
-                                                scaleData.xScale(
-                                                    infoLabelXAxisData,
-                                                ),
+
+                                                infoLabelXAxisData,
                                                 yAxisLabelPlacement + 50,
                                             );
                                         }
@@ -5321,13 +5341,6 @@ export default function Chart(props: propsIF) {
         if (selectedDate === undefined) {
             props.setShowTooltip(true);
             props.setCurrentData(nearest);
-            props.setCurrentVolumeData(nearest?.volumeUSD);
-        } else if (selectedDate) {
-            props.setCurrentVolumeData(
-                visibleCandleData.find(
-                    (item: CandleDataIF) => item.time * 1000 === selectedDate,
-                )?.volumeUSD,
-            );
         }
 
         const checkYLocation =
@@ -5394,14 +5407,6 @@ export default function Chart(props: propsIF) {
         if (isHoverCandleOrVolumeData && nearest) {
             const _selectedDate = nearest?.time * 1000;
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
-                props.setCurrentData(nearest);
-
-                const volumeData = visibleCandleData.find(
-                    (item: CandleDataIF) => item.time * 1000 === _selectedDate,
-                ) as CandleDataIF;
-
-                props.setCurrentVolumeData(volumeData?.volumeUSD);
-
                 setSelectedDate(_selectedDate);
             } else {
                 setSelectedDate(undefined);
@@ -5440,39 +5445,15 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
-    const setCrossHairDataFunc = (
-        nearestTime: number,
-        offsetX: number,
-        offsetY: number,
-    ) => {
-        if (scaleData) {
-            const snapDiff =
-                scaleData?.xScale.invert(offsetX) % (period * 1000);
+    const setCrossHairDataFunc = (nearestTime: number, offsetY: number) => {
+        setCrosshairActive('chart');
 
-            const snappedTime =
-                scaleData?.xScale.invert(offsetX) -
-                (snapDiff > period * 1000 - snapDiff
-                    ? -1 * (period * 1000 - snapDiff)
-                    : snapDiff);
-
-            const crTime =
-                snappedTime <= lastCandleData.time * 1000 &&
-                snappedTime >= firstCandleData.time * 1000 &&
-                nearestTime
-                    ? nearestTime * 1000
-                    : snappedTime;
-
-            setCrosshairActive('chart');
-
-            setCrosshairData([
-                {
-                    x: crTime,
-                    y: scaleData?.yScale.invert(offsetY),
-                },
-            ]);
-
-            return crTime;
-        }
+        setCrosshairData([
+            {
+                x: nearestTime,
+                y: scaleData?.yScale.invert(offsetY),
+            },
+        ]);
     };
 
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
@@ -5487,7 +5468,7 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
+                setCrossHairDataFunc(nearest?.time * 1000, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (
@@ -5878,6 +5859,27 @@ export default function Chart(props: propsIF) {
         denomInBase,
     ]);
 
+    useEffect(() => {
+        if (lastCandleData) {
+            setsubChartValues((prevState: SubChartValue[]) => {
+                const newData = [...prevState];
+
+                newData.filter(
+                    (target: SubChartValue) => target.name === 'tvl',
+                )[0].value = lastCandleData
+                    ? lastCandleData.tvlData.tvl
+                    : undefined;
+
+                newData.filter(
+                    (target: SubChartValue) => target.name === 'feeRate',
+                )[0].value = lastCandleData
+                    ? lastCandleData.averageLiquidityFee
+                    : undefined;
+                return newData;
+            });
+        }
+    }, [reset]);
+
     return (
         <div
             ref={d3Container}
@@ -5893,6 +5895,10 @@ export default function Chart(props: propsIF) {
                 paddingLeft: toolbarWidth + 'px',
             }}
         >
+            <ChartTooltip
+                currentData={props.currentData}
+                showTooltip={showTooltip}
+            />
             <d3fc-group
                 id='d3fc_group'
                 auto-resize

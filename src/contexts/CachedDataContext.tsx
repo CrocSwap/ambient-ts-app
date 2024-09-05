@@ -6,12 +6,14 @@ import {
     FetchTopPairedTokenFn,
     FetchContractDetailsFn,
     memoizeFetchContractDetails,
-    TokenBalancesQueryFn,
-    memoizeFetchTokenBalances,
+    memoizeFetchAmbientListWalletBalances,
+    memoizeFetchDexBalances,
     TokenPriceFn,
     memoizeTokenPrice,
     FetchBlockTimeFn,
     memoizeFetchBlockTime,
+    AmbientListBalancesQueryFn,
+    DexBalancesQueryFn,
 } from '../ambient-utils/api';
 
 import {
@@ -19,6 +21,7 @@ import {
     memoizePoolStats,
     SpotPriceFn,
     memoizeQuerySpotPrice,
+    memoizeQuerySpotTick,
     memoizeGet24hChange,
     Change24Fn,
     memoizeGetLiquidityFee,
@@ -26,13 +29,15 @@ import {
 } from '../ambient-utils/dataLayer';
 import { NFTQueryFn, memoizeFetchNFT } from '../ambient-utils/api/fetchNft';
 
-interface CachedDataIF {
-    cachedFetchTokenBalances: TokenBalancesQueryFn;
+export interface CachedDataIF {
+    cachedFetchAmbientListWalletBalances: AmbientListBalancesQueryFn;
+    cachedFetchDexBalances: DexBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedGet24hChange: Change24Fn;
     cachedGetLiquidityFee: LiquidityFeeFn;
     cachedQuerySpotPrice: SpotPriceFn;
+    cachedQuerySpotTick: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
     cachedFetchTopPairedToken: FetchTopPairedTokenFn;
@@ -49,12 +54,15 @@ export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const cachedDataState: CachedDataIF = {
-        cachedFetchTokenBalances: memoizeFetchTokenBalances(),
+        cachedFetchAmbientListWalletBalances:
+            memoizeFetchAmbientListWalletBalances(),
+        cachedFetchDexBalances: memoizeFetchDexBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedGet24hChange: memoizeGet24hChange(),
         cachedGetLiquidityFee: memoizeGetLiquidityFee(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
+        cachedQuerySpotTick: memoizeQuerySpotTick(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
         cachedFetchTopPairedToken: memoizeFetchTopPairedToken(),

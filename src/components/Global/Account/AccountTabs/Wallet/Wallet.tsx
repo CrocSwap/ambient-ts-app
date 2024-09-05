@@ -102,12 +102,12 @@ export default function Wallet(props: propsIF) {
     return (
         <div className={styles.container}>
             <WalletHeader />
-            <div className={styles.item_container}>
+            <div className={`${styles.item_container} custom_scroll_ambient`}>
                 {tokensToRender && tokensToRender.length > 0 ? (
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <WalletCard
-                            key={JSON.stringify(token)}
+                            key={token.address}
                             token={token}
                             cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />

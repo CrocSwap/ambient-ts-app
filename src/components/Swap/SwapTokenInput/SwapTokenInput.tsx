@@ -250,9 +250,20 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenAChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            if (value === '') {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsBuyLoading(false);
+                return;
+            }
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
                 await refreshImpact(truncatedInputStr, true);
+            } else {
+                setBuyQtyString('');
+                setPrimaryQuantity(value);
+                setIsBuyLoading(false);
             }
         } else {
             lastQuery.current = {
@@ -265,9 +276,20 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenBChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            if (value === '') {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsSellLoading(false);
+                return;
+            }
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
                 await refreshImpact(truncatedInputStr, false);
+            } else {
+                setSellQtyString('');
+                setPrimaryQuantity(value);
+                setIsSellLoading(false);
             }
         } else {
             lastQuery.current = {
@@ -325,6 +347,7 @@ function SwapTokenInput(props: propsIF) {
                 isTokenEth={isSellTokenEth}
                 isDexSelected={isWithdrawFromDexChecked}
                 isLoading={isSellLoading && buyQtyString !== ''}
+                impactCalculationPending={isBuyLoading && sellQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
@@ -363,6 +386,7 @@ function SwapTokenInput(props: propsIF) {
                 isTokenEth={isBuyTokenEth}
                 isDexSelected={isSaveAsDexSurplusChecked}
                 isLoading={isBuyLoading && sellQtyString !== ''}
+                impactCalculationPending={isSellLoading && buyQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenBChangeEvent}
                 reverseTokens={reverseTokens}

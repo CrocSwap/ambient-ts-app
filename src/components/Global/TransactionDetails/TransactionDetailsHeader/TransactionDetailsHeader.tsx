@@ -5,6 +5,7 @@ import logoText from '../../../../assets/images/logos/logo_text.png';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface TransactionDetailsHeaderPropsIF {
     copyTransactionDetailsToClipboard: () => Promise<void>;
@@ -26,6 +27,8 @@ export default function TransactionDetailsHeader(
         setShowShareComponent,
         onClose,
     } = props;
+
+    const isMobile = useMediaQuery('(max-width: 800px)');
 
     const copyTxHashIconWithTooltip = (
         <IconWithTooltip
@@ -57,20 +60,43 @@ export default function TransactionDetailsHeader(
                 />
             </section>
 
-            <section className={styles.settings_control}>
-                {!showShareComponent ? copyTxHashIconWithTooltip : null}
-                {showShareComponent ? copyImageIconWithTooltip : null}
-                <button
-                    className={styles.info_button}
-                    onClick={() => setShowShareComponent(!showShareComponent)}
-                >
-                    {showShareComponent ? 'Details' : 'Share'}
-                </button>
+            {isMobile ? (
+                <section className={styles.settings_control_mobile}>
+                    <div className={styles.mobile_close_header}>
+                        {!showShareComponent ? copyTxHashIconWithTooltip : null}
+                        {showShareComponent ? copyImageIconWithTooltip : null}
+                        <div onClick={onClose}>
+                            <CgClose size={28} color='var(--text3)' />
+                        </div>
+                    </div>
 
-                <div onClick={onClose}>
-                    <CgClose size={28} color='var(--text3)' />
-                </div>
-            </section>
+                    <button
+                        className={styles.info_button}
+                        onClick={() =>
+                            setShowShareComponent(!showShareComponent)
+                        }
+                    >
+                        {showShareComponent ? 'Details' : 'Share'}
+                    </button>
+                </section>
+            ) : (
+                <section className={styles.settings_control}>
+                    {!showShareComponent ? copyTxHashIconWithTooltip : null}
+                    {showShareComponent ? copyImageIconWithTooltip : null}
+                    <button
+                        className={styles.info_button}
+                        onClick={() =>
+                            setShowShareComponent(!showShareComponent)
+                        }
+                    >
+                        {showShareComponent ? 'Details' : 'Share'}
+                    </button>
+
+                    <div onClick={onClose}>
+                        <CgClose size={28} color='var(--text3)' />
+                    </div>
+                </section>
+            )}
         </div>
     );
 }

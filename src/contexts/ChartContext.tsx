@@ -41,7 +41,7 @@ interface ChartHeights {
     default: number;
 }
 
-interface ChartContextIF {
+export interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;
     isFullScreen: boolean;
     setIsFullScreen: (val: boolean) => void;
@@ -56,8 +56,8 @@ interface ChartContextIF {
     isChangeScaleChart: boolean;
     setIsChangeScaleChart: React.Dispatch<boolean>;
     isCandleDataNull: boolean;
-    setNumCandlesFetched: React.Dispatch<number | undefined>;
-    numCandlesFetched: number | undefined;
+    setNumCandlesFetched: React.Dispatch<{candleCount:number | undefined,switchPeriodFlag:boolean} >;
+    numCandlesFetched: {candleCount:number | undefined,switchPeriodFlag:boolean};
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -106,6 +106,8 @@ interface ChartContextIF {
     >;
     setContextmenu: React.Dispatch<SetStateAction<boolean>>;
     contextmenu: boolean;
+    setShouldResetBuffer: React.Dispatch<SetStateAction<boolean>>;
+    shouldResetBuffer: boolean;
     contextMenuPlacement:
         | {
               top: number;
@@ -220,6 +222,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [isChartHeightMinimum, setIsChartHeightMinimum] = useState(false);
 
     const [contextmenu, setContextmenu] = useState(false);
+
+    const [shouldResetBuffer, setShouldResetBuffer] = useState(true);
 
     const [contextMenuPlacement, setContextMenuPlacement] = useState<{
         top: number;
@@ -342,8 +346,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         useState<boolean>(initialIsToolbarOpen);
 
     const [numCandlesFetched, setNumCandlesFetched] = useState<
-        number | undefined
-    >();
+        {candleCount: number | undefined, switchPeriodFlag:boolean} 
+    >({candleCount:undefined,switchPeriodFlag:true});
 
     const currentPoolString =
         undoRedoOptions.currentPool.tokenA.address +
@@ -396,6 +400,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
+        shouldResetBuffer,
+        setShouldResetBuffer,
     };
 
     useEffect(() => {

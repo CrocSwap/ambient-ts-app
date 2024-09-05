@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMediaQuery } from '@material-ui/core';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import { EmojiClickData } from 'emoji-picker-react';
 import {
     Dispatch,
     SetStateAction,
@@ -73,10 +73,7 @@ interface FullChatPropsIF {
     verifyOldMessagesStartDate: Date;
     setShowVerifyOldMessagesPanel: Dispatch<SetStateAction<boolean>>;
     showPicker: boolean;
-    addReactionEmojiPickListener: (
-        event: React.MouseEvent,
-        data: IEmojiData,
-    ) => void;
+    addReactionEmojiPickListener: (data: EmojiClickData) => void;
     setShowPicker: Dispatch<SetStateAction<boolean>>;
     showDeleteConfirmation: boolean;
     handleConfirmDelete: () => void;
@@ -102,6 +99,7 @@ interface FullChatPropsIF {
     setMessageForNotificationBubble: Dispatch<
         SetStateAction<Message | undefined>
     >;
+    reactionPicker: JSX.Element;
 }
 
 interface ChannelDisplayPropsIF {
@@ -911,27 +909,7 @@ function FullChat(props: FullChatPropsIF) {
                 }}
             />
             {props.rndShowPreviousMessages()}
-            {props.isChatOpen && props.showPicker && (
-                <div
-                    id='chatReactionWrapper'
-                    className={styles.reaction_picker_wrapper}
-                >
-                    <div
-                        className={styles.reaction_picker_close}
-                        onClick={() => {
-                            props.setShowPicker(false);
-                        }}
-                    >
-                        {' '}
-                        X{' '}
-                    </div>
-                    <Picker
-                        onEmojiClick={props.addReactionEmojiPickListener}
-                        pickerStyle={{ width: '100%' }}
-                        disableSkinTonePicker={true}
-                    />
-                </div>
-            )}
+            {props.isChatOpen && props.showPicker && props.reactionPicker}
         </div>
     );
 }

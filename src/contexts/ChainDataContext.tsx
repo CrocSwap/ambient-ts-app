@@ -33,15 +33,18 @@ import {
     TokenBalanceContext,
 } from './TokenBalanceContext';
 import {
+    expandTokenBalances,
     fetchBlastUserXpData,
     fetchBlockNumber,
     fetchUserXpData,
+    IDexTokenBalances,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import { Network, Alchemy } from 'alchemy-sdk';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
+import { ReceiptContext } from './ReceiptContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -71,10 +74,16 @@ export const ChainDataContextProvider = (props: {
         setNFTFetchSettings,
     } = useContext(TokenBalanceContext);
 
+    const { sessionReceipts } = useContext(ReceiptContext);
+
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails, cachedFetchNFT } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchAmbientListWalletBalances,
+        cachedFetchDexBalances,
+        cachedTokenDetails,
+        cachedFetchNFT,
+    } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
     const {
@@ -120,7 +129,7 @@ export const ChainDataContextProvider = (props: {
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
-    const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
+    const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
     async function pollBlockNum(): Promise<void> {
         const nodeUrl = ['0x1'].includes(chainData.chainId)
@@ -159,11 +168,14 @@ export const ChainDataContextProvider = (props: {
             return;
         }
 
-        const interval = setInterval(async () => {
+        const interval = setInterval(() => {
             pollBlockNum();
         }, BLOCK_NUM_POLL_MS);
+
+        // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
+    }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
+
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 
@@ -365,20 +377,78 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId
+                chainData.chainId &&
+                lastBlockNumber
             ) {
                 try {
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyFiveMinutes,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            tokens.tokenUniv,
+                    const combinedBalances: TokenIF[] = [];
+
+                    // fetch wallet balances for tokens in ambient token list
+                    const AmbientListWalletBalances: TokenIF[] | undefined =
+                        await cachedFetchAmbientListWalletBalances({
+                            address: userAddress,
+                            chain: chainData.chainId,
+                            crocEnv: crocEnv,
+                            _refreshTime: lastBlockNumber,
+                        });
+
+                    combinedBalances.push(...AmbientListWalletBalances);
+
+                    // fetch exchange balances and wallet balances for tokens in user's exchange balances
+                    const dexBalancesFromCache = await cachedFetchDexBalances({
+                        address: userAddress,
+                        chain: chainData.chainId,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        _refreshTime: lastBlockNumber,
+                    });
+
+                    if (dexBalancesFromCache !== undefined) {
+                        await Promise.all(
+                            dexBalancesFromCache.map(
+                                async (tokenBalances: IDexTokenBalances) => {
+                                    const indexOfExistingToken = (
+                                        combinedBalances ?? []
+                                    ).findIndex(
+                                        (existingToken) =>
+                                            existingToken.address.toLowerCase() ===
+                                            tokenBalances.tokenAddress.toLowerCase(),
+                                    );
+                                    const newToken = await expandTokenBalances(
+                                        tokenBalances,
+                                        tokens.tokenUniv,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        chainData.chainId,
+                                    );
+
+                                    if (indexOfExistingToken === -1) {
+                                        const updatedToken = {
+                                            ...newToken,
+                                        };
+                                        combinedBalances.push(updatedToken);
+                                    } else {
+                                        const existingToken =
+                                            combinedBalances[
+                                                indexOfExistingToken
+                                            ];
+
+                                        const updatedToken = {
+                                            ...existingToken,
+                                        };
+
+                                        updatedToken.dexBalance =
+                                            newToken.dexBalance;
+
+                                        combinedBalances[indexOfExistingToken] =
+                                            updatedToken;
+                                    }
+                                },
+                            ),
                         );
-                    const tokensWithLogos = tokenBalances.map((token) => {
+                    }
+
+                    const tokensWithLogos = combinedBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
@@ -406,6 +476,7 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
         everyFiveMinutes,
         activeNetwork.graphCacheUrl,
+        sessionReceipts.length,
     ]);
 
     const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
