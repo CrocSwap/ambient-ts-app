@@ -66,8 +66,8 @@ export function createAreaSeries(
 export function decorateForLiquidityArea(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     series: any,
-    threshold: number,
     chartThemeColors: ChartThemeIF,
+    isBid: boolean,
 ) {
     const d3BidColor = chartThemeColors.liqBidColor?.copy();
     const d3AskColor = chartThemeColors.liqAskColor?.copy();
@@ -76,8 +76,9 @@ export function decorateForLiquidityArea(
     if (d3AskColor) d3AskColor.opacity = 0.3;
 
     series.decorate(
-        (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
-            if (d[0]?.liqPrices > threshold) {
+        (context: CanvasRenderingContext2D) => {
+
+            if (isBid) {
                 context.fillStyle = d3BidColor
                     ? d3BidColor.toString()
                     : liqBidColor;
