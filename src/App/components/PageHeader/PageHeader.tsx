@@ -437,17 +437,29 @@ const PageHeader = function () {
             {routeDisplay}
             <RightSide>
                 {chainData.chainId === '0x1' && <select onChange={(e) => skin.set(e.target.value as skins)}>
-                    {/* <option value={'purple_dark'}>Purple Dark</option>
-                    <option value={'purple_light'}>Purple Light</option> */}
                     {
-                        skin.available.map((s: skins) => (
-                            <option
-                                key={s}
-                                value={s}
-                            >
-                                {s}
-                            </option>
-                        ))
+                        skin.available.map((s: skins) => {
+                            const makeReadable = (str: string): string => {
+                                switch (str) {
+                                    case 'purple_dark':
+                                        return 'Purple Dark';
+                                    case 'purple_light':
+                                        return 'Purple Light';
+                                    case 'orange_dark':
+                                        return 'Orange Dark';
+                                    default:
+                                        return str;
+                                }
+                            }
+                            return (
+                                <option
+                                    key={s}
+                                    value={s}
+                                >
+                                    {makeReadable(s)}
+                                </option>
+                            )
+                        })
                     }
                 </select>}
                 {show ? (

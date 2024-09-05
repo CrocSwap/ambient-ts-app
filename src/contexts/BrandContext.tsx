@@ -112,8 +112,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     function getAvailableSkins(): skins[] {
         const networkSettings =
             brandAssets.networks[chainData.chainId as chainIds];
-        const available = networkSettings?.color ?? ['purple_dark'];
-        const premium = networkSettings?.premiumColor ?? [];
+        const available: skins[] = networkSettings?.color ?? ['purple_dark'];
+        const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
             userAddress && premiumTheme1.includes(userAddress.toLowerCase())
         );
