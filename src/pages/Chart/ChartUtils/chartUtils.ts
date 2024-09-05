@@ -6,7 +6,7 @@ import {
     MutableRefObject,
 } from 'react';
 import * as d3 from 'd3';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
+import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts/TradeCharts';
 import { CandleDataIF, LiquidityRangeIF } from '../../../ambient-utils/types';
 import {
     LS_KEY_CHART_ANNOTATIONS,

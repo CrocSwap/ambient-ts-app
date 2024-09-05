@@ -1,17 +1,17 @@
-import { useContext, useEffect } from 'react';
-import { FiRefreshCw } from 'react-icons/fi';
-import TopPools from '../../components/Global/Explore/TopPools';
-import DexTokens from '../../components/Global/Explore/DexTokens';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { ExploreContext } from '../../contexts/ExploreContext';
-import styled from 'styled-components/macro';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import Toggle from '../../components/Form/Toggle';
-import { FlexContainer, Text } from '../../styled/Common';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
+import { PoolIF } from '../../ambient-utils/types';
+import styles from './Explore.module.css';
+import { LuRefreshCcw, LuSearch } from 'react-icons/lu';
+import useOnClickOutside from '../../utils/hooks/useOnClickOutside';
+import TopPools from '../../components/Global/Explore/TopPools/TopPools';
+import DexTokens from '../../components/Global/Explore/DexTokens/DexTokens';
 
 interface ExploreIF {
     view: 'pools' | 'tokens';
@@ -118,171 +118,176 @@ export default function Explore(props: ExploreIF) {
         }
     }
 
-    return (
-        <Section>
-            <MainWrapper>
-                <TitleText>{titleTextForDOM}</TitleText>
-            </MainWrapper>
-            <OptionsWrapper>
-                <FlexContainer
-                    flexDirection='row'
-                    alignItems='center'
-                    gap={12}
-                    marginLeft='12px'
-                >
-                    <Text>Pools</Text>
-                    <Toggle
-                        isOn={view === 'tokens'}
-                        id={'explore_page_'}
-                        handleToggle={() => changeView(view)}
-                    />
-                    <Text>Tokens</Text>
-                </FlexContainer>
-                <FlexContainer
-                    flexDirection='row'
-                    alignItems='center'
-                    gap={12}
-                    marginLeft='12px'
-                >
-                    {view === 'pools' && (
-                        <DefaultTooltip
-                            interactive
-                            title={
-                                isExploreDollarizationEnabled
-                                    ? 'Switch to prices in native currency'
-                                    : 'Switch to prices in USD'
-                            }
-                            enterDelay={500}
-                        >
-                            <Refresh>
-                                <RefreshButton
-                                    onClick={() =>
-                                        setIsExploreDollarizationEnabled(
-                                            (prev) => !prev,
-                                        )
-                                    }
-                                >
-                                    {
-                                        <AiOutlineDollarCircle
-                                            size={20}
-                                            id='trade_dollarized_prices_button'
-                                            aria-label='Toggle dollarized prices button'
-                                            style={{
-                                                color: isExploreDollarizationEnabled
-                                                    ? 'var(--accent1)'
-                                                    : undefined,
-                                            }}
-                                        />
-                                    }
-                                </RefreshButton>
-                            </Refresh>
-                        </DefaultTooltip>
-                    )}
-                    <DefaultTooltip
-                        interactive
-                        title={
-                            view === 'pools'
-                                ? 'Refresh Top Pools'
-                                : 'Refresh Active Tokens'
+    const [searchQueryPool, setSearchQueryPool] = useState<string>('');
+    const [searchQueryToken, setSearchQueryToken] = useState<string>('');
+
+    const filteredPools =
+        searchQueryPool.length >= 2
+            ? pools.all.filter((pool: PoolIF) => {
+                  const lowerCaseQuery = searchQueryPool.toLowerCase();
+                  return (
+                      pool.base.name.toLowerCase().includes(lowerCaseQuery) ||
+                      pool.base.symbol.toLowerCase().includes(lowerCaseQuery) ||
+                      pool.quote.name.toLowerCase().includes(lowerCaseQuery) ||
+                      pool.quote.symbol.toLowerCase().includes(lowerCaseQuery)
+                  );
+              })
+            : pools.all;
+
+    const filteredTokens =
+        searchQueryToken.length >= 2
+            ? tokens.data.filter((token) => {
+                  const lowerCaseQuery = searchQueryToken.toLowerCase();
+                  return (
+                      token.tokenMeta?.name
+                          .toLowerCase()
+                          .includes(lowerCaseQuery) ||
+                      token.tokenMeta?.symbol
+                          .toLowerCase()
+                          .includes(lowerCaseQuery)
+                  );
+              })
+            : tokens.data;
+
+    const searchInputRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideInputHandler = () => {
+        const searchQuery =
+            view === 'pools' ? searchQueryPool : searchQueryToken;
+        const filteredItems = view === 'pools' ? filteredPools : filteredTokens;
+        const setSearchQuery =
+            view === 'pools' ? setSearchQueryPool : setSearchQueryToken;
+
+        if (!searchQuery || filteredItems.length) {
+            return null;
+        }
+
+        setSearchQuery('');
+    };
+
+    useOnClickOutside(searchInputRef, clickOutsideInputHandler);
+
+    const inputContainer = (
+        <div className={styles.input_container} ref={searchInputRef}>
+            <div className={styles.input_wrapper}>
+                <LuSearch />
+                <input
+                    type='text'
+                    placeholder={`Search ${view === 'pools' ? 'pools' : 'tokens'} by name or symbol`}
+                    value={
+                        view === 'pools' ? searchQueryPool : searchQueryToken
+                    }
+                    onChange={
+                        view === 'pools'
+                            ? (e) => setSearchQueryPool(e.target.value)
+                            : (e) => setSearchQueryToken(e.target.value)
+                    }
+                    className={styles.input}
+                />
+            </div>
+        </div>
+    );
+
+    const optionsContent = (
+        <div className={`${styles.options_content} ${view === 'tokens' ? styles.pools_options_content: ''}`}>
+        {inputContainer}
+        {view === 'pools' && (
+            <DefaultTooltip
+                interactive
+                title={
+                    isExploreDollarizationEnabled
+                        ? 'Switch to prices in native currency'
+                        : 'Switch to prices in USD'
+                }
+                enterDelay={500}
+            >
+                <div className={styles.refresh_container}>
+                    <button
+                        className={styles.refresh_button}
+                        onClick={() =>
+                            setIsExploreDollarizationEnabled(
+                                (prev) => !prev,
+                            )
                         }
-                        enterDelay={500}
                     >
-                        <Refresh>
-                            <RefreshButton onClick={() => handleRefresh()}>
-                                <RefreshIcon />
-                            </RefreshButton>
-                        </Refresh>
-                    </DefaultTooltip>
-                </FlexContainer>
-            </OptionsWrapper>
+                        {
+                            <AiOutlineDollarCircle
+                                size={20}
+                                id='trade_dollarized_prices_button'
+                                aria-label='Toggle dollarized prices button'
+                                style={{
+                                    color: isExploreDollarizationEnabled
+                                        ? 'var(--accent1)'
+                                        : undefined,
+                                }}
+                            />
+                        }
+                    </button>
+                </div>
+            </DefaultTooltip>
+        )}
+        <DefaultTooltip
+            interactive
+            title={
+                view === 'pools'
+                    ? 'Refresh Top Pools'
+                    : 'Refresh Active Tokens'
+            }
+            enterDelay={500}
+        >
+            <div className={styles.refresh_container}>
+                <button
+                    className={styles.refresh_button}
+                    onClick={() => handleRefresh()}
+                >
+                    <LuRefreshCcw size={20} />
+                </button>
+            </div>
+        </DefaultTooltip>
+    </div>
+    )
+
+    function handleToggle() {
+        changeView(view);
+        setSearchQueryToken('');
+        setSearchQueryPool('');
+    }
+
+    return (
+        <section className={styles.main_container}>
+            {/* <div className={styles.main_wrapper}>
+            <h2 className={styles.title_text}>{titleTextForDOM}</h2>
+            </div> */}
+            <div className={styles.options_wrapper}>
+           
+            <h2 className={styles.title_text}>{titleTextForDOM}</h2>
+           {optionsContent}
+            </div>
 
             {view === 'pools' && (
                 <TopPools
-                    allPools={pools.all}
+                    allPools={filteredPools}
                     goToMarket={goToMarket}
                     isExploreDollarizationEnabled={
                         isExploreDollarizationEnabled
                     }
+                    searchQuery={searchQueryPool}
+                    setSearchQuery={setSearchQueryPool}
+                    view={view}
+                    handleToggle={handleToggle}
                 />
             )}
             {view === 'tokens' && (
                 <DexTokens
-                    dexTokens={tokens.data}
+                    dexTokens={filteredTokens}
                     chainId={chainData.chainId}
                     goToMarket={goToMarket}
+                    searchQuery={searchQueryToken}
+                    setSearchQuery={setSearchQueryToken}
+                    view={view}
+                    handleToggle={handleToggle}
                 />
             )}
-        </Section>
+        </section>
     );
 }
-
-const Section = styled.section`
-    background: var(--dark2);
-    @media (max-width: 500px) {
-        height: calc(100svh - 70px);
-    }
-    @media (min-width: 500px) {
-        height: calc(100svh - 82px);
-    }
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`;
-
-const MainWrapper = styled.div`
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
-    color: var(--text1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4px;
-    user-select: none;
-`;
-
-const OptionsWrapper = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 4px;
-    user-select: none;
-`;
-
-const TitleText = styled.h2`
-    /* Responsive font size for smaller screens */
-    @media (max-width: 768px) {
-        font-size: var(--header1-size);
-    }
-
-    /* Responsive font size for even smaller screens */
-    @media (max-width: 480px) {
-        font-size: 20px;
-    }
-`;
-
-const Refresh = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    font-size: var(--body-size);
-    font-style: italic;
-    color: var(--text1);
-    gap: 8px;
-`;
-const RefreshButton = styled.button`
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--dark3);
-    border-radius: var(--border-radius);
-    border: none;
-    outline: none;
-`;
-
-const RefreshIcon = styled(FiRefreshCw)`
-    font-size: var(--header2-size);
-    cursor: pointer;
-`;

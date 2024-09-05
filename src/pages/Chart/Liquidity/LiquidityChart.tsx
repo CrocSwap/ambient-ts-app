@@ -13,7 +13,7 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
-import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
+import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts/TradeCharts';
 import {
     getXandYLocationForChart,
     lineValue,

@@ -13,7 +13,6 @@ import { useRepoExitPath } from './useRepoExitPath';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
-import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
@@ -44,14 +43,9 @@ function RepositionHeader(props: propsIF) {
 
     return (
         <>
-            <TradeModuleHeaderContainer
-                flexDirection='row'
-                alignItems='center'
-                justifyContent='space-between'
-                fullWidth
-                fontSize='header1'
-                color='text2'
-            >
+            <header className={styles.main_container}>
+
+            
                 <img
                     className={styles.settings_icon}
                     src={settingsIcon}
@@ -70,7 +64,7 @@ function RepositionHeader(props: propsIF) {
                         setCurrentRangeInReposition('');
                     }}
                 />
-            </TradeModuleHeaderContainer>
+            </header>
             {isOpen && (
                 <TransactionSettingsModal
                     module='Reposition'
