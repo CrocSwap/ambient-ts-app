@@ -139,19 +139,8 @@ function Trade() {
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
-    const { poolPriceDisplay, poolPriceChangePercent, isPoolPriceChangePositive } = useContext(PoolContext);
-    const baseTokenSymbol = baseToken.symbol;
-    const quoteTokenSymbol = quoteToken.symbol;
-    const displayPriceWithDenom =
-        isDenomBase && poolPriceDisplay
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+    const {  poolPriceChangePercent, isPoolPriceChangePositive, usdPrice } = useContext(PoolContext);
 
-    const displayPriceString = displayPriceWithDenom
-        ? getFormattedNumber({
-              value: displayPriceWithDenom,
-          })
-        : '…';
 
 
     // -----------------------------------------------------------------------
@@ -260,7 +249,10 @@ function Trade() {
                     className={styles.conv_rate}
                     onClick={toggleDidUserFlipDenom}
                 >
-                    {`${displayPriceString} ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}`}
+                    {usdPrice
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : '…'}
+                   
                     <p style={{color: isPoolPriceChangePositive ? 'var(--positive)' : 'var(--negative)'}}>
 
                     {poolPriceChangePercent}
