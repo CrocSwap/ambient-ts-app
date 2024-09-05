@@ -298,8 +298,6 @@ const ListItem = styled.ul<{
 const CheckboxContainer = styled.div`
     display: flex;
 
-    align-items: center;
-    justify-content: center;
 
     vertical-align: middle;
 `;
