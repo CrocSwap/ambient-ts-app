@@ -7,7 +7,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
 
-
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
@@ -154,25 +153,22 @@
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 
-        --scrollbar: none;
-        --scrollbar-track: transparent;
-        --scrollbar-color: transparent;
-        --scrollbar-thumb: linear-gradient(
-            0deg,
-            var(--accent1) 0%,
-            var(--accent5) 49.48%,
-            var(--accent1) 100%
-        );
+    --scrollbar: none;
+    --scrollbar-track: transparent;
+    --scrollbar-color: transparent;
+    --scrollbar-thumb: linear-gradient(
+        0deg,
+        var(--accent1) 0%,
+        var(--accent5) 49.48%,
+        var(--accent1) 100%
+    );
 }
 
-[data-theme='orange_dark'] {
+[data-theme='futa_dark'] {
     /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
---content-height: calc(100vh - 76px)
---content-height-mobile: calc(100svh - 120px)
-
-
-    /* font */
-    --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
+    --content-height: calc(100vh - 76px) --content-height-mobile:
+            calc(100svh - 120px) /* font */ --title-ts: 0px 0px 150px
+            rgba(242, 153, 74, 0.5),
         0px 0px 100px rgba(242, 153, 74, 0.5),
         0px 0px 30px rgba(242, 153, 74, 0.5),
         0px 0px 20px rgba(242, 153, 74, 0.5),
@@ -195,27 +191,27 @@
     /* colors */
     --blur-bg: rgba(239, 178, 115, 0.5);
 
-    --text1: #E1EEEE;
-    --text2: #939C9E;
-    --text3: #4D5255;
+    --text1: #e1eeee;
+    --text2: #939c9e;
+    --text3: #4d5255;
 
-    --dark1: #0D0F13;
-    --dark2: #14161A;
-    --dark3: #1B1E22;
-    --dark4: #171F22;
-    --accent1: #62EBF1;
-    --accent2: #3C898E;
-    --accent3: #29585D;
+    --dark1: #0d0f13;
+    --dark2: #14161a;
+    --dark3: #1b1e22;
+    --dark4: #171f22;
+    --accent1: #62ebf1;
+    --accent2: #3c898e;
+    --accent3: #29585d;
 
     --accent4: #71b5fc;
-    --accent5: #7BE4FF;
+    --accent5: #7be4ff;
 
-    --orange: #F1B162;
-    --green: #62F1B0;
-    --red: #F16962;
+    --orange: #f1b162;
+    --green: #62f1b0;
+    --red: #f16962;
 
-    --positive: #62F1B0;
-    --negative: #F16962;
+    --positive: #62f1b0;
+    --negative: #f16962;
 
     --other-green: #6bae52;
     --other-red: #e75670;
@@ -238,13 +234,10 @@
     /* sizes */
     --footer-height: 24px;
 
-
-       
-
-    --font-logo: "Fira Mono", monospace;
-    --font-family: "Fira Mono", monospace;
-    --roboto: "Fira Mono", monospace;
-    --mono: "Fira Mono", monospace;
+    --font-logo: 'Fira Mono', monospace;
+    --font-family: 'Fira Mono', monospace;
+    --roboto: 'Fira Mono', monospace;
+    --mono: 'Fira Mono', monospace;
 
     --scrollbar: none;
     --scrollbar-track: transparent;
@@ -258,9 +251,9 @@
 
     --title-gradient: linear-gradient(
         90deg,
-        #62EBF1 0%,
-        #7BE4FF 49.48%,
-        #62EBF1 100%
+        #62ebf1 0%,
+        #7be4ff 49.48%,
+        #62ebf1 100%
     );
 }
 

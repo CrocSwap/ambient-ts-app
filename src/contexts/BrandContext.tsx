@@ -88,7 +88,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
         return networkPrefs ? networkPrefs.color : 'purple_dark';
-        // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
+        // return premiumAccess.get('theme1') ? 'futa_dark' : 'purple_dark';
     }
 
     function getHero(): heroItem[] {

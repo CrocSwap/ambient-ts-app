@@ -24,7 +24,7 @@ export default function DesktopFooter() {
         : styles.unknown_status;
 
     return (
-        <footer data-theme='orange_dark' className={styles.desktopContainer}>
+        <footer data-theme='futa_dark' className={styles.desktopContainer}>
             <p className={styles.network}>
                 NETWORK: {chainData.displayName.toUpperCase()}
             </p>
