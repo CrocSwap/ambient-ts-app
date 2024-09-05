@@ -25,6 +25,8 @@ import {
     NavbarLogoutContainer,
 } from '../../../../styled/Components/Header';
 import NavbarDropdownItem from './NavbarDropdownItem';
+import plumeNetworkLogoBlackAndWhite from '../../../../assets/images/networks/plume_logo_black_white.svg';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -40,6 +42,7 @@ function NavbarDropdownMenu(props: propsIF) {
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const [, , termsUrls] = useTermsAgreed();
 
@@ -71,7 +74,7 @@ function NavbarDropdownMenu(props: propsIF) {
         {
             icon: <AiFillTwitterCircle size={20} />,
             resource: TWITTER_LINK,
-            text: 'Twitter',
+            text: 'X/Twitter',
         },
         {
             icon: <FaDiscord size={20} />,
@@ -93,15 +96,28 @@ function NavbarDropdownMenu(props: propsIF) {
             resource: `${window.location.origin}/${termsUrls.tos}`,
             text: 'Terms of Service',
         },
-        {
+    ];
+
+    if (isActiveNetworkPlume) {
+        navData.unshift({
+            icon: <img src={plumeNetworkLogoBlackAndWhite} width='20px' />,
+            resource: 'https://plumenetwork.xyz/',
+            text: 'About Plume',
+        });
+    } else {
+        navData.push({
             icon: <FaQuestion size={20} />,
             resource: `${window.location.origin}/faq`,
             text: 'FAQ',
-        },
-    ];
+        });
+    }
 
     return (
-        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel} hasBorder>
+        <NavbarDropdown
+            ref={dropdownRef}
+            aria-label={ariaLabel}
+            hasBorder={!isActiveNetworkPlume}
+        >
             <CSSTransition
                 in={true}
                 unmountOnExit

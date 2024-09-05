@@ -64,7 +64,7 @@ export default function TransactionSubmitted(props: PropsIF) {
         <Button
             idForDOM='import_token_B_into_wallet_button'
             flat
-            title={`Import ${tokenBSymbol} into Connected Wallet`}
+            title={`Import ${tokenBSymbol} Into Connected Wallet`}
             action={handleAddToMetaMask}
             disabled={false}
         />
@@ -100,71 +100,71 @@ export default function TransactionSubmitted(props: PropsIF) {
                 )}
             </div>
 
-            <h2 style={{ marginBottom: '15px' }}>
+            <h3 style={{ marginBottom: '15px' }}>
                 {type === 'Limit'
                     ? `Limit Order ${
                           isTransactionFailed
                               ? 'Failed'
                               : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
+                                ? 'Success!'
+                                : 'Submitted'
                       }`
                     : type === 'Range'
-                    ? `Pool ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Reposition'
-                    ? `Reposition ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Harvest'
-                    ? `Harvest ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Reset'
-                    ? `Reset ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Remove'
-                    ? `Removal ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Claim'
-                    ? `Claim ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : `Swap ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`}
-            </h2>
+                      ? `Pool ${
+                            isTransactionFailed
+                                ? 'Failed'
+                                : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                        }`
+                      : type === 'Reposition'
+                        ? `Reposition ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                    ? 'Success!'
+                                    : 'Submitted'
+                          }`
+                        : type === 'Harvest'
+                          ? `Harvest ${
+                                isTransactionFailed
+                                    ? 'Failed'
+                                    : isConfirmed
+                                      ? 'Success!'
+                                      : 'Submitted'
+                            }`
+                          : type === 'Reset'
+                            ? `Reset ${
+                                  isTransactionFailed
+                                      ? 'Failed'
+                                      : isConfirmed
+                                        ? 'Success!'
+                                        : 'Submitted'
+                              }`
+                            : type === 'Remove'
+                              ? `Removal ${
+                                    isTransactionFailed
+                                        ? 'Failed'
+                                        : isConfirmed
+                                          ? 'Success!'
+                                          : 'Submitted'
+                                }`
+                              : type === 'Claim'
+                                ? `Claim ${
+                                      isTransactionFailed
+                                          ? 'Failed'
+                                          : isConfirmed
+                                            ? 'Success!'
+                                            : 'Submitted'
+                                  }`
+                                : `Swap ${
+                                      isTransactionFailed
+                                          ? 'Failed'
+                                          : isConfirmed
+                                            ? 'Success!'
+                                            : 'Submitted'
+                                  }`}
+            </h3>
             <div
                 className={`${styles.action_buttons} ${
                     noAnimation && styles.bypass_buttons

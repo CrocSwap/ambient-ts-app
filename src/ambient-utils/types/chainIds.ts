@@ -5,4 +5,5 @@ export type chainIds =
     | '0xaa36a7'
     | '0xa0c71fd'
     | '0x8274f'
+    | '0x99c0a0f'
     | '0x13e31';

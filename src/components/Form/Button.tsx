@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { ButtonBase } from './Form.styles';
 
 interface propsIF {
@@ -15,6 +17,8 @@ interface propsIF {
 }
 
 export default function Button(props: propsIF) {
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
+
     const {
         idForDOM,
         disabled,
@@ -31,14 +35,23 @@ export default function Button(props: propsIF) {
     const ariaLabelToDisplay = disabled
         ? `Button is disabled. ${title}`
         : customAriaLabel
-        ? customAriaLabel
-        : '';
+          ? customAriaLabel
+          : '';
     return (
         <ButtonBase
             id={idForDOM}
             style={{
                 ...(thin ? { height: '28px', width: '156px', padding: 0 } : {}),
                 ...style, // Merge with style prop
+                ...(isActiveNetworkPlume
+                    ? {
+                          border: '2px solid #000',
+                          boxShadow:
+                              'inset 0 0 0 2px rgba(255, 255, 255, 0.86), 3px 5px #000',
+                          borderRadius: '0.6rem',
+                      }
+                    : {}),
+                textTransform: 'none',
             }}
             onClick={action}
             disabled={disabled}

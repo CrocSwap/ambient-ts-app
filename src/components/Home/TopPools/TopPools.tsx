@@ -9,6 +9,7 @@ import {
     TopPoolContainer,
     TopPoolViewMore,
 } from '../../../styled/Components/Home';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 interface TopPoolsPropsIF {
@@ -18,6 +19,7 @@ interface TopPoolsPropsIF {
 
 // eslint-disable-next-line
 export default function TopPools(props: TopPoolsPropsIF) {
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         topPools,
@@ -80,14 +82,16 @@ export default function TopPools(props: TopPoolsPropsIF) {
                     /> // Pass the corresponding spot price
                 ))}
             </HomeContent>
-            <HomeContent
-                justifyContent='center'
-                alignItems='center'
-                gap={16}
-                as={TopPoolViewMore}
-            >
-                <Link to='/explore'>View More</Link>
-            </HomeContent>
+            {!isActiveNetworkPlume && (
+                <HomeContent
+                    justifyContent='center'
+                    alignItems='center'
+                    gap={16}
+                    as={TopPoolViewMore}
+                >
+                    <Link to='/explore'>View More</Link>
+                </HomeContent>
+            )}
         </TopPoolContainer>
     );
 }

@@ -48,7 +48,6 @@ export const CurrencyQuantityInput = styled.input`
     font-weight: 300;
     font-size: var(--header2-size);
     line-height: 22px;
-    color: white;
     text-align: start;
     width: 100%;
     height: calc(1em + 0.65rem + 2px);
@@ -58,6 +57,7 @@ export const CurrencyQuantityInput = styled.input`
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;
+    color: var(--text1);
     transition:
         border-color 0.15s ease-in-out,
         box-shadow 0.15s ease-in-out;

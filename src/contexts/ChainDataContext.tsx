@@ -55,6 +55,7 @@ interface ChainDataContextIF {
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
+    isActiveNetworkPlume: boolean;
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
 }
@@ -105,6 +106,8 @@ export const ChainDataContextProvider = (props: {
     const isActiveNetworkScroll = ['0x82750', '0x8274f'].includes(
         chainData.chainId,
     );
+
+    const isActiveNetworkPlume = ['0x99c0a0f'].includes(chainData.chainId);
     const isActiveNetworkMainnet = ['0x1'].includes(chainData.chainId);
 
     const blockPollingUrl = BLOCK_POLLING_RPC_URL
@@ -117,6 +120,7 @@ export const ChainDataContextProvider = (props: {
         '0xa0c71fd',
         '0x82750',
         '0x8274f',
+        '0x99c0a0f', // plume sepolia
     ];
 
     const settings = {
@@ -550,6 +554,7 @@ export const ChainDataContextProvider = (props: {
         setGasPriceinGwei,
         isActiveNetworkBlast,
         isActiveNetworkScroll,
+        isActiveNetworkPlume,
         isActiveNetworkMainnet,
         isActiveNetworkL2,
     };

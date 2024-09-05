@@ -4,13 +4,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
 
 @import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif;
+
+    --swap-bg: url('./assets/images/backgrounds/swap_bg.png');
 
     /* font */
     --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5),
@@ -58,13 +60,19 @@
     --other-red: #e75670;
 
     /* border */
-    --color-border: 1px solid var(--accent1);
+    --color-border: var(--accent1);
     --border: var(--dark2);
     --border-radius: 4px;
-    --swap-border: var(--title-gradient);
+    --swap-border: var(--accent1);
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
+    --navbar-bg: var(--dark1);
+
+        /* font weight */
+        --fw-bold: 300;
+        --fw-extra-bold: 300;
+        --fw-normal: 300;
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -150,6 +158,9 @@
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
+
+        --content-container-bg: var(--dark1)
+        --page-bg: var(--dark1)
 }
 
 [data-theme='orange_dark'] {
@@ -157,6 +168,7 @@
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif;
+    --swap-bg: url('./assets/images/backgrounds/swap_bg.png');
 
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
@@ -206,10 +218,11 @@
     --color-border: 1px solid var(--accent1);
     --border: var(--dark2);
     --border-radius: 4px;
-    --swap-border: var(--title-gradient);
+    --swap-border: transparent;
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
+    --navbar-bg: var(--dark1)
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -320,6 +333,7 @@
 
 [data-theme='purple_light'] {
     --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);
+    --swap-bg: url('./assets/images/backgrounds/swap_bg.png');
 
     /* colors */
     --blur-bg: #ebebed;
@@ -343,9 +357,69 @@
 
     --swap-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16),
         0 3px 6px rgba(0, 0, 0, 0.23);
+    --swap-border: transparent;
+    --navbar-border: #cacbcd;
+    --dark-border: 0.2px solid #fefefe;
+    --navbar-bg: var(--dark1)
+    --border: #cacbcd;
+    --select: #acb6c4;
+}
+
+[data-theme='plume_light'] {
+    --font-logo: "Poppins", sans-serif;
+    --font-family: "Poppins", sans-serif;
+    --roboto: 'Roboto Mono', monospace;
+    --mono: monospace, 'Lexend Deca' sans-serif;
+
+
+    --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);
+    --swap-bg: transparent;
+    --title-gradient: #19222d;
+
+    /* font weight */
+    --fw-bold: 600;
+    --fw-extra-bold: 800;
+    --fw-normal: 500;
+
+    /* colors */
+    --blur-bg: #ebebed;
+
+    --text1: #282828;
+    --text2: #555555;
+    --text3: #585757;
+
+    --dark1: #f9f9f9;
+    --dark2: #ffffff;
+    --dark3: #eff1f4;
+
+    --accent1: #ebbe49;
+    --accent2: #f44336;
+
+    --gradient-box-shadow: none;
+
+    --shimmer: linear-gradient(to right, #ece9e6, white);
+    --chart-gradient: linear-gradient(to right, #d8d4d1, white);
+    --dark-gradient: linear-gradient(
+        90deg,
+        #9494d1 0%,
+        #645e7e 49.48%,
+        #7d7db1 100%
+    );
+
+    --swap-box-shadow: none;
+    --navbar-bg: #dfeef3;
     --swap-border: none;
     --navbar-border: #cacbcd;
     --dark-border: 0.2px solid #fefefe;
     --border: #cacbcd;
     --select: #acb6c4;
+    --border-radius: 8px;
+    --extra-info-bg: #f7f7f7;
+    --color-border: transparent;
+    --page-bg: #eef1f6;
+    --content-container-bg: url('./assets/images/backgrounds/swap_bg_sepolia.jpg');
+    
+   
 }
+
+

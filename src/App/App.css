@@ -7,10 +7,7 @@
     margin: 0;
     scroll-behavior: smooth;
     font-family: var(--font-family);
-    font-weight: 300;
-    /* outline: 1px solid red; */
-
-    /* outline: 1px solid red; */
+    font-weight: var(--fw-normal);
 }
 
 /* ===== Scrollbar CSS ===== */
@@ -20,10 +17,15 @@ body {
 }
 
 html {
-    background: var(--dark1);
     scrollbar-width: none;
     color: var(--text1);
     height: 100%;
+    width: 100%;
+    /* background: var(--page-bg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover; */
 }
 
 svg {
@@ -242,17 +244,13 @@ input[type='number'] {
         ) !important;
     background-origin: border-box !important;
     background-clip: content-box, border-box !important; /* Clip the border to show gradient */
-    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */;
-   
-    
-    
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
 }
 .custom_scroll_ambient::-webkit-scrollbar-track,
 .content-container::-webkit-scrollbar-track {
     background: #06060c !important; /* Background color of the scrollbar track */
     border-radius: 8px !important; /* Adjust the border radius as needed */
-    padding: 2px !important; /* Add padding to the track */;
-  
+    padding: 2px !important; /* Add padding to the track */
 }
 
 @media only screen and (max-width: 600px) {
@@ -274,6 +272,19 @@ input[type='number'] {
     }
 }
 
+.content-container-plume {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100vh;
+
+    background: var(--content-container-bg);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: fixed;
+}
 @media only screen and (min-width: 1280px) {
     .content-container {
         overflow-y: auto;
@@ -284,5 +295,19 @@ input[type='number'] {
     }
     .content-container-trade {
         background: var(--dark1);
+    }
+
+    .content-container-plume {
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 100vh;
+
+        background: var(--content-container-bg);
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: fixed;
     }
 }

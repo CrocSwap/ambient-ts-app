@@ -46,6 +46,7 @@ import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import ExampleForm from '../pages/InitPool/FormExample';
 import PointSystemPopup from '../components/Global/PointSystemPopup/PointSystemPopup';
+import { ChainDataContext } from '../contexts/ChainDataContext';
 import FooterNav from '../components/Global/FooterNav/FooterNav';
 
 /** ***** React Function *******/
@@ -70,18 +71,34 @@ export default function App() {
     const {
         sidebar: { toggle: toggleSidebar },
     } = useContext(SidebarContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
+    useEffect(() => {
+        if (isActiveNetworkPlume) {
+            document.documentElement.setAttribute('data-theme', 'plume_light');
+        }
+    }, []);
 
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle =
-        currentLocation.startsWith('/swap') && !smallScreen
+        currentLocation.startsWith('/swap') &&
+        !smallScreen &&
+        !isActiveNetworkPlume
             ? 'swap-body'
             : null;
 
-    const containerStyle = currentLocation.includes('trade')
+    const containerStylePlume = currentLocation.includes('trade')
+        ? 'content-container-trade-plume'
+        : 'content-container-plume';
+
+    const containerStyleDefault = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
+
+    const containerStyle = isActiveNetworkPlume
+        ? containerStylePlume
+        : containerStyleDefault;
 
     // CONTEXT: investigate
     // KEYBOARD SHORTCUTS ROUTES
@@ -141,11 +158,13 @@ export default function App() {
                             : '100vh',
                 }}
             >
-                {showPoints && showPointSystemPopup && (
-                    <PointSystemPopup
-                        dismissPointSystemPopup={dismissPointSystemPopup}
-                    />
-                )}
+                {showPoints &&
+                    showPointSystemPopup &&
+                    !isActiveNetworkPlume && (
+                        <PointSystemPopup
+                            dismissPointSystemPopup={dismissPointSystemPopup}
+                        />
+                    )}
                 <AppOverlay />
                 {location.pathname !== '/' && <PageHeader />}
 
@@ -156,7 +175,7 @@ export default function App() {
                         appHeaderDropdown.setIsActive(false)
                     }
                 />
-                <section className={`${swapBodyStyle}`}>
+                <section className={`${swapBodyStyle} `}>
                     {/* {(!currentLocation.startsWith('/swap') || smallScreen) &&
                         sidebarRender} */}
                     <Routes>
@@ -418,7 +437,7 @@ export default function App() {
                     currentLocation !== '/faq' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && <FooterNav />}
+                {showMobileVersion && !isActiveNetworkPlume && <FooterNav />}
             </div>
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />

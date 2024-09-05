@@ -15,6 +15,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useContext, useState } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -28,6 +29,7 @@ export default function PoolCard(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { tokenA, tokenB } = useContext(TradeDataContext);
+    const { isActiveNetworkPlume } = useContext(ChainDataContext);
 
     const [isHovered, setIsHovered] = useState(false);
     const poolData = useFetchPoolStats(pool, spotPrice);
@@ -93,6 +95,7 @@ export default function PoolCard(props: propsIF) {
     );
 
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     const [addrTokenA, addrTokenB] =
         tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
@@ -103,11 +106,17 @@ export default function PoolCard(props: propsIF) {
                 ? [pool.quote.address, pool.base.address]
                 : [pool.base.address, pool.quote.address];
 
-    const poolLink = linkGenMarket.getFullURL({
-        chain: chainId,
-        tokenA: addrTokenA,
-        tokenB: addrTokenB,
-    });
+    const poolLink = isActiveNetworkPlume
+        ? linkGenSwap.getFullURL({
+              chain: chainId,
+              tokenA: addrTokenA,
+              tokenB: addrTokenB,
+          })
+        : linkGenMarket.getFullURL({
+              chain: chainId,
+              tokenA: addrTokenA,
+              tokenB: addrTokenB,
+          });
 
     const poolPriceChangeDisplay = (
         <div className={styles.pool_price_change}>

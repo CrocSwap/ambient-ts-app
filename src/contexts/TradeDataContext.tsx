@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
+import { getDefaultPairForChain } from '../ambient-utils/constants';
 import {
     isBtcPair,
     isETHPair,
@@ -165,7 +165,7 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const [soloToken, setSoloToken] = React.useState(mainnetETH);
+    const [soloToken, setSoloToken] = React.useState(dfltTokenA);
 
     const [shouldSwapDirectionReverse, setShouldSwapDirectionReverse] =
         React.useState(false);

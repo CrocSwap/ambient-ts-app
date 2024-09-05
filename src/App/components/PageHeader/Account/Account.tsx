@@ -23,6 +23,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import LevelDropdown from './LevelDropdown/LevelDropdown';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
 // TODO: use user context instead of UseAccount
 interface propsIF {
@@ -34,6 +35,9 @@ interface propsIF {
 
 export default function Account(props: propsIF) {
     const { clickLogout, ensName } = props;
+    const { showPoints } = useContext(BrandContext);
+    const { isActiveNetworkPlume, connectedUserXp } =
+        useContext(ChainDataContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -41,8 +45,6 @@ export default function Account(props: propsIF) {
     } = useContext(AppStateContext);
 
     const { isUserConnected } = useContext(UserDataContext);
-
-    const { connectedUserXp } = useContext(ChainDataContext);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -195,12 +197,24 @@ export default function Account(props: propsIF) {
             alignItems='center'
         >
             {isUserConnected && walletDisplay}
-            {isUserConnected && levelDisplay}
+            {isUserConnected &&
+                showPoints &&
+                !isActiveNetworkPlume &&
+                levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
             <NotificationCenter />
 
             <NavItem
-                icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
+                icon={
+                    <FiMoreHorizontal
+                        size={20}
+                        color={
+                            isActiveNetworkPlume
+                                ? 'var(--text1)'
+                                : 'var(--text2)'
+                        }
+                    />
+                }
                 open={openNavbarMenu}
                 setOpen={setOpenNavbarMenu}
             >

@@ -1,6 +1,7 @@
 import { brandIF } from './types';
 import large from '../images/logos/large.svg';
 import scrollLogo from '../../assets/images/logos/scroll_brand_logo.svg';
+import plumeLogo from '../../assets/images/logos/plume_brand_logo.svg';
 import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const defaultBrandAssets: brandIF = {
@@ -42,7 +43,16 @@ export const defaultBrandAssets: brandIF = {
                 { content: scrollLogo, processAs: 'image' },
             ],
         },
-        // blast sepolia
+        // plume sepolia
+        '0x99c0a0f': {
+            color: 'plume_light',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: plumeLogo, processAs: 'image' },
+            ],
+        },
+        // blast logo
         '0xa0c71fd': {
             color: 'purple_dark',
             hero: [
