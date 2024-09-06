@@ -1,7 +1,5 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { Dispatch, SetStateAction, memo } from 'react';
 import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../ambient-utils/constants';
 
 interface OrderHistoryDisplayPropsIF {
@@ -33,13 +31,6 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         );
     };
 
-    const [
-        showOrderHistoryDisplayDropdown,
-        setShowOrderHistoryDisplayDropdown,
-    ] = useState(false);
-
-    const mobileView = useMediaQuery('(max-width: 968px)');
-
     const handleSwapToggle = () => {
         setShowSwap(!showSwap);
         updateOrderHistoryToggles({
@@ -48,23 +39,6 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
             isHistoricalOrderHistoryEnabled: showHistorical,
         });
     };
-
-    // const handleLiquidityToggle = () => {
-    //     setShowLiquidity(!showLiquidity);
-    //     updateOrderHistoryToggles({
-    //         isSwapOrderHistoryEnabled: showSwap,
-    //         isLiquidityOrderHistoryEnabled: !showLiquidity,
-    //         isHistoricalOrderHistoryEnabled: showHistorical,
-    //     });
-    // };
-    // const handleHistoricalToggle = () => {
-    //     setShowHistorical(!showHistorical);
-    //     updateOrderHistoryToggles({
-    //         isSwapOrderHistoryEnabled: showSwap,
-    //         isLiquidityOrderHistoryEnabled: showLiquidity,
-    //         isHistoricalOrderHistoryEnabled: !showHistorical,
-    //     });
-    // };
 
     const orderHistoryDisplay = [
         { name: 'Buys/Sells', selected: showSwap, action: handleSwapToggle },
@@ -79,64 +53,6 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         //     action: handleHistoricalToggle,
         // },
     ];
-
-    const wrapperStyle = showOrderHistoryDisplayDropdown
-        ? styles.dropdown_wrapper_active
-        : styles.dropdown_wrapper;
-
-    const dropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => {
-        setShowOrderHistoryDisplayDropdown(false);
-    };
-    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
-
-    function handleCurveDepthClickMobile(action: () => void) {
-        action();
-        setShowOrderHistoryDisplayDropdown(false);
-    }
-
-    const OrderHistoryDisplayMobile = (
-        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
-            <button
-                className={styles.volume_tvl_fee_mobile_button}
-                onClick={() =>
-                    setShowOrderHistoryDisplayDropdown(
-                        !showOrderHistoryDisplayDropdown,
-                    )
-                }
-                tabIndex={0}
-                aria-label='Open volume and tvl dropdown.'
-            >
-                Buys/Sells
-                {/* {showSwap ? 'Buys/Sells' : showHistorical ? 'Historical' : ''} */}
-                {/* showLiquidity
-                    ? 'Liquidity'
-                    : ''} */}
-            </button>
-
-            <div className={wrapperStyle}>
-                {orderHistoryDisplay.map((button, idx) => (
-                    <div className={styles.volume_tvl_container} key={idx}>
-                        <button
-                            onClick={() =>
-                                handleCurveDepthClickMobile(button.action)
-                            }
-                            className={
-                                button.selected
-                                    ? styles.active_selected_button
-                                    : styles.non_active_selected_button
-                            }
-                            aria-label={`Show ${button.name}.`}
-                        >
-                            {button.name}
-                        </button>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    if (mobileView) return OrderHistoryDisplayMobile;
 
     return (
         <div

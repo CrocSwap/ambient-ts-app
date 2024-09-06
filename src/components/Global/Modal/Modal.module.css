@@ -113,6 +113,8 @@
         border-top-right-radius: 8px;
         border-bottom: none;
         width: 100svw;
+
+        border-color: var(--dark3);
        
         /* min-height: 80vh; */
     }

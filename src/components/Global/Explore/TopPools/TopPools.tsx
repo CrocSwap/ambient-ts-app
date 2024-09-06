@@ -99,18 +99,18 @@ function TopPools(props: propsIF) {
                       </>
                   ),
               },
-        {
-            label: 'TVL',
-
-            sortable: true,
-            tooltipText: 'Total value locked',
-        },
-        {
-            label: desktopView ? '24h Price Δ' : 'Price',
-
-            sortable: true,
-            tooltipText: 'The change in price over the last 24 hours',
-        },
+              {
+                  label: 'TVL',
+      
+                  sortable: true,
+                  tooltipText: 'Total value locked',
+              },
+              {
+                  label: 'Change',
+                  
+                  sortable: true,
+                  tooltipText: 'The change in price over the last 24 hours',
+                },
         {
             label: '',
 

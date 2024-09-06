@@ -45,6 +45,8 @@ import { BrandContext } from '../../contexts/BrandContext';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import TableInfo from '../../components/Trade/TableInfo/TableInfo';
 import TradeCharts from './TradeCharts/TradeCharts/TradeCharts';
+import { useModal } from '../../components/Global/Modal/useModal';
+import { LuSettings } from 'react-icons/lu';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -120,11 +122,20 @@ function Trade() {
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
+    const [
+        isMobileSettingsModalOpen,
+        openMobileSettingsModal,
+        closeMobileSettingsModal,
+    ] = useModal();
+
     const tradeChartsProps = {
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
         updateURL,
+        isMobileSettingsModalOpen,
+        openMobileSettingsModal,
+        closeMobileSettingsModal
     };
 
     const tradeTabsProps = {
@@ -215,6 +226,7 @@ function Trade() {
     const contentHeight = availableHeight - 75;
     const activeTabData = tabs.find((tab) => tab.id === activeTab)?.data;
 
+
     const mobileComponent = (
         <div
             className={styles.mobile_container}
@@ -258,6 +270,7 @@ function Trade() {
                     {poolPriceChangePercent}
                     </p>
                 </div>
+               {activeTab === 'Chart' && <LuSettings size={20} onClick={openMobileSettingsModal} color='var(--text2)'/>}
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
                 {activeTabData}
