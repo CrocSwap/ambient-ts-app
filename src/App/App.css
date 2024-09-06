@@ -15,10 +15,10 @@
 
 /* ===== Scrollbar CSS ===== */
 /* Firefox */
-.content-container,
+/* .content-container,
 .content-container-trade {
     scrollbar-width: none;
-}
+} */
 
 body::-webkit-scrollbar {
     display: none;
