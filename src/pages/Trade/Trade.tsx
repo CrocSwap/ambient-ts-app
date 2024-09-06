@@ -22,7 +22,10 @@ import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleDataIF } from '../../ambient-utils/types';
-import { getFormattedNumber } from '../../ambient-utils/dataLayer';
+import {
+    getFormattedNumber,
+    getUnicodeCharacter,
+} from '../../ambient-utils/dataLayer';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
@@ -150,9 +153,13 @@ function Trade() {
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
-    const {  poolPriceChangePercent, isPoolPriceChangePositive, usdPrice } = useContext(PoolContext);
-
-
+    const {
+        poolPriceDisplay,
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
+        usdPrice,
+        isTradeDollarizationEnabled,
+    } = useContext(PoolContext);
 
     // -----------------------------------------------------------------------
 
@@ -226,6 +233,35 @@ function Trade() {
     const contentHeight = availableHeight - 75;
     const activeTabData = tabs.find((tab) => tab.id === activeTab)?.data;
 
+    const currencyCharacter = isDenomBase
+        ? // denom in a, return token b character
+          getUnicodeCharacter(quoteToken.symbol)
+        : // denom in b, return token a character
+          getUnicodeCharacter(baseToken.symbol);
+
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? isDenomBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
+
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+    });
+
+    const poolPrice = isTradeDollarizationEnabled
+        ? usdPrice
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : '…'
+        : poolPriceDisplay === Infinity ||
+            poolPriceDisplay === 0 ||
+            poolPriceDisplay === undefined
+          ? '…'
+          : `${currencyCharacter}${truncatedPoolPrice}`;
+
+    const poolPriceChangeString =
+        poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
     const mobileComponent = (
         <div
@@ -261,13 +297,17 @@ function Trade() {
                     className={styles.conv_rate}
                     onClick={toggleDidUserFlipDenom}
                 >
-                    {usdPrice
-            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
-            : '…'}
-                   
-                    <p style={{color: isPoolPriceChangePositive ? 'var(--positive)' : 'var(--negative)'}}>
+                    {poolPrice}
 
-                    {poolPriceChangePercent}
+                    <p
+                        style={{
+                            color: isPoolPriceChangePositive
+                                ? 'var(--positive)'
+                                : 'var(--negative)',
+                            fontSize: 'var(--body-size)',
+                        }}
+                    >
+                        {poolPriceChangeString}
                     </p>
                 </div>
                {activeTab === 'Chart' && <LuSettings size={20} onClick={openMobileSettingsModal} color='var(--text2)'/>}
