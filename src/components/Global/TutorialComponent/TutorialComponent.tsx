@@ -8,6 +8,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     tutoKey: string;
     steps: TutorialStepIF[];
+    initialTimeout?: number;
     showSteps?: boolean;
     initialStep?: number;
     onComplete?: () => void;
@@ -38,6 +39,7 @@ function TutorialComponent(props: propsIF) {
 
     
     const isMobile = useMediaQuery('(max-width: 800px)');
+    const [initialTimeoutDone, setInitialTimeoutDone] = useState<boolean>(false);
     // const focusOffsetV = 20;
 
     useEffect(() => {
@@ -191,6 +193,10 @@ function TutorialComponent(props: propsIF) {
             setTimeout(() => {
                 handleFocusOverlay();
                 handleTooltip();
+                
+                // setTimeout(() => {
+                //     handleFocusOverlay();
+                // }, 1000)
             }, 300);
         };
 
@@ -249,10 +255,25 @@ function TutorialComponent(props: propsIF) {
     }
 
     useEffect(() => {
-        handleFocusOverlay();
-        handleTooltip();
-        handleAssignments();
-        handleActionTriggers();
+
+        const delay = stepIndex === 0 && props.initialTimeout && !initialTimeoutDone ? props.initialTimeout : 0;
+        if(delay > 0 && focusOverlay.current){
+            focusOverlay.current.style.display = 'none';
+        }
+
+        setTimeout(() => {
+            handleFocusOverlay();
+            handleTooltip();
+            handleAssignments();
+            handleActionTriggers();
+            if(delay > 0){
+                setInitialTimeoutDone(true);
+                if(focusOverlay.current){
+                    focusOverlay.current.style.display = 'block';
+                }
+            }
+        },delay); 
+        
     }, [step]);
 
     const triggerTutorial = () => {

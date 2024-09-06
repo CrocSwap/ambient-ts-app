@@ -163,6 +163,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                             steps={filterRenderedSteps()}
                             showSteps={true}
                             onComplete={handleTutoFinish}
+                            initialTimeout={600}
                         />
                     </>
                 )}
