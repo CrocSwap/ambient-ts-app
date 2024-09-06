@@ -73,8 +73,7 @@ export default function PoolRow(props: propsIF) {
 
     const splitPoolDisplay = (
         <>
-            {pool?.base?.symbol} <br />
-            {pool?.quote?.symbol}
+            {pool?.base?.symbol + ' /'} <br /> {pool?.quote?.symbol}
         </>
     );
 
@@ -114,7 +113,9 @@ export default function PoolRow(props: propsIF) {
         >
             {!pool.priceChangeStr || pool.priceChangeStr.includes('NaN')
                 ? '...'
-                : pool.priceChangeStr}
+                : !desktopView && pool.priceChangeStr.includes('No')
+                  ? 'None'
+                  : pool.priceChangeStr}
         </p>
     );
 
@@ -149,6 +150,10 @@ export default function PoolRow(props: propsIF) {
         {
             element: <div>{priceDisplay}</div>,
         },
+
+        {
+            element: <div>{tvlDisplay}</div>,
+        },
         {
             element: <div>{poolVolumeDisplay}</div>,
         },
@@ -157,9 +162,6 @@ export default function PoolRow(props: propsIF) {
                   element: <div>{aprDisplay}</div>,
               }
             : null,
-            {
-                element: <div>{tvlDisplay}</div>,
-            },
         {
             element: <div>{priceChangeDisplay}</div>,
         },
