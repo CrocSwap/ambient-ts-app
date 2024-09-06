@@ -168,7 +168,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                     </>
                 )}
 
-            {!shouldTutoComponentShown && (
+            {!shouldTutoComponentShown && filterRenderedSteps().length > 0 && (
                 <div
                     className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected : ' '}`}
                     onClick={replayBtnListener}
