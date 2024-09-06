@@ -40,7 +40,7 @@ const useFetchPoolStats = (
     const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
     const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
-        number | undefined
+        [string, number] | undefined
     >();
     const {
         crocEnv,
@@ -106,7 +106,10 @@ const useFetchPoolStats = (
                           );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
-                    setLocalPoolPriceNonDisplay(spotPrice);
+                    setLocalPoolPriceNonDisplay([
+                        pool.base.address + pool.quote.address,
+                        spotPrice,
+                    ]);
 
                     if (
                         isTradePair &&
@@ -281,7 +284,10 @@ const useFetchPoolStats = (
             shouldInvertDisplay !== undefined &&
             crocEnv &&
             provider &&
-            localPoolPriceNonDisplay !== undefined
+            localPoolPriceNonDisplay !== undefined &&
+            // check if the local pool price for the current pool
+            localPoolPriceNonDisplay[0] ===
+                pool.base.address + pool.quote.address
         ) {
             const poolStatsNow = await cachedPoolStatsFetch(
                 chainId,
@@ -333,7 +339,7 @@ const useFetchPoolStats = (
             const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-            const nowPrice = localPoolPriceNonDisplay;
+            const nowPrice = localPoolPriceNonDisplay[1];
             const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
             const priceChangeResult =
@@ -451,10 +457,17 @@ const useFetchPoolStats = (
                                   },
                               ) +
                               '%'
-                            : priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) + '%';
+                            : priceChangeResult > 0 && didUserFlipDenom
+                              ? '-' +
+                                priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) +
+                                '%'
+                              : priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) + '%';
                     setPoolPriceChangePercent(priceChangeString);
                 }
             } catch (error) {
