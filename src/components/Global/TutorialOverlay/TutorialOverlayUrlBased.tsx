@@ -9,6 +9,7 @@ import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { futaAccountSteps } from '../../../utils/tutorial/Futa/FutaAccountSteps';
 // import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
@@ -36,6 +37,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         switch (page) {
             case 'auctions':
                 return { lsKey: 'tuto_auctions', steps: futaAuctionsSteps };
+            case 'account':
+                return { lsKey: 'tuto_futa_account', steps: futaAccountSteps, disableDefault: true};
             case 'auctionCreate':
                 return { lsKey: 'tuto_futa_create', steps: futaCreateSteps };
             default:
@@ -150,7 +153,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         validateURL() &&
         stepsFiltered.length > 0 &&
         showTutorial &&
-        isTutoBuild;
+        isTutoBuild &&
+        (selectedTutorialRef.current && !selectedTutorialRef.current.disableDefault);
 
     return (
         <>
@@ -163,11 +167,12 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                             steps={filterRenderedSteps()}
                             showSteps={true}
                             onComplete={handleTutoFinish}
+                            initialTimeout={600}
                         />
                     </>
                 )}
 
-            {!shouldTutoComponentShown && (
+            {!shouldTutoComponentShown && filterRenderedSteps().length > 0 && (
                 <div
                     className={`${styles.replay_tuto_btn} ${!isUserConnected ? styles.not_connected : ' '}`}
                     onClick={replayBtnListener}

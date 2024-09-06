@@ -59,6 +59,7 @@ export interface UserAvatarDataIF {
 export interface TutorialIF {
     lsKey: string;
     steps: Step[];
+    disableDefault?: boolean;
 }
 
 export interface TutorialStepIF {

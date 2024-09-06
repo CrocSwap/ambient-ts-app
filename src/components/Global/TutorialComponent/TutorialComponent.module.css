@@ -50,6 +50,7 @@
     box-shadow: 0 0 3px 0px color-mix(in srgb, var(--accent1) 10%, transparent);
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     max-width: 30rem;
+    left: 100vw;
 }
 
 .tooltip_wrapper.animated{

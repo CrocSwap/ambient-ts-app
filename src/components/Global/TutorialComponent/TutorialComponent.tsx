@@ -8,6 +8,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     tutoKey: string;
     steps: TutorialStepIF[];
+    initialTimeout?: number;
     showSteps?: boolean;
     initialStep?: number;
     onComplete?: () => void;
@@ -38,7 +39,7 @@ function TutorialComponent(props: propsIF) {
 
     
     const isMobile = useMediaQuery('(max-width: 800px)');
-    // const focusOffsetV = 20;
+    const [initialTimeoutDone, setInitialTimeoutDone] = useState<boolean>(false);
 
     useEffect(() => {
         if (hasTriggeredRef.current) return;
@@ -249,10 +250,25 @@ function TutorialComponent(props: propsIF) {
     }
 
     useEffect(() => {
-        handleFocusOverlay();
-        handleTooltip();
-        handleAssignments();
-        handleActionTriggers();
+
+        const delay = stepIndex === 0 && props.initialTimeout && !initialTimeoutDone ? props.initialTimeout : 0;
+        if(delay > 0 && focusOverlay.current){
+            focusOverlay.current.style.display = 'none';
+        }
+
+        setTimeout(() => {
+            handleFocusOverlay();
+            handleTooltip();
+            handleAssignments();
+            handleActionTriggers();
+            if(delay > 0){
+                setInitialTimeoutDone(true);
+                if(focusOverlay.current){
+                    focusOverlay.current.style.display = 'block';
+                }
+            }
+        },delay); 
+        
     }, [step]);
 
     const triggerTutorial = () => {
@@ -261,13 +277,6 @@ function TutorialComponent(props: propsIF) {
 
     const navButtons = (forTooltip?: boolean) => (
         <>
-            {showSteps && (
-                // <div className={styles.steps_indicator}>
-                //     {stepIndex + 1}{' '}
-                //     <span style={{ opacity: 0.5 }}>/ {steps.length}</span>
-                // </div>
-                <></>
-            )}
             {
                 forTooltip && isMobile ?
                 (<> </>)
