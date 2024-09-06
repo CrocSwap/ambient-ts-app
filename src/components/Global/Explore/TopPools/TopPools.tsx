@@ -1,4 +1,5 @@
 import { Dispatch, memo, SetStateAction } from 'react';
+import PoolRow from '../PoolRow/PoolRow';
 import { PoolDataIF } from '../../../../contexts/ExploreContext';
 import {
     SortedPoolMethodsIF,
@@ -12,7 +13,6 @@ import styles from './TopPools.module.css';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import PoolRow from '../PoolRow/PoolRow';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 
 export type HeaderItem = {
@@ -63,18 +63,24 @@ function TopPools(props: propsIF) {
                   classname: styles.tokens,
               },
         {
-            label: 'Pool',
+            label: desktopView ? 'Pool' : ' Pool',
 
             sortable: false,
             classname: styles.poolName,
         },
         {
-            label: 'Price',
-
+            label: desktopView ? 'Price' : '    Price',
             sortable: false,
+            classname: styles.price,
         },
         {
-            label: desktopView ? '24h Vol.' : 'Vol',
+            label: desktopView ? 'TVL' : '    TVL',
+
+            sortable: true,
+            tooltipText: 'Total value locked',
+        },
+        {
+            label: '24h Vol.',
 
             sortable: true,
             tooltipText: 'Total volume in the last 24 hours',
@@ -99,14 +105,9 @@ function TopPools(props: propsIF) {
                       </>
                   ),
               },
-        {
-            label: 'TVL',
 
-            sortable: true,
-            tooltipText: 'Total value locked',
-        },
         {
-            label: 'Change',
+            label: desktopView ? '24h Price Δ' : 'Change',
 
             sortable: true,
             tooltipText: 'The change in price over the last 24 hours',
