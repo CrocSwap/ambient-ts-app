@@ -150,6 +150,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
+        // spot price for pool
+        const spotPrice: number = await cachedQuerySpotPrice(
+            crocEnv,
+            pool.base.address,
+            pool.quote.address,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+
         const poolStatsNow = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
@@ -199,7 +208,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-        const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+        const nowPrice = spotPrice;
         const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
         const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
@@ -265,7 +274,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
-                '+ ' +
+                '+' +
                 (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -281,14 +290,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = 'No Change';
         }
 
-        // spot price for pool
-        const spotPrice: number = await cachedQuerySpotPrice(
-            crocEnv,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
             ? 1 /

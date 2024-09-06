@@ -23,9 +23,7 @@ function TradeChartsTokenInfo() {
     } = useContext(PoolContext);
     const { toggleDidUserFlipDenom } = useContext(TradeDataContext);
 
-    const denomInBase = isDenomBase;
-
-    const currencyCharacter = denomInBase
+    const currencyCharacter = isDenomBase
         ? // denom in a, return token b character
           getUnicodeCharacter(quoteToken.symbol)
         : // denom in b, return token a character
