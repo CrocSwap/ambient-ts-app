@@ -106,7 +106,7 @@ function TopPools(props: propsIF) {
             tooltipText: 'Total value locked',
         },
         {
-            label: desktopView ? '24h Price Δ' : 'Price',
+            label: 'Change',
 
             sortable: true,
             tooltipText: 'The change in price over the last 24 hours',

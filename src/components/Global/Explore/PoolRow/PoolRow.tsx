@@ -157,11 +157,11 @@ export default function PoolRow(props: propsIF) {
                   element: <div>{aprDisplay}</div>,
               }
             : null,
+            {
+                element: <div>{tvlDisplay}</div>,
+            },
         {
             element: <div>{priceChangeDisplay}</div>,
-        },
-        {
-            element: <div>{tvlDisplay}</div>,
         },
         {
             element: <div> {buttonDisplay}</div>,
