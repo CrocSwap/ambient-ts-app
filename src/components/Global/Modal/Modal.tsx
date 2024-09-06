@@ -9,6 +9,7 @@ import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 import { Container } from '../../../styled/Common';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component
 interface ModalPropsIF {
@@ -86,6 +87,17 @@ export default function Modal(props: ModalPropsIF) {
     const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
 
     const footerOrNull = !footer ? null : footerJSX;
+    const isMobile = useMediaQuery('(max-width: 500px)');
+
+    const mobileAnimation = {
+        initial: { opacity: 0, y: '100%' },
+        animate: { opacity: 1, y: 0 },
+    };
+
+    const desktopAnimation = {
+        initial: { opacity: 0, scale: 0.5 },
+        animate: { opacity: 1, scale: 1 },
+    };
 
     return (
         <GlobalModalPortal>
@@ -97,8 +109,16 @@ export default function Modal(props: ModalPropsIF) {
                 aria-modal='true'
             >
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={
+                        isMobile
+                            ? mobileAnimation.initial
+                            : desktopAnimation.initial
+                    }
+                    animate={
+                        isMobile
+                            ? mobileAnimation.animate
+                            : desktopAnimation.animate
+                    }
                     transition={{ duration: 0.4 }}
                     className={`
                 ${styles.modal_body}

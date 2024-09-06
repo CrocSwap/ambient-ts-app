@@ -55,8 +55,11 @@
 
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: center !important;
+  
+    
     gap: 8px;
+   
 }
 
 @media (min-width: 500px) and (max-width: 768px) {
