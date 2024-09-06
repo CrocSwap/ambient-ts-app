@@ -36,12 +36,9 @@
    
     overflow-x: auto; 
     white-space: nowrap; 
-    /* because this is the header */
-
    border-bottom: 1px solid var(--dark3);
     position: sticky;
     top: 0;
-    z-index: 100;
     padding-left: 8px;
    
     
