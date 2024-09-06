@@ -25,6 +25,7 @@ const useFetchPoolStats = (
     spotPriceRetrieved: number | undefined,
     isTradePair = false,
     enableTotalSupply = false,
+    didUserFlipDenom = false,
 ): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
@@ -38,6 +39,9 @@ const useFetchPoolStats = (
     } = useContext(CachedDataContext);
     const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
+    const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
+        [string, number] | undefined
+    >();
     const {
         crocEnv,
         activeNetwork,
@@ -102,6 +106,10 @@ const useFetchPoolStats = (
                           );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
+                    setLocalPoolPriceNonDisplay([
+                        pool.base.address + pool.quote.address,
+                        spotPrice,
+                    ]);
 
                     if (
                         isTradePair &&
@@ -275,7 +283,11 @@ const useFetchPoolStats = (
             lastBlockNumber &&
             shouldInvertDisplay !== undefined &&
             crocEnv &&
-            provider
+            provider &&
+            localPoolPriceNonDisplay !== undefined &&
+            // check if the local pool price for the current pool
+            localPoolPriceNonDisplay[0] ===
+                pool.base.address + pool.quote.address
         ) {
             const poolStatsNow = await cachedPoolStatsFetch(
                 chainId,
@@ -327,7 +339,7 @@ const useFetchPoolStats = (
             const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-            const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+            const nowPrice = localPoolPriceNonDisplay[1];
             const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
             const priceChangeResult =
@@ -422,29 +434,40 @@ const useFetchPoolStats = (
                     setIsPoolPriceChangePositive(true);
                     return;
                 }
+                const priceChangePercent = priceChangeResult * 100;
 
                 if (priceChangeResult > -0.0001 && priceChangeResult < 0.0001) {
                     setPoolPriceChangePercent('No Change');
                     setIsPoolPriceChangePositive(true);
                 } else {
-                    priceChangeResult > 0
+                    (priceChangeResult > 0 && !didUserFlipDenom) ||
+                    (priceChangeResult < 0 && didUserFlipDenom)
                         ? setIsPoolPriceChangePositive(true)
                         : setIsPoolPriceChangePositive(false);
 
-                    const priceChangePercent = priceChangeResult * 100;
-
                     const priceChangeString =
-                        priceChangePercent > 0
+                        (priceChangeResult > 0 && !didUserFlipDenom) ||
+                        (priceChangeResult < 0 && didUserFlipDenom)
                             ? '+' +
-                              priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) +
+                              Math.abs(priceChangePercent).toLocaleString(
+                                  undefined,
+                                  {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  },
+                              ) +
                               '%'
-                            : priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) + '%';
+                            : priceChangeResult > 0 && didUserFlipDenom
+                              ? '-' +
+                                priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) +
+                                '%'
+                              : priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) + '%';
                     setPoolPriceChangePercent(priceChangeString);
                 }
             } catch (error) {
@@ -482,6 +505,8 @@ const useFetchPoolStats = (
         !!provider,
         poolIndex,
         pool.base.address + pool.quote.address,
+        localPoolPriceNonDisplay,
+        didUserFlipDenom,
     ]);
 
     return {
