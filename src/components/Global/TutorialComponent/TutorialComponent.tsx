@@ -40,7 +40,6 @@ function TutorialComponent(props: propsIF) {
     
     const isMobile = useMediaQuery('(max-width: 800px)');
     const [initialTimeoutDone, setInitialTimeoutDone] = useState<boolean>(false);
-    // const focusOffsetV = 20;
 
     useEffect(() => {
         if (hasTriggeredRef.current) return;
@@ -193,10 +192,6 @@ function TutorialComponent(props: propsIF) {
             setTimeout(() => {
                 handleFocusOverlay();
                 handleTooltip();
-                
-                // setTimeout(() => {
-                //     handleFocusOverlay();
-                // }, 1000)
             }, 300);
         };
 
@@ -282,13 +277,6 @@ function TutorialComponent(props: propsIF) {
 
     const navButtons = (forTooltip?: boolean) => (
         <>
-            {showSteps && (
-                // <div className={styles.steps_indicator}>
-                //     {stepIndex + 1}{' '}
-                //     <span style={{ opacity: 0.5 }}>/ {steps.length}</span>
-                // </div>
-                <></>
-            )}
             {
                 forTooltip && isMobile ?
                 (<> </>)
