@@ -348,8 +348,8 @@ export default function Navbar() {
                     )}
                     {/* </AnimatePresence> */}
                 </div>
-            </div>
             <TutorialOverlayUrlBased />
+            </div>
         </div>
     );
 }
