@@ -184,8 +184,13 @@ function Trade() {
         {
             id: 'Chart',
             label: 'Chart',
-            data: isPoolInitialized && !isCandleDataNull && (
-                <TradeCharts {...tradeChartsProps} />
+            data: (
+                <>
+                    {!isChartHeightMinimum && <ChartToolbar />}
+                    {isPoolInitialized && !isCandleDataNull && (
+                        <TradeCharts {...tradeChartsProps} />
+                    )}
+                </>
             ),
         },
         { id: 'Txns', label: 'Txns', data: <TradeTabs2 {...tradeTabsProps} /> },
