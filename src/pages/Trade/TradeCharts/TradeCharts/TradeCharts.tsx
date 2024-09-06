@@ -34,6 +34,7 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import TradeCandleStickChart from '../TradeCandleStickChart/TradeCandleStickChart';
 import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
+import Modal from '../../../../components/Global/Modal/Modal';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -43,6 +44,9 @@ interface propsIF {
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
     updateURL: (changes: updatesIF) => void;
+    isMobileSettingsModalOpen: boolean;
+    openMobileSettingsModal: () => void;
+    closeMobileSettingsModal: () => void;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,7 +74,13 @@ export interface LiqSnap {
 
 // React functional component
 function TradeCharts(props: propsIF) {
-    const { selectedDate, setSelectedDate, updateURL } = props;
+    const {
+        selectedDate,
+        setSelectedDate,
+        updateURL,
+        isMobileSettingsModalOpen,
+        closeMobileSettingsModal,
+    } = props;
 
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
@@ -249,12 +259,15 @@ function TradeCharts(props: propsIF) {
         </div>
     );
 
-    const timeFrameContent = (
-        <FlexContainer justifyContent='space-between' alignItems='center'>
-            <div>
+    const timeFrameContentDesktop = (
+        <section className={styles.time_frame_container}>
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Time Frame:</p>
                 <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
-            <div>
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Volume:</p>
+
                 <VolumeTVLFee
                     setShowVolume={setShowVolume}
                     setShowTvl={setShowTvl}
@@ -265,7 +278,9 @@ function TradeCharts(props: propsIF) {
                 />
             </div>
             {isUserConnected && (
-                <div>
+                <div className={styles.mobile_settings_row}>
+                    <p className={styles.mobile_settings_header}>Buy/Sells:</p>
+
                     <OrderHistoryDisplay
                         setShowHistorical={setShowHistorical}
                         setShowSwap={setShowSwap}
@@ -276,13 +291,34 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            <div>
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Curve:</p>
+
                 <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
             <div className={styles.chart_overlay_container}>
                 {resetAndRescaleDisplay}
             </div>
-        </FlexContainer>
+        </section>
+    );
+    const timeFrameContent = smallScreen ? (
+        <>
+            {isMobileSettingsModalOpen && (
+                <Modal
+                    onClose={closeMobileSettingsModal}
+                    title='Chart Settings'
+                >
+                    {timeFrameContentDesktop}
+                    <div className={styles.settings_apply_button_container}>
+                        <button onClick={closeMobileSettingsModal}>
+                            Apply
+                        </button>
+                    </div>
+                </Modal>
+            )}
+        </>
+    ) : (
+        timeFrameContentDesktop
     );
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
