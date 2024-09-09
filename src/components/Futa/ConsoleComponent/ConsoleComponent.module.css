@@ -1,0 +1,42 @@
+.container{
+    font-family: "Fira Mono";
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  
+    gap: 8px;
+   
+
+}
+
+.content{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 180px;
+
+    overflow-y: scroll;
+}
+.container h3{
+    color: var(--text1, #CEFFFF);
+text-transform: uppercase;
+font-size: 24px;
+}
+
+.actionItem{
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    font-size: 12px;
+    gap: 8px
+}
+.actionItem p:first-of-type{
+    color: var(--text2)
+}
+
+.actionItem p:nth-of-type(3){
+    color: var(--accent1)
+}

@@ -7,6 +7,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../ambient-utils/dataLayer';
 import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { brand } from '../../../../../ambient-utils/constants';
 
 interface PropsIF {
     type:
@@ -46,6 +47,7 @@ export default function TransactionSubmitted(props: PropsIF) {
     const blockExplorer = getChainExplorer(chainId);
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
+    const isFuta = brand === 'futa';
 
     const logoURI = tokenBImage;
 
@@ -77,9 +79,13 @@ export default function TransactionSubmitted(props: PropsIF) {
             rel='noreferrer'
             className={styles.view_etherscan}
             aria-label='view on block explorer'
+            style={{ color: isFuta ? 'var(--dark1)' : 'var(--text1)' }}
         >
             View on Block Explorer
-            <FiExternalLink size={18} color='var(--text1)' />
+            <FiExternalLink
+                size={18}
+                color={isFuta ? 'var(--dark1)' : 'var(--text1)'}
+            />
         </a>
     );
     return (
@@ -106,64 +112,64 @@ export default function TransactionSubmitted(props: PropsIF) {
                           isTransactionFailed
                               ? 'Failed'
                               : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
+                                ? 'Success!'
+                                : 'Submitted'
                       }`
                     : type === 'Range'
-                    ? `Pool ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Reposition'
-                    ? `Reposition ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Harvest'
-                    ? `Harvest ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Reset'
-                    ? `Reset ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Remove'
-                    ? `Removal ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : type === 'Claim'
-                    ? `Claim ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`
-                    : `Swap ${
-                          isTransactionFailed
-                              ? 'Failed'
-                              : isConfirmed
-                              ? 'Success!'
-                              : 'Submitted'
-                      }`}
+                      ? `Pool ${
+                            isTransactionFailed
+                                ? 'Failed'
+                                : isConfirmed
+                                  ? 'Success!'
+                                  : 'Submitted'
+                        }`
+                      : type === 'Reposition'
+                        ? `Reposition ${
+                              isTransactionFailed
+                                  ? 'Failed'
+                                  : isConfirmed
+                                    ? 'Success!'
+                                    : 'Submitted'
+                          }`
+                        : type === 'Harvest'
+                          ? `Harvest ${
+                                isTransactionFailed
+                                    ? 'Failed'
+                                    : isConfirmed
+                                      ? 'Success!'
+                                      : 'Submitted'
+                            }`
+                          : type === 'Reset'
+                            ? `Reset ${
+                                  isTransactionFailed
+                                      ? 'Failed'
+                                      : isConfirmed
+                                        ? 'Success!'
+                                        : 'Submitted'
+                              }`
+                            : type === 'Remove'
+                              ? `Removal ${
+                                    isTransactionFailed
+                                        ? 'Failed'
+                                        : isConfirmed
+                                          ? 'Success!'
+                                          : 'Submitted'
+                                }`
+                              : type === 'Claim'
+                                ? `Claim ${
+                                      isTransactionFailed
+                                          ? 'Failed'
+                                          : isConfirmed
+                                            ? 'Success!'
+                                            : 'Submitted'
+                                  }`
+                                : `Swap ${
+                                      isTransactionFailed
+                                          ? 'Failed'
+                                          : isConfirmed
+                                            ? 'Success!'
+                                            : 'Submitted'
+                                  }`}
             </h2>
             <div
                 className={`${styles.action_buttons} ${

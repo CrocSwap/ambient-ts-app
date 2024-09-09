@@ -65,13 +65,7 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 const mainnetProvider = new BatchedJsonRpcProvider(MAINNET_RPC_URL, 1, {
     staticNetwork: true,
 });
-// const mainnetProvider = new BatchedJsonRpcProvider(
-//     `https://mainnet.infura.io/v3/${
-//         import.meta.env.VITE_INFURA_KEY || '4741d1713bff4013bc3075ed6e7ce091'
-//     }`,
-//     1,
-//     { staticNetwork: true },
-// );
+
 const scrollProvider = new BatchedJsonRpcProvider(SCROLL_RPC_URL, 534352, {
     staticNetwork: true,
 });
@@ -107,14 +101,14 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         const [dfltTokenA, dfltTokenB]: [TokenIF, TokenIF] =
             getDefaultPairForChain(chainData.chainId);
 
-        const savedTokenASymbol = localStorage.getItem('tokenA');
-        const savedTokenBSymbol = localStorage.getItem('tokenB');
+        const savedTokenASymbol: string | null = localStorage.getItem('tokenA');
+        const savedTokenBSymbol: string | null = localStorage.getItem('tokenB');
 
-        const tokensMatchingA =
+        const tokensMatchingA: TokenIF[] =
             savedTokenASymbol === 'ETH'
                 ? [dfltTokenA]
                 : tokens.getTokensByNameOrSymbol(savedTokenASymbol || '', true);
-        const tokensMatchingB =
+        const tokensMatchingB: TokenIF[] =
             savedTokenBSymbol === 'ETH'
                 ? [dfltTokenA]
                 : tokens.getTokensByNameOrSymbol(savedTokenBSymbol || '', true);
@@ -136,6 +130,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             isSavedTokenADefaultB || isSavedTokenBDefaultA;
 
         // default URL params for swap and market modules
+        // decision tree exists to preferentially consume most recent
+        // ... token pair rather than the hardcoded default
         const swapParams: swapParamsIF = {
             chain: chainId,
             tokenA: firstTokenMatchingA
@@ -169,7 +165,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     }
 
     const initUrl = createDefaultUrlParams(chainData.chainId);
-    // why is this a `useState`? why not a `useRef` or a const?
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
@@ -180,15 +175,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
             ? SCROLL_RPC_URL
             : chainData.nodeUrl;
-    // const nodeUrl =
-    //     chainData.nodeUrl.toLowerCase().includes('infura') &&
-    //     import.meta.env.VITE_INFURA_KEY
-    //         ? chainData.nodeUrl.slice(0, -32) + import.meta.env.VITE_INFURA_KEY
-    //         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
-    //           ? BLAST_RPC_URL
-    //           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-    //             ? SCROLL_RPC_URL
-    //             : chainData.nodeUrl;
 
     const provider = useMemo(
         () =>

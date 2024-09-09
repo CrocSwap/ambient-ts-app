@@ -20,6 +20,7 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import FavButton from './FavButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SidebarContext } from '../../../contexts/SidebarContext';
+import { BrandContextIF, BrandContext } from '../../../contexts/BrandContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -35,6 +36,8 @@ export default function PoolsListItem(props: propsIF) {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const isFuta = platformName.toLowerCase() === 'futa';
 
     const isBaseTokenMoneynessGreaterOrEqual =
         pool.base.address && pool.quote.address
@@ -85,6 +88,7 @@ export default function PoolsListItem(props: propsIF) {
     const { pathname } = useLocation();
 
     const navTarget = useMemo<pageNames>(() => {
+        if (isFuta) return 'swap';
         let output: pageNames;
         if (
             pathname.startsWith('/trade/market') ||
@@ -103,7 +107,7 @@ export default function PoolsListItem(props: propsIF) {
             output = 'market';
         }
         return output as pageNames;
-    }, [pathname]);
+    }, [pathname, isFuta]);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 

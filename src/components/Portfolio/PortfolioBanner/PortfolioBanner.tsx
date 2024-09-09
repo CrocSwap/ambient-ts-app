@@ -6,40 +6,41 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
-import {
-    PortfolioBannerLevelContainer,
-    PortfolioBannerRectangleContainer,
-} from '../../../styled/Components/Portfolio';
+
 import NoisyLines from '../../NoisyLines/NoisyLines';
+import styles from './PortfolioBanner.module.css'
 import {
     UserDataContext,
     UserXpDataIF,
 } from '../../../contexts/UserDataContext';
-import { useContext, useMemo } from 'react';
+import { Dispatch, SetStateAction, useContext, useMemo } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
-import { HeaderButtons } from '../../../styled/Components/Chart';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
     connectedAccountActive: boolean;
     resolvedUserXp: UserXpDataIF;
+    showTabsAndNotExchange: boolean;
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
+    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp, showTabsAndNotExchange, setShowTabsAndNotExchange } =
         props;
     const { userAddress } = useContext(UserDataContext);
     const { connectedUserXp } = useContext(ChainDataContext);
 
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
+
+
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-    const isSmallScreen = useMediaQuery('(max-width: 800px)');
 
     const xpData =
         connectedAccountActive || location.pathname === '/account/xp'
@@ -77,7 +78,7 @@ export default function PortfolioBanner(props: propsIF) {
     // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
         // early return if address is not available (first render)
-        if (!addressOfAccountDisplayed) return null;
+        if (!addressOfAccountDisplayed || !desktopScreen) return null;
         // locate rendered parent element in DOM by element ID
         const parentElem: HTMLElement | null =
             document.getElementById(BANNER_ID);
@@ -105,6 +106,7 @@ export default function PortfolioBanner(props: propsIF) {
                 noiseMidPosition={0.8}
                 seed={addressOfAccountDisplayed}
                 animationDuration={3000}
+               
             />
         );
     }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
@@ -112,22 +114,15 @@ export default function PortfolioBanner(props: propsIF) {
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
 
+
+
     return (
-        <PortfolioBannerRectangleContainer
-            id={BANNER_ID}
-            style={{ position: 'relative' }}
-        >
-            {noisyLines}
-            <FlexContainer
-                justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
-                alignItems='baseline'
-                gap={16}
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    left: 20,
-                    zIndex: 1,
-                }} // Positioned above the NoisyLines component
+   
+        <div className={styles.portfolio_banner_rectangle_container} id={BANNER_ID}>
+
+          
+            { noisyLines}
+            <div className={styles.portfolio_banner_rectangle_content}
             >
                 <PortfolioBannerAccount
                     ensName={ensName}
@@ -136,14 +131,15 @@ export default function PortfolioBanner(props: propsIF) {
                     truncatedAccountAddress={truncatedAccountAddress}
                     jazziconsToDisplay={jazziconsToDisplay}
                     connectedAccountActive={connectedAccountActive}
+                    showTabsAndNotExchange={showTabsAndNotExchange}
+                    setShowTabsAndNotExchange={setShowTabsAndNotExchange}
                 />
-                <DefaultTooltip
+         {desktopScreen &&       <DefaultTooltip
                     interactive
                     title={'Toggle USD Price Estimates'}
                     enterDelay={500}
                 >
-                    <HeaderButtons
-                        mobileHide
+                    <button className={styles.header_button}
                         onClick={() =>
                             setIsTradeDollarizationEnabled((prev) => !prev)
                         }
@@ -159,25 +155,19 @@ export default function PortfolioBanner(props: propsIF) {
                                     : undefined,
                             }}
                         />
-                    </HeaderButtons>
-                </DefaultTooltip>
-            </FlexContainer>
+                    </button>
+                </DefaultTooltip>}
+            </div>
 
-            <PortfolioBannerLevelContainer
-                isAccountPage
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    zIndex: 3,
-                }} // Positioned above the NoisyLines component
-            >
+            <div className={styles.portfolio_banner_level_container}>
+                
+     
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}
                     user={userLink}
                 />
-            </PortfolioBannerLevelContainer>
-        </PortfolioBannerRectangleContainer>
+            </div>
+            </div>
     );
 }
