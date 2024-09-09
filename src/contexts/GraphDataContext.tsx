@@ -18,7 +18,7 @@ import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 import { TradeDataContext } from './TradeDataContext';
 
-interface Changes {
+export interface Changes {
     dataReceived: boolean;
     changes: Array<TransactionIF>;
 }
