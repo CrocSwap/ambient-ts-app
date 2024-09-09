@@ -17,7 +17,7 @@ import {
     lineValue,
     renderCanvasArray,
     setCanvasResolution,
-} from '../../../../pages/Chart/ChartUtils/chartUtils';
+} from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { useMediaQuery } from '@material-ui/core';
 import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph';

@@ -132,6 +132,7 @@ aside.emoji-picker-react {
 .introjs-tooltipbuttons a {
     /* font-size: 1.2rem; */
     color: var(--accent5);
+    border: none;
     /* font-weight: 700; */
 }
 
@@ -140,6 +141,11 @@ aside.emoji-picker-react {
     border: none !important;
     outline: none !important;
 }
+
+.introjs-button:focus{
+    box-shadow: none !important;
+}
+
 .introjs-tooltipbuttons {
     position: fixed;
     right: 51.14px;
@@ -148,6 +154,7 @@ aside.emoji-picker-react {
 
     box-shadow: var(--glow-box-shadow);
     border-radius: var(--border-radius);
+    background: var(--dark2) !important;
 }
 
 /* .MuiPagination-root{
