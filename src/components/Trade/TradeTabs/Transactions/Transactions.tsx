@@ -52,12 +52,12 @@ import {
     SidebarStateIF,
 } from '../../../../contexts/SidebarContext';
 import {
+    Changes,
     ScrollToTopButton,
     TransactionRow as TransactionRowStyled,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import {
-    Changes,
     GraphDataContext,
     GraphDataContextIF,
 } from '../../../../contexts/GraphDataContext';

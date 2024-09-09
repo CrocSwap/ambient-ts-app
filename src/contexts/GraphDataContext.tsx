@@ -17,11 +17,7 @@ import { DataLoadingContext } from './DataLoadingContext';
 import { PositionUpdateIF, ReceiptContext } from './ReceiptContext';
 import { getPositionHash } from '../ambient-utils/dataLayer/functions/getPositionHash';
 import { TradeDataContext } from './TradeDataContext';
-
-export interface Changes {
-    dataReceived: boolean;
-    changes: Array<TransactionIF>;
-}
+import { Changes } from '../styled/Components/TransactionTable';
 
 interface PositionsByUser {
     dataReceived: boolean;
