@@ -211,9 +211,34 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 );
             });
             if (filteredNewTxByPoolData.length > 0) {
-                setTransactionsByPool({
-                    dataReceived: true,
-                    changes: filteredNewTxByPoolData,
+                setTransactionsByPool((prev) => {
+                    // Create a Set of existing transaction identifiers (e.g., txHash or txId)
+                    const existingTxIds = new Set(
+                        prev.changes.map(
+                            (change) => change.txHash || change.txId,
+                        ),
+                    );
+                    // Filter out transactions that are already in the state
+                    const newUniqueTxByPoolData =
+                        filteredNewTxByPoolData.filter(
+                            (tx) => !existingTxIds.has(tx.txHash || tx.txId),
+                        );
+                    // Sort and remove the oldest transactions if necessary
+                    const prevChangesCopy = [...prev.changes]; // Create a copy to avoid mutating state directly
+                    if (newUniqueTxByPoolData.length > 0) {
+                        prevChangesCopy.sort((a, b) => a.txTime - b.txTime);
+                        prevChangesCopy.splice(0, newUniqueTxByPoolData.length);
+                    }
+
+                    const newTxsArray = [
+                        ...prevChangesCopy,
+                        ...newUniqueTxByPoolData,
+                    ];
+
+                    return {
+                        dataReceived: true,
+                        changes: newTxsArray,
+                    };
                 });
                 setDataLoadingStatus({
                     datasetName: 'isPoolTxDataLoading',
@@ -476,7 +501,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         quote: quoteTokenAddress,
                         poolIdx: props.chainData.poolIndex,
                         chainId: props.chainData.chainId,
-                        n: 200,
+                        n: 100,
                         crocEnv: props.crocEnv,
                         graphCacheUrl: props.graphCacheUrl,
                         provider: props.provider,
