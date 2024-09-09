@@ -90,6 +90,10 @@
     color: var(--text2);
 }
 
+.non_active_selected_button {
+    color: var(--text2);
+}
+
 .futa_active_selected_button {
     color: var(--accent1);
     border: 1px solid var(--accent1);
