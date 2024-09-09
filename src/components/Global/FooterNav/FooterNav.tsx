@@ -88,7 +88,7 @@ const FooterNav: React.FC = () => {
         <div className={styles.nav}>
             {linksData.map((link, index) => (
                 <motion.div
-                    key={link.destination}
+                    key={index}
                     className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
                     onClick={() => setActiveIndex(index)}
                     initial={{ flexGrow: 1 }}

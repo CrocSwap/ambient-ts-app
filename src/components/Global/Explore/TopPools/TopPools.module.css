@@ -1,9 +1,7 @@
-
-
 /* ------------------------------------------- */
 
 /* ----------------------------------- */
-.mainContainer{
+.mainContainer {
     box-sizing: border-box;
     width: 100%;
     /* max-width: 1500px; */
@@ -19,38 +17,33 @@
     background: var(--dark1);
     border: 1px solid var(--dark3);
     border-radius: 4px;
-    
-    
-   
 }
 
-.headerContainer{
+.headerContainer {
     box-sizing: border-box;
     width: 100%;
-   
+
     display: flex;
     flex-direction: row;
     align-items: center;
     min-width: 100%;
     height: 40px;
-   
+
     gap: 4px;
-   
-    overflow-x: auto; 
-    white-space: nowrap; 
-   border-bottom: 1px solid var(--dark3);
+
+    overflow-x: auto;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--dark3);
     position: sticky;
     top: 0;
     padding-left: 8px;
-   
-    
 }
 
-.headerItems{
+.headerItems {
     color: var(--text2);
     font-size: var(--body-size);
 }
-.gridHeaderItem{
+.gridHeaderItem {
     box-sizing: border-box;
     display: flex;
     flex-grow: 1;
@@ -60,32 +53,25 @@
     min-height: 0;
     align-items: center;
     gap: 2px;
-    
+
     /* width: 133px; */
-   
-    padding: 0 8px;
+
     font-size: var(--body-size);
     width: 60px;
     /* justify-content: center; */
-   
-
-   
-    
 }
 .contentContainer {
-    height: calc(100% - 64px); /* Adjust this value based on your header's height */
+    height: calc(
+        100% - 64px
+    ); /* Adjust this value based on your header's height */
     overflow-y: auto; /* Make only the content scrollable */
     scrollbar-gutter: stable; /* This will keep the layout stable when the scrollbar appears */
-   
-   
+
     padding-right: 1rem;
     padding-bottom: 1rem;
-
-   
-
 }
 
-.borderRight{
+.borderRight {
     height: 100%;
     width: 2px;
     position: absolute;
@@ -93,31 +79,23 @@
     right: 10px;
 }
 
-
-
-.tokens{
-   
-   display: flex;
-   justify-content: flex-start !important;
+.tokens {
+    display: flex;
+    justify-content: flex-start !important;
 }
 
-
-.tradeButton{
+.tradeButton {
     width: 25px;
-   
 }
 
-
- .poolName{
-   /* justify-content: flex-start !important; */
-   width: 30px;
-  
-  
+.poolName {
+    /* justify-content: flex-start !important; */
+    width: 30px;
 }
-.no_results{
+.no_results {
     width: 100%;
     height: 200px;
-   
+
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -127,7 +105,7 @@
     gap: 8px;
 }
 
-.spinner_container{
+.spinner_container {
     position: absolute;
     top: 0;
     left: 0;
@@ -138,10 +116,10 @@
     align-items: center;
 }
 
-.no_results button{
+.no_results button {
     width: 100%;
     max-width: 200px;
-   
+
     height: auto;
     outline: none;
     padding: 4px 8px;
@@ -159,46 +137,47 @@
     color: var(--text1);
 }
 
-
-.no_results button:hover{
-    color: var(--text2)
+.no_results button:hover {
+    color: var(--text2);
 }
 
-
 @media only screen and (min-width: 768px) {
-
-    .mainContainer{
+    .mainContainer {
         border: none;
     }
-    .no_results{
+    .no_results {
         height: 70%;
     }
 
-    .headerContainer{
+    .headerContainer {
         gap: 8px;
     }
 
+    .gridHeaderItem {
+        padding: 0 8px;
+        width: 70px;
+        justify-content: flex-end;
+    }
 
-.gridHeaderItem{
-   
-    width: 70px;
-    justify-content: flex-end;
-   
-   
-}
-
-
-.tradeButton, .poolName{
-    width: 70px;
-}
+    .tradeButton,
+    .poolName {
+        width: 70px;
+        padding-right: 30px;
+    }
+    .price {
+        padding-right: 15px;
+    }
 }
 
 @media only screen and (min-width: 1024px) {
-    .headerItems, .gridHeaderItem{
+    .headerItems,
+    .gridHeaderItem {
         font-size: 14px;
     }
-    .gridHeaderItem, .tradeButton, .tradeButton, .poolName{
+    .gridHeaderItem,
+    .tradeButton,
+    .tradeButton,
+    .poolName {
         width: 133px;
     }
-
 }

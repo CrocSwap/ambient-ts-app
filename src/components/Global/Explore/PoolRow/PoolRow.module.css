@@ -1,4 +1,4 @@
-.gridContainer{
+.gridContainer {
     box-sizing: border-box;
     width: 100%;
     display: flex;
@@ -6,18 +6,15 @@
     align-items: center;
     min-width: 100%;
     min-height: 50px;
-   
+
     gap: 4px;
-   
-    white-space: nowrap; 
+
+    white-space: nowrap;
     padding-left: 8px;
     /* padding: 0 8px; */
-   
-
-    
 }
 
-.gridItem{
+.gridItem {
     box-sizing: border-box;
     display: flex;
     flex-grow: 1;
@@ -29,31 +26,24 @@
     font-size: 12px;
     width: 60px;
     justify-content: center;
-    
-   
-   
 }
 
-.tokenIcon{
+.tokenIcon {
     width: 100%;
     display: flex;
     justify-content: flex-start !important;
 }
 
-.tradeButton{
+.tradeButton {
     width: 25px;
-   
 }
 
-
-.poolName{
-   justify-content: flex-start;
-   width: 30px;
-  
-  
+.poolName {
+    justify-content: flex-start;
+    width: 50px;
 }
 
-.tradeIcon{
+.tradeIcon {
     width: 25px;
     height: 25px;
     background: var(--dark2);
@@ -66,28 +56,29 @@
 }
 
 @media only screen and (min-width: 768px) {
-
-    .gridContainer{
+    .gridContainer {
         gap: 8px;
     }
 
-    .gridItem{
+    .gridItem {
         width: 70px;
         justify-content: flex-end;
     }
-    .tradeButton, .poolName{
-width: 70px;
+    .tradeButton,
+    .poolName {
+        width: 70px;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .gridItem,
+    .tradeButton,
+    .tradeButton,
+    .poolName {
+        width: 133px;
     }
 
-   
+    .gridItem {
+        font-size: 14px;
     }
-
-    @media only screen and (min-width: 1024px) {
-        .gridItem, .tradeButton, .tradeButton, .poolName{
-            width: 133px;
-        }
-
-        .gridItem{
-            font-size: 14px;
-        }
-    }
+}

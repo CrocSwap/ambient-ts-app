@@ -86,12 +86,16 @@ overflow: hidden !important;
     grid-template-rows: 105px 1fr ;
     gap: 4px;
     overflow: hidden;
-    padding: 0 1rem;
    
  
     
 }
 
+  @media (min-width: 400px) {
+    .mobile_layout{
+      padding: 0 1rem
+  }
+}
   @media (min-width: 1200px) {
     .portfolio_tabs_container.fullLayoutContainer {
       grid-template-columns: auto 36px;

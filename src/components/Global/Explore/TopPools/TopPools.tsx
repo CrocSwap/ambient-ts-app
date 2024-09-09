@@ -63,18 +63,24 @@ function TopPools(props: propsIF) {
                   classname: styles.tokens,
               },
         {
-            label: 'Pool',
+            label: desktopView ? 'Pool' : ' Pool',
 
             sortable: false,
             classname: styles.poolName,
         },
         {
-            label: 'Price',
-
+            label: desktopView ? 'Price' : '    Price',
             sortable: false,
+            classname: styles.price,
         },
         {
-            label: desktopView ? '24h Vol.' : 'Vol',
+            label: desktopView ? 'TVL' : '    TVL',
+
+            sortable: true,
+            tooltipText: 'Total value locked',
+        },
+        {
+            label: '24h Vol.',
 
             sortable: true,
             tooltipText: 'Total volume in the last 24 hours',
@@ -99,18 +105,13 @@ function TopPools(props: propsIF) {
                       </>
                   ),
               },
-              {
-                  label: 'TVL',
-      
-                  sortable: true,
-                  tooltipText: 'Total value locked',
-              },
-              {
-                  label: 'Change',
-                  
-                  sortable: true,
-                  tooltipText: 'The change in price over the last 24 hours',
-                },
+
+        {
+            label: desktopView ? '24h Price Δ' : 'Change',
+
+            sortable: true,
+            tooltipText: 'The change in price over the last 24 hours',
+        },
         {
             label: '',
 

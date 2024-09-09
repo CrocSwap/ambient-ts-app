@@ -74,8 +74,13 @@ export interface LiqSnap {
 
 // React functional component
 function TradeCharts(props: propsIF) {
-    const { selectedDate, setSelectedDate, updateURL, isMobileSettingsModalOpen,
-        closeMobileSettingsModal, } = props;
+    const {
+        selectedDate,
+        setSelectedDate,
+        updateURL,
+        isMobileSettingsModalOpen,
+        closeMobileSettingsModal,
+    } = props;
 
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
@@ -254,8 +259,6 @@ function TradeCharts(props: propsIF) {
         </div>
     );
 
-
-console.log({isMobileSettingsModalOpen})
     const timeFrameContentDesktop = (
         <section className={styles.time_frame_container}>
             <div className={styles.mobile_settings_row}>
@@ -263,7 +266,7 @@ console.log({isMobileSettingsModalOpen})
                 <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
             <div className={styles.mobile_settings_row}>
-            <p className={styles.mobile_settings_header}>Volume:</p>
+                <p className={styles.mobile_settings_header}>Volume:</p>
 
                 <VolumeTVLFee
                     setShowVolume={setShowVolume}
@@ -276,7 +279,7 @@ console.log({isMobileSettingsModalOpen})
             </div>
             {isUserConnected && (
                 <div className={styles.mobile_settings_row}>
-                <p className={styles.mobile_settings_header}>Buy/Sells:</p>
+                    <p className={styles.mobile_settings_header}>Buy/Sells:</p>
 
                     <OrderHistoryDisplay
                         setShowHistorical={setShowHistorical}
@@ -289,10 +292,10 @@ console.log({isMobileSettingsModalOpen})
                 </div>
             )}
             <div className={styles.mobile_settings_row}>
-            <p className={styles.mobile_settings_header}>Curve:</p>
+                <p className={styles.mobile_settings_header}>Curve:</p>
 
                 <CurveDepth overlayMethods={chartSettings.poolOverlay} />
-            </div >
+            </div>
             <div className={styles.chart_overlay_container}>
                 {resetAndRescaleDisplay}
             </div>
@@ -300,22 +303,24 @@ console.log({isMobileSettingsModalOpen})
     );
     const timeFrameContent = smallScreen ? (
         <>
-          {isMobileSettingsModalOpen && (
-            <Modal onClose={closeMobileSettingsModal} title='Chart Settings'>
+            {isMobileSettingsModalOpen && (
+                <Modal
+                    onClose={closeMobileSettingsModal}
+                    title='Chart Settings'
+                >
                     {timeFrameContentDesktop}
                     <div className={styles.settings_apply_button_container}>
-
-                    <button onClick={closeMobileSettingsModal}>Apply</button>
+                        <button onClick={closeMobileSettingsModal}>
+                            Apply
+                        </button>
                     </div>
-            </Modal>
-          )}
+                </Modal>
+            )}
         </>
-      ) : (
+    ) : (
         timeFrameContentDesktop
-      );
-      
+    );
 
-  
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
