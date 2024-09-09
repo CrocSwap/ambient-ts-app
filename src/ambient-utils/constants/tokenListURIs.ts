@@ -6,8 +6,8 @@ export const tokenListURIs = {
     blastCoingecko: 'https://tokens.coingecko.com/blast/all.json',
     // broken: '/broken-list.json',
     scrollCoingecko: 'https://tokens.coingecko.com/scroll/all.json',
-    // scrollTech:
-    //     'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
+    scrollTech:
+        'https://raw.githubusercontent.com/scroll-tech/token-list/main/scroll.tokenlist.json',
     testnet: '/testnet-token-list.json',
     uniswap: 'https://tokens.uniswap.org',
     ambient: '/ambient-token-list.json',
