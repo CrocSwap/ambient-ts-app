@@ -6,7 +6,7 @@
             rgba(0, 0, 0, 0.5) 0%,
             rgba(0, 0, 0, 0.5) 100%
         ),
-        url('../../assets/images/backgrounds/pointSystemBg.png');
+        url('../../../assets/images/backgrounds/pointSystemBg.png');
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -21,12 +21,9 @@
 
 .points_banner_small {
     position: relative;
-    background: linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.5) 0%,
-            rgba(0, 0, 0, 0.5) 100%
-        ),
-        url('../../assets/images/backgrounds/pointSystemBg.png'),
+    background:
+        linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%),
+        url('../../../assets/images/backgrounds/pointSystemBg.png'),
         lightgray 50% / cover;
 
     -webkit-background-size: cover;

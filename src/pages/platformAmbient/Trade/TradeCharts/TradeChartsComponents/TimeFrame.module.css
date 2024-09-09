@@ -90,8 +90,28 @@
     color: var(--text2);
 }
 
+.non_active_selected_button {
+    color: var(--text2);
+}
 
+.futa_active_selected_button {
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+}
 
+.active_selected_button {
+    width: 100%;
+    height: 100%;
+    color: var(--text1);
+}
+
+.futa_non_active_selected_button {
+    color: var(--text2);
+}
+
+.non_active_selected_button {
+    color: var(--text2);
+}
 
 .main_time_frame_container button:focus-visible,
 .active_selected_button:focus-visible,
@@ -101,9 +121,5 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-
-@media only screen and (max-width: 600px){
-
-
-
+@media only screen and (max-width: 600px) {
 }

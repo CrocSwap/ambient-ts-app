@@ -11,6 +11,7 @@ import {
 // START: Import Local Files
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
+import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import {
@@ -30,7 +31,6 @@ import styles from './TradeCharts.module.css';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
