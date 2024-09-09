@@ -1,12 +1,65 @@
-import styled from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
+import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Common/Animations';
 
+interface TradeModuleLinkProps {
+    isActive: boolean;
+    isFuta?: boolean;
+}
 
+export const TradeModuleLink = styled(Link)<TradeModuleLinkProps>`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 116px;
+    height: ${({ isFuta }) => (isFuta ? '29px' : '25px')};
+    font-size: 18px;
+    border-radius: var(--border-radius);
+    transition: all var(--animation-speed) ease-in-out;
+
+    color: ${({ isFuta }) => (isFuta ? 'var(--text2)' : 'var(--text1)')};
+    background: ${({ isFuta }) => (isFuta ? 'var(--dark2)' : 'var(--dark2)')};
+
+    ${({ isFuta, isActive }) =>
+        isFuta &&
+        css`
+            ${isActive &&
+            css`
+                color: var(--accent1);
+                background: var(--base-dark2, #14161a);
+                border: 0.5px solid var(--base-accent1, #62ebf1);
+            `}
+
+            &:hover {
+                opacity: 0.5;
+                border: 0.5px solid var(--base-accent1, #62ebf1);
+            }
+            border-radius: 0;
+            width: 50%;
+            transition: all var(--animation-speed) ease-in-out;
+        `}
+
+    ${({ isActive, isFuta }) =>
+        !isFuta &&
+        isActive &&
+        css`
+            background: var(--accent1);
+        `}
+    
+    &:hover {
+        ${({ isFuta }) =>
+            !isFuta &&
+            css`
+                background: var(--accent1);
+            `}
+    }
+`;
 
 export const WarningContainer = styled(FlexContainer)`
-    border: 1px solid var(--dark3);
+    border: 1px solid var(--other-red);
     border-radius: var(--border-radius);
+    text-transform: uppercase;
 
     & svg {
         color: var(--other-red) !important;
@@ -24,8 +77,6 @@ export const HoverableIcon = styled.svg`
         color: var(--accent1) !important;
     }
 `;
-
-
 
 export const AdvancedModeSection = styled(FlexContainer)<{ disabled: boolean }>`
     ${({ disabled }) =>
@@ -214,21 +265,22 @@ export const TokenQuantityContainer = styled.div<AnimationProps>`
     ${Animations};
 `;
 
-export const TokenSelectButton = styled.button`
+export const TokenSelectButton = styled.button<{ justDisplay?: boolean }>`
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    cursor: pointer;
+    cursor: ${(props) => (props.justDisplay ? 'default' : 'pointer')};
+    pointer-events: ${(props) => (props.justDisplay ? 'none' : 'auto')};
     transition: var(--transition);
 
     background: var(--dark1);
     outline: none;
     border: 0.5px solid transparent;
     padding: 0 4px;
-    border-radius: 50px;
     height: 40px;
+    padding-right: ${(props) => (props.justDisplay ? '12px' : '')};
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
@@ -236,7 +288,7 @@ export const TokenSelectButton = styled.button`
 
     &:hover {
         border: 0.5px solid var(--accent1);
-        color: var(--accent1);
+        color: var (--accent1);
         box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
         transition: var(--transition);
     }
@@ -486,4 +538,26 @@ export const CurrencyQuantityInput = styled.input`
     transition:
         border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
+`;
+
+export const LPButton = styled.button`
+    background: transparent;
+    outline: none;
+    border: none;
+    color: var(--accent1);
+    text-align: center;
+    font-family: 'Fira Mono';
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.36px;
+    text-decoration-line: underline;
+    transition: color 0.3s ease;
+    cursor: pointer;
+    text-transform: uppercase;
+
+    &:hover {
+        color: var(--accent2);
+    }
 `;

@@ -2,7 +2,6 @@ import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import Spinner from '../../Spinner/Spinner';
 import styles from './DexTokens.module.css';
 import { useSortedDexTokens, sortedDexTokensIF } from '../useSortedDexTokens';
-import { dexTokenData } from '../../../../pages/Explore/useTokenStats';
 import { getDefaultPairForChain } from '../../../../ambient-utils/constants';
 import {
     GCServerPoolIF,
@@ -16,8 +15,9 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { isWrappedNativeToken } from '../../../../ambient-utils/dataLayer';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
-import TokenRow from '../TokenRow/TokenRow';
+import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
+import TokenRow from '../TokenRow/TokenRow';
 
 export type columnSlugs =
     | 'token'
@@ -44,12 +44,19 @@ interface propsIF {
     searchQuery: string;
     setSearchQuery: Dispatch<SetStateAction<string>>;
     view: 'pools' | 'tokens';
-    handleToggle(): void
+    handleToggle(): void;
 }
 
 function DexTokens(props: propsIF) {
-    const { dexTokens, chainId, goToMarket, searchQuery, setSearchQuery, view, handleToggle } =
-        props;
+    const {
+        dexTokens,
+        chainId,
+        goToMarket,
+        searchQuery,
+        setSearchQuery,
+        view,
+        handleToggle,
+    } = props;
 
     const { findPool } = useContext(PoolContext);
 
@@ -105,7 +112,7 @@ function DexTokens(props: propsIF) {
         {
             label: '',
             slug: 'tradeBtn',
-          
+
             sortable: false,
         },
     ];
@@ -123,8 +130,10 @@ function DexTokens(props: propsIF) {
                             className={`${styles.gridHeaderItem} ${item.classname} ${styles.headerItems}`}
                             style={{
                                 cursor: item.sortable ? 'pointer' : 'default',
-                                paddingRight: item?.tooltipText && desktopView ? '16px' : '0'
-
+                                paddingRight:
+                                    item?.tooltipText && desktopView
+                                        ? '16px'
+                                        : '0',
                             }}
                             onClick={() =>
                                 item.sortable && sortedTokens.update(item.slug)
@@ -140,7 +149,7 @@ function DexTokens(props: propsIF) {
                                     }
                                 />
                             )}
-                            {item.tooltipText &&  desktopView && (
+                            {item.tooltipText && desktopView && (
                                 <TooltipComponent
                                     title={item.tooltipText}
                                     placement='right'
@@ -161,7 +170,7 @@ function DexTokens(props: propsIF) {
 
     return (
         <div className={styles.mainContainer}>
-                        <ExploreToggle view={view} handleToggle={handleToggle}/>
+            <ExploreToggle view={view} handleToggle={handleToggle} />
 
             {headerDisplay}
             <div className={`${styles.contentContainer} custom_scroll_ambient`}>
@@ -202,7 +211,6 @@ function DexTokens(props: propsIF) {
                                 samplePool={samplePool}
                                 backupPool={backupPool}
                                 goToMarket={goToMarket}
-                                
                             />
                         );
                     })

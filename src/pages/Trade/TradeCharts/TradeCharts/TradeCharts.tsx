@@ -9,9 +9,6 @@ import {
 } from 'react';
 
 // START: Import Local Files
-import TimeFrame from '../TradeChartsComponents/TimeFrame';
-import VolumeTVLFee from '../TradeChartsComponents/VolumeTVLFee';
-import CurveDepth from '../TradeChartsComponents/CurveDepth';
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
@@ -22,12 +19,10 @@ import {
 } from '../../../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { TradeChartsHeader } from '../TradeChartsHeader/TradeChartsHeader';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
 import { TutorialButton } from '../../../../styled/Components/Tutorial';
-import OrderHistoryDisplay from '../TradeChartsComponents/OrderHistoryDisplay';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './TradeCharts.module.css';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
@@ -35,6 +30,12 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import TradeCandleStickChart from '../TradeCandleStickChart/TradeCandleStickChart';
 import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import Modal from '../../../../components/Global/Modal/Modal';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import CurveDepth from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
+import OrderHistoryDisplay from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/OrderHistoryDisplay';
+import TimeFrame from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/TimeFrame';
+import VolumeTVLFee from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/VolumeTVLFee';
+import { TradeChartsHeader } from '../../../platformAmbient/Trade/TradeCharts/TradeChartsHeader/TradeChartsHeader';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -96,6 +97,8 @@ function TradeCharts(props: propsIF) {
     } = useContext(ChartContext);
 
     const { isUserConnected } = useContext(UserDataContext);
+
+    const { platformName } = useContext(BrandContext);
 
     const { pathname } = useLocation();
     const smallScreen = useMediaQuery('(max-width: 768px)');
@@ -203,7 +206,13 @@ function TradeCharts(props: propsIF) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     const resetAndRescaleDisplay = (
-        <div className={styles.chart_overlay_container}>
+        <div
+            className={
+                ['futa'].includes(platformName)
+                    ? styles.futa_chart_overlay_container
+                    : styles.chart_overlay_container
+            }
+        >
             {showLatest && (
                 <div className={styles.settings_container}>
                     <button
@@ -214,7 +223,11 @@ function TradeCharts(props: propsIF) {
                                 setLatest(true);
                             }
                         }}
-                        className={styles.non_active_selected_button}
+                        className={
+                            ['futa'].includes(platformName)
+                                ? styles.futa_non_active_selected_button
+                                : styles.non_active_selected_button
+                        }
                         aria-label='Show latest.'
                     >
                         Latest
@@ -229,9 +242,13 @@ function TradeCharts(props: propsIF) {
                         setRescale(true);
                     }}
                     className={
-                        reset
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
+                        ['futa'].includes(platformName)
+                            ? reset
+                                ? styles.futa_active_selected_button
+                                : styles.futa_non_active_selected_button
+                            : reset
+                              ? styles.active_selected_button
+                              : styles.non_active_selected_button
                     }
                     aria-label='Reset.'
                 >
@@ -247,9 +264,13 @@ function TradeCharts(props: propsIF) {
                         });
                     }}
                     className={
-                        rescale
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
+                        ['futa'].includes(platformName)
+                            ? rescale
+                                ? styles.futa_active_selected_button
+                                : styles.futa_non_active_selected_button
+                            : rescale
+                              ? styles.active_selected_button
+                              : styles.non_active_selected_button
                     }
                     aria-label='Auto rescale.'
                 >
@@ -332,8 +353,11 @@ function TradeCharts(props: propsIF) {
                 fullHeight
                 fullWidth
                 style={{
+                    padding:
+                        isChartFullScreen || ['futa'].includes(platformName)
+                            ? '1rem'
+                            : '0',
                     background: isChartFullScreen ? 'var(--dark2)' : '',
-                    padding: smallScreen ? '0 1rem' : '',
                 }}
                 ref={chartCanvasRef}
             >

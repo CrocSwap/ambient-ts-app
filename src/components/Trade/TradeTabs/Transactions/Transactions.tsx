@@ -10,7 +10,6 @@ import {
     memo,
     useMemo,
 } from 'react';
-
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';

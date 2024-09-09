@@ -6,6 +6,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
+import { brand } from '../../../ambient-utils/constants';
 
 // Interface for React functional components
 interface propsIF {
@@ -79,6 +80,7 @@ export default function DropdownMenu2(props: propsIF) {
     );
 
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
+    const showFullMenu = desktopScreen && brand !== 'futa';
     return (
         <div ref={dropdownRefItem}>
             <Menu
@@ -89,7 +91,7 @@ export default function DropdownMenu2(props: propsIF) {
                 fullWidth
                 onClick={() => expandable && toggleMenu()}
                 style={{
-                    minWidth: !desktopScreen
+                    minWidth: !showFullMenu
                         ? ''
                         : titleWidth
                           ? titleWidth
@@ -97,7 +99,7 @@ export default function DropdownMenu2(props: propsIF) {
                 }}
             >
                 <MenuItem gap={4}>
-                    {desktopScreen && (
+                    {showFullMenu && (
                         <Icon
                             justifyContent='center'
                             alignItems='center'
@@ -127,13 +129,17 @@ export default function DropdownMenu2(props: propsIF) {
                                     : title}
                         </Icon>
                     )}
-                    {!desktopScreen && (
+                    {!showFullMenu && (
                         <img
                             src={logo}
                             alt={title}
                             width='18px'
                             height='18px'
-                            style={{ borderRadius: '50%', marginLeft: '2px' }}
+                            style={{
+                                cursor: 'default',
+                                borderRadius: '50%',
+                                marginLeft: '2px',
+                            }}
                         />
                     )}
                 </MenuItem>

@@ -329,6 +329,25 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
+    function reverseForAmbient(): void {
+        isTokenAPrimary
+            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                ? setIsSellLoading(true)
+                : null
+            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+              ? setIsBuyLoading(true)
+              : null;
+
+        if (!isTokenAPrimary) {
+            setSellQtyString(primaryQuantity);
+        } else {
+            setBuyQtyString(primaryQuantity);
+        }
+        setIsTokenAPrimary(!isTokenAPrimary);
+
+        reverseTokens();
+    }
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -364,11 +383,7 @@ function SwapTokenInput(props: propsIF) {
                 justifyContent='center'
                 alignItems='center'
             >
-                <TokensArrow
-                    onClick={() => {
-                        reverseTokens();
-                    }}
-                />
+                <TokensArrow onClick={() => reverseForAmbient()} />
             </FlexContainer>
             <TokenInputWithWalletBalance
                 fieldId='swap_buy'

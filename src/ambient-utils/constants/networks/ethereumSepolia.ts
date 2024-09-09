@@ -28,6 +28,7 @@ export const ethereumSepolia: NetworkIF = {
     shouldPollBlock: false,
     marketData: '0x1',
     defaultPair: [sepoliaETH, sepoliaUSDC],
+    defaultPairFuta: [sepoliaETH, sepoliaWBTC],
     topPools: [
         new TopPool(sepoliaETH, sepoliaUSDC, lookupChain('0xaa36a7').poolIndex),
         new TopPool(sepoliaETH, sepoliaWBTC, lookupChain('0xaa36a7').poolIndex),
