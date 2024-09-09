@@ -532,11 +532,13 @@ function Transactions(props: propsIF) {
         },
     ];
 
+
+    
     const txDataToDisplay: TransactionIF[] = isCandleSelected
         ? candleTransactionData
         : transactionData;
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions, sortData] =
         useSortedTxs('time', txDataToDisplay);
 
     const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
@@ -714,6 +716,7 @@ function Transactions(props: propsIF) {
     };
 
     useEffect(() => {
+        domDebug('sortBy', sortBy)
         scrollToTop();
     }, [sortBy, showAllData]);
 
@@ -779,6 +782,8 @@ function Transactions(props: propsIF) {
         }
     }
 
+    const autoScrollAlternateSolutionActive = true;
+
     const addMoreData = (): void => {
         if (!crocEnv || !provider) return;
         // retrieve pool recent changes
@@ -825,7 +830,12 @@ function Transactions(props: propsIF) {
                         } else {
                             setMoreDataAvailable(false);
                         }
-                        const newTxData = [...prev.changes, ...uniqueChanges];
+                        let newTxData = [];
+                        if(autoScrollAlternateSolutionActive){
+                            newTxData = sortData([...prev.changes, ...uniqueChanges]);
+                        }else{
+                             newTxData = [...prev.changes, ...uniqueChanges];
+                        }
                         return {
                             dataReceived: true,
                             changes: newTxData,
@@ -864,13 +874,31 @@ function Transactions(props: propsIF) {
         logData();
         // if(disableAutoScroll) return;
         if(autoScroll){
-            if(autoScrollDirection === ScrollDirection.DOWN){
-                scrollByTxID(lastSeenTxIDRef.current || '', ScrollPosition.BOTTOM)
-            }else if(autoScrollDirection === ScrollDirection.UP){
-                scrollByTxID(firstSeenTxIDRef.current || '', ScrollPosition.TOP);
+            if(sortBy === 'time' || !autoScrollAlternateSolutionActive){
+                if(autoScrollDirection === ScrollDirection.DOWN){
+                    scrollByTxID(lastSeenTxIDRef.current || '', ScrollPosition.BOTTOM)
+                }else if(autoScrollDirection === ScrollDirection.UP){
+                    scrollByTxID(firstSeenTxIDRef.current || '', ScrollPosition.TOP);
+                }
+            }else{
+                scrollWithAlternateStrategy();
             }
         }
     }, [sortedTxDataToDisplay])
+
+    const scrollWithAlternateStrategy = () => {
+        if(autoScrollDirection === ScrollDirection.DOWN && scrollRef.current){
+            scrollRef.current.scrollTo({
+                top: 1912,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }else if(autoScrollDirection === ScrollDirection.UP && scrollRef.current){
+            scrollRef.current.scrollTo({
+                top: 1850,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    }
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
