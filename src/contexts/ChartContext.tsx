@@ -17,18 +17,18 @@ import { getLocalStorageItem } from '../ambient-utils/dataLayer';
 import {
     LS_KEY_CHART_ANNOTATIONS,
     LS_KEY_CHART_CONTEXT_SETTINGS,
-} from '../pages/Chart/ChartUtils/chartConstants';
+} from '../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import {
     actionKeyIF,
     actionStackIF,
     useUndoRedo,
-} from '../pages/Chart/ChartUtils/useUndoRedo';
+} from '../pages/platformAmbient/Chart/ChartUtils/useUndoRedo';
 import { TradeDataContext, TradeDataContextIF } from './TradeDataContext';
 import {
     drawDataHistory,
     getCssVariable,
     selectedDrawnData,
-} from '../pages/Chart/ChartUtils/chartUtils';
+} from '../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import { BrandContext } from './BrandContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
@@ -144,6 +144,10 @@ export interface ChartThemeIF {
     drawngShapeDefaultColor: d3.RGBColor | d3.HSLColor | null;
 
     selectedDateStrokeColor: d3.RGBColor | d3.HSLColor | null;
+    text2: d3.RGBColor | d3.HSLColor | null;
+    accent1: d3.RGBColor | d3.HSLColor | null;
+    accent3: d3.RGBColor | d3.HSLColor | null;
+    dark1: d3.RGBColor | d3.HSLColor | null;
     textColor: string;
 
     [key: string]: d3.RGBColor | d3.HSLColor | string | null;
@@ -170,6 +174,10 @@ export interface LocalChartSettingsIF {
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
+    const { skin, platformName } = useContext(BrandContext);
+
+    const isFuta = ['futa'].includes(platformName);
+
     // 2:1 ratio of the window height subtracted by main header and token info header
     const CHART_MAX_HEIGHT = window.innerHeight - 160;
     const CHART_MIN_HEIGHT = 4;
@@ -180,8 +188,12 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const CHART_SAVED_HEIGHT_LOCAL_STORAGE =
         localStorage.getItem('savedChartHeight');
 
-    if (CHART_SAVED_HEIGHT_LOCAL_STORAGE) {
+    if (CHART_SAVED_HEIGHT_LOCAL_STORAGE && !isFuta) {
         CHART_SAVED_HEIGHT = parseInt(CHART_SAVED_HEIGHT_LOCAL_STORAGE);
+    }
+
+    if (isFuta) {
+        CHART_SAVED_HEIGHT = CHART_MAX_HEIGHT + 50;
     }
 
     const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(
@@ -244,8 +256,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         max: CHART_MAX_HEIGHT,
         default: CHART_DEFAULT_HEIGHT,
     });
-
-    const { skin } = useContext(BrandContext);
 
     const [chartThemeColors, setChartThemeColors] = useState<
         ChartThemeIF | undefined
@@ -430,7 +440,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const storedData = localStorage.getItem(LS_KEY_CHART_ANNOTATIONS);
-        if (storedData) {
+        if (storedData && !isFuta) {
             const parseStoredData = JSON.parse(storedData);
             parseStoredData.isMagnetActive = isMagnetActive.value;
             localStorage.setItem(
@@ -491,6 +501,11 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
                 ? d3.color(contextChartColors.drawngShapeDefaultColor)
                 : getCssVariable(skin, '--accent1');
 
+        const text2 = getCssVariable(skin, '--text2');
+        const accent3 = getCssVariable(skin, '--accent3');
+        const accent1 = getCssVariable(skin, '--accent1');
+        const dark1 = getCssVariable(skin, '--dark1');
+
         const chartThemeColors = {
             upCandleBodyColor: upCandleBodyColor,
             downCandleBodyColor: downCandleBodyColor,
@@ -503,6 +518,10 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
             liqAskColor: liqAskColor,
             liqBidColor: liqBidColor,
             selectedDateStrokeColor: selectedDateStrokeColor,
+            text2: text2,
+            accent1: accent1,
+            accent3: accent3,
+            dark1: dark1,
             textColor: '',
         };
 

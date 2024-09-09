@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { dexTokenData } from '../../../pages/Explore/useTokenStats';
+import { dexTokenData } from '../../../pages/platformAmbient/Explore/useTokenStats';
 import { columnSlugs } from './DexTokens/DexTokens';
 
 interface sortIF {

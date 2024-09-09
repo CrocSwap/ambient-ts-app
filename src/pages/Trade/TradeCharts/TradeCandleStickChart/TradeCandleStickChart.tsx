@@ -7,7 +7,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import Chart from '../../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -30,21 +29,25 @@ import {
     CandleScaleIF,
     TransactionIF,
 } from '../../../../ambient-utils/types';
-import {
-    chartItemStates,
-    getInitialDisplayCandleCount,
-    liquidityChartData,
-    scaleData,
-} from '../../../Chart/ChartUtils/chartUtils';
+
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import {
-    maxRequestCountForCondensed,
-    xAxisBuffer,
-} from '../../../Chart/ChartUtils/chartConstants';
+
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import {
+    xAxisBuffer,
+    maxRequestCountForCondensed,
+} from '../../../platformAmbient/Chart/ChartUtils/chartConstants';
+import {
+    chartItemStates,
+    liquidityChartData,
+    getInitialDisplayCandleCount,
+    scaleData,
+} from '../../../platformAmbient/Chart/ChartUtils/chartUtils';
+import Chart from '../../../platformAmbient/Chart/Chart';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -89,6 +92,10 @@ function TradeCandleStickChart(props: propsIF) {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
+
+    const { liqMode } = props.chartItemStates;
+
+    const { platformName } = useContext(BrandContext);
 
     const period = useMemo(
         () => chartSettings.candleTime.global.time,
@@ -628,7 +635,13 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData === undefined, mobileView, isDenomBase, period]);
+    }, [
+        unparsedCandleData === undefined,
+        mobileView,
+        isDenomBase,
+        period,
+        liqMode,
+    ]);
 
     useEffect(() => {
         if (candleScale.isFetchFirst200Candle === true) {
@@ -898,13 +911,18 @@ function TradeCandleStickChart(props: propsIF) {
         const snapDiff = nowDate % (period * 1000);
         const snappedTime = nowDate + (period * 1000 - snapDiff);
 
+        const liqBuffer =
+            liqMode === 'none' || ['futa'].includes(platformName)
+                ? 0.95
+                : xAxisBuffer;
+
         const centerX = snappedTime;
         const diff =
-            (localInitialDisplayCandleCount * period * 1000) / xAxisBuffer;
+            (localInitialDisplayCandleCount * period * 1000) / liqBuffer;
 
         xScale.domain([
-            centerX - diff * xAxisBuffer,
-            centerX + diff * (1 - xAxisBuffer),
+            centerX - diff * liqBuffer,
+            centerX + diff * (1 - liqBuffer),
         ]);
     };
     const resetChart = () => {

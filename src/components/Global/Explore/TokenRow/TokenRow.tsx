@@ -3,7 +3,6 @@ import TokenIcon from '../../TokenIcon/TokenIcon';
 import { uriToHttp } from '../../../../ambient-utils/dataLayer';
 
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { dexTokenData } from '../../../../pages/Explore/useTokenStats';
 import {
     GCServerPoolIF,
     PoolIF,
@@ -11,25 +10,18 @@ import {
 } from '../../../../ambient-utils/types';
 import { GrLineChart } from 'react-icons/gr';
 import styles from './TokenRow.module.css';
+import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 interface propsIF {
     token: dexTokenData;
     tokenMeta: TokenIF;
     samplePool: PoolIF | undefined;
     backupPool: GCServerPoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
-    
 }
 
 export default function TokenRow(props: propsIF) {
-    const {
-        token,
-        tokenMeta,
-        samplePool,
-        goToMarket,
-        backupPool,
-    } = props;
+    const { token, tokenMeta, samplePool, goToMarket, backupPool } = props;
 
-    
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     const handleClick = (
