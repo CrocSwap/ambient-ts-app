@@ -125,6 +125,11 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    
+    useEffect(() => {
+        appHeaderDropdown.setIsActive(false);
+    }, [location]); 
+
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     return (
