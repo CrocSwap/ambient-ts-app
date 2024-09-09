@@ -17,6 +17,7 @@ import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
     futaBrandAssets,
+    sampleBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
 
