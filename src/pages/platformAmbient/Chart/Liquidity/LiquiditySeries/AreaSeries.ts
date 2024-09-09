@@ -1,8 +1,8 @@
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts/TradeCharts';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { LiquidityRangeIF } from '../../../../../ambient-utils/types';
 import { ChartThemeIF } from '../../../../../contexts/ChartContext';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 
 export function getActiveLiqDepth(
     data: LiquidityRangeIF,
@@ -75,20 +75,17 @@ export function decorateForLiquidityArea(
     if (d3BidColor) d3BidColor.opacity = 0.3;
     if (d3AskColor) d3AskColor.opacity = 0.3;
 
-    series.decorate(
-        (context: CanvasRenderingContext2D) => {
-
-            if (isBid) {
-                context.fillStyle = d3BidColor
-                    ? d3BidColor.toString()
-                    : liqBidColor;
-            } else {
-                context.fillStyle = d3AskColor
-                    ? d3AskColor.toString()
-                    : liqAskColor;
-            }
-        },
-    );
+    series.decorate((context: CanvasRenderingContext2D) => {
+        if (isBid) {
+            context.fillStyle = d3BidColor
+                ? d3BidColor.toString()
+                : liqBidColor;
+        } else {
+            context.fillStyle = d3AskColor
+                ? d3AskColor.toString()
+                : liqAskColor;
+        }
+    });
 }
 
 export function createAreaSeriesLiquidity(
