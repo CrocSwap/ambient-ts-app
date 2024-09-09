@@ -245,6 +245,7 @@
     height: 100%;
     overflow-y: scroll;
     scrollbar-color: var(--dark2) var(--dark2);
+    margin-bottom: 3rem;
 }
 .scrolling{
     scrollbar-color: var(--accent1) var(--dark2);
@@ -313,6 +314,7 @@
     }
     .tickerTableContent{
         height: 100%;
+        margin-bottom: 0;
        
     }
 }
