@@ -74,6 +74,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
+        // make the linter happy for sample file
+        false && sampleBrandAssets;
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
