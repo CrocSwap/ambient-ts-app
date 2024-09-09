@@ -95,7 +95,10 @@ const FooterNav: React.FC = () => {
                     animate={{ flexGrow: index === activeIndex ? 3 : 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                    <Link to={link.destination} className={styles.link}>
+                    <Link to={link.destination} className={styles.link}
+                      
+                    
+                    >
                         <link.icon
                             size={24}
                             color={
