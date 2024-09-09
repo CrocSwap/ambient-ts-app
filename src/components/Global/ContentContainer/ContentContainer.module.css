@@ -24,6 +24,23 @@
     gap: 1rem;
 }
 
+.swap_main_content {
+    box-shadow: var(--gradient-box-shadow);
+}
+
+.swap_bg {
+    background: var(--dark1);
+}
+.circle,
+.circle2 {
+    display: none;
+}
+
+.no_background {
+    background: transparent;
+    margin-top: 0;
+}
+
 .main_content:hover,
 .main_content:focus-within {
     transition: var(--transition);

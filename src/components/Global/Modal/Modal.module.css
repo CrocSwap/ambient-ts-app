@@ -35,6 +35,8 @@
     /* max-height: 80vh; */
     color: var(--text1);
     /* min-height: 80vh; */
+
+   
 }
 
 .box_shadow {
@@ -111,4 +113,11 @@
     .modal_content {
         width: 100%;
     }
+}
+
+
+
+.modal_content{
+    scrollbar-width: 5px !important;
+    scrollbar-color: var(--accent1) var(--dark2); 
 }

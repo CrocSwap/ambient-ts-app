@@ -120,7 +120,6 @@ import {
     pinTickToTickLower,
     pinTickToTickUpper,
 } from '../../../ambient-utils/dataLayer/functions/pinTick';
-
 import { filterCandleWithTransaction } from '../../Chart/ChartUtils/discontinuityScaleUtils';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import ChartSettings from '../../Chart/ChartSettings/ChartSettings';

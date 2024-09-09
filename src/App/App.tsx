@@ -26,6 +26,7 @@ import FooterNav from '../components/Global/FooterNav/FooterNav';
 
 import { RouteRenderer } from '../routes';
 import Navbar from '../components/Futa/Navbar/Navbar';
+import Footer from '../components/Futa/Footer/Footer';
 
 /** ***** React Function *******/
 export default function App() {
@@ -95,12 +96,32 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
-    
+
     useEffect(() => {
         appHeaderDropdown.setIsActive(false);
-    }, [location]); 
+    }, [location]);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
+    // const showChatPanel =
+    //     currentLocation !== '/' &&
+    //     currentLocation !== '/404' &&
+    //     currentLocation !== '/terms' &&
+    //     currentLocation !== '/privacy' &&
+    //     currentLocation !== '/faq' &&
+    //     !currentLocation.includes('/chat') &&
+    //     isChatEnabled;
+    const ambientFooter = (
+        <div data-theme={skin} className='footer_container'>
+            {currentLocation !== '/' &&
+                currentLocation !== '/404' &&
+                currentLocation !== '/terms' &&
+                currentLocation !== '/privacy' &&
+                currentLocation !== '/faq' &&
+                !currentLocation.includes('/chat') &&
+                isChatEnabled && <ChatPanel isFullScreen={false} />}
+            {showMobileVersion && <FooterNav />}
+        </div>
+    );
 
     return (
         <>
@@ -140,16 +161,11 @@ export default function App() {
                 />
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
-            <div data-theme={skin} className='footer_container'>
-                {currentLocation !== '/' &&
-                    currentLocation !== '/404' &&
-                    currentLocation !== '/terms' &&
-                    currentLocation !== '/privacy' &&
-                    currentLocation !== '/faq' &&
-                    !currentLocation.includes('/chat') &&
-                    isChatEnabled && <ChatPanel isFullScreen={false} />}
-                {showMobileVersion && <FooterNav />}
-            </div>
+            {platformName === 'futa' ? (
+                <Footer data-theme={skin} />
+            ) : (
+                ambientFooter
+            )}
 
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
