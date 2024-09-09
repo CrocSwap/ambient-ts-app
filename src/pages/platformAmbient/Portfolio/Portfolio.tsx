@@ -26,11 +26,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { useSimulatedIsUserConnected } from '../../../App/hooks/useSimulatedIsUserConnected';
-import {
-    MobileButton,
-    PortfolioContainer,
-    PortfolioTabsContainer,
-} from '../../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
     BlastUserXpDataIF,
@@ -39,6 +34,7 @@ import {
 } from '../../../contexts/UserDataContext';
 import Level from '../Level/Level';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import styles from './Portfolio.module.css';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
@@ -332,35 +328,9 @@ function Portfolio(props: PortfolioPropsIF) {
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
-    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
+    const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
-    const mobileDataToggle = (
-        <FlexContainer
-            justifyContent='center'
-            alignItems='center'
-            background='dark2'
-            rounded
-            outline='text2'
-            margin='10px auto'
-        >
-            <MobileButton
-                onClick={() =>
-                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                }
-                active={!showTabsAndNotExchange}
-            >
-                Transactions
-            </MobileButton>
-            <MobileButton
-                onClick={() =>
-                    setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                }
-                active={showTabsAndNotExchange}
-            >
-                Exchange
-            </MobileButton>
-        </FlexContainer>
-    );
+
 
     const notConnectedContent = (
         <FlexContainer
@@ -400,6 +370,8 @@ function Portfolio(props: PortfolioPropsIF) {
         setShowProfileSettings: setShowProfileSettings,
         connectedAccountActive: connectedAccountActive,
         resolvedUserXp: resolvedUserXp,
+        showTabsAndNotExchange: showTabsAndNotExchange,
+        setShowTabsAndNotExchange: setShowTabsAndNotExchange
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -425,11 +397,14 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
     };
 
+    
+
     const contentToRenderOnMobile = (() => {
         switch (true) {
             case (!showTabsAndNotExchange && isUserConnected) ||
                 (addressFromParams !== undefined && !connectedAccountActive):
                 return <PortfolioTabs {...portfolioTabsProps} />;
+
             case showTabsAndNotExchange &&
                 isUserConnected &&
                 connectedAccountActive:
@@ -438,6 +413,37 @@ function Portfolio(props: PortfolioPropsIF) {
                 return notConnectedContent;
         }
     })();
+
+    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const calculateHeight = () => {
+          const totalHeight = window.innerHeight;
+          const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+          setAvailableHeight(totalHeight - heightToSubtract);
+        };
+    
+        calculateHeight(); // Calculate initial height
+        window.addEventListener('resize', calculateHeight);
+    
+        return () => window.removeEventListener('resize', calculateHeight);
+    }, []);
+    
+    const bannerHeight = 115;
+    const contentHeight = availableHeight - bannerHeight;
+
+
+
+    const mobilePortfolio = (
+        <div className={styles.mobile_layout} style={{ height: `${availableHeight}px` }}>
+        
+            <PortfolioBanner {...portfolioBannerProps} />
+            <div style={{ height: `${contentHeight}px`, overflowY: 'hidden' }}>
+
+                {contentToRenderOnMobile}
+            </div>
+        </div>
+    );
 
     // tab control on account from pageheader
     const onTradeRoute = location.pathname.includes('trade');
@@ -469,41 +475,40 @@ function Portfolio(props: PortfolioPropsIF) {
     }, [specificTab]);
 
     // end of tab control on account from page header
-    const mobilePortfolio = (
-        <FlexContainer
-            flexDirection='column-reverse'
-            gap={4}
-            margin='0 auto'
-            height='calc(100svh - 112px)'
-            style={{
-                padding: ' 0 8px',
-            }}
-        >
-            {contentToRenderOnMobile}
-            {connectedAccountActive && mobileDataToggle}
-            <PortfolioBanner {...portfolioBannerProps} />
-        </FlexContainer>
-    );
+    // const mobilePortfolio = (
+    //     <div className={styles.mobile_container}>
+    //         {useMediaQuery('(min-height: 300px)') && (
+    //             <PortfolioBanner {...portfolioBannerProps} />
+    //         )}
+    //         <div className={styles.mobile_content}>
+    //             {
+    //                 connectedAccountActive &&
+    //                 mobileDataToggle}
+    //             {contentToRenderOnMobile}
+    //         </div>
+    //     </div>
+    // );
+
+    // const yes = false
+
+ 
+
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
 
     return (
-        <PortfolioContainer
-            data-testid={'portfolio'}
-            padding='32px'
-            background='dark2'
-            flexDirection='column-reverse'
-            gap={16}
-        >
+        <div data-testid={'portfolio'} className={styles.portfolio_container}>
             {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
 
-            <PortfolioTabsContainer
-                active={connectedAccountActive}
-                fullLayoutContainer={
-                    !connectedAccountActive || fullLayoutActive
-                }
+            <div
+                className={`${styles.portfolio_tabs_container}
+                 ${connectedAccountActive ? styles.active : ''} ${
+                     !connectedAccountActive || fullLayoutActive
+                         ? styles.fullLayoutContainer
+                         : ''
+                 }`}
             >
                 {isUserConnected || addressFromParams ? (
                     <PortfolioTabs {...portfolioTabsProps} />
@@ -514,9 +519,9 @@ function Portfolio(props: PortfolioPropsIF) {
                     : !isUserConnected && !addressFromParams
                       ? notConnectedContent
                       : undefined}
-            </PortfolioTabsContainer>
+            </div>
             <PortfolioBanner {...portfolioBannerProps} />
-        </PortfolioContainer>
+        </div>
     );
 }
 
