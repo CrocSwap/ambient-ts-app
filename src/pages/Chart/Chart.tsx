@@ -244,6 +244,8 @@ export default function Chart(props: propsIF) {
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
+        shouldResetBuffer, 
+        setShouldResetBuffer
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -763,8 +765,6 @@ export default function Chart(props: propsIF) {
         useState<DOMRect | undefined>();
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
-
-    const [shouldResetBuffer, setShouldResetBuffer] = useState(true);
 
     const [
         isOnCandleOrVolumeMouseLocation,
