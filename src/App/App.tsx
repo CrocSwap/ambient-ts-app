@@ -101,7 +101,7 @@ export default function App() {
         appHeaderDropdown.setIsActive(false);
     }, [location]);
 
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+    const showMobileVersion = useMediaQuery('(max-width: 800px)');
     // const showChatPanel =
     //     currentLocation !== '/' &&
     //     currentLocation !== '/404' &&

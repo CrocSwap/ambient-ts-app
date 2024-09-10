@@ -169,6 +169,14 @@
     .tradeButton,
     .tradeButton,
     .poolName {
+        width: 100px;
+    }
+}
+@media only screen and (min-width: 1280px) {
+    .gridHeaderItem,
+    .tradeButton,
+    .tradeButton,
+    .poolName {
         width: 133px;
     }
 }
