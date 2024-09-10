@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SketchPicker } from 'react-color';
+import { ColorResult, SketchPicker } from 'react-color';
 import Swap from '../../platformAmbient/Swap/Swap';
 
 export default function CSSDebug() {
@@ -21,7 +21,6 @@ export default function CSSDebug() {
 
     return (
         <>
-            <button onClick={() => setCSSCustomPropertyValue('--text1', 'green')}>Green!</button>
             <button onClick={() => toggleColorPicker()}>Show Picker</button>
             {showColorPicker && <SketchPicker
                 color={text1Color}
@@ -36,8 +35,7 @@ export default function CSSDebug() {
                 //         color,
                 //     );
                 // }}
-                onChange={(color) => setCSSCustomPropertyValue('--text1', 'green')}
-                // onChange={(color) => setCSSCustomPropertyValue('--text1', color)}
+                onChange={(color: ColorResult) => setCSSCustomPropertyValue('--text1', color.hex)}
             />}
             <Swap />
         </>
