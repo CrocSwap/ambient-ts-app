@@ -19,7 +19,6 @@ export const useSortedTxs = (
     boolean,
     Dispatch<SetStateAction<boolean>>,
     TransactionIF[],
-    (data: TransactionIF[]) => TransactionIF[],
 ] => {
     // default sort function
     const sortByUpdateTime = (unsortedData: TransactionIF[]): TransactionIF[] =>
@@ -107,12 +106,5 @@ export const useSortedTxs = (
         return sortData(transactions);
     }, [sortBy, reverseSort, transactions[0]?.txHash, transactions.length]);
 
-    return [
-        sortBy,
-        setSortBy,
-        reverseSort,
-        setReverseSort,
-        sortedTransactions,
-        sortData,
-    ];
+    return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];
 };
