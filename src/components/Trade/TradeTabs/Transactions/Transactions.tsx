@@ -928,7 +928,7 @@ function Transactions(props: propsIF) {
     const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!isLoading) {
+        if (!isLoading && !txDataToDisplay.length) {
             // use a timeout to keep the isLoading state true 1 second longer
             const handler = setTimeout(
                 () => setDebouncedIsLoading(isLoading),
@@ -938,7 +938,7 @@ function Transactions(props: propsIF) {
         } else {
             setDebouncedIsLoading(isLoading);
         }
-    }, [isLoading, 1000]);
+    }, [isLoading, txDataToDisplay.length]);
 
     const shouldDisplayNoTableData: boolean =
         !debouncedIsLoading &&
