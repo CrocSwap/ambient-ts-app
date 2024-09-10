@@ -14,6 +14,29 @@
 }
 
 /* ===== Scrollbar CSS ===== */
+/* Firefox */
+/* .content-container,
+.content-container-trade {
+    scrollbar-width: none;
+} */
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body::-webkit-scrollbar-track {
+    background: transparent;
+}
+body::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        0deg,
+        var(--accent1) 0%,
+        var(--accent5) 49.48%,
+        var(--accent1) 100%
+    );
+
+    box-shadow: 0px 0px 0px 100000vh black;
+}
 
 body {
     background: var(--dark1);
@@ -21,7 +44,6 @@ body {
 
 html {
     background: var(--dark1);
-    scrollbar-width: none;
     color: var(--text1);
     height: 100%;
 }
@@ -41,12 +63,6 @@ button:hover > svg {
     cursor: pointer;
 }
 
-/* button,
-svg,
-a {
-    transition: var(--transition);
-} */
-
 a {
     color: unset;
     text-decoration: none;
@@ -59,8 +75,6 @@ input:disabled {
 }
 
 body {
-    overflow-x: hidden;
-
     min-height: 100%;
     max-height: 100%;
 
@@ -76,10 +90,6 @@ footer {
   right: 0;
  bottom: 0; */
     margin-top: auto;
-}
-
-.swap-body {
-    height: calc(100vh - (var(--footer-height) + 2rem));
 }
 
 h3:focus-visible,
@@ -223,10 +233,11 @@ input[type='number'] {
 }
 .custom_scroll_ambient {
     overflow-y: auto !important;
+   
 }
 .custom_scroll_ambient::-webkit-scrollbar,
 .content-container::-webkit-scrollbar {
-    width: 12px !important; /* Adjust the width as needed */
+    width: 8px !important; /* Adjust the width as needed */
 }
 .custom_scroll_ambient::-webkit-scrollbar-thumb,
 .content-container::-webkit-scrollbar-thumb {
@@ -254,6 +265,81 @@ input[type='number'] {
     padding: 2px !important; /* Add padding to the track */;
   
 }
+/* -----------------------FUTA------------ */
+
+.futa_main {
+    scrollbar-color: var(--accent1) var(--dark2);
+}
+.futa_main::-webkit-scrollbar {
+    width: 12px;
+    border-radius: 0 !important;
+}
+
+.futa_main::-webkit-scrollbar-thumb {
+    background: var(--accent1);
+    border-radius: 0 !important;
+}
+
+.futa_main::-webkit-scrollbar-track {
+    background: var(--dark2);
+    border: 1px solid var(--accent1);
+    border-radius: 0 !important;
+}
+
+.futa_main::-webkit-scrollbar-button:vertical:start:decrement {
+    background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,5 5,12 19,12" fill="%23FFFFFF"/></svg>')
+        no-repeat center;
+    background-size: 50%;
+}
+
+.futa_main::-webkit-scrollbar-button:vertical:end:increment {
+    background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12,19 5,12 19,12" fill="%23FFFFFF"/></svg>')
+        no-repeat center;
+    background-size: 50%;
+
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}
+
+.futa_main::-webkit-scrollbar-button {
+    height: 12px;
+    background-color: #00ffff;
+    border-radius: 0 !important;
+}
+
+.custom-resizable-handle-futa {
+    background-color: red;
+    width: 200px;
+    overflow-y: scroll !important;
+    overflow-y: auto !important;
+}
+.custom_scroll_ambient::-webkit-scrollbar,
+.content-container::-webkit-scrollbar {
+    width: 12px !important; /* Adjust the width as needed */
+}
+.custom_scroll_ambient::-webkit-scrollbar-thumb,
+.content-container::-webkit-scrollbar-thumb {
+    border: 2px solid transparent !important; /* Space for the border */
+    background-clip: padding-box !important; /* Create space for the border */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    background-image: linear-gradient(#06060c, #06060c),
+        linear-gradient(
+            0deg,
+            var(--accent1) 0%,
+            var(--accent5) 49.48%,
+            var(--accent1) 100%
+        ) !important;
+    background-origin: border-box !important;
+    background-clip: content-box, border-box !important; /* Clip the border to show gradient */
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
+}
+.custom_scroll_ambient::-webkit-scrollbar-track,
+.content-container::-webkit-scrollbar-track {
+    background: #06060c !important; /* Background color of the scrollbar track */
+    border-radius: 8px !important; /* Adjust the border radius as needed */
+    padding: 2px !important; /* Add padding to the track */
+}
 
 @media only screen and (max-width: 600px) {
     .app_blur {
@@ -265,12 +351,6 @@ input[type='number'] {
         top: 56px;
         bottom: 64px;
         z-index: 2;
-    }
-    .swap-body {
-        /* max-height: 86.5vh; */
-        overflow-y: hidden;
-
-        max-height: calc(100vh - 7.5rem);
     }
 }
 

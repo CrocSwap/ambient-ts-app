@@ -8,6 +8,7 @@ import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
     AcknowledgeLink,
     AcknowledgeText,
+    LPButton,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
@@ -19,6 +20,9 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import { brand } from '../../../ambient-utils/constants';
+import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
+import { openInNewTab } from '../../../ambient-utils/dataLayer';
 
 interface PropsIF {
     chainId: string;
@@ -65,6 +69,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const { tokenA, tokenB, limitTick, areDefaultTokensUpdatedForChain } =
         useContext(TradeDataContext);
+    const isFuta = brand === 'futa';
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -106,6 +111,12 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
+    const poolLinkParams: poolParamsIF = {
+        chain: chainId,
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
+
     return (
         <>
             {isTutorialActive && (
@@ -125,7 +136,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 noPadding={smallScreen && !isSwapPage}
             >
                 {header}
-                {isSwapPage || (
+                {!isSwapPage && !isFuta && (
                     <TradeLinks
                         chainId={chainId}
                         tokenA={tokenA}
@@ -145,7 +156,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     flexDirection='column'
                     gap={8}
                     margin='8px 0 0 0'
-                    padding='0 32px'
+                    padding={isFuta ? '0 16px' : '0 32px'}
                 >
                     {transactionDetails}
                     <SmolRefuelLink />
@@ -220,6 +231,28 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                         />
                     )}
                     {warnings && warnings}
+                    {isFuta && (
+                        <LPButton
+                            onClick={() =>
+                                openInNewTab(
+                                    'https://testnet.ambient.finance/trade/pool/' +
+                                        // 'https://ambient.finance/trade/pool/' +
+                                        Object.entries(poolLinkParams)
+                                            .map(
+                                                (
+                                                    tup: [
+                                                        string,
+                                                        string | number,
+                                                    ],
+                                                ) => tup.join('='),
+                                            )
+                                            .join('&'),
+                                )
+                            }
+                        >
+                            Looking to LP?
+                        </LPButton>
+                    )}
                 </FlexContainer>
             </ContentContainer>
             {modal}

@@ -50,7 +50,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
@@ -90,23 +91,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         string | undefined
     >();
 
-    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
-        number | undefined
-    >();
-
     const { crocEnv } = useContext(CrocEnvContext);
 
     useEffect(() => {
         if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                setEthMainnetUsdPrice(price.usdPrice);
-            } else {
-                setEthMainnetUsdPrice(undefined);
-            }
-        });
+
         if (usdcData === undefined) {
             setUsdcUsdValueForDom(undefined);
             setUsdcBalanceForDom(undefined);
@@ -177,9 +166,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             : undefined;
 
     const ethMainnetUsdValue =
-        ethMainnetUsdPrice !== undefined &&
+        nativeTokenUsdPrice !== undefined &&
         nativeCombinedBalanceDisplayNum !== undefined
-            ? ethMainnetUsdPrice * nativeCombinedBalanceDisplayNum
+            ? nativeTokenUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
     const nativeTokenMainnetUsdValueTruncated =

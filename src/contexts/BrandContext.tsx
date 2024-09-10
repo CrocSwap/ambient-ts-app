@@ -106,7 +106,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
             userAddress && premiumTheme1.includes(userAddress.toLowerCase())
         );
         if (userAddress) {
-            setSkin(hasPremium ? 'orange_dark' : 'purple_dark');
+            setSkin(hasPremium ? 'futa_dark' : 'purple_dark');
         } else {
             setSkin('purple_dark');
         }
@@ -115,6 +115,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     function getAvailableSkins(): skins[] {
         const networkSettings =
             brandAssets.networks[chainData.chainId as chainIds];
+
         const available: skins[] = networkSettings?.color ?? ['purple_dark'];
         const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
@@ -134,7 +135,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
-    }
+    };
 
     // data to be returned to the app
     const brandData: BrandContextIF = {

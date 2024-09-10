@@ -445,7 +445,7 @@ const PageHeader = function () {
                                         return 'Purple Dark';
                                     case 'purple_light':
                                         return 'Purple Light';
-                                    case 'orange_dark':
+                                    case 'futa_dark':
                                         return 'Orange Dark';
                                     default:
                                         return str;

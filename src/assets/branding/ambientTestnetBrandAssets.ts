@@ -8,7 +8,7 @@ export const ambientTestnetBrandAssets: brandIF = {
         // ethereum sepolia
         '0xaa36a7': {
             color: ['purple_dark'],
-            premiumColor: ['orange_dark'],
+            premiumColor: ['futa_dark'],
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // scroll sepolia

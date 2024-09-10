@@ -3,8 +3,8 @@ import { CandleDataIF, TokenIF } from '../../../ambient-utils/types';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
-import useDollarPrice from '../ChartUtils/getDollarPrice';
 import { ChartTooltipDiv, CurrentDataDiv } from './ChartTooltipStyles';
+import useDollarPrice from '../../platformAmbient/Chart/ChartUtils/getDollarPrice';
 
 interface propsIF {
     showTooltip: boolean;
