@@ -21,6 +21,7 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
+import CSSDebug from '../pages/common/CSSDebug/CSSDebug';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -189,6 +190,7 @@ const PlatformAmbientRoutes: React.FC = () => {
             {IS_LOCAL_ENV && (
                 <Route path='template/form' element={<ExampleForm />} />
             )}
+            <Route path='/css-debug' element={<CSSDebug />} />
             <Route path='/404' element={<NotFound />} />
             <Route path='*' element={<Navigate to='/404' replace />} />
         </Routes>
