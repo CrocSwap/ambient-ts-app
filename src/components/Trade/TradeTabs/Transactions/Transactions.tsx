@@ -12,7 +12,6 @@ import {
     memo,
     useMemo,
 } from 'react';
-
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
@@ -58,6 +57,7 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import {
+    Changes,
     GraphDataContext,
     GraphDataContextIF,
 } from '../../../../contexts/GraphDataContext';
@@ -75,6 +75,7 @@ import {
 } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
+import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -85,6 +86,17 @@ interface propsIF {
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
 }
+
+enum ScrollDirection {
+    UP,
+    DOWN,
+}
+
+enum ScrollPosition {
+    TOP,
+    BOTTOM,
+}
+
 function Transactions(props: propsIF) {
     const {
         filter,
@@ -131,7 +143,6 @@ function Transactions(props: propsIF) {
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
-        setTransactionsByPool,
     } = useContext<GraphDataContextIF>(GraphDataContext);
     const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
     const { baseToken, quoteToken } =
@@ -154,10 +165,29 @@ function Transactions(props: propsIF) {
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
+    const moreDataLoadingRef = useRef<boolean>();
+    moreDataLoadingRef.current = moreDataLoading;
+
+    const extraPagesAvailableRef = useRef<number>();
+    extraPagesAvailableRef.current = extraPagesAvailable;
+
+    const moreDataAvailableRef = useRef<boolean>();
+    moreDataAvailableRef.current = moreDataAvailable;
+
+    const pagesVisibleRef = useRef<[number, number]>();
+    pagesVisibleRef.current = pagesVisible;
+
     const lastRowRef = useRef<HTMLDivElement | null>(null);
     const firstRowRef = useRef<HTMLDivElement | null>(null);
 
     const showAllData = !isAccountView && showAllDataSelection;
+
+    const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
+        dataReceived: true,
+        changes: [...transactionsByPool.changes],
+    });
+    const fetchedTransactionsRef = useRef<Changes>();
+    fetchedTransactionsRef.current = fetchedTransactions;
 
     const transactionData = useMemo<TransactionIF[]>(
         () =>
@@ -165,18 +195,54 @@ function Transactions(props: propsIF) {
                 ? activeAccountTransactionData || []
                 : !showAllData
                   ? userTransactionsByPool.changes
-                  : transactionsByPool.changes,
+                  : fetchedTransactions.changes,
         [
             activeAccountTransactionData,
             userTransactionsByPool,
             transactionsByPool,
             showAllData,
+            fetchedTransactions,
         ],
     );
 
     const [lastSeenTxID, setLastSeenTxID] = useState<string>('');
     const lastSeenTxIDRef = useRef<string>();
     lastSeenTxIDRef.current = lastSeenTxID;
+
+    const [firstSeenTxID, setFirstSeenTxID] = useState<string>('');
+    const firstSeenTxIDRef = useRef<string>();
+    firstSeenTxIDRef.current = firstSeenTxID;
+
+    const [autoScroll, setAutoScroll] = useState(false);
+    const autoScrollRef = useRef<boolean>();
+    autoScrollRef.current = autoScroll;
+
+    const [autoScrollDirection, setAutoScrollDirection] = useState(
+        ScrollDirection.DOWN,
+    );
+    const autoScrollDirectionRef = useRef<ScrollDirection>();
+    autoScrollDirectionRef.current = autoScrollDirection;
+
+    useEffect(() => {
+        const existingChanges = new Set(
+            fetchedTransactions.changes.map(
+                (change) => change.txHash || change.txId,
+            ),
+        ); // Adjust if using a different unique identifier
+
+        const uniqueChanges = transactionsByPool.changes.filter(
+            (change) => !existingChanges.has(change.txHash || change.txId),
+        );
+
+        if (uniqueChanges.length > 0) {
+            setFetchedTransactions((prev) => {
+                return {
+                    dataReceived: true,
+                    changes: [...uniqueChanges, ...prev.changes],
+                };
+            });
+        }
+    }, [transactionsByPool]);
 
     const oldestTxTime = useMemo(
         () =>
@@ -459,8 +525,14 @@ function Transactions(props: propsIF) {
         ? candleTransactionData
         : transactionData;
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTxs('time', txDataToDisplay);
+    const [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedTransactions,
+        sortData,
+    ] = useSortedTxs('time', txDataToDisplay);
 
     const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
         return isCandleSelected || isAccountView
@@ -520,13 +592,28 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
+                const moreDataLoadingVal = moreDataLoadingRef.current
+                    ? moreDataLoadingRef.current
+                    : moreDataLoading;
+                const moreDataAvailableVal = moreDataAvailableRef.current
+                    ? moreDataAvailableRef.current
+                    : moreDataAvailable;
+                const extraPagesAvailableVal = extraPagesAvailableRef.current
+                    ? extraPagesAvailableRef.current
+                    : extraPagesAvailable;
+                const pagesVisibleVal = pagesVisibleRef.current
+                    ? pagesVisibleRef.current
+                    : pagesVisible;
+
                 const entry = entries[0];
-                if (moreDataLoading) return;
+                if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
+                    bindLastSeenRow();
+                    setTransactionTableOpacity('.5');
                     // last row is visible
-                    extraPagesAvailable + 1 > pagesVisible[1]
+                    extraPagesAvailableVal + 1 > pagesVisibleVal[1]
                         ? shiftDown()
-                        : moreDataAvailable
+                        : moreDataAvailableVal
                           ? addMoreData()
                           : undefined;
                 }
@@ -551,7 +638,7 @@ function Transactions(props: propsIF) {
         moreDataLoading,
         moreDataAvailable,
         extraPagesAvailable,
-        pagesVisible[1],
+        // pagesVisible[1],
     ]);
 
     useEffect(() => {
@@ -562,6 +649,7 @@ function Transactions(props: propsIF) {
                 if (entry.isIntersecting) {
                     // first row is visible
                     pagesVisible[0] > 0 && shiftUp();
+                    bindFirstSeenRow();
                 }
             },
             {
@@ -600,33 +688,45 @@ function Transactions(props: propsIF) {
         }
     };
 
+    const triggerAutoScroll = (
+        direction: ScrollDirection,
+        timeout?: number,
+    ) => {
+        setTransactionTableOpacity('1');
+        setAutoScroll(true);
+        setAutoScrollDirection(direction);
+        setTimeout(
+            () => {
+                setAutoScroll(false);
+            },
+            timeout ? timeout : 2000,
+        );
+    };
+
+    const setTransactionTableOpacity = (val: string) => {
+        if (scrollRef.current) {
+            scrollRef.current.style.opacity = val;
+        }
+    };
+
     const shiftUp = (): void => {
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
-        if (scrollRef.current) {
-            // scroll to middle of container
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight * 0.49,
-                behavior: 'instant' as ScrollBehavior,
-            });
-        }
+        triggerAutoScroll(ScrollDirection.UP);
     };
 
     const shiftDown = (): void => {
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
-        if (scrollRef.current) {
-            // scroll to middle of container
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight * 0.4,
-                behavior: 'instant' as ScrollBehavior,
-            });
-        }
+        triggerAutoScroll(ScrollDirection.DOWN);
     };
 
     useEffect(() => {
+        domDebug('sortBy', sortBy);
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const findTableElementByTxID = (txID: string): void => {
+    const markRows = false;
+
+    const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
         const txSpans = document.querySelectorAll(
             '#current_row_scroll > div > div:nth-child(2) > div > span',
         );
@@ -634,38 +734,62 @@ function Transactions(props: propsIF) {
         txSpans.forEach((span) => {
             if (span.textContent === txID) {
                 const row = span.parentElement?.parentElement as HTMLDivElement;
-                row.style.backgroundColor = 'red';
+                // row.style.backgroundColor = 'red';
 
                 const parent = row.parentElement as HTMLDivElement;
-                parent.style.background = 'blue';
+                if (markRows) {
+                    parent.style.background = 'blue';
+                }
 
                 parent.scrollIntoView({
+                    block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
                     behavior: 'instant' as ScrollBehavior,
                 });
             }
         });
     };
 
+    const bindFirstSeenRow = (): void => {
+        const rows = document.querySelectorAll('#current_row_scroll > div');
+        if (rows.length > 0) {
+            const firstRow = rows[0] as HTMLDivElement;
+            if (markRows) {
+                firstRow.style.backgroundColor = 'cyan';
+            }
+
+            const txDiv = firstRow.querySelector('div:nth-child(2)');
+            if (txDiv) {
+                const txText = txDiv.querySelector('span')?.textContent;
+                setFirstSeenTxID(txText || '');
+                domDebug('firstSeenTxID', txText);
+            }
+        }
+    };
+
     const bindLastSeenRow = (): void => {
         const rows = document.querySelectorAll('#current_row_scroll > div');
         if (rows.length > 0) {
             // const lastRow = rows[rows.length - 1] as HTMLDivElement;
+            rows.forEach((row) => {
+                (row as HTMLDivElement).style.backgroundColor = 'transparent';
+            });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            lastRow.style.backgroundColor = 'red';
+            if (markRows) {
+                lastRow.style.backgroundColor = 'blue';
+            }
 
             const txDiv = lastRow.querySelector('div:nth-child(2)');
             if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setLastSeenTxID(txText || '');
+                domDebug('lastSeenTxID', txText);
             }
         }
     };
 
+    const autoScrollAlternateSolutionActive = true;
+
     const addMoreData = (): void => {
-        console.log('addMoreData');
-        if (scrollRef.current) {
-            bindLastSeenRow();
-        }
         if (!crocEnv || !provider) return;
         // retrieve pool recent changes
         setMoreDataLoading(true);
@@ -687,7 +811,8 @@ function Transactions(props: propsIF) {
         })
             .then((poolChangesJsonData) => {
                 if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                    setTransactionsByPool((prev) => {
+                    // setTransactionsByPool((prev) => {
+                    setFetchedTransactions((prev) => {
                         const existingChanges = new Set(
                             prev.changes.map(
                                 (change) => change.txHash || change.txId,
@@ -705,17 +830,20 @@ function Transactions(props: propsIF) {
                                 prev[0] + 1,
                                 prev[1] + 1,
                             ]);
-                            if (scrollRef.current) {
-                                // scroll to middle of container
-                                scrollRef.current.scrollTo({
-                                    top: scrollRef.current.scrollHeight * 0.4,
-                                    behavior: 'instant' as ScrollBehavior,
-                                });
-                            }
+
+                            triggerAutoScroll(ScrollDirection.DOWN);
                         } else {
                             setMoreDataAvailable(false);
                         }
-                        const newTxData = [...prev.changes, ...uniqueChanges];
+                        let newTxData = [];
+                        if (autoScrollAlternateSolutionActive) {
+                            newTxData = sortData([
+                                ...prev.changes,
+                                ...uniqueChanges,
+                            ]);
+                        } else {
+                            newTxData = [...prev.changes, ...uniqueChanges];
+                        }
                         return {
                             dataReceived: true,
                             changes: newTxData,
@@ -724,19 +852,69 @@ function Transactions(props: propsIF) {
                 } else {
                     setMoreDataAvailable(false);
                 }
-
-                setTimeout(() => {
-                    findTableElementByTxID(lastSeenTxIDRef.current || '');
-                }, 1000);
             })
             .then(() => setMoreDataLoading(false))
-            // .then(() => findTableElementByTxID(lastSeenTxIDRef.current || ''))
             .catch(console.error);
     };
 
-    // useEffect(() => {
-    //         findTableElementByTxID(lastSeenTxIDRef.current || '');
-    // }, [transactionsByPool])
+    const logData = () => {
+        domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
+        // if(sortedTxDataToDisplay.length > 0){
+        //     domDebug('sortedTxDataDisp LAST', sortedTxDataToDisplay[sortedTxDataToDisplay.length - 1].txHash);
+        // }
+        // if(sortedTxDataToDisplay.length > 0){
+        //     domDebug('sortedTxDataDisp FIRST', sortedTxDataToDisplay[0].txHash);
+        // }
+        domDebug('sortedTransactions', sortedTransactions.length);
+        domDebug('pagesVisible', pagesVisible[0] + ' ' + pagesVisible[1]);
+        // if(sortedTransactions.length > 0){
+        //     domDebug('sortedTransactions LAST ', sortedTransactions[sortedTransactions.length - 1].txHash);
+        // }
+        // if(sortedTransactions.length > 0){
+        //     domDebug('sortedTransactions FIRST ', sortedTransactions[0].txHash);
+        // }
+    };
+
+    // const disableAutoScroll = true;
+
+    useEffect(() => {
+        logData();
+        // if(disableAutoScroll) return;
+        if (autoScroll) {
+            if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
+                if (autoScrollDirection === ScrollDirection.DOWN) {
+                    scrollByTxID(
+                        lastSeenTxIDRef.current || '',
+                        ScrollPosition.BOTTOM,
+                    );
+                } else if (autoScrollDirection === ScrollDirection.UP) {
+                    scrollByTxID(
+                        firstSeenTxIDRef.current || '',
+                        ScrollPosition.TOP,
+                    );
+                }
+            } else {
+                scrollWithAlternateStrategy();
+            }
+        }
+    }, [sortedTxDataToDisplay]);
+
+    const scrollWithAlternateStrategy = () => {
+        if (autoScrollDirection === ScrollDirection.DOWN && scrollRef.current) {
+            scrollRef.current.scrollTo({
+                top: 1912,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        } else if (
+            autoScrollDirection === ScrollDirection.UP &&
+            scrollRef.current
+        ) {
+            scrollRef.current.scrollTo({
+                top: 1850,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -904,9 +1082,12 @@ function Transactions(props: propsIF) {
             )}
             <div
                 ref={scrollRef}
-                style={{ flex: 1, overflow: 'auto' }}
+                style={{
+                    flex: 1,
+                    overflow: 'auto',
+                    transition: 'all .1s ease-in-out',
+                }}
                 className='custom_scroll_ambient'
-                // onScroll={(e) => {console.log('scroll', e.currentTarget.scrollTop)}}
             >
                 {(
                     isCandleSelected
