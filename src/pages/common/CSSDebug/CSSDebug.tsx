@@ -9,6 +9,7 @@ export default function CSSDebug() {
     }
     return (
         <>
+            <button onClick={() => document.documentElement.style.setProperty('--text1', 'green')}>Green!</button>
             <button onClick={() => toggleColorPicker()}>Show Picker</button>
             {showColorPicker && <SketchPicker
                 // color={
