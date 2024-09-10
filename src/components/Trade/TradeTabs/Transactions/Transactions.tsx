@@ -686,6 +686,7 @@ function Transactions(props: propsIF) {
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const scrollToTop = () => {
+        setLastSeenTxID('');
         setPagesVisible([0, 1]);
 
         if (scrollRef.current) {
