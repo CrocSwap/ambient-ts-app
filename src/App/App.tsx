@@ -96,7 +96,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
-    const showMobileVersion = useMediaQuery('(max-width: 500px)');
+    const showMobileVersion = useMediaQuery('(max-width: 800px)');
     // const showChatPanel =
     //     currentLocation !== '/' &&
     //     currentLocation !== '/404' &&
