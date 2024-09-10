@@ -1,7 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import { PiArrowElbowLeftUpBold } from 'react-icons/pi';
 
 import {
     Dispatch,
@@ -89,12 +88,12 @@ interface propsIF {
 
 enum ScrollDirection {
     UP,
-    DOWN
+    DOWN,
 }
 
 enum ScrollPosition {
     TOP,
-    BOTTOM
+    BOTTOM,
 }
 
 function Transactions(props: propsIF) {
@@ -164,7 +163,7 @@ function Transactions(props: propsIF) {
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
-    
+
     const moreDataLoadingRef = useRef<boolean>();
     moreDataLoadingRef.current = moreDataLoading;
 
@@ -173,7 +172,7 @@ function Transactions(props: propsIF) {
 
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
-    
+
     const pagesVisibleRef = useRef<[number, number]>();
     pagesVisibleRef.current = pagesVisible;
 
@@ -181,8 +180,11 @@ function Transactions(props: propsIF) {
     const firstRowRef = useRef<HTMLDivElement | null>(null);
 
     const showAllData = !isAccountView && showAllDataSelection;
-    
-    const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({dataReceived: true, changes: [...transactionsByPool.changes]});
+
+    const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
+        dataReceived: true,
+        changes: [...transactionsByPool.changes],
+    });
     const fetchedTransactionsRef = useRef<Changes>();
     fetchedTransactionsRef.current = fetchedTransactions;
 
@@ -198,30 +200,29 @@ function Transactions(props: propsIF) {
             userTransactionsByPool,
             transactionsByPool,
             showAllData,
-            fetchedTransactions
+            fetchedTransactions,
         ],
     );
 
     const [lastSeenTxID, setLastSeenTxID] = useState<string>('');
     const lastSeenTxIDRef = useRef<string>();
     lastSeenTxIDRef.current = lastSeenTxID;
-    
+
     const [firstSeenTxID, setFirstSeenTxID] = useState<string>('');
     const firstSeenTxIDRef = useRef<string>();
     firstSeenTxIDRef.current = firstSeenTxID;
-
 
     const [autoScroll, setAutoScroll] = useState(false);
     const autoScrollRef = useRef<boolean>();
     autoScrollRef.current = autoScroll;
 
-    const [autoScrollDirection, setAutoScrollDirection] = useState(ScrollDirection.DOWN);
+    const [autoScrollDirection, setAutoScrollDirection] = useState(
+        ScrollDirection.DOWN,
+    );
     const autoScrollDirectionRef = useRef<ScrollDirection>();
     autoScrollDirectionRef.current = autoScrollDirection;
 
-
-    useEffect( () => {
-
+    useEffect(() => {
         const existingChanges = new Set(
             fetchedTransactions.changes.map(
                 (change) => change.txHash || change.txId,
@@ -229,31 +230,19 @@ function Transactions(props: propsIF) {
         ); // Adjust if using a different unique identifier
 
         const uniqueChanges = transactionsByPool.changes.filter(
-            (change) =>
-                !existingChanges.has(
-                    change.txHash || change.txId,
-                ),
+            (change) => !existingChanges.has(change.txHash || change.txId),
         );
 
-
-
-        if(uniqueChanges.length > 0){
+        if (uniqueChanges.length > 0) {
             setFetchedTransactions((prev) => {
                 return {
                     dataReceived: true,
-                    changes: [...uniqueChanges, ...prev.changes]
-                }
-            })
-                
+                    changes: [...uniqueChanges, ...prev.changes],
+                };
+            });
         }
+    }, [transactionsByPool]);
 
-
-
-
-
-    }, [transactionsByPool])
-    
-    
     const oldestTxTime = useMemo(
         () =>
             transactionData.length > 0
@@ -531,14 +520,18 @@ function Transactions(props: propsIF) {
         },
     ];
 
-
-    
     const txDataToDisplay: TransactionIF[] = isCandleSelected
         ? candleTransactionData
         : transactionData;
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions, sortData] =
-        useSortedTxs('time', txDataToDisplay);
+    const [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedTransactions,
+        sortData,
+    ] = useSortedTxs('time', txDataToDisplay);
 
     const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
         return isCandleSelected || isAccountView
@@ -596,14 +589,20 @@ function Transactions(props: propsIF) {
     };
 
     useEffect(() => {
-
         const observer = new IntersectionObserver(
             (entries) => {
-
-                const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
-                const moreDataAvailableVal = moreDataAvailableRef.current ? moreDataAvailableRef.current : moreDataAvailable;
-                const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
-                const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
+                const moreDataLoadingVal = moreDataLoadingRef.current
+                    ? moreDataLoadingRef.current
+                    : moreDataLoading;
+                const moreDataAvailableVal = moreDataAvailableRef.current
+                    ? moreDataAvailableRef.current
+                    : moreDataAvailable;
+                const extraPagesAvailableVal = extraPagesAvailableRef.current
+                    ? extraPagesAvailableRef.current
+                    : extraPagesAvailable;
+                const pagesVisibleVal = pagesVisibleRef.current
+                    ? pagesVisibleRef.current
+                    : pagesVisible;
 
                 const entry = entries[0];
                 if (moreDataLoadingVal) return;
@@ -612,7 +611,7 @@ function Transactions(props: propsIF) {
                     setTransactionTableOpacity('.5');
                     // last row is visible
                     extraPagesAvailableVal + 1 > pagesVisibleVal[1]
-                    ? shiftDown()
+                        ? shiftDown()
                         : moreDataAvailableVal
                           ? addMoreData()
                           : undefined;
@@ -622,7 +621,7 @@ function Transactions(props: propsIF) {
                 threshold: 0.1, // Trigger when 10% of the element is visible
             },
         );
-        
+
         const currentElement = lastRowRef.current;
         if (currentElement) {
             observer.observe(currentElement);
@@ -688,98 +687,104 @@ function Transactions(props: propsIF) {
         }
     };
 
-    const triggerAutoScroll = (direction: ScrollDirection, timeout?: number) => {
-        
-        setTransactionTableOpacity('1')
+    const triggerAutoScroll = (
+        direction: ScrollDirection,
+        timeout?: number,
+    ) => {
+        setTransactionTableOpacity('1');
         setAutoScroll(true);
         setAutoScrollDirection(direction);
-        setTimeout(() => {
-            setAutoScroll(false);
-        }, timeout ? timeout : 2000)
-    }
+        setTimeout(
+            () => {
+                setAutoScroll(false);
+            },
+            timeout ? timeout : 2000,
+        );
+    };
 
     const setTransactionTableOpacity = (val: string) => {
-        if(scrollRef.current){
+        if (scrollRef.current) {
             scrollRef.current.style.opacity = val;
         }
-    }
+    };
 
     const shiftUp = (): void => {
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
     };
-            
+
     const shiftDown = (): void => {
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
     };
 
     useEffect(() => {
-        domDebug('sortBy', sortBy)
+        domDebug('sortBy', sortBy);
         scrollToTop();
     }, [sortBy, showAllData]);
 
-
     const markRows = false;
 
-    const scrollByTxID = (txID: string, pos: ScrollPosition):void => {
-        const txSpans = document.querySelectorAll('#current_row_scroll > div > div:nth-child(2) > div > span'); 
+    const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
+        const txSpans = document.querySelectorAll(
+            '#current_row_scroll > div > div:nth-child(2) > div > span',
+        );
 
         txSpans.forEach((span) => {
-            if(span.textContent === txID){
+            if (span.textContent === txID) {
                 const row = span.parentElement?.parentElement as HTMLDivElement;
                 // row.style.backgroundColor = 'red';
 
                 const parent = row.parentElement as HTMLDivElement;
-                if(markRows){
+                if (markRows) {
                     parent.style.background = 'blue';
                 }
 
-                parent.scrollIntoView({block: pos === ScrollPosition.BOTTOM ? 'end' : 'start' , behavior: 'instant' as ScrollBehavior});
-
+                parent.scrollIntoView({
+                    block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
+                    behavior: 'instant' as ScrollBehavior,
+                });
             }
         });
-    }
-
-
+    };
 
     const bindFirstSeenRow = (): void => {
         const rows = document.querySelectorAll('#current_row_scroll > div');
-        if(rows.length > 0){
+        if (rows.length > 0) {
             const firstRow = rows[0] as HTMLDivElement;
-            if(markRows){
+            if (markRows) {
                 firstRow.style.backgroundColor = 'cyan';
             }
 
-            const txDiv =  firstRow.querySelector('div:nth-child(2)');
-            if(txDiv){
+            const txDiv = firstRow.querySelector('div:nth-child(2)');
+            if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setFirstSeenTxID(txText || '');
                 domDebug('firstSeenTxID', txText);
             }
-        }    
-    }
+        }
+    };
 
     const bindLastSeenRow = (): void => {
-    const rows = document.querySelectorAll('#current_row_scroll > div');
-        if(rows.length > 0){
+        const rows = document.querySelectorAll('#current_row_scroll > div');
+        if (rows.length > 0) {
             // const lastRow = rows[rows.length - 1] as HTMLDivElement;
             rows.forEach((row) => {
                 (row as HTMLDivElement).style.backgroundColor = 'transparent';
-            })
+            });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            if(markRows){
+            if (markRows) {
                 lastRow.style.backgroundColor = 'blue';
             }
 
-            const txDiv =  lastRow.querySelector('div:nth-child(2)');
-            if(txDiv){
+            const txDiv = lastRow.querySelector('div:nth-child(2)');
+            if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setLastSeenTxID(txText || '');
                 domDebug('lastSeenTxID', txText);
             }
         }
-    }
+    };
 
     const autoScrollAlternateSolutionActive = true;
 
@@ -830,10 +835,13 @@ function Transactions(props: propsIF) {
                             setMoreDataAvailable(false);
                         }
                         let newTxData = [];
-                        if(autoScrollAlternateSolutionActive){
-                            newTxData = sortData([...prev.changes, ...uniqueChanges]);
-                        }else{
-                             newTxData = [...prev.changes, ...uniqueChanges];
+                        if (autoScrollAlternateSolutionActive) {
+                            newTxData = sortData([
+                                ...prev.changes,
+                                ...uniqueChanges,
+                            ]);
+                        } else {
+                            newTxData = [...prev.changes, ...uniqueChanges];
                         }
                         return {
                             dataReceived: true,
@@ -843,12 +851,11 @@ function Transactions(props: propsIF) {
                 } else {
                     setMoreDataAvailable(false);
                 }
-
             })
             .then(() => setMoreDataLoading(false))
             .catch(console.error);
-        };
-        
+    };
+
     const logData = () => {
         domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
         // if(sortedTxDataToDisplay.length > 0){
@@ -865,39 +872,48 @@ function Transactions(props: propsIF) {
         // if(sortedTransactions.length > 0){
         //     domDebug('sortedTransactions FIRST ', sortedTransactions[0].txHash);
         // }
-    }
-    
+    };
+
     // const disableAutoScroll = true;
 
     useEffect(() => {
         logData();
         // if(disableAutoScroll) return;
-        if(autoScroll){
-            if(sortBy === 'time' || !autoScrollAlternateSolutionActive){
-                if(autoScrollDirection === ScrollDirection.DOWN){
-                    scrollByTxID(lastSeenTxIDRef.current || '', ScrollPosition.BOTTOM)
-                }else if(autoScrollDirection === ScrollDirection.UP){
-                    scrollByTxID(firstSeenTxIDRef.current || '', ScrollPosition.TOP);
+        if (autoScroll) {
+            if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
+                if (autoScrollDirection === ScrollDirection.DOWN) {
+                    scrollByTxID(
+                        lastSeenTxIDRef.current || '',
+                        ScrollPosition.BOTTOM,
+                    );
+                } else if (autoScrollDirection === ScrollDirection.UP) {
+                    scrollByTxID(
+                        firstSeenTxIDRef.current || '',
+                        ScrollPosition.TOP,
+                    );
                 }
-            }else{
+            } else {
                 scrollWithAlternateStrategy();
             }
         }
-    }, [sortedTxDataToDisplay])
+    }, [sortedTxDataToDisplay]);
 
     const scrollWithAlternateStrategy = () => {
-        if(autoScrollDirection === ScrollDirection.DOWN && scrollRef.current){
+        if (autoScrollDirection === ScrollDirection.DOWN && scrollRef.current) {
             scrollRef.current.scrollTo({
                 top: 1912,
                 behavior: 'instant' as ScrollBehavior,
             });
-        }else if(autoScrollDirection === ScrollDirection.UP && scrollRef.current){
+        } else if (
+            autoScrollDirection === ScrollDirection.UP &&
+            scrollRef.current
+        ) {
             scrollRef.current.scrollTo({
                 top: 1850,
                 behavior: 'instant' as ScrollBehavior,
             });
         }
-    }
+    };
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -1059,13 +1075,16 @@ function Transactions(props: propsIF) {
                     }}
                     className='scroll_to_top_button'
                 >
-                    <PiArrowElbowLeftUpBold color='var(--text1)' size={22} />
                     Return to Top
                 </ScrollToTopButton>
             )}
             <div
                 ref={scrollRef}
-                style={{ flex: 1, overflow: 'auto', transition: 'all .1s ease-in-out' }}
+                style={{
+                    flex: 1,
+                    overflow: 'auto',
+                    transition: 'all .1s ease-in-out',
+                }}
                 className='custom_scroll_ambient'
             >
                 {(
