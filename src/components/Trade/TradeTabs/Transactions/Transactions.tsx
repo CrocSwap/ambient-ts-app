@@ -182,11 +182,21 @@ function Transactions(props: propsIF) {
     const showAllData = !isAccountView && showAllDataSelection;
 
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
-        dataReceived: true,
+        dataReceived: false,
         changes: [...transactionsByPool.changes],
     });
-    const fetchedTransactionsRef = useRef<Changes>();
-    fetchedTransactionsRef.current = fetchedTransactions;
+    // const fetchedTransactionsRef = useRef<Changes>();
+    // fetchedTransactionsRef.current = fetchedTransactions;
+
+    useEffect(() => {
+        // clear fetched transactions when switching pools
+        if (transactionsByPool.changes.length === 0) {
+            setFetchedTransactions({
+                dataReceived: true,
+                changes: [],
+            });
+        }
+    }, [transactionsByPool.changes]);
 
     const transactionData = useMemo<TransactionIF[]>(
         () =>
@@ -915,8 +925,23 @@ function Transactions(props: propsIF) {
         }
     };
 
+    const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (!isLoading) {
+            // use a timeout to keep the isLoading state true 1 second longer
+            const handler = setTimeout(
+                () => setDebouncedIsLoading(isLoading),
+                1000,
+            );
+            return () => clearTimeout(handler);
+        } else {
+            setDebouncedIsLoading(isLoading);
+        }
+    }, [isLoading, 1000]);
+
     const shouldDisplayNoTableData: boolean =
-        !isLoading &&
+        !debouncedIsLoading &&
         !txDataToDisplay.length &&
         unindexedNonFailedTransactions.length === 0;
 
@@ -1090,7 +1115,7 @@ function Transactions(props: propsIF) {
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
-                        : isLoading
+                        : debouncedIsLoading
                 ) ? (
                     <div style={{ height: isSmallScreen ? '80vh' : '100%' }}>
                         <Spinner size={100} bg='var(--dark1)' centered />
