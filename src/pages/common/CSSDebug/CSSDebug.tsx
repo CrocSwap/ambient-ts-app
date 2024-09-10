@@ -21,20 +21,14 @@ export default function CSSDebug() {
 
     return (
         <>
-            <button onClick={() => toggleColorPicker()}>Show Picker</button>
+            <button onClick={() => toggleColorPicker()}>
+                Show Picker
+                <div
+                    style={{width: '20px', height: '20px', backgroundColor: text1Color, display: 'inline-block'}}
+                />
+            </button>
             {showColorPicker && <SketchPicker
                 color={text1Color}
-                // width={'170px'}
-                // onChange={(
-                //     color,
-                //     event,
-                // ) => {
-                //     event.stopPropagation();
-                //     item.action(
-                //         selectedColorObj.replaceSelector,
-                //         color,
-                //     );
-                // }}
                 onChange={(color: ColorResult) => setCSSCustomPropertyValue('--text1', color.hex)}
             />}
             <Swap />
