@@ -1,4 +1,9 @@
-import { CrocImpact, bigIntToFloat, fromDisplayQty } from '@crocswap-libs/sdk';
+import {
+    CrocImpact,
+    bigIntToFloat,
+    fromDisplayQty,
+    toDisplayQty,
+} from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo, useRef, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -120,6 +125,25 @@ function Swap(props: propsIF) {
     const [buyQtyString, setBuyQtyString] = useState<string>(
         !isTokenAPrimary ? primaryQuantity : '',
     );
+
+    const sellQtyNoExponentString = useMemo(() => {
+        return sellQtyString.includes('e')
+            ? toDisplayQty(
+                  fromDisplayQty(sellQtyString || '0', tokenB.decimals),
+                  tokenB.decimals,
+              )
+            : sellQtyString;
+    }, [sellQtyString]);
+
+    const buyQtyNoExponentString = useMemo(() => {
+        return buyQtyString.includes('e')
+            ? toDisplayQty(
+                  fromDisplayQty(buyQtyString || '0', tokenB.decimals),
+                  tokenB.decimals,
+              )
+            : buyQtyString;
+    }, [buyQtyString]);
+
     const [isSellLoading, setIsSellLoading] = useState(false);
     const [isBuyLoading, setIsBuyLoading] = useState(false);
     const [swapAllowed, setSwapAllowed] = useState<boolean>(
@@ -197,14 +221,14 @@ function Swap(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
-        fromDisplayQty(sellQtyString || '0', tokenA.decimals);
+        fromDisplayQty(sellQtyNoExponentString || '0', tokenA.decimals);
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(sellQtyString || '0', tokenA.decimals);
+        : fromDisplayQty(sellQtyNoExponentString || '0', tokenA.decimals);
 
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=
@@ -273,27 +297,28 @@ function Swap(props: propsIF) {
     useEffect(() => {
         if (tokenABalance === '') return;
         if (
-            (sellQtyString === '' && buyQtyString === '') ||
+            (sellQtyNoExponentString === '' && buyQtyNoExponentString === '') ||
             (isTokenAPrimary &&
                 !isBuyLoading &&
-                (isNaN(parseFloat(sellQtyString)) ||
-                    parseFloat(sellQtyString) <= 0)) ||
+                (isNaN(parseFloat(sellQtyNoExponentString)) ||
+                    parseFloat(sellQtyNoExponentString) <= 0)) ||
             (!isTokenAPrimary &&
                 !isSellLoading &&
-                (isNaN(parseFloat(buyQtyString)) ||
-                    parseFloat(buyQtyString) <= 0))
+                (isNaN(parseFloat(buyQtyNoExponentString)) ||
+                    parseFloat(buyQtyNoExponentString) <= 0))
         ) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Enter an Amount');
             if (
                 isBuyLoading &&
-                (sellQtyString === '' || parseFloat(sellQtyString) <= 0)
+                (sellQtyNoExponentString === '' ||
+                    parseFloat(sellQtyNoExponentString) <= 0)
             ) {
                 setIsBuyLoading(false);
                 setLastImpactQuery(undefined);
             } else if (
                 isSellLoading &&
-                (buyQtyString === '' || parseFloat(buyQtyString) <= 0)
+                (buyQtyString === '' || parseFloat(buyQtyNoExponentString) <= 0)
             ) {
                 setIsSellLoading(false);
                 setLastImpactQuery(undefined);
@@ -318,13 +343,17 @@ function Swap(props: propsIF) {
                 : 'Wallet';
 
             setSwapAllowed(
-                fromDisplayQty(sellQtyString || '0', tokenA.decimals) <=
-                    hurdleBigInt,
+                fromDisplayQty(
+                    sellQtyNoExponentString || '0',
+                    tokenA.decimals,
+                ) <= hurdleBigInt,
             );
 
             if (
-                fromDisplayQty(sellQtyString || '0', tokenA.decimals) >
-                hurdleBigInt
+                fromDisplayQty(
+                    sellQtyNoExponentString || '0',
+                    tokenA.decimals,
+                ) > hurdleBigInt
             ) {
                 if (activeTxHashInPendingTxs) {
                     setSellQtyString('');
@@ -363,8 +392,8 @@ function Swap(props: propsIF) {
         isPoolInitialized === undefined, // Needed to distinguish false from undefined
         tokenA.address,
         tokenB.address,
-        buyQtyString,
-        sellQtyString,
+        buyQtyNoExponentString,
+        sellQtyNoExponentString,
         isWithdrawFromDexChecked,
         isBuyLoading,
         isSellLoading,
@@ -464,8 +493,8 @@ function Swap(props: propsIF) {
             if (!crocEnv || !L1_GAS_CALC_ENABLED) return;
 
             const qty = isTokenAPrimary
-                ? sellQtyString.replaceAll(',', '')
-                : buyQtyString.replaceAll(',', '');
+                ? sellQtyNoExponentString.replaceAll(',', '')
+                : buyQtyNoExponentString.replaceAll(',', '');
 
             if (qty === '' || parseFloat(qty) === 0) return;
             const l1Gas = userAddress
@@ -506,8 +535,8 @@ function Swap(props: propsIF) {
     }, [
         crocEnv,
         isTokenAPrimary,
-        sellQtyString,
-        buyQtyString,
+        sellQtyNoExponentString,
+        buyQtyNoExponentString,
         tokenA.address,
         tokenB.address,
         slippageTolerancePercentage,
@@ -535,7 +564,10 @@ function Swap(props: propsIF) {
         setShowConfirmation(true);
         if (!crocEnv) return;
 
-        const qty = isTokenAPrimary ? sellQtyString : buyQtyString;
+        const qty = isTokenAPrimary
+            ? sellQtyNoExponentString
+            : buyQtyNoExponentString;
+
         const isQtySell = isTokenAPrimary;
 
         let tx;
@@ -579,6 +611,7 @@ function Swap(props: propsIF) {
                 });
             }
         } catch (error) {
+            console.log({ error });
             setTxError(error);
         }
 
@@ -718,9 +751,9 @@ function Swap(props: propsIF) {
 
     const percentDiffUsdValue =
         usdValueTokenA && usdValueTokenB
-            ? ((usdValueTokenB * parseFloat(buyQtyString) -
-                  usdValueTokenA * parseFloat(sellQtyString)) /
-                  (usdValueTokenA * parseFloat(sellQtyString))) *
+            ? ((usdValueTokenB * parseFloat(buyQtyNoExponentString) -
+                  usdValueTokenA * parseFloat(sellQtyNoExponentString)) /
+                  (usdValueTokenA * parseFloat(sellQtyNoExponentString))) *
               100
             : 0;
 
@@ -830,8 +863,8 @@ function Swap(props: propsIF) {
                         }
                         effectivePrice={effectivePrice}
                         isSellTokenBase={isSellTokenBase}
-                        sellQtyString={sellQtyString}
-                        buyQtyString={buyQtyString}
+                        sellQtyString={sellQtyNoExponentString}
+                        buyQtyString={buyQtyNoExponentString}
                         isTokenAPrimary={isTokenAPrimary}
                         priceImpactWarning={priceImpactWarning}
                         isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -874,7 +907,10 @@ function Swap(props: propsIF) {
                 isPoolInitialized &&
                 isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
-                fromDisplayQty(sellQtyString || '0', tokenA.decimals) > 0 &&
+                fromDisplayQty(
+                    sellQtyNoExponentString || '0',
+                    tokenA.decimals,
+                ) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
                         idForDOM='approve_token_a_for_swap_module'
