@@ -126,12 +126,17 @@ function Range() {
     );
 
     const tokenAInputQtyNoExponentString = useMemo(() => {
-        return tokenAInputQty.includes('e')
-            ? toDisplayQty(
-                  fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
-                  tokenA.decimals,
-              )
-            : tokenAInputQty;
+        try {
+            return tokenAInputQty.includes('e')
+                ? toDisplayQty(
+                      fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+                      tokenA.decimals,
+                  )
+                : tokenAInputQty;
+        } catch (error) {
+            console.log({ error });
+            return '0';
+        }
     }, [tokenAInputQty]);
 
     const tokenBInputQtyNoExponentString = useMemo(() => {
@@ -981,7 +986,7 @@ function Range() {
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
     } = useHandleRangeButtonMessage(
         tokenA,
-        tokenAInputQty,
+        tokenAInputQtyNoExponentString,
         tokenABalance,
         tokenADexBalance,
         isTokenAInputDisabled,

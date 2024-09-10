@@ -127,12 +127,17 @@ function Swap(props: propsIF) {
     );
 
     const sellQtyNoExponentString = useMemo(() => {
-        return sellQtyString.includes('e')
-            ? toDisplayQty(
-                  fromDisplayQty(sellQtyString || '0', tokenB.decimals),
-                  tokenB.decimals,
-              )
-            : sellQtyString;
+        try {
+            return sellQtyString.includes('e')
+                ? toDisplayQty(
+                      fromDisplayQty(sellQtyString || '0', tokenB.decimals),
+                      tokenB.decimals,
+                  )
+                : sellQtyString;
+        } catch (error) {
+            console.log({ error });
+            return sellQtyString;
+        }
     }, [sellQtyString]);
 
     const buyQtyNoExponentString = useMemo(() => {
@@ -219,16 +224,36 @@ function Swap(props: propsIF) {
         setPriceImpactNumMemo(priceImpactNum);
     }, [priceImpactNum]);
 
-    const tokenASurplusMinusTokenARemainderNum =
-        fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
-        fromDisplayQty(sellQtyNoExponentString || '0', tokenA.decimals);
+    const tokenASurplusMinusTokenARemainderNum = useMemo(() => {
+        try {
+            return (
+                fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
+                fromDisplayQty(sellQtyNoExponentString || '0', tokenA.decimals)
+            );
+        } catch (error) {
+            console.log({ error });
+            return 0n;
+        }
+    }, [tokenADexBalance, sellQtyNoExponentString]);
+
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
-    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1n
-            : 0n
-        : fromDisplayQty(sellQtyNoExponentString || '0', tokenA.decimals);
+
+    const tokenAQtyCoveredByWalletBalance = useMemo(() => {
+        try {
+            return isWithdrawFromDexChecked
+                ? tokenASurplusMinusTokenARemainderNum < 0
+                    ? tokenASurplusMinusTokenARemainderNum * -1n
+                    : 0n
+                : fromDisplayQty(
+                      sellQtyNoExponentString || '0',
+                      tokenA.decimals,
+                  );
+        } catch (error) {
+            console.log({ error });
+            return 0n;
+        }
+    }, [sellQtyNoExponentString, tokenASurplusMinusTokenARemainderNum]);
 
     const isTokenAWalletBalanceSufficient =
         fromDisplayQty(tokenABalance || '0', tokenA.decimals) >=

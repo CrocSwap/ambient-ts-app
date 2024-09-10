@@ -134,12 +134,17 @@ export default function Limit() {
     }, [tokenAInputQty]);
 
     const tokenBInputQtyNoExponentString = useMemo(() => {
-        return tokenBInputQty.includes('e')
-            ? toDisplayQty(
-                  fromDisplayQty(tokenBInputQty || '0', tokenB.decimals),
-                  tokenB.decimals,
-              )
-            : tokenBInputQty;
+        try {
+            return tokenBInputQty.includes('e')
+                ? toDisplayQty(
+                      fromDisplayQty(tokenBInputQty || '0', tokenB.decimals),
+                      tokenB.decimals,
+                  )
+                : tokenBInputQty;
+        } catch (error) {
+            console.log({ error });
+            return tokenBInputQty;
+        }
     }, [tokenBInputQty]);
 
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
