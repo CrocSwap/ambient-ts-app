@@ -1,5 +1,11 @@
 import styled from 'styled-components/macro';
 import { FlexContainer, GridContainer } from '../Common';
+import { TransactionIF } from '../../ambient-utils/types';
+
+export interface Changes {
+    dataReceived: boolean;
+    changes: Array<TransactionIF>;
+}
 
 export const ClearButton = styled.button`
     background: var(--dark2);
