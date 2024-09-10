@@ -1,6 +1,8 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
+import { PiArrowElbowLeftUpBold } from 'react-icons/pi';
+
 import {
     Dispatch,
     useState,
@@ -10,6 +12,7 @@ import {
     memo,
     useMemo,
 } from 'react';
+
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
@@ -49,7 +52,10 @@ import {
     SidebarContext,
     SidebarStateIF,
 } from '../../../../contexts/SidebarContext';
-import { TransactionRow as TransactionRowStyled } from '../../../../styled/Components/TransactionTable';
+import {
+    ScrollToTopButton,
+    TransactionRow as TransactionRowStyled,
+} from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     GraphDataContext,
@@ -125,6 +131,7 @@ function Transactions(props: propsIF) {
         userTransactionsByPool,
         transactionsByPool,
         unindexedNonFailedSessionTransactionHashes,
+        setTransactionsByPool,
     } = useContext<GraphDataContextIF>(GraphDataContext);
     const { transactionsByType } = useContext<ReceiptContextIF>(ReceiptContext);
     const { baseToken, quoteToken } =
@@ -138,6 +145,17 @@ function Transactions(props: propsIF) {
     const [candleTransactionData, setCandleTransactionData] = useState<
         TransactionIF[]
     >([]);
+
+    // ref holding scrollable element (to attach event listener)
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+
+    const lastRowRef = useRef<HTMLDivElement | null>(null);
+    const firstRowRef = useRef<HTMLDivElement | null>(null);
 
     const showAllData = !isAccountView && showAllDataSelection;
 
@@ -154,6 +172,22 @@ function Transactions(props: propsIF) {
             transactionsByPool,
             showAllData,
         ],
+    );
+
+    const [lastSeenTxID, setLastSeenTxID] = useState<string>('');
+    const lastSeenTxIDRef = useRef<string>();
+    lastSeenTxIDRef.current = lastSeenTxID;
+
+    const oldestTxTime = useMemo(
+        () =>
+            transactionData.length > 0
+                ? transactionData.reduce((min, transaction) => {
+                      return transaction.txTime < min
+                          ? transaction.txTime
+                          : min;
+                  }, transactionData[0].txTime)
+                : 0,
+        [transactionData],
     );
 
     const userTransacionsLength = useMemo<number>(
@@ -236,7 +270,7 @@ function Transactions(props: propsIF) {
             quote: selectedQuoteAddress,
             poolIdx: poolIndex,
             chainId: chainId,
-            n: 80,
+            n: 100,
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
@@ -428,6 +462,15 @@ function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', txDataToDisplay);
 
+    const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
+        return isCandleSelected || isAccountView
+            ? sortedTransactions
+            : sortedTransactions.slice(
+                  pagesVisible[0] * 50,
+                  pagesVisible[1] * 50 + 50,
+              );
+    }, [sortedTransactions, pagesVisible, isCandleSelected, isAccountView]);
+
     const headerColumnsDisplay: JSX.Element = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
@@ -473,6 +516,227 @@ function Transactions(props: propsIF) {
             }
         }
     };
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (moreDataLoading) return;
+                if (entry.isIntersecting) {
+                    // last row is visible
+                    extraPagesAvailable + 1 > pagesVisible[1]
+                        ? shiftDown()
+                        : moreDataAvailable
+                          ? addMoreData()
+                          : undefined;
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            },
+        );
+
+        const currentElement = lastRowRef.current;
+        if (currentElement) {
+            observer.observe(currentElement);
+        }
+
+        return () => {
+            if (currentElement) {
+                observer.unobserve(currentElement);
+            }
+        };
+    }, [
+        lastRowRef.current,
+        moreDataLoading,
+        moreDataAvailable,
+        extraPagesAvailable,
+        pagesVisible[1],
+    ]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (moreDataLoading) return;
+                if (entry.isIntersecting) {
+                    // first row is visible
+                    pagesVisible[0] > 0 && shiftUp();
+                }
+            },
+            {
+                threshold: 0.1, // Trigger when 10% of the element is visible
+            },
+        );
+
+        const currentElement = firstRowRef.current;
+        if (currentElement) {
+            observer.observe(currentElement);
+        }
+
+        return () => {
+            if (currentElement) {
+                observer.unobserve(currentElement);
+            }
+        };
+    }, [firstRowRef.current, moreDataLoading, pagesVisible[0]]);
+
+    useEffect(() => {
+        setPagesVisible([0, 1]);
+        setExtraPagesAvailable(0);
+        setMoreDataAvailable(true);
+        setMoreDataLoading(false);
+    }, [selectedBaseAddress + selectedQuoteAddress]);
+
+    const scrollToTop = () => {
+        setPagesVisible([0, 1]);
+
+        if (scrollRef.current) {
+            // scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
+            scrollRef.current.scrollTo({
+                top: 0,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    const shiftUp = (): void => {
+        setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
+        if (scrollRef.current) {
+            // scroll to middle of container
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight * 0.49,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    const shiftDown = (): void => {
+        setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
+        if (scrollRef.current) {
+            // scroll to middle of container
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight * 0.4,
+                behavior: 'instant' as ScrollBehavior,
+            });
+        }
+    };
+
+    useEffect(() => {
+        scrollToTop();
+    }, [sortBy, showAllData]);
+
+    const findTableElementByTxID = (txID: string): void => {
+        const txSpans = document.querySelectorAll(
+            '#current_row_scroll > div > div:nth-child(2) > div > span',
+        );
+
+        txSpans.forEach((span) => {
+            if (span.textContent === txID) {
+                const row = span.parentElement?.parentElement as HTMLDivElement;
+                row.style.backgroundColor = 'red';
+
+                const parent = row.parentElement as HTMLDivElement;
+                parent.style.background = 'blue';
+
+                parent.scrollIntoView({
+                    behavior: 'instant' as ScrollBehavior,
+                });
+            }
+        });
+    };
+
+    const bindLastSeenRow = (): void => {
+        const rows = document.querySelectorAll('#current_row_scroll > div');
+        if (rows.length > 0) {
+            // const lastRow = rows[rows.length - 1] as HTMLDivElement;
+            const lastRow = rows[rows.length - 1] as HTMLDivElement;
+            lastRow.style.backgroundColor = 'red';
+
+            const txDiv = lastRow.querySelector('div:nth-child(2)');
+            if (txDiv) {
+                const txText = txDiv.querySelector('span')?.textContent;
+                setLastSeenTxID(txText || '');
+            }
+        }
+    };
+
+    const addMoreData = (): void => {
+        console.log('addMoreData');
+        if (scrollRef.current) {
+            bindLastSeenRow();
+        }
+        if (!crocEnv || !provider) return;
+        // retrieve pool recent changes
+        setMoreDataLoading(true);
+        fetchPoolRecentChanges({
+            tokenList: tokens.tokenUniv,
+            base: selectedBaseAddress,
+            quote: selectedQuoteAddress,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            n: 50,
+            timeBefore: oldestTxTime,
+            crocEnv: crocEnv,
+            graphCacheUrl: activeNetwork.graphCacheUrl,
+            provider: provider,
+            cachedFetchTokenPrice: cachedFetchTokenPrice,
+            cachedQuerySpotPrice: cachedQuerySpotPrice,
+            cachedTokenDetails: cachedTokenDetails,
+            cachedEnsResolve: cachedEnsResolve,
+        })
+            .then((poolChangesJsonData) => {
+                if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                    setTransactionsByPool((prev) => {
+                        const existingChanges = new Set(
+                            prev.changes.map(
+                                (change) => change.txHash || change.txId,
+                            ),
+                        ); // Adjust if using a different unique identifier
+                        const uniqueChanges = poolChangesJsonData.filter(
+                            (change) =>
+                                !existingChanges.has(
+                                    change.txHash || change.txId,
+                                ),
+                        );
+                        if (uniqueChanges.length > 0) {
+                            setExtraPagesAvailable((prev) => prev + 1);
+                            setPagesVisible((prev) => [
+                                prev[0] + 1,
+                                prev[1] + 1,
+                            ]);
+                            if (scrollRef.current) {
+                                // scroll to middle of container
+                                scrollRef.current.scrollTo({
+                                    top: scrollRef.current.scrollHeight * 0.4,
+                                    behavior: 'instant' as ScrollBehavior,
+                                });
+                            }
+                        } else {
+                            setMoreDataAvailable(false);
+                        }
+                        const newTxData = [...prev.changes, ...uniqueChanges];
+                        return {
+                            dataReceived: true,
+                            changes: newTxData,
+                        };
+                    });
+                } else {
+                    setMoreDataAvailable(false);
+                }
+
+                setTimeout(() => {
+                    findTableElementByTxID(lastSeenTxIDRef.current || '');
+                }, 1000);
+            })
+            .then(() => setMoreDataLoading(false))
+            // .then(() => findTableElementByTxID(lastSeenTxIDRef.current || ''))
+            .catch(console.error);
+    };
+
+    // useEffect(() => {
+    //         findTableElementByTxID(lastSeenTxIDRef.current || '');
+    // }, [transactionsByPool])
 
     const shouldDisplayNoTableData: boolean =
         !isLoading &&
@@ -607,12 +871,12 @@ function Transactions(props: propsIF) {
                     })}
                 <TableRows
                     type='Transaction'
-                    data={sortedTransactions.filter(
-                        (tx) => tx.changeType !== 'cross',
-                    )}
+                    data={sortedTxDataToDisplay}
                     fullData={sortedTransactions}
                     tableView={tableView}
                     isAccountView={isAccountView}
+                    firstRowRef={firstRowRef}
+                    lastRowRef={lastRowRef}
                 />
             </ul>
         </div>
@@ -621,13 +885,28 @@ function Transactions(props: propsIF) {
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%' }}
+            style={{
+                height: isSmallScreen ? '95%' : '100%',
+                position: 'relative',
+            }}
         >
             <div>{headerColumnsDisplay}</div>
-
+            {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
+                <ScrollToTopButton
+                    onClick={() => {
+                        scrollToTop();
+                    }}
+                    className='scroll_to_top_button'
+                >
+                    <PiArrowElbowLeftUpBold color='var(--text1)' size={22} />
+                    Return to Top
+                </ScrollToTopButton>
+            )}
             <div
+                ref={scrollRef}
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
+                // onScroll={(e) => {console.log('scroll', e.currentTarget.scrollTop)}}
             >
                 {(
                     isCandleSelected
