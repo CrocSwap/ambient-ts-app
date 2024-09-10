@@ -4,8 +4,14 @@ import Swap from '../../platformAmbient/Swap/Swap';
 
 export default function CSSDebug() {
     const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
+    const [text1Color, setText1Color] = useState<string>(getCSSCustomPropertyValue('--text1'));
     function toggleColorPicker(): void {
         setShowColorPicker(!showColorPicker);
+    }
+    function setCSSCustomPropertyValue (property: string, color: string): void {
+        const root = document.documentElement;
+        setText1Color(color);
+        root.style.setProperty(property, color);
     }
     function getCSSCustomPropertyValue (property: string): string {
         const root = document.documentElement;
@@ -15,10 +21,10 @@ export default function CSSDebug() {
 
     return (
         <>
-            <button onClick={() => document.documentElement.style.setProperty('--text1', 'green')}>Green!</button>
+            <button onClick={() => setCSSCustomPropertyValue('--text1', 'green')}>Green!</button>
             <button onClick={() => toggleColorPicker()}>Show Picker</button>
             {showColorPicker && <SketchPicker
-                color={getCSSCustomPropertyValue('--text1')}
+                color={text1Color}
                 // width={'170px'}
                 // onChange={(
                 //     color,
@@ -30,6 +36,8 @@ export default function CSSDebug() {
                 //         color,
                 //     );
                 // }}
+                onChange={(color) => setCSSCustomPropertyValue('--text1', 'green')}
+                // onChange={(color) => setCSSCustomPropertyValue('--text1', color)}
             />}
             <Swap />
         </>
