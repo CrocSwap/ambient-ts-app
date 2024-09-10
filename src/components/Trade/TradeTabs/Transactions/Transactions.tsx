@@ -1,7 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
-import { PiArrowElbowLeftUpBold } from 'react-icons/pi';
 
 import {
     Dispatch,
@@ -1076,7 +1075,7 @@ function Transactions(props: propsIF) {
                     }}
                     className='scroll_to_top_button'
                 >
-                    <PiArrowElbowLeftUpBold color='var(--text1)' size={22} />
+                    {/* <PiArrowElbowLeftUpBold color='var(--text1)' size={22} /> */}
                     Return to Top
                 </ScrollToTopButton>
             )}
