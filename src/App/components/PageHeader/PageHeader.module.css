@@ -1,0 +1,15 @@
+.trade_links_container{
+    width: 200px;
+    height: 200px;
+    position: relative;
+}
+
+.trade_links{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 3rem;
+    display: flex;
+    flex-direction: column;
+    background: red;
+}
