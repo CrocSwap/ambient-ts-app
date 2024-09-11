@@ -314,7 +314,7 @@ const PageHeader = function () {
             subRoutes: [
                 {
                     title: 'Swap',
-                    destination: linkGenSwap.getFullURL(swapParams),
+                    destination: linkGenMarket.getFullURL(swapParams)
                 },
                 { title: 'Limit', destination: linkGenLimit.getFullURL(swapParams) },
                 { title: 'Pool', destination: linkGenPool.getFullURL(swapParams) },
