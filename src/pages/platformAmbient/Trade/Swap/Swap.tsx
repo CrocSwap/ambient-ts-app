@@ -145,7 +145,6 @@ function Swap(props: propsIF) {
             buyQtyString || '0',
             tokenB.decimals,
         );
-        console.log({ buyQtyBigInt, buyQtyString });
         return buyQtyString.includes('e')
             ? toDisplayQty(buyQtyBigInt, tokenB.decimals)
             : buyQtyString;
@@ -335,7 +334,6 @@ function Swap(props: propsIF) {
                     parseFloat(buyQtyNoExponentString) <= 0))
         ) {
             setSwapAllowed(false);
-            console.log({ sellQtyNoExponentString, buyQtyNoExponentString });
             setSwapButtonErrorMessage('Enter an Amount');
             if (
                 isBuyLoading &&
