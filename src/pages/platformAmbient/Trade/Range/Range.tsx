@@ -137,7 +137,7 @@ function Range() {
             console.log({ error });
             return '0';
         }
-    }, [tokenAInputQty]);
+    }, [tokenAInputQty, tokenA.decimals]);
 
     const tokenBInputQtyNoExponentString = useMemo(() => {
         return tokenBInputQty.includes('e')
@@ -146,7 +146,7 @@ function Range() {
                   tokenB.decimals,
               )
             : tokenBInputQty;
-    }, [tokenBInputQty]);
+    }, [tokenBInputQty, tokenB.decimals]);
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);

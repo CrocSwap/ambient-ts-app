@@ -138,16 +138,18 @@ function Swap(props: propsIF) {
             console.log({ error });
             return sellQtyString;
         }
-    }, [sellQtyString]);
+    }, [sellQtyString, tokenA.decimals]);
 
     const buyQtyNoExponentString = useMemo(() => {
+        const buyQtyBigInt = fromDisplayQty(
+            buyQtyString || '0',
+            tokenB.decimals,
+        );
+        console.log({ buyQtyBigInt, buyQtyString });
         return buyQtyString.includes('e')
-            ? toDisplayQty(
-                  fromDisplayQty(buyQtyString || '0', tokenB.decimals),
-                  tokenB.decimals,
-              )
+            ? toDisplayQty(buyQtyBigInt, tokenB.decimals)
             : buyQtyString;
-    }, [buyQtyString]);
+    }, [buyQtyString, tokenB.decimals]);
 
     const [isSellLoading, setIsSellLoading] = useState(false);
     const [isBuyLoading, setIsBuyLoading] = useState(false);
@@ -333,6 +335,7 @@ function Swap(props: propsIF) {
                     parseFloat(buyQtyNoExponentString) <= 0))
         ) {
             setSwapAllowed(false);
+            console.log({ sellQtyNoExponentString, buyQtyNoExponentString });
             setSwapButtonErrorMessage('Enter an Amount');
             if (
                 isBuyLoading &&

@@ -131,7 +131,7 @@ export default function Limit() {
                   tokenA.decimals,
               )
             : tokenAInputQty;
-    }, [tokenAInputQty]);
+    }, [tokenAInputQty, tokenA.decimals]);
 
     const tokenBInputQtyNoExponentString = useMemo(() => {
         try {
@@ -145,7 +145,7 @@ export default function Limit() {
             console.log({ error });
             return tokenBInputQty;
         }
-    }, [tokenBInputQty]);
+    }, [tokenBInputQty, tokenB.decimals]);
 
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState(false);
