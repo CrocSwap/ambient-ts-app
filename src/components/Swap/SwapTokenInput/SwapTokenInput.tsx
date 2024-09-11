@@ -186,7 +186,8 @@ function SwapTokenInput(props: propsIF) {
             while (
                 precisionOfInput(
                     rawTokenBQty.toPrecision(precisionForTruncation),
-                ) > tokenB.decimals
+                ) > tokenB.decimals &&
+                precisionForTruncation > 1
             ) {
                 precisionForTruncation--;
             }
@@ -214,7 +215,8 @@ function SwapTokenInput(props: propsIF) {
             while (
                 precisionOfInput(
                     rawTokenAQty.toPrecision(precisionForTruncation),
-                ) > tokenA.decimals
+                ) > tokenA.decimals &&
+                precisionForTruncation > 1
             ) {
                 precisionForTruncation--;
             }
