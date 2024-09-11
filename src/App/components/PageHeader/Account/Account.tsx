@@ -23,6 +23,8 @@ import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import LevelDropdown from './LevelDropdown/LevelDropdown';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -42,6 +44,8 @@ export default function Account(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const { connectedUserXp } = useContext(ChainDataContext);
+    const smallScreen = useMediaQuery('(max-width: 500px)');
+
 
     const [_, copy] = useCopyToClipboard();
 
@@ -84,6 +88,7 @@ export default function Account(props: propsIF) {
     const mainAriaLabel = 'account dropdown menu container';
 
     const isEscapePressed = useKeyPress('Escape');
+
     useEffect(() => {
         if (isEscapePressed) {
             setShowWalletDropdown(false);
@@ -192,9 +197,11 @@ export default function Account(props: propsIF) {
             overflow='visible'
             alignItems='center'
         >
-            {isUserConnected && walletDisplay}
-            {isUserConnected && levelDisplay}
+            {isUserConnected && !smallScreen && walletDisplay}
+            {isUserConnected && !smallScreen && levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
+            <NotificationCenter />
+
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}

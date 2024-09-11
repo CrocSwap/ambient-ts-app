@@ -35,7 +35,7 @@ interface propsIF {
     position: PositionIF;
     isPositionEmpty: boolean;
     isPositionInRange: boolean;
-    handleAccountClick: () => void;
+    handleWalletLinkClick: () => void;
     isAccountView: boolean;
     openDetailsModal: () => void;
     openActionModal: () => void;
@@ -116,8 +116,8 @@ function RangesMenu(props: propsIF) {
             ? useMediaQuery('(max-width: 1300px)')
             : useMediaQuery('(max-width: 1150px)')
         : sidebar.isOpen
-        ? useMediaQuery('(max-width: 1400px)')
-        : useMediaQuery('(max-width: 1150px)');
+          ? useMediaQuery('(max-width: 1400px)')
+          : useMediaQuery('(max-width: 1150px)');
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserConnected;
@@ -294,7 +294,7 @@ function RangesMenu(props: propsIF) {
     // ----------------------
 
     const walletButton = (
-        <Chip ariaLabel='View wallet.' onClick={props.handleAccountClick}>
+        <Chip ariaLabel='View wallet.' onClick={props.handleWalletLinkClick}>
             Wallet
             <FiExternalLink
                 size={15}

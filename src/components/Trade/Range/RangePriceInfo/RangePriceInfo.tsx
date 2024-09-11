@@ -12,7 +12,7 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 // interface for component props
 interface propsIF {
     spotPriceDisplay: string;
-    aprPercentage: number | undefined;
+    // aprPercentage: number | undefined;
     poolPriceCharacter: string;
     isTokenABase: boolean;
     pinnedDisplayPrices:
@@ -75,22 +75,22 @@ function RangePriceInfo(props: propsIF) {
             ? '$0'
             : minPriceUsdEquivalent
         : isAmbient
-        ? '0'
-        : pinnedDisplayPrices
-        ? poolPriceCharacter +
-          pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
-        : '...';
+          ? '0'
+          : pinnedDisplayPrices
+            ? poolPriceCharacter +
+              pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+            : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
         ? isAmbient
             ? '$∞'
             : maxPriceUsdEquivalent
         : isAmbient
-        ? '∞'
-        : pinnedDisplayPrices
-        ? poolPriceCharacter +
-          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
-        : '...';
+          ? '∞'
+          : pinnedDisplayPrices
+            ? poolPriceCharacter +
+              pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+            : '...';
 
     const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplayTruncated;
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncated;

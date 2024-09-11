@@ -28,16 +28,15 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--navbar-border);
-    ${({ fixed }) => fixed && fixedStyles}
+    ${({ fixed }) => fixed && fixedStyles};
+     padding: 0 1rem;
 
     @media only screen and (min-width: 800px) {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         padding: 0 16px;
     }
-    @media only screen and (max-width: 600px) {
-        padding: 0 1rem;
-    }
+    
 `;
 
 // Define the styles for LogoContainer
@@ -309,7 +308,7 @@ export const WalletWrapper = styled(FlexContainer)`
     border: 1px solid var(--accent1);
     @media (max-width: 500px) {
         width: 300px;
-        right: -50px;
+        right: -100px;
     }
 `;
 
@@ -337,7 +336,8 @@ export const LevelWrapper = styled(FlexContainer)`
     border-radius: 4px;
 
     @media (max-width: 500px) {
-        right: -70px;
+        right: -50px;
+        width: 300px;
     }
 `;
 export const AccountDropdownWrapper = styled(FlexContainer)`
@@ -420,7 +420,7 @@ export const WalletName = styled.p`
 export const StyledExchangeBalanceDropdown = styled.div`
     position: absolute;
     top: 68px;
-    right: 68px;
+    right: 5px;
     height: 510px;
     border: none;
     overflow: hidden;
@@ -574,8 +574,6 @@ export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
         height: 20px;
     }
 `;
-
-// NetworkSelector
 
 export const DropdownMenuContainer = styled(FlexContainer)`
     z-index: 99999;

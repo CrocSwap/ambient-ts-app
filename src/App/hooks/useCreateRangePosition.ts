@@ -2,12 +2,16 @@ import { MutableRefObject, useContext } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
+    isTransactionDeniedError,
     isTransactionFailedError,
     isTransactionReplacedError,
-    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../ambient-utils/constants';
+import {
+    DISABLE_WORKAROUNDS,
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+} from '../../ambient-utils/constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { createRangePositionTx } from '../../ambient-utils/dataLayer/transactions/range';
@@ -47,17 +51,15 @@ export function useCreateRangePosition() {
     const createRangePosition = async (params: {
         slippageTolerancePercentage: number;
         isAmbient: boolean;
-        tokenAInputQty: number;
-        tokenBInputQty: number;
+        tokenAInputQty: string;
+        tokenBInputQty: string;
         isWithdrawTokenAFromDexChecked: boolean;
         isWithdrawTokenBFromDexChecked: boolean;
         defaultLowTick: number;
         defaultHighTick: number;
         isAdd: boolean;
         setNewRangeTransactionHash: (s: string) => void;
-        setTxErrorCode: (s: string) => void;
-        setTxErrorMessage: (s: string) => void;
-        setTxErrorJSON: (s: string) => void;
+        setTxError: (s: Error) => void;
         resetConfirmation: () => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
         activeRangeTxHash: MutableRefObject<string>;
@@ -73,9 +75,7 @@ export function useCreateRangePosition() {
             defaultHighTick,
             isAdd,
             setNewRangeTransactionHash,
-            setTxErrorCode,
-            setTxErrorMessage,
-            setTxErrorJSON,
+            setTxError,
             setIsTxCompletedRange,
             activeRangeTxHash,
         } = params;
@@ -95,23 +95,66 @@ export function useCreateRangePosition() {
         });
 
         try {
-            tx = await createRangePositionTx({
-                crocEnv,
-                isAmbient,
-                slippageTolerancePercentage,
-                tokenA: {
-                    address: tokenA.address,
-                    qty: tokenAInputQty,
-                    isWithdrawFromDexChecked: isWithdrawTokenAFromDexChecked,
-                },
-                tokenB: {
-                    address: tokenB.address,
-                    qty: tokenBInputQty,
-                    isWithdrawFromDexChecked: isWithdrawTokenBFromDexChecked,
-                },
-                isTokenAPrimary,
-                tick: { low: defaultLowTick, high: defaultHighTick },
-            });
+            try {
+                tx = await createRangePositionTx({
+                    crocEnv,
+                    isAmbient,
+                    slippageTolerancePercentage,
+                    tokenA: {
+                        address: tokenA.address,
+                        qty: tokenAInputQty,
+                        isWithdrawFromDexChecked:
+                            isWithdrawTokenAFromDexChecked,
+                    },
+                    tokenB: {
+                        address: tokenB.address,
+                        qty: tokenBInputQty,
+                        isWithdrawFromDexChecked:
+                            isWithdrawTokenBFromDexChecked,
+                    },
+                    isTokenAPrimary,
+                    tick: { low: defaultLowTick, high: defaultHighTick },
+                });
+            } catch (error) {
+                // If the user's requested position fails to create and its the non-primary side is ETH,
+                // try to create the same position but with the ETH amount static instead of floating.
+                if (
+                    (isTokenAPrimary && tokenB.address != ZERO_ADDRESS) ||
+                    (!isTokenAPrimary && tokenA.address != ZERO_ADDRESS) ||
+                    isTransactionDeniedError(error) ||
+                    DISABLE_WORKAROUNDS
+                ) {
+                    throw error;
+                }
+                console.log(
+                    'position creation with floating ETH failed, trying static ETH',
+                    error,
+                );
+                try {
+                    tx = await createRangePositionTx({
+                        crocEnv,
+                        isAmbient,
+                        slippageTolerancePercentage,
+                        tokenA: {
+                            address: tokenA.address,
+                            qty: tokenAInputQty,
+                            isWithdrawFromDexChecked:
+                                isWithdrawTokenAFromDexChecked,
+                        },
+                        tokenB: {
+                            address: tokenB.address,
+                            qty: tokenBInputQty,
+                            isWithdrawFromDexChecked:
+                                isWithdrawTokenBFromDexChecked,
+                        },
+                        isTokenAPrimary: !isTokenAPrimary,
+                        tick: { low: defaultLowTick, high: defaultHighTick },
+                    });
+                } catch (error2) {
+                    if (isTransactionDeniedError(error2)) throw error2;
+                    else throw error;
+                }
+            }
 
             setNewRangeTransactionHash(tx?.hash);
             addPendingTx(tx?.hash);
@@ -148,13 +191,8 @@ export function useCreateRangePosition() {
                 unixTimeAdded: Math.floor(Date.now() / 1000),
             });
         } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
             console.error({ error });
-            setTxErrorCode(error?.code);
-            setTxErrorMessage(parseErrorMessage(error));
-            setTxErrorJSON(JSON.stringify(error));
+            setTxError(error);
         }
 
         let receipt;
@@ -186,7 +224,7 @@ export function useCreateRangePosition() {
         }
         if (receipt) {
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
             if (setIsTxCompletedRange) {
                 setIsTxCompletedRange(true);
             }

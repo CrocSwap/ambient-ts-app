@@ -8,10 +8,14 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
+    ALCHEMY_API_KEY,
     BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
+    MAINNET_RPC_URL,
     SCROLL_RPC_URL,
+    SEPOLIA_RPC_URL,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
+    ZERO_ADDRESS,
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
@@ -24,26 +28,39 @@ import {
     UserDataContext,
     UserXpDataIF,
 } from './UserDataContext';
-import { TokenBalanceContext } from './TokenBalanceContext';
 import {
+    NftDataIF,
+    NftListByChain,
+    TokenBalanceContext,
+} from './TokenBalanceContext';
+import {
+    expandTokenBalances,
     fetchBlastUserXpData,
     fetchBlockNumber,
     fetchUserXpData,
+    RpcNodeStatus,
+    IDexTokenBalances,
 } from '../ambient-utils/api';
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
+import moment from 'moment';
+import { Network, Alchemy } from 'alchemy-sdk';
+import { fetchNFT } from '../ambient-utils/api/fetchNft';
+import { ReceiptContext } from './ReceiptContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
+    rpcNodeStatus: RpcNodeStatus;
     connectedUserXp: UserXpDataIF;
     connectedUserBlastXp: BlastUserXpDataIF;
     isActiveNetworkBlast: boolean;
     isActiveNetworkScroll: boolean;
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
+    nativeTokenUsdPrice: number | undefined;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -54,17 +71,39 @@ export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isUserIdle } = useContext(AppStateContext);
-    const { setTokenBalances } = useContext(TokenBalanceContext);
+    const {
+        setTokenBalances,
+        setNFTData,
+        NFTFetchSettings,
+        setNFTFetchSettings,
+    } = useContext(TokenBalanceContext);
+
+    const { sessionReceipts } = useContext(ReceiptContext);
 
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails } =
-        useContext(CachedDataContext);
+    const {
+        cachedFetchAmbientListWalletBalances,
+        cachedFetchDexBalances,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedFetchNFT,
+    } = useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const {
+        userAddress,
+        isUserConnected,
+        setIsfetchNftTriggered,
+        isfetchNftTriggered,
+        nftTestWalletAddress,
+        setNftTestWalletAddress,
+    } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
+
+    const [rpcNodeStatus, setRpcNodeStatus] =
+        useState<RpcNodeStatus>('unknown');
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
     const isActiveNetworkBlast = ['0x13e31', '0xa0c71fd'].includes(
@@ -88,28 +127,51 @@ export const ChainDataContextProvider = (props: {
         '0x8274f',
     ];
 
+    const settings = {
+        apiKey: ALCHEMY_API_KEY,
+        network: Network.ETH_MAINNET,
+    };
+
+    const alchemyClient = new Alchemy(settings);
+
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
 
-    const BLOCK_NUM_POLL_MS = isUserIdle ? 15000 : 5000; // poll for new block every 15 seconds when user is idle, every 5 seconds when user is active
+    const BLOCK_NUM_POLL_MS = isUserIdle ? 30000 : 5000; // poll for new block every 30 seconds when user is idle, every 5 seconds when user is active
 
     async function pollBlockNum(): Promise<void> {
-        // if default RPC is Infura, use key from env variable
-        const nodeUrl =
-            chainData.nodeUrl.toLowerCase().includes('infura') &&
-            import.meta.env.VITE_INFURA_KEY
-                ? chainData.nodeUrl.slice(0, -32) +
-                  import.meta.env.VITE_INFURA_KEY
-                : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+        const nodeUrl = ['0x1'].includes(chainData.chainId)
+            ? MAINNET_RPC_URL
+            : ['0xaa36a7'].includes(chainData.chainId)
+              ? SEPOLIA_RPC_URL
+              : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
                 ? BLAST_RPC_URL
                 : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
-                ? SCROLL_RPC_URL
-                : blockPollingUrl;
+                  ? SCROLL_RPC_URL
+                  : blockPollingUrl;
+        // const nodeUrl =
+        //     chainData.nodeUrl.toLowerCase().includes('infura') &&
+        //     import.meta.env.VITE_INFURA_KEY
+        //         ? chainData.nodeUrl.slice(0, -32) +
+        //           import.meta.env.VITE_INFURA_KEY
+        //         : ['0x13e31'].includes(chainData.chainId) // use blast env variable for blast network
+        //           ? BLAST_RPC_URL
+        //           : ['0x82750'].includes(chainData.chainId) // use scroll env variable for scroll network
+        //             ? SCROLL_RPC_URL
+        //             : blockPollingUrl;
         try {
             const lastBlockNumber = await fetchBlockNumber(nodeUrl);
-            if (lastBlockNumber > 0) setLastBlockNumber(lastBlockNumber);
+            // const lastBlockNumber = await fetchBlockNumber(
+            //     'http://scroll-sepolia-rpc.01no.de:8545',
+            // );
+            if (lastBlockNumber > 0) {
+                setLastBlockNumber(lastBlockNumber);
+                setRpcNodeStatus('active');
+            } else {
+                setRpcNodeStatus('inactive');
+            }
         } catch (error) {
-            console.error({ error });
+            setRpcNodeStatus('inactive');
         }
     }
 
@@ -122,11 +184,14 @@ export const ChainDataContextProvider = (props: {
             return;
         }
 
-        const interval = setInterval(async () => {
+        const interval = setInterval(() => {
             pollBlockNum();
         }, BLOCK_NUM_POLL_MS);
+
+        // Clean up the interval when the component unmounts or when dependencies change
         return () => clearInterval(interval);
-    }, [blockPollingUrl, BLOCK_NUM_POLL_MS]);
+    }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
+
     /* This will not work with RPCs that don't support web socket subscriptions. In
      * particular Infura does not support websockets on Arbitrum endpoints. */
 
@@ -170,9 +235,10 @@ export const ChainDataContextProvider = (props: {
     }, [lastNewHeadMessage]);
 
     const fetchGasPrice = async () => {
-        const newGasPrice = await supportedNetworks[
-            chainData.chainId
-        ].getGasPriceInGwei(provider);
+        const newGasPrice =
+            await supportedNetworks[chainData.chainId].getGasPriceInGwei(
+                provider,
+            );
         if (gasPriceInGwei !== newGasPrice) {
             setGasPriceinGwei(newGasPrice);
         }
@@ -190,6 +256,136 @@ export const ChainDataContextProvider = (props: {
     const everyFiveMinutes = Math.floor(Date.now() / 300000);
 
     useEffect(() => {
+        const nftLocalData = localStorage.getItem('user_nft_data');
+
+        const actionKey = userAddress;
+
+        const localNftDataParsed = nftLocalData
+            ? new Map(JSON.parse(nftLocalData))
+            : undefined;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nftDataMap = localNftDataParsed?.get(actionKey) as any;
+
+        const isOverTimeLimit =
+            nftDataMap &&
+            moment(Date.now()).diff(moment(nftDataMap.lastFetchTime), 'days') >=
+                7;
+
+        if (
+            isfetchNftTriggered ||
+            !nftLocalData ||
+            isOverTimeLimit ||
+            (localNftDataParsed && !localNftDataParsed.has(actionKey))
+        ) {
+            (async () => {
+                if (
+                    crocEnv &&
+                    isUserConnected &&
+                    userAddress &&
+                    chainData.chainId &&
+                    alchemyClient
+                ) {
+                    try {
+                        const fetchFunction = isfetchNftTriggered
+                            ? fetchNFT
+                            : cachedFetchNFT;
+
+                        const NFTResponse = await fetchFunction(
+                            nftTestWalletAddress !== ''
+                                ? nftTestWalletAddress
+                                : userAddress,
+                            crocEnv,
+                            alchemyClient,
+                            NFTFetchSettings.pageKey,
+                            NFTFetchSettings.pageSize,
+                        );
+
+                        if (NFTResponse !== undefined) {
+                            const NFTData = NFTResponse.NFTData;
+
+                            const pageKey = NFTResponse.pageKey;
+
+                            const userHasNFT = NFTResponse.userHasNFT;
+
+                            setNFTFetchSettings({
+                                pageSize: NFTFetchSettings.pageSize,
+                                pageKey: pageKey ? pageKey : '',
+                            });
+
+                            const nftImgArray: Array<NftDataIF> = [];
+
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            NFTData.map((nftData: any) => {
+                                if (
+                                    nftData.collection.name !==
+                                    'ENS: Ethereum Name Service'
+                                ) {
+                                    nftImgArray.push({
+                                        contractAddress:
+                                            nftData.contract.address,
+                                        contractName: nftData.contract.name,
+                                        thumbnailUrl:
+                                            nftData.image.thumbnailUrl,
+                                        cachedUrl: nftData.image.cachedUrl,
+                                    });
+                                }
+                            });
+
+                            const nftDataMap = localNftDataParsed
+                                ? localNftDataParsed
+                                : new Map<string, Array<NftListByChain>>();
+
+                            const mapValue: Array<NftListByChain> = [];
+
+                            mapValue.push({
+                                chainId: chainData.chainId,
+                                totalNFTCount: NFTResponse.totalNFTCount,
+                                userHasNFT: userHasNFT,
+                                data: nftImgArray,
+                            });
+
+                            const mapWithFetchTime = {
+                                lastFetchTime: Date.now(),
+                                mapValue: mapValue,
+                            };
+
+                            nftDataMap.set(actionKey, mapWithFetchTime);
+
+                            localStorage.setItem(
+                                'user_nft_data',
+                                JSON.stringify(Array.from(nftDataMap)),
+                            );
+
+                            setNFTData(mapValue);
+                            setIsfetchNftTriggered(() => false);
+                            setNftTestWalletAddress(() => '');
+                        }
+                    } catch (error) {
+                        console.error({ error });
+                        setIsfetchNftTriggered(() => false);
+                    }
+                }
+            })();
+        } else {
+            if (localNftDataParsed && localNftDataParsed.has(actionKey)) {
+                if (nftDataMap) {
+                    setNFTData(() => nftDataMap.mapValue as NftListByChain[]);
+                }
+            }
+        }
+    }, [
+        crocEnv,
+        isUserConnected,
+        userAddress,
+        chainData.chainId,
+        // everyFiveMinutes,
+        alchemyClient !== undefined,
+        activeNetwork.graphCacheUrl,
+        isfetchNftTriggered,
+    ]);
+
+    useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
@@ -197,20 +393,78 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId
+                chainData.chainId &&
+                lastBlockNumber
             ) {
                 try {
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainData.chainId,
-                            everyFiveMinutes,
-                            cachedTokenDetails,
-                            crocEnv,
-                            activeNetwork.graphCacheUrl,
-                            tokens.tokenUniv,
+                    const combinedBalances: TokenIF[] = [];
+
+                    // fetch wallet balances for tokens in ambient token list
+                    const AmbientListWalletBalances: TokenIF[] | undefined =
+                        await cachedFetchAmbientListWalletBalances({
+                            address: userAddress,
+                            chain: chainData.chainId,
+                            crocEnv: crocEnv,
+                            _refreshTime: lastBlockNumber,
+                        });
+
+                    combinedBalances.push(...AmbientListWalletBalances);
+
+                    // fetch exchange balances and wallet balances for tokens in user's exchange balances
+                    const dexBalancesFromCache = await cachedFetchDexBalances({
+                        address: userAddress,
+                        chain: chainData.chainId,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        _refreshTime: lastBlockNumber,
+                    });
+
+                    if (dexBalancesFromCache !== undefined) {
+                        await Promise.all(
+                            dexBalancesFromCache.map(
+                                async (tokenBalances: IDexTokenBalances) => {
+                                    const indexOfExistingToken = (
+                                        combinedBalances ?? []
+                                    ).findIndex(
+                                        (existingToken) =>
+                                            existingToken.address.toLowerCase() ===
+                                            tokenBalances.tokenAddress.toLowerCase(),
+                                    );
+                                    const newToken = await expandTokenBalances(
+                                        tokenBalances,
+                                        tokens.tokenUniv,
+                                        cachedTokenDetails,
+                                        crocEnv,
+                                        chainData.chainId,
+                                    );
+
+                                    if (indexOfExistingToken === -1) {
+                                        const updatedToken = {
+                                            ...newToken,
+                                        };
+                                        combinedBalances.push(updatedToken);
+                                    } else {
+                                        const existingToken =
+                                            combinedBalances[
+                                                indexOfExistingToken
+                                            ];
+
+                                        const updatedToken = {
+                                            ...existingToken,
+                                        };
+
+                                        updatedToken.dexBalance =
+                                            newToken.dexBalance;
+
+                                        combinedBalances[indexOfExistingToken] =
+                                            updatedToken;
+                                    }
+                                },
+                            ),
                         );
-                    const tokensWithLogos = tokenBalances.map((token) => {
+                    }
+
+                    const tokensWithLogos = combinedBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
@@ -238,7 +492,25 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
         everyFiveMinutes,
         activeNetwork.graphCacheUrl,
+        sessionReceipts.length,
     ]);
+
+    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
+        number | undefined
+    >();
+
+    useEffect(() => {
+        if (!crocEnv) return;
+        Promise.resolve(
+            cachedFetchTokenPrice(ZERO_ADDRESS, chainData.chainId, crocEnv),
+        ).then((price) => {
+            if (price?.usdPrice !== undefined) {
+                setNativeTokenUsdPrice(price.usdPrice);
+            } else {
+                setNativeTokenUsdPrice(undefined);
+            }
+        });
+    }, [crocEnv, chainData.chainId]);
 
     const [connectedUserXp, setConnectedUserXp] = React.useState<UserXpDataIF>({
         dataReceived: false,
@@ -305,6 +577,7 @@ export const ChainDataContextProvider = (props: {
     const chainDataContext = {
         lastBlockNumber,
         setLastBlockNumber,
+        rpcNodeStatus,
         gasPriceInGwei,
         connectedUserXp,
         connectedUserBlastXp,
@@ -313,6 +586,7 @@ export const ChainDataContextProvider = (props: {
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isActiveNetworkL2,
+        nativeTokenUsdPrice,
     };
 
     return (

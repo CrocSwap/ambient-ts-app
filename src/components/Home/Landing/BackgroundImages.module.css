@@ -1,5 +1,6 @@
 .home_wallpaper_mobile {
-    background: linear-gradient(
+    background:
+        linear-gradient(
             to bottom,
             rgba(13, 17, 23, 0),
             rgba(13, 17, 23, 0.1) 80%,
@@ -12,7 +13,8 @@
 }
 
 .purple_waves {
-    background: linear-gradient(
+    background:
+        linear-gradient(
             180deg,
             var(--dark1) 0%,
             var(--dark1) 0%,
@@ -24,15 +26,15 @@
 }
 
 .stars {
-    background: linear-gradient(
+    background:
+        linear-gradient(
             180deg,
             var(--dark1) 0%,
             var(--dark1) 0%,
             rgba(0, 0, 0, 0) 0%,
             var(--dark1) 100%
         ),
-        url('/src/assets/images/home/stars.png') no-repeat
-            center center;
+        url('/src/assets/images/home/stars.png') no-repeat center center;
 }
 
 .home2 {
@@ -46,8 +48,8 @@
 }
 
 .background {
-    background: url('/src/assets/images/backgrounds/background.png') no-repeat
-        center center fixed;
+    background: url('../../../assets/images/backgrounds/background.png')
+        no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -56,7 +58,7 @@
 
 .ambient_blast_logo {
     font-size: 50px;
-    font-family: 'Lexend Exa';
+    /* font-family: 'Lexend Exa'; */
     font-style: normal;
     font-weight: 300;
     line-height: normal;

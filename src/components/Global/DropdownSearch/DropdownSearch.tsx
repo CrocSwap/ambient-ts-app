@@ -45,8 +45,7 @@ interface optionItem {
 }
 
 const DropdownSearch = () => {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
-        useContext(CachedDataContext);
+    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
@@ -132,6 +131,8 @@ const DropdownSearch = () => {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
+                        // unfocus the input
+                        e.currentTarget.blur();
                     }
                 }}
                 spellCheck='false'
@@ -161,32 +162,17 @@ const DropdownSearch = () => {
         {
             id: 1,
             name: 'Top Pools',
-            data: (
-                <TopPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <TopPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
         {
             id: 2,
             name: 'Favorites',
-            data: (
-                <FavoritePools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <FavoritePools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
         {
             id: 3,
             name: 'Recent Pairs',
-            data: (
-                <RecentPools
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                />
-            ),
+            data: <RecentPools cachedQuerySpotPrice={cachedQuerySpotPrice} />,
         },
     ];
 
@@ -236,16 +222,12 @@ const DropdownSearch = () => {
                 <motion.div
                     className={styles.dropdown_content}
                     initial={{ height: 0 }}
-                    animate={{ height: '164px' }}
+                    animate={{ height: 'auto' }}
                     exit={{ height: 0 }}
                     transition={{ type: 'spring', stiffness: 200 }}
                 >
                     {searchData.isInputValid ? (
-                        <SidebarSearchResults
-                            searchData={searchData}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
+                        <SidebarSearchResults searchData={searchData} />
                     ) : (
                         activeOption?.data
                     )}

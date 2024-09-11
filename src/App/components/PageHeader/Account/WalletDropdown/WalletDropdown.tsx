@@ -14,7 +14,6 @@ import {
     WalletWrapper,
     AccountLink,
 } from '../../../../../styled/Components/Header';
-import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     ZERO_ADDRESS,
@@ -51,7 +50,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
+    const { isActiveNetworkBlast, nativeTokenUsdPrice } =
+        useContext(ChainDataContext);
 
     const { tokenBalances } = useContext(TokenBalanceContext);
     const defaultPair = supportedNetworks[chainId].defaultPair;
@@ -91,23 +91,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         string | undefined
     >();
 
-    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
-        number | undefined
-    >();
-
     const { crocEnv } = useContext(CrocEnvContext);
 
     useEffect(() => {
         if (!crocEnv) return;
-        Promise.resolve(
-            cachedFetchTokenPrice(ZERO_ADDRESS, chainId, crocEnv),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                setEthMainnetUsdPrice(price.usdPrice);
-            } else {
-                setEthMainnetUsdPrice(undefined);
-            }
-        });
+
         if (usdcData === undefined) {
             setUsdcUsdValueForDom(undefined);
             setUsdcBalanceForDom(undefined);
@@ -115,9 +103,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         }
         const usdcCombinedBalance =
             usdcData.walletBalance !== undefined
-                ? BigNumber.from(usdcData.walletBalance)
-                      .add(BigNumber.from(usdcData.dexBalance ?? '0'))
-                      .toString()
+                ? (
+                      BigInt(usdcData.walletBalance) +
+                      BigInt(usdcData.dexBalance ?? '0')
+                  ).toString()
                 : undefined;
         const usdcCombinedBalanceDisplay =
             usdcData && usdcCombinedBalance
@@ -157,9 +146,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
-            ? BigNumber.from(nativeData.walletBalance)
-                  .add(BigNumber.from(nativeData.dexBalance ?? '0'))
-                  .toString()
+            ? (
+                  BigInt(nativeData.walletBalance) +
+                  BigInt(nativeData.dexBalance ?? '0')
+              ).toString()
             : undefined;
     const nativeCombinedBalanceDisplay =
         nativeData && nativeCombinedBalance
@@ -176,9 +166,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             : undefined;
 
     const ethMainnetUsdValue =
-        ethMainnetUsdPrice !== undefined &&
+        nativeTokenUsdPrice !== undefined &&
         nativeCombinedBalanceDisplayNum !== undefined
-            ? ethMainnetUsdPrice * nativeCombinedBalanceDisplayNum
+            ? nativeTokenUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
     const nativeTokenMainnetUsdValueTruncated =

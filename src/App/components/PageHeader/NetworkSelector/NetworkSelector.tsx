@@ -1,7 +1,7 @@
 // import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     MenuContent,
@@ -19,26 +19,36 @@ import {
 import { Text } from '../../../../styled/Common';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import cantoLogo from '../../../../assets/images/networks/canto.png';
-import scrollLogo from '../../../../assets/images/networks/scroll.png';
+import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
 import blastLogo from '../../../../assets/images/networks/blast_logo.png';
-import ETH from '../../../../assets/images/logos/eth-diamond-purple.png';
+import blastSepoliaLogo from '../../../../assets/images/networks/blast_sepolia_logo.webp';
+import scrollSepoliaLogo from '../../../../assets/images/networks/scroll_sepolia_logo.webp';
+import ETH from '../../../../assets/images/networks/ethereum_logo.svg';
+import sepoliaLogo from '../../../../assets/images/networks/sepolia_logo.webp';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { lookupChainId } from '../../../../ambient-utils/dataLayer';
+import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
-    switchNetwork: ((chainId_: number) => void) | undefined;
+    customBR?: string;
 }
 
 export default function NetworkSelector(props: propsIF) {
-    const { switchNetwork } = props;
     const {
         chooseNetwork,
         chainData: { chainId },
+        chainData,
     } = useContext(CrocEnvContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
+    const { switchNetwork } = useSwitchNetwork();
+    const smallScreen = useMediaQuery('(max-width: 600px)');
+
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { isConnected } = useWeb3ModalAccount();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
@@ -51,9 +61,9 @@ export default function NetworkSelector(props: propsIF) {
     chains.forEach((chain: ChainSpec) => chainMap.set(chain.chainId, chain));
 
     // click handler for network switching (does not handle Canto link)
-    function handleClick(chn: ChainSpec): void {
-        if (switchNetwork) {
-            switchNetwork(parseInt(chn.chainId));
+    async function handleClick(chn: ChainSpec): Promise<void> {
+        if (isConnected) {
+            await switchNetwork(parseInt(chn.chainId));
             if (chainParam || networkParam) {
                 // navigate to index page only if chain/network search param present
                 linkGenIndex.navigate();
@@ -66,6 +76,43 @@ export default function NetworkSelector(props: propsIF) {
             chooseNetwork(supportedNetworks[chn.chainId]);
         }
     }
+
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    // logic to consume chain param data from the URL
+    // runs once when the app initializes, again when web3modal finishes initializing
+    useEffect(() => {
+        // search for param in URL by key 'chain' or 'network'
+        const chainParam: string | null =
+            searchParams.get('chain') ?? searchParams.get('network');
+        // logic to execute if a param is found (if not, do nothing)
+        if (chainParam) {
+            // get a canonical 0x hex string chain ID from URL param
+            const targetChain: string =
+                lookupChainId(chainParam, 'string') ?? chainParam;
+            // check if chain is supported and not the current chain in the app
+            // yes → trigger machinery to switch the current network
+            // no → no action except to clear the param from the URL
+            if (
+                supportedNetworks[targetChain] &&
+                targetChain !== chainData.chainId
+            ) {
+                // use web3modal if wallet is connected, otherwise use in-app toggle
+                if (isConnected) {
+                    switchNetwork(parseInt(targetChain));
+                } else {
+                    if (!initialLoadComplete) {
+                        setTimeout(() => {
+                            setInitialLoadComplete(true);
+                        }, 500);
+                    } else {
+                        chooseNetwork(supportedNetworks[targetChain]);
+                    }
+                }
+            } else {
+                setSearchParams('');
+            }
+        }
+    }, [isConnected, initialLoadComplete]);
 
     // !important:  network data is manually coded because the data used to generate
     // !important:  ... elements does not follow a consistent shape (due to Canto)
@@ -84,13 +131,13 @@ export default function NetworkSelector(props: propsIF) {
                 <img
                     src={ETH}
                     alt='ethereum mainnet network'
-                    width='17px'
-                    height='22px'
-                    style={{ borderRadius: '50%', marginLeft: '2px' }}
+                    width='25px'
+                    height='25px'
+                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
                 />
                 <Text
                     color={chainId === '0x1' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '4px' }}
+                    style={{ marginLeft: '1px' }}
                 >
                     Ethereum
                 </Text>
@@ -156,7 +203,7 @@ export default function NetworkSelector(props: propsIF) {
     const cantoNetwork: JSX.Element = (
         <NetworkItem
             id='canto_network_selector'
-            onClick={() => window.open('http://canto.io/lp', '_blank')}
+            onClick={() => window.open('https://app.canto.io/lp', '_blank')}
             key='canto'
             custom={chains.length + 1}
             variants={ItemEnterAnimation}
@@ -191,22 +238,22 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
                 <img
-                    src={ETH}
+                    src={sepoliaLogo}
                     alt='sepolia network'
-                    width='17px'
-                    height='22px'
+                    width='25px'
+                    height='25px'
                     style={{
                         borderRadius: '50%',
-                        marginLeft: '2px',
+                        marginLeft: '-2px',
                     }}
                 />
                 <Text
                     color={chainId === '0xaa36a7' ? 'accent1' : 'white'}
-                    marginLeft='5px'
+                    marginLeft='1px'
                 >
                     Sepolia
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='35px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='30px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -224,7 +271,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0xa0c71fd'}>
                 <img
-                    src={blastLogo}
+                    src={blastSepoliaLogo}
                     alt='blast network'
                     width='25px'
                     height='25px'
@@ -232,11 +279,11 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0xa0c71fd' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '3px' }}
+                    style={{ marginLeft: '2px' }}
                 >
-                    {'Sepolia'}
+                    Blast
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='50px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -255,7 +302,7 @@ export default function NetworkSelector(props: propsIF) {
         >
             <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
                 <img
-                    src={scrollLogo}
+                    src={scrollSepoliaLogo}
                     alt='scroll sepolia network'
                     width='22px'
                     height='22px'
@@ -263,11 +310,11 @@ export default function NetworkSelector(props: propsIF) {
                 />
                 <Text
                     color={chainId === '0x8274f' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '4px' }}
+                    style={{ marginLeft: '3px' }}
                 >
-                    Sepolia
+                    Scroll
                 </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='32px'>
+                <Text color={'accent1'} fontSize={'mini'} marginLeft='47px'>
                     Testnet
                 </Text>
             </ChainNameStatus>
@@ -275,7 +322,12 @@ export default function NetworkSelector(props: propsIF) {
     );
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div
+            style={{
+                position: 'relative',
+                borderRadius: props.customBR ? props.customBR : '4px',
+            }}
+        >
             <DropdownMenuContainer
                 justifyContent='center'
                 alignItems='center'
@@ -283,19 +335,32 @@ export default function NetworkSelector(props: propsIF) {
             >
                 <DropdownMenu2
                     marginTop={'50px'}
+                    marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
                     expandable={networks.length > 1}
                     logo={
                         lookupChain(chainId)
                             .displayName.toLowerCase()
-                            .includes('scroll')
-                            ? scrollLogo
+                            .includes('blast sepolia')
+                            ? blastSepoliaLogo
                             : lookupChain(chainId)
-                                  .displayName.toLowerCase()
-                                  .includes('blast')
-                            ? blastLogo
-                            : ETH
+                                    .displayName.toLowerCase()
+                                    .includes('scroll sepolia')
+                              ? scrollSepoliaLogo
+                              : lookupChain(chainId)
+                                      .displayName.toLowerCase()
+                                      .includes('scroll')
+                                ? scrollLogo
+                                : lookupChain(chainId)
+                                        .displayName.toLowerCase()
+                                        .includes('blast')
+                                  ? blastLogo
+                                  : lookupChain(chainId)
+                                          .displayName.toLowerCase()
+                                          .includes('sepolia')
+                                    ? sepoliaLogo
+                                    : ETH
                     }
                 >
                     <MenuContent

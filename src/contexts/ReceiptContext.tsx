@@ -1,6 +1,6 @@
 import React, { createContext } from 'react';
 
-interface ReceiptContextIF {
+export interface ReceiptContextIF {
     sessionReceipts: Array<string>;
     allReceipts: Array<string>;
     pendingTransactions: Array<string>;
@@ -123,8 +123,7 @@ export const ReceiptContextProvider = (props: {
         setSessionReceipts((sessionReceipts) =>
             sessionReceipts.filter(
                 (r) =>
-                    JSON.parse(r).transactionHash.toLowerCase() !==
-                    txHash.toLowerCase(),
+                    JSON.parse(r).hash.toLowerCase() !== txHash.toLowerCase(),
             ),
         );
     };

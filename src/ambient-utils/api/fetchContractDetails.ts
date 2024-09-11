@@ -16,7 +16,7 @@ export interface ContractDetails {
 // !important:  ... as the point of entry for a token fetched from on-chain data
 
 export const fetchContractDetails = async (
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     address: string,
     _chainId: string,
     provenance: otherTokenSources,
@@ -36,45 +36,69 @@ export const fetchContractDetails = async (
     }
 
     const contract = new Contract(address, ERC20_ABI, provider);
-
-    let decimals,
-        totalSupply,
-        symbol,
-        name = undefined;
+    let decimals = 18;
+    let totalSupply: bigint | undefined;
+    let symbol: string | undefined;
+    let name: string | undefined;
 
     try {
-        decimals = await contract.decimals();
+        // Await all three promises concurrently
+        const [decimalsResult, totalSupplyResult, symbolResult, nameResult] =
+            await Promise.all([
+                contract.decimals().catch((error) => {
+                    console.warn('Failed to fetch decimals:', {
+                        address,
+                        error,
+                    });
+                    return 18; // Default to 18 if it fails
+                }),
+                contract.totalSupply().catch((error) => {
+                    console.warn('Failed to fetch totalSupply:', {
+                        address,
+                        error,
+                    });
+                    return undefined; // Handle undefined later if needed
+                }),
+                contract.symbol().catch(async (error) => {
+                    console.warn('Failed to fetch symbol:', { address, error });
+
+                    // Attempt to decode the symbol as bytes32 if the token is non-compliant
+                    try {
+                        return ethers.decodeBytes32String(error.data);
+                    } catch (innerError) {
+                        console.warn('Failed to decode symbol as bytes32:', {
+                            address,
+                            innerError,
+                        });
+                        return undefined; // Handle undefined later if needed
+                    }
+                }),
+                contract.name().catch(async (error) => {
+                    console.warn('Failed to fetch name:', { address, error });
+
+                    // Attempt to decode the symbol as bytes32 if the token is non-compliant
+                    try {
+                        return ethers.decodeBytes32String(error.data);
+                    } catch (innerError) {
+                        console.warn('Failed to decode name as bytes32:', {
+                            address,
+                            innerError,
+                        });
+                        return undefined; // Handle undefined later if needed
+                    }
+                }),
+            ]);
+
+        // Assign the results
+        decimals = Number(decimalsResult);
+        totalSupply = totalSupplyResult;
+        symbol = symbolResult;
+        name = nameResult;
     } catch (error) {
-        console.warn({ error });
-    }
-
-    try {
-        totalSupply = await contract.totalSupply();
-    } catch (error) {
-        console.warn({ error });
-    }
-
-    try {
-        symbol = await contract.symbol();
-        /* eslint-disable @typescript-eslint/no-explicit-any */
-    } catch (error: any) {
-        // attempt to parse data as bytes32 in case of a non-compliant token
-        try {
-            symbol = ethers.utils.parseBytes32String(error.data);
-        } catch (error) {
-            console.warn({ error });
-        }
-    }
-
-    try {
-        name = await contract.name();
-        /* eslint-disable @typescript-eslint/no-explicit-any */
-    } catch (error: any) {
-        try {
-            name = ethers.utils.parseBytes32String(error.data);
-        } catch (error) {
-            console.warn({ error });
-        }
+        console.error('Error while fetching contract data:', {
+            address,
+            error,
+        });
     }
 
     return {
@@ -82,15 +106,15 @@ export const fetchContractDetails = async (
         chainId: parseInt(_chainId),
         decimals: decimals,
         totalSupply: totalSupply,
-        symbol: symbol,
-        name: name,
+        symbol: symbol || '',
+        name: name || '',
         fromList: provenance,
         logoURI: '',
     };
 };
 
 export type FetchContractDetailsFn = (
-    provider: ethers.providers.Provider,
+    provider: ethers.Provider,
     address: string,
     chainId: string,
 ) => Promise<TokenIF | undefined>;

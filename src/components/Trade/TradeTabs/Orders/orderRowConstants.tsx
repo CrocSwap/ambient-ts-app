@@ -16,6 +16,8 @@ import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { Link } from 'react-router-dom';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -99,13 +101,15 @@ export const orderRowConstants = (props: propsIF) => {
 
     const { tokens } = useContext(TokenContext);
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
+    const { tokenA, setIsTokenAPrimary } = useContext(TradeDataContext);
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
     const quoteToken: TokenIF | undefined =
         tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
+    const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';
+    const smallScreen = useMediaQuery(SMALL_SCREEN_BP);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -246,12 +250,19 @@ export const orderRowConstants = (props: propsIF) => {
         />
     );
 
+    const newTokenA: string = limitOrder.isBid
+        ? limitOrder.base
+        : limitOrder.quote;
+    const newTokenB: string = limitOrder.isBid
+        ? limitOrder.quote
+        : limitOrder.base;
+
     // URL params for link to limit page
     const limitLinkParams: limitParamsIF = {
         chain: limitOrder.chainId,
-        tokenA: limitOrder.quote,
-        tokenB: limitOrder.base,
-        limitTick: limitOrder.isBid ? limitOrder.askTick : limitOrder.bidTick,
+        tokenA: newTokenA,
+        tokenB: newTokenB,
+        limitTick: limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,
     };
 
     const tokenPair = (
@@ -261,7 +272,16 @@ export const orderRowConstants = (props: propsIF) => {
         >
             {isOwnerActiveAccount ? (
                 <RowItem hover>
-                    <Link to={linkGenLimit.getFullURL(limitLinkParams)}>
+                    <Link
+                        to={linkGenLimit.getFullURL(limitLinkParams)}
+                        onClick={() => {
+                            tokenA.address.toLowerCase() !==
+                                newTokenA.toLowerCase() &&
+                                setIsTokenAPrimary((isTokenAPrimary) => {
+                                    return !isTokenAPrimary;
+                                });
+                        }}
+                    >
                         <span style={{ textTransform: 'none' }}>
                             {isBaseTokenMoneynessGreaterOrEqual
                                 ? `${quoteTokenSymbol} / ${baseTokenSymbol}`
@@ -398,8 +418,8 @@ export const orderRowConstants = (props: propsIF) => {
                                 ? displayPriceInUsd
                                 : truncatedDisplayPriceDenomByMoneyness
                             : isTradeDollarizationEnabled
-                            ? displayPriceInUsd
-                            : truncatedDisplayPrice}
+                              ? displayPriceInUsd
+                              : truncatedDisplayPrice}
                     </span>
                 </p>
             ) || '…'}

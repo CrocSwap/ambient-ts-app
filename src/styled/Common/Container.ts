@@ -62,7 +62,7 @@ export interface ContainerProps {
     boxShadow?: BoxShadows;
 
     // Flex Props
-    flexDirection?: 'row' | 'column';
+    flexDirection?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
     grow?: boolean;
 
     // Grid Props
@@ -75,6 +75,7 @@ export interface ContainerProps {
     letterSpacing?: boolean;
     fontSize?: FontSizes;
     fontWeight?: FontWeights;
+    backgroundColor?: string;
 }
 
 export const ContainerStyles = (props: ContainerProps) => {
@@ -92,6 +93,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         overflowX,
         overflowY,
         background,
+        backgroundColor,
         color,
         rounded,
         position,
@@ -137,15 +139,15 @@ export const ContainerStyles = (props: ContainerProps) => {
                 customCols
                     ? customCols
                     : numCols
-                    ? `repeat(${numCols}, 1fr)`
-                    : 'auto'
+                      ? `repeat(${numCols}, 1fr)`
+                      : 'auto'
             };
             grid-template-rows: ${
                 customRows
                     ? customRows
                     : numRows
-                    ? `repeat(${numRows}, 1fr)`
-                    : 'auto'
+                      ? `repeat(${numRows}, 1fr)`
+                      : 'auto'
             };   
             
             ${gap ? `gap: ${gap};` : 'gap: 4px;'}
@@ -196,6 +198,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${overflowX ? `overflow-x: ${overflowX};` : ''}
         ${overflowY ? `overflow-y: ${overflowY};` : ''}
         ${background ? `background: var(--${background});` : ''}
+        ${backgroundColor ? `background-color: ${backgroundColor};` : ''}
         ${color ? `color: var(--${color});` : ''}
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${maxWidth ? `max-width: ${maxWidth};` : ''}

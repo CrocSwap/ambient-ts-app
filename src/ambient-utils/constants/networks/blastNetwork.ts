@@ -1,17 +1,10 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    blastETH,
-    blastUSDB,
-    blastEzETH,
-    blastWrsETH,
-    blastJUICE,
-    blastOLE,
-} from '../defaultTokens';
+import { blastETH, blastUSDB, blastBLAST, blastYES } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { GCGO_BLAST_URL } from '../gcgo';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 export const BLAST_RPC_URL =
     import.meta.env.VITE_BLAST_RPC_URL !== undefined
@@ -36,13 +29,14 @@ export const blast: NetworkIF = {
     defaultPair: [blastETH, blastUSDB],
     topPools: [
         new TopPool(blastETH, blastUSDB, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastWrsETH, blastETH, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastETH, blastJUICE, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastETH, blastOLE, lookupChain('0x13e31').poolIndex),
-        new TopPool(blastEzETH, blastETH, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastETH, blastBLAST, lookupChain('0x13e31').poolIndex),
+        new TopPool(blastYES, blastETH, lookupChain('0x13e31').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+        return (
+            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+            1e-9
+        );
     },
 };

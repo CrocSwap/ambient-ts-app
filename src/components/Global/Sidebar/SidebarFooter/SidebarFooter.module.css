@@ -11,15 +11,9 @@
     height: 64px;
  
     display: none;
-}
-
-.position_sticky {
     position: sticky;
 }
 
-.position_absolute {
-    position: absolute;
-}
 
 .sidebar_footer span{
     background-color: transparent;

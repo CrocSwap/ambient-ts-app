@@ -22,9 +22,9 @@ import {
     saveCtaDismissalToLocalStorage,
 } from '../App/functions/localStorage';
 import { useTermsAgreed } from '../App/hooks/useTermsAgreed';
-import { useWeb3Modal } from '@web3modal/ethers5/react';
+import { useWeb3Modal } from '@web3modal/ethers/react';
 
-interface AppStateContextIF {
+export interface AppStateContextIF {
     appOverlay: { isActive: boolean; setIsActive: (val: boolean) => void };
     appHeaderDropdown: {
         isActive: boolean;
@@ -105,11 +105,8 @@ export const AppStateContextProvider = (props: {
         )?.unixTimeOfDismissal || 0;
 
     const [showPointSystemPopup, setShowPointSystemPopup] = useState(
-        !ctaPopupDismissalTime ||
-            ctaPopupDismissalTime <
-                Math.floor(
-                    Date.now() / 1000 - 60 * pointsModalDismissalDuration,
-                ),
+        ctaPopupDismissalTime <
+            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
     );
 
     const dismissPointSystemPopup = () => {
@@ -123,11 +120,8 @@ export const AppStateContextProvider = (props: {
         )?.unixTimeOfDismissal || 0;
 
     const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        !ctaBannerDismissalTime ||
-            ctaBannerDismissalTime <
-                Math.floor(
-                    Date.now() / 1000 - 60 * pointsBannerDismissalDuration,
-                ),
+        ctaBannerDismissalTime <
+            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
     );
 
     const dismissTopBannerPopup = () => {

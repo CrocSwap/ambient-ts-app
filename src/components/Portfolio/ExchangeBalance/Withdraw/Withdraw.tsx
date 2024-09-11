@@ -1,5 +1,4 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
 import {
     Dispatch,
     SetStateAction,
@@ -42,6 +41,7 @@ import {
     GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -140,9 +140,7 @@ export default function Withdraw(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!withdrawQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(
-                      BigNumber.from(withdrawQtyNonDisplay),
-                  )
+                ? BigInt(tokenDexBalance) >= BigInt(withdrawQtyNonDisplay)
                 : false,
         [tokenDexBalance, withdrawQtyNonDisplay],
     );
@@ -259,7 +257,7 @@ export default function Withdraw(props: propsIF) {
 
                 if (receipt) {
                     addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.transactionHash);
+                    removePendingTx(receipt.hash);
                     resetWithdrawQty();
                 }
             } catch (error) {
@@ -349,7 +347,7 @@ export default function Withdraw(props: propsIF) {
         }
     };
     const [extraL1GasFeeWithdraw] = useState(
-        isActiveNetworkScroll ? 1.2 : isActiveNetworkBlast ? 0.25 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const [withdrawGasPriceinDollars, setWithdrawGasPriceinDollars] = useState<
@@ -363,11 +361,13 @@ export default function Withdraw(props: propsIF) {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                NUM_GWEI_IN_WEI *
+                Number(NUM_GWEI_IN_WEI) *
                 ethMainnetUsdPrice *
-                (isTokenEth
-                    ? GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE
-                    : GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20);
+                Number(
+                    isTokenEth
+                        ? GAS_DROPS_ESTIMATE_WITHDRAWAL_NATIVE
+                        : GAS_DROPS_ESTIMATE_WITHDRAWAL_ERC20,
+                );
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
@@ -412,6 +412,7 @@ export default function Withdraw(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
+            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button

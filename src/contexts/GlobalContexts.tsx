@@ -22,6 +22,9 @@ import { cleanupBatchManager } from '../ambient-utils/api';
 import { ReceiptContextProvider } from './ReceiptContext';
 import { XpLeadersContextProvider } from './XpLeadersContext';
 import { BrandContextProvider } from './BrandContext';
+import { AuctionsContextProvider } from './AuctionsContext';
+import { FutaSearchableTickerContextProvider } from './Futa/FutaSearchableTickerContext';
+import { FutaHomeContextProvider } from './Futa/FutaHomeContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     useEffect(() => {
@@ -37,43 +40,49 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                     <UserDataContextProvider>
                         <ReceiptContextProvider>
                             <RangeContextProvider>
-                                <TradeDataContextProvider>
-                                    {/* Everything above here has no context dependencies */}
-                                    <BrandContextProvider>
-                                        <TokenBalanceContextProvider>
-                                            <CrocEnvContextProvider>
-                                                <TokenContextProvider>
+                                {/* Everything above here has no context dependencies */}
+                                <TokenBalanceContextProvider>
+                                    <TokenContextProvider>
+                                        <TradeDataContextProvider>
+                                            <BrandContextProvider>
+                                                <CrocEnvContextProvider>
                                                     <ChainDataContextProvider>
-                                                        <XpLeadersContextProvider>
-                                                            <ChartContextProvider>
-                                                                <GraphDataContextProvider>
-                                                                    <TradeTokenContextProvider>
-                                                                        <PoolContextProvider>
-                                                                            <CandleContextProvider>
-                                                                                <TradeTableContextProvider>
-                                                                                    <UserPreferenceContextProvider>
-                                                                                        <SidebarContextProvider>
-                                                                                            <ExploreContextProvider>
-                                                                                                {
-                                                                                                    props.children
-                                                                                                }
-                                                                                            </ExploreContextProvider>
-                                                                                        </SidebarContextProvider>
-                                                                                    </UserPreferenceContextProvider>
-                                                                                </TradeTableContextProvider>
-                                                                            </CandleContextProvider>
-                                                                        </PoolContextProvider>
-                                                                    </TradeTokenContextProvider>
-                                                                </GraphDataContextProvider>
-                                                            </ChartContextProvider>
-                                                        </XpLeadersContextProvider>
+                                                        <AuctionsContextProvider>
+                                                            <XpLeadersContextProvider>
+                                                                <ChartContextProvider>
+                                                                    <FutaSearchableTickerContextProvider>
+                                                                        <FutaHomeContextProvider>
+                                                                            <GraphDataContextProvider>
+                                                                                <TradeTokenContextProvider>
+                                                                                    <PoolContextProvider>
+                                                                                        <CandleContextProvider>
+                                                                                            <TradeTableContextProvider>
+                                                                                                <UserPreferenceContextProvider>
+                                                                                                    <SidebarContextProvider>
+                                                                                                        <ExploreContextProvider>
+                                                                                                            {
+                                                                                                                props.children
+                                                                                                            }
+                                                                                                        </ExploreContextProvider>
+                                                                                                    </SidebarContextProvider>
+                                                                                                </UserPreferenceContextProvider>
+                                                                                            </TradeTableContextProvider>
+                                                                                        </CandleContextProvider>
+                                                                                    </PoolContextProvider>
+                                                                                </TradeTokenContextProvider>
+                                                                            </GraphDataContextProvider>
+                                                                        </FutaHomeContextProvider>
+                                                                    </FutaSearchableTickerContextProvider>
+                                                                </ChartContextProvider>
+                                                            </XpLeadersContextProvider>
+                                                        </AuctionsContextProvider>
                                                     </ChainDataContextProvider>
-                                                </TokenContextProvider>
-                                            </CrocEnvContextProvider>
-                                        </TokenBalanceContextProvider>
-                                    </BrandContextProvider>
-                                    {/* Everything below here has no context dependencies */}
-                                </TradeDataContextProvider>
+                                                </CrocEnvContextProvider>
+                                            </BrandContextProvider>
+                                        </TradeDataContextProvider>
+                                    </TokenContextProvider>
+                                </TokenBalanceContextProvider>
+                                {/* Everything below here has no context dependencies */}
                             </RangeContextProvider>
                         </ReceiptContextProvider>
                     </UserDataContextProvider>

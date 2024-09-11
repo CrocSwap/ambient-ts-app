@@ -1,9 +1,16 @@
-import { CrocEnv, bigNumToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
-import { CACHE_UPDATE_FREQ_IN_MS, GCGO_OVERRIDE_URL } from '../../constants';
+import { CrocEnv, bigIntToFloat, toDisplayPrice } from '@crocswap-libs/sdk';
+import {
+    CACHE_UPDATE_FREQ_IN_MS,
+    GCGO_OVERRIDE_URL,
+    ZERO_ADDRESS,
+    ethereumMainnet,
+    mainnetETH,
+} from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 import { TokenIF } from '../../types';
 import { PoolQueryFn } from './querySpotPrice';
+import { isETHorStakedEthToken } from '..';
 
 const getLiquidityFee = async (
     base: string,
@@ -104,6 +111,7 @@ export async function expandPoolStats(
     cachedTokenDetails: FetchContractDetailsFn,
     cachedQuerySpotPrice: PoolQueryFn,
     tokenList: TokenIF[],
+    enableTotalSupply?: boolean,
 ): Promise<PoolStatsIF> {
     const provider = (await crocEnv.context).provider;
 
@@ -113,12 +121,18 @@ export async function expandPoolStats(
     const baseUsdPrice = (await basePricePromise)?.usdPrice;
     const quoteUsdPrice = (await quotePricePromise)?.usdPrice;
 
-    const baseTokenListedDecimals = tokenList.find(
+    const baseTokenListed = tokenList.find(
         (token) => token.address.toLowerCase() === base.toLowerCase(),
-    )?.decimals;
-    const quoteTokenListedDecimals = tokenList.find(
+    );
+    const quoteTokenListed = tokenList.find(
         (token) => token.address.toLowerCase() === quote.toLowerCase(),
-    )?.decimals;
+    );
+
+    const baseTokenListedDecimals = baseTokenListed?.decimals;
+    const quoteTokenListedDecimals = quoteTokenListed?.decimals;
+
+    const baseTokenListedTotalSupply = baseTokenListed?.totalSupply;
+    const quoteTokenListedTotalSupply = quoteTokenListed?.totalSupply;
 
     const DEFAULT_DECIMALS = 18;
 
@@ -132,21 +146,33 @@ export async function expandPoolStats(
             (await cachedTokenDetails(provider, quote, chainId))?.decimals) ??
         DEFAULT_DECIMALS;
 
-    const baseTotalSupplyBigNum = (
-        await cachedTokenDetails(provider, base, chainId)
-    )?.totalSupply;
+    const baseTotalSupplyBigInt =
+        !enableTotalSupply || base === ZERO_ADDRESS
+            ? undefined
+            : baseTokenListedTotalSupply ||
+              (await cachedTokenDetails(provider, base, chainId))?.totalSupply;
 
-    const quoteTotalSupplyBigNum = (
-        await cachedTokenDetails(provider, quote, chainId)
-    )?.totalSupply;
+    const quoteTotalSupplyBigInt = !enableTotalSupply
+        ? undefined
+        : quoteTokenListedTotalSupply ||
+          (await cachedTokenDetails(provider, quote, chainId))?.totalSupply;
 
-    const baseTotalSupplyNum = baseTotalSupplyBigNum
-        ? bigNumToFloat(baseTotalSupplyBigNum)
+    const baseTotalSupplyNum = baseTotalSupplyBigInt
+        ? bigIntToFloat(baseTotalSupplyBigInt)
         : undefined;
 
-    const quoteTotalSupplyNum = quoteTotalSupplyBigNum
-        ? bigNumToFloat(quoteTotalSupplyBigNum)
+    const quoteTotalSupplyNum = quoteTotalSupplyBigInt
+        ? bigIntToFloat(quoteTotalSupplyBigInt)
         : undefined;
+
+    const getEthPrice = async () => {
+        const mainnetEthPrice = await cachedFetchTokenPrice(
+            mainnetETH.address,
+            ethereumMainnet.chainId,
+            crocEnv,
+        );
+        return mainnetEthPrice?.usdPrice;
+    };
 
     const getSpotPrice = async () => {
         const spotPrice = await cachedQuerySpotPrice(
@@ -166,14 +192,18 @@ export async function expandPoolStats(
 
     const basePrice = baseUsdPrice
         ? baseUsdPrice
-        : quoteUsdPrice
-        ? quoteUsdPrice / (await getSpotPrice())
-        : 0.0;
+        : isETHorStakedEthToken(base)
+          ? (await getEthPrice()) || 0.0
+          : quoteUsdPrice
+            ? quoteUsdPrice / (await getSpotPrice())
+            : 0.0;
     const quotePrice = quoteUsdPrice
         ? quoteUsdPrice
-        : baseUsdPrice
-        ? baseUsdPrice * (await getSpotPrice())
-        : 0.0;
+        : isETHorStakedEthToken(quote)
+          ? (await getEthPrice()) || 0.0
+          : baseUsdPrice
+            ? baseUsdPrice * (await getSpotPrice())
+            : 0.0;
 
     return decoratePoolStats(
         payload,

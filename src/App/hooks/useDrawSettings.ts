@@ -4,19 +4,19 @@ import {
     drawnShapeDefaultLineWidth,
     fibDefaultLevels,
     fibonacciDefaultDash,
-} from '../../pages/Chart/ChartUtils/drawConstants';
+} from '../../pages/platformAmbient/Chart/ChartUtils/drawConstants';
 import { diffHashSig } from '../../ambient-utils/dataLayer';
-import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/Chart/ChartUtils/chartConstants';
+import { LS_KEY_CHART_ANNOTATIONS } from '../../pages/platformAmbient/Chart/ChartUtils/chartConstants';
 import { ChartThemeIF } from '../../contexts/ChartContext';
 
 export const useDrawSettings = (chartThemeColors: ChartThemeIF | undefined) => {
     const drawnShapeDefaultColor =
-        chartThemeColors && chartThemeColors.darkStrokeColor
-            ? chartThemeColors.darkStrokeColor.toString()
+        chartThemeColors && chartThemeColors.drawngShapeDefaultColor
+            ? chartThemeColors.drawngShapeDefaultColor.toString()
             : '#7371fc';
 
     const d3BackgroundColor = chartThemeColors
-        ? chartThemeColors.darkStrokeColor?.copy()
+        ? chartThemeColors.drawngShapeDefaultColor?.copy()
         : undefined;
 
     if (d3BackgroundColor) d3BackgroundColor.opacity = 0.15;

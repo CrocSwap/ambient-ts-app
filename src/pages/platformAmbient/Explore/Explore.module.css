@@ -1,0 +1,247 @@
+.main_container {
+    background: var(--dark2);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: calc(100vh - 64px);
+}
+
+/* .main_wrapper{
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    color: var(--text1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    user-select: none;
+ 
+    
+} */
+
+.options_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    user-select: none;
+}
+
+.options_content {
+    display: flex;
+
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+.title_text {
+    font-size: var(--header1-lh);
+}
+
+.refresh_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: var(--body-size);
+    font-style: italic;
+    color: var(--text1);
+    gap: 8px;
+}
+
+.refresh_button {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--dark3);
+    border-radius: var(--border-radius);
+    border: none;
+    outline: none;
+}
+.input_container {
+    display: flex;
+    height: 30px;
+    padding: 0 4px;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    flex: 1 0 0;
+    border-radius: 4px;
+    background: var(--dark2, #12121a);
+
+    width: 300px;
+    border: 1px solid var(--dark3);
+}
+
+.input_wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-text2, #8b98a5);
+    font-family: 'Lexend Deca', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: normal;
+    padding-left: 24px; /* Adjust if necessary based on the icon's width */
+}
+
+.input::placeholder {
+    color: var(--text-text2, #8b98a5);
+}
+
+@media (max-width: 768px) {
+    .main_container {
+        background: var(--dark1);
+        height: calc(100vh - 120px);
+    }
+    .title_text {
+        font-size: var(--header1-size);
+    }
+    .options_wrapper {
+        flex-direction: column;
+    }
+
+    .options_content {
+        width: 100%;
+
+        display: grid;
+        grid-template-columns: 1fr 30px 30px;
+        gap: 4px;
+    }
+
+    .pools_options_content {
+        grid-template-columns: 1fr 30px !important;
+    }
+
+    .title_text {
+        display: none;
+    }
+
+    .input_container {
+        width: 100%;
+        background: var(--dark2);
+    }
+}
+
+@media (max-width: 480px) {
+    .title_text {
+        font-size: 20px;
+    }
+}
+
+/* ----------------------------------- */
+.myContainer {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+
+    /* max-width: 1500px; */
+    margin: auto;
+    /* border: 1px solid var(--dark3); */
+    border-radius: 4px;
+    /* padding: 8px; */
+    overflow-x: auto;
+    position: relative;
+
+    /* height: calc(100vh - 64px); */
+    overflow-y: hidden;
+}
+
+.gridContainer {
+    box-sizing: border-box;
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: 100%;
+    min-height: 64px;
+
+    gap: 4px;
+
+    overflow-x: auto;
+    white-space: nowrap;
+    /* because this is the header */
+
+    padding-right: 1rem;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.gridItem {
+    box-sizing: border-box;
+    display: flex;
+    flex-grow: 1;
+    /* background: var(--dark2); */
+    flex-shrink: 0;
+    min-width: 0;
+    min-height: 0;
+    align-items: stretch;
+
+    /* width: 133px; */
+
+    padding: 0 8px;
+    font-size: 12px;
+    width: 60px;
+    /* justify-content: center; */
+}
+.contentContainer {
+    height: calc(
+        100% - 64px
+    ); /* Adjust this value based on your header's height */
+    overflow-y: auto; /* Make only the content scrollable */
+    scrollbar-gutter: stable; /* This will keep the layout stable when the scrollbar appears */
+}
+
+.tokens {
+    width: 100%;
+    display: flex;
+    /* justify-content: flex-start !important; */
+}
+
+.tradeButton {
+    width: 25px;
+}
+
+.poolName {
+    /* justify-content: flex-start !important; */
+    width: 30px;
+}
+
+@media only screen and (min-width: 768px) {
+    .gridContainer {
+        gap: 8px;
+    }
+
+    .gridItem {
+        font-size: 16px;
+        width: 70px;
+        justify-content: flex-end;
+    }
+
+    .tradeButton,
+    .poolName {
+        width: 70px;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .gridItem,
+    .tradeButton,
+    .tradeButton,
+    .poolName {
+        width: 133px;
+    }
+}

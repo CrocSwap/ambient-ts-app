@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any  */
-import { Provider } from '@ethersproject/providers';
+import { Provider, Signer } from 'ethers';
 import { TopPool } from '../constants/networks/TopPool';
 import { TokenIF } from './token/TokenIF';
-import { Signer } from 'ethers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
 export interface NetworkIF {
@@ -13,6 +12,7 @@ export interface NetworkIF {
     shouldPollBlock: boolean;
     marketData: string;
     defaultPair: TokenIF[];
+    defaultPairFuta?: [TokenIF, TokenIF];
     topPools: TopPool[];
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

@@ -1,7 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { TransactionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
-import { BigNumber } from 'ethers/lib/ethers';
 
 export type TxSortType =
     | 'time'
@@ -47,11 +45,11 @@ export const useSortedTxs = (
             return a.ensResolution.localeCompare(b.ensResolution);
         });
         // sort transactions with no ENS by the wallet address, for some reason
-        // ... alphanumeric sort fails so we're running a BigNumber comparison
+        // ... alphanumeric sort fails so we're running a BigInt comparison
         const sortedNoENS: TransactionIF[] = txsNoENS.sort((a, b) => {
-            const walletA = BigNumber.from(a.user);
-            const walletB = BigNumber.from(b.user);
-            return walletA.gte(walletB) ? 1 : -1;
+            const walletA = BigInt(a.user);
+            const walletB = BigInt(b.user);
+            return walletA > walletB ? 1 : -1;
         });
         // combine and return sorted arrays
         return [...sortedENS, ...sortedNoENS];
@@ -103,16 +101,10 @@ export const useSortedTxs = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const ordersHashSum = useMemo<string>(() => {
-        return diffHashSig(transactions);
-    }, [transactions]);
-
     // array of positions sorted by the relevant column
     const sortedTransactions = useMemo<TransactionIF[]>(() => {
         return sortData(transactions);
-    }, [sortBy, reverseSort, ordersHashSum]);
+    }, [sortBy, reverseSort, transactions[0]?.txHash, transactions.length]);
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions];
 };

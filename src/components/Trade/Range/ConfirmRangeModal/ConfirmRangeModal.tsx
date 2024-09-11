@@ -30,9 +30,7 @@ interface propsIF {
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     showConfirmation: boolean;
-    txErrorCode: string;
-    txErrorMessage: string;
-    txErrorJSON: string;
+    txError: Error | undefined;
     resetConfirmation: () => void;
     isAdd: boolean;
     tokenAQty: string;
@@ -53,9 +51,7 @@ function ConfirmRangeModal(props: propsIF) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-        txErrorCode,
-        txErrorMessage,
-        txErrorJSON,
+        txError,
         showConfirmation,
         resetConfirmation,
         isAdd,
@@ -203,9 +199,7 @@ function ConfirmRangeModal(props: propsIF) {
             tokenA={{ token: tokenA, quantity: memoTokenAQty }}
             tokenB={{ token: tokenB, quantity: memoTokenBQty }}
             transactionHash={newRangeTransactionHash}
-            txErrorCode={txErrorCode}
-            txErrorMessage={txErrorMessage}
-            txErrorJSON={txErrorJSON}
+            txError={txError}
             showConfirmation={showConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             isEditPanel={isEditPanel}
@@ -215,16 +209,16 @@ function ConfirmRangeModal(props: propsIF) {
                         ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
                         : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`
                     : memoIsAdd
-                    ? `Adding ${memoTokenAQty ? memoTokenAQty : '0'} ${
-                          tokenA.symbol
-                      } and ${memoTokenBQty ? memoTokenBQty : '0'} ${
-                          tokenB.symbol
-                      }`
-                    : `Minting a Position with ${
-                          memoTokenAQty ? memoTokenAQty : '0'
-                      } ${tokenA.symbol} and ${
-                          memoTokenBQty ? memoTokenBQty : '0'
-                      } ${tokenB.symbol}`
+                      ? `Adding ${memoTokenAQty ? memoTokenAQty : '0'} ${
+                            tokenA.symbol
+                        } and ${memoTokenBQty ? memoTokenBQty : '0'} ${
+                            tokenB.symbol
+                        }`
+                      : `Minting a Position with ${
+                            memoTokenAQty ? memoTokenAQty : '0'
+                        } ${tokenA.symbol} and ${
+                            memoTokenBQty ? memoTokenBQty : '0'
+                        } ${tokenB.symbol}`
             }
             initiate={sendTransaction}
             resetConfirmation={resetConfirmation}

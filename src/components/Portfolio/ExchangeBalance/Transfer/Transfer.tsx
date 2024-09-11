@@ -10,7 +10,6 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { BigNumber } from 'ethers';
 import { FaGasPump } from 'react-icons/fa';
 import { getFormattedNumber } from '../../../../ambient-utils/dataLayer';
 import useDebounce from '../../../../App/hooks/useDebounce';
@@ -41,6 +40,7 @@ import {
 } from '../../../../ambient-utils/constants/';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import SmolRefuelLink from '../../../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -135,9 +135,7 @@ export default function Transfer(props: propsIF) {
     const isDexBalanceSufficient = useMemo(
         () =>
             tokenDexBalance && !!transferQtyNonDisplay
-                ? BigNumber.from(tokenDexBalance).gte(
-                      BigNumber.from(transferQtyNonDisplay),
-                  )
+                ? BigInt(tokenDexBalance) >= BigInt(transferQtyNonDisplay)
                 : false,
         [tokenDexBalance, transferQtyNonDisplay],
     );
@@ -251,7 +249,7 @@ export default function Transfer(props: propsIF) {
 
                 if (receipt) {
                     addReceipt(JSON.stringify(receipt));
-                    removePendingTx(receipt.transactionHash);
+                    removePendingTx(receipt.hash);
                     resetTransferQty();
                 }
             } catch (error) {
@@ -310,7 +308,7 @@ export default function Transfer(props: propsIF) {
     };
 
     const [extraL1GasFeeTransfer] = useState(
-        isActiveNetworkScroll ? 1.25 : isActiveNetworkBlast ? 0.35 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
@@ -377,6 +375,7 @@ export default function Transfer(props: propsIF) {
                     </GasPump>
                 }
             </FlexContainer>
+            <SmolRefuelLink />
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <Button

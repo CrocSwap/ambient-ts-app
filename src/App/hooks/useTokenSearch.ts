@@ -5,6 +5,7 @@ import { ZERO_ADDRESS, tokenListURIs } from '../../ambient-utils/constants';
 import {
     removeWrappedNative,
     isUsdcToken,
+    isBlastRewardToken,
 } from '../../ambient-utils/dataLayer';
 
 export const useTokenSearch = (
@@ -97,6 +98,7 @@ export const useTokenSearch = (
             const patchLists = (
                 listA: TokenIF[],
                 listB: TokenIF[],
+                listC?: TokenIF[],
             ): TokenIF[] => {
                 const addressesListA = listA.map((tkn: TokenIF) =>
                     tkn.address.toLowerCase(),
@@ -105,7 +107,22 @@ export const useTokenSearch = (
                     (tkn: TokenIF) =>
                         !addressesListA.includes(tkn.address.toLowerCase()),
                 );
-                return listA.concat(dedupedListB);
+                const combinedAandB = listA.concat(dedupedListB);
+                const addressesListAandB = combinedAandB.map((tkn: TokenIF) =>
+                    tkn.address.toLowerCase(),
+                );
+                const dedupedListC: TokenIF[] | undefined = listC
+                    ? listC.filter(
+                          (tkn: TokenIF) =>
+                              !addressesListAandB.includes(
+                                  tkn.address.toLowerCase(),
+                              ),
+                      )
+                    : undefined;
+
+                return dedupedListC
+                    ? combinedAandB.concat(dedupedListC)
+                    : combinedAandB;
             };
             // array of ambient and uniswap tokens, no dupes
             const baseTokenList: TokenIF[] =
@@ -115,11 +132,26 @@ export const useTokenSearch = (
                           tokens.getTokensFromList(tokenListURIs.uniswap),
                       )
                     : chainId === '0x82750'
-                    ? patchLists(
-                          tokens.getTokensFromList(tokenListURIs.ambient),
-                          tokens.getTokensFromList(tokenListURIs.scroll),
-                      )
-                    : tokens.getTokensFromList(tokenListURIs.ambient);
+                      ? patchLists(
+                            tokens.getTokensFromList(tokenListURIs.ambient),
+                            // tokens.getTokensFromList(tokenListURIs.scrollTech),
+                            tokens.getTokensFromList(
+                                tokenListURIs.scrollCoingecko,
+                            ),
+                        )
+                      : chainId === '0x13e31'
+                        ? patchLists(
+                              tokens.getTokensFromList(tokenListURIs.ambient),
+                              tokens.getTokensFromList(
+                                  tokenListURIs.blastCoingecko,
+                              ),
+                          )
+                        : chainId === '0xaa36a7'
+                          ? patchLists(
+                                tokens.getTokensFromList(tokenListURIs.ambient),
+                                tokens.getTokensFromList(tokenListURIs.futa),
+                            )
+                          : tokens.getTokensFromList(tokenListURIs.ambient);
 
             // ERC-20 tokens from connected wallet subject to universe verification
             const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
@@ -135,7 +167,8 @@ export const useTokenSearch = (
                 chainId,
                 withWalletTokens,
             );
-            // combine the Ambient and Uniswap token lists
+            // combine the token lists
+            // console.log({ tknsNoWrappedNative });
             return tknsNoWrappedNative;
         }
 
@@ -195,6 +228,8 @@ export const useTokenSearch = (
                         priority = 100;
                     } else if (isUsdcToken(tknAddress)) {
                         priority = 90;
+                    } else if (isBlastRewardToken(tknAddress)) {
+                        priority = 85;
                     } else if (
                         walletTknAddresses.includes(tkn.address.toLowerCase())
                     ) {

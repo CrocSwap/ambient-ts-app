@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Contract } from 'ethers';
+import { JsonRpcProvider, Contract } from 'ethers';
 
 export const MULTICALL_ABI = [
     {
@@ -97,8 +96,7 @@ type CachedResponse = {
     validUntil: Date;
 };
 
-export class BatchedJsonRpcProvider {
-    provider: JsonRpcProvider;
+export class BatchedJsonRpcProvider extends JsonRpcProvider {
     multicall: Multicall;
     payloads: Array<Payload>;
     drainTimer: null | Timer;
@@ -109,53 +107,35 @@ export class BatchedJsonRpcProvider {
         batchStallTimeMs: number;
     };
     cachedCalls: Map<string, CachedResponse>;
-    proxy: JsonRpcProvider;
-    constructor(provider: JsonRpcProvider) {
-        this.multicall = new Multicall(provider);
+    constructor(url: string, network?: number, options?: any) {
+        super(url, network, options);
+        this.multicall = new Multicall(this);
         this.payloads = [];
         this.drainTimer = null;
         this.nextId = 0;
         this.batchOptions = {
-            batchMaxCount: 20,
+            batchMaxCount: 40,
             batchMaxSizeBytes: 1000000,
-            batchStallTimeMs: 20,
+            batchStallTimeMs: 50,
         };
         this.cachedCalls = new Map();
-        this.provider = provider;
-        this.proxy = new Proxy(provider, {
-            get: (target, prop, receiver) => {
-                // override only the send method
-                if (prop === 'send') {
-                    return (...args: any[]) => {
-                        try {
-                            return this.send(args[0], args[1]);
-                        } catch (e) {
-                            console.error(
-                                'multicall failed, calling directly',
-                                e,
-                            );
-                            return this.provider.send(args[0], args[1]);
-                        }
-                    };
-                }
-                return Reflect.get(target, prop, receiver);
-            },
-        });
     }
 
     async send(method: string, params: any[]): Promise<any> {
-        // console.log(method, params, params[0]?.['data']);
         if (!this.multicall.initialized) {
             this.multicall.initialize();
         }
         if (method == 'eth_chainId' || method == 'eth_accounts') {
             return this.sendCached(method, params);
         } else if (method != 'eth_call' || !this.multicall.ready) {
-            return this.provider.send(method, params);
+            return super.send(method, params);
         } else {
             const callParams = params as EthCallWithBlockTag;
-            if (callParams[1] != 'latest') {
-                return this.provider.send(method, params);
+            if (
+                callParams[1] != 'latest' ||
+                callParams[0].to == this.multicall.contractAddress
+            ) {
+                return super.send(method, params);
             }
             return this.scheduleForBatch(callParams);
         }
@@ -174,7 +154,7 @@ export class BatchedJsonRpcProvider {
                 resolve,
                 reject: (_) => {
                     // attempt to call directly if multicall fails
-                    this.provider
+                    super
                         .send(payload.method, payload.params)
                         .then(resolve)
                         .catch(reject);
@@ -190,7 +170,7 @@ export class BatchedJsonRpcProvider {
         if (cachedResponse && cachedResponse.validUntil > new Date()) {
             return cachedResponse.response;
         }
-        const response = this.provider.send(method, params);
+        const response = super.send(method, params);
         // I don't think there's a reason to not cache these forever, but it might break some obscure use case.
         this.cachedCalls.set(cacheKey, {
             response,
@@ -229,7 +209,7 @@ export class BatchedJsonRpcProvider {
                 }
                 await (async () => {
                     if (batch.length === 1) {
-                        this.provider
+                        super
                             .send(
                                 batch[0].payload.method,
                                 batch[0].payload.params,
@@ -242,9 +222,8 @@ export class BatchedJsonRpcProvider {
                     const payload = batch.map((p) => p.payload);
 
                     try {
-                        const results = await this.multicall.sendMulticall(
-                            payload,
-                        );
+                        const results =
+                            await this.multicall.sendMulticall(payload);
                         for (const { resolve, reject, payload } of batch) {
                             const resp = results.filter(
                                 (r: any) => r.id === payload.id,
@@ -284,18 +263,23 @@ export class BatchedJsonRpcProvider {
 class Multicall {
     provider: JsonRpcProvider;
     contract: Contract | null | undefined;
+    contractAddress: string | null | undefined;
     constructor(provider: JsonRpcProvider) {
         this.provider = provider;
         this.contract = undefined;
+        this.contractAddress = undefined;
     }
 
     async initialize() {
         if (this.contract === undefined) {
             try {
-                const chainId = this.provider.network.chainId;
+                const chainId = Number(
+                    (await this.provider.getNetwork()).chainId,
+                );
                 if (this.contract === undefined && chainId) {
                     const multicallAddress = MULTICALL_ADDRESSES.get(chainId);
                     if (multicallAddress) {
+                        this.contractAddress = multicallAddress;
                         this.contract = new Contract(
                             multicallAddress,
                             MULTICALL_ABI,
@@ -331,9 +315,8 @@ class Multicall {
         const preparedCalls = calls.map((c) => {
             return [c.target, true, c.callData];
         });
-        const rawResults = await this.contract.callStatic.aggregate3(
-            preparedCalls,
-        );
+        const rawResults =
+            await this.contract.aggregate3.staticCall(preparedCalls);
         const results = rawResults.map((r: any, i: number) => {
             return {
                 id: payload[i].id,

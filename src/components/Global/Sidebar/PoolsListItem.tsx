@@ -1,9 +1,5 @@
 import { PoolIF } from '../../../ambient-utils/types';
-import {
-    PoolStatsFn,
-    getMoneynessRank,
-    uriToHttp,
-} from '../../../ambient-utils/dataLayer';
+import { getMoneynessRank, uriToHttp } from '../../../ambient-utils/dataLayer';
 import { Link, useLocation } from 'react-router-dom';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -12,12 +8,11 @@ import {
     linkGenMethodsIF,
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../ambient-utils/api';
 import {
     ItemContainer,
     MainItemContainer,
 } from '../../../styled/Components/Sidebar';
-import { FlexContainer } from '../../../styled/Common';
+import { FlexContainer, Text } from '../../../styled/Common';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -25,15 +20,15 @@ import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import FavButton from './FavButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { SidebarContext } from '../../../contexts/SidebarContext';
+import { BrandContextIF, BrandContext } from '../../../contexts/BrandContext';
 
 interface propsIF {
     pool: PoolIF;
-    cachedPoolStatsFetch: PoolStatsFn;
-    cachedFetchTokenPrice: TokenPriceFn;
+    spotPrice: number | undefined;
 }
 
 export default function PoolsListItem(props: propsIF) {
-    const { pool } = props;
+    const { pool, spotPrice } = props;
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
@@ -41,6 +36,8 @@ export default function PoolsListItem(props: propsIF) {
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
+    const isFuta = platformName.toLowerCase() === 'futa';
 
     const isBaseTokenMoneynessGreaterOrEqual =
         pool.base.address && pool.quote.address
@@ -76,11 +73,22 @@ export default function PoolsListItem(props: propsIF) {
     }
 
     // hook to get human-readable values for pool volume and TVL
-    const poolData = useFetchPoolStats(pool);
+    const poolData = useFetchPoolStats(pool, spotPrice);
+
+    const {
+        poolPrice,
+        poolTvl,
+        poolVolume24h,
+        poolPriceChangePercent,
+        isPoolPriceChangePositive,
+        baseLogoUri,
+        quoteLogoUri,
+    } = poolData;
 
     const { pathname } = useLocation();
 
     const navTarget = useMemo<pageNames>(() => {
+        if (isFuta) return 'swap';
         let output: pageNames;
         if (
             pathname.startsWith('/trade/market') ||
@@ -99,7 +107,7 @@ export default function PoolsListItem(props: propsIF) {
             output = 'market';
         }
         return output as pageNames;
-    }, [pathname]);
+    }, [pathname, isFuta]);
 
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
@@ -110,10 +118,10 @@ export default function PoolsListItem(props: propsIF) {
         tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
             ? [pool.base.address, pool.quote.address]
             : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
-            ? [pool.quote.address, pool.base.address]
-            : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
-            ? [pool.quote.address, pool.base.address]
-            : [pool.base.address, pool.quote.address];
+              ? [pool.quote.address, pool.base.address]
+              : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+                ? [pool.quote.address, pool.base.address]
+                : [pool.base.address, pool.quote.address];
 
     const mobileScreen = useMediaQuery('(max-width: 500px)');
 
@@ -129,8 +137,8 @@ export default function PoolsListItem(props: propsIF) {
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
-                                ? poolData.quoteLogoUri
-                                : poolData.baseLogoUri) ?? '...',
+                                ? quoteLogoUri
+                                : baseLogoUri) ?? '...',
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -147,8 +155,8 @@ export default function PoolsListItem(props: propsIF) {
                         }
                         src={uriToHttp(
                             (isBaseTokenMoneynessGreaterOrEqual
-                                ? poolData.baseLogoUri
-                                : poolData.quoteLogoUri) ?? '...',
+                                ? baseLogoUri
+                                : quoteLogoUri) ?? '...',
                         )}
                         alt={
                             isBaseTokenMoneynessGreaterOrEqual
@@ -169,6 +177,20 @@ export default function PoolsListItem(props: propsIF) {
         </FlexContainer>
     );
 
+    const priceChangeDisplay = (
+        <Text
+            color={
+                poolPriceChangePercent?.toLowerCase().includes('change')
+                    ? 'white'
+                    : isPoolPriceChangePositive
+                      ? 'positive'
+                      : 'negative'
+            }
+        >
+            {poolPriceChangePercent}
+        </Text>
+    );
+
     return (
         <MainItemContainer style={{ width: '100%' }}>
             <ItemContainer
@@ -185,13 +207,14 @@ export default function PoolsListItem(props: propsIF) {
             >
                 {[
                     [poolDisplay],
-                    `${poolData.poolPrice ?? '...'}`,
-                    `${
-                        poolData.poolVolume24h
-                            ? '$' + poolData.poolVolume24h
-                            : '...'
-                    }`,
-                    `${poolData.poolTvl ? '$' + poolData.poolTvl : '...'}`,
+                    `${poolPrice ?? '...'}`,
+                    `${poolVolume24h ? '$' + poolVolume24h : '...'}`,
+                    `${poolTvl ? '$' + poolTvl : '...'}`,
+
+                    poolPrice === undefined ||
+                    poolPriceChangePercent === undefined
+                        ? '…'
+                        : priceChangeDisplay,
                 ].map((item, idx) => (
                     <FlexContainer key={idx} padding='4px 0'>
                         {item}

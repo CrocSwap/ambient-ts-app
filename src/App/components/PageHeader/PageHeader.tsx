@@ -10,7 +10,6 @@ import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 // import { BiGitBranch } from 'react-icons/bi';
 // import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
@@ -20,16 +19,13 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import {
-    useWeb3ModalAccount,
-    useSwitchNetwork,
-} from '@web3modal/ethers5/react';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
     chainNumToString,
     trimString,
+    checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
 import {
     linkGenMethodsIF,
@@ -75,7 +71,7 @@ const PageHeader = function () {
     const { poolPriceDisplay, isTradeDollarizationEnabled, usdPrice } =
         useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
-    const { setShowAllData } = useContext(TradeTableContext);
+    const { setShowAllData, activeTradeTab } = useContext(TradeTableContext);
     const {
         baseToken: {
             setBalance: setBaseTokenBalance,
@@ -89,10 +85,6 @@ const PageHeader = function () {
     const { userAddress, isUserConnected, disconnectUser, ensName } =
         useContext(UserDataContext);
     const { resetReceiptData } = useContext(ReceiptContext);
-    const { isConnected } = useWeb3ModalAccount();
-    const switchNetwork = isConnected
-        ? useSwitchNetwork().switchNetwork
-        : undefined;
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -167,31 +159,72 @@ const PageHeader = function () {
                   value: poolPriceDisplayWithDenom,
               });
 
+    function removeAfterEth(inputString: string) {
+        // Find the position of ".eth"
+        const ethIndex = inputString.indexOf('.eth');
+
+        // If ".eth" is found in the string, return the substring up to and including ".eth"
+        if (ethIndex !== -1) {
+            return inputString.substring(0, ethIndex + 4);
+        }
+
+        // If ".eth" is not found, return the original string
+        return inputString;
+    }
+
     useEffect(() => {
         const path = location.pathname;
 
         const pathNoLeadingSlash = path.slice(1);
 
-        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
-        const isAddressHex =
-            (pathNoLeadingSlash?.startsWith('0x') &&
-                pathNoLeadingSlash?.length == 42) ||
-            (pathNoLeadingSlash?.startsWith('account/0x') &&
-                pathNoLeadingSlash?.length == 50);
+        const isAddressEns = pathNoLeadingSlash?.includes('.eth');
+        const isAddressHex = checkEoaHexAddress(path);
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
-
-        if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account ~ Ambient';
+        if (pathNoLeadingSlash.startsWith('account') && !isPathValidAddress) {
+            if (pathNoLeadingSlash.includes('points')) {
+                document.title = 'My Points ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('liquidity')) {
+                document.title = 'My Liquidity ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('limits')) {
+                document.title = 'My Limits ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('transactions')) {
+                document.title = 'My Transactions ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('wallet-balances')) {
+                document.title = 'My Wallet Balances ~ Ambient';
+            } else if (pathNoLeadingSlash.includes('exchange-balances')) {
+                document.title = 'My Exchange Balances ~ Ambient';
+            } else {
+                document.title = 'My Account ~ Ambient';
+            }
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
             const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoPrefixDecoded.length > 15
-                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
-                    : pathNoPrefixDecoded
+                ? removeAfterEth(pathNoPrefixDecoded).length > 15
+                    ? trimString(
+                          removeAfterEth(pathNoPrefixDecoded),
+                          10,
+                          3,
+                          '…',
+                      )
+                    : removeAfterEth(pathNoPrefixDecoded)
                 : trimString(pathNoPrefixDecoded, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
+            if (pathNoLeadingSlash.includes('points')) {
+                document.title = `${ensNameOrAddressTruncated} Points ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('liquidity')) {
+                document.title = `${ensNameOrAddressTruncated} Liquidity ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('limits')) {
+                document.title = `${ensNameOrAddressTruncated} Limits ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('transactions')) {
+                document.title = `${ensNameOrAddressTruncated} Transactions ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('wallet-balances')) {
+                document.title = `${ensNameOrAddressTruncated} Wallet Balances ~ Ambient`;
+            } else if (pathNoLeadingSlash.includes('exchange-balances')) {
+                document.title = `${ensNameOrAddressTruncated} Exchange Balances ~ Ambient`;
+            } else {
+                document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
+            }
         } else if (
             location.pathname.includes('swap') ||
             location.pathname.includes('trade')
@@ -204,7 +237,13 @@ const PageHeader = function () {
         } else if (location.pathname.includes('initpool')) {
             document.title = 'Pool Initialization ~ Ambient';
         } else if (location.pathname.includes('explore')) {
-            document.title = 'Explore ~ Ambient';
+            if (location.pathname.includes('pool')) {
+                document.title = 'Explore Pools ~ Ambient';
+            } else if (location.pathname.includes('tokens')) {
+                document.title = 'Explore Tokens ~ Ambient';
+            } else {
+                document.title = 'Explore ~ Ambient';
+            }
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -216,15 +255,16 @@ const PageHeader = function () {
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
         : location.pathname.includes('trade/limit')
-        ? '/trade/limit/'
-        : location.pathname.includes('trade/edit')
-        ? '/trade/edit/'
-        : '/trade/market/';
+          ? '/trade/limit/'
+          : location.pathname.includes('trade/edit')
+            ? '/trade/edit/'
+            : '/trade/market/';
 
     // hooks to generate URL paths
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const swapParams: swapParamsIF = {
         chain: chainNumToString(tokenA.chainId),
@@ -237,6 +277,18 @@ const PageHeader = function () {
         destination: string;
         shouldDisplay: boolean;
     }
+
+    // maintain limits and liquidity tab selection when navigating from portfolio
+    const tradeLinkDestination = (
+        activeTradeTab === 'limits' ? linkGenLimit : linkGenMarket
+    ).getFullURL(swapParams);
+
+    const activeTradeTabSlug =
+        activeTradeTab.toLowerCase() === 'exchange balances'
+            ? 'exchange-balances'
+            : activeTradeTab.toLowerCase() === 'wallet balances'
+              ? 'wallet-balances'
+              : activeTradeTab.toLowerCase();
 
     const linkData: linkDataIF[] = [
         {
@@ -251,7 +303,7 @@ const PageHeader = function () {
         },
         {
             title: 'Trade',
-            destination: linkGenMarket.getFullURL(swapParams),
+            destination: tradeLinkDestination,
             shouldDisplay: true,
         },
         {
@@ -266,7 +318,7 @@ const PageHeader = function () {
         },
         {
             title: 'Account',
-            destination: '/account',
+            destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
             shouldDisplay: !!isUserConnected,
         },
         {
@@ -279,29 +331,16 @@ const PageHeader = function () {
     // Most of this functionality can be achieved by using the NavLink instead of Link and accessing the isActive prop on the
     // Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
-    function isActive(linkDestination: string, locationPathname: string) {
-        if (linkDestination.includes('/trade')) {
-            if (linkDestination.includes('/pool')) {
-                return locationPathname.includes('/trade/pool')
-                    ? HeaderClasses.active
-                    : HeaderClasses.inactive;
-            } else {
-                return locationPathname.includes(tradeDestination)
-                    ? HeaderClasses.active
-                    : HeaderClasses.inactive;
-            }
-        } else if (linkDestination.includes('/swap')) {
-            return locationPathname.includes('/swap')
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        } else {
-            return locationPathname === linkDestination
-                ? HeaderClasses.active
-                : HeaderClasses.inactive;
-        }
-    }
-
-    function isUnderlined(linkDestination: string, locationPathname: string) {
+    function isActive(
+        title: string,
+        linkDestination: string,
+        locationPathname: string,
+    ) {
+        const trailingSlashRegex = /\/$/;
+        const locationPathnameNoTrailingSlash = locationPathname.replace(
+            trailingSlashRegex,
+            '',
+        );
         return (
             (linkDestination.includes('/trade') &&
                 (linkDestination.includes('/trade/pool')
@@ -309,7 +348,13 @@ const PageHeader = function () {
                     : locationPathname.includes(tradeDestination))) ||
             (locationPathname.includes('/swap') &&
                 linkDestination.includes('/swap')) ||
-            locationPathname === linkDestination
+            (locationPathname.includes('/explore') &&
+                linkDestination.includes('/explore')) ||
+            (locationPathnameNoTrailingSlash.endsWith('/account') &&
+                linkDestination.includes('/account') &&
+                !linkDestination.includes('/points')) ||
+            (locationPathname === linkDestination &&
+                !(title === 'Account' && locationPathname.includes('/points')))
         );
     }
 
@@ -323,16 +368,22 @@ const PageHeader = function () {
                     link.shouldDisplay ? (
                         <NavigationLink
                             tabIndex={0}
-                            className={isActive(
-                                link.destination,
-                                location.pathname,
-                            )}
+                            className={
+                                isActive(
+                                    link.title,
+                                    link.destination,
+                                    location.pathname,
+                                )
+                                    ? HeaderClasses.active
+                                    : HeaderClasses.inactive
+                            }
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {isUnderlined(
+                            {isActive(
+                                link.title,
                                 link.destination,
                                 location.pathname,
                             ) && <UnderlinedMotionDiv layoutId='underline' />}
@@ -364,7 +415,8 @@ const PageHeader = function () {
     return (
         <PrimaryHeader
             data-testid={'page-header'}
-            fixed={location.pathname === '/'}
+            fixed={false}
+            style={{ position: 'sticky', top: 0, zIndex: 10 }}
         >
             <div
                 onClick={(event: React.MouseEvent) => {
@@ -398,25 +450,10 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
-                            <NetworkSelector switchNetwork={switchNetwork} />
+                        
+                            <NetworkSelector />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
-                            <NotificationCenter />
                         </FlexContainer>
                     </div>
                 )}

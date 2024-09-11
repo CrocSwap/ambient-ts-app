@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ethers } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { NetworkSessionIF, TokenIF } from '../../types';
-import { Provider } from '@ethersproject/providers';
 import { fetchTokenUniverse } from '../../api/fetchTokenUniverse';
 import { supportedNetworks } from './index';
 
@@ -55,7 +54,7 @@ export const createNetworkSession = async ({
     );
     provider = await assertExists(
         provider,
-        async () => new ethers.providers.JsonRpcProvider(infuraUrl),
+        async () => new ethers.JsonRpcProvider(infuraUrl),
     );
     crocEnv = await assertExists(
         crocEnv,

@@ -1,15 +1,21 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { NetworkIF, TokenIF } from '../ambient-utils/types';
 import { ChainSpec, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { getDefaultPairForChain, mainnetETH } from '../ambient-utils/constants';
 import {
-    blastETH,
-    blastUSDB,
-    getDefaultPairForChain,
-    mainnetETH,
-} from '../ambient-utils/constants';
-import { useAppChain } from '../App/hooks/useAppChain';
-import { translateTokenSymbol } from '../ambient-utils/dataLayer';
-import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
+    isBtcPair,
+    isETHPair,
+    isStablePair,
+    translateTokenSymbol,
+} from '../ambient-utils/dataLayer';
+import { TokenBalanceContext } from './TokenBalanceContext';
+import { TokenContext } from './TokenContext';
 
 export interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -69,7 +75,10 @@ export const TradeDataContext = createContext<TradeDataContextIF>(
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, activeNetwork, chooseNetwork } = useAppChain();
+    const { chainData, activeNetwork, chooseNetwork } =
+        useContext(TokenBalanceContext);
+
+    const { tokens } = useContext(TokenContext);
 
     const savedTokenASymbol = localStorage.getItem('tokenA');
     const savedTokenBSymbol = localStorage.getItem('tokenB');
@@ -80,8 +89,6 @@ export const TradeDataContextProvider = (props: {
 
     // Limit NoGoZone
     const [noGoZoneBoundaries, setNoGoZoneBoundaries] = useState([0, 0]);
-
-    const tokens: tokenMethodsIF = useTokens(chainData.chainId, []);
 
     const tokensMatchingA =
         savedTokenASymbol === 'ETH'
@@ -112,15 +119,16 @@ export const TradeDataContextProvider = (props: {
         return firstTokenMatchingA
             ? firstTokenMatchingA
             : shouldReverseDefaultTokens
-            ? dfltTokenB
-            : dfltTokenA;
+              ? dfltTokenB
+              : dfltTokenA;
     });
+
     const [tokenB, setTokenB] = React.useState<TokenIF>(
         firstTokenMatchingB
             ? firstTokenMatchingB
             : shouldReverseDefaultTokens
-            ? dfltTokenA
-            : dfltTokenB,
+              ? dfltTokenA
+              : dfltTokenB,
     );
 
     const [
@@ -181,8 +189,10 @@ export const TradeDataContextProvider = (props: {
     }, [isTokenAPrimary]);
 
     useEffect(() => {
-        localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
-        localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
+        tokenA.symbol &&
+            localStorage.setItem('tokenA', translateTokenSymbol(tokenA.symbol));
+        tokenB.symbol &&
+            localStorage.setItem('tokenB', translateTokenSymbol(tokenB.symbol));
     }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
@@ -214,12 +224,12 @@ export const TradeDataContextProvider = (props: {
         baseAddress: string,
         quoteAddress: string,
     ) => {
-        const isPoolBlastEthUSDB =
-            chainId === '0x13e31' &&
-            baseAddress.toLowerCase() === blastETH.address.toLowerCase() &&
-            quoteAddress.toLowerCase() === blastUSDB.address.toLowerCase();
-        // temporarily reset to 10 for ETH/USDB until volatility reduces
-        const defaultWidth = isPoolBlastEthUSDB ? 10 : 10;
+        const isPoolStable =
+            isStablePair(baseAddress, quoteAddress) ||
+            isETHPair(baseAddress, quoteAddress) ||
+            isBtcPair(baseAddress, quoteAddress);
+        const defaultWidth = isPoolStable ? 0.5 : 10;
+
         return defaultWidth;
     };
 
@@ -269,6 +279,7 @@ export const TradeDataContextProvider = (props: {
         noGoZoneBoundaries,
         setNoGoZoneBoundaries,
     };
+
 
     return (
         <TradeDataContext.Provider value={tradeDataContext}>

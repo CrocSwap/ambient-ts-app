@@ -55,7 +55,7 @@ export const ContentContainer = styled(FlexContainer)`
 `;
 
 export const SearchContainer = styled(FlexContainer)`
-    background-color: var(--dark2);
+    background-color: var(--dark3);
     border-radius: var(--border-radius);
 `;
 
@@ -124,7 +124,7 @@ export const ItemContainer = styled.div`
     border-radius: var(--border-radius);
     cursor: pointer;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     align-items: center;
 
     &:hover {
@@ -139,7 +139,7 @@ export const ItemHeaderContainer = styled.div`
     border-radius: var(--border-radius);
     cursor: pointer;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 30px;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 30px;
     color: var(--text2, #8b98a5);
 `;
 
@@ -223,7 +223,33 @@ export const SearchResultsContainer = styled(FlexContainer)`
 
 export const ResultsContainer = styled(FlexContainer)`
     max-height: 140px;
-    overflow-y: scroll;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 12px !important; /* Adjust the width as needed */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 2px solid transparent !important; /* Space for the border */
+        background-clip: padding-box !important; /* Create space for the border */
+        border-radius: 8px !important; /* Adjust the border radius as needed */
+        background-image: linear-gradient(#06060c, #06060c),
+            linear-gradient(
+                0deg,
+                var(--accent1) 0%,
+                var(--accent5) 49.48%,
+                var(--accent1) 100%
+            ) !important;
+        background-origin: border-box !important;
+        background-clip: content-box, border-box !important; /* Clip the border to show gradient */
+        min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #06060c !important; /* Background color of the scrollbar track */
+        border-radius: 8px !important; /* Adjust the border radius as needed */
+        padding: 2px !important; /* Add padding to the track */
+    }
 `;
 
 export const Results = styled(GridContainer)`

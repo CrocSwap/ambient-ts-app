@@ -18,6 +18,10 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { maxWidth } from '../../../../ambient-utils/types/mediaQueries';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -95,6 +99,16 @@ export default function rangeRowConstants(props: propsIF) {
     } = props;
 
     const { isTradeDollarizationEnabled } = useContext(PoolContext);
+    const { tokenA } = useContext(TradeDataContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
+    const {
+        setRangeTicksCopied,
+        setSimpleRangeWidth,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+        setAdvancedMode,
+    } = useContext(RangeContext);
 
     const { tokens } = useContext(TokenContext);
     const baseToken: TokenIF | undefined =
@@ -103,7 +117,8 @@ export default function rangeRowConstants(props: propsIF) {
         tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
-    const smallScreen = useMediaQuery('(max-width: 720px)');
+    const SMALL_SCREEN_BP: maxWidth = '(max-width: 720px)';
+    const smallScreen = useMediaQuery(SMALL_SCREEN_BP);
 
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
@@ -257,14 +272,41 @@ export default function rangeRowConstants(props: propsIF) {
     // URL params for link to pool page
     const poolLinkParams: poolParamsIF = {
         chain: position.chainId,
-        tokenA: position.quote,
-        tokenB: position.base,
+        tokenA:
+            tokenA.address.toLowerCase() === position.quote.toLowerCase()
+                ? position.quote
+                : position.base,
+        tokenB:
+            tokenA.address.toLowerCase() === position.quote.toLowerCase()
+                ? position.base
+                : position.quote,
+        lowTick: position.bidTick.toString(),
+        highTick: position.askTick.toString(),
+    };
+
+    const handleCopyClick = () => {
+        setActiveMobileComponent('trade');
+
+        setRangeTicksCopied(true);
+        handlePulseAnimation('range');
+
+        if (position.positionType === 'ambient') {
+            setSimpleRangeWidth(100);
+            setAdvancedMode(false);
+        } else {
+            setAdvancedLowTick(position.bidTick);
+            setAdvancedHighTick(position.askTick);
+            setAdvancedMode(true);
+        }
     };
 
     const tokenPair = (
         <div
             className='base_color'
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) => {
+                event.stopPropagation();
+                handleCopyClick();
+            }}
         >
             {isOwnerActiveAccount ? (
                 <RowItem hover>
@@ -408,8 +450,8 @@ export default function rangeRowConstants(props: propsIF) {
                         ? lowDisplayPriceInUsd
                         : minRangeDenomByMoneyness || '…'
                     : isTradeDollarizationEnabled
-                    ? lowDisplayPriceInUsd
-                    : ambientOrMin || '…'}
+                      ? lowDisplayPriceInUsd
+                      : ambientOrMin || '…'}
             </span>
         </FlexContainer>
     );
@@ -441,8 +483,8 @@ export default function rangeRowConstants(props: propsIF) {
                         ? highDisplayPriceInUsd
                         : maxRangeDenomByMoneyness || '…'
                     : isTradeDollarizationEnabled
-                    ? highDisplayPriceInUsd
-                    : ambientOrMax || '…'}
+                      ? highDisplayPriceInUsd
+                      : ambientOrMax || '…'}
             </span>
         </FlexContainer>
     );
@@ -462,8 +504,8 @@ export default function rangeRowConstants(props: propsIF) {
                             ? lowDisplayPriceInUsd
                             : minRangeDenomByMoneyness || '…'
                         : isTradeDollarizationEnabled
-                        ? lowDisplayPriceInUsd
-                        : ambientOrMin || '…'}
+                          ? lowDisplayPriceInUsd
+                          : ambientOrMin || '…'}
                 </span>
             </p>
             <p>
@@ -474,8 +516,8 @@ export default function rangeRowConstants(props: propsIF) {
                             ? highDisplayPriceInUsd
                             : maxRangeDenomByMoneyness || '…'
                         : isTradeDollarizationEnabled
-                        ? highDisplayPriceInUsd
-                        : ambientOrMax || '…'}
+                          ? highDisplayPriceInUsd
+                          : ambientOrMax || '…'}
                 </span>
             </p>
         </FlexContainer>

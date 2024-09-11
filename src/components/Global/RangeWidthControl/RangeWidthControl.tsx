@@ -32,11 +32,12 @@ import {
 } from '../../../ambient-utils/constants';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import {
-    DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
-    DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
-} from '../../../pages/Trade/Range/Range';
+
 import { FlexContainer } from '../../../styled/Common';
+import {
+    DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
+    DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
+} from '../../../pages/platformAmbient/Trade/Range/Range';
 
 interface PropsIF {
     isEditPanel?: boolean;
@@ -187,8 +188,8 @@ export default function RangeWidthControl(props: PropsIF) {
         currentPoolPriceNonDisplay === 0
             ? '...'
             : isDenomBase
-            ? truncatedCurrentPoolDisplayPriceInBase
-            : truncatedCurrentPoolDisplayPriceInQuote;
+              ? truncatedCurrentPoolDisplayPriceInBase
+              : truncatedCurrentPoolDisplayPriceInQuote;
 
     // if chart is at ambient width, keep ambient width, otherwise use the default
     // otherwise the the width rapidly switches back and forth between the two when returning to an in progress reposition
@@ -211,10 +212,10 @@ export default function RangeWidthControl(props: PropsIF) {
         setAdvancedMode(false);
     }, []);
 
-    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
-        useState(0);
-    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
-        useState(0);
+    // const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
+    //     useState(0);
+    // const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
+    //     useState(0);
 
     useEffect(() => {
         if (advancedMode) {
@@ -226,12 +227,12 @@ export default function RangeWidthControl(props: PropsIF) {
                 pinnedHighTick,
                 gridSize,
             );
-            setRangeLowBoundNonDisplayPrice(
-                pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-            );
-            setRangeHighBoundNonDisplayPrice(
-                pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-            );
+            // setRangeLowBoundNonDisplayPrice(
+            //     pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            // );
+            // setRangeHighBoundNonDisplayPrice(
+            //     pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            // );
 
             // setPinnedMinPriceDisplayTruncated(
             //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
@@ -701,13 +702,13 @@ export default function RangeWidthControl(props: PropsIF) {
                 gridSize,
             );
 
-            !isDenomBase
-                ? setRangeLowBoundNonDisplayPrice(
-                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-                  )
-                : setRangeHighBoundNonDisplayPrice(
-                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-                  );
+            // !isDenomBase
+            //     ? setRangeLowBoundNonDisplayPrice(
+            //           pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            //       )
+            //     : setRangeHighBoundNonDisplayPrice(
+            //           pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            //       );
 
             !isDenomBase
                 ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
@@ -789,13 +790,13 @@ export default function RangeWidthControl(props: PropsIF) {
                 gridSize,
             );
 
-            isDenomBase
-                ? setRangeLowBoundNonDisplayPrice(
-                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-                  )
-                : setRangeHighBoundNonDisplayPrice(
-                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-                  );
+            // isDenomBase
+            //     ? setRangeLowBoundNonDisplayPrice(
+            //           pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            //       )
+            //     : setRangeHighBoundNonDisplayPrice(
+            //           pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            //       );
 
             isDenomBase
                 ? setMinPrice(

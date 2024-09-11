@@ -9,11 +9,12 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
-
+import styles from './PortfolioTabs.module.css'
 // START: Import Local Files
 import {
     getPositionData,
     getLimitOrderData,
+    filterLimitArray,
 } from '../../../ambient-utils/dataLayer';
 import {
     LimitOrderIF,
@@ -40,7 +41,6 @@ import {
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 import Points from '../../Global/Account/AccountTabs/Points/Points';
@@ -50,6 +50,7 @@ import {
 } from '../../../contexts/UserDataContext';
 import medal from '../../../assets/images/icons/medal.svg';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component props
 interface propsIF {
@@ -85,6 +86,8 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(AppStateContext);
 
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
+
     const {
         crocEnv,
         activeNetwork,
@@ -124,11 +127,6 @@ export default function PortfolioTabs(props: propsIF) {
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
-                    ensResolution: 'true',
-                    annotate: 'true',
-                    omitEmpty: 'true',
-                    omitKnockout: 'true',
-                    addValue: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -168,14 +166,13 @@ export default function PortfolioTabs(props: propsIF) {
                         });
                 }
             });
+
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
                     user: accountToSearch,
                     chainId: chainId,
-                    ensResolution: 'true',
-                    omitEmpty: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -203,9 +200,10 @@ export default function PortfolioTabs(props: propsIF) {
                         ),
                     )
                         .then((updatedLimitOrderStates) => {
-                            setLookupAccountLimitOrderData(
+                            const filteredData = filterLimitArray(
                                 updatedLimitOrderStates,
                             );
+                            setLookupAccountLimitOrderData(filteredData);
                         })
                         .finally(() => {
                             setDataLoadingStatus({
@@ -221,11 +219,6 @@ export default function PortfolioTabs(props: propsIF) {
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
                 chainId: chainId,
-                annotate: true,
-                addValue: true,
-                simpleCalc: true,
-                annotateMEV: false,
-                ensResolution: true,
                 n: 200, // fetch last 200 changes,
                 crocEnv: crocEnv,
                 graphCacheUrl: activeNetwork.graphCacheUrl,
@@ -421,16 +414,52 @@ export default function PortfolioTabs(props: propsIF) {
         },
     ];
 
+    const dataToUse = connectedAccountActive
+    ? accountTabDataWithTokens
+    : accountTabDataWithoutTokens
+
+    const [activeTab, setActiveTab] = useState<string>('Transactions'); 
+
+
+    const renderTabContent = () => {
+        const selectedTabData =dataToUse.find(
+            (tab) => tab.label === activeTab
+        );
+        return selectedTabData ? selectedTabData.content : null;
+    };
+
+
+    const mobileTabs = (
+        <div className={styles.mobile_tabs_container}>
+            <div className={styles.mobile_tabs_button_container}>
+                {dataToUse.map((tab) => (
+                    <button
+                        key={tab.label}
+                        onClick={() => setActiveTab(tab.label)}
+                        style={{
+                            color: tab.label === activeTab ? 'var(--accent1)' : 'var(--text2)',
+                            borderBottom: tab.label === activeTab ? '1px solid var(--accent1)' : '1px solid transparent'
+                        }}
+                    >
+                        <span className={styles.tabLabel}>{tab.label}</span>
+                    </button>
+                ))}
+            </div>
+            <div className={styles.tabContent} style={{height: '100%'}}>
+                {renderTabContent()}
+            </div>
+        </div>
+    );
+
+
+    if ( isSmallScreen) return mobileTabs
     return (
-        <PortfolioTabsPortfolioTabsContainer>
+        <div className={styles.portfolio_tabs_container}>
             <TabComponent
-                data={
-                    connectedAccountActive
-                        ? accountTabDataWithTokens
-                        : accountTabDataWithoutTokens
-                }
+                data={dataToUse}
                 rightTabOptions={false}
+                isPortfolio={true}
             />
-        </PortfolioTabsPortfolioTabsContainer>
+        </div>
     );
 }

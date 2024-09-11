@@ -1,7 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../ambient-utils/types';
-import { diffHashSig } from '../../../ambient-utils/dataLayer';
-import { BigNumber } from 'ethers';
 
 export type RangeSortType =
     | 'id'
@@ -56,11 +54,11 @@ export const useSortedPositions = (
             return a.ensResolution.localeCompare(b.ensResolution);
         });
         // sort positions with no ENS by the wallet address, for some reason
-        // ... alphanumeric sort fails so we're running a BigNumber comparison
+        // ... alphanumeric sort fails so we're running a BigInt comparison
         const sortedNoENS: PositionIF[] = positionsNoENS.sort((a, b) => {
-            const walletA = BigNumber.from(a.user);
-            const walletB = BigNumber.from(b.user);
-            return walletA.gte(walletB) ? 1 : -1;
+            const walletA = BigInt(a.user);
+            const walletB = BigInt(b.user);
+            return walletA > walletB ? 1 : -1;
         });
         // combine and return sorted arrays
         return [...sortedENS, ...sortedNoENS];
@@ -215,17 +213,10 @@ export const useSortedPositions = (
         return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
-    // Generates a fingerprint from the positions objects. Used for comparison
-    // in below React hook
-    const posHashSum = useMemo<string>(
-        () => diffHashSig(positions),
-        [positions],
-    );
-
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo<PositionIF[]>(() => {
         return sortData(positions);
-    }, [sortBy, reverseSort, posHashSum]); // fix failure to refresh rows when data changes
+    }, [sortBy, reverseSort, positions[0]?.positionId, positions.length]); // fix failure to refresh rows when data changes
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };

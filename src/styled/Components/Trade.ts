@@ -4,11 +4,17 @@ import styled from 'styled-components/macro';
 export const MainSection = styled.section<{
     isDropdown?: boolean;
     isSmallScreen?: boolean;
+    isFill: boolean;
 }>`
     display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
-    grid-template-columns: auto 380px;
+    ${({ isFill }) => {
+        if (!isFill) {
+            return 'grid-template-columns: auto 380px;';
+        }
+    }}
+
     height: ${(props) =>
         props.isDropdown && !props.isSmallScreen
             ? 'calc(100dvh - 85px)'
@@ -21,52 +27,18 @@ export const MainSection = styled.section<{
         flex-direction: column;
     }
 
-    @media only screen and (max-width: 1279px) {
-        padding-left: ${(props) => (props.isSmallScreen ? '' : '30px')};
-    }
-
     @media (max-width: 600px) {
         display: flex;
         flex-direction: column;
         gap: 4px;
     }
-`;
 
-export const TradeDropdown = styled.div`
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    width: 370px;
-    text-align: end;
-    border-radius: var(--border-radius);
-    text-transform: capitalize;
-    margin: 0 auto;
-    background: var(--dark2);
-
-    @media (max-width: 500px) {
-        width: 95%;
+    @media (max-width: 700px) and (min-width: 500px) {
+        height: calc(100dvh - 85px);
     }
 `;
 
-export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`
-    background: transparent;
-    outline: none;
-    border: none;
-    padding: ${(props) => (props.activeText ? '0 8px' : '8px')};
-    cursor: pointer;
-    transition: var(--transition);
-    border-radius: var(--border-radius);
-    text-align: center;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-transform: capitalize;
 
-    color: ${(props) => (props.activeText ? 'var(--text1)' : 'var(--text2)')};
-    font-size: ${(props) =>
-        props.activeText ? 'var(--header1-size)' : 'inherit'};
-`;
 
 export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
@@ -96,12 +68,15 @@ export const ResizableContainer = styled(Resizable)<{
     `}
 `;
 
-export const ChartContainer = styled.div<{ fullScreen: boolean }>`
-    ${({ fullScreen }) =>
+export const ChartContainer = styled.div<{
+    fullScreen: boolean;
+    isFuta: boolean;
+}>`
+    ${({ fullScreen, isFuta }) =>
         fullScreen
             ? `
         transition: var(--transition);
-        background: var(--dark2);
+        background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         position: fixed;
         width: 100%;
         height: calc(100% - 56px);
@@ -109,7 +84,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
         top: 56px;
         z-index: 10;
 
-        background: var(--dark2);
+        background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
     `
             : `
         flex: 1 0;
@@ -124,8 +99,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
         overflow: hidden;
 
         @media (min-width: 1200px) {
-            background: var(--dark2);
-           
+            background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         }
 
         @media ((min-width: 801px) and (max-width:1200px)) {
@@ -140,4 +114,39 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
     &::-webkit-scrollbar {
         display: none;
     }
+`;
+
+export const TradeDropdown = styled.div`
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    width: 370px;
+    text-align: end;
+    border-radius: var(--border-radius);
+    text-transform: capitalize;
+    margin: 0 auto;
+    background: var(--dark2);
+    @media (max-width: 500px) {
+        width: 95%;
+    }
+`;
+
+export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`
+    background: transparent;
+    outline: none;
+    border: none;
+    padding: ${(props) => (props.activeText ? '0 8px' : '8px')};
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: capitalize;
+
+    color: ${(props) => (props.activeText ? 'var(--text1)' : 'var(--text2)')};
+    font-size: ${(props) =>
+        props.activeText ? 'var(--header1-size)' : 'inherit'};
 `;

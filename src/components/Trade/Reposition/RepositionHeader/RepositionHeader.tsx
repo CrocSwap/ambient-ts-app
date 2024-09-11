@@ -12,9 +12,8 @@ import { useRepoExitPath } from './useRepoExitPath';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
-import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
-import { MdArrowBackIosNew } from 'react-icons/md';
+import { VscClose } from 'react-icons/vsc';
 
 interface propsIF {
     positionHash: string;
@@ -46,15 +45,9 @@ function RepositionHeader(props: propsIF) {
 
     return (
         <>
-            <TradeModuleHeaderContainer
-                flexDirection='row'
-                alignItems='center'
-                justifyContent='space-between'
-                fullWidth
-                fontSize='header1'
-                color='text2'
-            >
-                <MdArrowBackIosNew
+            <header className={styles.main_container}>
+                <VscClose
+                    className={styles.close_icon}
                     onClick={() => {
                         setAdvancedMode(false);
                         setRangeWidthPercentage(defaultRangeWidthForActivePool);
@@ -63,7 +56,6 @@ function RepositionHeader(props: propsIF) {
                         resetTxHash();
                         setCurrentRangeInReposition('');
                     }}
-                    className={styles.close_icon}
                     size={12}
                 />
 
@@ -77,7 +69,7 @@ function RepositionHeader(props: propsIF) {
                     alt='settings'
                     onClick={openModal}
                 />
-            </TradeModuleHeaderContainer>
+            </header>
             {isOpen && (
                 <TransactionSettingsModal
                     module={editPanel ? 'Pool' : 'Reposition'}

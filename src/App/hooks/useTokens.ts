@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { tokenListURIs, defaultTokens } from '../../ambient-utils/constants';
 import { TokenIF, TokenListIF } from '../../ambient-utils/types';
-import { chainNumToString, uriToHttp } from '../../ambient-utils/dataLayer';
+import {
+    chainNumToString,
+    uriToHttp,
+    serializeBigInt,
+} from '../../ambient-utils/dataLayer';
 
 export interface tokenMethodsIF {
     allDefaultTokens: TokenIF[];
@@ -74,7 +78,7 @@ export const useTokens = (
         const retMap = new Map<string, TokenIF>();
         tokenLists
             // Reverse add, so higher priority lists overwrite lower priority
-            .reverse()
+            // .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
@@ -98,6 +102,20 @@ export const useTokens = (
             });
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
+
+    const defaultTokenMap = useMemo<Map<string, TokenIF>>(() => {
+        const retMap = new Map<string, TokenIF>();
+        defaultTokens
+            .filter((t) => chainNumToString(t.chainId) === chainId)
+            .forEach((t) => {
+                const deepToken: TokenIF = deepCopyToken(
+                    t,
+                    tokenListURIs.ambient,
+                );
+                retMap.set(deepToken.address.toLowerCase(), deepToken);
+            });
+        return retMap;
+    }, [defaultTokens, chainId]);
 
     const tokenUniv: TokenIF[] = useMemo(() => {
         if (tokenMap.size) {
@@ -187,23 +205,42 @@ export const useTokens = (
                 fetchAndFormatList(uri),
             );
         // resolve all promises for token lists
-        Promise.all(tokenListPromises)
-            // remove `undefined` values (URIs that did not produce a valid response)
-            .then((lists) => lists.filter((l) => l !== undefined))
-            // record token lists in local storage + persist in local storage
-            .then((lists) => {
-                localStorage.setItem(
-                    localStorageKeys.tokenLists,
-                    JSON.stringify(lists),
-                );
-                setTokenLists(lists as TokenListIF[]);
-            });
+        Promise.allSettled(tokenListPromises).then((results) => {
+            // Filter out promises that were rejected and extract values from fulfilled ones
+            const fulfilledLists = results
+                .filter(
+                    (
+                        result,
+                    ): result is PromiseFulfilledResult<
+                        TokenListIF | undefined
+                    > => result.status === 'fulfilled',
+                )
+                .map((result) => result.value)
+                .filter((l) => l !== undefined); // remove `undefined` values (URIs that did not produce a valid response)
+
+            // Record token lists in local storage + persist in local storage
+            localStorage.setItem(
+                localStorageKeys.tokenLists,
+                JSON.stringify(fulfilledLists),
+            );
+            setTokenLists(fulfilledLists as TokenListIF[]);
+        });
     }, []);
 
     // fn to verify a token is on a known list or user-acknowledged
     const verifyToken = useCallback(
         (addr: string): boolean => {
-            return tokenMap.has(addr.toLowerCase());
+            for (const token of defaultTokens) {
+                if (token.address.toLowerCase() === addr.toLowerCase()) {
+                    return true;
+                }
+            }
+            for (const token of tokenMap.values()) {
+                if (token.address.toLowerCase() === addr.toLowerCase()) {
+                    return true;
+                }
+            }
+            return false;
         },
         [chainId, tokenMap],
     );
@@ -229,14 +266,16 @@ export const useTokens = (
             // to next session
             localStorage.setItem(
                 localStorageKeys.ackTokens,
-                JSON.stringify(newAckList),
+                serializeBigInt(newAckList),
             );
         },
         [chainId, tokenUniv],
     );
 
     const getTokenByAddress = useCallback(
-        (addr: string): TokenIF | undefined => tokenMap.get(addr.toLowerCase()),
+        (addr: string): TokenIF | undefined =>
+            defaultTokenMap.get(addr.toLowerCase()) ||
+            tokenMap.get(addr.toLowerCase()),
         [chainId, tokenUniv],
     );
 

@@ -69,12 +69,14 @@ function SelectedRange(props: propsIF) {
                 ? initialPrice
                 : 1 / initialPrice
             : isDenomBase && poolPriceDisplay
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay ?? 0;
+              ? 1 / poolPriceDisplay
+              : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedNumber({
-        value: displayPriceWithDenom,
-    });
+    const displayPriceString = displayPriceWithDenom
+        ? getFormattedNumber({
+              value: displayPriceWithDenom,
+          })
+        : '…';
 
     // PRICE RANGE DISPLAY
     interface PriceRangeProps {

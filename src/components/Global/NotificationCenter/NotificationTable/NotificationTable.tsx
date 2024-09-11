@@ -10,6 +10,7 @@ import {
 } from './NotificationTable.styles';
 import { FlexContainer } from '../../../../styled/Common';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import { BrandContext } from '../../../../contexts/BrandContext';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -22,6 +23,8 @@ const NotificationTable = (props: NotificationTableProps) => {
     const { showNotificationTable, pendingTransactions, notificationItemRef } =
         props;
 
+    const { platformName } = useContext(BrandContext);
+
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
 
@@ -33,12 +36,11 @@ const NotificationTable = (props: NotificationTableProps) => {
         <ReceiptDisplay
             key={idx}
             status={receipt?.status === 1 ? 'successful' : 'failed'}
-            hash={receipt?.transactionHash}
+            hash={receipt?.hash}
             txBlockNumber={receipt?.blockNumber}
             txType={
-                transactionsByType.find(
-                    (e) => e.txHash === receipt?.transactionHash,
-                )?.txDescription
+                transactionsByType.find((e) => e.txHash === receipt?.hash)
+                    ?.txDescription
             }
         />
     ));
@@ -54,15 +56,18 @@ const NotificationTable = (props: NotificationTableProps) => {
         />
     ));
 
+    const isFuta = ['futa'].includes(platformName);
+
     if (!showNotificationTable) return null;
     return (
-        <MainContainer>
+        <MainContainer isFuta={isFuta}>
             <Container
                 flexDirection='column'
                 justifyContent='space-between'
                 fullWidth
                 background='dark1'
                 ref={notificationItemRef}
+                isFuta={isFuta}
             >
                 <Header>Recent Transactions</Header>
 
@@ -77,6 +82,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                             resetReceiptData();
                         }}
                         aria-label='Clear all'
+                        isFuta={isFuta}
                     >
                         Clear all
                     </FooterButton>

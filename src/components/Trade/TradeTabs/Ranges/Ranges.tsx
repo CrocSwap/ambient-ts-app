@@ -2,7 +2,6 @@
 import { useEffect, useState, useContext, memo, useRef, useMemo } from 'react';
 
 // START: Import Local Files
-import { Pagination } from '@mui/material';
 import { useSortedPositions } from '../useSortedPositions';
 import { PositionIF, PositionServerIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -10,19 +9,16 @@ import RangeHeader from './RangesTable/RangeHeader';
 import NoTableData from '../NoTableData/NoTableData';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import usePagination from '../../../Global/Pagination/usePagination';
-import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
+    HideEmptyPositionContainer,
     RangeRow as RangeRowStyled,
-    ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer, Text } from '../../../../styled/Common';
+import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
@@ -32,7 +28,7 @@ import TableRows from '../TableRows';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import {
-    bigNumToFloat,
+    bigIntToFloat,
     baseTokenForConcLiq,
     tickToPrice,
     quoteTokenForConcLiq,
@@ -41,6 +37,8 @@ import {
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
+import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
+import Toggle from '../../../Form/Toggle';
 
 // interface for props
 interface propsIF {
@@ -54,8 +52,11 @@ function Ranges(props: propsIF) {
     const { activeAccountPositionData, connectedAccountActive, isAccountView } =
         props;
 
-    const { showAllData: showAllDataSelection, toggleTradeTable } =
-        useContext(TradeTableContext);
+    const {
+        showAllData: showAllDataSelection,
+        hideEmptyPositionsOnAccount,
+        setHideEmptyPositionsOnAccount,
+    } = useContext(TradeTableContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -63,7 +64,6 @@ function Ranges(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
-    const { tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
         provider,
@@ -79,12 +79,11 @@ function Ranges(props: propsIF) {
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded =
-        !isAccountView && tradeTableState === 'Expanded';
 
     const { userAddress } = useContext(UserDataContext);
 
     const {
+        positionsByUser,
         userPositionsByPool,
         positionsByPool,
         unindexedNonFailedSessionPositionUpdates,
@@ -106,21 +105,43 @@ function Ranges(props: propsIF) {
         setCurrentRangeInReposition('');
     }
 
+    const activeUserPositionsLength = useMemo(
+        () =>
+            isAccountView
+                ? activeAccountPositionData
+                    ? activeAccountPositionData.filter(
+                          (position) => position.positionLiq != 0,
+                      ).length
+                    : 0
+                : positionsByUser.positions.filter(
+                      (position) => position.positionLiq != 0,
+                  ).length,
+        [activeAccountPositionData, positionsByUser, isAccountView],
+    );
+
+    const activeUserPositionsByPool = useMemo(
+        () =>
+            userPositionsByPool?.positions.filter(
+                (position) => position.positionLiq != 0,
+            ),
+        [userPositionsByPool],
+    );
+
     const rangeData = useMemo(
         () =>
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
-                ? userPositionsByPool?.positions
-                : positionsByPool.positions.filter(
-                      (position) => position.positionLiq != 0,
-                  ),
+                  ? activeUserPositionsByPool
+                  : positionsByPool.positions.filter(
+                        (position) => position.positionLiq != 0,
+                    ),
         [
             showAllData,
             isAccountView,
             activeAccountPositionData,
             positionsByPool,
-            userPositionsByPool,
+            activeUserPositionsByPool,
         ],
     );
 
@@ -129,10 +150,10 @@ function Ranges(props: propsIF) {
             isAccountView && connectedAccountActive
                 ? dataLoadingStatus.isConnectedUserRangeDataLoading
                 : isAccountView
-                ? dataLoadingStatus.isLookupUserRangeDataLoading
-                : !showAllData
-                ? dataLoadingStatus.isConnectedUserPoolRangeDataLoading
-                : dataLoadingStatus.isPoolRangeDataLoading,
+                  ? dataLoadingStatus.isLookupUserRangeDataLoading
+                  : !showAllData
+                    ? dataLoadingStatus.isConnectedUserPoolRangeDataLoading
+                    : dataLoadingStatus.isPoolRangeDataLoading,
         [
             showAllData,
             isAccountView,
@@ -148,7 +169,7 @@ function Ranges(props: propsIF) {
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     const isLargeScreen = useMediaQuery('(min-width: 2000px)');
     const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
@@ -160,103 +181,78 @@ function Ranges(props: propsIF) {
             isSidebarOpen)
             ? 'small'
             : (!isSmallScreen && !isLargeScreen) ||
-              (isAccountView &&
-                  connectedAccountActive &&
-                  isLargeScreenAccount &&
-                  isSidebarOpen)
-            ? 'medium'
-            : 'large';
+                (isAccountView &&
+                    connectedAccountActive &&
+                    isLargeScreenAccount &&
+                    isSidebarOpen)
+              ? 'medium'
+              : 'large';
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [userAddress, showAllData, baseTokenAddress + quoteTokenAddress]);
+    const filteredSortedPositions = useMemo(() => {
+        // filter out empty positions on account view when hideEmptyPositionsOnAccount is true
+        return hideEmptyPositionsOnAccount && isAccountView
+            ? sortedPositions.filter((position) => position.positionLiq !== 0)
+            : sortedPositions;
+    }, [hideEmptyPositionsOnAccount, isAccountView, sortedPositions]);
 
-    const [page, setPage] = useState(1);
-    const resetPageToFirst = () => setPage(1);
-
-    // const isScreenShort =
-    //     (isAccountView && useMediaQuery('(max-height: 900px)')) ||
-    //     (!isAccountView && useMediaQuery('(max-height: 700px)'));
-
-    // const isScreenTall =
-    //     (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
-    //     (!isAccountView && useMediaQuery('(min-height: 1000px)'));
-
-    const _DATA = usePagination(
-        sortedPositions,
-        // , isScreenShort, isScreenTall
-    );
-
-    const {
-        showingFrom,
-        showingTo,
-        totalItems,
-        setCurrentPage,
-        rowsPerPage,
-        changeRowsPerPage,
-        count,
-        fullData,
-    } = _DATA;
-    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
-        setPage(p);
-        _DATA.jump(p);
-        const element = document.getElementById('current_row_scroll');
-        element?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-            inline: 'start',
-        });
-    };
-
-    const handleChangeRowsPerPage = (
-        event:
-            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            | React.ChangeEvent<HTMLSelectElement>,
-    ) => {
-        changeRowsPerPage(parseInt(event.target.value, 10));
-    };
-    const tradePageCheck = isTradeTableExpanded && rangeData.length > 10;
+    const _DATA = filteredSortedPositions;
+    // , isScreenShort, isScreenTall
 
     const listRef = useRef<HTMLUListElement>(null);
-    const sPagination = useMediaQuery('(max-width: 800px)');
 
-    const footerDisplay = rowsPerPage > 0 &&
-        ((isAccountView && rangeData.length > 10) ||
-            (!isAccountView && tradePageCheck)) && (
-            <FlexContainer
-                alignItems='center'
-                justifyContent='center'
-                gap={isSmallScreen ? 4 : 8}
-                margin={isSmallScreen ? '40px auto' : '16px auto'}
-                background='dark1'
-                flexDirection={isSmallScreen ? 'column' : 'row'}
-            >
-                <RowsPerPageDropdown
-                    rowsPerPage={rowsPerPage}
-                    onChange={handleChangeRowsPerPage}
-                    itemCount={sortedPositions.length}
-                    setCurrentPage={setCurrentPage}
-                    resetPageToFirst={resetPageToFirst}
-                />
-                <Pagination
-                    count={count}
-                    page={page}
-                    shape='circular'
-                    color='secondary'
-                    onChange={handleChange}
-                    showFirstButton
-                    showLastButton
-                    size={sPagination ? 'small' : 'medium'}
-                />
-                {!isSmallScreen && (
-                    <Text
-                        fontSize='mini'
-                        color='text2'
-                        style={{ whiteSpace: 'nowrap' }}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
-                )}
-            </FlexContainer>
-        );
+    const userHasEmptyPositions = useMemo(
+        () =>
+            positionsByUser.positions.filter(
+                (position) => position.positionLiq === 0,
+            ).length > 0,
+        [positionsByUser.positions],
+    );
+
+    const showEmptyToggleButton =
+        connectedAccountActive && userHasEmptyPositions;
+
+    const footerDisplay = (
+        <FlexContainer
+            alignItems='center'
+            justifyContent='space-between'
+            fullWidth
+            flexDirection={isSmallScreen ? 'column' : 'row'}
+            margin={isSmallScreen ? '20px auto' : '16px auto'}
+        >
+            {showEmptyToggleButton && (
+                <HideEmptyPositionContainer
+                    onClick={() => {
+                        localStorage.setItem(
+                            LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                            String(!hideEmptyPositionsOnAccount),
+                        );
+                        setHideEmptyPositionsOnAccount(
+                            !hideEmptyPositionsOnAccount,
+                        );
+                    }}
+                    style={{ width: '100%' }}
+                >
+                    <p>Hide Empty Positions</p>
+
+                    <Toggle
+                        isOn={hideEmptyPositionsOnAccount}
+                        disabled={false}
+                        handleToggle={() => {
+                            localStorage.setItem(
+                                LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT,
+                                String(!hideEmptyPositionsOnAccount),
+                            );
+                            setHideEmptyPositionsOnAccount(
+                                !hideEmptyPositionsOnAccount,
+                            );
+                        }}
+                        id='toggle_empty_positions_liquidity'
+                        aria-label='toggle empty positions'
+                    />
+                </HideEmptyPositionContainer>
+            )}
+        </FlexContainer>
+    );
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
@@ -311,7 +307,9 @@ function Ranges(props: propsIF) {
         {
             name: walID,
             className: 'wallet_id',
-            show: tableView !== 'large',
+            show:
+                tableView === 'medium' ||
+                (!isAccountView && tableView === 'small'),
             slug: 'walletid',
             sortable: !isAccountView,
         },
@@ -410,14 +408,6 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    useEffect(() => {
-        if (_DATA.currentData.length && !isTradeTableExpanded) {
-            setCurrentPage(1);
-            const mockEvent = {} as React.ChangeEvent<unknown>;
-            handleChange(mockEvent, 1);
-        }
-    }, [isTradeTableExpanded]);
-
     const relevantTransactionsByType = transactionsByType.filter(
         (tx) =>
             unindexedNonFailedSessionPositionUpdates.some(
@@ -470,7 +460,7 @@ function Ranges(props: propsIF) {
                     );
 
                     const position = pendingPositionUpdate.txDetails.isAmbient
-                        ? await pos.queryAmbient()
+                        ? await pos.queryAmbientPos()
                         : await pos.queryRangePos(
                               pendingPositionUpdate.txDetails.lowTick || 0,
                               pendingPositionUpdate.txDetails.highTick || 0,
@@ -481,20 +471,18 @@ function Ranges(props: propsIF) {
 
                     if (!pendingPositionUpdate.txDetails)
                         return {} as PositionIF;
-                    const liqBigNum = pendingPositionUpdate.txDetails.isAmbient
-                        ? position.seeds
-                        : position.liq;
-                    const liqNum = bigNumToFloat(liqBigNum);
+                    const liqBigInt = position.liq;
+                    const liqNum = bigIntToFloat(liqBigInt);
                     if (pendingPositionUpdate.txDetails.isAmbient) {
                         positionLiqBase =
                             liqNum * Math.sqrt(poolPriceNonDisplay);
                         positionLiqQuote =
                             liqNum / Math.sqrt(poolPriceNonDisplay);
                     } else {
-                        positionLiqBase = bigNumToFloat(
+                        positionLiqBase = bigIntToFloat(
                             baseTokenForConcLiq(
                                 poolPriceNonDisplay,
-                                liqBigNum,
+                                liqBigInt,
                                 tickToPrice(
                                     pendingPositionUpdate.txDetails.lowTick ||
                                         0,
@@ -505,10 +493,10 @@ function Ranges(props: propsIF) {
                                 ),
                             ),
                         );
-                        positionLiqQuote = bigNumToFloat(
+                        positionLiqQuote = bigIntToFloat(
                             quoteTokenForConcLiq(
                                 poolPriceNonDisplay,
-                                liqBigNum,
+                                liqBigInt,
                                 tickToPrice(
                                     pendingPositionUpdate.txDetails.lowTick ||
                                         0,
@@ -581,8 +569,8 @@ function Ranges(props: propsIF) {
                         askTick: pendingPositionUpdate.txDetails.highTick,
                         isBid: pendingPositionUpdate.txDetails.isBid,
                         user: pendingPositionUpdate.userAddress,
-                        timeFirstMint: position.timestamp, // from on-chain call (not updated for removes?)
-                        latestUpdateTime: position.timestamp, // from on-chain call (not updated for removes?)
+                        timeFirstMint: Number(position.timestamp), // from on-chain call (not updated for removes?)
+                        latestUpdateTime: Number(position.timestamp), // from on-chain call (not updated for removes?)
                         lastMintTx: '', // unknown
                         firstMintTx: '', // unknown
                         positionType: pendingPositionUpdate.txDetails.isAmbient
@@ -681,7 +669,7 @@ function Ranges(props: propsIF) {
     const shouldDisplayNoTableData =
         !isLoading &&
         !rangeData.length &&
-        unindexedNonFailedSessionPositionUpdates.length === 0;
+        relevantTransactionsByType.length === 0;
 
     const unindexedUpdatedPositionHashes = unindexedUpdatedPositions.map(
         (pos) => pos.positionId,
@@ -715,18 +703,50 @@ function Ranges(props: propsIF) {
             );
         });
 
-    const rangeDataOrNull = !shouldDisplayNoTableData ? (
-        <div>
+   
+
+    const handleKeyDownViewRanges = (
+        event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
+    ): void => {
+        // Opens a modal which displays the contents of a transaction and some other information
+        const { key } = event;
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+            const rows = document.querySelectorAll('.row_container_global');
+            const currentRow = event.target as HTMLLIElement;
+            const index = Array.from(rows).indexOf(currentRow);
+
+            if (key === 'ArrowDown') {
+                event.preventDefault();
+                if (index < rows.length - 1) {
+                    (rows[index + 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[0] as HTMLLIElement).focus();
+                }
+            } else if (key === 'ArrowUp') {
+                event.preventDefault();
+                if (index > 0) {
+                    (rows[index - 1] as HTMLLIElement).focus();
+                } else {
+                    (rows[rows.length - 1] as HTMLLIElement).focus();
+                }
+            }
+        }
+    };
+
+    const rangeDataOrNull = shouldDisplayNoTableData ? (
+        <NoTableData
+            type='liquidity'
+            isAccountView={isAccountView}
+            activeUserPositionsLength={activeUserPositionsLength}
+            activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
+        />
+    ) : (
+        <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%'}}>
             <ul
                 ref={listRef}
-                id='current_row_scroll'
-                style={
-                    isSmallScreen
-                        ? isAccountView
-                            ? { height: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 380px)' }
-                        : undefined
-                }
+                // id='current_row_scroll'
+                style={{height: '100%'}}
             >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&
@@ -748,7 +768,7 @@ function Ranges(props: propsIF) {
                 <TableRows
                     type='Range'
                     data={unindexedUpdatedPositions.concat(
-                        _DATA.currentData
+                        filteredSortedPositions
                             .filter(
                                 (pos) =>
                                     // remove existing row for adds
@@ -758,43 +778,51 @@ function Ranges(props: propsIF) {
                             )
                             // only show empty positions on account view
                             .filter(
-                                (pos) => isAccountView || pos.positionLiq !== 0,
+                                (pos) =>
+                                    (isAccountView &&
+                                        !hideEmptyPositionsOnAccount) ||
+                                    pos.positionLiq !== 0,
                             ),
                     )}
-                    fullData={unindexedUpdatedPositions.concat(fullData)}
+                    fullData={unindexedUpdatedPositions.concat(
+                        filteredSortedPositions,
+                    )}
                     isAccountView={isAccountView}
                     tableView={tableView}
                 />
             </ul>
-            {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                !isTradeTableExpanded &&
-                    !props.isAccountView &&
-                    sortedPositions.length > rowsPerPage && (
-                        <FlexContainer
-                            justifyContent='center'
-                            alignItems='center'
-                            padding='8px'
-                        >
-                            <ViewMoreButton onClick={() => toggleTradeTable()}>
-                                View More
-                            </ViewMoreButton>
-                        </FlexContainer>
-                    )
-            }
         </div>
-    ) : (
-        <NoTableData type='liquidity' isAccountView={isAccountView} />
     );
 
+    if (isSmallScreen) return (
+        <div style={{  overflow: 'scroll', height:  '100%'}}>
+            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
+            {headerColumnsDisplay}
+
+            </div>
+            <div style={{overflowY: 'scroll', height: '100%'}}>
+                
+            {rangeDataOrNull}   
+</div>
+        </div>
+    )
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%' }}
+            style={{
+                height: isSmallScreen
+                    ? '97%'
+                    : !isAccountView
+                      ? '105%'
+                      : '100%',
+            }}
         >
             <div>{headerColumnsDisplay}</div>
 
-            <div style={{ flex: 1, overflow: 'auto' }}>
+            <div
+                style={{ flex: 1, overflow: 'auto' }}
+                className='custom_scroll_ambient'
+            >
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (

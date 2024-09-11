@@ -68,12 +68,15 @@ const BASE_URL_PATHS = {
     privacy: '/privacy',
     faq: '/faq',
     faqPoints: '/faq/points',
+    auctions: '/auctions',
+    auctionCreate: '/create',
+    notFound: '/404',
 } as const;
 
 // string-literal union type of keys in `BASE_URL_PATHS`
 export type pageNames = keyof typeof BASE_URL_PATHS;
 // string-literal union type of keys in `BASE_URL_PATHS`
-export type baseURLs = typeof BASE_URL_PATHS[pageNames];
+export type baseURLs = (typeof BASE_URL_PATHS)[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
@@ -132,6 +135,12 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'privacy';
         } else if (pathname.startsWith(BASE_URL_PATHS.faqPoints)) {
             pageName = 'faqPoints';
+        } else if (pathname.endsWith(BASE_URL_PATHS.auctionCreate)) {
+            pageName = 'auctionCreate';
+        } else if (pathname.startsWith(BASE_URL_PATHS.auctions)) {
+            pageName = 'auctions';
+        } else if (pathname.includes(BASE_URL_PATHS.notFound)) {
+            pageName = 'notFound';
         } else {
             pageName = 'home';
         }

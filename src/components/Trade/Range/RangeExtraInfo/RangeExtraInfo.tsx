@@ -33,9 +33,11 @@ function RangeExtraInfo(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString = getFormattedNumber({
-        value: displayPriceWithDenom,
-    });
+    const displayPriceString = displayPriceWithDenom
+        ? getFormattedNumber({
+              value: displayPriceWithDenom,
+          })
+        : '…';
 
     const usdPriceDisplay = usdPrice
         ? getFormattedNumber({ value: usdPrice })

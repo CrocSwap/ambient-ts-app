@@ -1,19 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    useWeb3ModalAccount,
-    useSwitchNetwork,
-} from '@web3modal/ethers5/react';
+import { useWeb3ModalAccount, useSwitchNetwork } from '@web3modal/ethers/react';
 import {
     getDefaultChainId,
     validateChainId,
     chainNumToString,
+    checkEoaHexAddress,
 } from '../../ambient-utils/dataLayer';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../ambient-utils/types';
 import { supportedNetworks } from '../../ambient-utils/constants';
-import { useSearchParams } from 'react-router-dom';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -21,16 +18,13 @@ export const useAppChain = (): {
     chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
-    const { chainId: chainNetwork } = useWeb3ModalAccount();
+    const { chainId: walletChainId } = useWeb3ModalAccount();
     const { switchNetwork } = useSwitchNetwork();
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
-    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
-    const [searchParams] = useSearchParams();
-    const chainParam = searchParams.get('chain');
-    const networkParam = searchParams.get('network');
+    const [ignoreFirst, setIgnoreFirst] = useState<boolean>(true);
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
@@ -63,8 +57,8 @@ export const useAppChain = (): {
     // returns `null` if no wallet or if network fails validation
     function getChainFromWallet(): string | null {
         let output: string | null = null;
-        if (chainNetwork) {
-            const chainAsString: string = chainNumToString(chainNetwork);
+        if (walletChainId) {
+            const chainAsString: string = chainNumToString(walletChainId);
             const isValid: boolean = validateChainId(chainAsString);
             if (isValid) output = chainAsString;
         }
@@ -80,18 +74,9 @@ export const useAppChain = (): {
     // memoized and validated chain ID from the connected wallet
     const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
-    // trigger chain switch in wallet when chain in URL changes
-    useEffect(() => {
-        if (chainInURLValidated && switchNetwork) {
-            if (activeNetwork.chainId !== chainInURLValidated) {
-                switchNetwork(parseInt(chainInURLValidated));
-            }
-        }
-    }, [switchNetwork === undefined]);
-
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
-        if (chainNetwork) {
+        if (walletChainId) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
             // if a wallet is connected, evaluate action to take
@@ -116,16 +101,22 @@ export const useAppChain = (): {
                         // first part seems unnecessary but appears to help stability
                         const { pathname } = window.location;
 
-                        const isPathENS = pathname.slice(1)?.endsWith('.eth');
-                        const isPathHex =
-                            pathname.slice(1)?.startsWith('0x') &&
-                            pathname.slice(1)?.length == 42;
-                        const isPathUserAddress = isPathENS || isPathHex;
+                        const isPathENS = pathname.slice(1)?.includes('.eth');
+                        /*  check if path is 42 character hex string 
+                            after removing the first character for /{hex} URLs 
+                            or first 9 characters for /account/{hex} */
+                        const isPathHexEoaAddress =
+                            checkEoaHexAddress(pathname);
+                        const isPathUserAddress =
+                            isPathENS || isPathHexEoaAddress;
+
                         const isPathUserXpOrLeaderboard =
                             pathname.includes('/xp');
                         const isPathPointsTabOnAccount =
                             pathname.includes('/points');
+                        const isPathOnAccount = pathname.includes('/account');
                         const isPathOnExplore = pathname.includes('/explore');
+                        const isPathOnAuctions = pathname.includes('/auctions');
 
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
@@ -135,10 +126,7 @@ export const useAppChain = (): {
                             }
                             linkGenCurrent.navigate(templateURL);
                         } else {
-                            if (chainParam || networkParam) {
-                                // navigate to index page only if "chain" or "network" in URL
-                                linkGenIndex.navigate();
-                            } else if (
+                            if (
                                 linkGenCurrent.currentPage === 'initpool' ||
                                 linkGenCurrent.currentPage === 'reposition'
                             ) {
@@ -146,13 +134,24 @@ export const useAppChain = (): {
                                     `chain=${incomingChainFromWallet}`,
                                 );
                             } else if (pathname.includes('chain')) {
-                                linkGenCurrent.navigate(
-                                    `chain=${incomingChainFromWallet}`,
-                                );
+                                if (!ignoreFirst) {
+                                    linkGenCurrent.navigate(
+                                        `chain=${incomingChainFromWallet}`,
+                                    );
+                                } else {
+                                    setIgnoreFirst(false);
+                                    if (chainInURLValidated)
+                                        switchNetwork(
+                                            parseInt(chainInURLValidated),
+                                        );
+                                    return;
+                                }
                             } else if (
                                 isPathUserAddress ||
-                                isPathUserXpOrLeaderboard ||
+                                isPathOnAccount ||
                                 isPathPointsTabOnAccount ||
+                                isPathOnAuctions ||
+                                isPathUserXpOrLeaderboard ||
                                 isPathOnExplore
                             ) {
                                 if (
@@ -167,6 +166,8 @@ export const useAppChain = (): {
                         }
                         if (activeNetwork.chainId != incomingChainFromWallet) {
                             window.location.reload();
+                        } else {
+                            setIgnoreFirst(false);
                         }
                         // update state with new validated wallet network
                         chainInWalletValidated.current =
@@ -178,7 +179,7 @@ export const useAppChain = (): {
                 chainInWalletValidated.current = incomingChainFromWallet;
             }
         }
-    }, [chainNetwork, chainInWalletValidated.current]);
+    }, [walletChainId, chainInWalletValidated.current]);
 
     const defaultChain = getDefaultChainId();
 
@@ -215,11 +216,9 @@ export const useAppChain = (): {
         const { pathname } = window.location;
 
         setActiveNetwork(network);
-        const isPathENS = pathname.slice(1)?.endsWith('.eth');
-        const isPathHex =
-            pathname.slice(1)?.startsWith('0x') &&
-            pathname.slice(1)?.length == 42;
-        const isPathUserAddress = isPathENS || isPathHex;
+        const isPathENS = pathname.slice(1)?.includes('.eth');
+        const isPathHexEoaAddress = checkEoaHexAddress(pathname);
+        const isPathUserAddress = isPathENS || isPathHexEoaAddress;
         const isPathUserXpOrLeaderboard = pathname.includes('/xp');
         const isPathOnExplore = pathname.includes('/explore');
         if (

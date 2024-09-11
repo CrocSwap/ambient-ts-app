@@ -2,16 +2,16 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     scrollETH,
     scrollUSDC,
-    // scrollDAI,
     scrollUSDT,
     scrollWBTC,
+    scrollWeETH,
     scrollWrsETH,
 } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
-import { Provider } from '@ethersproject/providers';
+import { Provider } from 'ethers';
 import { GCGO_SCROLL_URL } from '../gcgo';
-import { bigNumToFloat } from '@crocswap-libs/sdk';
+import { bigIntToFloat } from '@crocswap-libs/sdk';
 
 export const SCROLL_RPC_URL =
     import.meta.env.VITE_SCROLL_RPC_URL !== undefined
@@ -36,13 +36,16 @@ export const scrollMainnet: NetworkIF = {
     defaultPair: [scrollETH, scrollUSDC],
     topPools: [
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollWrsETH, scrollETH, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollUSDT, scrollUSDC, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollWrsETH, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollWeETH, lookupChain('0x82750').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
-        return bigNumToFloat(await provider.getGasPrice()) * 1e-9;
+        return (
+            bigIntToFloat((await provider.getFeeData()).gasPrice || BigInt(0)) *
+            1e-9
+        );
     },
 };

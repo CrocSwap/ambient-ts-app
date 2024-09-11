@@ -1,24 +1,48 @@
 import styles from './TransactionException.module.css';
 import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import TooltipComponent from '../../../../Global/TooltipComponent/TooltipComponent';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { parseErrorMessage } from '../../../../../utils/TransactionError';
+import { useSwitchNetwork } from '@web3modal/ethers/react';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
 interface propsIF {
-    txErrorMessage: string;
-    txErrorJSON: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    txError: any;
 }
 
 export default function TransactionException(props: propsIF) {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const { txErrorMessage, txErrorJSON } = props;
+    const { txError } = props;
+    const txErrorMessage = parseErrorMessage(txError);
+    let txErrorCopyable = JSON.stringify(txError);
+    if (txErrorCopyable === '{}') {
+        try {
+            txErrorCopyable = txError.toString();
+        } catch {
+            txErrorCopyable = '';
+        }
+    }
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const { tokenA, tokenB, isTokenAPrimary } = useContext(TradeDataContext);
+    const { chainData } = useContext(CrocEnvContext);
+    useEffect(() => {
+        if (txError.reason === 'sending a transaction requires a signer') {
+            location.reload();
+        } else if (
+            txErrorMessage.startsWith('network changed') ||
+            (txError.code === 'NETWORK_ERROR' && txError.event === 'changed')
+        ) {
+            console.log('caught network changed error, switching');
+            useSwitchNetwork().switchNetwork(Number(chainData.chainId));
+        }
+    }, [txError]);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -32,7 +56,7 @@ export default function TransactionException(props: propsIF) {
         'Error Message: ' + txErrorMessage?.replace('err: ', '');
 
     function handleCopyErrorMessage() {
-        copy(txErrorJSON);
+        copy(txErrorCopyable);
         openSnackbar('Error message copied to clipboard', 'info');
     }
     const suggestionToCheckWalletETHBalance = (
@@ -78,16 +102,18 @@ export default function TransactionException(props: propsIF) {
                             {formattedErrorMessage}
                         </p>
 
-                        <button
-                            className={styles.copy_error}
-                            onClick={handleCopyErrorMessage}
-                        >
-                            Copy Error Message to Clipboard
-                            <TooltipComponent
-                                title='If you have any questions or need further assistance, please open a ticket on Discord (#open-a-ticket) and paste this error message. https://discord.gg/ambient-finance'
-                                placement='bottom'
-                            />
-                        </button>
+                        {txErrorCopyable && txErrorCopyable !== '{}' && (
+                            <button
+                                className={styles.copy_error}
+                                onClick={handleCopyErrorMessage}
+                            >
+                                Copy Error Message to Clipboard
+                                <TooltipComponent
+                                    title='If you have any questions or need further assistance, please open a ticket on Discord (#open-a-ticket) and paste this error message. https://discord.gg/ambient-finance'
+                                    placement='bottom'
+                                />
+                            </button>
+                        )}
                     </div>
                     <DividerDark />
 

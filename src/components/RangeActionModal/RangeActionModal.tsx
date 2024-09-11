@@ -9,7 +9,6 @@ import {
     PositionServerIF,
     RangeModalAction,
 } from '../../ambient-utils/types';
-import { BigNumber } from 'ethers';
 import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
@@ -17,7 +16,6 @@ import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
-    parseErrorMessage,
     TransactionError,
 } from '../../utils/TransactionError';
 import { GCGO_OVERRIDE_URL, IS_LOCAL_ENV } from '../../ambient-utils/constants';
@@ -45,6 +43,7 @@ import { ReceiptContext } from '../../contexts/ReceiptContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
 import { useProcessRange } from '../../utils/hooks/useProcessRange';
 import { getPositionHash } from '../../ambient-utils/dataLayer/functions/getPositionHash';
+import SmolRefuelLink from '../Global/SmolRefuelLink/SmolRefuelLink';
 
 interface propsIF {
     type: RangeModalAction;
@@ -157,11 +156,13 @@ function RangeActionModal(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
-        BigNumber | undefined
+        bigint | undefined
     >();
 
     const liquidityToBurn = useMemo(
-        () => currentLiquidity?.mul(removalPercentage).div(100),
+        () =>
+            ((currentLiquidity || BigInt(0)) * BigInt(removalPercentage)) /
+            BigInt(100),
         [currentLiquidity, removalPercentage],
     );
 
@@ -174,11 +175,11 @@ function RangeActionModal(props: propsIF) {
                 position.user,
             );
 
-            const liqBigNum = isAmbient
-                ? (await pos.queryAmbient()).seeds
+            const liqBigInt = isAmbient
+                ? (await pos.queryAmbientPos()).liq
                 : (await pos.queryRangePos(position.bidTick, position.askTick))
                       .liq;
-            setCurrentLiquidity(liqBigNum);
+            setCurrentLiquidity(liqBigInt);
         } catch (error) {
             console.error(error);
         }
@@ -214,7 +215,6 @@ function RangeActionModal(props: propsIF) {
                             askTick: position.askTick
                                 ? position.askTick.toString()
                                 : '0',
-                            addValue: 'true',
                             positionType: position.positionType,
                         }),
                 )
@@ -264,23 +264,19 @@ function RangeActionModal(props: propsIF) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTransactionHash, setNewTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [txErrorMessage, setTxErrorMessage] = useState('');
-    const [txErrorJSON, setTxErrorJSON] = useState('');
+    const [txError, setTxError] = useState<Error>();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTransactionHash('');
-        setTxErrorCode('');
-        setTxErrorMessage('');
-        setTxErrorJSON('');
+        setTxError(undefined);
     };
 
     useEffect(() => {
         if (!showConfirmation) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txError]);
 
     const closeModal = () => {
         resetConfirmation();
@@ -320,16 +316,8 @@ function RangeActionModal(props: propsIF) {
                     addPendingTx(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
                     console.error({ error });
-                    setTxErrorCode(error?.code);
-                    setTxErrorMessage(parseErrorMessage(error));
-                    setTxErrorJSON(JSON.stringify(error));
+                    setTxError(error);
                 }
             } else {
                 try {
@@ -341,16 +329,8 @@ function RangeActionModal(props: propsIF) {
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
                     IS_LOCAL_ENV && console.debug({ error });
-                    setTxErrorCode(error?.code);
-                    setTxErrorMessage(parseErrorMessage(error));
-                    setTxErrorJSON(JSON.stringify(error));
+                    setTxError(error);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -365,15 +345,8 @@ function RangeActionModal(props: propsIF) {
                 addPendingTx(tx?.hash);
                 setNewTransactionHash(tx?.hash);
             } catch (error) {
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
+                setTxError(error);
             }
         } else {
             IS_LOCAL_ENV &&
@@ -443,7 +416,7 @@ function RangeActionModal(props: propsIF) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
         }
     };
 
@@ -500,14 +473,7 @@ function RangeActionModal(props: propsIF) {
                 }
             } catch (error) {
                 console.error({ error });
-                setTxErrorCode(error?.code);
-                setTxErrorMessage(parseErrorMessage(error));
-                setTxErrorJSON(JSON.stringify(error));
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
+                setTxError(error);
             }
         } else {
             console.error('unsupported position type for harvest');
@@ -545,7 +511,7 @@ function RangeActionModal(props: propsIF) {
             IS_LOCAL_ENV && console.debug('dispatching receipt');
             IS_LOCAL_ENV && console.debug({ receipt });
             addReceipt(JSON.stringify(receipt));
-            removePendingTx(receipt.transactionHash);
+            removePendingTx(receipt.hash);
         }
     };
 
@@ -627,13 +593,11 @@ function RangeActionModal(props: propsIF) {
                                 ? 'Reset'
                                 : 'Harvest'
                             : type === 'Remove'
-                            ? 'Remove'
-                            : 'Range'
+                              ? 'Remove'
+                              : 'Range'
                     }
                     newTransactionHash={newTransactionHash}
-                    txErrorCode={txErrorCode}
-                    txErrorMessage={txErrorMessage}
-                    txErrorJSON={txErrorJSON}
+                    txError={txError}
                     resetConfirmation={resetConfirmation}
                     sendTransaction={type === 'Remove' ? removeFn : harvestFn}
                     transactionPendingDisplayString={
@@ -648,20 +612,20 @@ function RangeActionModal(props: propsIF) {
                         !(
                             (type === 'Remove'
                                 ? liquidityToBurn === undefined ||
-                                  liquidityToBurn.isZero()
+                                  liquidityToBurn == BigInt(0)
                                 : memoIsActionReset) || showSettings
                         )
                             ? type === 'Remove'
                                 ? 'Remove Liquidity'
                                 : 'Harvest Fees'
                             : type === 'Harvest'
-                            ? 'Reset'
-                            : '...'
+                              ? 'Reset'
+                              : '...'
                     }
                     disabled={
                         (type === 'Remove' &&
                             (liquidityToBurn === undefined ||
-                                liquidityToBurn.isZero())) ||
+                                liquidityToBurn == BigInt(0))) ||
                         showSettings
                     }
                     action={type === 'Remove' ? removeFn : harvestFn}
@@ -777,8 +741,8 @@ function RangeActionModal(props: propsIF) {
                               type === 'Remove' ? 'Remove Liquidity' : 'Harvest'
                           } Settings`
                         : type === 'Remove'
-                        ? 'Remove Liquidity'
-                        : 'Harvest Confirmation'
+                          ? 'Remove Liquidity'
+                          : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
                     resetConfirmation();
@@ -789,6 +753,11 @@ function RangeActionModal(props: propsIF) {
             <div className={styles.remove_range_container}>
                 <div className={styles.main_content}>
                     {mainModalContent}
+                    {!showSettings && (
+                        <span style={{ marginRight: '20px' }}>
+                            <SmolRefuelLink />
+                        </span>
+                    )}
                     {buttonToDisplay}
                 </div>
             </div>

@@ -2,7 +2,7 @@ import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-
+import styles from './ExchangeBalance.module.css'
 import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
 import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
@@ -14,21 +14,12 @@ import {
     useEffect,
     useContext,
 } from 'react';
-import { BigNumber } from 'ethers';
 import { fetchEnsAddress } from '../../../ambient-utils/api';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
-import { FlexContainer } from '../../../styled/Common';
 
-import {
-    PortfolioControlContainer,
-    PortfolioInfoText,
-    PortfolioMotionContainer,
-    PortfolioMotionSubContainer,
-} from '../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -58,7 +49,7 @@ export default function ExchangeBalance(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { setTokenBalance } = useContext(TokenBalanceContext);
 
-    const [tokenAllowance, setTokenAllowance] = useState<string>('');
+    const [tokenAllowance, setTokenAllowance] = useState<bigint | undefined>();
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
         useState<boolean>(false);
     const [recheckTokenBalances, setRecheckTokenBalances] =
@@ -90,7 +81,7 @@ export default function ExchangeBalance(props: propsIF) {
                 .token(selectedToken.address)
                 .wallet(userAddress)
 
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     setTokenWalletBalance(bal.toString());
 
                     setTokenBalance({
@@ -103,7 +94,7 @@ export default function ExchangeBalance(props: propsIF) {
             crocEnv
                 .token(selectedToken.address)
                 .balance(userAddress)
-                .then((bal: BigNumber) => {
+                .then((bal: bigint) => {
                     setTokenDexBalance(bal.toString());
 
                     setTokenBalance({
@@ -128,7 +119,7 @@ export default function ExchangeBalance(props: propsIF) {
                     const allowance = await crocEnv
                         .token(selectedTokenAddress)
                         .allowance(userAddress);
-                    setTokenAllowance(allowance.toString());
+                    setTokenAllowance(allowance);
                 } catch (err) {
                     console.warn(err);
                 }
@@ -146,9 +137,8 @@ export default function ExchangeBalance(props: propsIF) {
     useEffect(() => {
         (async () => {
             if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(
-                    sendToAddress,
-                );
+                const newResolvedAddress =
+                    await mainnetProvider.resolveName(sendToAddress);
 
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
@@ -251,7 +241,7 @@ export default function ExchangeBalance(props: propsIF) {
     ];
 
     const exchangeControl = (
-        <PortfolioControlContainer
+        <div className={styles.portfolio_control_container}
             id='portfolio_sidebar_toggle'
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
@@ -263,41 +253,17 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-        </PortfolioControlContainer>
+        </div>
     );
 
-    const columnView = useMediaQuery('(max-width: 1200px)');
 
     return (
         <>
-            <PortfolioMotionContainer
-                animate={
-                    columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
-                }
-                fullWidth
-                flexDirection='column'
-                alignItems='center'
-                background='dark1'
-                rounded
-                fullHeight
-                xl={{ maxWidth: '400px' }}
-            >
-                <PortfolioMotionSubContainer
-                    fullHeight
-                    fullWidth
-                    alignItems='center'
-                    rounded
-                    id='subcont'
-                >
-                    <FlexContainer
-                        fullHeight
-                        fullWidth
-                        rounded
-                        background='dark1'
-                        justifyContent='center'
-                        position='relative'
-                    >
-                        {(!fullLayoutActive || columnView || isModalView) && (
+         
+            <div className={styles.portfolio_motion_container}>
+                <div className={styles.portfolio_motion_sub_container} id='subcont'>
+                    <div className={styles.tab_component_container}>
+                        {(!fullLayoutActive  || isModalView) && (
                             <TabComponent
                                 data={accountData}
                                 rightTabOptions={false}
@@ -306,16 +272,17 @@ export default function ExchangeBalance(props: propsIF) {
                             />
                         )}
                         {!isModalView && exchangeControl}
-                    </FlexContainer>
-                </PortfolioMotionSubContainer>
-                {(!fullLayoutActive || columnView || isModalView) && (
-                    <PortfolioInfoText>
+                    </div>
+                </div>
+                {(!fullLayoutActive  || isModalView) && (
+                    <p className={styles.portfolio_info_text}>
                         Collateral deposited into the Ambient Finance exchange
                         can be traded at lower gas costs and withdrawn at any
                         time.
-                    </PortfolioInfoText>
+                    </p>
                 )}
-            </PortfolioMotionContainer>
+                </div>
+           
         </>
     );
 }

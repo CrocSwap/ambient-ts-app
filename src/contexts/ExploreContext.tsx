@@ -22,7 +22,10 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
-import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
+import {
+    useTokenStatsIF,
+    useTokenStats,
+} from '../pages/platformAmbient/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {
@@ -49,6 +52,7 @@ export interface PoolDataIF extends PoolIF {
     tvlStr: string;
     volume: number;
     volumeStr: string;
+    apr: number;
     priceChange: number;
     priceChangeStr: string;
     moneyness: {
@@ -146,6 +150,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
+        // spot price for pool
+        const spotPrice: number = await cachedQuerySpotPrice(
+            crocEnv,
+            pool.base.address,
+            pool.quote.address,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+
         const poolStatsNow = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
@@ -195,8 +208,12 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-        const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+        const nowPrice = spotPrice;
         const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
+
+        const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
+        const feesTotal24hAgo = expandedPoolStats24hAgo?.feesTotalUsd;
+        const feesChange24h = feesTotalNow - feesTotal24hAgo;
 
         const priceChangeRaw =
             ydayPrice && nowPrice && ydayPrice > 0 && nowPrice > 0
@@ -218,6 +235,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 tvlStr: '0',
                 volume: 0,
                 volumeStr: '0',
+                apr: 0,
                 priceChange: 0,
                 priceChangeStr: '0',
                 moneyness: {
@@ -244,6 +262,11 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   prefix: '$',
               })
             : '';
+        // format fees as apr, use 0 as backup value
+        const aprNum: number =
+            feesChange24h && expandedPoolStatsNow.tvlTotalUsd
+                ? (feesChange24h / expandedPoolStatsNow.tvlTotalUsd) * 100 * 365
+                : 0;
         // human readable price change over last 24 hours
         let priceChangePercent: string;
 
@@ -251,7 +274,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
-                '+ ' +
+                '+' +
                 (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -267,14 +290,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = 'No Change';
         }
 
-        // spot price for pool
-        const spotPrice: number = await cachedQuerySpotPrice(
-            crocEnv,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
             ? 1 /
@@ -316,6 +331,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             tvlStr: tvlDisplay,
             volume: volumeChange24h,
             volumeStr: volumeDisplay,
+            apr: aprNum,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
             moneyness: {

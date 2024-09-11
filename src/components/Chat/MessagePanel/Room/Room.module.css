@@ -86,10 +86,11 @@
     background: var(--dark3);
     padding: 1px;
     border-radius: var(--border-radius);
+    z-index: 100;
 }
 
 .dropdown_btn {
-    padding: 2px 4px;
+    padding: 4px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
     color: var(--text1);
@@ -101,15 +102,15 @@
 }
 
 .dropdown .dropdown_content {
-    position: absolute;
-    top: 110%;
-    padding: 15px;
-    background: white;
+    background: var(--dark3);
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
     color: var(--text2);
     width: 95%;
-    text-align: center;
+    max-height: 140px;
+    overflow-y: auto; 
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
 .star_icon {
@@ -166,4 +167,121 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
+}
+
+.only_mentions_toggle_wrapper{
+    display: inline-block;
+    vertical-align: bottom ;
+    margin-left: .4rem;
+    float: right;
+}
+.only_mentions_wrapper{
+    /* background: #34327e; */
+    opacity: 1;
+    animation: opaAnim 0.3s .3s ease-in-out forwards;
+    /* box-shadow: 0px 0px 12px rgba(205, 193, 255, 0.2); */
+    border-top: 0.5px solid var(--accent1);
+    /* border-left: 0.5px solid var(--accent1);
+    border-right: 0.5px solid var(--accent1); */
+    /* border-radius: .2rem .2rem 0 0; */
+    padding: .4rem .3rem;
+    font-size: .8rem;
+    display: block;
+    width: 100%;
+    border-top: 1px solid rgba(205, 193, 255, 0.2);
+    font-size: .82rem;
+    margin-top: .4rem;
+    /* text-align: right; */
+    border-top: none;
+    padding-top: 0.5rem;
+    box-shadow: inset 0px 4px 10px 6px rgba(0, 0, 0, 0.16);
+    background: #242b3f;
+    display: inline-block;
+}
+
+.only_mentions_text{
+    transition: ease-in-out .3s;
+    opacity: .5;
+}
+
+.only_mentions_text_active{
+    opacity: 1;
+}
+
+.noti_dot{
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 2rem;
+    background: var(--accent1);
+    margin-left: .1rem;
+}
+
+.ment_text_info_wrapper{
+    float: right;
+    text-align: right;
+    margin-right: .4rem;
+    display: inline-block;
+    transition: all .2s ease-in-out;
+    opacity: .5;
+}
+
+.opa_full{
+    opacity: 1;
+}
+
+
+.m_visible{
+    display: none !important;
+}
+
+
+@media only screen and (max-width: 600px){
+    .dropdown {
+        width: 100%;
+        margin: 8px 0;
+        padding: 4px;
+        text-align: center;
+    }
+
+
+    .dropdown_content{
+        position: absolute;
+    }
+
+    .current_pool{
+        display: none;
+    }
+
+    .m_hidden{
+        display: none !important;
+    }
+
+    .m_visible{
+        display: inline-block !important;
+    }
+
+    .dd_icon{
+        vertical-align: middle;
+    }
+
+    .dropdow_content{
+        position: absolute;
+        z-index: 99;
+        background: var(--dark3);
+        left: 0;
+        width: 100%;
+
+    }
+
+    .dropdown_item  {
+        text-align: center;
+        padding: .7rem;
+        font-size: .9rem;
+    }
+
+    .room_name_wrapper{
+        margin-left: -1rem;
+    }
+
 }

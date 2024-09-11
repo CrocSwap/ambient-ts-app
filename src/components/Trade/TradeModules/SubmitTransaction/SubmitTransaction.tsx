@@ -18,6 +18,10 @@ import {
 import { FlexContainer } from '../../../../styled/Common';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
+import {
+    isTransactionDeniedError,
+    parseErrorMessage,
+} from '../../../../utils/TransactionError';
 
 interface propsIF {
     type:
@@ -30,9 +34,7 @@ interface propsIF {
         | 'Claim'
         | 'Reset';
     newTransactionHash: string;
-    txErrorCode: string;
-    txErrorMessage: string;
-    txErrorJSON: string;
+    txError: Error | undefined;
     resetConfirmation: () => void;
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
@@ -42,9 +44,7 @@ export default function SubmitTransaction(props: propsIF) {
     const {
         type,
         newTransactionHash,
-        txErrorCode,
-        txErrorMessage,
-        txErrorJSON,
+        txError,
         resetConfirmation,
         sendTransaction,
         transactionPendingDisplayString,
@@ -54,8 +54,9 @@ export default function SubmitTransaction(props: propsIF) {
     const { pendingTransactions, sessionReceipts } = useContext(ReceiptContext);
 
     const isTransactionApproved = newTransactionHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+    const isTransactionDenied = isTransactionDeniedError(txError);
+    const isTransactionException =
+        txError !== undefined && !isTransactionDenied;
     const isTransactionPending = !(
         isTransactionApproved ||
         isTransactionDenied ||
@@ -87,12 +88,7 @@ export default function SubmitTransaction(props: propsIF) {
             initiateTx={sendTransaction}
         />
     );
-    const transactionException = (
-        <TransactionException
-            txErrorMessage={txErrorMessage}
-            txErrorJSON={txErrorJSON}
-        />
-    );
+    const transactionException = <TransactionException txError={txError} />;
 
     const [isTransactionFailed, setIsTransactionFailed] =
         useState<boolean>(false);
@@ -103,7 +99,7 @@ export default function SubmitTransaction(props: propsIF) {
             sessionReceipts.length > 0 ? JSON.parse(sessionReceipts[0]) : null;
         if (
             lastReceipt?.status === 0 &&
-            lastReceipt.transactionHash === newTransactionHash
+            lastReceipt.hash === newTransactionHash
         ) {
             setIsTransactionFailed(true);
         } else {
@@ -128,19 +124,19 @@ export default function SubmitTransaction(props: propsIF) {
     const confirmationDisplay = isTransactionException
         ? transactionException
         : isTransactionDenied
-        ? transactionDenied
-        : isTransactionApproved
-        ? transactionSubmitted
-        : isTransactionFailed
-        ? transactionFailed
-        : confirmSendMessage;
+          ? transactionDenied
+          : isTransactionApproved
+            ? transactionSubmitted
+            : isTransactionFailed
+              ? transactionFailed
+              : confirmSendMessage;
 
     const buttonColor =
         isTransactionException || isTransactionDenied || isTransactionFailed
             ? 'var(--negative)'
             : isTransactionApproved
-            ? 'var(--positive)'
-            : 'var(--accent1)';
+              ? 'var(--positive)'
+              : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
@@ -153,18 +149,18 @@ export default function SubmitTransaction(props: propsIF) {
     );
 
     const buttonText = isTransactionException
-        ? txErrorMessage?.toLowerCase().includes('gas')
+        ? parseErrorMessage(txError).toLowerCase().includes('gas')
             ? 'Wallet Balance Insufficient to Cover Gas'
             : 'Transaction Exception'
         : isTransactionDenied
-        ? 'Transaction Denied'
-        : isTransactionFailed
-        ? 'Transaction Failed'
-        : isTransactionConfirmed
-        ? 'Transaction Confirmed'
-        : isTransactionApproved
-        ? 'Transaction Submitted'
-        : transactionPendingDisplayString;
+          ? 'Transaction Denied'
+          : isTransactionFailed
+            ? 'Transaction Failed'
+            : isTransactionConfirmed
+              ? 'Transaction Confirmed'
+              : isTransactionApproved
+                ? 'Transaction Submitted'
+                : transactionPendingDisplayString;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 

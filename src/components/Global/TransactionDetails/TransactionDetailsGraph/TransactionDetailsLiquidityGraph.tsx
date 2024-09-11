@@ -20,13 +20,13 @@ import {
     clipCanvas,
     fillLiqInfinity,
     setCanvasResolution,
-} from '../../../../pages/Chart/ChartUtils/chartUtils';
+} from '../../../../pages/platformAmbient/Chart/ChartUtils/chartUtils';
 import {
     createAreaSeriesLiquidity,
     getAskPriceValue,
     getBidPriceValue,
-} from '../../../../pages/Chart/Liquidity/LiquiditySeries/AreaSeries';
-import { createLiquidityLineSeries } from '../../../../pages/Chart/Liquidity/LiquiditySeries/LineSeries';
+} from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/AreaSeries';
+import { createLiquidityLineSeries } from '../../../../pages/platformAmbient/Chart/Liquidity/LiquiditySeries/LineSeries';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
 interface TransactionDetailsLiquidityGraphIF {
     tx: TransactionIF;
@@ -40,6 +40,7 @@ interface TransactionDetailsLiquidityGraphIF {
     lastCandleData: CandleDataIF | undefined;
     setIsDataLoading: Dispatch<React.SetStateAction<boolean>>;
     chartThemeColors: ChartThemeIF | undefined;
+    currentPoolPriceTick?: number | undefined;
 }
 
 type liquidityChartData = {
@@ -50,7 +51,8 @@ type liquidityChartData = {
 export default function TransactionDetailsLiquidityGraph(
     props: TransactionDetailsLiquidityGraphIF,
 ) {
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice, cachedQuerySpotTick } =
+        useContext(CachedDataContext);
 
     const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
@@ -153,6 +155,8 @@ export default function TransactionDetailsLiquidityGraph(
                 crocEnv,
                 activeNetwork.graphCacheUrl,
                 cachedFetchTokenPrice,
+                cachedQuerySpotTick,
+                props.currentPoolPriceTick,
             ).then((liqCurve) => {
                 if (liqCurve) {
                     const liqAsk: LiquidityRangeIF[] = [];

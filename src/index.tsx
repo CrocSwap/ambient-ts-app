@@ -6,16 +6,21 @@ import App from './App/App';
 import './i18n/config';
 import { StyleSheetManager } from 'styled-components';
 import isValidProp from '@emotion/is-prop-valid';
-import { createWeb3Modal, defaultConfig } from '@web3modal/ethers5/react';
+import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
+    brand,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
 } from './ambient-utils/constants';
-import scrollLogo from './assets/images/networks/scroll.png';
+import scrollLogo from './assets/images/networks/scroll_logo.webp';
 import blastLogo from './assets/images/networks/blast_logo.png';
+import blastSepoliaLogo from './assets/images/networks/blast_sepolia_logo.webp';
+import scrollSepoliaLogo from './assets/images/networks/scroll_sepolia_logo.webp';
+import sepoliaLogo from './assets/images/networks/sepolia_logo.webp';
+import ethLogo from './assets/images/networks/ethereum_logo.svg';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -47,8 +52,10 @@ const metadata = {
 
 const ethersConfig = defaultConfig({
     metadata,
-    defaultChainId: 1,
-    // enableEmail: true,
+    defaultChainId: 534352,
+    enableEmail: false,
+    rpcUrl: ' ',
+    enableCoinbase: true,
 });
 
 const modal = createWeb3Modal({
@@ -56,20 +63,28 @@ const modal = createWeb3Modal({
     chains: Object.values(supportedNetworks).map((network) => network.chain),
     projectId: WALLETCONNECT_PROJECT_ID as string,
     chainImages: {
+        1: ethLogo,
         81457: blastLogo,
-        168587773: blastLogo,
-        534351: scrollLogo,
+        168587773: blastSepoliaLogo,
+        534351: scrollSepoliaLogo,
         534352: scrollLogo,
+        11155111: sepoliaLogo,
     },
     termsConditionsUrl: '/terms',
     privacyPolicyUrl: '/privacy',
     enableAnalytics: false,
     themeVariables: {
         '--w3m-color-mix': 'var(--dark2)',
-        '--w3m-color-mix-strength': 40,
+        '--w3m-color-mix-strength': 10,
         '--w3m-font-family': 'var(--font-family)',
-        '--w3m-accent': 'var(--accent1)',
+        '--w3m-accent': brand === 'futa' ? '#0CCDFF' : 'var(--accent1)',
     },
+    featuredWalletIds: [
+        'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+        'e7c4d26541a7fd84dbdfa9922d3ad21e936e13a7a0e44385d44f006139e44d3b', // WalletConnect
+        '8a0ee50d1f22f6651afcae7eb4253e52a3310b90af5daef78a8c4929a9bb99d4', // Binance
+        '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
+    ],
 });
 
 modal.subscribeEvents((event) => {

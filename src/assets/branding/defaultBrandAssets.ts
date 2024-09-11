@@ -5,27 +5,8 @@ import blastLogo from '../../assets/images/logos/blast_logo.svg';
 
 export const defaultBrandAssets: brandIF = {
     networks: {
-        // ethereum mainnet
-        '0x1': {
-            color: 'purple_dark',
-            hero: [{ content: 'ambient', processAs: 'text' }],
-        },
-        // ethereum sepolia
-        '0xaa36a7': {
-            color: 'purple_dark',
-            hero: [{ content: 'ambient', processAs: 'text' }],
-        },
         // scroll mainnet
         '0x82750': {
-            color: 'purple_dark',
-            hero: [
-                { content: 'ambient', processAs: 'text' },
-                { content: '×', processAs: 'separator' },
-                { content: scrollLogo, processAs: 'image' },
-            ],
-        },
-        // scroll sepolia
-        '0x8274f': {
             color: 'purple_dark',
             hero: [
                 { content: 'ambient', processAs: 'text' },
@@ -42,7 +23,26 @@ export const defaultBrandAssets: brandIF = {
                 { content: blastLogo, processAs: 'image' },
             ],
         },
-        // blast logo
+        // ethereum mainnet
+        '0x1': {
+            color: 'purple_dark',
+            hero: [{ content: 'ambient', processAs: 'text' }],
+        },
+        // ethereum sepolia
+        '0xaa36a7': {
+            color: 'purple_dark',
+            hero: [{ content: 'ambient', processAs: 'text' }],
+        },
+        // scroll sepolia
+        '0x8274f': {
+            color: 'purple_dark',
+            hero: [
+                { content: 'ambient', processAs: 'text' },
+                { content: '×', processAs: 'separator' },
+                { content: scrollLogo, processAs: 'image' },
+            ],
+        },
+        // blast sepolia
         '0xa0c71fd': {
             color: 'purple_dark',
             hero: [
@@ -54,7 +54,7 @@ export const defaultBrandAssets: brandIF = {
     },
     platformName: 'ambient',
     fontSet: 'ambient',
-    showPoints: true,
+    showPoints: false,
     showDexStats: true,
     headerImage: large as string,
     includeCanto: true,

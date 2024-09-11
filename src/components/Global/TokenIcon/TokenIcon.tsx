@@ -82,18 +82,22 @@ function TokenIcon(props: propsIF) {
     // this fixes a bug when the app sometimes gets an empty string for URI src
     // sometimes this happens post-load for still undetermined reasons
     useEffect(() => {
-        setFetchError(false);
+        if (src) setFetchError(false);
     }, [src]);
 
     // fn to get a character to use in the `<NoTokenIcon />` element
-    function getTokenCharacter(tkn: TokenIF | undefined): string {
+    function getTokenCharacter(tkn: TokenIF | undefined, alt?: string): string {
         const DEFAULT_OUTPUT = '';
         // early return if no token data object is available
-        if (!tkn) return DEFAULT_OUTPUT;
+        if (!tkn && !alt) return DEFAULT_OUTPUT;
         // regex to identify whether a character is alphanumeric (case-insensitive)
         const alphanumericRegex = /[a-zA-Z0-9]/;
         // array of strings to use to isolate a character in order of preference
-        const characterSources: string[] = [tkn.symbol, tkn.name];
+        const characterSources: string[] = tkn
+            ? [tkn.symbol, tkn.name]
+            : alt
+              ? [alt]
+              : [];
         // join sources into a string for easier processing
         const characterSourcesAsStr: string = characterSources.join('');
         // iterate over characters in string to find the first alphanumeric
@@ -147,12 +151,9 @@ function TokenIcon(props: propsIF) {
 
     const noTokenIcon: JSX.Element = (
         <NoTokenIcon
-            tokenInitial={
-                token
-                    ? getTokenCharacter(token)
-                    : alt?.charAt(0).toUpperCase() || ''
-            }
+            tokenInitial={getTokenCharacter(token, alt) || ''}
             width={getIconWidth(size)}
+            isFutaList={token?.fromList?.includes('futa')}
         />
     );
 
