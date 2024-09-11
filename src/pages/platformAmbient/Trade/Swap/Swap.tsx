@@ -130,8 +130,8 @@ function Swap(props: propsIF) {
         try {
             return sellQtyString.includes('e')
                 ? toDisplayQty(
-                      fromDisplayQty(sellQtyString || '0', tokenB.decimals),
-                      tokenB.decimals,
+                      fromDisplayQty(sellQtyString || '0', tokenA.decimals),
+                      tokenA.decimals,
                   )
                 : sellQtyString;
         } catch (error) {
