@@ -23,7 +23,6 @@ function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
-    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { activeMobileComponent, setActiveMobileComponent } =
         useContext(TradeTableContext);
@@ -104,7 +103,9 @@ function SwapFuta() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer noPadding noStyle={smallScreen}>
+                <ContentContainer
+                // noPadding noStyle={smallScreen}
+                >
                     <div>
                         <Divider count={2} />
                         <Swap isOnTradeRoute />

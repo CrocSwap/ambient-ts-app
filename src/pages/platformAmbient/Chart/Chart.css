@@ -335,11 +335,11 @@ div.tooltip {
     }
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 768px) {
 
-    .main_layout_chart{
-        padding-bottom: 20px;
-    }
+    /* .main_layout_chart{
+        padding: 0 1rem;
+    } */
     .popup {
         font-size: medium;
         width: 80%;

@@ -78,20 +78,6 @@ export const HoverableIcon = styled.svg`
     }
 `;
 
-export const TradeModuleHeaderContainer = styled(FlexContainer).attrs({
-    as: 'header',
-})`
-    & svg {
-        color: var(--text2);
-        height: 20px;
-        width: 20px;
-    }
-
-    & svg:hover {
-        color: var(--accent1) !important;
-    }
-`;
-
 export const AdvancedModeSection = styled(FlexContainer)<{ disabled: boolean }>`
     ${({ disabled }) =>
         disabled &&
@@ -376,8 +362,12 @@ export const ExtraDetailsContainer = styled.div`
 `;
 
 export const ModalContainer = styled(FlexContainer)`
-    width: 400px;
+    width: 100%;
     border-radius: var(--border-radius);
+
+    @media (min-width: 500px) {
+        width: 400px;
+    }
 `;
 
 export const ConfirmationDetailsContainer = styled(FlexContainer)`

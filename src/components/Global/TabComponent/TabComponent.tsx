@@ -211,7 +211,6 @@ export default function TabComponent(props: TabPropsIF) {
         cloneElement(rightTabOptions as ReactElement<any>, {
             currentTab: selectedTab.label,
         });
-    const desktopView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
         <FlexContainer alignItems='center' justifyContent='space-between'>
@@ -245,7 +244,7 @@ export default function TabComponent(props: TabPropsIF) {
                             ? handleMobileMenuIcon(item.icon, item.label)
                             : null}
 
-                        {desktopView && (
+                        {/* {desktopView && ( */}
                             <button
                                 className={styles.label_button}
                                 role='tab'
@@ -254,7 +253,7 @@ export default function TabComponent(props: TabPropsIF) {
                             >
                                 {item.label}
                             </button>
-                        )}
+                        {/* )} */}
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
@@ -302,7 +301,7 @@ export default function TabComponent(props: TabPropsIF) {
                     {item.icon
                         ? handleMobileMenuIcon(item.icon, item.label)
                         : null}
-                    {desktopView && (
+                    {/* {desktopView && ( */}
                         <button
                             className={`${styles.item_label} ${
                                 item.label === selectedTab.label
@@ -315,7 +314,7 @@ export default function TabComponent(props: TabPropsIF) {
                             {' '}
                             {item.label}
                         </button>
-                    )}
+                    {/* // )} */}
 
                     {item.label === selectedTab.label && (
                         <motion.div

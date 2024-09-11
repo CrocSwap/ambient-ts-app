@@ -11,7 +11,6 @@ import {
 // START: Import Local Files
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
-import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import {
@@ -20,22 +19,23 @@ import {
 } from '../../../../ambient-utils/constants';
 import { getLocalStorageItem } from '../../../../ambient-utils/dataLayer';
 import { CandleDataIF } from '../../../../ambient-utils/types';
-import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
 import { TutorialButton } from '../../../../styled/Components/Tutorial';
-import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './TradeCharts.module.css';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { BrandContext } from '../../../../contexts/BrandContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import TradeCandleStickChart from './TradeCandleStickChart';
-import CurveDepth from './TradeChartsComponents/CurveDepth';
-import TimeFrame from './TradeChartsComponents/TimeFrame';
-import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
+import TradeCandleStickChart from '../TradeCandleStickChart/TradeCandleStickChart';
+import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import Modal from '../../../../components/Global/Modal/Modal';
+import { BrandContext } from '../../../../contexts/BrandContext';
+import CurveDepth from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/CurveDepth';
+import OrderHistoryDisplay from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/OrderHistoryDisplay';
+import TimeFrame from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/TimeFrame';
+import VolumeTVLFee from '../../../platformAmbient/Trade/TradeCharts/TradeChartsComponents/VolumeTVLFee';
+import { TradeChartsHeader } from '../../../platformAmbient/Trade/TradeCharts/TradeChartsHeader/TradeChartsHeader';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -312,11 +312,11 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            {!['futa'].includes(platformName) && (
-                <div>
-                    <CurveDepth overlayMethods={chartSettings.poolOverlay} />
-                </div>
-            )}
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Curve:</p>
+
+                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
+            </div>
             <div className={styles.chart_overlay_container}>
                 {resetAndRescaleDisplay}
             </div>
