@@ -28,16 +28,15 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--navbar-border);
-    ${({ fixed }) => fixed && fixedStyles}
+    ${({ fixed }) => fixed && fixedStyles};
+     padding: 0 1rem;
 
     @media only screen and (min-width: 800px) {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         padding: 0 16px;
     }
-    @media only screen and (max-width: 600px) {
-        padding: 0 1rem;
-    }
+    
 `;
 
 // Define the styles for LogoContainer

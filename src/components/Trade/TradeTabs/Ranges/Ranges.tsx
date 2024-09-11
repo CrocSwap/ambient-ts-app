@@ -169,7 +169,7 @@ function Ranges(props: propsIF) {
         useSortedPositions('time', rangeData);
 
     // TODO: Use these as media width constants
-    const isSmallScreen = useMediaQuery('(max-width: 700px)');
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     const isLargeScreen = useMediaQuery('(min-width: 2000px)');
     const isLargeScreenAccount = useMediaQuery('(min-width: 1600px)');
 
@@ -703,72 +703,7 @@ function Ranges(props: propsIF) {
             );
         });
 
-    // const rangeDataOrNull = !shouldDisplayNoTableData ? (
-    //     <div>
-    //         <ul
-    //             ref={listRef}
-    //             id='current_row_scroll'
-    //             style={
-    //                 isSmallScreen
-    //                     ? isAccountView
-    //                         ? { maxHeight: 'calc(100svh - 310px)' }
-    //                         : { height: 'calc(100svh - 330px)' }
-    //                     : undefined
-    //             }
-    //         >
-    //             {!isAccountView &&
-    //                 pendingPositionsToDisplayPlaceholder.length > 0 &&
-    //                 pendingPositionsToDisplayPlaceholder
-    //                     .reverse()
-    //                     .map((tx, idx) => (
-    //                         <RangesRowPlaceholder
-    //                             key={idx}
-    //                             transaction={{
-    //                                 hash: tx.txHash,
-    //                                 side: tx.txAction,
-    //                                 type: tx.txType,
-    //                                 details: tx.txDetails,
-    //                             }}
-    //                             tableView={tableView}
-    //                         />
-    //                     ))}
-
-    //             <TableRows
-    //                 type='Range'
-    //                 data={unindexedUpdatedPositions.concat(
-    //                     filteredSortedPositions
-    //                         .filter(
-    //                             (pos) =>
-    //                                 // remove existing row for adds
-    //                                 !unindexedUpdatedPositionHashes.includes(
-    //                                     pos.positionId,
-    //                                 ),
-    //                         )
-    //                         // only show empty positions on account view
-    //                         .filter(
-    //                             (pos) =>
-    //                                 (isAccountView &&
-    //                                     !hideEmptyPositionsOnAccount) ||
-    //                                 pos.positionLiq !== 0,
-    //                         ),
-    //                 )}
-    //                 fullData={unindexedUpdatedPositions.concat(
-    //                     filteredSortedPositions,
-    //                 )}
-    //                 isAccountView={isAccountView}
-    //                 tableView={tableView}
-    //             />
-    //         </ul>
-
-    //     </div>
-    // ) : (
-    //     <NoTableData
-    //         type='liquidity'
-    //         isAccountView={isAccountView}
-    //         activeUserPositionsLength={activeUserPositionsLength}
-    //         activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
-    //     />
-    // );
+   
 
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
@@ -807,17 +742,11 @@ function Ranges(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewRanges}>
+        <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%'}}>
             <ul
                 ref={listRef}
-                id='current_row_scroll'
-                style={
-                    isSmallScreen
-                        ? isAccountView
-                            ? { maxHeight: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 330px)' }
-                        : undefined
-                }
+                // id='current_row_scroll'
+                style={{height: '100%'}}
             >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&
@@ -865,6 +794,18 @@ function Ranges(props: propsIF) {
         </div>
     );
 
+    if (isSmallScreen) return (
+        <div style={{  overflow: 'scroll', height:  '100%'}}>
+            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
+            {headerColumnsDisplay}
+
+            </div>
+            <div style={{overflowY: 'scroll', height: '100%'}}>
+                
+            {rangeDataOrNull}   
+</div>
+        </div>
+    )
     return (
         <FlexContainer
             flexDirection='column'

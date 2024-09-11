@@ -17,19 +17,11 @@ interface propsIF {
     samplePool: PoolIF | undefined;
     backupPool: GCServerPoolIF | undefined;
     goToMarket: (tknA: string, tknB: string) => void;
-    
 }
 
 export default function TokenRow(props: propsIF) {
-    const {
-        token,
-        tokenMeta,
-        samplePool,
-        goToMarket,
-        backupPool,
-    } = props;
+    const { token, tokenMeta, samplePool, goToMarket, backupPool } = props;
 
-    
     const desktopView = useMediaQuery('(min-width: 768px)');
 
     const handleClick = (

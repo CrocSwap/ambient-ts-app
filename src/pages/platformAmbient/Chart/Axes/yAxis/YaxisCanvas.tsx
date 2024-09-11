@@ -14,7 +14,6 @@ import {
     formatPoolPriceAxis,
 } from '../../../../../utils/numbers';
 import { createRectLabel } from './YaxisUtils';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 import {
     diffHashSig,
     diffHashSigScaleData,
@@ -36,6 +35,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import useDollarPrice from '../../ChartUtils/getDollarPrice';
 import { BrandContext } from '../../../../../contexts/BrandContext';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;

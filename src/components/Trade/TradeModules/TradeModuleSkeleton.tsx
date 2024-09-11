@@ -18,8 +18,8 @@ import Button from '../../Form/Button';
 import TradeLinks from './TradeLinks';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { brand } from '../../../ambient-utils/constants';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
@@ -81,6 +81,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         return !tokens.verify(tokenB.address);
     }, [tokenB.address, tokens]);
 
+    const smallScreen = useMediaQuery('(max-width: 768px)');
+
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         // !Important   any changes to verbiage in this code block must be approved
@@ -109,7 +111,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
-    const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const poolLinkParams: poolParamsIF = {
         chain: chainId,
@@ -131,12 +132,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     </TutorialButton>
                 </FlexContainer>
             )}{' '}
-            <ContentContainer
-                isOnTradeRoute={!isSwapPage}
-                noPadding={smallScreen && !isSwapPage}
-            >
+            <ContentContainer isOnTradeRoute={!isSwapPage}>
                 {header}
-                {!isSwapPage && !isFuta && (
+                {!isSwapPage && !smallScreen && !isFuta && (
                     <TradeLinks
                         chainId={chainId}
                         tokenA={tokenA}

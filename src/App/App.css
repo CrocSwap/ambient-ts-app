@@ -359,10 +359,13 @@ input[type='number'] {
         overflow-y: auto;
         overflow-x: hidden;
         height: calc(100vh - 56px);
-
+        
         background: var(--dark1);
+       
     }
     .content-container-trade {
         background: var(--dark1);
     }
 }
+
+

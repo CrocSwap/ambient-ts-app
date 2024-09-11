@@ -330,8 +330,6 @@ function Portfolio(props: PortfolioPropsIF) {
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
-
-
     const notConnectedContent = (
         <FlexContainer
             fullWidth
@@ -371,7 +369,7 @@ function Portfolio(props: PortfolioPropsIF) {
         connectedAccountActive: connectedAccountActive,
         resolvedUserXp: resolvedUserXp,
         showTabsAndNotExchange: showTabsAndNotExchange,
-        setShowTabsAndNotExchange: setShowTabsAndNotExchange
+        setShowTabsAndNotExchange: setShowTabsAndNotExchange,
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -397,8 +395,6 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
     };
 
-    
-
     const contentToRenderOnMobile = (() => {
         switch (true) {
             case (!showTabsAndNotExchange && isUserConnected) ||
@@ -418,28 +414,27 @@ function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         const calculateHeight = () => {
-          const totalHeight = window.innerHeight;
-          const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
-          setAvailableHeight(totalHeight - heightToSubtract);
+            const totalHeight = window.innerHeight;
+            const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+            setAvailableHeight(totalHeight - heightToSubtract);
         };
-    
+
         calculateHeight(); // Calculate initial height
         window.addEventListener('resize', calculateHeight);
-    
+
         return () => window.removeEventListener('resize', calculateHeight);
     }, []);
-    
+
     const bannerHeight = 115;
     const contentHeight = availableHeight - bannerHeight;
 
-
-
     const mobilePortfolio = (
-        <div className={styles.mobile_layout} style={{ height: `${availableHeight}px` }}>
-        
+        <div
+            className={styles.mobile_layout}
+            style={{ height: `${availableHeight}px` }}
+        >
             <PortfolioBanner {...portfolioBannerProps} />
             <div style={{ height: `${contentHeight}px`, overflowY: 'hidden' }}>
-
                 {contentToRenderOnMobile}
             </div>
         </div>
@@ -490,8 +485,6 @@ function Portfolio(props: PortfolioPropsIF) {
     // );
 
     // const yes = false
-
- 
 
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
