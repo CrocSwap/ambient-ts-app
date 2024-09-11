@@ -1,8 +1,8 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import { TutorialStepIF } from '../../Chat/ChatIFs';
-import styles from './TutorialComponent.module.css';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { TutorialStepExternalComponent, TutorialStepIF } from '../../Chat/ChatIFs';
+import styles from './TutorialComponent.module.css';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
@@ -12,6 +12,7 @@ interface propsIF {
     showSteps?: boolean;
     initialStep?: number;
     onComplete?: () => void;
+    externalComponents?: Map<string, TutorialStepExternalComponent>
 }
 
 function TutorialComponent(props: propsIF) {
@@ -43,6 +44,8 @@ function TutorialComponent(props: propsIF) {
     const [onCompleteActions, setOnCompleteActions] = useState<string[]>([]);
     const onCompleteActionsRef = useRef<string[]>([]);
     onCompleteActionsRef.current = onCompleteActions;
+
+    const [stepExternalComponent, setStepExternalComponent] = useState<TutorialStepExternalComponent>();
 
     useEffect(() => {
         if (hasTriggeredRef.current) return;
@@ -285,6 +288,12 @@ function TutorialComponent(props: propsIF) {
             focusOverlay.current.style.display = 'none';
         }
 
+        if(step && step.element && props.externalComponents && props.externalComponents.get(step.element.toString()) !== undefined){
+            setStepExternalComponent(props.externalComponents.get(step.element.toString()));
+        }else{
+            setStepExternalComponent(undefined);
+        }
+
         setTimeout(() => {
             handleFocusOverlay();
             handleTooltip();
@@ -380,10 +389,20 @@ function TutorialComponent(props: propsIF) {
                     </div>
                     <div className={styles.tooltip_content}>{step.intro}</div>  
 
+                    {stepExternalComponent && (stepExternalComponent.placement === 'nav-before' || !stepExternalComponent.placement) &&
+                        (<>{stepExternalComponent.component}</>)
+                    }
                     <div className={styles.tooltip_buttons_wrapper}>
                         {navButtons(true)}
                         {renderNavigate()}
+                        {stepExternalComponent && stepExternalComponent.placement === 'nav-end' &&
+                            (<>{stepExternalComponent.component}</>)
+                        }
                     </div>
+
+                    {stepExternalComponent && stepExternalComponent.placement === 'nav-after' &&
+                        (<>{stepExternalComponent.component}</>)
+                    }
 
                     <div className={styles.step_dots_wrapper}>
                         {steps.map((_, i) => (
