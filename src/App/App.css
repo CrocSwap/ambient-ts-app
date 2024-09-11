@@ -233,7 +233,6 @@ input[type='number'] {
 }
 .custom_scroll_ambient {
     overflow-y: auto !important;
-   
 }
 .custom_scroll_ambient::-webkit-scrollbar,
 .content-container::-webkit-scrollbar {
@@ -253,17 +252,13 @@ input[type='number'] {
         ) !important;
     background-origin: border-box !important;
     background-clip: content-box, border-box !important; /* Clip the border to show gradient */
-    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */;
-   
-    
-    
+    min-height: 50px !important; /* Set the minimum height for the scrollbar thumb */
 }
 .custom_scroll_ambient::-webkit-scrollbar-track,
 .content-container::-webkit-scrollbar-track {
     background: #06060c !important; /* Background color of the scrollbar track */
     border-radius: 8px !important; /* Adjust the border radius as needed */
-    padding: 2px !important; /* Add padding to the track */;
-  
+    padding: 2px !important; /* Add padding to the track */
 }
 /* -----------------------FUTA------------ */
 
@@ -366,4 +361,3 @@ input[type='number'] {
         background: var(--dark1);
     }
 }
-

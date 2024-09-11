@@ -96,7 +96,12 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
-    const showMobileVersion = useMediaQuery('(max-width: 500px)');
+
+    useEffect(() => {
+        appHeaderDropdown.setIsActive(false);
+    }, [location]);
+
+    const showMobileVersion = useMediaQuery('(max-width: 800px)');
     // const showChatPanel =
     //     currentLocation !== '/' &&
     //     currentLocation !== '/404' &&
@@ -133,7 +138,7 @@ export default function App() {
                     height:
                         location.pathname == '/'
                             ? 'calc(100vh - 56px)'
-                            : '100vh',
+                            : '100dvh',
                 }}
             >
                 {showPoints && showPointSystemPopup && (

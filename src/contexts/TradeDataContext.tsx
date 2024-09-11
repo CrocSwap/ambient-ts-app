@@ -280,6 +280,7 @@ export const TradeDataContextProvider = (props: {
         setNoGoZoneBoundaries,
     };
 
+
     return (
         <TradeDataContext.Provider value={tradeDataContext}>
             {props.children}

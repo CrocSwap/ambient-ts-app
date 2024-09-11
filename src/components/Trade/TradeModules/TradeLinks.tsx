@@ -1,5 +1,3 @@
-import { FlexContainer } from '../../../styled/Common';
-import { TradeModuleLink } from '../../../styled/Components/TradeModules';
 import {
     linkGenMethodsIF,
     useLinkGen,
@@ -9,6 +7,8 @@ import {
     baseURLs,
 } from '../../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../../ambient-utils/types';
+import { Link } from 'react-router-dom';
+import styles from './TradeLinks.module.css';
 import { brand } from '../../../ambient-utils/constants';
 
 interface propsIF {
@@ -88,27 +88,17 @@ export default function TradeLinks(props: propsIF) {
 
     // nav links to the three trade modules
     return (
-        <FlexContainer
-            as='nav'
-            justifyContent='center'
-            alignItems='center'
-            gap={8}
-            margin={!isFuta ? '0 0 16px 0' : '8px 0'}
-            padding={isFuta ? '' : ''}
-            height='25px'
-            width='100%'
-        >
+        <nav className={styles.container}>
             {routes.map((route: routeIF) => (
-                <TradeModuleLink
+                <Link
                     key={JSON.stringify(route)}
                     id={`link_to_${route.name.toLowerCase()}_module`}
                     to={route.path}
-                    isActive={location.pathname.includes(route.baseURL)}
-                    isFuta={isFuta}
+                    className={`${styles.trade_link} ${location.pathname.includes(route.baseURL) ? styles.trade_link_active : ''}`}
                 >
                     {route.name}
-                </TradeModuleLink>
+                </Link>
             ))}
-        </FlexContainer>
+        </nav>
     );
 }

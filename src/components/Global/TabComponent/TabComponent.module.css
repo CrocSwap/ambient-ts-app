@@ -55,6 +55,7 @@
     font-weight: 500;
     font-size: var(--body-size);
     line-height: var(--body-lh);
+list-style-type: none;
 }
 
 .label_button {
@@ -87,11 +88,17 @@
     transition: var(--transition);
 }
 
+
 .selected button,
 .non_selected button {
     font-family: var(--font-family);
     font-weight: 500;
     line-height: 19px;
+
+    background: transparent;
+    outline: none;
+    border: none;
+    list-style: none;
 }
 
 .selected button {
@@ -134,6 +141,7 @@
     padding: 4px;
     border-radius: var(--border-radius);
     cursor: pointer;
+    display: none;
 }
 
 .tab_icon_container:hover {
@@ -143,11 +151,12 @@
 }
 .tab_icon {
     display: flex;
-}
-
-.item_label {
     display: none;
 }
+
+/* .item_label {
+    display: none;
+} */
 
 .item_label:focus-visible {
     border-bottom: 1px solid var(--text1);

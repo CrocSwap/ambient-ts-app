@@ -318,7 +318,7 @@ function Transactions(props: propsIF) {
     );
 
     // TODO: Use these as media width constants
-    const isSmallScreen: boolean = useMediaQuery('(max-width: 800px)');
+    const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
     const tableView: 'small' | 'medium' | 'large' =
@@ -1085,14 +1085,27 @@ function Transactions(props: propsIF) {
         </div>
     );
 
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {transactionDataOrNull}
+                </div>
+            </div>
+        );
+
     return (
-        <FlexContainer
-            flexDirection='column'
-            style={{
-                height: isSmallScreen ? '95%' : '100%',
-                position: 'relative',
-            }}
-        >
+        <FlexContainer flexDirection='column' style={{ height: '100%' }}>
             <div>{headerColumnsDisplay}</div>
             {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
                 <ScrollToTopButton

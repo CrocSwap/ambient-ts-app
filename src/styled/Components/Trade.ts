@@ -38,40 +38,7 @@ export const MainSection = styled.section<{
     }
 `;
 
-export const TradeDropdown = styled.div`
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    width: 370px;
-    text-align: end;
-    border-radius: var(--border-radius);
-    text-transform: capitalize;
-    margin: 0 auto;
-    background: var(--dark2);
-    @media (max-width: 500px) {
-        width: 95%;
-    }
-`;
 
-export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`
-    background: transparent;
-    outline: none;
-    border: none;
-    padding: ${(props) => (props.activeText ? '0 8px' : '8px')};
-    cursor: pointer;
-    transition: var(--transition);
-    border-radius: var(--border-radius);
-    text-align: center;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-transform: capitalize;
-
-    color: ${(props) => (props.activeText ? 'var(--text1)' : 'var(--text2)')};
-    font-size: ${(props) =>
-        props.activeText ? 'var(--header1-size)' : 'inherit'};
-`;
 
 export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
@@ -147,4 +114,39 @@ export const ChartContainer = styled.div<{
     &::-webkit-scrollbar {
         display: none;
     }
+`;
+
+export const TradeDropdown = styled.div`
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    width: 370px;
+    text-align: end;
+    border-radius: var(--border-radius);
+    text-transform: capitalize;
+    margin: 0 auto;
+    background: var(--dark2);
+    @media (max-width: 500px) {
+        width: 95%;
+    }
+`;
+
+export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`
+    background: transparent;
+    outline: none;
+    border: none;
+    padding: ${(props) => (props.activeText ? '0 8px' : '8px')};
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: capitalize;
+
+    color: ${(props) => (props.activeText ? 'var(--text1)' : 'var(--text2)')};
+    font-size: ${(props) =>
+        props.activeText ? 'var(--header1-size)' : 'inherit'};
 `;
