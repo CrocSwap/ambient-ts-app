@@ -5,8 +5,8 @@ import React, {
     useContext,
     useCallback,
 } from 'react';
-import { useLocation } from 'react-router-dom';
-import { AnimateSharedLayout } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
+import { AnimateSharedLayout, motion } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
@@ -21,6 +21,7 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import styles from './PageHeader.module.css';
 import {
     getFormattedNumber,
     chainNumToString,
@@ -32,17 +33,7 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-import {
-    HeaderClasses,
-    LogoContainer,
-    LogoText,
-    NavigationLink,
-    PrimaryHeader,
-    PrimaryNavigation,
-    RightSide,
-    TradeNowDiv,
-    UnderlinedMotionDiv,
-} from '../../../styled/Components/Header';
+
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 // import { version as appVersion } from '../../../../package.json';
@@ -103,7 +94,18 @@ const PageHeader = function () {
         resetTokenBalances();
         setShowAllData(true);
         disconnectUser();
-    }, []);
+    }, [
+        setCrocEnv,
+        setBaseTokenBalance,
+        setQuoteTokenBalance,
+        setBaseTokenDexBalance,
+        setQuoteTokenDexBalance,
+        resetUserGraphData,
+        resetReceiptData,
+        resetTokenBalances,
+        setShowAllData,
+        disconnectUser,
+    ]);
 
     const accountProps = {
         accountAddress: accountAddress,
@@ -276,6 +278,10 @@ const PageHeader = function () {
         title: string;
         destination: string;
         shouldDisplay: boolean;
+        subRoutes?: Array<{
+            title: string;
+            destination: string;
+        }>;
     }
 
     // maintain limits and liquidity tab selection when navigating from portfolio
@@ -305,27 +311,48 @@ const PageHeader = function () {
             title: 'Trade',
             destination: tradeLinkDestination,
             shouldDisplay: true,
+            subRoutes: [
+                {
+                    title: 'Swap',
+                    destination: linkGenSwap.getFullURL(swapParams),
+                },
+                { title: 'Limit', destination: linkGenLimit.getFullURL(swapParams) },
+                { title: 'Pool', destination: linkGenPool.getFullURL(swapParams) },
+            ],
         },
-        {
-            title: 'Pool',
-            destination: linkGenPool.getFullURL(swapParams),
-            shouldDisplay: true,
-        },
+        // {
+        //     title: 'Pool',
+        //     destination: linkGenPool.getFullURL(swapParams),
+        //     shouldDisplay: true,
+        // },
         {
             title: 'Explore',
             destination: '/explore',
             shouldDisplay: true,
+            subRoutes: [
+                {
+                    title: 'Pools',
+                    destination: '/explore/pools',
+                },
+                { title: 'Tokens',  destination: '/explore/tokens' },
+            ],
         },
         {
             title: 'Account',
             destination: `/account${activeTradeTab && '/' + activeTradeTabSlug}`,
             shouldDisplay: !!isUserConnected,
+             subRoutes: [
+                { title: 'Points', destination: '/account/points'},
+                { title: 'Exchange', destination: '/account/exchange-balances'},
+                { title: 'Wallet', destination: '/account/wallet-balances'},
+                { title: 'Transactions', destination: '/account/transactions'},
+            ]
         },
-        {
-            title: 'Points',
-            destination: '/account/points',
-            shouldDisplay: !!isUserConnected && desktopScreen,
-        },
+        // {
+        //     title: 'Points',
+        //     destination: '/account/points',
+        //     shouldDisplay: !!isUserConnected && desktopScreen,
+        // },
     ];
 
     // Most of this functionality can be achieved by using the NavLink instead of Link and accessing the isActive prop on the
@@ -360,39 +387,61 @@ const PageHeader = function () {
 
     const routeDisplay = (
         <AnimateSharedLayout>
-            <PrimaryNavigation
+            <nav
                 id='primary_navigation'
-                dataVisible={mobileNavToggle}
+                className={`${styles.primary_navigation} ${mobileNavToggle ? styles.primary_navigation_visible : ''}`}
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <NavigationLink
-                            tabIndex={0}
-                            className={
-                                isActive(
+                        <div className={styles.nav_item_with_dropdown} key={idx}>
+                            <Link
+                                tabIndex={0}
+                                className={`${styles.navigation_link} ${
+                                    isActive(
+                                        link.title,
+                                        link.destination,
+                                        location.pathname,
+                                    )
+                                        ? styles.navigation_link_active
+                                        : ''
+                                }`}
+                                to={link.destination}
+                            >
+                                {link.title}
+    
+                                {isActive(
                                     link.title,
                                     link.destination,
                                     location.pathname,
-                                )
-                                    ? HeaderClasses.active
-                                    : HeaderClasses.inactive
-                            }
-                            to={link.destination}
-                            key={idx}
-                        >
-                            {link.title}
-
-                            {isActive(
-                                link.title,
-                                link.destination,
-                                location.pathname,
-                            ) && <UnderlinedMotionDiv layoutId='underline' />}
-                        </NavigationLink>
+                                ) && (
+                                    <motion.span
+                                        className={styles.underline_link}
+                                        layoutId='underline'
+                                    />
+                                )}
+                            </Link>
+                            
+                            {/* If the link has subRoutes, render a dropdown */}
+                            {link.subRoutes && (
+                                <div className={styles.dropdown_menu}>
+                                    {link.subRoutes.map((subLink, subIdx) => (
+                                        <Link
+                                            key={subIdx}
+                                            className={styles.dropdown_link}
+                                            to={subLink.destination}
+                                        >
+                                            {subLink.title}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ) : null,
                 )}
-            </PrimaryNavigation>
+            </nav>
         </AnimateSharedLayout>
     );
+    
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);
 
@@ -410,12 +459,12 @@ const PageHeader = function () {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [location.pathname]);
 
     return (
-        <PrimaryHeader
+        <header
+            className={styles.primary_header}
             data-testid={'page-header'}
-            fixed={false}
             style={{ position: 'sticky', top: 0, zIndex: 10 }}
         >
             <div
@@ -426,23 +475,31 @@ const PageHeader = function () {
                     }
                 }}
             >
-                <LogoContainer to='/' aria-label='Home'>
+                <Link
+                    to='/'
+                    aria-label='Home'
+                    className={styles.link_container}
+                >
                     {desktopScreen ? (
                         <img src={headerImage} alt='ambient' />
                     ) : (
-                        <LogoText src={logo} alt='ambient' />
+                        <img
+                            src={logo}
+                            alt='ambient'
+                            className={styles.logo_text}
+                        />
                     )}
-                </LogoContainer>
+                </Link>
             </div>
             {routeDisplay}
-            <RightSide>
+            <div className={styles.right_side}>
                 {show ? (
-                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
+                    <div className={styles.trade_now_container}>
                         <TradeNowButton
                             inNav
                             fieldId='trade_now_btn_in_page_header'
                         />
-                    </TradeNowDiv>
+                    </div>
                 ) : (
                     <div>
                         <FlexContainer
@@ -450,15 +507,14 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                        
                             <NetworkSelector />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                         </FlexContainer>
                     </div>
                 )}
-            </RightSide>
-        </PrimaryHeader>
+            </div>
+        </header>
     );
 };
 

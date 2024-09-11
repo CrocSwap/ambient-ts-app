@@ -21,6 +21,7 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
+import Transactions from '../components/Trade/TradeTabs/Transactions/Transactions';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
@@ -87,6 +88,10 @@ const PlatformAmbientRoutes: React.FC = () => {
             <Route
                 path='account/liquidity'
                 element={<Portfolio specificTab='liquidity' />}
+            />
+            <Route
+                path='explore/transactions'
+                element={<Transactions isAccountView={false}  />}
             />
             <Route
                 path='account/points'

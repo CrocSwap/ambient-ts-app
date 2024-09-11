@@ -4,126 +4,17 @@ import styled, { css } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 
 import { FlexContainer, GridContainer } from '../Common';
-const fixedStyles = `   
-position: fixed;
-top: 0;
-z-index: 3;
-`;
 
-interface PrimaryHeaderProps {
-    'data-testid': string;
-    fixed: boolean;
-}
 
 interface LevelButtonProps {
     large?: boolean;
 }
 
-// Define the styles for PrimaryHeader
-export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
-    width: 100%;
-    height: 56px;
-    background: var(--dark1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--navbar-border);
-    ${({ fixed }) => fixed && fixedStyles};
-     padding: 0 1rem;
 
-    @media only screen and (min-width: 800px) {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        padding: 0 16px;
-    }
-    
-`;
 
-// Define the styles for LogoContainer
-// inline block prevents clickable area from expanding larger than content
-export const LogoContainer = styled(Link)`
-    display: inline-block;
-    flex-direction: row;
-    gap: 8px;
-    align-items: center;
 
-    &:focus-visible img {
-        box-shadow: var(--glow-light-box-shadow);
-    }
 
-    @media only screen and (min-width: 800px) {
-        img:nth-of-type(1) {
-            margin: 0 4px;
-        }
-    }
 
-    @media (max-width: 1200px) {
-        img:nth-of-type(2) {
-            display: block;
-            margin: 0 4px;
-        }
-    }
-
-    @media only screen and (min-width: 1180px) {
-        vertical-align: middle;
-        justify-content: flex-start;
-    }
-`;
-
-// Define the styles for LogoText
-export const LogoText = styled.img`
-    max-width: 70%;
-    max-height: 70%;
-`;
-
-// Define the styles for RightSide
-export const RightSide = styled.div`
-    @media only screen and (min-width: 1180px) {
-        vertical-align: middle;
-        display: flex;
-        justify-content: flex-end;
-    }
-`;
-
-// Define the styles for TradeNowDiv
-export const TradeNowDiv = styled(FlexContainer)`
-    width: 380px;
-    padding: 0 1rem;
-`;
-
-interface PrimaryNavigationProps {
-    dataVisible: boolean;
-}
-export const PrimaryNavigation = styled.nav<PrimaryNavigationProps>`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2rem;
-
-    @media (max-width: 800px) {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        inset: 0 0 0 30%;
-        padding: min(30vh, 10rem) 2em;
-        transform: translateX(100%);
-        transition: transform var(--animation-speed) ease-in-out;
-        flex-direction: column;
-        backdrop-filter: blur(1rem);
-        background: rgba(23, 29, 39, 0.5);
-        backdrop-filter: blur(13px);
-        -webkit-backdrop-filter: blur(13px);
-        border-radius: 10px;
-        font-size: calc(var(--header2-size) + 0.5rem);
-        line-height: calc(var(--header2-lh) + 0.5rem);
-        ${({ dataVisible }) => dataVisible && 'transform: translateX(0%);'}
-    }
-
-    @media only screen and (min-width: 1180px) {
-        vertical-align: middle;
-        justify-content: center;
-    }
-`;
 
 export enum HeaderClasses {
     active = 'active',
@@ -173,15 +64,6 @@ interface NavigationLinkProps {
     className: HeaderClasses.active | HeaderClasses.inactive;
 }
 
-export const UnderlinedMotionDiv = styled(motion.div)`
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--text1);
-    box-shadow: var(--glow-light-box-shadow);
-`;
 
 // WalletDropdown
 
