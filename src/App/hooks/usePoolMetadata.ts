@@ -41,6 +41,7 @@ import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { fetchPoolLimitOrders } from '../../ambient-utils/api/fetchPoolLimitOrders';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -530,64 +531,30 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         })
                         .catch(console.error);
 
-                    // retrieve pool limit order states
-                    const poolLimitOrderStatesCacheEndpoint = GCGO_OVERRIDE_URL
-                        ? GCGO_OVERRIDE_URL + '/pool_limit_orders?'
-                        : props.graphCacheUrl + '/pool_limit_orders?';
-
-                    fetch(
-                        poolLimitOrderStatesCacheEndpoint +
-                            new URLSearchParams({
-                                base: baseTokenAddress.toLowerCase(),
-                                quote: quoteTokenAddress.toLowerCase(),
-                                poolIdx: props.chainData.poolIndex.toString(),
-                                chainId: props.chainData.chainId,
-                                n: '200',
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const poolLimitOrderStates = json?.data;
-                            const crocEnv = props.crocEnv;
-                            const provider = props.provider;
-                            const skipENSFetch = true;
-                            if (poolLimitOrderStates && crocEnv && provider) {
-                                Promise.all(
-                                    poolLimitOrderStates.map(
-                                        (limitOrder: LimitOrderServerIF) => {
-                                            return getLimitOrderData(
-                                                limitOrder,
-                                                props.searchableTokens,
-                                                crocEnv,
-                                                provider,
-                                                props.chainData.chainId,
-                                                props.cachedFetchTokenPrice,
-                                                props.cachedQuerySpotPrice,
-                                                props.cachedTokenDetails,
-                                                props.cachedEnsResolve,
-                                                skipENSFetch,
-                                            );
-                                        },
-                                    ),
-                                ).then((updatedLimitOrderStates) => {
-                                    if (updatedLimitOrderStates.length > 0) {
-                                        const filteredData = filterLimitArray(
-                                            updatedLimitOrderStates,
-                                        );
-                                        setNewLimitsByPoolData(filteredData);
-                                    } else {
-                                        setNewLimitsByPoolData(undefined);
-                                        setLimitOrdersByPool({
-                                            dataReceived: false,
-                                            limitOrders: [],
-                                        });
-                                        setDataLoadingStatus({
-                                            datasetName:
-                                                'isPoolOrderDataLoading',
-                                            loadingStatus: false,
-                                        });
-                                    }
-                                });
+                    fetchPoolLimitOrders({
+                        tokenList: props.searchableTokens,
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: props.chainData.poolIndex,
+                        chainId: props.chainData.chainId,
+                        n: 100,
+                        crocEnv: props.crocEnv,
+                        graphCacheUrl: props.graphCacheUrl,
+                        provider: props.provider,
+                        cachedFetchTokenPrice: props.cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: props.cachedQuerySpotPrice,
+                        cachedTokenDetails: props.cachedTokenDetails,
+                        cachedEnsResolve: props.cachedEnsResolve,
+                    })
+                        .then((updatedLimitOrderStates) => {
+                            if (
+                                updatedLimitOrderStates &&
+                                updatedLimitOrderStates.length > 0
+                            ) {
+                                const filteredData = filterLimitArray(
+                                    updatedLimitOrderStates,
+                                );
+                                setNewLimitsByPoolData(filteredData);
                             } else {
                                 setNewLimitsByPoolData(undefined);
                                 setLimitOrdersByPool({
@@ -761,7 +728,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 const userPoolLimitOrderStates = json?.data;
                                 const crocEnv = props.crocEnv;
                                 const provider = props.provider;
-                                const skipENSFetch = true;
                                 if (
                                     userPoolLimitOrderStates &&
                                     crocEnv &&
@@ -782,7 +748,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     props.cachedQuerySpotPrice,
                                                     props.cachedTokenDetails,
                                                     props.cachedEnsResolve,
-                                                    skipENSFetch,
                                                 );
                                             },
                                         ),

@@ -10,7 +10,10 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 import Spinner from '../../../Global/Spinner/Spinner';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
 import { OrderRow as OrderRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
@@ -19,6 +22,9 @@ import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
+// import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
+// import { TokenContextIF, TokenContext } from '../../../../contexts/TokenContext';
+// import { CachedDataIF, CachedDataContext } from '../../../../contexts/CachedDataContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -40,8 +46,21 @@ function Orders(props: propsIF) {
     } = useContext(SidebarContext);
 
     const {
-        chainData: { poolIndex },
-    } = useContext(CrocEnvContext);
+        //  crocEnv,
+        //  activeNetwork,
+        //  provider,
+        chainData: {
+            // chainId,
+            poolIndex,
+        },
+    } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
+    // const {
+    //     cachedQuerySpotPrice,
+    //     cachedFetchTokenPrice,
+    //     cachedTokenDetails,
+    //     cachedEnsResolve,
+    // } = useContext<CachedDataIF>(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -54,6 +73,7 @@ function Orders(props: propsIF) {
     } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
+    // const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
     const { transactionsByType } = useContext(ReceiptContext);
 
@@ -69,6 +89,74 @@ function Orders(props: propsIF) {
             ),
         [userLimitOrdersByPool],
     );
+
+    // const addMoreData = (): void => {
+    //     if (!crocEnv || !provider) return;
+    //     // retrieve pool limit order changes
+    //     setMoreDataLoading(true);
+    //     fetchPoolLimitOrders({
+    //         tokenList: tokenList,
+    //         base: baseToken.address,
+    //         quote: quoteToken.address,
+    //         poolIdx: poolIndex,
+    //         chainId: chainId,
+    //         n: 50,
+    //         timeBefore: oldestTxTime,
+    //         crocEnv: crocEnv,
+    //         graphCacheUrl: activeNetwork.graphCacheUrl,
+    //         provider: provider,
+    //         cachedFetchTokenPrice: cachedFetchTokenPrice,
+    //         cachedQuerySpotPrice: cachedQuerySpotPrice,
+    //         cachedTokenDetails: cachedTokenDetails,
+    //         cachedEnsResolve: cachedEnsResolve,
+    //     })
+    //         .then((poolChangesJsonData) => {
+    //             if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+    //                 // setTransactionsByPool((prev) => {
+    //                 setFetchedTransactions((prev) => {
+    //                     const existingChanges = new Set(
+    //                         prev.changes.map(
+    //                             (change) => change.txHash || change.txId,
+    //                         ),
+    //                     ); // Adjust if using a different unique identifier
+    //                     const uniqueChanges = poolChangesJsonData.filter(
+    //                         (change) =>
+    //                             !existingChanges.has(
+    //                                 change.txHash || change.txId,
+    //                             ),
+    //                     );
+    //                     if (uniqueChanges.length > 0) {
+    //                         setExtraPagesAvailable((prev) => prev + 1);
+    //                         setPagesVisible((prev) => [
+    //                             prev[0] + 1,
+    //                             prev[1] + 1,
+    //                         ]);
+
+    //                         triggerAutoScroll(ScrollDirection.DOWN);
+    //                     } else {
+    //                         setMoreDataAvailable(false);
+    //                     }
+    //                     let newTxData = [];
+    //                     if (autoScrollAlternateSolutionActive) {
+    //                         newTxData = sortData([
+    //                             ...prev.changes,
+    //                             ...uniqueChanges,
+    //                         ]);
+    //                     } else {
+    //                         newTxData = [...prev.changes, ...uniqueChanges];
+    //                     }
+    //                     return {
+    //                         dataReceived: true,
+    //                         changes: newTxData,
+    //                     };
+    //                 });
+    //             } else {
+    //                 setMoreDataAvailable(false);
+    //             }
+    //         })
+    //         .then(() => setMoreDataLoading(false))
+    //         .catch(console.error);
+    // };
 
     const limitOrderData = useMemo(
         () =>
@@ -357,11 +445,11 @@ function Orders(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%'}}>
+        <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%' }}>
             <ul
                 ref={listRef}
                 // id='current_row_scroll'
-                style={{height: '100%'}}
+                style={{ height: '100%' }}
             >
                 {!isAccountView &&
                     relevantTransactionsByType.length > 0 &&
@@ -390,18 +478,24 @@ function Orders(props: propsIF) {
         </div>
     );
 
-    if (isSmallScreen) return (
-        <div style={{  overflow: 'scroll', height:  '100%'}}>
-            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
-            {headerColumnsDisplay}
-
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {orderDataOrNull}
+                </div>
             </div>
-            <div style={{overflowY: 'scroll', height: '100%'}}>
-                
-            {orderDataOrNull}   
-</div>
-        </div>
-    )
+        );
 
     return (
         <FlexContainer

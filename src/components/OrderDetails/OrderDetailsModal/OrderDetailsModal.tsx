@@ -127,8 +127,6 @@ export default function OrderDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
-                    // temporarily skip ENS fetch
-                    const skipENSFetch = true;
                     const positionPayload = json?.data as LimitOrderServerIF;
                     return getLimitOrderData(
                         positionPayload,
@@ -140,7 +138,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        skipENSFetch,
                     );
                 })
                 .then((positionStats: LimitOrderIF) => {

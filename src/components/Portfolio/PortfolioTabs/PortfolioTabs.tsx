@@ -9,7 +9,7 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
-import styles from './PortfolioTabs.module.css'
+import styles from './PortfolioTabs.module.css';
 // START: Import Local Files
 import {
     getPositionData,
@@ -178,7 +178,6 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 // temporarily skip ENS fetch
-                const skipENSFetch = true;
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
@@ -194,7 +193,6 @@ export default function PortfolioTabs(props: propsIF) {
                                     cachedQuerySpotPrice,
                                     cachedTokenDetails,
                                     cachedEnsResolve,
-                                    skipENSFetch,
                                 );
                             },
                         ),
@@ -415,19 +413,17 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     const dataToUse = connectedAccountActive
-    ? accountTabDataWithTokens
-    : accountTabDataWithoutTokens
+        ? accountTabDataWithTokens
+        : accountTabDataWithoutTokens;
 
-    const [activeTab, setActiveTab] = useState<string>('Transactions'); 
-
+    const [activeTab, setActiveTab] = useState<string>('Transactions');
 
     const renderTabContent = () => {
-        const selectedTabData =dataToUse.find(
-            (tab) => tab.label === activeTab
+        const selectedTabData = dataToUse.find(
+            (tab) => tab.label === activeTab,
         );
         return selectedTabData ? selectedTabData.content : null;
     };
-
 
     const mobileTabs = (
         <div className={styles.mobile_tabs_container}>
@@ -437,22 +433,27 @@ export default function PortfolioTabs(props: propsIF) {
                         key={tab.label}
                         onClick={() => setActiveTab(tab.label)}
                         style={{
-                            color: tab.label === activeTab ? 'var(--accent1)' : 'var(--text2)',
-                            borderBottom: tab.label === activeTab ? '1px solid var(--accent1)' : '1px solid transparent'
+                            color:
+                                tab.label === activeTab
+                                    ? 'var(--accent1)'
+                                    : 'var(--text2)',
+                            borderBottom:
+                                tab.label === activeTab
+                                    ? '1px solid var(--accent1)'
+                                    : '1px solid transparent',
                         }}
                     >
                         <span className={styles.tabLabel}>{tab.label}</span>
                     </button>
                 ))}
             </div>
-            <div className={styles.tabContent} style={{height: '100%'}}>
+            <div className={styles.tabContent} style={{ height: '100%' }}>
                 {renderTabContent()}
             </div>
         </div>
     );
 
-
-    if ( isSmallScreen) return mobileTabs
+    if (isSmallScreen) return mobileTabs;
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent
