@@ -185,8 +185,6 @@ function Transactions(props: propsIF) {
         dataReceived: false,
         changes: [...transactionsByPool.changes],
     });
-    // const fetchedTransactionsRef = useRef<Changes>();
-    // fetchedTransactionsRef.current = fetchedTransactions;
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -320,6 +318,12 @@ function Transactions(props: propsIF) {
     // TODO: Use these as media width constants
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
+
+    const txSpanSelectorForScrollMethod =  isSmallScreen ? '#current_row_scroll > div > div:nth-child(1) > div:nth-child(1) > span':
+        '#current_row_scroll > div > div:nth-child(2) > div > span';
+    const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
+        'div:nth-child(2)';
+    
 
     const tableView: 'small' | 'medium' | 'large' =
         isSmallScreen ||
@@ -734,11 +738,12 @@ function Transactions(props: propsIF) {
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const markRows = false;
+    const markRows = true;
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
+
         const txSpans = document.querySelectorAll(
-            '#current_row_scroll > div > div:nth-child(2) > div > span',
+            txSpanSelectorForScrollMethod
         );
 
         txSpans.forEach((span) => {
@@ -748,9 +753,8 @@ function Transactions(props: propsIF) {
 
                 const parent = row.parentElement as HTMLDivElement;
                 if (markRows) {
-                    parent.style.background = 'blue';
+                    parent.style.background = 'red';
                 }
-
                 parent.scrollIntoView({
                     block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
                     behavior: 'instant' as ScrollBehavior,
@@ -767,7 +771,7 @@ function Transactions(props: propsIF) {
                 firstRow.style.backgroundColor = 'cyan';
             }
 
-            const txDiv = firstRow.querySelector('div:nth-child(2)');
+            const txDiv = firstRow.querySelector(txSpanSelectorForBindMethod);
             if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setFirstSeenTxID(txText || '');
@@ -788,7 +792,7 @@ function Transactions(props: propsIF) {
                 lastRow.style.backgroundColor = 'blue';
             }
 
-            const txDiv = lastRow.querySelector('div:nth-child(2)');
+            const txDiv = lastRow.querySelector(txSpanSelectorForBindMethod);
             if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setLastSeenTxID(txText || '');
@@ -964,8 +968,8 @@ function Transactions(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { maxHeight: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 330px)' }
+                            ? { maxHeight: 'calc(100svh - 310px)', overflowY:'auto' }
+                            : { height: 'calc(100svh - 300px)', overflowY:'auto' }
                         : undefined
                 }
             >
@@ -1098,7 +1102,12 @@ function Transactions(props: propsIF) {
                 >
                     {headerColumnsDisplay}
                 </div>
-                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                {/* <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {transactionDataOrNull}
+                </div> */}
+                <div
+                ref={scrollRef}
+                >
                     {transactionDataOrNull}
                 </div>
             </div>
