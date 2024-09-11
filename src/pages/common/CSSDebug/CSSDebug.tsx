@@ -27,51 +27,53 @@ export default function CSSDebug() {
         ],
     };
 
-    const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
-    const [text1Color, setText1Color] = useState<string>(getCSSCustomPropertyValue('--text1'));
+    type toggleableColors = (typeof cssVariables.colors)[number];
 
-    function toggleColorPicker(): void {
-        setShowColorPicker(!showColorPicker);
+    const [activeProperty, setActiveProperty] = useState<[toggleableColors, string]|null>(null);
+    function updateProperty(p: toggleableColors): void {
+        const currentProperty: string = activeProperty
+            ? activeProperty[1]
+            : getCSSCustomPropertyValue(p);
+        setActiveProperty([p, currentProperty]);
+    }
+    function updateColor(c: string): void {
+        if (activeProperty) {
+            setActiveProperty([activeProperty[0], c]);
+        }
     }
 
-    function setCSSCustomPropertyValue (property: string, color: string): void {
-        const root = document.documentElement;
-        setText1Color(color);
-        root.style.setProperty(property, color);
-    }
-
-    function getCSSCustomPropertyValue (property: string): string {
+    function getCSSCustomPropertyValue (property: toggleableColors): string {
         const root = document.documentElement;
         const value = getComputedStyle(root).getPropertyValue(property).trim();
         return value || '';
     };
 
+    function handleColorButtonClick(v: toggleableColors): void {
+        if (activeProperty) {
+            updateProperty(v);
+        } else {
+            const activeColor = getCSSCustomPropertyValue(v);
+            setActiveProperty([v, activeColor]);
+        }
+    }
+
     return (
         <>
-            {/* <button onClick={() => toggleColorPicker()}>
-                Show Picker
-                <div
-                    style={{width: '20px', height: '20px', backgroundColor: text1Color, display: 'inline-block'}}
-                />
-            </button> */}
             {
                 cssVariables.colors.map(
-                    (c: (typeof cssVariables.colors)[number]) => (
+                    (variable: toggleableColors) => (
                         <button
-                            key={c}
-                            onClick={() => toggleColorPicker()}
+                            key={variable}
+                            onClick={() => handleColorButtonClick(variable)}
                         >
-                            <h6>Change {c}</h6>
+                            <h6>Change {variable}</h6>
                         </button>
                     )
                 )
             }
-            {showColorPicker && <SketchPicker
-                color={text1Color}
-                onChange={(color: ColorResult) => {
-                    console.log(color.rgb);
-                    setCSSCustomPropertyValue('--text1', color.hex);
-                }}
+            {activeProperty && <SketchPicker
+                color={activeProperty[1]}
+                onChange={(color: ColorResult) => updateColor(color.hex)}
             />}
             <Swap />
         </>
