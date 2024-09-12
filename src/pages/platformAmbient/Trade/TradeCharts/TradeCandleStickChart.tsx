@@ -46,6 +46,7 @@ import {
 } from '../../Chart/ChartUtils/chartConstants';
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -90,6 +91,8 @@ function TradeCandleStickChart(props: propsIF) {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
+
+    const { isUserIdle } = useContext(AppStateContext);
 
     const { liqMode } = props.chartItemStates;
 
@@ -1105,6 +1108,14 @@ function TradeCandleStickChart(props: propsIF) {
             </div>
         </div>
     );
+
+    const skeletonChart = (
+        <div
+            id='skeleton'
+            className='skeleton'
+            style={{ width: '100%', height: '100%' }}
+        />
+    );
     return (
         <>
             <div
@@ -1145,7 +1156,7 @@ function TradeCandleStickChart(props: propsIF) {
                         </div>
                     </>
                 )}
-                {isOpenChart && (
+                {isOpenChart && !isUserIdle && (
                     <Chart
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}
@@ -1187,6 +1198,10 @@ function TradeCandleStickChart(props: propsIF) {
                         showTooltip={showTooltip}
                     />
                 )}
+
+                {!(!isOpenChart || isCompletedFetchData) &&
+                    isUserIdle &&
+                    skeletonChart}
             </div>
         </>
     );
