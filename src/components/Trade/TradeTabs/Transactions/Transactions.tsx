@@ -921,15 +921,8 @@ function Transactions(props: propsIF) {
             .catch(console.error);
     };
 
-    const logData = () => {
-        domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
-        domDebug('sortedTransactions', sortedTransactions.length);
-        domDebug('pagesVisible', pagesVisible[0] + ' ' + pagesVisible[1]);
-    };
-
 
     useEffect(() => {
-        logData();
         if (autoScroll) {
             if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
                 if (autoScrollDirection === ScrollDirection.DOWN) {
