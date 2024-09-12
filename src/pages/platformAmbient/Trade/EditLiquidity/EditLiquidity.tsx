@@ -1,6 +1,13 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
+import { CrocEditPosition } from '@crocswap-libs/sdk';
 
 // START: Import Other Local Files
 import styles from './EditLiquidity.module.css';
@@ -16,11 +23,12 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import Range from '../Range/Range';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 function EditLiquidity() {
     const { params } = useParams();
     const { crocEnv } = useContext(CrocEnvContext);
-
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const { getDefaultRangeWidthForTokenPair } = useContext(TradeDataContext);
     const { setCurrentRangeInEdit } = useContext(RangeContext);
     const locationHook = useLocation();
@@ -60,6 +68,148 @@ function EditLiquidity() {
     // eslint-disable-next-line
     const [newEditTransactionHash, setNewEditTransactionHash] = useState('');
 
+    const [concLiq, setConcLiq] = useState<bigint>(BigInt(0));
+
+    const updateConcLiq = async () => {
+        if (!crocEnv || !position) return;
+        const pos = crocEnv.positions(
+            position.base,
+            position.quote,
+            position.user,
+        );
+
+        const liquidity = (
+            await pos.queryRangePos(position.bidTick, position.askTick)
+        ).liq;
+
+        setConcLiq(liquidity);
+    };
+
+    useEffect(() => {
+        if (!crocEnv || !position) return;
+        updateConcLiq();
+    }, [crocEnv, lastBlockNumber, position?.positionId]);
+
+    //  function mintArgsForEdit(
+    //      lowTick: number,
+    //      highTick: number,
+    //  ): 'ambient' | [number, number] {
+    //      if (lowTick === 0 && highTick === 0) {
+    //          return 'ambient';
+    //      } else {
+    //          return [lowTick, highTick];
+    //      }
+    //  }
+
+    const sendEditTransaction = async (params: {
+        setTxError: (s: Error | undefined) => void;
+        resetConfirmation: () => void;
+        setShowConfirmation: Dispatch<SetStateAction<boolean>>;
+        defaultLowTick: number;
+        defaultHighTick: number;
+    }) => {
+        const {
+            setTxError,
+            resetConfirmation,
+            setShowConfirmation,
+            defaultLowTick: pinnedLowTick,
+            defaultHighTick: pinnedHighTick,
+        } = params;
+
+        if (!crocEnv || !position) return;
+        console.log({ position });
+        let tx;
+        setTxError(undefined);
+
+        resetConfirmation();
+        setShowConfirmation(true);
+
+        try {
+            const pool = crocEnv.pool(position.base, position.quote);
+            const edit = new CrocEditPosition(
+                pool,
+                {
+                    liquidity: concLiq,
+                    burn: [position.bidTick, position.askTick],
+                    mint: [pinnedLowTick, pinnedHighTick],
+                },
+                //  { impact: slippageTolerancePercentage / 100 },
+            );
+            tx = await edit.edit();
+            //  setNewRepositionTransactionHash(tx?.hash);
+            //  addPendingTx(tx?.hash);
+            //  if (tx?.hash) {
+            //  addTransactionByType({
+            //      userAddress: userAddress || '',
+            //      txHash: tx.hash,
+            //      txAction: 'Reposition',
+            //      txType: 'Range',
+            //      txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+            //      txDetails: {
+            //          baseAddress: position.base,
+            //          quoteAddress: position.quote,
+            //          poolIdx: poolIndex,
+            //          baseSymbol: position.baseSymbol,
+            //          quoteSymbol: position.quoteSymbol,
+            //          baseTokenDecimals: baseTokenDecimals,
+            //          quoteTokenDecimals: quoteTokenDecimals,
+            //          lowTick: pinnedLowTick,
+            //          highTick: pinnedHighTick,
+            //          gridSize: lookupChain(position.chainId).gridSize,
+            //          originalLowTick: position.bidTick,
+            //          originalHighTick: position.askTick,
+            //          isBid: position.positionLiqQuote === 0,
+            //      },
+            //  });
+            //  const posHash = getPositionHash(position);
+            //  addPositionUpdate({
+            //      txHash: tx.hash,
+            //      positionID: posHash,
+            //      isLimit: false,
+            //      unixTimeAdded: Math.floor(Date.now() / 1000),
+            //  });
+            //  }
+            // We want the user to exit themselves
+            // navigate(redirectPath, { replace: true });
+        } catch (error) {
+            console.error({ error });
+            //  setTxError(error);
+        }
+
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            console.error({ e });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            //  if (isTransactionReplacedError(error)) {
+            //      IS_LOCAL_ENV && console.debug('repriced');
+            //      removePendingTx(error.hash);
+            //      const newTransactionHash = error.replacement.hash;
+            //      addPendingTx(newTransactionHash);
+
+            //      updateTransactionHash(error.hash, error.replacement.hash);
+            //      setNewRepositionTransactionHash(newTransactionHash);
+            //      const posHash = getPositionHash(position);
+            //      addPositionUpdate({
+            //          txHash: newTransactionHash,
+            //          positionID: posHash,
+            //          isLimit: false,
+            //          unixTimeAdded: Math.floor(Date.now() / 1000),
+            //      });
+            //      IS_LOCAL_ENV && console.debug({ newTransactionHash });
+            //      receipt = error.receipt;
+            //  } else if (isTransactionFailedError(error)) {
+            //      receipt = error.receipt;
+            //  }
+        }
+        if (receipt) {
+            //  addReceipt(JSON.stringify(receipt));
+            //  removePendingTx(receipt.hash);
+        }
+    };
+
     return (
         <>
             <div className={styles.repositionContainer}>
@@ -75,6 +225,7 @@ function EditLiquidity() {
                     position={position}
                     prepopulatedBaseValue={position?.positionLiqBaseDecimalCorrected.toString()}
                     prepopulatedQuoteValue={position?.positionLiqQuoteDecimalCorrected.toString()}
+                    editFunction={sendEditTransaction}
                 />
             </div>
         </>

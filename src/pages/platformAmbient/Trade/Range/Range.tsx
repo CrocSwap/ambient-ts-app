@@ -1,5 +1,14 @@
 import { concDepositSkew, fromDisplayQty } from '@crocswap-libs/sdk';
-import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    Dispatch,
+    memo,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import Button from '../../../../components/Form/Button';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 
@@ -56,9 +65,16 @@ interface RangePropsIF {
     prepopulatedQuoteValue?: string;
     isReposition?: boolean;
     position?: PositionIF;
+    editFunction?: (params: {
+        setTxError: (s: Error | undefined) => void;
+        resetConfirmation: () => void;
+        setShowConfirmation: Dispatch<SetStateAction<boolean>>;
+        defaultLowTick: number;
+        defaultHighTick: number;
+    }) => Promise<void>;
 }
 function Range(props: RangePropsIF) {
-    const { isEditPanel, isReposition, position } = props;
+    const { isEditPanel, isReposition, position, editFunction } = props;
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
@@ -135,15 +151,15 @@ function Range(props: RangePropsIF) {
         position
             ? position?.positionLiqBaseDecimalCorrected.toString()
             : isTokenAPrimary
-            ? primaryQuantity
-            : '',
+              ? primaryQuantity
+              : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
         position
             ? position?.positionLiqQuoteDecimalCorrected.toString()
             : !isTokenAPrimary
-            ? primaryQuantity
-            : '',
+              ? primaryQuantity
+              : '',
     );
 
     const [positionCount, setPositionCount] = useState(0);
@@ -209,7 +225,7 @@ function Range(props: RangePropsIF) {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const [txError, setTxError] = useState<Error>();
+    const [txError, setTxError] = useState<Error | undefined>();
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -948,21 +964,29 @@ function Range(props: RangePropsIF) {
         if (!crocEnv) return;
         setShowConfirmation(true);
 
-        createRangePosition({
-            slippageTolerancePercentage,
-            isAmbient,
-            tokenAInputQty: isTokenAInputDisabled ? '0' : tokenAInputQty,
-            tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBInputQty,
-            isWithdrawTokenAFromDexChecked,
-            isWithdrawTokenBFromDexChecked,
-            defaultLowTick,
-            defaultHighTick,
-            isAdd,
-            setNewRangeTransactionHash,
-            setTxError,
-            resetConfirmation,
-            activeRangeTxHash,
-        });
+        editFunction
+            ? editFunction({
+                  setTxError,
+                  resetConfirmation,
+                  setShowConfirmation,
+                  defaultLowTick,
+                  defaultHighTick,
+              })
+            : createRangePosition({
+                  slippageTolerancePercentage,
+                  isAmbient,
+                  tokenAInputQty: isTokenAInputDisabled ? '0' : tokenAInputQty,
+                  tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBInputQty,
+                  isWithdrawTokenAFromDexChecked,
+                  isWithdrawTokenBFromDexChecked,
+                  defaultLowTick,
+                  defaultHighTick,
+                  isAdd,
+                  setNewRangeTransactionHash,
+                  setTxError,
+                  resetConfirmation,
+                  activeRangeTxHash,
+              });
     };
 
     const handleModalOpen = () => {
