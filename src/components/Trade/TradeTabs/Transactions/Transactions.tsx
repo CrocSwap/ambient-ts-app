@@ -230,6 +230,45 @@ function Transactions(props: propsIF) {
     const autoScrollDirectionRef = useRef<ScrollDirection>();
     autoScrollDirectionRef.current = autoScrollDirection;
 
+    const [isTableReady, setIsTableReady] = useState(true);
+    const isTableReadyRef = useRef<boolean>();
+    isTableReadyRef.current = isTableReady;
+
+    const getOverlayComponentForLoadingState = () => {
+
+
+            if(isSmallScreen){
+                return <div style={{
+                    transition: 'all .2s ease-in-out', 
+                    position: 'absolute', top: '0', left: '0', 
+                    zIndex: isTableReadyRef.current ? '-1': '1',
+                    backdropFilter: 'blur(10px)',
+                    width: '100%',
+                    height: '100%'
+                }}></div>
+            }else{
+                return <div style={{
+                    transition: 'all .2s ease-in-out', 
+                    position: 'absolute', top: '0', left: '0', 
+                    zIndex: isTableReadyRef.current ? '-1': '1',
+                    backdropFilter: 'blur(10px)',
+                    width: '100%',
+                    height: '100%'
+                }}></div>
+            }
+    }
+
+    const bindTableReadyState = (newState: boolean) => {
+        if(newState === true){
+            setTransactionTableOpacity('1');
+            setIsTableReady(true);
+        }
+        else{
+            setTransactionTableOpacity('.5');
+            setIsTableReady(false);
+        }
+    }
+
     useEffect(() => {
         const existingChanges = new Set(
             fetchedTransactions.changes.map(
@@ -622,7 +661,7 @@ function Transactions(props: propsIF) {
                 if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
                     bindLastSeenRow();
-                    setTransactionTableOpacity('.5');
+                    bindTableReadyState(false);
                     // last row is visible
                     extraPagesAvailableVal + 1 > pagesVisibleVal[1]
                         ? shiftDown()
@@ -706,7 +745,7 @@ function Transactions(props: propsIF) {
         direction: ScrollDirection,
         timeout?: number,
     ) => {
-        setTransactionTableOpacity('1');
+        bindTableReadyState(true);
         setAutoScroll(true);
         setAutoScrollDirection(direction);
         setTimeout(
@@ -738,7 +777,7 @@ function Transactions(props: propsIF) {
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const markRows = true;
+    const markRows = false;
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
 
@@ -1108,6 +1147,7 @@ function Transactions(props: propsIF) {
                 <div
                 ref={scrollRef}
                 >
+                    {getOverlayComponentForLoadingState()}
                     {transactionDataOrNull}
                 </div>
             </div>
@@ -1135,6 +1175,7 @@ function Transactions(props: propsIF) {
                 }}
                 className='custom_scroll_ambient'
             >
+                {getOverlayComponentForLoadingState()}
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading
