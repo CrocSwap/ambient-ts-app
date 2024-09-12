@@ -95,8 +95,12 @@ function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, getDefaultRangeWidthForTokenPair } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        getDefaultRangeWidthForTokenPair,
+        setIsTokenAPrimary,
+    } = useContext(TradeDataContext);
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
 
@@ -186,14 +190,16 @@ function RangesMenu(props: propsIF) {
             className={styles.reposition_button}
             to={linkGenEdit.getFullURL({
                 chain: chainId,
-                tokenA:
-                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
-                        ? position.quote
-                        : position.base,
-                tokenB:
-                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
-                        ? position.base
-                        : position.quote,
+                tokenA: position.base,
+                tokenB: position.quote,
+                // tokenA:
+                //     tokenAAddress.toLowerCase() === position.quote.toLowerCase()
+                //         ? position.quote
+                //         : position.base,
+                // tokenB:
+                //     tokenBAddress.toLowerCase() === position.base.toLowerCase()
+                //         ? position.base
+                //         : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
@@ -203,6 +209,7 @@ function RangesMenu(props: propsIF) {
                 setAdvancedHighTick(position.askTick);
                 setAdvancedMode(true);
                 setCurrentPositionActive(position.positionId);
+                setIsTokenAPrimary(true);
             }}
             state={{ position: position }}
         >

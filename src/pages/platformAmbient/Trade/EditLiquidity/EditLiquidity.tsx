@@ -143,7 +143,6 @@ function EditLiquidity() {
         } = params;
 
         if (!crocEnv || !position) return;
-        console.log({ position });
         let tx;
         setTxError(undefined);
 
