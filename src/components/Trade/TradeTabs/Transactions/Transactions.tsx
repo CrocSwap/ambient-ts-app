@@ -1,24 +1,28 @@
 /* eslint-disable no-irregular-whitespace */
+import { CandleDataIF, TransactionIF } from '../../../../ambient-utils/types';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { TransactionIF, CandleDataIF } from '../../../../ambient-utils/types';
 
 import {
     Dispatch,
-    useState,
-    useEffect,
-    useRef,
-    useContext,
     memo,
+    useContext,
+    useEffect,
     useMemo,
+    useRef,
+    useState,
 } from 'react';
-import TransactionHeader from './TransactionsTable/TransactionHeader';
-import { useSortedTxs } from '../useSortedTxs';
-import NoTableData from '../NoTableData/NoTableData';
+import { RiArrowUpSLine } from 'react-icons/ri';
+import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
+import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
+import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 import {
-    TradeTableContext,
-    TradeTableContextIF,
-} from '../../../../contexts/TradeTableContext';
-import Spinner from '../../../Global/Spinner/Spinner';
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
+import {
+    CachedDataContext,
+    CachedDataIF,
+} from '../../../../contexts/CachedDataContext';
 import {
     CandleContext,
     CandleContextIF,
@@ -27,54 +31,52 @@ import {
     ChartContext,
     ChartContextIF,
 } from '../../../../contexts/ChartContext';
-import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
-import {
-    AppStateContext,
-    AppStateContextIF,
-} from '../../../../contexts/AppStateContext';
 import {
     CrocEnvContext,
     CrocEnvContextIF,
 } from '../../../../contexts/CrocEnvContext';
 import {
-    TokenContext,
-    TokenContextIF,
-} from '../../../../contexts/TokenContext';
-import {
-    CachedDataContext,
-    CachedDataIF,
-} from '../../../../contexts/CachedDataContext';
-import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
-import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
-import {
-    SidebarContext,
-    SidebarStateIF,
-} from '../../../../contexts/SidebarContext';
-import {
-    ScrollToTopButton,
-    TransactionRow as TransactionRowStyled,
-} from '../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../styled/Common';
+    DataLoadingContext,
+    DataLoadingContextIF,
+} from '../../../../contexts/DataLoadingContext';
 import {
     Changes,
     GraphDataContext,
     GraphDataContextIF,
 } from '../../../../contexts/GraphDataContext';
 import {
-    DataLoadingContext,
-    DataLoadingContextIF,
-} from '../../../../contexts/DataLoadingContext';
+    ReceiptContext,
+    ReceiptContextIF,
+} from '../../../../contexts/ReceiptContext';
+import {
+    SidebarContext,
+    SidebarStateIF,
+} from '../../../../contexts/SidebarContext';
+import {
+    TokenContext,
+    TokenContextIF,
+} from '../../../../contexts/TokenContext';
 import {
     TradeDataContext,
     TradeDataContextIF,
 } from '../../../../contexts/TradeDataContext';
 import {
-    ReceiptContext,
-    ReceiptContextIF,
-} from '../../../../contexts/ReceiptContext';
-import TableRows from '../TableRows';
-import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
+    TradeTableContext,
+    TradeTableContextIF,
+} from '../../../../contexts/TradeTableContext';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    ScrollToTopButton,
+    ScrollToTopButtonMobile,
+    TransactionRow as TransactionRowStyled,
+} from '../../../../styled/Components/TransactionTable';
 import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
+import Spinner from '../../../Global/Spinner/Spinner';
+import NoTableData from '../NoTableData/NoTableData';
+import TableRows from '../TableRows';
+import { useSortedTxs } from '../useSortedTxs';
+import TransactionHeader from './TransactionsTable/TransactionHeader';
+import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -240,11 +242,12 @@ function Transactions(props: propsIF) {
             if(isSmallScreen){
                 return <div style={{
                     transition: 'all .2s ease-in-out', 
-                    position: 'absolute', top: '0', left: '0', 
+                    // position: 'absolute', top: '0', left: '0', 
+                    position: 'absolute', top: '80px', left: '0', 
                     zIndex: isTableReadyRef.current ? '-1': '1',
                     backdropFilter: 'blur(10px)',
                     width: '100%',
-                    height: '100%'
+                    height: 'calc(100% - 80px)'
                 }}></div>
             }else{
                 return <div style={{
@@ -732,7 +735,15 @@ function Transactions(props: propsIF) {
         setLastSeenTxID('');
         setPagesVisible([0, 1]);
 
-        if (scrollRef.current) {
+        if(isSmallScreen){
+            const wrapper = document.getElementById('current_row_scroll');
+            if(wrapper){
+                    wrapper.scrollTo({
+                        top: 0,
+                        behavior: 'instant' as ScrollBehavior,
+                    });
+            }
+        }else if(scrollRef.current) {
             // scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
             scrollRef.current.scrollTo({
                 top: 0,
@@ -912,27 +923,13 @@ function Transactions(props: propsIF) {
 
     const logData = () => {
         domDebug('sortedTxDataDisp', sortedTxDataToDisplay.length);
-        // if(sortedTxDataToDisplay.length > 0){
-        //     domDebug('sortedTxDataDisp LAST', sortedTxDataToDisplay[sortedTxDataToDisplay.length - 1].txHash);
-        // }
-        // if(sortedTxDataToDisplay.length > 0){
-        //     domDebug('sortedTxDataDisp FIRST', sortedTxDataToDisplay[0].txHash);
-        // }
         domDebug('sortedTransactions', sortedTransactions.length);
         domDebug('pagesVisible', pagesVisible[0] + ' ' + pagesVisible[1]);
-        // if(sortedTransactions.length > 0){
-        //     domDebug('sortedTransactions LAST ', sortedTransactions[sortedTransactions.length - 1].txHash);
-        // }
-        // if(sortedTransactions.length > 0){
-        //     domDebug('sortedTransactions FIRST ', sortedTransactions[0].txHash);
-        // }
     };
 
-    // const disableAutoScroll = true;
 
     useEffect(() => {
         logData();
-        // if(disableAutoScroll) return;
         if (autoScroll) {
             if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
                 if (autoScrollDirection === ScrollDirection.DOWN) {
@@ -953,19 +950,22 @@ function Transactions(props: propsIF) {
     }, [sortedTxDataToDisplay]);
 
     const scrollWithAlternateStrategy = () => {
-        if (autoScrollDirection === ScrollDirection.DOWN && scrollRef.current) {
-            scrollRef.current.scrollTo({
-                top: 1912,
-                behavior: 'instant' as ScrollBehavior,
-            });
-        } else if (
-            autoScrollDirection === ScrollDirection.UP &&
-            scrollRef.current
-        ) {
-            scrollRef.current.scrollTo({
-                top: 1850,
-                behavior: 'instant' as ScrollBehavior,
-            });
+
+        if(isSmallScreen){
+            const wrapper = document.getElementById('current_row_scroll');
+            if(wrapper){
+                    wrapper.scrollTo({
+                        top: autoScrollDirection === ScrollDirection.DOWN ? 1400 : 1340,
+                        behavior: 'instant' as ScrollBehavior,
+                    });
+            }
+        }else{
+            if ( scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: autoScrollDirection === ScrollDirection.DOWN ? 1912 : 1850,
+                    behavior: 'instant' as ScrollBehavior,
+                });
+            }
         }
     };
 
@@ -1141,12 +1141,20 @@ function Transactions(props: propsIF) {
                 >
                     {headerColumnsDisplay}
                 </div>
-                {/* <div style={{ overflowY: 'scroll', height: '100%' }}>
-                    {transactionDataOrNull}
-                </div> */}
                 <div
                 ref={scrollRef}
                 >
+
+                    {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
+                        <ScrollToTopButtonMobile
+                            onClick={() => {
+                                scrollToTop();
+                            }}
+                        >
+                            <RiArrowUpSLine size={20} color='white'/>
+                            {/* Scroll to top */}
+                        </ScrollToTopButtonMobile>
+                    )}
                     {getOverlayComponentForLoadingState()}
                     {transactionDataOrNull}
                 </div>
