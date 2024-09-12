@@ -71,10 +71,19 @@ interface RangePropsIF {
         setShowConfirmation: Dispatch<SetStateAction<boolean>>;
         defaultLowTick: number;
         defaultHighTick: number;
+        slippageTolerancePercentage: number;
+        setNewRangeTransactionHash: Dispatch<SetStateAction<string>>;
     }) => Promise<void>;
+    disableEditConfirmButton?: boolean;
 }
 function Range(props: RangePropsIF) {
-    const { isEditPanel, isReposition, position, editFunction } = props;
+    const {
+        isEditPanel,
+        isReposition,
+        position,
+        editFunction,
+        disableEditConfirmButton = false,
+    } = props;
     const {
         chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
@@ -971,6 +980,8 @@ function Range(props: RangePropsIF) {
                   setShowConfirmation,
                   defaultLowTick,
                   defaultHighTick,
+                  slippageTolerancePercentage,
+                  setNewRangeTransactionHash,
               })
             : createRangePosition({
                   slippageTolerancePercentage,
@@ -1220,15 +1231,17 @@ function Range(props: RangePropsIF) {
                     title={
                         areBothAckd
                             ? tokenAAllowed && tokenBAllowed
-                                ? bypassConfirmRange.isEnabled
-                                    ? isAdd
-                                        ? `Add ${
-                                              isAmbient ? 'Ambient' : ''
-                                          } Liquidity`
-                                        : `Submit ${
-                                              isAmbient ? 'Ambient' : ''
-                                          } Liquidity`
-                                    : 'Confirm'
+                                ? disableEditConfirmButton
+                                    ? 'Edit Submitted'
+                                    : bypassConfirmRange.isEnabled
+                                      ? isAdd
+                                          ? `Add ${
+                                                isAmbient ? 'Ambient' : ''
+                                            } Liquidity`
+                                          : `Submit ${
+                                                isAmbient ? 'Ambient' : ''
+                                            } Liquidity`
+                                      : 'Confirm'
                                 : rangeButtonErrorMessageTokenA ||
                                   rangeButtonErrorMessageTokenB
                             : 'Acknowledge'
@@ -1243,7 +1256,8 @@ function Range(props: RangePropsIF) {
                     disabled={
                         (!isPoolInitialized ||
                             !(tokenAAllowed && tokenBAllowed) ||
-                            isInvalidRange) &&
+                            isInvalidRange ||
+                            disableEditConfirmButton) &&
                         areBothAckd
                     }
                     flat={true}
