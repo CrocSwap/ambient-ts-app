@@ -64,6 +64,9 @@ function TutorialComponent(props: propsIF) {
         if (refVal < steps.length - 1) {
             setStepIndex(refVal + 1);
         }
+        else if (refVal === steps.length -1){
+            completeTutorial();
+        }
     };
     const prevStep = () => {
         const refVal =
