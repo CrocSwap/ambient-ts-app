@@ -27,7 +27,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import styles from './TradeCharts.module.css';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import TradeCandleStickChart from '../TradeCandleStickChart/TradeCandleStickChart';
+import TradeCandleStickChart from '../../../platformAmbient/Trade/TradeCharts/TradeCandleStickChart';
 import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { BrandContext } from '../../../../contexts/BrandContext';
