@@ -7,7 +7,7 @@ import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData, SpotPriceFn } from '../dataLayer/functions';
 import { Provider } from 'ethers';
 
-interface argsIF {
+export interface argsIF {
     tokenList: TokenIF[];
     base: string;
     quote: string;
