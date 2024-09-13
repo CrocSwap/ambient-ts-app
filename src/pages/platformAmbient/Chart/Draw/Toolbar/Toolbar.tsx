@@ -54,7 +54,7 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const mobileView = useMediaQuery('(max-width: 780px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
@@ -322,8 +322,8 @@ function ChartToolbar() {
             isActive={isToolbarOpen}
             isMobile={mobileView}
             isSmallScreen={smallScreen}
-            marginTopValue={chartContainerOptions.top - 57}
-            height={chartContainerOptions.height}
+            marginTopValue={chartContainerOptions.top -  57}
+            height={chartContainerOptions.height-xAxisHeightPixel}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
