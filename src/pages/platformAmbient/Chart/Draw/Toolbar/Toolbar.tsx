@@ -31,6 +31,7 @@ import FibRetracementSvg from '../../../../../assets/images/icons/draw/FibRetrac
 import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
 import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
 import { BrandContext } from '../../../../../contexts/BrandContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 /* interface ToolbarProps {
   
@@ -85,6 +86,7 @@ function ChartToolbar() {
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
+    const { isUserIdle10min } = useContext(AppStateContext);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -315,13 +317,15 @@ function ChartToolbar() {
         }
     };
 
-    return chartContainerOptions && chartContainerOptions.top !== 0 ? (
+    return chartContainerOptions &&
+        chartContainerOptions.top !== 0 &&
+        !isUserIdle10min ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
             isSmallScreen={smallScreen}
-            marginTopValue={chartContainerOptions.top -  57}
-            height={chartContainerOptions.height-xAxisHeightPixel}
+            marginTopValue={chartContainerOptions.top - 57}
+            height={chartContainerOptions.height - xAxisHeightPixel}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
