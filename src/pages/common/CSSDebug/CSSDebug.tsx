@@ -1,5 +1,3 @@
-// import { useState } from 'react';
-// import { ColorResult, SketchPicker } from 'react-color';
 import Swap from '../../platformAmbient/Swap/Swap';
 import ColorToggle from './ColorToggle';
 import styles from './CSSDebug.module.css';
@@ -31,52 +29,9 @@ const cssVariables = {
 export type toggleableColors = (typeof cssVariables.colors)[number];
 
 export default function CSSDebug() {
-    // const [activeProperty, setActiveProperty] = useState<[toggleableColors, string]|null>(null);
-    // function updateProperty(p: toggleableColors): void {
-    //     const currentProperty: string = activeProperty
-    //         ? activeProperty[1]
-    //         : getCSSCustomPropertyValue(p);
-    //     setActiveProperty([p, currentProperty]);
-    // }
-    // function updateColor(c: string): void {
-    //     if (activeProperty) {
-    //         setActiveProperty([activeProperty[0], c]);
-    //     }
-    // }
-
-    // function getCSSCustomPropertyValue (property: toggleableColors): string {
-    //     const root = document.documentElement;
-    //     const value = getComputedStyle(root).getPropertyValue(property).trim();
-    //     return value || '';
-    // };
-
-    // function handleColorButtonClick(v: toggleableColors): void {
-    //     if (activeProperty) {
-    //         updateProperty(v);
-    //     } else {
-    //         const activeColor = getCSSCustomPropertyValue(v);
-    //         setActiveProperty([v, activeColor]);
-    //     }
-    // }
 
     return (
         <>
-            {/* {
-                cssVariables.colors.map(
-                    (variable: toggleableColors) => (
-                        <button
-                            key={variable}
-                            onClick={() => handleColorButtonClick(variable)}
-                        >
-                            <h6>Change {variable}</h6>
-                        </button>
-                    )
-                )
-            } */}
-            {/* {activeProperty && <SketchPicker
-                color={activeProperty[1]}
-                onChange={(color: ColorResult) => updateColor(color.hex)}
-            />} */}
             <section
                 className={styles.color_toggles}
             >
