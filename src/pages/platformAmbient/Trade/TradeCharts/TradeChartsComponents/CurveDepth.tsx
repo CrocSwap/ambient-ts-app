@@ -1,7 +1,6 @@
 import styles from './CurveDepth.module.css';
-import { useState, useRef, memo } from 'react';
+import {  memo } from 'react';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { overlayIF } from '../../../../../App/hooks/useChartSettings';
 
 interface propsIF {
@@ -11,9 +10,8 @@ interface propsIF {
 function CurveDepth(props: propsIF) {
     const { overlayMethods } = props;
 
-    const [showCurveDepthDropdown, setShowCurveDepthDropdown] = useState(false);
 
-    const mobileView = useMediaQuery('(max-width: 968px)');
+    const mobileView = useMediaQuery('(max-width: 768px)');
 
     const curveDepthData = [
         {
@@ -33,34 +31,17 @@ function CurveDepth(props: propsIF) {
         },
     ];
 
-    const wrapperStyle = showCurveDepthDropdown
-        ? styles.dropdown_wrapper_active
-        : styles.dropdown_wrapper;
 
-    const dropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => {
-        setShowCurveDepthDropdown(false);
-    };
-    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
+ ;
 
     function handleCurveDepthClickMobile(action: () => void) {
         action();
-        setShowCurveDepthDropdown(false);
     }
 
     const curveDepthMobile = (
-        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
-            <button
-                className={styles.curve_depth_mobile_button}
-                onClick={() =>
-                    setShowCurveDepthDropdown(!showCurveDepthDropdown)
-                }
-                aria-label='Show curve depth dropdown.'
-            >
-                {overlayMethods.overlay}
-            </button>
+         
 
-            <div className={wrapperStyle}>
+            <div className={styles.mobile_container}>
                 {curveDepthData.map((button, idx) => (
                     <div className={styles.curve_depth_container} key={idx}>
                         <button
@@ -80,7 +61,7 @@ function CurveDepth(props: propsIF) {
                     </div>
                 ))}
             </div>
-        </div>
+       
     );
     if (mobileView) return curveDepthMobile;
 
