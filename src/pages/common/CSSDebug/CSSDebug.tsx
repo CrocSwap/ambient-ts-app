@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import Swap from '../../platformAmbient/Swap/Swap';
 import ColorToggle from './ColorToggle';
 import styles from './CSSDebug.module.css';
 
 const cssVariables = {
     colors: [
-        '--blur-bg',
         '--text1',
         '--text2',
         '--text3',
@@ -29,6 +29,8 @@ const cssVariables = {
 export type toggleableColors = (typeof cssVariables.colors)[number];
 
 export default function CSSDebug() {
+    const [themeName, setThemeName] = useState<string>('');
+    false && themeName;
 
     return (
         <>
@@ -44,6 +46,15 @@ export default function CSSDebug() {
                 ))
             }
             </section>
+            <label htmlFor='theme_name'>Name this Theme:</label>
+            <input
+                type='text'
+                name='theme_name'
+                onChange={(e) => setThemeName(e.target.value.trim())}
+            />
+            <div>
+                {`[data-theme='${themeName}']`}
+            </div>
             <Swap />
         </>
     );
