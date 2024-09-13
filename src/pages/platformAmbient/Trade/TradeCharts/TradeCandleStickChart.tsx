@@ -93,7 +93,7 @@ function TradeCandleStickChart(props: propsIF) {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const { isUserIdle } = useContext(AppStateContext);
+    const { isUserIdle10min } = useContext(AppStateContext);
 
     const { liqMode } = props.chartItemStates;
 
@@ -1157,7 +1157,7 @@ function TradeCandleStickChart(props: propsIF) {
                         </div>
                     </>
                 )}
-                {isOpenChart && !isUserIdle && (
+                {isOpenChart && !isUserIdle10min && (
                     <>
                         <ChartTooltip
                             currentData={currentData}
@@ -1206,7 +1206,7 @@ function TradeCandleStickChart(props: propsIF) {
                 )}
 
                 {!(!isOpenChart || isCompletedFetchData) &&
-                    isUserIdle &&
+                    isUserIdle10min &&
                     skeletonChart}
             </div>
         </>

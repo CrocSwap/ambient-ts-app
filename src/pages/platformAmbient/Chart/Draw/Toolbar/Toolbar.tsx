@@ -86,7 +86,7 @@ function ChartToolbar() {
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
-    const { isUserIdle } = useContext(AppStateContext);
+    const { isUserIdle10min } = useContext(AppStateContext);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -317,13 +317,15 @@ function ChartToolbar() {
         }
     };
 
-    return chartContainerOptions && chartContainerOptions.top !== 0 && !isUserIdle ? (
+    return chartContainerOptions &&
+        chartContainerOptions.top !== 0 &&
+        !isUserIdle10min ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
             isSmallScreen={smallScreen}
-            marginTopValue={chartContainerOptions.top -  57}
-            height={chartContainerOptions.height-xAxisHeightPixel}
+            marginTopValue={chartContainerOptions.top - 57}
+            height={chartContainerOptions.height - xAxisHeightPixel}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
