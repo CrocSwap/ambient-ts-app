@@ -320,8 +320,8 @@ function ChartToolbar() {
             isActive={isToolbarOpen}
             isMobile={mobileView}
             isSmallScreen={smallScreen}
-            marginTopValue={chartContainerOptions.top - 57}
-            height={chartContainerOptions.height}
+            marginTopValue={chartContainerOptions.top -  57}
+            height={chartContainerOptions.height-xAxisHeightPixel}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
