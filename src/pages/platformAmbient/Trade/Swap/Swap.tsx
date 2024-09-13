@@ -844,7 +844,7 @@ function Swap(props: propsIF) {
             button={
                 <Button
                     idForDOM='confirm_swap_button'
-                    style={{ textTransform: 'none' }}
+                    style={{ textTransform: 'none', height: '51px' }}
                     title={buttonTitle}
                     action={
                         areBothAckd
