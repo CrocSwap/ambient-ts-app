@@ -26,6 +26,7 @@ import { CandleDataIF } from '../../../ambient-utils/types';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
+import Transactions2 from './Transactions2/Transactions2';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -119,7 +120,12 @@ function TradeTabs2(props: propsIF) {
         : [
               {
                   label: 'Transactions',
-                  content: <Transactions {...transactionsProps} />,
+                  content: (
+                      <Transactions2
+                          isAccountPage={false}
+                          candleData={filter}
+                      />
+                  ),
                   icon: recentTransactionsImage,
                   showRightSideOption: true,
               },

@@ -243,9 +243,11 @@ export const RangeRow = styled(Row)<{
 
 export const RowItem = styled(FlexContainer)<{
     type?: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
+    width?: number;
     hover?: boolean;
 }>`
-    ${({ hover, type }) => `
+    ${({ hover, type, width }) => `
+        ${width && `width: ${width}px;`}
         ${
             hover &&
             `
@@ -283,6 +285,8 @@ export const RowItem = styled(FlexContainer)<{
                       : ''
         };
     `}
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 `;
 
 export const ViewMoreButton = styled.button`

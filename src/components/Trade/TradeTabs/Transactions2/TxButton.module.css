@@ -1,0 +1,14 @@
+.tx_button_wrapper {
+    width: 24px;
+    height: 24px;
+}
+
+.tx_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid grey;
+    border-radius: 5px;
+}

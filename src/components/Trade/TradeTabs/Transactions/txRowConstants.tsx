@@ -450,6 +450,7 @@ export const txRowConstants = (props: propsIF) => {
                 alignItems='center'
                 justifyContent='flex-end'
                 gap={4}
+                //  style={{fontSize: 'var(--body-size)', lineHeight: 'var(--body-lh)', display: 'none'}}
             >
                 {baseQuantityDisplay}
                 {baseTokenLogoComponent}
