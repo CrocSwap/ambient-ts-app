@@ -337,17 +337,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         const thresholdDepth = liquidityData?.liqTransitionPointforDepth;
 
         if (liqBidSeries && chartThemeColors && liqAskSeries) {
-            decorateForLiquidityArea(
-                liqBidSeries,
-                chartThemeColors,
-                true,
-            );
+            decorateForLiquidityArea(liqBidSeries, chartThemeColors, true);
 
-            decorateForLiquidityArea(
-                liqAskSeries,
-                chartThemeColors,
-                false,
-            );
+            decorateForLiquidityArea(liqAskSeries, chartThemeColors, false);
 
             decorateForLiquidityLine(
                 lineLiqSeries,
@@ -360,7 +352,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             decorateForLiquidityArea(
                 liqDepthAskSeries,
                 chartThemeColors,
-                false
+                false,
             );
             decorateForLiquidityLine(
                 lineLiqDepthAskSeries,
@@ -370,11 +362,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         }
 
         if (liqDepthBidSeries && chartThemeColors) {
-            decorateForLiquidityArea(
-                liqDepthBidSeries,
-                chartThemeColors,
-                true
-            );
+            decorateForLiquidityArea(liqDepthBidSeries, chartThemeColors, true);
             decorateForLiquidityLine(
                 lineLiqDepthBidSeries,
                 thresholdDepth,
