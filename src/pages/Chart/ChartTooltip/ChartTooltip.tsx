@@ -34,12 +34,8 @@ export default function ChartTooltip(props: propsIF) {
                 <CurrentDataDiv>
                     <p>
                         {`${topToken.symbol} / ${bottomToken.symbol} • ${matchingCandleTime?.readable} • `}
-                    </p>
-                    <p>
                         {`O: ${getDollarPrice(isDenomBase ? currentData.invPriceOpenExclMEVDecimalCorrected : currentData.priceOpenExclMEVDecimalCorrected).formattedValue} `}
                         {`H: ${getDollarPrice(isDenomBase ? currentData.invMinPriceExclMEVDecimalCorrected : currentData.maxPriceExclMEVDecimalCorrected).formattedValue} `}
-                    </p>
-                    <p>
                         {`L: ${getDollarPrice(isDenomBase ? currentData.invMaxPriceExclMEVDecimalCorrected : currentData.minPriceExclMEVDecimalCorrected).formattedValue} `}
                         {`C: ${getDollarPrice(isDenomBase ? currentData.invPriceCloseExclMEVDecimalCorrected : currentData.priceCloseExclMEVDecimalCorrected).formattedValue} `}
                         {`V: ${formatDollarAmountAxis(currentData.volumeUSD)}`}
