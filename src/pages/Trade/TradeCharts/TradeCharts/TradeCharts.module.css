@@ -49,6 +49,8 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+
+    
 }
 .mobile_settings_header{
     font-size: var(--body-size);

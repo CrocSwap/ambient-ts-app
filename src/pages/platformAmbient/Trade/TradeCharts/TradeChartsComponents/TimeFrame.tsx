@@ -31,14 +31,7 @@ function TimeFrame(props: propsIF) {
 
     const timeFrameMobile = (
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
-            <button
-                className={styles.time_frame_mobile_button}
-                onClick={() => setShowTimeFrameDropdown(!showTimeFrameDropdown)}
-                tabIndex={0}
-                aria-label='Open time frame dropdown.'
-            >
-                Duration
-            </button>
+        
 
             <div className={wrapperStyle}>
                 {candleTime.defaults.map((option, idx) => (
