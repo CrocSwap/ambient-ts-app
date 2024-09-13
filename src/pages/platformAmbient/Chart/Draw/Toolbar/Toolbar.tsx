@@ -53,7 +53,7 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const mobileView = useMediaQuery('(max-width: 780px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
