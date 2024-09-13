@@ -46,6 +46,7 @@ import {
 } from '../../Chart/ChartUtils/chartConstants';
 import { filterCandleWithTransaction } from '../../../Chart/ChartUtils/discontinuityScaleUtils';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -1146,6 +1147,11 @@ function TradeCandleStickChart(props: propsIF) {
                     </>
                 )}
                 {isOpenChart && (
+                    <>
+                    <ChartTooltip
+                       currentData={currentData}
+                       showTooltip={showTooltip}
+                   />
                     <Chart
                         isTokenABase={isTokenABase}
                         liquidityData={liquidityData}
@@ -1184,8 +1190,8 @@ function TradeCandleStickChart(props: propsIF) {
                         setIsCompletedFetchData={setIsCompletedFetchData}
                         setChartResetStatus={setChartResetStatus}
                         chartResetStatus={chartResetStatus}
-                        showTooltip={showTooltip}
                     />
+                    </>
                 )}
             </div>
         </>

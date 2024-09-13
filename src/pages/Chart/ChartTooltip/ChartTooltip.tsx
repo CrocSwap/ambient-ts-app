@@ -13,7 +13,7 @@ interface propsIF {
 export default function ChartTooltip(props: propsIF) {
     const { showTooltip, currentData } = props;
 
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings,isToolbarOpen } = useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
     const matchingCandleTime = candleTime.defaults.find(
@@ -29,7 +29,7 @@ export default function ChartTooltip(props: propsIF) {
     const getDollarPrice = useDollarPrice();
 
     const chartTooltip = (
-        <ChartTooltipDiv>
+        <ChartTooltipDiv isToolbarOpen={isToolbarOpen}>
             {showTooltip && currentData ? (
                 <CurrentDataDiv>
                     <p>

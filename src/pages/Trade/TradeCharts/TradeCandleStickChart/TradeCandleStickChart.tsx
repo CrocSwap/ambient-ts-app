@@ -48,6 +48,7 @@ import {
     scaleData,
 } from '../../../platformAmbient/Chart/ChartUtils/chartUtils';
 import Chart from '../../../platformAmbient/Chart/Chart';
+import ChartTooltip from '../../../Chart/ChartTooltip/ChartTooltip';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -1148,46 +1149,51 @@ function TradeCandleStickChart(props: propsIF) {
                     </>
                 )}
                 {isOpenChart && (
-                    <Chart
-                        isTokenABase={isTokenABase}
-                        liquidityData={liquidityData}
-                        changeState={props.changeState}
-                        denomInBase={isDenomBase}
-                        chartItemStates={props.chartItemStates}
-                        setCurrentData={setCurrentData}
+                     <>
+                     <ChartTooltip
                         currentData={currentData}
-                        isCandleAdded={isCandleAdded}
-                        setIsCandleAdded={setIsCandleAdded}
-                        scaleData={scaleData}
-                        prevPeriod={prevPeriod}
-                        candleTimeInSeconds={period}
-                        poolPriceNonDisplay={poolPriceNonDisplay}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        rescale={props.rescale}
-                        setRescale={props.setRescale}
-                        latest={props.latest}
-                        setLatest={props.setLatest}
-                        reset={props.reset}
-                        setReset={props.setReset}
-                        showLatest={props.showLatest}
-                        setShowLatest={props.setShowLatest}
-                        setShowTooltip={setShowTooltip}
-                        liquidityScale={liquidityScale}
-                        liquidityDepthScale={liquidityDepthScale}
-                        candleTime={chartSettings.candleTime.global}
-                        unparsedData={candleData}
-                        updateURL={updateURL}
-                        userTransactionData={userTransactionData}
-                        setPrevCandleCount={setPrevCandleCount}
-                        isFetchingEnoughData={isFetchingEnoughData}
-                        setIsFetchingEnoughData={setIsFetchingEnoughData}
-                        isCompletedFetchData={isCompletedFetchData}
-                        setIsCompletedFetchData={setIsCompletedFetchData}
-                        setChartResetStatus={setChartResetStatus}
-                        chartResetStatus={chartResetStatus}
                         showTooltip={showTooltip}
                     />
+                     <Chart
+                         isTokenABase={isTokenABase}
+                         liquidityData={liquidityData}
+                         changeState={props.changeState}
+                         denomInBase={isDenomBase}
+                         chartItemStates={props.chartItemStates}
+                         setCurrentData={setCurrentData}
+                         currentData={currentData}
+                         isCandleAdded={isCandleAdded}
+                         setIsCandleAdded={setIsCandleAdded}
+                         scaleData={scaleData}
+                         prevPeriod={prevPeriod}
+                         candleTimeInSeconds={period}
+                         poolPriceNonDisplay={poolPriceNonDisplay}
+                         selectedDate={selectedDate}
+                         setSelectedDate={setSelectedDate}
+                         rescale={props.rescale}
+                         setRescale={props.setRescale}
+                         latest={props.latest}
+                         setLatest={props.setLatest}
+                         reset={props.reset}
+                         setReset={props.setReset}
+                         showLatest={props.showLatest}
+                         setShowLatest={props.setShowLatest}
+                         setShowTooltip={setShowTooltip}
+                         liquidityScale={liquidityScale}
+                         liquidityDepthScale={liquidityDepthScale}
+                         candleTime={chartSettings.candleTime.global}
+                         unparsedData={candleData}
+                         updateURL={updateURL}
+                         userTransactionData={userTransactionData}
+                         setPrevCandleCount={setPrevCandleCount}
+                         isFetchingEnoughData={isFetchingEnoughData}
+                         setIsFetchingEnoughData={setIsFetchingEnoughData}
+                         isCompletedFetchData={isCompletedFetchData}
+                         setIsCompletedFetchData={setIsCompletedFetchData}
+                         setChartResetStatus={setChartResetStatus}
+                         chartResetStatus={chartResetStatus}
+                     />
+                     </>
                 )}
             </div>
         </>
