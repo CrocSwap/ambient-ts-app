@@ -1,0 +1,8 @@
+.color_toggle {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    margin: 8px;
+    padding: 4px;
+    outline: 1px solid yellow;
+}

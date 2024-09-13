@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
 import { toggleableColors } from './CSSDebug';
+import styles from './ColorToggle.module.css';
 
 interface propsIF {
     cssProperty: toggleableColors;
@@ -24,7 +25,8 @@ export default function ColorToggle(props: propsIF) {
     }
 
     return (
-        <section>
+        <section className={styles.color_toggle}>
+            <h4>Toggle {cssProperty}</h4>
             <SketchPicker
                 color={color}
                 onChange={((color: ColorResult) => handleChange(color))}
