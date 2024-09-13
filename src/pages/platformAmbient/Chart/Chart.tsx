@@ -125,7 +125,6 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
 import { BrandContext } from '../../../contexts/BrandContext';
 import CandleLineChart from './LineChart/LineChart';
-import ChartTooltip from '../../Chart/ChartTooltip/ChartTooltip';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 
 interface propsIF {
@@ -177,7 +176,6 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
-    showTooltip: boolean;
 }
 
 export default function Chart(props: propsIF) {
@@ -209,7 +207,6 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
-        showTooltip,
     } = props;
 
     const {
@@ -705,9 +702,8 @@ export default function Chart(props: propsIF) {
     );
 
     const [bandwidth, setBandwidth] = useState(5);
-    const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const toolbarWidth = smallScreen ? 0 : isToolbarOpen ? 38 : 15;
+    const toolbarWidth = isToolbarOpen ? 38 : 15;
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,
@@ -5933,10 +5929,6 @@ export default function Chart(props: propsIF) {
                 paddingLeft: toolbarWidth + 'px',
             }}
         >
-            <ChartTooltip
-                currentData={props.currentData}
-                showTooltip={showTooltip}
-            />
             <d3fc-group
                 id='d3fc_group'
                 auto-resize
