@@ -6,3 +6,15 @@
     padding: 4px;
     outline: 1px solid yellow;
 }
+
+.color_toggle > header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.color_box {
+    height: 100%;
+    aspect-ratio: 1;
+}

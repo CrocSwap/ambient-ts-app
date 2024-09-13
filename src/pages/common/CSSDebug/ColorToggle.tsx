@@ -26,7 +26,13 @@ export default function ColorToggle(props: propsIF) {
 
     return (
         <section className={styles.color_toggle}>
-            <h4>Toggle {cssProperty}</h4>
+            <header>
+                <h4>Toggle {cssProperty}</h4>
+                <div
+                    className={styles.color_box}
+                    style={{backgroundColor: color}}
+                />
+            </header>
             <SketchPicker
                 color={color}
                 onChange={((color: ColorResult) => handleChange(color))}
