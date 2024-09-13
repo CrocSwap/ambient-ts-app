@@ -13,7 +13,7 @@ interface propsIF {
 export default function ChartTooltip(props: propsIF) {
     const { showTooltip, currentData } = props;
 
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings,isToolbarOpen } = useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
     const matchingCandleTime = candleTime.defaults.find(
@@ -29,17 +29,13 @@ export default function ChartTooltip(props: propsIF) {
     const getDollarPrice = useDollarPrice();
 
     const chartTooltip = (
-        <ChartTooltipDiv>
+        <ChartTooltipDiv isToolbarOpen={isToolbarOpen}>
             {showTooltip && currentData ? (
                 <CurrentDataDiv>
                     <p>
                         {`${topToken.symbol} / ${bottomToken.symbol} • ${matchingCandleTime?.readable} • `}
-                    </p>
-                    <p>
                         {`O: ${getDollarPrice(isDenomBase ? currentData.invPriceOpenExclMEVDecimalCorrected : currentData.priceOpenExclMEVDecimalCorrected).formattedValue} `}
                         {`H: ${getDollarPrice(isDenomBase ? currentData.invMinPriceExclMEVDecimalCorrected : currentData.maxPriceExclMEVDecimalCorrected).formattedValue} `}
-                    </p>
-                    <p>
                         {`L: ${getDollarPrice(isDenomBase ? currentData.invMaxPriceExclMEVDecimalCorrected : currentData.minPriceExclMEVDecimalCorrected).formattedValue} `}
                         {`C: ${getDollarPrice(isDenomBase ? currentData.invPriceCloseExclMEVDecimalCorrected : currentData.priceCloseExclMEVDecimalCorrected).formattedValue} `}
                         {`V: ${formatDollarAmountAxis(currentData.volumeUSD)}`}
