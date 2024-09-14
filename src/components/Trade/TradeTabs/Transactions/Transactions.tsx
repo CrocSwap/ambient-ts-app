@@ -11,7 +11,6 @@ import {
     useRef,
     useState,
 } from 'react';
-import { RiArrowUpSLine } from 'react-icons/ri';
 import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
@@ -66,17 +65,15 @@ import {
 } from '../../../../contexts/TradeTableContext';
 import { FlexContainer } from '../../../../styled/Common';
 import {
-    ScrollToTopButton,
-    ScrollToTopButtonMobile,
     TransactionRow as TransactionRowStyled,
 } from '../../../../styled/Components/TransactionTable';
-import { domDebug } from '../../../Chat/DomDebugger/DomDebuggerUtils';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
 import TableRows from '../TableRows';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
+import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -86,16 +83,6 @@ interface propsIF {
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
-}
-
-enum ScrollDirection {
-    UP,
-    DOWN,
-}
-
-enum ScrollPosition {
-    TOP,
-    BOTTOM,
 }
 
 function Transactions(props: propsIF) {
@@ -161,25 +148,10 @@ function Transactions(props: propsIF) {
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
-    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
-    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
-
-    const moreDataLoadingRef = useRef<boolean>();
-    moreDataLoadingRef.current = moreDataLoading;
-
-    const extraPagesAvailableRef = useRef<number>();
-    extraPagesAvailableRef.current = extraPagesAvailable;
-
+    
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
-
-    const pagesVisibleRef = useRef<[number, number]>();
-    pagesVisibleRef.current = pagesVisible;
-
-    const lastRowRef = useRef<HTMLDivElement | null>(null);
-    const firstRowRef = useRef<HTMLDivElement | null>(null);
 
     const showAllData = !isAccountView && showAllDataSelection;
 
@@ -214,63 +186,12 @@ function Transactions(props: propsIF) {
         ],
     );
 
-    const [lastSeenTxID, setLastSeenTxID] = useState<string>('');
-    const lastSeenTxIDRef = useRef<string>();
-    lastSeenTxIDRef.current = lastSeenTxID;
-
-    const [firstSeenTxID, setFirstSeenTxID] = useState<string>('');
-    const firstSeenTxIDRef = useRef<string>();
-    firstSeenTxIDRef.current = firstSeenTxID;
-
-    const [autoScroll, setAutoScroll] = useState(false);
-    const autoScrollRef = useRef<boolean>();
-    autoScrollRef.current = autoScroll;
-
-    const [autoScrollDirection, setAutoScrollDirection] = useState(
-        ScrollDirection.DOWN,
-    );
-    const autoScrollDirectionRef = useRef<ScrollDirection>();
-    autoScrollDirectionRef.current = autoScrollDirection;
-
-    const [isTableReady, setIsTableReady] = useState(true);
-    const isTableReadyRef = useRef<boolean>();
-    isTableReadyRef.current = isTableReady;
-
-    const getOverlayComponentForLoadingState = () => {
+    const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    useEffect(() => {
+        setShowInfiniteScroll(!isAccountView && showAllData);
+    }, [isAccountView, showAllData]);
 
 
-            if(isSmallScreen){
-                return <div style={{
-                    transition: 'all .2s ease-in-out', 
-                    // position: 'absolute', top: '0', left: '0', 
-                    position: 'absolute', top: '80px', left: '0', 
-                    zIndex: isTableReadyRef.current ? '-1': '1',
-                    backdropFilter: 'blur(10px)',
-                    width: '100%',
-                    height: 'calc(100% - 80px)'
-                }}></div>
-            }else{
-                return <div style={{
-                    transition: 'all .2s ease-in-out', 
-                    position: 'absolute', top: '0', left: '0', 
-                    zIndex: isTableReadyRef.current ? '-1': '1',
-                    backdropFilter: 'blur(10px)',
-                    width: '100%',
-                    height: '100%'
-                }}></div>
-            }
-    }
-
-    const bindTableReadyState = (newState: boolean) => {
-        if(newState === true){
-            setTransactionTableOpacity('1');
-            setIsTableReady(true);
-        }
-        else{
-            setTransactionTableOpacity('.5');
-            setIsTableReady(false);
-        }
-    }
 
     useEffect(() => {
         const existingChanges = new Set(
@@ -361,11 +282,6 @@ function Transactions(props: propsIF) {
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
-    const txSpanSelectorForScrollMethod =  isSmallScreen ? '#current_row_scroll > div > div:nth-child(1) > div:nth-child(1) > span':
-        '#current_row_scroll > div > div:nth-child(2) > div > span';
-    const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
-        'div:nth-child(2)';
-    
 
     const tableView: 'small' | 'medium' | 'large' =
         isSmallScreen ||
@@ -589,15 +505,6 @@ function Transactions(props: propsIF) {
         sortData,
     ] = useSortedTxs('time', txDataToDisplay);
 
-    const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
-        return isCandleSelected || isAccountView
-            ? sortedTransactions
-            : sortedTransactions.slice(
-                  pagesVisible[0] * 50,
-                  pagesVisible[1] * 50 + 50,
-              );
-    }, [sortedTransactions, pagesVisible, isCandleSelected, isAccountView]);
-
     const headerColumnsDisplay: JSX.Element = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
@@ -644,322 +551,75 @@ function Transactions(props: propsIF) {
         }
     };
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const moreDataLoadingVal = moreDataLoadingRef.current
-                    ? moreDataLoadingRef.current
-                    : moreDataLoading;
-                const moreDataAvailableVal = moreDataAvailableRef.current
-                    ? moreDataAvailableRef.current
-                    : moreDataAvailable;
-                const extraPagesAvailableVal = extraPagesAvailableRef.current
-                    ? extraPagesAvailableRef.current
-                    : extraPagesAvailable;
-                const pagesVisibleVal = pagesVisibleRef.current
-                    ? pagesVisibleRef.current
-                    : pagesVisible;
 
-                const entry = entries[0];
-                if (moreDataLoadingVal) return;
-                if (entry.isIntersecting) {
-                    bindLastSeenRow();
-                    bindTableReadyState(false);
-                    // last row is visible
-                    extraPagesAvailableVal + 1 > pagesVisibleVal[1]
-                        ? shiftDown()
-                        : moreDataAvailableVal
-                          ? addMoreData()
-                          : undefined;
-                }
-            },
-            {
-                threshold: 0.1, // Trigger when 10% of the element is visible
-            },
-        );
 
-        const currentElement = lastRowRef.current;
-        if (currentElement) {
-            observer.observe(currentElement);
-        }
-
-        return () => {
-            if (currentElement) {
-                observer.unobserve(currentElement);
-            }
-        };
-    }, [
-        lastRowRef.current,
-        moreDataLoading,
-        moreDataAvailable,
-        extraPagesAvailable,
-        // pagesVisible[1],
-    ]);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const entry = entries[0];
-                if (moreDataLoading) return;
-                if (entry.isIntersecting) {
-                    // first row is visible
-                    pagesVisible[0] > 0 && shiftUp();
-                    bindFirstSeenRow();
-                }
-            },
-            {
-                threshold: 0.1, // Trigger when 10% of the element is visible
-            },
-        );
-
-        const currentElement = firstRowRef.current;
-        if (currentElement) {
-            observer.observe(currentElement);
-        }
-
-        return () => {
-            if (currentElement) {
-                observer.unobserve(currentElement);
-            }
-        };
-    }, [firstRowRef.current, moreDataLoading, pagesVisible[0]]);
-
-    useEffect(() => {
-        setPagesVisible([0, 1]);
-        setExtraPagesAvailable(0);
-        setMoreDataAvailable(true);
-        setMoreDataLoading(false);
-    }, [selectedBaseAddress + selectedQuoteAddress]);
-
-    const scrollToTop = () => {
-        setLastSeenTxID('');
-        setPagesVisible([0, 1]);
-
-        if(isSmallScreen){
-            const wrapper = document.getElementById('current_row_scroll');
-            if(wrapper){
-                    wrapper.scrollTo({
-                        top: 0,
-                        behavior: 'instant' as ScrollBehavior,
-                    });
-            }
-        }else if(scrollRef.current) {
-            // scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
-            scrollRef.current.scrollTo({
-                top: 0,
-                behavior: 'instant' as ScrollBehavior,
-            });
-        }
-    };
-
-    const triggerAutoScroll = (
-        direction: ScrollDirection,
-        timeout?: number,
-    ) => {
-        bindTableReadyState(true);
-        setAutoScroll(true);
-        setAutoScrollDirection(direction);
-        setTimeout(
-            () => {
-                setAutoScroll(false);
-            },
-            timeout ? timeout : 2000,
-        );
-    };
-
-    const setTransactionTableOpacity = (val: string) => {
-        if (scrollRef.current) {
-            scrollRef.current.style.opacity = val;
-        }
-    };
-
-    const shiftUp = (): void => {
-        setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
-        triggerAutoScroll(ScrollDirection.UP);
-    };
-
-    const shiftDown = (): void => {
-        setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
-        triggerAutoScroll(ScrollDirection.DOWN);
-    };
-
-    useEffect(() => {
-        domDebug('sortBy', sortBy);
-        scrollToTop();
-    }, [sortBy, showAllData]);
-
-    const markRows = false;
-
-    const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
-
-        const txSpans = document.querySelectorAll(
-            txSpanSelectorForScrollMethod
-        );
-
-        txSpans.forEach((span) => {
-            if (span.textContent === txID) {
-                const row = span.parentElement?.parentElement as HTMLDivElement;
-                // row.style.backgroundColor = 'red';
-
-                const parent = row.parentElement as HTMLDivElement;
-                if (markRows) {
-                    parent.style.background = 'red';
-                }
-                parent.scrollIntoView({
-                    block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
-                    behavior: 'instant' as ScrollBehavior,
-                });
-            }
-        });
-    };
-
-    const bindFirstSeenRow = (): void => {
-        const rows = document.querySelectorAll('#current_row_scroll > div');
-        if (rows.length > 0) {
-            const firstRow = rows[0] as HTMLDivElement;
-            if (markRows) {
-                firstRow.style.backgroundColor = 'cyan';
-            }
-
-            const txDiv = firstRow.querySelector(txSpanSelectorForBindMethod);
-            if (txDiv) {
-                const txText = txDiv.querySelector('span')?.textContent;
-                setFirstSeenTxID(txText || '');
-                domDebug('firstSeenTxID', txText);
-            }
-        }
-    };
-
-    const bindLastSeenRow = (): void => {
-        const rows = document.querySelectorAll('#current_row_scroll > div');
-        if (rows.length > 0) {
-            // const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            rows.forEach((row) => {
-                (row as HTMLDivElement).style.backgroundColor = 'transparent';
-            });
-            const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            if (markRows) {
-                lastRow.style.backgroundColor = 'blue';
-            }
-
-            const txDiv = lastRow.querySelector(txSpanSelectorForBindMethod);
-            if (txDiv) {
-                const txText = txDiv.querySelector('span')?.textContent;
-                setLastSeenTxID(txText || '');
-                domDebug('lastSeenTxID', txText);
-            }
-        }
-    };
 
     const autoScrollAlternateSolutionActive = true;
 
-    const addMoreData = (): void => {
-        if (!crocEnv || !provider) return;
+    const addMoreData = async():Promise<boolean> => {
+        
         // retrieve pool recent changes
-        setMoreDataLoading(true);
-        fetchPoolRecentChanges({
-            tokenList: tokens.tokenUniv,
-            base: selectedBaseAddress,
-            quote: selectedQuoteAddress,
-            poolIdx: poolIndex,
-            chainId: chainId,
-            n: 50,
-            timeBefore: oldestTxTime,
-            crocEnv: crocEnv,
-            graphCacheUrl: activeNetwork.graphCacheUrl,
-            provider: provider,
-            cachedFetchTokenPrice: cachedFetchTokenPrice,
-            cachedQuerySpotPrice: cachedQuerySpotPrice,
-            cachedTokenDetails: cachedTokenDetails,
-            cachedEnsResolve: cachedEnsResolve,
-        })
-            .then((poolChangesJsonData) => {
-                if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                    // setTransactionsByPool((prev) => {
-                    setFetchedTransactions((prev) => {
-                        const existingChanges = new Set(
-                            prev.changes.map(
-                                (change) => change.txHash || change.txId,
-                            ),
-                        ); // Adjust if using a different unique identifier
-                        const uniqueChanges = poolChangesJsonData.filter(
-                            (change) =>
-                                !existingChanges.has(
-                                    change.txHash || change.txId,
-                                ),
-                        );
-                        if (uniqueChanges.length > 0) {
-                            setExtraPagesAvailable((prev) => prev + 1);
-                            setPagesVisible((prev) => [
-                                prev[0] + 1,
-                                prev[1] + 1,
-                            ]);
-
-                            triggerAutoScroll(ScrollDirection.DOWN);
+        return new Promise(resolve => {
+            if(!crocEnv || !provider) resolve(false);
+            else{
+                fetchPoolRecentChanges({
+                    tokenList: tokens.tokenUniv,
+                    base: selectedBaseAddress,
+                    quote: selectedQuoteAddress,
+                    poolIdx: poolIndex,
+                    chainId: chainId,
+                    n: 50,
+                    timeBefore: oldestTxTime,
+                    crocEnv: crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider: provider,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
+                })
+                    .then((poolChangesJsonData) => {
+                        if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                            // setTransactionsByPool((prev) => {
+                            setFetchedTransactions((prev) => {
+                                const existingChanges = new Set(
+                                    prev.changes.map(
+                                        (change) => change.txHash || change.txId,
+                                    ),
+                                ); // Adjust if using a different unique identifier
+                                const uniqueChanges = poolChangesJsonData.filter(
+                                    (change) =>
+                                        !existingChanges.has(
+                                            change.txHash || change.txId,
+                                        ),
+                                );
+                                if (uniqueChanges.length > 0) {
+                                    resolve(true);
+                                } else {
+                                    setMoreDataAvailable(false);
+                                    resolve(false);
+                                }
+                                let newTxData = [];
+                                if (autoScrollAlternateSolutionActive) {
+                                    newTxData = sortData([
+                                        ...prev.changes,
+                                        ...uniqueChanges,
+                                    ]);
+                                } else {
+                                    newTxData = [...prev.changes, ...uniqueChanges];
+                                }
+                                return {
+                                    dataReceived: true,
+                                    changes: newTxData,
+                                };
+                            });
                         } else {
                             setMoreDataAvailable(false);
                         }
-                        let newTxData = [];
-                        if (autoScrollAlternateSolutionActive) {
-                            newTxData = sortData([
-                                ...prev.changes,
-                                ...uniqueChanges,
-                            ]);
-                        } else {
-                            newTxData = [...prev.changes, ...uniqueChanges];
-                        }
-                        return {
-                            dataReceived: true,
-                            changes: newTxData,
-                        };
-                    });
-                } else {
-                    setMoreDataAvailable(false);
-                }
-            })
-            .then(() => setMoreDataLoading(false))
-            .catch(console.error);
-    };
-
-
-    useEffect(() => {
-        if (autoScroll) {
-            if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
-                if (autoScrollDirection === ScrollDirection.DOWN) {
-                    scrollByTxID(
-                        lastSeenTxIDRef.current || '',
-                        ScrollPosition.BOTTOM,
-                    );
-                } else if (autoScrollDirection === ScrollDirection.UP) {
-                    scrollByTxID(
-                        firstSeenTxIDRef.current || '',
-                        ScrollPosition.TOP,
-                    );
-                }
-            } else {
-                scrollWithAlternateStrategy();
+                    })
+                    .catch(console.error);
             }
-        }
-    }, [sortedTxDataToDisplay]);
-
-    const scrollWithAlternateStrategy = () => {
-
-        if(isSmallScreen){
-            const wrapper = document.getElementById('current_row_scroll');
-            if(wrapper){
-                    wrapper.scrollTo({
-                        top: autoScrollDirection === ScrollDirection.DOWN ? 1400 : 1340,
-                        behavior: 'instant' as ScrollBehavior,
-                    });
-            }
-        }else{
-            if ( scrollRef.current) {
-                scrollRef.current.scrollTo({
-                    top: autoScrollDirection === ScrollDirection.DOWN ? 1912 : 1850,
-                    behavior: 'instant' as ScrollBehavior,
-                });
-            }
-        }
+        })
     };
 
     const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
@@ -1108,15 +768,33 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                <TableRows
-                    type='Transaction'
-                    data={sortedTxDataToDisplay}
-                    fullData={sortedTransactions}
-                    tableView={tableView}
-                    isAccountView={isAccountView}
-                    firstRowRef={firstRowRef}
-                    lastRowRef={lastRowRef}
-                />
+                    {showInfiniteScroll ? 
+                    (
+                    <TableRowsInfiniteScroll
+                        type='Transaction'
+                        fullData={sortedTransactions}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                        fetcherFunction={addMoreData}
+                        scrollRef={scrollRef}
+                        sortBy={sortBy}
+                        showAllData={showAllData}
+                        selectedBaseAddress={selectedBaseAddress}
+                        selectedQuoteAddress={selectedQuoteAddress}
+                        moreDataAvailable={moreDataAvailableRef.current}
+                        />
+
+                    )
+                    :
+                    (<TableRows
+                        type='Transaction'
+                        data={sortedTransactions}
+                        fullData={sortedTransactions}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                    />)
+                    }
+                
             </ul>
         </div>
     );
@@ -1138,17 +816,15 @@ function Transactions(props: propsIF) {
                 ref={scrollRef}
                 >
 
-                    {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
+                    {/* {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
                         <ScrollToTopButtonMobile
                             onClick={() => {
                                 scrollToTop();
                             }}
                         >
                             <RiArrowUpSLine size={20} color='white'/>
-                            {/* Scroll to top */}
                         </ScrollToTopButtonMobile>
-                    )}
-                    {getOverlayComponentForLoadingState()}
+                    )} */}
                     {transactionDataOrNull}
                 </div>
             </div>
@@ -1157,7 +833,7 @@ function Transactions(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' style={{ height: '100%' }}>
             <div>{headerColumnsDisplay}</div>
-            {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
+            {/* {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
                 <ScrollToTopButton
                     onClick={() => {
                         scrollToTop();
@@ -1166,7 +842,7 @@ function Transactions(props: propsIF) {
                 >
                     Return to Top
                 </ScrollToTopButton>
-            )}
+            )} */}
             <div
                 ref={scrollRef}
                 style={{
@@ -1176,7 +852,6 @@ function Transactions(props: propsIF) {
                 }}
                 className='custom_scroll_ambient'
             >
-                {getOverlayComponentForLoadingState()}
                 {(
                     isCandleSelected
                         ? dataLoadingStatus.isCandleDataLoading

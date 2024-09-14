@@ -31,11 +31,11 @@ interface LimitOrdersByUser {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }
-interface PositionsByPool {
+export interface PositionsByPool {
     dataReceived: boolean;
     positions: Array<PositionIF>;
 }
-interface LimitOrdersByPool {
+export interface LimitOrdersByPool {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }

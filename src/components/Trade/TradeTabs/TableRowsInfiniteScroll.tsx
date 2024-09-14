@@ -1,32 +1,27 @@
 import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { } from '../../../ambient-utils/api';
 import {
     LimitOrderIF,
     PositionIF,
     TransactionIF
 } from '../../../ambient-utils/types';
-import TableRows from './TableRows';
-import { argsIF } from '../../../ambient-utils/api';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
+import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
-    data: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     fullData: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    isLeaderboard?: boolean;
-    positionsByApy?: string[];
-    firstRowRef?: MutableRefObject<HTMLDivElement | null>;
-    lastRowRef?: MutableRefObject<HTMLDivElement | null>;
-    fetcherFunctionArgs: argsIF;
-    fetcherFunction: (args: argsIF) => Promise<Response>;
+    fetcherFunction: () => Promise<boolean>;
     scrollRef: MutableRefObject<HTMLDivElement | null>;
     sortBy: TxSortType;
     showAllData: boolean;
     selectedBaseAddress:string;
     selectedQuoteAddress: string;
+    moreDataAvailable: boolean;
 }
 
 enum ScrollDirection {
@@ -42,46 +37,42 @@ enum ScrollPosition {
 
 function TableRowsInfiniteScroll({
     type,
-    data,
     fullData,
     isAccountView,
     tableView,
-    isLeaderboard,
-    positionsByApy,
-    fetcherFunctionArgs,
     fetcherFunction,
     scrollRef,
     sortBy,
     showAllData,
     selectedBaseAddress,
-    selectedQuoteAddress
+    selectedQuoteAddress,
+    moreDataAvailable  
     
 }: propsIF) {
 
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const txSpanSelectorForScrollMethod =  isSmallScreen ? '#current_row_scroll > div > div:nth-child(1) > div:nth-child(1) > span':
-        '#current_row_scroll > div > div:nth-child(2) > div > span';
+    const txSpanSelectorForScrollMethod =  isSmallScreen ? '#current_row_scroll > div > div > div:nth-child(1) > div:nth-child(1) > span':
+        '#current_row_scroll > div > div > div:nth-child(2) > div > span';
     const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
         'div:nth-child(2)';
     
 
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+
+    const pagesVisibleRef = useRef<[number, number]>();
+    pagesVisibleRef.current = pagesVisible;
+
+    
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
-    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const extraPagesAvailableRef = useRef<number>();
+    extraPagesAvailableRef.current = extraPagesAvailable;
+
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
     const moreDataLoadingRef = useRef<boolean>();
     moreDataLoadingRef.current = moreDataLoading;
 
-    const extraPagesAvailableRef = useRef<number>();
-    extraPagesAvailableRef.current = extraPagesAvailable;
-
-    const moreDataAvailableRef = useRef<boolean>();
-    moreDataAvailableRef.current = moreDataAvailable;
-
-    const pagesVisibleRef = useRef<[number, number]>();
-    pagesVisibleRef.current = pagesVisible;
 
     const lastRowRef = useRef<HTMLDivElement | null>(null);
     const firstRowRef = useRef<HTMLDivElement | null>(null);
@@ -108,6 +99,17 @@ function TableRowsInfiniteScroll({
     const [isTableReady, setIsTableReady] = useState(true);
     const isTableReadyRef = useRef<boolean>();
     isTableReadyRef.current = isTableReady;
+
+    const bindData = () => {
+        return fullData.slice(pagesVisible[0] * 50, pagesVisible[1] * 50 + 50);
+    }
+
+    const [data, setData] = useState<TransactionIF[] | LimitOrderIF[] | PositionIF[]>(bindData());
+
+    useEffect(() => {
+        setData(bindData());
+    }
+    , [fullData, pagesVisible]);
 
     const getOverlayComponentForLoadingState = () => {
 
@@ -146,13 +148,13 @@ function TableRowsInfiniteScroll({
         }
     }
 
+  
+
 
     
     useEffect(() => {
         setPagesVisible([0, 1]);
         setExtraPagesAvailable(0);
-        setMoreDataAvailable(true);
-        setMoreDataLoading(false);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const scrollToTop = () => {
@@ -187,6 +189,7 @@ function TableRowsInfiniteScroll({
         direction: ScrollDirection,
         timeout?: number,
     ) => {
+        console.log('triggerAutoScroll')
         bindTableReadyState(true);
         setAutoScroll(true);
         setAutoScrollDirection(direction);
@@ -214,7 +217,7 @@ function TableRowsInfiniteScroll({
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const markRows = false;
+    const markRows = true;
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
 
@@ -240,7 +243,7 @@ function TableRowsInfiniteScroll({
     };
 
     const bindFirstSeenRow = (): void => {
-        const rows = document.querySelectorAll('#current_row_scroll > div');
+        const rows = document.querySelectorAll('#current_row_scroll > div > div');
         if (rows.length > 0) {
             const firstRow = rows[0] as HTMLDivElement;
             if (markRows) {
@@ -257,7 +260,7 @@ function TableRowsInfiniteScroll({
     };
 
     const bindLastSeenRow = (): void => {
-        const rows = document.querySelectorAll('#current_row_scroll > div');
+        const rows = document.querySelectorAll('#current_row_scroll > div > div');
         if (rows.length > 0) {
             // const lastRow = rows[rows.length - 1] as HTMLDivElement;
             rows.forEach((row) => {
@@ -281,24 +284,62 @@ function TableRowsInfiniteScroll({
 
 
 
+    useEffect(() => {
+        if (autoScroll) {
+            if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
+                if (autoScrollDirection === ScrollDirection.DOWN) {
+                    scrollByTxID(
+                        lastSeenTxIDRef.current || '',
+                        ScrollPosition.BOTTOM,
+                    );
+                } else if (autoScrollDirection === ScrollDirection.UP) {
+                    scrollByTxID(
+                        firstSeenTxIDRef.current || '',
+                        ScrollPosition.TOP,
+                    );
+                }
+            } else {
+                scrollWithAlternateStrategy();
+            }
+        }
+    }, [data]);
+
+
+    const scrollWithAlternateStrategy = () => {
+
+        if(isSmallScreen){
+            const wrapper = document.getElementById('current_row_scroll');
+            if(wrapper){
+                    wrapper.scrollTo({
+                        top: autoScrollDirection === ScrollDirection.DOWN ? 1400 : 1340,
+                        behavior: 'instant' as ScrollBehavior,
+                    });
+            }
+        }else{
+            if ( scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: autoScrollDirection === ScrollDirection.DOWN ? 1912 : 1850,
+                    behavior: 'instant' as ScrollBehavior,
+                });
+            }
+        }
+    };
+
+
     
     useEffect(() => {
+        if(moreDataLoadingRef.current) return;    
         const observer = new IntersectionObserver(
             (entries) => {
-                const moreDataLoadingVal = moreDataLoadingRef.current
-                    ? moreDataLoadingRef.current
-                    : moreDataLoading;
-                const moreDataAvailableVal = moreDataAvailableRef.current
-                    ? moreDataAvailableRef.current
-                    : moreDataAvailable;
-                const extraPagesAvailableVal = extraPagesAvailableRef.current
-                    ? extraPagesAvailableRef.current
-                    : extraPagesAvailable;
                 const pagesVisibleVal = pagesVisibleRef.current
                     ? pagesVisibleRef.current
                     : pagesVisible;
 
+                const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
                 const entry = entries[0];
+
+                const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
+
                 if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
                     bindLastSeenRow();
@@ -306,7 +347,7 @@ function TableRowsInfiniteScroll({
                     // last row is visible
                     extraPagesAvailableVal + 1 > pagesVisibleVal[1]
                         ? shiftDown()
-                        : moreDataAvailableVal
+                        : moreDataAvailable
                           ? addMoreData()
                           : undefined;
                 }
@@ -334,11 +375,18 @@ function TableRowsInfiniteScroll({
         // pagesVisible[1],
     ]);
 
+    if(pagesVisibleRef.current){
+        domDebug('page', pagesVisibleRef.current[0]);
+    }
+
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
-                if (moreDataLoading) return;
+
+                const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
+                
+                if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
                     // first row is visible
                     pagesVisible[0] > 0 && shiftUp();
@@ -365,25 +413,40 @@ function TableRowsInfiniteScroll({
 
 
     const addMoreData = async() => {
-        const resp = await fetcherFunction(fetcherFunctionArgs);
-        console.log(resp);
+        console.log('add more data')
+        setMoreDataLoading(true);
+        const changePage = await fetcherFunction();
+        setMoreDataLoading(false);
+        console.log('change Page................')
+        if(changePage){
+            
+            setExtraPagesAvailable((prev) => prev + 1);
+            setPagesVisible((prev) => [
+                prev[0] + 1,
+                prev[1] + 1,
+            ]);
+            
+            triggerAutoScroll(ScrollDirection.DOWN);
+        }else{
+            bindTableReadyState(true);
+        }
     }
 
     return (
         <>
+<div>
+            {getOverlayComponentForLoadingState()}
+            <TableRows
+                type={type}
+                data={data}
+                fullData={fullData}
+                isAccountView={isAccountView}
+                tableView={tableView}
+                lastRowRef={lastRowRef}
+                firstRowRef={firstRowRef}
+                />
 
-        <TableRows
-            type={type}
-            data={data}
-            fullData={fullData}
-            isAccountView={isAccountView}
-            tableView={tableView}
-            isLeaderboard={isLeaderboard}
-            positionsByApy={positionsByApy}
-            lastRowRef={lastRowRef}
-            firstRowRef={firstRowRef}
-        />
-
+            </div>
 
         </>
     );
