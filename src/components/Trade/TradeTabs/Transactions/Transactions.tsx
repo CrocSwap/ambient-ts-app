@@ -70,10 +70,10 @@ import {
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
 import TableRows from '../TableRows';
+import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
-import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -141,24 +141,37 @@ function Transactions(props: propsIF) {
     const quoteTokenSymbol: string = quoteToken?.symbol;
     const baseTokenSymbol: string = baseToken?.symbol;
 
+    
+    const showAllData = !isAccountView && showAllDataSelection;
+
     const [candleTransactionData, setCandleTransactionData] = useState<
         TransactionIF[]
     >([]);
+    
+
+    // infinite scroll variables and useEffects -----------------------------------------------
 
     // ref holding scrollable element (to attach event listener)
     const scrollRef = useRef<HTMLDivElement>(null);
-
-    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     
-    const moreDataAvailableRef = useRef<boolean>();
-    moreDataAvailableRef.current = moreDataAvailable;
-
-    const showAllData = !isAccountView && showAllDataSelection;
-
+    
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
         dataReceived: false,
         changes: [...transactionsByPool.changes],
     });
+
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+
+    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const moreDataAvailableRef = useRef<boolean>();
+    moreDataAvailableRef.current = moreDataAvailable;
+
+    useEffect(() => {
+        setPagesVisible([0, 1]);
+        setExtraPagesAvailable(0);
+    }, [selectedBaseAddress + selectedQuoteAddress]);
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -170,6 +183,18 @@ function Transactions(props: propsIF) {
         }
     }, [transactionsByPool.changes]);
 
+    
+    const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    useEffect(() => {
+        setShowInfiniteScroll(!isAccountView && showAllData);
+    }, [isAccountView, showAllData]);
+
+    
+
+
+
+    // ----------------------------------------------------------------------------------------------
+    
     const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
@@ -186,11 +211,28 @@ function Transactions(props: propsIF) {
         ],
     );
 
-    const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
-    useEffect(() => {
-        setShowInfiniteScroll(!isAccountView && showAllData);
-    }, [isAccountView, showAllData]);
 
+    const txDataToDisplay: TransactionIF[] = isCandleSelected
+        ? candleTransactionData
+        : transactionData;
+
+    const [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedTransactions,
+        sortData,
+    ] = useSortedTxs('time', txDataToDisplay);
+
+    const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
+        return isCandleSelected || isAccountView
+            ? sortedTransactions
+            : sortedTransactions.slice(
+                  pagesVisible[0] * 50,
+                  pagesVisible[1] * 50 + 50,
+              );
+    }, [sortedTransactions, pagesVisible, isCandleSelected, isAccountView]);
 
 
     useEffect(() => {
@@ -492,18 +534,8 @@ function Transactions(props: propsIF) {
         },
     ];
 
-    const txDataToDisplay: TransactionIF[] = isCandleSelected
-        ? candleTransactionData
-        : transactionData;
 
-    const [
-        sortBy,
-        setSortBy,
-        reverseSort,
-        setReverseSort,
-        sortedTransactions,
-        sortData,
-    ] = useSortedTxs('time', txDataToDisplay);
+
 
     const headerColumnsDisplay: JSX.Element = (
         <TransactionRowStyled size={tableView} header account={isAccountView}>
@@ -580,7 +612,6 @@ function Transactions(props: propsIF) {
                 })
                     .then((poolChangesJsonData) => {
                         if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                            // setTransactionsByPool((prev) => {
                             setFetchedTransactions((prev) => {
                                 const existingChanges = new Set(
                                     prev.changes.map(
@@ -772,16 +803,18 @@ function Transactions(props: propsIF) {
                     (
                     <TableRowsInfiniteScroll
                         type='Transaction'
-                        fullData={sortedTransactions}
+                        data={sortedTxDataToDisplay}
                         tableView={tableView}
                         isAccountView={isAccountView}
                         fetcherFunction={addMoreData}
                         scrollRef={scrollRef}
                         sortBy={sortBy}
                         showAllData={showAllData}
-                        selectedBaseAddress={selectedBaseAddress}
-                        selectedQuoteAddress={selectedQuoteAddress}
                         moreDataAvailable={moreDataAvailableRef.current}
+                        pagesVisible={pagesVisible}
+                        setPagesVisible={setPagesVisible}
+                        extraPagesAvailable={extraPagesAvailable}
+                        setExtraPagesAvailable={setExtraPagesAvailable}
                         />
 
                     )
@@ -812,19 +845,9 @@ function Transactions(props: propsIF) {
                 >
                     {headerColumnsDisplay}
                 </div>
-                <div
+                <div id='zzzzzzzzzzz'
                 ref={scrollRef}
                 >
-
-                    {/* {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
-                        <ScrollToTopButtonMobile
-                            onClick={() => {
-                                scrollToTop();
-                            }}
-                        >
-                            <RiArrowUpSLine size={20} color='white'/>
-                        </ScrollToTopButtonMobile>
-                    )} */}
                     {transactionDataOrNull}
                 </div>
             </div>
@@ -833,16 +856,6 @@ function Transactions(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' style={{ height: '100%' }}>
             <div>{headerColumnsDisplay}</div>
-            {/* {showAllData && !isCandleSelected && pagesVisible[0] > 0 && (
-                <ScrollToTopButton
-                    onClick={() => {
-                        scrollToTop();
-                    }}
-                    className='scroll_to_top_button'
-                >
-                    Return to Top
-                </ScrollToTopButton>
-            )} */}
             <div
                 ref={scrollRef}
                 style={{

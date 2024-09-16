@@ -1,4 +1,4 @@
-import { memo, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { memo, MutableRefObject, SetStateAction, useEffect, Dispatch, useRef, useState } from 'react';
 import { } from '../../../ambient-utils/api';
 import {
     LimitOrderIF,
@@ -9,19 +9,23 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
+import { ScrollToTopButton, ScrollToTopButtonMobile } from '../../../styled/Components/TransactionTable';
+import { RiArrowUpSLine } from 'react-icons/ri';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
-    fullData: TransactionIF[] | LimitOrderIF[] | PositionIF[];
+    data: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     fetcherFunction: () => Promise<boolean>;
     scrollRef: MutableRefObject<HTMLDivElement | null>;
     sortBy: TxSortType;
     showAllData: boolean;
-    selectedBaseAddress:string;
-    selectedQuoteAddress: string;
+    pagesVisible: [number, number];
+    setPagesVisible: Dispatch<SetStateAction<[number, number]>>;
     moreDataAvailable: boolean;
+    extraPagesAvailable: number;
+    setExtraPagesAvailable: Dispatch<SetStateAction<number>>;
 }
 
 enum ScrollDirection {
@@ -37,20 +41,23 @@ enum ScrollPosition {
 
 function TableRowsInfiniteScroll({
     type,
-    fullData,
+    data,
     isAccountView,
     tableView,
     fetcherFunction,
     scrollRef,
     sortBy,
     showAllData,
-    selectedBaseAddress,
-    selectedQuoteAddress,
-    moreDataAvailable  
+    pagesVisible,
+    setPagesVisible,
+    moreDataAvailable,
+    extraPagesAvailable,
+    setExtraPagesAvailable
     
 }: propsIF) {
-
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
+
+    const wrapperID = Math.random().toString(36).substring(7);
 
     const txSpanSelectorForScrollMethod =  isSmallScreen ? '#current_row_scroll > div > div > div:nth-child(1) > div:nth-child(1) > span':
         '#current_row_scroll > div > div > div:nth-child(2) > div > span';
@@ -58,15 +65,7 @@ function TableRowsInfiniteScroll({
         'div:nth-child(2)';
     
 
-    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
-
-    const pagesVisibleRef = useRef<[number, number]>();
-    pagesVisibleRef.current = pagesVisible;
-
     
-    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
-    const extraPagesAvailableRef = useRef<number>();
-    extraPagesAvailableRef.current = extraPagesAvailable;
 
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
@@ -100,16 +99,15 @@ function TableRowsInfiniteScroll({
     const isTableReadyRef = useRef<boolean>();
     isTableReadyRef.current = isTableReady;
 
-    const bindData = () => {
-        return fullData.slice(pagesVisible[0] * 50, pagesVisible[1] * 50 + 50);
-    }
+    const extraPagesAvailableRef = useRef<number>();
+    extraPagesAvailableRef.current = extraPagesAvailable;
 
-    const [data, setData] = useState<TransactionIF[] | LimitOrderIF[] | PositionIF[]>(bindData());
+    const pagesVisibleRef = useRef<[number, number]>();
+    pagesVisibleRef.current = pagesVisible;
 
-    useEffect(() => {
-        setData(bindData());
-    }
-    , [fullData, pagesVisible]);
+    const moreDataAvailableRef = useRef<boolean>();
+    moreDataAvailableRef.current = moreDataAvailable;
+
 
     const getOverlayComponentForLoadingState = () => {
 
@@ -150,13 +148,6 @@ function TableRowsInfiniteScroll({
 
   
 
-
-    
-    useEffect(() => {
-        setPagesVisible([0, 1]);
-        setExtraPagesAvailable(0);
-    }, [selectedBaseAddress + selectedQuoteAddress]);
-
     const scrollToTop = () => {
         setLastSeenTxID('');
         setPagesVisible([0, 1]);
@@ -189,7 +180,6 @@ function TableRowsInfiniteScroll({
         direction: ScrollDirection,
         timeout?: number,
     ) => {
-        console.log('triggerAutoScroll')
         bindTableReadyState(true);
         setAutoScroll(true);
         setAutoScrollDirection(direction);
@@ -205,7 +195,7 @@ function TableRowsInfiniteScroll({
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
     };
-
+    
     const shiftDown = (): void => {
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
@@ -331,14 +321,13 @@ function TableRowsInfiniteScroll({
         if(moreDataLoadingRef.current) return;    
         const observer = new IntersectionObserver(
             (entries) => {
-                const pagesVisibleVal = pagesVisibleRef.current
-                    ? pagesVisibleRef.current
-                    : pagesVisible;
 
-                const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
                 const entry = entries[0];
 
                 const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
+                const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
+                const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
+                const moreDataAvailableVal = moreDataAvailableRef.current ? moreDataAvailableRef.current : moreDataAvailable
 
                 if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
@@ -347,7 +336,7 @@ function TableRowsInfiniteScroll({
                     // last row is visible
                     extraPagesAvailableVal + 1 > pagesVisibleVal[1]
                         ? shiftDown()
-                        : moreDataAvailable
+                        : moreDataAvailableVal
                           ? addMoreData()
                           : undefined;
                 }
@@ -375,21 +364,21 @@ function TableRowsInfiniteScroll({
         // pagesVisible[1],
     ]);
 
-    if(pagesVisibleRef.current){
-        domDebug('page', pagesVisibleRef.current[0]);
-    }
-
     useEffect(() => {
+        domDebug('moreDataLoading', moreDataLoading);
+        domDebug('page', pagesVisible[0]);
+
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
 
                 const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
                 
+                const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
                 if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
                     // first row is visible
-                    pagesVisible[0] > 0 && shiftUp();
+                    pagesVisibleVal[0] > 0 && shiftUp();
                     bindFirstSeenRow();
                 }
             },
@@ -412,12 +401,11 @@ function TableRowsInfiniteScroll({
 
 
 
+
     const addMoreData = async() => {
-        console.log('add more data')
         setMoreDataLoading(true);
         const changePage = await fetcherFunction();
         setMoreDataLoading(false);
-        console.log('change Page................')
         if(changePage){
             
             setExtraPagesAvailable((prev) => prev + 1);
@@ -434,19 +422,25 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div>
-            {getOverlayComponentForLoadingState()}
+<div id={`infinite_scroll_wrapper-${wrapperID}`}>
             <TableRows
                 type={type}
                 data={data}
-                fullData={fullData}
+                fullData={data}
                 isAccountView={isAccountView}
                 tableView={tableView}
                 lastRowRef={lastRowRef}
                 firstRowRef={firstRowRef}
                 />
-
+                {pagesVisible[0] > 0 && !isSmallScreen && (
+                    <ScrollToTopButton onClick={scrollToTop}>Scroll to Top</ScrollToTopButton>)}
+                {pagesVisible[0] > 0 && isSmallScreen && (
+                    <ScrollToTopButtonMobile onClick={scrollToTop}>
+<RiArrowUpSLine size={20} color='white'/>
+                    </ScrollToTopButtonMobile>)}
+                
             </div>
+                {getOverlayComponentForLoadingState()}
 
         </>
     );

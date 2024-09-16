@@ -329,7 +329,8 @@ export const HideEmptyPositionContainer = styled.button`
 
 export const ScrollToTopButton = styled.button`
     position: absolute;
-    right: 0;
+    right: 1rem;
+    top: 3rem;
     display: flex;
     flex-direction: row;
     align-items: center;
