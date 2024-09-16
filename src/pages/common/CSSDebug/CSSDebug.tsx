@@ -30,8 +30,6 @@ export interface cssColorIF {
 }
 
 export default function CSSDebug() {
-    // const [themeName, setThemeName] = useState<string>('');
-
     const SAMPLE_TEXT = 'Zero-to-One Decentralized Trading Protocol';
     const [sampleText, setSampleText] = useState<string>(SAMPLE_TEXT);
 
@@ -49,14 +47,28 @@ export default function CSSDebug() {
                         )
                     }
                 </div>
-                <div>
-                <input
-                    type='text'
-                    value={sampleText}
-                    onChange={
-                        (e) => setSampleText(e.target.value)
-                    }
-                />
+                <div className={styles.previews}>
+                    <input
+                        type='text'
+                        value={sampleText}
+                        onChange={(e) => setSampleText(e.target.value)}
+                    />
+                    <section>
+                        <h5>On Black (#000000)</h5>
+                        <p style={{backgroundColor: '#000000'}}>{sampleText}</p>
+                    </section>
+                    <section>
+                        <h5>On White (#FFFFFF)</h5>
+                        <p style={{backgroundColor: '#FFFFFF'}}>{sampleText}</p>
+                    </section>
+                    <section>
+                        <h5>On --dark1 (#FFFFFF)</h5>
+                        <p style={{backgroundColor: '--dark1'}}>{sampleText}</p>
+                    </section>
+                    <section>
+                        <h5>On --dark2</h5>
+                        <p style={{backgroundColor: '--dark2'}}>{sampleText}</p>
+                    </section>
                 </div>
             </section>
             <Swap />

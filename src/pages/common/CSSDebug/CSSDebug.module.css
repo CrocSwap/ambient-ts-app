@@ -15,3 +15,17 @@
     flex-wrap: wrap;
     justify-content: space-evenly;
 }
+
+.previews {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid green;
+}
+
+.previews > input {
+    width: 100%;
+}
+
+.previews > section {
+    margin-top: 8px;
+}
