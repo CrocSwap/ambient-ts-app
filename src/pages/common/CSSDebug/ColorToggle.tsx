@@ -43,21 +43,41 @@ export default function ColorToggle(props: propsIF) {
             <div className={styles.preview_area}>
                 {
                     cssProperty.format === 'text' && (
-                        <>
-                            {
-                                allColors.background.map((
-                                    (c: cssColorIF) => (
-                                        <section
-                                            key={JSON.stringify(c)}
-                                            className={styles.text_sample}
-                                        >
-                                            <h5>On {c.name}:</h5>
-                                            <p style={{backgroundColor: `var(${c.name})`}}>{sampleText}</p>
-                                        </section>
-                                    )
-                                ))
-                            }
-                        </>
+                        allColors.background.map((
+                            (c: cssColorIF) => (
+                                <section
+                                    key={JSON.stringify(c)}
+                                    className={styles.text_sample}
+                                >
+                                    <h5>On {c.name}:</h5>
+                                    <p style={{backgroundColor: `var(${c.name})`}}>
+                                        {sampleText}
+                                    </p>
+                                </section>
+                            )
+                        ))
+                    )
+                }
+                {
+                    cssProperty.format === 'background' && (
+                        allColors.text.map((
+                            (c: cssColorIF) => (
+                                <section
+                                    key={JSON.stringify(c)}
+                                    className={styles.text_sample}
+                                >
+                                    <h5>Under {c.name}:</h5>
+                                    <p
+                                        style={{
+                                            color: `var(${c.name})`,
+                                            backgroundColor: color,
+                                        }}
+                                    >
+                                        {sampleText}
+                                    </p>
+                                </section>
+                            )
+                        ))
                     )
                 }
             </div>
