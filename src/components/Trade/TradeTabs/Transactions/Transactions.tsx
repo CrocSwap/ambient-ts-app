@@ -152,7 +152,6 @@ function Transactions(props: propsIF) {
     // infinite scroll variables and useEffects -----------------------------------------------
 
     // ref holding scrollable element (to attach event listener)
-    const scrollRef = useRef<HTMLDivElement>(null);
     
     
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
@@ -807,7 +806,6 @@ function Transactions(props: propsIF) {
                         tableView={tableView}
                         isAccountView={isAccountView}
                         fetcherFunction={addMoreData}
-                        scrollRef={scrollRef}
                         sortBy={sortBy}
                         showAllData={showAllData}
                         moreDataAvailable={moreDataAvailableRef.current}
@@ -845,8 +843,7 @@ function Transactions(props: propsIF) {
                 >
                     {headerColumnsDisplay}
                 </div>
-                <div id='zzzzzzzzzzz'
-                ref={scrollRef}
+                <div
                 >
                     {transactionDataOrNull}
                 </div>
@@ -857,7 +854,6 @@ function Transactions(props: propsIF) {
         <FlexContainer flexDirection='column' style={{ height: '100%' }}>
             <div>{headerColumnsDisplay}</div>
             <div
-                ref={scrollRef}
                 style={{
                     flex: 1,
                     overflow: 'auto',

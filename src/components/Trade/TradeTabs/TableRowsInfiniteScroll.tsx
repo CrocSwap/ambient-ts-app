@@ -1,16 +1,16 @@
-import { memo, MutableRefObject, SetStateAction, useEffect, Dispatch, useRef, useState } from 'react';
+import { Dispatch, memo, SetStateAction, useEffect, useRef, useState } from 'react';
+import { RiArrowUpSLine } from 'react-icons/ri';
 import { } from '../../../ambient-utils/api';
 import {
     LimitOrderIF,
     PositionIF,
     TransactionIF
 } from '../../../ambient-utils/types';
+import { ScrollToTopButton, ScrollToTopButtonMobile } from '../../../styled/Components/TransactionTable';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
-import { ScrollToTopButton, ScrollToTopButtonMobile } from '../../../styled/Components/TransactionTable';
-import { RiArrowUpSLine } from 'react-icons/ri';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -18,7 +18,6 @@ interface propsIF {
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     fetcherFunction: () => Promise<boolean>;
-    scrollRef: MutableRefObject<HTMLDivElement | null>;
     sortBy: TxSortType;
     showAllData: boolean;
     pagesVisible: [number, number];
@@ -26,6 +25,7 @@ interface propsIF {
     moreDataAvailable: boolean;
     extraPagesAvailable: number;
     setExtraPagesAvailable: Dispatch<SetStateAction<number>>;
+    tableKey?: string
 }
 
 enum ScrollDirection {
@@ -45,22 +45,22 @@ function TableRowsInfiniteScroll({
     isAccountView,
     tableView,
     fetcherFunction,
-    scrollRef,
     sortBy,
     showAllData,
     pagesVisible,
     setPagesVisible,
     moreDataAvailable,
     extraPagesAvailable,
-    setExtraPagesAvailable
+    setExtraPagesAvailable,
+    tableKey
     
 }: propsIF) {
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const wrapperID = Math.random().toString(36).substring(7);
+    const wrapperID = tableKey ? tableKey : '';
 
-    const txSpanSelectorForScrollMethod =  isSmallScreen ? '#current_row_scroll > div > div > div:nth-child(1) > div:nth-child(1) > span':
-        '#current_row_scroll > div > div > div:nth-child(2) > div > span';
+    const txSpanSelectorForScrollMethod =  isSmallScreen ? `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(1) > div:nth-child(1) > span`:
+        `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(2) > div > span`;
     const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
         'div:nth-child(2)';
     
@@ -109,6 +109,17 @@ function TableRowsInfiniteScroll({
     moreDataAvailableRef.current = moreDataAvailable;
 
 
+    
+    const bindWrapperEl = () => {
+        if(isSmallScreen){
+            return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement;
+        }else{
+            return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement?.parentElement?.parentElement;
+        }
+    }
+    
+    const wrapperEl = bindWrapperEl();
+
     const getOverlayComponentForLoadingState = () => {
 
 
@@ -151,18 +162,8 @@ function TableRowsInfiniteScroll({
     const scrollToTop = () => {
         setLastSeenTxID('');
         setPagesVisible([0, 1]);
-
-        if(isSmallScreen){
-            const wrapper = document.getElementById('current_row_scroll');
-            if(wrapper){
-                    wrapper.scrollTo({
-                        top: 0,
-                        behavior: 'instant' as ScrollBehavior,
-                    });
-            }
-        }else if(scrollRef.current) {
-            // scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' }); // For smooth scrolling
-            scrollRef.current.scrollTo({
+        if(wrapperEl){
+            wrapperEl.scrollTo({
                 top: 0,
                 behavior: 'instant' as ScrollBehavior,
             });
@@ -170,8 +171,8 @@ function TableRowsInfiniteScroll({
     };
     
     const setTransactionTableOpacity = (val: string) => {
-        if (scrollRef.current) {
-            scrollRef.current.style.opacity = val;
+        if(wrapperEl){
+            wrapperEl.style.opacity = val;
         }
     };
 
@@ -233,7 +234,7 @@ function TableRowsInfiniteScroll({
     };
 
     const bindFirstSeenRow = (): void => {
-        const rows = document.querySelectorAll('#current_row_scroll > div > div');
+        const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
             const firstRow = rows[0] as HTMLDivElement;
             if (markRows) {
@@ -250,7 +251,7 @@ function TableRowsInfiniteScroll({
     };
 
     const bindLastSeenRow = (): void => {
-        const rows = document.querySelectorAll('#current_row_scroll > div > div');
+        const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
             // const lastRow = rows[rows.length - 1] as HTMLDivElement;
             rows.forEach((row) => {
@@ -297,17 +298,15 @@ function TableRowsInfiniteScroll({
 
     const scrollWithAlternateStrategy = () => {
 
-        if(isSmallScreen){
-            const wrapper = document.getElementById('current_row_scroll');
-            if(wrapper){
-                    wrapper.scrollTo({
-                        top: autoScrollDirection === ScrollDirection.DOWN ? 1400 : 1340,
-                        behavior: 'instant' as ScrollBehavior,
-                    });
-            }
-        }else{
-            if ( scrollRef.current) {
-                scrollRef.current.scrollTo({
+
+        if(wrapperEl){
+            if(isSmallScreen){
+                wrapperEl.scrollTo({
+                    top: autoScrollDirection === ScrollDirection.DOWN ? 1400 : 1340,
+                    behavior: 'instant' as ScrollBehavior,
+                });
+            }else{
+                wrapperEl.scrollTo({
                     top: autoScrollDirection === ScrollDirection.DOWN ? 1912 : 1850,
                     behavior: 'instant' as ScrollBehavior,
                 });
@@ -422,7 +421,7 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div id={`infinite_scroll_wrapper-${wrapperID}`}>
+<div id={`infinite_scroll_wrapper_${wrapperID}`}>
             <TableRows
                 type={type}
                 data={data}
