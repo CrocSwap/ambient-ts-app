@@ -49,7 +49,7 @@ import TokenIcon from '../../../components/Global/TokenIcon/TokenIcon';
 import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { LuSettings } from 'react-icons/lu';
-import TradeCharts from '../../Trade/TradeCharts/TradeCharts/TradeCharts';
+import TradeCharts from './TradeCharts/TradeCharts';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -78,7 +78,6 @@ function Trade() {
     const { platformName } = useContext(BrandContext);
 
     const isFuta = ['futa'].includes(platformName);
-
 
     const { tokens } = useContext(TokenContext);
 
@@ -142,7 +141,7 @@ function Trade() {
         updateURL,
         isMobileSettingsModalOpen,
         openMobileSettingsModal,
-        closeMobileSettingsModal
+        closeMobileSettingsModal,
     };
 
     const tradeTabsProps = {
@@ -319,7 +318,13 @@ function Trade() {
                         {poolPriceChangeString}
                     </p>
                 </div>
-               {activeTab === 'Chart' && <LuSettings size={20} onClick={openMobileSettingsModal} color='var(--text2)'/>}
+                {activeTab === 'Chart' && (
+                    <LuSettings
+                        size={20}
+                        onClick={openMobileSettingsModal}
+                        color='var(--text2)'
+                    />
+                )}
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
                 {activeTabData}
@@ -429,7 +434,10 @@ function Trade() {
                                 />
                             )}
                             {!isCandleDataNull && isPoolInitialized && (
-                                <ChartContainer fullScreen={isChartFullScreen} isFuta={isFuta}>
+                                <ChartContainer
+                                    fullScreen={isChartFullScreen}
+                                    isFuta={isFuta}
+                                >
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
                                     )}
