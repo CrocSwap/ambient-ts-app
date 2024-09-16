@@ -50,7 +50,12 @@ export default function ColorToggle(props: propsIF) {
                                     className={styles.text_sample}
                                 >
                                     <h5>On {c.name}:</h5>
-                                    <p style={{backgroundColor: `var(${c.name})`}}>
+                                    <p
+                                        style={{
+                                            color: color,
+                                            backgroundColor: `var(${c.name})`
+                                        }}
+                                    >
                                         {sampleText}
                                     </p>
                                 </section>
