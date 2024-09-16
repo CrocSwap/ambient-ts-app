@@ -208,7 +208,7 @@ function TableRowsInfiniteScroll({
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const markRows = true;
+    const markRows = false;
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
 
