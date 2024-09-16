@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 import styles from './ColorToggle.module.css';
 import { cssColorIF } from './CSSDebug';
@@ -18,19 +18,22 @@ export default function ColorToggle2(props: propsIF) {
         return value;
     }
 
-    function handleChange(c: ColorResult): void {
-        setColor(c.hex);
-        document.documentElement.style.setProperty(cssProperty.name, c.hex);
+    function handleChange(c: string): void {
+        setColor(c);
+        document.documentElement.style.setProperty(cssProperty.name, c);
     }
+
+    const originalColor = useRef(getCssCustomPropertyValue(cssProperty.name));
 
     return (
         <section className={styles.color_toggle}>
             <header>
-                <h4>Toggle {cssProperty.name}</h4>        
+                <h4>Toggle {cssProperty.name}</h4>
+                <button onClick={() => handleChange(originalColor.current)}>R</button>
             </header>
             <SketchPicker
                 color={color}
-                onChange={(color: ColorResult) => handleChange(color)}
+                onChange={(color: ColorResult) => handleChange(color.hex)}
             />
         </section>
     );
