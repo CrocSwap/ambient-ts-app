@@ -30,34 +30,35 @@ export interface cssColorIF {
 }
 
 export default function CSSDebug() {
-    const [themeName, setThemeName] = useState<string>('');
-    false && themeName;
+    // const [themeName, setThemeName] = useState<string>('');
+
+    const SAMPLE_TEXT = 'Zero-to-One Decentralized Trading Protocol';
+    const [sampleText, setSampleText] = useState<string>(SAMPLE_TEXT);
 
     return (
         <>
-            <section
-                className={styles.color_toggles}
-            >
-            {
-                colors.map(
-                    (c: cssColorIF) => (
-                        <ColorToggle2
-                            key={JSON.stringify(c)}
-                            cssProperty={c}
-                        />
-                    )
-                )
-            }
+            <section className={styles.css_debug}>
+                <div className={styles.color_toggles}>{
+                        colors.map(
+                            (c: cssColorIF) => (
+                                <ColorToggle2
+                                    key={JSON.stringify(c)}
+                                    cssProperty={c}
+                                />
+                            )
+                        )
+                    }
+                </div>
+                <div>
+                <input
+                    type='text'
+                    value={sampleText}
+                    onChange={
+                        (e) => setSampleText(e.target.value)
+                    }
+                />
+                </div>
             </section>
-            <label htmlFor='theme_name'>Name this Theme:</label>
-            <input
-                type='text'
-                name='theme_name'
-                onChange={(e) => setThemeName(e.target.value.trim())}
-            />
-            <div>
-                {`[data-theme='${themeName}']`}
-            </div>
             <Swap />
         </>
     );

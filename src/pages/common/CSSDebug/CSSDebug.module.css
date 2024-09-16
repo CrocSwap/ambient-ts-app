@@ -1,3 +1,14 @@
+.css_debug {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    padding: 20px;
+}
+
+.css_debug > * {
+    max-width: 800px;
+}
+
 .color_toggles {
     display: flex;
     flex-direction: row;
