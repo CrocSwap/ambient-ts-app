@@ -56,8 +56,10 @@ export default function CSSDebug() {
 
     return (
         <>
+            <label htmlFor='sample_text_changer'>Sample text:</label>
             <input
                 type='text'
+                name='sample_text_changer'
                 value={sampleText}
                 onChange={(e) => setSampleText(e.target.value)}
             />
