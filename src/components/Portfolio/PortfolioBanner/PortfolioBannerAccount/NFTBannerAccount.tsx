@@ -397,8 +397,9 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 setIsContractNameOptionTabActive(false);
             }}
             ref={NftComponentItemRef}
+            
         >
-            <div>
+            <div >
                 <NFTBannerHeader>
                     <div style={{ width: '25px' }}>
                         <FiRefreshCw

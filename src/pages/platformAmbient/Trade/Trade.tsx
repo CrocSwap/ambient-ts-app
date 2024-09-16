@@ -440,7 +440,8 @@ function Trade() {
                                 >
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
-                                    )}
+                                    )} 
+                                   
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
@@ -451,6 +452,7 @@ function Trade() {
                                 overflow='hidden'
                             >
                                 <TradeTabs2 {...tradeTabsProps} />
+                            
                             </FlexContainer>
                         )}
                     </FlexContainer>

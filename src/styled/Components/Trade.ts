@@ -22,10 +22,18 @@ export const MainSection = styled.section<{
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
-    @media (max-width: 1200px) {
-        display: flex;
-        flex-direction: column;
+  @media (max-width: 1200px) {
+  ${({ isFill }) => {
+    if (!isFill) {
+      return `
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */
+        margin: 0 auto;
+       
+      `;
     }
+  }}
+}
 
     @media (max-width: 600px) {
         display: flex;
@@ -37,8 +45,6 @@ export const MainSection = styled.section<{
         height: calc(100dvh - 85px);
     }
 `;
-
-
 
 export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
