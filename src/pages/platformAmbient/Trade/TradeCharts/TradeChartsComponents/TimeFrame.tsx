@@ -1,7 +1,6 @@
 import styles from './TimeFrame.module.css';
-import { useState, useRef, memo, useContext } from 'react';
+import {  useRef, memo, useContext } from 'react';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { candleTimeIF } from '../../../../../App/hooks/useChartSettings';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 
@@ -12,41 +11,27 @@ interface propsIF {
 function TimeFrame(props: propsIF) {
     const { candleTime } = props;
 
-    const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
 
     const mobileView = useMediaQuery('(max-width: 968px)');
 
-    const wrapperStyle = showTimeFrameDropdown
-        ? styles.dropdown_wrapper_active
-        : styles.dropdown_wrapper;
 
     const dropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => {
-        setShowTimeFrameDropdown(false);
-    };
+ 
 
-    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
 
     const { platformName } = useContext(BrandContext);
 
     const timeFrameMobile = (
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
-            <button
-                className={styles.time_frame_mobile_button}
-                onClick={() => setShowTimeFrameDropdown(!showTimeFrameDropdown)}
-                tabIndex={0}
-                aria-label='Open time frame dropdown.'
-            >
-                Duration
-            </button>
+       
 
-            <div className={wrapperStyle}>
+            <div className={styles.mobile_container}>
                 {candleTime.defaults.map((option, idx) => (
                     <div className={styles.main_time_frame_container} key={idx}>
                         <button
                             onClick={() => {
                                 candleTime.changeTime(option.seconds);
-                                setShowTimeFrameDropdown(false);
+                               
                             }}
                             className={
                                 ['futa'].includes(platformName)
