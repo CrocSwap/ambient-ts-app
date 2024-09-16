@@ -1,5 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-import { useContext, useRef, memo, useMemo } from 'react';
+import { useContext, useRef, memo, useMemo, useState, useEffect } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import { useSortedLimits } from '../useSortedLimits';
@@ -18,13 +18,14 @@ import { OrderRow as OrderRowStyled } from '../../../../styled/Components/Transa
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { GraphDataContext, LimitOrdersByPool } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
-// import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
-// import { TokenContextIF, TokenContext } from '../../../../contexts/TokenContext';
-// import { CachedDataIF, CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLimitOrders';
+import { TokenContextIF, TokenContext } from '../../../../contexts/TokenContext';
+import { CachedDataIF, CachedDataContext } from '../../../../contexts/CachedDataContext';
+import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 
 // interface for props for react functional component
 interface propsIF {
@@ -46,21 +47,21 @@ function Orders(props: propsIF) {
     } = useContext(SidebarContext);
 
     const {
-        //  crocEnv,
-        //  activeNetwork,
-        //  provider,
+         crocEnv,
+         activeNetwork,
+         provider,
         chainData: {
-            // chainId,
+            chainId,
             poolIndex,
         },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
-    // const {
-    //     cachedQuerySpotPrice,
-    //     cachedFetchTokenPrice,
-    //     cachedTokenDetails,
-    //     cachedEnsResolve,
-    // } = useContext<CachedDataIF>(CachedDataContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext<CachedDataIF>(CachedDataContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -73,90 +74,125 @@ function Orders(props: propsIF) {
     } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
-    // const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
-
+    
     const { transactionsByType } = useContext(ReceiptContext);
-
+    
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
-
+    
     const activeUserLimitOrdersByPool = useMemo(
         () =>
             userLimitOrdersByPool?.limitOrders.filter(
                 (order) => order.positionLiq != 0 || order.claimableLiq !== 0,
             ),
-        [userLimitOrdersByPool],
-    );
+            [userLimitOrdersByPool],
+        );
+        
+        const [fetchedTransactions, setFetchedTransactions] = useState<LimitOrdersByPool>({
+            dataReceived: false,
+        limitOrders: [...limitOrdersByPool.limitOrders],
+    });
+    
+    const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
+    
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 
-    // const addMoreData = (): void => {
-    //     if (!crocEnv || !provider) return;
-    //     // retrieve pool limit order changes
-    //     setMoreDataLoading(true);
-    //     fetchPoolLimitOrders({
-    //         tokenList: tokenList,
-    //         base: baseToken.address,
-    //         quote: quoteToken.address,
-    //         poolIdx: poolIndex,
-    //         chainId: chainId,
-    //         n: 50,
-    //         timeBefore: oldestTxTime,
-    //         crocEnv: crocEnv,
-    //         graphCacheUrl: activeNetwork.graphCacheUrl,
-    //         provider: provider,
-    //         cachedFetchTokenPrice: cachedFetchTokenPrice,
-    //         cachedQuerySpotPrice: cachedQuerySpotPrice,
-    //         cachedTokenDetails: cachedTokenDetails,
-    //         cachedEnsResolve: cachedEnsResolve,
-    //     })
-    //         .then((poolChangesJsonData) => {
-    //             if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-    //                 // setTransactionsByPool((prev) => {
-    //                 setFetchedTransactions((prev) => {
-    //                     const existingChanges = new Set(
-    //                         prev.changes.map(
-    //                             (change) => change.txHash || change.txId,
-    //                         ),
-    //                     ); // Adjust if using a different unique identifier
-    //                     const uniqueChanges = poolChangesJsonData.filter(
-    //                         (change) =>
-    //                             !existingChanges.has(
-    //                                 change.txHash || change.txId,
-    //                             ),
-    //                     );
-    //                     if (uniqueChanges.length > 0) {
-    //                         setExtraPagesAvailable((prev) => prev + 1);
-    //                         setPagesVisible((prev) => [
-    //                             prev[0] + 1,
-    //                             prev[1] + 1,
-    //                         ]);
+    const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 
-    //                         triggerAutoScroll(ScrollDirection.DOWN);
-    //                     } else {
-    //                         setMoreDataAvailable(false);
-    //                     }
-    //                     let newTxData = [];
-    //                     if (autoScrollAlternateSolutionActive) {
-    //                         newTxData = sortData([
-    //                             ...prev.changes,
-    //                             ...uniqueChanges,
-    //                         ]);
-    //                     } else {
-    //                         newTxData = [...prev.changes, ...uniqueChanges];
-    //                     }
-    //                     return {
-    //                         dataReceived: true,
-    //                         changes: newTxData,
-    //                     };
-    //                 });
-    //             } else {
-    //                 setMoreDataAvailable(false);
-    //             }
-    //         })
-    //         .then(() => setMoreDataLoading(false))
-    //         .catch(console.error);
-    // };
+    const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+    const moreDataAvailableRef = useRef<boolean>();
+    moreDataAvailableRef.current = moreDataAvailable;
+
+    const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    useEffect(() => {
+        setShowInfiniteScroll(!isAccountView && showAllData);
+    }, [isAccountView, showAllData]);
+
+
+    // useEffect(() => {
+    //     setPagesVisible([0, 1]);
+    //     setExtraPagesAvailable(0);
+    // }, [selectedBaseAddress + selectedQuoteAddress]);
+
+    // useEffect(() => {
+    //     // clear fetched transactions when switching pools
+    //     if (transactionsByPool.changes.length === 0) {
+    //         setFetchedTransactions({
+    //             dataReceived: true,
+    //             changes: [],
+    //         });
+    //     }
+    // }, [transactionsByPool.changes]);
+
+
+    const autoScrollAlternateSolutionActive = true;
+
+    const addMoreData = async():Promise<boolean> => {
+        
+        return new Promise(resolve => {
+            if(!crocEnv || !provider) resolve(false);
+            else{
+                fetchPoolLimitOrders({
+                    tokenList: tokenList,
+                    base: baseToken.address,
+                    quote: quoteToken.address,
+                    poolIdx: poolIndex,
+                    chainId: chainId,
+                    n: 50,
+                    timeBefore: oldestTxTime,
+                    crocEnv: crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
+                    provider: provider,
+                    cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    cachedTokenDetails: cachedTokenDetails,
+                    cachedEnsResolve: cachedEnsResolve,
+                })
+                    .then((poolChangesJsonData) => {
+                        if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                            // setTransactionsByPool((prev) => {
+                            setFetchedTransactions((prev) => {
+                                const existingChanges = new Set(
+                                    prev.limitOrders.map(
+                                        (change) => change.positionHash || change.limitOrderId,
+                                    ),
+                                ); // Adjust if using a different unique identifier
+                                const uniqueChanges = poolChangesJsonData.filter(
+                                    (change) =>
+                                        !existingChanges.has(
+                                            change.positionHash || change.limitOrderId,
+                                        ),
+                                );
+                                if (uniqueChanges.length > 0) {
+                                    resolve(true);
+                                } else {
+                                    setMoreDataAvailable(false);
+                                    resolve(false)
+                                }
+                                let newTxData = [];
+                                if (autoScrollAlternateSolutionActive) {
+                                    newTxData = sortData([
+                                        ...prev.limitOrders,
+                                        ...uniqueChanges,
+                                    ]);
+                                } else {
+                                    newTxData = [...prev.limitOrders, ...uniqueChanges];
+                                }
+                                return {
+                                    dataReceived: true,
+                                    limitOrders: newTxData,
+                                };
+                            });
+                        } else {
+                            setMoreDataAvailable(false);
+                        }
+                    })
+                    .catch(console.error);
+            }
+        })
+    };
 
     const limitOrderData = useMemo(
         () =>
@@ -164,10 +200,11 @@ function Orders(props: propsIF) {
                 ? activeAccountLimitOrderData || []
                 : !showAllData
                   ? activeUserLimitOrdersByPool
-                  : limitOrdersByPool.limitOrders.filter(
-                        (order) =>
-                            order.positionLiq != 0 || order.claimableLiq !== 0,
-                    ),
+                //   : limitOrdersByPool.limitOrders.filter(
+                //         (order) =>
+                //             order.positionLiq != 0 || order.claimableLiq !== 0,
+                //     ),
+                  : fetchedTransactions.limitOrders,
         [
             showAllData,
             isAccountView,
@@ -175,6 +212,18 @@ function Orders(props: propsIF) {
             limitOrdersByPool,
             activeUserLimitOrdersByPool,
         ],
+    );
+
+    const oldestTxTime = useMemo(
+        () =>
+            limitOrderData.length > 0
+                ? limitOrderData.reduce((min, order) => {
+                      return order.latestUpdateTime < min
+                          ? order.latestUpdateTime
+                          : min;
+                  }, limitOrderData[0].latestUpdateTime)
+                : 0,
+        [limitOrderData],
     );
 
     const activeUserLimitOrdersLength = useMemo(
@@ -234,8 +283,20 @@ function Orders(props: propsIF) {
         !limitOrderData.length &&
         relevantTransactionsByType.length === 0;
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits, sortData] =
         useSortedLimits('time', limitOrderData);
+
+    const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
+        return isAccountView
+            ? sortedLimits
+            : sortedLimits.slice(
+                    pagesVisible[0] * 50,
+                    pagesVisible[1] * 50 + 50,
+                );
+    }, [sortedLimits, pagesVisible,  isAccountView]);
+
+    console.log('sortedLimitDataToDisplay', sortedLimitDataToDisplay);
+    
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -467,13 +528,34 @@ function Orders(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                <TableRows
-                    type='Order'
-                    data={sortedLimits}
-                    fullData={sortedLimits}
-                    tableView={tableView}
-                    isAccountView={isAccountView}
-                />
+                {showInfiniteScroll ? 
+                    (
+                    <TableRowsInfiniteScroll
+                        type='Order'
+                        data={sortedLimitDataToDisplay}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                        fetcherFunction={addMoreData}
+                        sortBy={sortBy}
+                        showAllData={showAllData}
+                        moreDataAvailable={moreDataAvailableRef.current}
+                        pagesVisible={pagesVisible}
+                        setPagesVisible={setPagesVisible}
+                        extraPagesAvailable={extraPagesAvailable}
+                        setExtraPagesAvailable={setExtraPagesAvailable}
+                        tableKey='Orders'
+                        />
+                    )
+                    :
+                    
+                    (<TableRows
+                        type='Order'
+                        data={sortedLimits}
+                        fullData={sortedLimits}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                    />)
+                    }
             </ul>
         </div>
     );

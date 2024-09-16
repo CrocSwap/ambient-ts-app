@@ -11,6 +11,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
+import { LimitSortType } from './useSortedLimits';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -18,7 +19,7 @@ interface propsIF {
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     fetcherFunction: () => Promise<boolean>;
-    sortBy: TxSortType;
+    sortBy: TxSortType | LimitSortType;
     showAllData: boolean;
     pagesVisible: [number, number];
     setPagesVisible: Dispatch<SetStateAction<[number, number]>>;
@@ -55,6 +56,7 @@ function TableRowsInfiniteScroll({
     tableKey
     
 }: propsIF) {
+
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
     const wrapperID = tableKey ? tableKey : '';
@@ -208,7 +210,7 @@ function TableRowsInfiniteScroll({
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const markRows = false;
+    const markRows = true;
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
 
@@ -402,6 +404,7 @@ function TableRowsInfiniteScroll({
 
 
     const addMoreData = async() => {
+        console.log('add more dat')
         setMoreDataLoading(true);
         const changePage = await fetcherFunction();
         setMoreDataLoading(false);
