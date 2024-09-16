@@ -313,7 +313,8 @@ function TradeCharts(props: propsIF) {
                 </div>
             )}
             {!['futa'].includes(platformName) && (
-                <div>
+                <div className={styles.mobile_settings_row}>
+                    <p className={styles.mobile_settings_header}>Curve/Depth:</p>
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
                 </div>
             )}

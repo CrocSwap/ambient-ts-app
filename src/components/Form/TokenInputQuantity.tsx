@@ -339,6 +339,7 @@ function TokenInputQuantity(props: propsIF) {
             id={fieldId}
             style={{
                 borderRadius: customBorderRadius ? customBorderRadius : '1rem',
+                minHeight: '81px'
             }}
         >
             {label && <span className={styles.text}>{label}</span>}

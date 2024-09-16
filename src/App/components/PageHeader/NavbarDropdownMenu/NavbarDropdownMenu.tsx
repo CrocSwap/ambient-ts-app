@@ -38,7 +38,7 @@ function NavbarDropdownMenu(props: propsIF) {
         props;
 
     const {
-        walletModal: { open: openWalletModal },
+        walletModal: { open: openWalletModal }, appHeaderDropdown
     } = useContext(AppStateContext);
 
     const [, , termsUrls] = useTermsAgreed();
@@ -133,6 +133,7 @@ function NavbarDropdownMenu(props: propsIF) {
                                 onClick={() => {
                                     clickLogout();
                                     closeMenu && closeMenu();
+                                    appHeaderDropdown.setIsActive(false)
                                 }}
                             />
                         </NavbarLogoutContainer>
@@ -140,7 +141,10 @@ function NavbarDropdownMenu(props: propsIF) {
                         <NavbarLogoutContainer>
                             <NavbarDropdownItem
                                 connectButton
-                                onClick={openWalletModal}
+                                    onClick={() => {
+                                        openWalletModal()
+                                        appHeaderDropdown.setIsActive(false)
+                                }}
                             >
                                 Connect Wallet
                             </NavbarDropdownItem>
