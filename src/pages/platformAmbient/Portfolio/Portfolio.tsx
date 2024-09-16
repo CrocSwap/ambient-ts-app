@@ -469,22 +469,7 @@ function Portfolio(props: PortfolioPropsIF) {
         }
     }, [specificTab]);
 
-    // end of tab control on account from page header
-    // const mobilePortfolio = (
-    //     <div className={styles.mobile_container}>
-    //         {useMediaQuery('(min-height: 300px)') && (
-    //             <PortfolioBanner {...portfolioBannerProps} />
-    //         )}
-    //         <div className={styles.mobile_content}>
-    //             {
-    //                 connectedAccountActive &&
-    //                 mobileDataToggle}
-    //             {contentToRenderOnMobile}
-    //         </div>
-    //     </div>
-    // );
 
-    // const yes = false
 
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;

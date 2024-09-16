@@ -1,5 +1,11 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
@@ -8,13 +14,15 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
-import styles from './PortfolioBannerAccount.module.css'
+import styles from './PortfolioBannerAccount.module.css';
 
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import NFTBannerAccount from './NFTBannerAccount';
+import Modal from '../../../Global/Modal/Modal';
+import { useModal } from '../../../Global/Modal/useModal';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -23,7 +31,7 @@ interface IPortfolioBannerAccountPropsIF {
     jazziconsToDisplay: JSX.Element | null;
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
-    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PortfolioBannerAccount(
@@ -39,7 +47,7 @@ export default function PortfolioBannerAccount(
         ensNameAvailable,
         connectedAccountActive,
         showTabsAndNotExchange,
-        setShowTabsAndNotExchange
+        setShowTabsAndNotExchange,
     } = props;
 
     const {
@@ -149,9 +157,36 @@ export default function PortfolioBannerAccount(
         setNftTestWalletAddress(() => nftTestWalletInput);
         setIsfetchNftTriggered(() => true);
     }
+    const [
+        isNftSettingsModalOpen,
+        openNftSettingsModal,
+        closeNftSettingsModal,
+    ] = useModal();
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
+
+    const mobileBannerSettings = (
+        !showNFTPage ? null : <Modal usingCustomHeader onClose={closeNftSettingsModal}>
+            { NFTData && (
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                    NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    nftTestWalletInput={nftTestWalletInput}
+                    handleTestWalletChange={handleTestWalletChange}
+                />
+            )}
+        </Modal>
+    );
 
     return (
-        <div className={styles.portfolio_banner_main_container}
+        <div
+            className={styles.portfolio_banner_main_container}
             // animate={showAccountDetails ? 'open' : 'closed'}
         >
             <FlexContainer
@@ -169,10 +204,14 @@ export default function PortfolioBannerAccount(
                         ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
-                
-                        <div className={styles.portfolio_settings_container}
-                            style={{transform: NFTData ? 'transform: translate(0%, 23%)' : ''}}
-                        >    
+                    <div
+                        className={styles.portfolio_settings_container}
+                        style={{
+                            transform: NFTData
+                                ? 'transform: translate(0%, 23%)'
+                                : '',
+                        }}
+                    >
                         {(resolvedAddress || userAddress) &&
                             getAvatarForProfilePage(
                                 resolvedAddress
@@ -186,8 +225,7 @@ export default function PortfolioBannerAccount(
                                     resolvedAddress.length > 0 &&
                                     !connectedAccountActive
                                     ? false
-                                    : 
-                                      true,
+                                    : true,
                             )}
                     </div>
                 </span>
@@ -233,13 +271,21 @@ export default function PortfolioBannerAccount(
                     </FlexContainer>
                 </FlexContainer>
 
-                {isSmallScreen && connectedAccountActive && <button
-                    onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
-                
-                    className={styles.deposit_button}>{showTabsAndNotExchange ? 'Transactions' : 'Deposit/Withdraw'}</button>}
+                {isSmallScreen && connectedAccountActive && (
+                    <button
+                        onClick={() =>
+                            setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                        }
+                        className={styles.deposit_button}
+                    >
+                        {showTabsAndNotExchange
+                            ? 'Transactions'
+                            : 'Deposit/Withdraw'}
+                    </button>
+                )}
             </FlexContainer>
 
-            {showNFTPage && NFTData && (
+            {showMobileVersion ? mobileBannerSettings : showNFTPage && NFTData && (
                 <NFTBannerAccount
                     setShowNFTPage={setShowNFTPage}
                     showNFTPage={showNFTPage}

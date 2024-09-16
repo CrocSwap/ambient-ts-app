@@ -752,6 +752,8 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                             handleNftSelection();
                             setIsSaveActive(!isVerified ? 3 : 1);
                         }
+                        setShowNFTPage(false)
+                        
                     }}
                 >
                     {isSaveActive === 1
