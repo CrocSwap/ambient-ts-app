@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Swap from '../../platformAmbient/Swap/Swap';
 import styles from './CSSDebug.module.css';
-import ColorToggle2 from './ColorToggle';
+import ColorToggle from './ColorToggle';
 
 const colors = [
     { name: '--text1', format: 'text' },
@@ -35,41 +35,23 @@ export default function CSSDebug() {
 
     return (
         <>
+            <input
+                type='text'
+                value={sampleText}
+                onChange={(e) => setSampleText(e.target.value)}
+            />
             <section className={styles.css_debug}>
-                <div className={styles.color_toggles}>{
-                        colors.map(
-                            (c: cssColorIF) => (
-                                <ColorToggle2
-                                    key={JSON.stringify(c)}
-                                    cssProperty={c}
-                                />
-                            )
+                {
+                    colors.map(
+                        (c: cssColorIF) => (
+                            <ColorToggle
+                                key={JSON.stringify(c)}
+                                cssProperty={c}
+                                sampleText={sampleText}
+                            />
                         )
-                    }
-                </div>
-                <div className={styles.previews}>
-                    <input
-                        type='text'
-                        value={sampleText}
-                        onChange={(e) => setSampleText(e.target.value)}
-                    />
-                    <section>
-                        <h5>On Black (#000000)</h5>
-                        <p style={{backgroundColor: '#000000'}}>{sampleText}</p>
-                    </section>
-                    <section>
-                        <h5>On White (#FFFFFF)</h5>
-                        <p style={{backgroundColor: '#FFFFFF'}}>{sampleText}</p>
-                    </section>
-                    <section>
-                        <h5>On --dark1 (#FFFFFF)</h5>
-                        <p style={{backgroundColor: '--dark1'}}>{sampleText}</p>
-                    </section>
-                    <section>
-                        <h5>On --dark2</h5>
-                        <p style={{backgroundColor: '--dark2'}}>{sampleText}</p>
-                    </section>
-                </div>
+                    )
+                }
             </section>
             <Swap />
         </>

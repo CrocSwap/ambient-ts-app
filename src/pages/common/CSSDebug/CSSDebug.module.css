@@ -1,31 +1,6 @@
 .css_debug {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
-    padding: 20px;
-}
-
-.css_debug > * {
-    max-width: 800px;
-}
-
-.color_toggles {
-    display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-evenly;
-}
-
-.previews {
-    display: flex;
-    flex-direction: column;
-    border: 2px solid green;
-}
-
-.previews > input {
-    width: 100%;
-}
-
-.previews > section {
-    margin-top: 8px;
+    padding: 20px;
 }
