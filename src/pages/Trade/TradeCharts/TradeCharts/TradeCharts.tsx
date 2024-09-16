@@ -355,7 +355,7 @@ function TradeCharts(props: propsIF) {
                 style={{
                     padding:
                         isChartFullScreen || ['futa'].includes(platformName)
-                            ? '1rem'
+                            ? '0 0 1rem'
                             : '0',
                     background: isChartFullScreen ? 'var(--dark2)' : '',
                 }}

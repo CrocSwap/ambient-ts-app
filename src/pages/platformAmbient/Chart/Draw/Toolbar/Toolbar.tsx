@@ -58,6 +58,7 @@ function ChartToolbar() {
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
+    const isFuta = ['futa'].includes(platformName);
 
     const {
         toolbarRef,
@@ -79,6 +80,7 @@ function ChartToolbar() {
         setSelectedDrawnShape,
         chartContainerOptions,
         setIsMagnetActiveLocal,
+        isFullScreen
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -329,9 +331,11 @@ function ChartToolbar() {
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
-                mobileView || ['futa'].includes(platformName)
-                    ? 'var(--dark1)'
-                    : 'var(--dark2)'
+                isFuta
+                    ? mobileView || smallScreen ? 'transparent' : isFullScreen ?  'var(--dark2)':'var(--dark1)'
+                    : mobileView
+                      ? 'var(--dark1)'
+                      : 'var(--dark2)'
             }
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
@@ -554,7 +558,7 @@ function ChartToolbar() {
                 >
                     <ArrowRight
                         isActive={isToolbarOpen}
-                        isFuta={['futa'].includes(platformName)}
+                        isFuta={isFuta}
                     ></ArrowRight>
                 </DividerButton>
             </DividerContainer>

@@ -1,14 +1,29 @@
 import styled from 'styled-components';
 
 const ChartTooltipDiv = styled.div<{
-    isToolbarOpen:boolean;
+    isToolbarOpen: boolean;
+    isFuta: boolean;
+    isFullScreen: boolean;
 }>`
     justify-content: space-between;
     text-wrap: wrap;
     align-items: center;
     position: fixed;
-    margin-top: -24px;
-    margin-left: 10px;
+
+    ${({ isFuta }) => {
+        if (isFuta) {
+            return `
+            left: 5px;
+            top: 190px;
+    `;
+        } else {
+            return `
+            margin-top: -24px;
+            margin-left: 10px;
+            `;
+        }
+    }}
+
     p {
         margin-left: 0px;
         text-overflow: ellipsis;
@@ -19,8 +34,11 @@ const ChartTooltipDiv = styled.div<{
     @media screen and (min-width: 768px) {
         position: absolute;
         margin-top: 0px;
-        margin-left: ${({ isToolbarOpen }) => isToolbarOpen ? '38px': '12px'};
+        margin-left: ${({ isToolbarOpen }) =>
+            isToolbarOpen ? '38px' : '12px'};
 
+        top: ${({ isFuta, isFullScreen }) =>
+            isFuta ? (isFullScreen ? '110px' : '55px') : ''};
         p {
             margin-left: 2px;
             max-width: 1000px;

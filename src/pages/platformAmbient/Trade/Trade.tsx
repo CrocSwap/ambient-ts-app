@@ -142,7 +142,7 @@ function Trade() {
         updateURL,
         isMobileSettingsModalOpen,
         openMobileSettingsModal,
-        closeMobileSettingsModal
+        closeMobileSettingsModal,
     };
 
     const tradeTabsProps = {
@@ -229,7 +229,7 @@ function Trade() {
     useEffect(() => {
         const calculateHeight = () => {
             const totalHeight = window.innerHeight;
-            const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+            const heightToSubtract = isFuta ? 56 + 56 + 55 : 56 + 56; // Subtract 56px from top and 56px from bottom
             setAvailableHeight(totalHeight - heightToSubtract);
         };
 
@@ -278,7 +278,10 @@ function Trade() {
             style={{ height: `${availableHeight}px` }}
         >
             {mobileTabs}
-            <div className={styles.mobile_header}>
+            <div
+                className={styles.mobile_header}
+                style={{ padding: isFuta ? '0' : '' }}
+            >
                 <div
                     className={styles.mobile_token_icons}
                     onClick={toggleDidUserFlipDenom}
@@ -299,8 +302,11 @@ function Trade() {
                         alt={isDenomBase ? quoteToken.symbol : baseToken.symbol}
                         size={'s'}
                     />
-                    {isDenomBase ? baseToken.symbol : quoteToken.symbol} /
-                    {isDenomBase ? quoteToken.symbol : baseToken.symbol}
+                    <div>
+                        {isDenomBase ? baseToken.symbol : quoteToken.symbol}
+                        {'/'}
+                        {isDenomBase ? quoteToken.symbol : baseToken.symbol}
+                    </div>
                 </div>
                 <div
                     className={styles.conv_rate}
@@ -319,7 +325,13 @@ function Trade() {
                         {poolPriceChangeString}
                     </p>
                 </div>
-               {activeTab === 'Chart' && <LuSettings size={20} onClick={openMobileSettingsModal} color='var(--text2)'/>}
+                {activeTab === 'Chart' && (
+                    <LuSettings
+                        size={20}
+                        onClick={openMobileSettingsModal}
+                        color='var(--text2)'
+                    />
+                )}
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
                 {activeTabData}
@@ -429,7 +441,10 @@ function Trade() {
                                 />
                             )}
                             {!isCandleDataNull && isPoolInitialized && (
-                                <ChartContainer fullScreen={isChartFullScreen} isFuta={isFuta}>
+                                <ChartContainer
+                                    fullScreen={isChartFullScreen}
+                                    isFuta={isFuta}
+                                >
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
                                     )}
