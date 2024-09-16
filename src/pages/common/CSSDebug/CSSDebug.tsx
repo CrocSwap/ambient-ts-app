@@ -1,32 +1,33 @@
 import { useState } from 'react';
 import Swap from '../../platformAmbient/Swap/Swap';
-import ColorToggle from './ColorToggle';
 import styles from './CSSDebug.module.css';
+import ColorToggle2 from './ColorToggle';
 
-const cssVariables = {
-    colors: [
-        '--text1',
-        '--text2',
-        '--text3',
-        '--dark1',
-        '--dark2',
-        '--dark3',
-        '--dark4',
-        '--accent1',
-        '--accent2',
-        '--accent3',
-        '--accent4',
-        '--accent5',
-        '--positive',
-        '--negative',
-        '--other-green',
-        '--other-red',
-        '--border',
-        '--dark-border-color',
-    ],
-};
+const colors = [
+    { name: '--text1', format: 'text' },
+    { name: '--text2', format: 'text' },
+    { name: '--text3', format: 'text' },
+    { name: '--dark1', format: 'background' },
+    { name: '--dark2', format: 'background' },
+    { name: '--dark3', format: 'background' },
+    { name: '--dark4', format: 'background' },
+    { name: '--accent1', format: 'text' },
+    { name: '--accent2', format: 'text' },
+    { name: '--accent3', format: 'text' },
+    { name: '--accent4', format: 'text' },
+    { name: '--accent5', format: 'text' },
+    { name: '--positive', format: 'text' },
+    { name: '--negative', format: 'text' },
+    { name: '--other-green', format: 'text' },
+    { name: '--other-red', format: 'text' },
+    { name: '--border', format: 'border' },
+    { name: '--dark-border-color', format: 'border' },
+];
 
-export type toggleableColors = (typeof cssVariables.colors)[number];
+export interface cssColorIF {
+    name: typeof colors[number]['name'];
+    format: string;
+}
 
 export default function CSSDebug() {
     const [themeName, setThemeName] = useState<string>('');
@@ -38,12 +39,14 @@ export default function CSSDebug() {
                 className={styles.color_toggles}
             >
             {
-                cssVariables.colors.map((c: toggleableColors) => (
-                    <ColorToggle
-                        key={c}
-                        cssProperty={c}
-                    />
-                ))
+                colors.map(
+                    (c: cssColorIF) => (
+                        <ColorToggle2
+                            key={JSON.stringify(c)}
+                            cssProperty={c}
+                        />
+                    )
+                )
             }
             </section>
             <label htmlFor='theme_name'>Name this Theme:</label>
