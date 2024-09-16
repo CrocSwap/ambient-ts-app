@@ -22,7 +22,6 @@ import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 import NFTBannerAccount from './NFTBannerAccount';
 import Modal from '../../../Global/Modal/Modal';
-import { useModal } from '../../../Global/Modal/useModal';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -157,16 +156,12 @@ export default function PortfolioBannerAccount(
         setNftTestWalletAddress(() => nftTestWalletInput);
         setIsfetchNftTriggered(() => true);
     }
-    const [
-        isNftSettingsModalOpen,
-        openNftSettingsModal,
-        closeNftSettingsModal,
-    ] = useModal();
+   
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
 
     const mobileBannerSettings = (
-        !showNFTPage ? null : <Modal usingCustomHeader onClose={closeNftSettingsModal}>
+        !showNFTPage ? null : <Modal usingCustomHeader onClose={() => setShowNFTPage(false)}>
             { NFTData && (
                 <NFTBannerAccount
                     setShowNFTPage={setShowNFTPage}

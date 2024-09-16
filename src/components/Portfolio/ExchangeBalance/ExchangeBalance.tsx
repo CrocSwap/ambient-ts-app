@@ -29,6 +29,7 @@ interface propsIF {
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
+    setIsAutoLayout?: Dispatch<SetStateAction<boolean>> | undefined;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -37,6 +38,7 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         isModalView = false,
         setTokenModalOpen = () => null,
+        setIsAutoLayout
     } = props;
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -239,11 +241,14 @@ export default function ExchangeBalance(props: propsIF) {
             icon: transferImage,
         },
     ];
-
+    const toggleFullLayoutActive = () => {
+        setFullLayoutActive(!fullLayoutActive);
+       setIsAutoLayout && setIsAutoLayout(false); // Mark that the layout is now manually controlled
+      };
     const exchangeControl = (
         <div className={styles.portfolio_control_container}
             id='portfolio_sidebar_toggle'
-            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+            onClick={toggleFullLayoutActive}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
                 <img

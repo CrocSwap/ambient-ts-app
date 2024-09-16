@@ -202,10 +202,25 @@ function Portfolio(props: PortfolioPropsIF) {
     }, [connectedAccountActive, resolvedAddress, isActiveNetworkBlast]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
+    const [isAutoLayout, setIsAutoLayout] = useState<boolean>(true); // Tracks if the layout is being set automatically
+
+    const matchesMinWidth = useMediaQuery('(min-width: 768px)');
+    const matchesMaxWidth = useMediaQuery('(max-width: 1280px)');
+
+    useEffect(() => {
+        // Only change `fullLayoutActive` if it's set automatically
+        if (isAutoLayout && matchesMinWidth && matchesMaxWidth) {
+            setFullLayoutActive(true);
+        } else if (isAutoLayout && (!matchesMinWidth || !matchesMaxWidth)) {
+            setFullLayoutActive(false);
+        }
+    }, [isAutoLayout, matchesMinWidth, matchesMaxWidth]);
+
     const exchangeBalanceComponent = (
         <ExchangeBalance
             fullLayoutActive={fullLayoutActive}
             setFullLayoutActive={setFullLayoutActive}
+            setIsAutoLayout={setIsAutoLayout}
         />
     );
 
@@ -468,8 +483,6 @@ function Portfolio(props: PortfolioPropsIF) {
             setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         }
     }, [specificTab]);
-
-
 
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
