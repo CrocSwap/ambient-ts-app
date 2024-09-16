@@ -276,7 +276,7 @@ function Trade() {
             className={styles.mobile_container}
             style={{ height: `${availableHeight}px` }}
         >
-            {mobileTabs}
+            {!isFuta &&  mobileTabs}
             <div className={styles.mobile_header}>
                 <div
                     className={styles.mobile_token_icons}
@@ -327,7 +327,13 @@ function Trade() {
                 )}
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
-                {activeTabData}
+                { !isFuta ? activeTabData :  <>
+                    {!isChartHeightMinimum && <ChartToolbar />}
+                    {isPoolInitialized && !isCandleDataNull && (
+                        <TradeCharts {...tradeChartsProps} />
+                    )}
+                </> }
+
             </div>
         </div>
     );
@@ -445,7 +451,7 @@ function Trade() {
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
-                        {!isChartFullScreen && (
+                        {!isChartFullScreen && !isFuta &&  (
                             <FlexContainer
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}
