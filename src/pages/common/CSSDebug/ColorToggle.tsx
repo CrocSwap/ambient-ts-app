@@ -1,16 +1,17 @@
 import { useRef, useState } from 'react';
 import { ColorResult, SketchPicker } from 'react-color';
 import styles from './ColorToggle.module.css';
-import { cssColorIF } from './CSSDebug';
+import { allColorsIF, cssColorIF } from './CSSDebug';
 import { RxReset } from 'react-icons/rx';
 
 interface propsIF {
     cssProperty: cssColorIF;
     sampleText: string;
+    allColors: allColorsIF;
 }
 
 export default function ColorToggle(props: propsIF) {
-    const { cssProperty, sampleText } = props;
+    const { cssProperty, sampleText, allColors } = props;
 
     const [color, setColor] = useState<string>(getCssCustomPropertyValue(cssProperty.name));
 
@@ -25,18 +26,14 @@ export default function ColorToggle(props: propsIF) {
         document.documentElement.style.setProperty(cssProperty.name, c);
     }
 
-    const originalColor = useRef(getCssCustomPropertyValue(cssProperty.name));
-
-    function generateKey(background: string) {
-        return `${cssProperty.name}_preview_over_${background}`;
-    }
+    const originalColor = useRef<string>(getCssCustomPropertyValue(cssProperty.name));
 
     return (
         <section className={styles.color_toggle}>
             <div className={styles.toggle_area}>
                 <header>
                     <h4>Toggle {cssProperty.name}</h4>
-                    <RxReset size={12} onClick={() => handleChange(originalColor.current)}/>
+                    <RxReset onClick={() => handleChange(originalColor.current)}/>
                 </header>
                 <SketchPicker
                     color={color}
@@ -48,14 +45,14 @@ export default function ColorToggle(props: propsIF) {
                     cssProperty.format === 'text' && (
                         <>
                             {
-                                ['--dark1', '--dark2', '--dark3', '--dark4'].map((
-                                    (backgroundClr: string) => (
+                                allColors.background.map((
+                                    (c: cssColorIF) => (
                                         <section
-                                            key={generateKey(backgroundClr)}
+                                            key={JSON.stringify(c)}
                                             className={styles.text_sample}
                                         >
-                                            <h5>On {backgroundClr}:</h5>
-                                            <p style={{backgroundColor: `var(${backgroundClr})`}}>{sampleText}</p>
+                                            <h5>On {c.name}:</h5>
+                                            <p style={{backgroundColor: `var(${c.name})`}}>{sampleText}</p>
                                         </section>
                                     )
                                 ))

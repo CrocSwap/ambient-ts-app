@@ -1,13 +1,14 @@
 .color_toggle {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: nowrap;
     margin: 8px;
     padding: 4px;
+    gap: 6px;
     outline: 1px solid yellow;
 }
 
-.color_toggle > header {
+.toggle_area > header {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;

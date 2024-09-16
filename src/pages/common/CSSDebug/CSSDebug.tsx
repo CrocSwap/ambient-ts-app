@@ -3,14 +3,18 @@ import Swap from '../../platformAmbient/Swap/Swap';
 import styles from './CSSDebug.module.css';
 import ColorToggle from './ColorToggle';
 
-const colors = [
+
+export type colorFormats = 'text'|'background'|'border';
+
+export interface cssColorIF {
+    name: string;
+    format: colorFormats;
+}
+
+const textColors: cssColorIF[] = [
     { name: '--text1', format: 'text' },
     { name: '--text2', format: 'text' },
     { name: '--text3', format: 'text' },
-    { name: '--dark1', format: 'background' },
-    { name: '--dark2', format: 'background' },
-    { name: '--dark3', format: 'background' },
-    { name: '--dark4', format: 'background' },
     { name: '--accent1', format: 'text' },
     { name: '--accent2', format: 'text' },
     { name: '--accent3', format: 'text' },
@@ -20,14 +24,31 @@ const colors = [
     { name: '--negative', format: 'text' },
     { name: '--other-green', format: 'text' },
     { name: '--other-red', format: 'text' },
+];
+
+const backgroundColors: cssColorIF[] = [
+    { name: '--dark1', format: 'background' },
+    { name: '--dark2', format: 'background' },
+    { name: '--dark3', format: 'background' },
+    { name: '--dark4', format: 'background' },
+];
+
+const borderColors: cssColorIF[] = [
     { name: '--border', format: 'border' },
     { name: '--dark-border-color', format: 'border' },
 ];
 
-export interface cssColorIF {
-    name: typeof colors[number]['name'];
-    format: string;
+export interface allColorsIF {
+    text: cssColorIF[];
+    background: cssColorIF[];
+    border: cssColorIF[];
 }
+
+const allColors: allColorsIF = {
+    text: textColors,
+    background: backgroundColors,
+    border: borderColors,
+};
 
 export default function CSSDebug() {
     const SAMPLE_TEXT = 'Zero-to-One Decentralized Trading Protocol';
@@ -42,12 +63,37 @@ export default function CSSDebug() {
             />
             <section className={styles.css_debug}>
                 {
-                    colors.map(
+                    textColors.map(
                         (c: cssColorIF) => (
                             <ColorToggle
                                 key={JSON.stringify(c)}
                                 cssProperty={c}
                                 sampleText={sampleText}
+                                allColors={allColors}
+                            />
+                        )
+                    )
+                }
+                {
+                    backgroundColors.map(
+                        (c: cssColorIF) => (
+                            <ColorToggle
+                                key={JSON.stringify(c)}
+                                cssProperty={c}
+                                sampleText={sampleText}
+                                allColors={allColors}
+                            />
+                        )
+                    )
+                }
+                {
+                    borderColors.map(
+                        (c: cssColorIF) => (
+                            <ColorToggle
+                                key={JSON.stringify(c)}
+                                cssProperty={c}
+                                sampleText={sampleText}
+                                allColors={allColors}
                             />
                         )
                     )
