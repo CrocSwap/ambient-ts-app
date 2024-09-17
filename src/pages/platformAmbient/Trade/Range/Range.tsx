@@ -1,4 +1,8 @@
-import { concDepositSkew, fromDisplayQty } from '@crocswap-libs/sdk';
+import {
+    concDepositSkew,
+    fromDisplayQty,
+    toDisplayQty,
+} from '@crocswap-libs/sdk';
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../../../components/Form/Button';
 import { useModal } from '../../../../components/Global/Modal/useModal';
@@ -116,9 +120,33 @@ function Range() {
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
     );
+
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
         !isTokenAPrimary ? primaryQuantity : '',
     );
+
+    const tokenAInputQtyNoExponentString = useMemo(() => {
+        try {
+            return tokenAInputQty.includes('e')
+                ? toDisplayQty(
+                      fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+                      tokenA.decimals,
+                  )
+                : tokenAInputQty;
+        } catch (error) {
+            console.log({ error });
+            return '0';
+        }
+    }, [tokenAInputQty, tokenA.decimals]);
+
+    const tokenBInputQtyNoExponentString = useMemo(() => {
+        return tokenBInputQty.includes('e')
+            ? toDisplayQty(
+                  fromDisplayQty(tokenBInputQty || '0', tokenB.decimals),
+                  tokenB.decimals,
+              )
+            : tokenBInputQty;
+    }, [tokenBInputQty, tokenB.decimals]);
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);
@@ -258,23 +286,32 @@ function Range() {
 
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
-        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
+        fromDisplayQty(tokenAInputQtyNoExponentString || '0', tokenA.decimals);
     const tokenBSurplusMinusTokenBRemainderNum =
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
-        fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
+        fromDisplayQty(tokenBInputQtyNoExponentString || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
+        : fromDisplayQty(
+              tokenAInputQtyNoExponentString || '0',
+              tokenA.decimals,
+          );
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
         ? tokenBSurplusMinusTokenBRemainderNum < 0
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
-    const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
+        : fromDisplayQty(
+              tokenBInputQtyNoExponentString || '0',
+              tokenB.decimals,
+          );
+    const isQtyEntered =
+        tokenAInputQtyNoExponentString !== '' &&
+        tokenBInputQtyNoExponentString !== '';
     const showExtraInfoDropdown =
-        tokenAInputQty !== '' || tokenBInputQty !== '';
+        tokenAInputQtyNoExponentString !== '' ||
+        tokenBInputQtyNoExponentString !== '';
 
     const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
@@ -903,8 +940,12 @@ function Range() {
         createRangePosition({
             slippageTolerancePercentage,
             isAmbient,
-            tokenAInputQty: isTokenAInputDisabled ? '0' : tokenAInputQty,
-            tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBInputQty,
+            tokenAInputQty: isTokenAInputDisabled
+                ? '0'
+                : tokenAInputQtyNoExponentString,
+            tokenBInputQty: isTokenBInputDisabled
+                ? '0'
+                : tokenBInputQtyNoExponentString,
             isWithdrawTokenAFromDexChecked,
             isWithdrawTokenBFromDexChecked,
             defaultLowTick,
@@ -945,7 +986,7 @@ function Range() {
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
     } = useHandleRangeButtonMessage(
         tokenA,
-        tokenAInputQty,
+        tokenAInputQtyNoExponentString,
         tokenABalance,
         tokenADexBalance,
         isTokenAInputDisabled,
@@ -1086,8 +1127,16 @@ function Range() {
             modal={
                 isOpen ? (
                     <ConfirmRangeModal
-                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
-                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
+                        tokenAQty={
+                            isTokenAInputDisabled
+                                ? ''
+                                : tokenAInputQtyNoExponentString
+                        }
+                        tokenBQty={
+                            isTokenBInputDisabled
+                                ? ''
+                                : tokenBInputQtyNoExponentString
+                        }
                         spotPriceDisplay={getFormattedNumber({
                             value: displayPriceWithDenom,
                         })}

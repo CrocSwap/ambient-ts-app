@@ -5,7 +5,10 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../../styled/Common';
-import { truncateDecimals } from '../../../../ambient-utils/dataLayer';
+import {
+    precisionOfInput,
+    truncateDecimals,
+} from '../../../../ambient-utils/dataLayer';
 import {
     limitParamsIF,
     linkGenMethodsIF,
@@ -155,9 +158,34 @@ function LimitTokenInput(props: propsIF) {
             );
         }
 
+        let precisionForTruncation = 6;
+
+        const fixedTokenBQty = parseFloat(
+            rawTokenBQty.toFixed(tokenB.decimals),
+        );
+
+        const precisionOfTruncatedTokenBQty = precisionOfInput(
+            fixedTokenBQty.toPrecision(precisionForTruncation),
+        );
+
+        // find the largest precision that doesn't exceed the token's decimal places
+        while (
+            precisionOfTruncatedTokenBQty > tokenB.decimals &&
+            precisionForTruncation > 1
+        ) {
+            precisionForTruncation--;
+        }
+
+        const truncatedTokenBQtyIsZero =
+            fixedTokenBQty.toPrecision(precisionForTruncation) === '0.00000';
+
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(6)
+                ? truncatedTokenBQtyIsZero
+                    ? '0'
+                    : fixedTokenBQty
+                          .toPrecision(precisionForTruncation)
+                          .replace(/\.?0+$/, '') // Remove trailing zeros
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
@@ -220,9 +248,34 @@ function LimitTokenInput(props: propsIF) {
                 fromDisplayQty(formattedRawTokenAQty, tokenA.decimals),
             );
         }
+        let precisionForTruncation = 6;
+
+        const fixedTokenAQty = parseFloat(
+            rawTokenAQty.toFixed(tokenA.decimals),
+        );
+
+        const precisionOfTruncatedTokenAQty = precisionOfInput(
+            fixedTokenAQty.toPrecision(precisionForTruncation),
+        );
+
+        // find the largest precision that doesn't exceed the token's decimal places
+        while (
+            precisionOfTruncatedTokenAQty > tokenA.decimals &&
+            precisionForTruncation > 1
+        ) {
+            precisionForTruncation--;
+        }
+
+        const truncatedTokenAQtyIsZero =
+            fixedTokenAQty.toPrecision(precisionForTruncation) === '0.00000';
+
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(6)
+                ? truncatedTokenAQtyIsZero
+                    ? '0'
+                    : fixedTokenAQty
+                          .toPrecision(precisionForTruncation)
+                          .replace(/\.?0+$/, '')
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 
