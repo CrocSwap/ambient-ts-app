@@ -229,6 +229,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 useMediaQuery('(min-width: 2000px)') ? 'center' : 'flex-start'
             }
             padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
+            style={{background: 'var(--dark1)'}}
         >
             <TradeChartsTokenInfo />
             {tradeTableState === 'Expanded' || showNoChartData
