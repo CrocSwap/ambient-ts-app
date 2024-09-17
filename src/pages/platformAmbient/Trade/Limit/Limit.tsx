@@ -123,6 +123,30 @@ export default function Limit() {
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
         !isTokenAPrimary ? primaryQuantity : '',
     );
+
+    const tokenAInputQtyNoExponentString = useMemo(() => {
+        return tokenAInputQty.includes('e')
+            ? toDisplayQty(
+                  fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+                  tokenA.decimals,
+              )
+            : tokenAInputQty;
+    }, [tokenAInputQty, tokenA.decimals]);
+
+    const tokenBInputQtyNoExponentString = useMemo(() => {
+        try {
+            return tokenBInputQty.includes('e')
+                ? toDisplayQty(
+                      fromDisplayQty(tokenBInputQty || '0', tokenB.decimals),
+                      tokenB.decimals,
+                  )
+                : tokenBInputQty;
+        } catch (error) {
+            console.log({ error });
+            return tokenBInputQty;
+        }
+    }, [tokenBInputQty, tokenB.decimals]);
+
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(
@@ -187,14 +211,17 @@ export default function Limit() {
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
-        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
+        fromDisplayQty(tokenAInputQtyNoExponentString || '0', tokenA.decimals);
     const isTokenADexSurplusSufficient =
         tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
+        : fromDisplayQty(
+              tokenAInputQtyNoExponentString || '0',
+              tokenA.decimals,
+          );
     const isTokenAAllowanceSufficient =
         tokenAAllowance === undefined
             ? true
@@ -493,11 +520,14 @@ export default function Limit() {
 
     useEffect(() => {
         handleLimitButtonMessage(
-            fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+            fromDisplayQty(
+                tokenAInputQtyNoExponentString || '0',
+                tokenA.decimals,
+            ),
         );
     }, [
         isOrderValid,
-        tokenAInputQty,
+        tokenAInputQtyNoExponentString,
         isPoolInitialized,
         poolPriceNonDisplay,
         limitTick,
@@ -601,8 +631,8 @@ export default function Limit() {
         const sellToken = tokenA.address;
         const buyToken = tokenB.address;
 
-        const sellQty = tokenAInputQty;
-        const buyQty = tokenBInputQty;
+        const sellQty = tokenAInputQtyNoExponentString;
+        const buyQty = tokenBInputQtyNoExponentString;
 
         const qty = isTokenAPrimary ? sellQty : buyQty;
         const type = isTokenAPrimary ? 'sell' : 'buy';
@@ -898,8 +928,8 @@ export default function Limit() {
 
     const percentDiffUsdValue =
         usdValueTokenA && usdValueTokenB
-            ? ((usdValueTokenB * parseFloat(tokenBInputQty) -
-                  usdValueTokenA * parseFloat(tokenAInputQty)) /
+            ? ((usdValueTokenB * parseFloat(tokenBInputQtyNoExponentString) -
+                  usdValueTokenA * parseFloat(tokenAInputQtyNoExponentString)) /
                   (usdValueTokenA * parseFloat(tokenAInputQty))) *
               100
             : 0;
@@ -921,7 +951,10 @@ export default function Limit() {
                         set: setTokenAInputQty,
                     }}
                     tokenBInputQty={{
-                        value: tokenBInputQty,
+                        value:
+                            tokenBInputQtyNoExponentString !== '0.0'
+                                ? tokenBInputQty
+                                : '0',
                         set: setTokenBInputQty,
                     }}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -964,8 +997,8 @@ export default function Limit() {
                     <ConfirmLimitModal
                         onClose={handleModalClose}
                         initiateLimitOrderMethod={sendLimitOrder}
-                        tokenAInputQty={tokenAInputQty}
-                        tokenBInputQty={tokenBInputQty}
+                        tokenAInputQty={tokenAInputQtyNoExponentString}
+                        tokenBInputQty={tokenBInputQtyNoExponentString}
                         insideTickDisplayPrice={endDisplayPrice}
                         newLimitOrderTransactionHash={
                             newLimitOrderTransactionHash
@@ -1029,7 +1062,7 @@ export default function Limit() {
                 isPoolInitialized &&
                 !isTokenAAllowanceSufficient &&
                 isTokenAWalletBalanceSufficient &&
-                parseFloat(tokenAInputQty) > 0 ? (
+                parseFloat(tokenAInputQtyNoExponentString) > 0 ? (
                     <Button
                         idForDOM='approve_limit_order_button'
                         style={{ textTransform: 'none' }}
