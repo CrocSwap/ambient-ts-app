@@ -10,6 +10,12 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 import { ChartContext } from '../../../contexts/ChartContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
+import { Outlet } from 'react-router-dom';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 // import logo from '../../../assets/futa/logos/homeLogo.svg';
 
@@ -18,11 +24,22 @@ function SwapFuta() {
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
+    const {
 
+        limitTick,
+
+    } = useContext(TradeDataContext);
 
     const { isCandleDataNull } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const {
+        chainData: { chainId },
+        provider,
+    } = useContext(CrocEnvContext);
+    const { tokens } = useContext(TokenContext);
+
+    const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
    
     const [activeTab, setActiveTab] = useState('Trade');
@@ -31,6 +48,7 @@ function SwapFuta() {
         {
             id: 'Trade',
             label: 'Trade',
+            
             data: <Swap isOnTradeRoute />
         },
         !isCandleDataNull &&
@@ -51,12 +69,14 @@ function SwapFuta() {
     ];
 
     
+
+    
     const mobileTabs = (
         <div 
             className={styles.mobile_tabs_container}
             style={{
                 display: 'grid', 
-                gridTemplateColumns: `repeat(${tabs.length - 1}, 1fr)` // Dynamic grid based on tab count
+                gridTemplateColumns: `repeat(${tabs.length }, 1fr)` // Dynamic grid based on tab count
             }}
         >
             {tabs

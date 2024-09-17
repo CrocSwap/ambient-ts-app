@@ -44,10 +44,10 @@ const PlatformFutaRoutes: React.FC = () => {
                     element={<Auctions placeholderTicker />}
                 />
 
-                <Route
+                {/* <Route
                     path='/trade'
                     element={<Navigate to='/explore' replace />}
-                />
+                /> */}
                 <Route path='/create' element={<Create />} />
                 <Route
                     path='/auctions/ticker'

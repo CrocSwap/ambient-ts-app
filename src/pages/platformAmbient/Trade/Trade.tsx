@@ -276,7 +276,7 @@ function Trade() {
             className={styles.mobile_container}
             style={{ height: `${availableHeight}px` }}
         >
-            {!isFuta &&  mobileTabs}
+            {!isFuta && mobileTabs}
             <div className={styles.mobile_header}>
                 <div
                     className={styles.mobile_token_icons}
@@ -327,17 +327,21 @@ function Trade() {
                 )}
             </div>
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
-                { !isFuta ? activeTabData :  <>
-                    {!isChartHeightMinimum && <ChartToolbar />}
-                    {isPoolInitialized && !isCandleDataNull && (
-                        <TradeCharts {...tradeChartsProps} />
-                    )}
-                </> }
-
+                {activeTabData}
             </div>
         </div>
     );
 
+
+    if (isFuta && smallScreen)
+        return (
+            <>
+                {!isChartHeightMinimum && <ChartToolbar />}
+                {isPoolInitialized && !isCandleDataNull && (
+                    <TradeCharts {...tradeChartsProps} />
+                )}
+            </>
+        );
     if (smallScreen) return mobileComponent;
 
     return (
@@ -365,7 +369,7 @@ function Trade() {
                     >
                         <ResizableContainer
                             showResizeable={
-                                !isCandleDataNull && !isChartFullScreen
+                                !isCandleDataNull && !isChartFullScreen && !isFuta
                             }
                             enable={{
                                 bottom: !isChartFullScreen,
@@ -446,19 +450,17 @@ function Trade() {
                                 >
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
-                                    )} 
-                                   
+                                    )}
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
-                        {!isChartFullScreen && !isFuta &&  (
+                        {!isChartFullScreen && !isFuta && (
                             <FlexContainer
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}
                                 overflow='hidden'
                             >
                                 <TradeTabs2 {...tradeTabsProps} />
-                            
                             </FlexContainer>
                         )}
                     </FlexContainer>

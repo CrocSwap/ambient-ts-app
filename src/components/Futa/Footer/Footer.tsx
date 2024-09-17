@@ -30,6 +30,8 @@ const itemVariants = {
 export default function Footer() {
     const { tokenA, tokenB } = useContext(TradeDataContext);
 
+    
+
     const paramsSlug = formSlugForPairParams({
         chain: chainNumToString(tokenA.chainId),
         tokenA: tokenA.address,
@@ -47,10 +49,11 @@ export default function Footer() {
             icon: <FiPlusCircle size={24} color='var(--text1)' />,
         },
         {
-            label: 'Trade',
+            label: 'Swap',
             link: '/swap/' + paramsSlug,
             icon: <MdOutlineSwapVerticalCircle size={24} color='var(--text1)' />,
         },
+  
         {
             label: 'Account',
             link: '/account',
