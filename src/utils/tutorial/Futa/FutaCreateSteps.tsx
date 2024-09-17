@@ -27,11 +27,12 @@ export const futaCreateSteps = [
         title: 'Create Token',
         intro: 'Create token auction token from this button',
         navigate: {label: 'To Auctions', path: '/auctions'},
+        actionOnComplete: '#create_auction_reset',
     },
     {
         element: '#auctions_create_connect_button',
         title: 'Connect Wallet',
         intro: 'You should connect your wallet to create token auction',
-        navigate: {label: 'To Auctions', path: '/auctions'},
+        actionOnComplete: '#create_auction_reset',
     },
 ];

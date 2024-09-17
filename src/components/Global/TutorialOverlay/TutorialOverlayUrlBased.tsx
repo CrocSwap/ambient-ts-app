@@ -1,15 +1,16 @@
 import { Step } from 'intro.js-react';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { futaAuctionsSteps } from '../../../utils/tutorial/Futa/AuctionsSteps';
+import { futaAccountSteps } from '../../../utils/tutorial/Futa/FutaAccountSteps';
 import { futaCreateSteps } from '../../../utils/tutorial/Futa/FutaCreateSteps';
-import { TutorialIF } from '../../Chat/ChatIFs';
+import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { futaAccountSteps } from '../../../utils/tutorial/Futa/FutaAccountSteps';
 // import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
@@ -32,6 +33,19 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const [stepsFiltered, setStepsFiltered] = useState<Step[]>([]);
 
     const [replayTutorial, setReplayTutorial] = useState<boolean>(false);
+    
+    const {
+        walletModal: { open: openWalletModal },
+    } = useContext(AppStateContext);
+
+
+    const connectButton =         (<button
+    id='connect_wallet_button_page_header'
+    onClick={openWalletModal}
+    className={styles.connectButton}
+>
+    CONNECT WALLET
+</button>)
 
     const getTutorialObjectForPage = (page: string) => {
         switch (page) {
@@ -40,7 +54,10 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
             case 'account':
                 return { lsKey: 'tuto_futa_account', steps: futaAccountSteps, disableDefault: true};
             case 'auctionCreate':
-                return { lsKey: 'tuto_futa_create', steps: futaCreateSteps };
+                return { lsKey: 'tuto_futa_create', 
+                    steps: futaCreateSteps,  
+                    externalComponents: 
+                    new Map<string, TutorialStepExternalComponent>([['#auctions_create_connect_button', {component: connectButton, placement: 'nav-end' }]])};
             default:
                 return undefined;
         }
@@ -168,6 +185,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
                             showSteps={true}
                             onComplete={handleTutoFinish}
                             initialTimeout={600}
+                            externalComponents={selectedTutorialRef.current.externalComponents}
                         />
                     </>
                 )}
