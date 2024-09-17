@@ -450,21 +450,7 @@ const PageHeader = function () {
                             gap={8}
                             overflow='visible'
                         >
-                            {/* {desktopScreen && (
-                                <FlexContainer fontSize='body' color={'orange'}>
-                                    {APP_ENVIRONMENT !== 'production' ? (
-                                        <FlexContainer
-                                            alignItems='center'
-                                            gap={4}
-                                        >
-                                            {`${BRANCH_NAME} - v${appVersion}`}
-                                            {APP_ENVIRONMENT !== 'testnet' && (
-                                                <BiGitBranch color='yellow' />
-                                            )}
-                                        </FlexContainer>
-                                    ) : null}
-                                </FlexContainer>
-                            )} */}
+                        
                             <NetworkSelector />
                             {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />

@@ -90,60 +90,27 @@
     color: var(--text2);
 }
 
-.time_frame_mobile_button {
-    background: var(--dark2);
-    color: var(--text1);
-    padding: 2px 8px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--dark3);
-    font-size: 12px;
-    
+.non_active_selected_button {
+    color: var(--text2);
 }
 
-.dropdown_menu {
+.futa_active_selected_button {
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+}
+
+.active_selected_button {
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    position: relative;
-    cursor: pointer;
+    height: 100%;
+    color: var(--text1);
 }
 
-.dropdown_wrapper,
-.dropdown_wrapper_active {
-    padding: 8px;
-    position: absolute;
-    background: var(--dark2);
-    border-radius: var(--border-radius);
-    box-shadow: 10px 35px 20px rgba(0, 0, 0, 0.5);
-    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    z-index: 2;
-    display: flex;
-}
-.dropdown_wrapper_active:after {
-    content: '';
-    position: absolute;
-    height: 0;
-    width: 0;
-    left: 98%;
-    top: 0;
-    border: 10px solid transparent;
-    border-left: 10px solid var(--dark2);
+.futa_non_active_selected_button {
+    color: var(--text2);
 }
 
-.dropdown_wrapper {
-    top: 3px;
-    opacity: 0;
-    pointer-events: none;
-    left: 30px;
-}
-
-.dropdown_wrapper_active {
-    opacity: 1;
-    pointer-events: auto;
-    left: 30px;
-    top: 25px;
-    z-index: 999;
+.non_active_selected_button {
+    color: var(--text2);
 }
 
 .main_time_frame_container button:focus-visible,
@@ -154,9 +121,6 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-
-@media only screen and (max-width: 600px){
-
-
-
+.mobile_container{
+    display: flex;
 }

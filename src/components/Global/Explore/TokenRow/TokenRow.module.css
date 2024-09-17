@@ -11,10 +11,17 @@
    
     white-space: nowrap; 
     padding-left: 8px;
+    cursor: pointer !important;
     /* padding: 0 8px; */
    
 
     
+}
+
+.gridContainer:hover{
+    background: var(--dark2);
+    transition: all var(--animation-speed) ease-in-out;
+    border-radius: 4px;
 }
 
 .gridItem{
@@ -84,10 +91,17 @@ width: 70px;
 
     @media only screen and (min-width: 1024px) {
         .gridItem, .tradeButton, .tradeButton, .poolName{
-            width: 133px;
+            width: 100px;
         }
 
         .gridItem{
             font-size: 14px;
         }
+    }
+    @media only screen and (min-width: 1280px) {
+        .gridItem, .tradeButton, .tradeButton, .poolName{
+            width: 133px;
+        }
+
+        
     }

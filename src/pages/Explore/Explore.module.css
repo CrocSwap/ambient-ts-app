@@ -5,6 +5,7 @@
     flex-direction: column;
     gap: 16px;
     height: calc(100vh - 64px);
+   
 }
 
 /* .main_wrapper{
@@ -20,7 +21,9 @@
     
 } */
 
-.options_wrapper {
+
+
+.options_wrapper{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -28,18 +31,22 @@
     user-select: none;
 }
 
-.options_content {
+.options_content{
     display: flex;
-
+    
     flex-direction: row;
     align-items: center;
     gap: 12px;
+   
+
+   
+    
 }
-.title_text {
+.title_text{
     font-size: var(--header1-lh);
 }
 
-.refresh_container {
+.refresh_container{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -49,7 +56,7 @@
     gap: 8px;
 }
 
-.refresh_button {
+.refresh_button{
     width: 30px;
     height: 30px;
     display: flex;
@@ -69,8 +76,8 @@
     gap: 4px;
     flex: 1 0 0;
     border-radius: 4px;
-    background: var(--dark2, #12121a);
-
+    background: var(--dark2, #12121A);
+   
     width: 300px;
     border: 1px solid var(--dark3);
 }
@@ -79,6 +86,8 @@
     display: flex;
     align-items: center;
     width: 100%;
+   
+   
 }
 
 .input {
@@ -87,8 +96,8 @@
     border: none;
     outline: none;
     background: transparent;
-    color: var(--text-text2, #8b98a5);
-    font-family: 'Lexend Deca', sans-serif;
+    color: var(--text-text2, #8B98A5);
+    font-family: "Lexend Deca", sans-serif;
     font-size: 12px;
     font-weight: 300;
     line-height: normal;
@@ -96,40 +105,51 @@
 }
 
 .input::placeholder {
-    color: var(--text-text2, #8b98a5);
+    color: var(--text-text2, #8B98A5);
+}
+
+.input_wrapper::before {
+    content: url('path/to/your/icon.svg'); /* Replace with your actual icon path */
+    display: inline-block;
+    margin-left: 8px;
+    margin-right: 8px;
 }
 
 @media (max-width: 768px) {
-    .main_container {
+
+    .main_container{
         background: var(--dark1);
         height: calc(100vh - 120px);
+        
+        
     }
     .title_text {
         font-size: var(--header1-size);
     }
-    .options_wrapper {
+    .options_wrapper{
         flex-direction: column;
     }
 
-    .options_content {
+    .options_content{
         width: 100%;
-
+      
         display: grid;
         grid-template-columns: 1fr 30px 30px;
         gap: 4px;
     }
 
-    .pools_options_content {
+    .pools_options_content{
         grid-template-columns: 1fr 30px !important;
+       
     }
 
-    .title_text {
+    .title_text{
         display: none;
     }
 
-    .input_container {
+    .input_container{
         width: 100%;
-        background: var(--dark2);
+        background: var(--dark2)
     }
 }
 
@@ -139,12 +159,14 @@
     }
 }
 
+
+
 /* ----------------------------------- */
-.myContainer {
+.myContainer{
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-
+   
     /* max-width: 1500px; */
     margin: auto;
     /* border: 1px solid var(--dark3); */
@@ -155,32 +177,36 @@
 
     /* height: calc(100vh - 64px); */
     overflow-y: hidden;
+   
 }
 
-.gridContainer {
+.gridContainer{
     box-sizing: border-box;
     width: 100%;
-
+   
     display: flex;
     flex-direction: row;
     align-items: center;
     min-width: 100%;
     min-height: 64px;
-
+   
     gap: 4px;
-
-    overflow-x: auto;
-    white-space: nowrap;
+   
+    overflow-x: auto; 
+    white-space: nowrap; 
     /* because this is the header */
-
+  
     padding-right: 1rem;
 
+   
     position: sticky;
     top: 0;
     z-index: 100;
+   
+    
 }
 
-.gridItem {
+.gridItem{
     box-sizing: border-box;
     display: flex;
     flex-grow: 1;
@@ -189,59 +215,68 @@
     min-width: 0;
     min-height: 0;
     align-items: stretch;
-
+    
     /* width: 133px; */
-
+   
     padding: 0 8px;
     font-size: 12px;
     width: 60px;
     /* justify-content: center; */
+   
+
+   
+    
 }
 .contentContainer {
-    height: calc(
-        100% - 64px
-    ); /* Adjust this value based on your header's height */
+    height: calc(100% - 64px); /* Adjust this value based on your header's height */
     overflow-y: auto; /* Make only the content scrollable */
     scrollbar-gutter: stable; /* This will keep the layout stable when the scrollbar appears */
+
 }
 
-.tokens {
+.tokens{
     width: 100%;
-    display: flex;
-    /* justify-content: flex-start !important; */
+   display: flex;
+   /* justify-content: flex-start !important; */
 }
 
-.tradeButton {
+
+.tradeButton{
     width: 25px;
+   
 }
 
-.poolName {
-    /* justify-content: flex-start !important; */
-    width: 30px;
+
+ .poolName{
+   /* justify-content: flex-start !important; */
+   width: 30px;
+  
+  
 }
 
 @media only screen and (min-width: 768px) {
-    .gridContainer {
+
+    .gridContainer{
         gap: 8px;
     }
 
-    .gridItem {
-        font-size: 16px;
-        width: 70px;
-        justify-content: flex-end;
-    }
 
-    .tradeButton,
-    .poolName {
-        width: 70px;
-    }
+.gridItem{
+    font-size: 16px;
+    width: 70px;
+    justify-content: flex-end;
+   
+   
+}
+
+.tradeButton, .poolName{
+    width: 70px;
+        }
 }
 
 @media only screen and (min-width: 1024px) {
-    .gridItem,
-    .tradeButton,
-    .tradeButton,
-    .poolName {
+    .gridItem, .tradeButton, .tradeButton, .poolName{
         width: 133px;
     }
+
 }

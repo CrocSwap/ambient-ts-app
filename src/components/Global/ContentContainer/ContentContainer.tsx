@@ -1,52 +1,31 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import styles from './ContentContainer.module.css';
 
 interface ContentContainerPropsIF {
     children: ReactNode;
-    customWidth?: boolean;
-    customWidthAuto?: boolean;
     isOnTradeRoute?: boolean;
-    noPadding?: boolean;
-    noStyle?: boolean;
+    style?: CSSProperties; // Allow custom inline styles
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
     const {
         children,
         isOnTradeRoute,
-        customWidth,
-        customWidthAuto,
-        noPadding,
-        noStyle,
+        style
     } = props;
 
-    const customWidthStyle = customWidth ? styles.customWidth_container : null;
     const tradeRouteStyle = isOnTradeRoute
-        ? styles.no_background
-        : styles.swap_bg;
-    const swapRouteStyle = isOnTradeRoute ? null : styles.swap_route;
-    const customWidthAutoStyle = customWidthAuto
-        ? styles.customWidthAuto
-        : styles.container;
-
-    if (noStyle) return <>{children}</>;
-
-
+        ? styles.trade_route
+        : styles.swap_route
+    
 
     return (
-        <section
-            className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}
-        >
-            <section className={`${styles.window} ${tradeRouteStyle}`}>
-                <div
-                    className={`${styles.main_content} ${
-                        !isOnTradeRoute && styles.swap_main_content
-                    }`}
-                    style={{ padding: noPadding ? '' : '8px 16px 16px 16px' }}
-                >
+        <section className={tradeRouteStyle} style={style}>
+            <div className={styles.container} >
+                <div className={styles.main_content}>
                     {children}
                 </div>
-            </section>
+            </div>
         </section>
     );
 }

@@ -1,7 +1,5 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction, useState, useRef, memo } from 'react';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import { Dispatch, SetStateAction, memo } from 'react';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../../../ambient-utils/constants';
 
 interface VolumeTVLFeePropsIF {
@@ -32,11 +30,6 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
             JSON.stringify({ ...newStatus }),
         );
     };
-
-    const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] =
-        useState(false);
-
-    const mobileView = useMediaQuery('(max-width: 968px)');
 
     const handleVolumeToggle = () => {
         setShowVolume(!showVolume);
@@ -73,64 +66,6 @@ function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
             action: handleFeeRateToggle,
         },
     ];
-
-    const wrapperStyle = showVolumeTVLFeeDropdown
-        ? styles.dropdown_wrapper_active
-        : styles.dropdown_wrapper;
-
-    const dropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => {
-        setShowVolumeTVLFeeDropdown(false);
-    };
-    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
-
-    function handleCurveDepthClickMobile(action: () => void) {
-        action();
-        setShowVolumeTVLFeeDropdown(false);
-    }
-
-    const volumeTVLFeeMobile = (
-        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
-            <button
-                className={styles.volume_tvl_fee_mobile_button}
-                onClick={() =>
-                    setShowVolumeTVLFeeDropdown(!showVolumeTVLFeeDropdown)
-                }
-                tabIndex={0}
-                aria-label='Open volume and tvl dropdown.'
-            >
-                {showVolume
-                    ? 'Volume'
-                    : showTvl
-                      ? 'TVL'
-                      : showFeeRate
-                        ? 'Fee Rate'
-                        : ''}
-            </button>
-
-            <div className={wrapperStyle}>
-                {volumeTvlAndFeeData.map((button, idx) => (
-                    <div className={styles.volume_tvl_container} key={idx}>
-                        <button
-                            onClick={() =>
-                                handleCurveDepthClickMobile(button.action)
-                            }
-                            className={
-                                button.selected
-                                    ? styles.active_selected_button
-                                    : styles.non_active_selected_button
-                            }
-                            aria-label={`Show ${button.name}.`}
-                        >
-                            {button.name}
-                        </button>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    if (mobileView) return volumeTVLFeeMobile;
 
     return (
         <div

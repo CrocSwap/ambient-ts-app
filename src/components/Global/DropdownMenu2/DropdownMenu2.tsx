@@ -13,6 +13,8 @@ interface propsIF {
     title: string;
     children: ReactNode;
     marginTop?: string;
+    marginRight?: string;
+    marginLeft?: string;
     titleWidth?: string;
     logo?: string;
     left?: string;
@@ -30,6 +32,8 @@ export default function DropdownMenu2(props: propsIF) {
         left,
         right,
         expandable,
+        marginRight,
+        marginLeft
     } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
@@ -67,8 +71,8 @@ export default function DropdownMenu2(props: propsIF) {
             exit='hidden'
             style={{
                 top: marginTop ? marginTop : '30px',
-                left: left,
-                right: right,
+                left: marginLeft ?? left,
+                right: marginRight ?? right,
             }}
         >
             {children}

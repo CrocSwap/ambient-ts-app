@@ -156,7 +156,7 @@ p:focus-visible {
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 4;
+    z-index: 99;
 
     background: rgba(1, 0, 16, 0.25);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -359,10 +359,13 @@ input[type='number'] {
         overflow-y: auto;
         overflow-x: hidden;
         height: calc(100vh - 56px);
-
+        
         background: var(--dark1);
+       
     }
     .content-container-trade {
         background: var(--dark1);
     }
 }
+
+

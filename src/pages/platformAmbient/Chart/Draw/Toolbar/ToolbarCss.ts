@@ -8,13 +8,15 @@ const ToolbarContainer = styled.div<{
     marginTopValue: number;
     height: number;
 }>`
-    ${({ isActive, marginTopValue }) => {
+    ${({ isActive, marginTopValue, isMobile }) => {
+        const marginTop = isMobile ? '' : `${marginTopValue}px`;
+
         if (isActive) {
             return `
             width: 38px;
             padding-left:5px;
 
-            margin-top: ${marginTopValue}px;
+            margin-top: ${marginTop};
             &::-webkit-scrollbar {
                 width: 0;
                 display: none;
@@ -28,12 +30,13 @@ const ToolbarContainer = styled.div<{
             return `
             width: 9px;
             margin-left:5px;
-            margin-top: ${marginTopValue}px;
+            margin-top: ${marginTop};
             `;
         }
     }}
 
     background: ${({ backgroundColor }) => backgroundColor};
+    height: ${({ height }) => height + 'px'};
 
     display: flex;
     position: absolute;

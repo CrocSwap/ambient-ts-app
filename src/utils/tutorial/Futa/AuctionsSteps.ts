@@ -6,7 +6,7 @@ export const futaAuctionsSteps = [
     },
     {
         element: '#auctions_search_wrapper',
-        title: 'Search Auctios',
+        title: 'Search Auctions',
         intro: 'You can search for auctions from here',
     },
 ];
