@@ -389,7 +389,21 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
 
     useOnClickOutside(NftComponentItemRef, clickOutsideHandler);
 
+    const handleSaveButtonClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+        
+        if (isSaveActive === 0) {
+            handleNftSelection();
+            setIsSaveActive(!isVerified ? 3 : 1);
+           
+        }
+        
+      };
+      
+
     return (
+
+        
         <NFTBannerAccountContainer
             isMobile={isMobile}
             onClick={(event: React.MouseEvent<HTMLDivElement>) => {
@@ -399,7 +413,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             ref={NftComponentItemRef}
             
         >
-            <div >
+            <div>
                 <NFTBannerHeader>
                     <div style={{ width: '25px' }}>
                         <FiRefreshCw
@@ -746,15 +760,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
             <NFTBannerFooter>
                 <SaveButton
                     isActive={isSaveActive}
-                    onClick={(event: React.MouseEvent<HTMLDivElement>) => {
-                        event.stopPropagation();
-                        if (isSaveActive === 0) {
-                            handleNftSelection();
-                            setIsSaveActive(!isVerified ? 3 : 1);
-                        }
-                        setShowNFTPage(false)
-                        
-                    }}
+                    onClick={ handleSaveButtonClick}
                 >
                     {isSaveActive === 1
                         ? 'Saving..'
@@ -772,6 +778,7 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                 text={toastrText}
                 type={toastrType}
             />
-        </NFTBannerAccountContainer>
+            </NFTBannerAccountContainer>
+           
     );
 }

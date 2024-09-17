@@ -64,7 +64,7 @@ export const ResizableContainer = styled(Resizable)<{
         bottom: 0 !important;
         height: 5px !important;
         background-color: var(--dark3);
-        z-index: 99;
+        z-index: 8;
     }
     
     & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
