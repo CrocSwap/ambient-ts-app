@@ -9,7 +9,6 @@ import {
     useState,
 } from 'react';
 import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PoolIF } from '../ambient-utils/types';
 import {
@@ -67,8 +66,6 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
@@ -221,10 +218,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     ? ydayPrice / nowPrice - 1.0
                     : nowPrice / ydayPrice - 1.0
                 : 0.0;
-        if (
-            !expandedPoolStatsNow ||
-            (!isActiveNetworkBlast && expandedPoolStatsNow.tvlTotalUsd < 100)
-        ) {
+        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
