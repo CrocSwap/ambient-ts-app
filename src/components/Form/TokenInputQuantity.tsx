@@ -114,12 +114,25 @@ function TokenInputQuantity(props: propsIF) {
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         let inputStringNoCommas = event.target.value
-            .replace(/,/g, '.')
-            .replace(/\s+/g, '');
+            .replace(/,/g, '.') // Replace commas with dots
+            .replace(/\s+/g, ''); // Remove any spaces
+
+        if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
+
+        const inputStringNoUnfinishedExponent = isNaN(+inputStringNoCommas)
+            ? inputStringNoCommas.replace(
+                  /e[+-]?(?!\d)/gi, // Match 'e', 'e-' or 'e+' only if NOT followed by a number
+                  '',
+              )
+            : inputStringNoCommas;
+
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(inputStringNoCommas) > token.decimals;
-        if (inputStringNoCommas === '.') inputStringNoCommas = '0.';
-        if (!isPrecisionGreaterThanDecimals && !isNaN(+inputStringNoCommas)) {
+
+        if (
+            !isPrecisionGreaterThanDecimals &&
+            !isNaN(+inputStringNoUnfinishedExponent)
+        ) {
             handleTokenInputEvent(inputStringNoCommas);
             setDisplayValue(inputStringNoCommas);
         }
