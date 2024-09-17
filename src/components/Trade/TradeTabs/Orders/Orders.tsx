@@ -90,10 +90,12 @@ function Orders(props: propsIF) {
             [userLimitOrdersByPool],
         );
         
-        const [fetchedTransactions, setFetchedTransactions] = useState<LimitOrdersByPool>({
+    const [fetchedTransactions, setFetchedTransactions] = useState<LimitOrdersByPool>({
             dataReceived: false,
         limitOrders: [...limitOrdersByPool.limitOrders],
     });
+
+    console.log('fetched orders initial', fetchedTransactions.limitOrders.length)
     
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
     
@@ -105,32 +107,66 @@ function Orders(props: propsIF) {
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
+
+    
+    const selectedBaseAddress: string = baseToken.address;
+    const selectedQuoteAddress: string = quoteToken.address;
+
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    
     useEffect(() => {
         setShowInfiniteScroll(!isAccountView && showAllData);
     }, [isAccountView, showAllData]);
 
 
-    // useEffect(() => {
-    //     setPagesVisible([0, 1]);
-    //     setExtraPagesAvailable(0);
-    // }, [selectedBaseAddress + selectedQuoteAddress]);
+    useEffect(() => {
+        console.log('reset orders tsx ???????????????????????????????????????')
+        setPagesVisible([0, 1]);
+        setExtraPagesAvailable(0);
+        setMoreDataAvailable(true);
+    }, [selectedBaseAddress + selectedQuoteAddress]);
 
-    // useEffect(() => {
-    //     // clear fetched transactions when switching pools
-    //     if (transactionsByPool.changes.length === 0) {
-    //         setFetchedTransactions({
-    //             dataReceived: true,
-    //             changes: [],
-    //         });
-    //     }
-    // }, [transactionsByPool.changes]);
+    useEffect(() => {
+        console.log('page', pagesVisible[0])
+    }, [pagesVisible]);
+
+    useEffect(() => {
+        // clear fetched transactions when switching pools
+        if (limitOrdersByPool.limitOrders.length === 0) {
+            setFetchedTransactions({
+                dataReceived: true,
+                limitOrders: [],
+            });
+        }
+        else{
+            const existingChanges = new Set(
+                fetchedTransactions.limitOrders.map(
+                    // (change) => change.positionHash || change.limitOrderId,
+                    (change) => change.limitOrderId,
+                ),
+            ); // Adjust if using a different unique identifier
+    
+            const uniqueChanges = limitOrdersByPool.limitOrders.filter(
+                // (change) => !existingChanges.has(change.positionHash || change.limitOrderId),
+                (change) => !existingChanges.has(change.limitOrderId),
+            );
+    
+            if (uniqueChanges.length > 0) {
+                setFetchedTransactions((prev) => {
+                    return {
+                        dataReceived: true,
+                        limitOrders: [...uniqueChanges, ...prev.limitOrders],
+                    };
+                });
+            }
+        }
+    }, [limitOrdersByPool]);
 
 
     const autoScrollAlternateSolutionActive = true;
 
     const addMoreData = async():Promise<boolean> => {
-        
+        console.log('oldestTxTime', new Date(oldestTxTime))
         return new Promise(resolve => {
             if(!crocEnv || !provider) resolve(false);
             else{
@@ -140,7 +176,7 @@ function Orders(props: propsIF) {
                     quote: quoteToken.address,
                     poolIdx: poolIndex,
                     chainId: chainId,
-                    n: 50,
+                    n: dataPerPage,
                     timeBefore: oldestTxTime,
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
@@ -156,15 +192,18 @@ function Orders(props: propsIF) {
                             setFetchedTransactions((prev) => {
                                 const existingChanges = new Set(
                                     prev.limitOrders.map(
-                                        (change) => change.positionHash || change.limitOrderId,
+                                        // (change) => change.positionHash || change.limitOrderId,
+                                        (change) => change.limitOrderId,
                                     ),
                                 ); // Adjust if using a different unique identifier
                                 const uniqueChanges = poolChangesJsonData.filter(
                                     (change) =>
                                         !existingChanges.has(
-                                            change.positionHash || change.limitOrderId,
+                                            // change.positionHash || change.limitOrderId,
+                                            change.limitOrderId,
                                         ),
                                 );
+                                console.log('unique changes', uniqueChanges.length);
                                 if (uniqueChanges.length > 0) {
                                     resolve(true);
                                 } else {
@@ -194,7 +233,7 @@ function Orders(props: propsIF) {
         })
     };
 
-    const limitOrderData = useMemo(
+    const limitOrderData = useMemo<LimitOrderIF[]>(
         () =>
             isAccountView
                 ? activeAccountLimitOrderData || []
@@ -211,6 +250,7 @@ function Orders(props: propsIF) {
             activeAccountLimitOrderData,
             limitOrdersByPool,
             activeUserLimitOrdersByPool,
+            fetchedTransactions
         ],
     );
 
@@ -225,6 +265,8 @@ function Orders(props: propsIF) {
                 : 0,
         [limitOrderData],
     );
+
+    console.log('oldest tx', (new Date().getTime() - new Date(oldestTxTime * 1000).getTime()) / 1000 / 60 / 60/ 24)
 
     const activeUserLimitOrdersLength = useMemo(
         () =>
@@ -286,17 +328,16 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits, sortData] =
         useSortedLimits('time', limitOrderData);
 
+    const dataPerPage = 50;
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
         return isAccountView
             ? sortedLimits
             : sortedLimits.slice(
-                    pagesVisible[0] * 50,
-                    pagesVisible[1] * 50 + 50,
+                    pagesVisible[0] * dataPerPage,
+                    pagesVisible[1] * dataPerPage + dataPerPage,
                 );
     }, [sortedLimits, pagesVisible,  isAccountView]);
 
-    console.log('sortedLimitDataToDisplay', sortedLimitDataToDisplay);
-    
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');

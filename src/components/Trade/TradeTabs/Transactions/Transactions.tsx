@@ -153,11 +153,11 @@ function Transactions(props: propsIF) {
 
     // ref holding scrollable element (to attach event listener)
     
-    
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
         dataReceived: false,
         changes: [...transactionsByPool.changes],
     });
+    console.log('fetched transactions initial', fetchedTransactions.changes.length);
 
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 
@@ -170,6 +170,7 @@ function Transactions(props: propsIF) {
     useEffect(() => {
         setPagesVisible([0, 1]);
         setExtraPagesAvailable(0);
+        setMoreDataAvailable(true);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     useEffect(() => {
@@ -623,6 +624,7 @@ function Transactions(props: propsIF) {
                                             change.txHash || change.txId,
                                         ),
                                 );
+                                console.log('unique changes', uniqueChanges.length);
                                 if (uniqueChanges.length > 0) {
                                     resolve(true);
                                 } else {

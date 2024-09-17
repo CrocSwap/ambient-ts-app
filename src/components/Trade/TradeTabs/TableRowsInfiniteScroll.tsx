@@ -110,8 +110,6 @@ function TableRowsInfiniteScroll({
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
-
-    
     const bindWrapperEl = () => {
         if(isSmallScreen){
             return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement;
@@ -148,7 +146,6 @@ function TableRowsInfiniteScroll({
     }
 
     const bindTableReadyState = (newState: boolean) => {
-
         if(newState === true){
             setTransactionTableOpacity('1');
             setIsTableReady(true);
@@ -200,6 +197,7 @@ function TableRowsInfiniteScroll({
     };
     
     const shiftDown = (): void => {
+        console.log('shift down')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
     };
@@ -316,8 +314,6 @@ function TableRowsInfiniteScroll({
         }
     };
 
-
-    
     useEffect(() => {
         if(moreDataLoadingRef.current) return;    
         const observer = new IntersectionObserver(
@@ -339,7 +335,7 @@ function TableRowsInfiniteScroll({
                         ? shiftDown()
                         : moreDataAvailableVal
                           ? addMoreData()
-                          : undefined;
+                          : bindTableReadyState(true);
                 }
             },
             {
@@ -365,6 +361,13 @@ function TableRowsInfiniteScroll({
         // pagesVisible[1],
     ]);
 
+
+    useEffect(() => {
+        if(moreDataAvailable == false){
+            bindTableReadyState(true);
+        }
+    }, [moreDataAvailable])
+
     useEffect(() => {
         domDebug('moreDataLoading', moreDataLoading);
         domDebug('page', pagesVisible[0]);
@@ -379,7 +382,11 @@ function TableRowsInfiniteScroll({
                 if (moreDataLoadingVal) return;
                 if (entry.isIntersecting) {
                     // first row is visible
-                    pagesVisibleVal[0] > 0 && shiftUp();
+                    if(pagesVisibleVal[0] > 0){
+                        shiftUp()
+                    }else{
+                        bindTableReadyState(true);
+                    }
                     bindFirstSeenRow();
                 }
             },
@@ -404,12 +411,12 @@ function TableRowsInfiniteScroll({
 
 
     const addMoreData = async() => {
-        console.log('add more dat')
+        console.log('add more data')
         setMoreDataLoading(true);
         const changePage = await fetcherFunction();
+        console.log('change page', changePage);
         setMoreDataLoading(false);
         if(changePage){
-            
             setExtraPagesAvailable((prev) => prev + 1);
             setPagesVisible((prev) => [
                 prev[0] + 1,

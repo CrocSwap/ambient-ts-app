@@ -7,6 +7,7 @@ import {
     useContext,
     useEffect,
     useRef,
+    MutableRefObject,
 } from 'react';
 import {
     LimitModalAction,
@@ -26,6 +27,7 @@ interface propsIF {
     openDetailsModal: () => void;
     openActionModal: () => void;
     setLimitModalAction: Dispatch<SetStateAction<LimitModalAction>>;
+    observedRowRef: MutableRefObject<HTMLDivElement | null> | undefined;
 }
 
 function OrderRow(props: propsIF) {
@@ -36,6 +38,7 @@ function OrderRow(props: propsIF) {
         openDetailsModal,
         openActionModal,
         setLimitModalAction,
+        observedRowRef,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -263,7 +266,7 @@ function OrderRow(props: propsIF) {
                 {tableView === 'medium' && tokensColumn}
                 {tableView !== 'small' && statusDisplay}
 
-                <div data-label='menu'>
+                <div data-label='menu' ref={observedRowRef}>
                     <OrdersMenu
                         limitOrder={limitOrder}
                         {...orderMenuProps}

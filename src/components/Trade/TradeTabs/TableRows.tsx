@@ -237,6 +237,13 @@ function TableRows({
                         limitOrder={order}
                         tableView={tableView}
                         isAccountView={isAccountView}
+                        observedRowRef={
+                            idx === 0
+                                ? firstRowRef
+                                : idx === data.length - 1
+                                  ? lastRowRef
+                                  : undefined
+                        }
                         openDetailsModal={() =>
                             openLimitModal(order.limitOrderId, 'details')
                         }
