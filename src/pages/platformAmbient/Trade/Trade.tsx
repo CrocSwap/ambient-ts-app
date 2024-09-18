@@ -366,11 +366,16 @@ function Trade() {
                         flexDirection='column'
                         fullHeight
                         overflow='hidden'
+                        
                     >
                         <ResizableContainer
                             showResizeable={
                                 !isCandleDataNull && !isChartFullScreen && !isFuta
                             }
+                            style={{
+                                maxHeight: isFuta ? '100%' : 'calc(100% - 54px)',
+                               
+                            }}
                             enable={{
                                 bottom: !isChartFullScreen,
                                 top: false,

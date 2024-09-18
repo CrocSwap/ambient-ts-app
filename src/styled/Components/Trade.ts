@@ -54,7 +54,7 @@ export const ResizableContainer = styled(Resizable)<{
     align-items: center;
     overflow: hidden;
 
-    max-height: calc(100% - 54px);
+    // max-height: calc(100% - 54px);
     min-height: 0px;
 
     ${({ showResizeable }) =>
