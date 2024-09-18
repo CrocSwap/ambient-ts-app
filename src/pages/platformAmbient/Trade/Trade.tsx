@@ -372,10 +372,8 @@ function Trade() {
                             showResizeable={
                                 !isCandleDataNull && !isChartFullScreen && !isFuta
                             }
-                            style={{
-                                maxHeight: isFuta ? '100%' : 'calc(100% - 54px)',
-                               
-                            }}
+                            isFuta={isFuta}
+                            
                             enable={{
                                 bottom: !isChartFullScreen,
                                 top: false,

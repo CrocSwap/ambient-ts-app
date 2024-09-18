@@ -48,31 +48,32 @@ export const MainSection = styled.section<{
 
 export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
-}>`
+    isFuta?: boolean;
+  }>`
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-
-    // max-height: calc(100% - 54px);
+  
+    max-height: ${({ isFuta }) => (isFuta ? '100%' : 'calc(100% - 54px)')};
     min-height: 0px;
-
+  
     ${({ showResizeable }) =>
-        showResizeable &&
-        `
-    & > div:last-child > * {
-        bottom: 0 !important;
-        height: 5px !important;
-        background-color: var(--dark3);
-        z-index: 8;
-    }
-    
-    & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
-        z-index: -1;
-        display: none;
-    }
+      showResizeable &&
+      `
+      & > div:last-child > * {
+          bottom: 0 !important;
+          height: 5px !important;
+          background-color: var(--dark3);
+          z-index: 8;
+      }
+  
+      & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
+          z-index: -1;
+          display: none;
+      }
     `}
-`;
+  `;
 
 export const ChartContainer = styled.div<{
     fullScreen: boolean;
