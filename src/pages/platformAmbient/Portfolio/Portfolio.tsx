@@ -35,6 +35,9 @@ import {
 import Level from '../Level/Level';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import styles from './Portfolio.module.css';
+import Modal from '../../../components/Global/Modal/Modal';
+import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
+import { TokenBalanceContext } from '../../../contexts';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
@@ -44,12 +47,19 @@ interface PortfolioPropsIF {
 }
 
 function Portfolio(props: PortfolioPropsIF) {
+
+
     const {
         userAddress,
+        isfetchNftTriggered,
+        setIsfetchNftTriggered,
+        setNftTestWalletAddress,
         setResolvedAddressInContext,
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
+    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
+        useContext(TokenBalanceContext);
     const { isLevelsPage, isRanksPage, isViewMoreActive, specificTab } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
@@ -373,6 +383,14 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedUserBlastXp: resolvedUserBlastXp,
     };
 
+    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
+    const [showNFTPage, setShowNFTPage] = useState(false);
+
+    function handleTestWalletChange(nftTestWalletInput: string) {
+        setNftTestWalletAddress(() => nftTestWalletInput);
+        setIsfetchNftTriggered(() => true);
+    }
+
     const portfolioBannerProps = {
         ensName: connectedAccountActive
             ? ensName ?? ''
@@ -385,6 +403,11 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedUserXp: resolvedUserXp,
         showTabsAndNotExchange: showTabsAndNotExchange,
         setShowTabsAndNotExchange: setShowTabsAndNotExchange,
+
+        nftTestWalletInput, setNftTestWalletInput, showNFTPage, setShowNFTPage, handleTestWalletChange,
+        NFTData, NFTFetchSettings, setNFTFetchSettings,
+        userAddress,
+        
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -443,6 +466,28 @@ function Portfolio(props: PortfolioPropsIF) {
     const bannerHeight = 115;
     const contentHeight = availableHeight - bannerHeight;
 
+ 
+
+
+    const mobileBannerSettings = !showNFTPage ? null : (
+        <Modal usingCustomHeader onClose={() => setShowNFTPage(false)}>
+            {NFTData && (
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                    NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    nftTestWalletInput={nftTestWalletInput}
+                    handleTestWalletChange={handleTestWalletChange}
+                />
+            )}
+        </Modal>
+    );
+
     const mobilePortfolio = (
         <div
             className={styles.mobile_layout}
@@ -452,6 +497,7 @@ function Portfolio(props: PortfolioPropsIF) {
             <div style={{ height: `${contentHeight}px`, overflowY: 'hidden' }}>
                 {contentToRenderOnMobile}
             </div>
+            {mobileBannerSettings}
         </div>
     );
 
@@ -512,6 +558,24 @@ function Portfolio(props: PortfolioPropsIF) {
                       : undefined}
             </div>
             <PortfolioBanner {...portfolioBannerProps} />
+
+            {
+                 showNFTPage &&
+                  NFTData && (
+                      <NFTBannerAccount
+                          setShowNFTPage={setShowNFTPage}
+                          showNFTPage={showNFTPage}
+                          NFTData={NFTData}
+                          isfetchNftTriggered={isfetchNftTriggered}
+                          setIsfetchNftTriggered={setIsfetchNftTriggered}
+                          NFTFetchSettings={NFTFetchSettings}
+                          setNFTFetchSettings={setNFTFetchSettings}
+                          setNftTestWalletInput={setNftTestWalletInput}
+                          nftTestWalletInput={nftTestWalletInput}
+                          handleTestWalletChange={handleTestWalletChange}
+                      />
+                  )
+                  }
         </div>
     );
 }

@@ -72,10 +72,11 @@
     .NFTBannerAccountContainer {
         display: grid;
         box-shadow: 4px 4px 6px #0d1117;
-        position: fixed;
-        left: calc(50vw - 50px);
-        top: 0;
-        transform: translateX(-50%);
+    /* position: absolute; */
+    position: absolute;
+    top: 160px;
+    left: 100px;
+       
 
         border-color: var(--accent1);
         background: #0d1117;
@@ -84,5 +85,8 @@
         border-style: solid;
         width: 350px;
         max-height: 570px;
+        height: auto;
+
+        
     }
 }

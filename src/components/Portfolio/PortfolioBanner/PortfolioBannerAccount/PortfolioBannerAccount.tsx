@@ -20,8 +20,7 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
-import NFTBannerAccount from './NFTBannerAccount';
-import Modal from '../../../Global/Modal/Modal';
+
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -31,13 +30,20 @@ interface IPortfolioBannerAccountPropsIF {
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
     setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
+
+    nftTestWalletInput: string;
+    setNftTestWalletInput: Dispatch<SetStateAction<string>>;
+
+    showNFTPage: boolean;
+    setShowNFTPage: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line 
+    handleTestWalletChange: any;
 }
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
 ) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
-    const [showNFTPage, setShowNFTPage] = useState(false);
 
     const {
         ensName,
@@ -47,20 +53,25 @@ export default function PortfolioBannerAccount(
         connectedAccountActive,
         showTabsAndNotExchange,
         setShowTabsAndNotExchange,
+
+        showNFTPage,
+        setShowNFTPage,
+
+        nftTestWalletInput,
+        setNftTestWalletInput,
+
+        handleTestWalletChange,
     } = props;
 
     const {
         userAddress,
         userProfileNFT,
-        isfetchNftTriggered,
-        setIsfetchNftTriggered,
+
         setUserProfileNFT,
         setUserThumbnailNFT,
-        setNftTestWalletAddress,
     } = useContext(UserDataContext);
 
-    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
-        useContext(TokenBalanceContext);
+    const { NFTData } = useContext(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -150,38 +161,10 @@ export default function PortfolioBannerAccount(
         document.body.addEventListener('keydown', openWalletAddressPanel);
     }, []);
 
-    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
-
-    function handleTestWalletChange(nftTestWalletInput: string) {
-        setNftTestWalletAddress(() => nftTestWalletInput);
-        setIsfetchNftTriggered(() => true);
-    }
-   
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
-
-    const mobileBannerSettings = (
-        !showNFTPage ? null : <Modal usingCustomHeader onClose={() => setShowNFTPage(false)}>
-            { NFTData && (
-                <NFTBannerAccount
-                    setShowNFTPage={setShowNFTPage}
-                    showNFTPage={showNFTPage}
-                    NFTData={NFTData}
-                    isfetchNftTriggered={isfetchNftTriggered}
-                    setIsfetchNftTriggered={setIsfetchNftTriggered}
-                    NFTFetchSettings={NFTFetchSettings}
-                    setNFTFetchSettings={setNFTFetchSettings}
-                    setNftTestWalletInput={setNftTestWalletInput}
-                    nftTestWalletInput={nftTestWalletInput}
-                    handleTestWalletChange={handleTestWalletChange}
-                />
-            )}
-        </Modal>
-    );
-
     return (
         <div
             className={styles.portfolio_banner_main_container}
+
             // animate={showAccountDetails ? 'open' : 'closed'}
         >
             <FlexContainer
@@ -279,21 +262,6 @@ export default function PortfolioBannerAccount(
                     </button>
                 )}
             </FlexContainer>
-
-            {showMobileVersion ? mobileBannerSettings : showNFTPage && NFTData && (
-                <NFTBannerAccount
-                    setShowNFTPage={setShowNFTPage}
-                    showNFTPage={showNFTPage}
-                    NFTData={NFTData}
-                    isfetchNftTriggered={isfetchNftTriggered}
-                    setIsfetchNftTriggered={setIsfetchNftTriggered}
-                    NFTFetchSettings={NFTFetchSettings}
-                    setNFTFetchSettings={setNFTFetchSettings}
-                    setNftTestWalletInput={setNftTestWalletInput}
-                    nftTestWalletInput={nftTestWalletInput}
-                    handleTestWalletChange={handleTestWalletChange}
-                />
-            )}
 
             {isWalletPanelActive && (
                 <div

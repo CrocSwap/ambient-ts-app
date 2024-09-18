@@ -6,6 +6,8 @@
     display: flex;
     flex-direction: column-reverse;
     gap: 16px;
+
+    position: relative;
 }
 
 .portfolio_tabs_container {
