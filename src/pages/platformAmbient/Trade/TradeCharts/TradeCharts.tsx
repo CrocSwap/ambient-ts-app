@@ -103,6 +103,10 @@ function TradeCharts(props: propsIF) {
     const { pathname } = useLocation();
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
+    const isFuta = ['futa'].includes(platformName)
+   
+   
+
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
 
@@ -295,7 +299,7 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            {!['futa'].includes(platformName) && (
+            {!isFuta && (
                 <div className={styles.mobile_settings_row}>
                     <p className={styles.mobile_settings_header}>Curve/Depth:</p>
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
@@ -338,10 +342,10 @@ function TradeCharts(props: propsIF) {
                 fullWidth
                 style={{
                     padding:
-                        isChartFullScreen || ['futa'].includes(platformName)
+                        isChartFullScreen || isFuta
                             ? '1rem'
                             : '0',
-                    background: isChartFullScreen ? 'var(--dark2)' : '',
+                    background: isChartFullScreen ? isFuta ? 'var(--dark1)' : 'var(--dark2)' : '',
                 }}
                 ref={chartCanvasRef}
             >
