@@ -16,6 +16,13 @@
         width: 65px;
     }
 
+    .banner_settings_container{
+        background: red;
+      
+        z-index: 999;
+        position: absolute;
+    }
+
     .deposit_button{
         font-size: 12px;
         outline: none;

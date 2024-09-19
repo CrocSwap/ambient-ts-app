@@ -85,8 +85,8 @@
     .mobile_settings_header {
         display: none;
     }
-    .active_selected_button:hover,
-    .non_active_selected_button:hover {
+    .active_selected_button:hover, .futa_active_selected_button:hover
+    .non_active_selected_button:hover, .futa_non_active_selected_button {
         /* background: var(--title-gradient); */
         color: var(--text1);
     }
@@ -100,12 +100,12 @@
     }
 }
 
-.active_selected_button {
+.active_selected_button, .futa_active_selected_button {
     width: 100%;
     height: 100%;
     color: var(--text1);
 }
 
-.non_active_selected_button {
+.non_active_selected_button, .futa_non_active_selected_button {
     color: var(--text2);
 }
