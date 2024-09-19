@@ -8,18 +8,19 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 import { trimString } from '../../../ambient-utils/dataLayer';
 
 import NoisyLines from '../../NoisyLines/NoisyLines';
-import styles from './PortfolioBanner.module.css'
-import {
-    UserDataContext,
-    UserXpDataIF,
-} from '../../../contexts/UserDataContext';
-import { Dispatch, SetStateAction, useContext, useMemo } from 'react';
+import styles from './PortfolioBanner.module.css';
+import { UserXpDataIF } from '../../../contexts/UserDataContext';
+import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
 import { PoolContext } from '../../../contexts/PoolContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import {
+    NftFetchSettingsIF,
+    NftListByChain,
+} from '../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     ensName: string;
@@ -27,17 +28,39 @@ interface propsIF {
     connectedAccountActive: boolean;
     resolvedUserXp: UserXpDataIF;
     showTabsAndNotExchange: boolean;
-    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
+
+    nftTestWalletInput: string;
+    setNftTestWalletInput: Dispatch<SetStateAction<string>>;
+
+    showNFTPage: boolean;
+    setShowNFTPage: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line
+    handleTestWalletChange: any;
+
+    NFTData: NftListByChain[] | undefined;
+    NFTFetchSettings: NftFetchSettingsIF;
+    setNFTFetchSettings: Dispatch<SetStateAction<NftFetchSettingsIF>>;
+    userAddress: `0x${string}` | undefined;
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp, showTabsAndNotExchange, setShowTabsAndNotExchange } =
-        props;
-    const { userAddress } = useContext(UserDataContext);
+    const {
+        ensName,
+        resolvedAddress,
+        connectedAccountActive,
+        resolvedUserXp,
+        showTabsAndNotExchange,
+        setShowTabsAndNotExchange,
+
+        showNFTPage,
+        setShowNFTPage,
+        handleTestWalletChange,
+        userAddress,
+    } = props;
     const { connectedUserXp } = useContext(ChainDataContext);
 
     const desktopScreen = useMediaQuery('(min-width: 768px)');
-
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
@@ -106,24 +129,22 @@ export default function PortfolioBanner(props: propsIF) {
                 noiseMidPosition={0.8}
                 seed={addressOfAccountDisplayed}
                 animationDuration={3000}
-               
             />
         );
     }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
 
+    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
+
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
 
-
-
     return (
-   
-        <div className={styles.portfolio_banner_rectangle_container} id={BANNER_ID}>
-
-          
-            { noisyLines}
-            <div className={styles.portfolio_banner_rectangle_content}
-            >
+        <div
+            className={styles.portfolio_banner_rectangle_container}
+            id={BANNER_ID}
+        >
+            {noisyLines}
+            <div className={styles.portfolio_banner_rectangle_content}>
                 <PortfolioBannerAccount
                     ensName={ensName}
                     ensNameAvailable={ensNameAvailable}
@@ -133,41 +154,47 @@ export default function PortfolioBanner(props: propsIF) {
                     connectedAccountActive={connectedAccountActive}
                     showTabsAndNotExchange={showTabsAndNotExchange}
                     setShowTabsAndNotExchange={setShowTabsAndNotExchange}
+                    nftTestWalletInput={nftTestWalletInput}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    showNFTPage={showNFTPage}
+                    setShowNFTPage={setShowNFTPage}
+                    handleTestWalletChange={handleTestWalletChange}
                 />
-         {desktopScreen &&       <DefaultTooltip
-                    interactive
-                    title={'Toggle USD Price Estimates'}
-                    enterDelay={500}
-                >
-                    <button className={styles.header_button}
-                        onClick={() =>
-                            setIsTradeDollarizationEnabled((prev) => !prev)
-                        }
-                        style={{ zIndex: '2' }}
+                {desktopScreen && (
+                    <DefaultTooltip
+                        interactive
+                        title={'Toggle USD Price Estimates'}
+                        enterDelay={500}
                     >
-                        <AiOutlineDollarCircle
-                            size={20}
-                            id='trade_dollarized_prices_button'
-                            aria-label='Toggle dollarized prices button'
-                            style={{
-                                color: isTradeDollarizationEnabled
-                                    ? 'var(--accent1)'
-                                    : undefined,
-                            }}
-                        />
-                    </button>
-                </DefaultTooltip>}
+                        <button
+                            className={styles.header_button}
+                            onClick={() =>
+                                setIsTradeDollarizationEnabled((prev) => !prev)
+                            }
+                            style={{ zIndex: '2' }}
+                        >
+                            <AiOutlineDollarCircle
+                                size={20}
+                                id='trade_dollarized_prices_button'
+                                aria-label='Toggle dollarized prices button'
+                                style={{
+                                    color: isTradeDollarizationEnabled
+                                        ? 'var(--accent1)'
+                                        : undefined,
+                                }}
+                            />
+                        </button>
+                    </DefaultTooltip>
+                )}
             </div>
 
             <div className={styles.portfolio_banner_level_container}>
-                
-     
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}
                     user={userLink}
                 />
             </div>
-            </div>
+        </div>
     );
 }
