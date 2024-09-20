@@ -2,7 +2,6 @@ import styles from './LevelDropdown.module.css'
 import UserProfileCard from '../UserProfileCard';
 import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 import UserLevelDisplay from '../../../../../components/Global/LevelsCard/UserLevelDisplay';
-import { StylesProvider } from '@material-ui/core';
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;

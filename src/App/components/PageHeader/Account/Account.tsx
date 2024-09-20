@@ -46,7 +46,6 @@ export default function Account(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const { connectedUserXp } = useContext(ChainDataContext);
-    const smallScreen = useMediaQuery('(max-width: 500px)');
     const desktopScreen = useMediaQuery('(min-width: 768px)');
 
 
