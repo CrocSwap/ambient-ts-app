@@ -1,8 +1,8 @@
-import { LevelWrapper } from '../../../../../styled/Components/Header';
-
+import styles from './LevelDropdown.module.css'
 import UserProfileCard from '../UserProfileCard';
 import { UserXpDataIF } from '../../../../../contexts/UserDataContext';
 import UserLevelDisplay from '../../../../../components/Global/LevelsCard/UserLevelDisplay';
+import { StylesProvider } from '@material-ui/core';
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
@@ -16,7 +16,7 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
         props;
 
     return (
-        <LevelWrapper>
+        <div className={styles.container}>
             <UserProfileCard
                 ensName={ensName !== '' ? ensName : ''}
                 accountAddress={props.accountAddress}
@@ -24,12 +24,14 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
                 accountAddressFull={props.accountAddressFull}
                 padding='0 2rem'
             />
-
+            <div className={styles.userLevelContainer}>
+                
             <UserLevelDisplay
                 currentLevel={connectedUserXp?.data?.currentLevel}
                 globalPoints={connectedUserXp?.data?.globalPoints}
                 user={ensName ?? accountAddressFull}
-            />
-        </LevelWrapper>
+                />
+                </div>
+        </div>
     );
 }

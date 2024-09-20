@@ -120,7 +120,6 @@ export default function Account(props: propsIF) {
                 />
             </Modal>
     )
- 
 
     const walletDisplay = (
         <section
@@ -177,6 +176,25 @@ export default function Account(props: propsIF) {
         currentLevel !== undefined && currentLevel?.toString()?.length >= 2
             ? formattedXpLevel
             : currentLevel;
+    
+            function handleCloseLevel() {
+                setShowLevelDropdown(false);
+                if (!showLevelDropdown) {
+                    appHeaderDropdown.setIsActive(true);
+                } else appHeaderDropdown.setIsActive(false);
+            }
+            const levelDisplayModal = (
+                <Modal usingCustomHeader onClose={handleCloseLevel}>
+                    <ModalHeader title={'My Level'} onClose={handleCloseLevel} />
+                    <LevelDropdown
+                            ensName={ensName !== '' ? ensName : ''}
+                            accountAddress={props.accountAddress}
+                            handleCopyAddress={handleCopyAddress}
+                            accountAddressFull={props.accountAddressFull}
+                            connectedUserXp={connectedUserXp}
+                        />
+                    </Modal>
+            )
 
     const levelDisplay = (
         <section
@@ -202,7 +220,7 @@ export default function Account(props: propsIF) {
             >
                 {currentLevelDisplay}
             </LevelButton>
-            {showLevelDropdown ? (
+            {showLevelDropdown ?  !desktopScreen ? levelDisplayModal : (
                 <LevelDropdown
                     ensName={ensName !== '' ? ensName : ''}
                     accountAddress={props.accountAddress}
@@ -223,7 +241,7 @@ export default function Account(props: propsIF) {
             alignItems='center'
         >
             {isUserConnected &&walletDisplay }
-            {isUserConnected && !smallScreen && levelDisplay}
+            {isUserConnected  && levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
             <NotificationCenter />
 

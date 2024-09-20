@@ -4,7 +4,6 @@ import coins from '../../../../assets/images/coins.svg';
 import NavItem from '../NavItem/NavItem';
 import useKeyPress from '../../../hooks/useKeyPress';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { StyledExchangeBalanceDropdown } from '../../../../styled/Components/Header';
 import styles from './ExchangeBalanceDropdown.module.css'
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';

@@ -225,34 +225,34 @@ export const NameDisplayContainer = styled(FlexContainer)`
 
 
 
-export const LevelWrapper = styled(FlexContainer)`
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
-    background: var(--dark2);
-    position: absolute;
-    top: 50px;
-    width: auto;
-    min-width: 350px;
-    right: 15px;
-    z-index: 9999;
-    padding: 8px 1rem;
-    border: 1px solid var(--accent1);
+// export const LevelWrapper = styled(FlexContainer)`
+//     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+//     box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
+//     background: var(--dark2);
+//     position: absolute;
+//     top: 50px;
+//     width: auto;
+//     min-width: 350px;
+//     right: 15px;
+//     z-index: 9999;
+//     padding: 8px 1rem;
+//     border: 1px solid var(--accent1);
 
-    opacity: 1;
-    bottom: 85px;
-    pointer-events: auto;
+//     opacity: 1;
+//     bottom: 85px;
+//     pointer-events: auto;
 
-    display: flex;
-    flex-direction: column;
-    height: 150px;
-    gap: 8px;
-    border-radius: 4px;
+//     display: flex;
+//     flex-direction: column;
+//     height: 150px;
+//     gap: 8px;
+//     border-radius: 4px;
 
-    @media (max-width: 500px) {
-        right: -50px;
-        width: 300px;
-    }
-`;
+//     @media (max-width: 500px) {
+//         right: -50px;
+//         width: 300px;
+//     }
+// `;
 export const AccountDropdownWrapper = styled(FlexContainer)`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
@@ -330,28 +330,7 @@ export const WalletName = styled.p`
 
 // ExchangeBalanceDropdown
 
-export const StyledExchangeBalanceDropdown = styled.div`
-    position: absolute;
-    top: 68px;
-    right: 5px;
-    height: 510px;
-    border: none;
-    overflow: hidden;
-    transition: all var(--animation-speed) ease;
-    z-index: 999;
-    background: var(--dark1);
-    border-radius: var(--border-radius);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
-    text-align: start;
-    border: 1px solid var(--accent1);
-
-    @media only screen and (max-width: 600px) {
-        width: auto;
-        height: auto;
-        background: transparent;
-        border-radius: var(--border-radius);
-    }
-`;
+// 
 
 // NavbarDropdownMenu
 
