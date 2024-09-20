@@ -95,11 +95,30 @@ function Orders(props: propsIF) {
         limitOrders: [...limitOrdersByPool.limitOrders],
     });
 
-    console.log('fetched orders initial', fetchedTransactions.limitOrders.length)
-    
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
     
+    const dataPerPage = 50;
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+    const [pageDataCount, setPageDataCount] = useState<number[]>([dataPerPage, dataPerPage]);
+    const pageDataCountRef = useRef<number[]>();
+    pageDataCountRef.current = pageDataCount;
+
+    const getIndexForPages = (start: boolean) => {
+        const pageDataCountVal = pageDataCountRef.current ? pageDataCountRef.current : pageDataCount;
+        let ret = 0;
+        if(start){
+            for(let i = 0 ; i < pagesVisible[0]; i++){
+                ret += pageDataCountVal[i];
+            }
+        }else{
+            for(let i = 0 ; i <= pagesVisible[1]; i++){
+                ret += pageDataCountVal[i];
+            }
+            ret -= 1;
+        }
+
+        return ret;
+    }
 
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 
@@ -120,15 +139,15 @@ function Orders(props: propsIF) {
 
 
     useEffect(() => {
-        console.log('reset orders tsx ???????????????????????????????????????')
         setPagesVisible([0, 1]);
+        setPageDataCount([dataPerPage, dataPerPage]);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
-    useEffect(() => {
-        console.log('page', pagesVisible[0])
-    }, [pagesVisible]);
+    // useEffect(() => {
+    //     console.log('page', pagesVisible[0])
+    // }, [pagesVisible]);
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -166,7 +185,6 @@ function Orders(props: propsIF) {
     const autoScrollAlternateSolutionActive = true;
 
     const addMoreData = async():Promise<boolean> => {
-        console.log('oldestTxTime', new Date(oldestTxTime))
         return new Promise(resolve => {
             if(!crocEnv || !provider) resolve(false);
             else{
@@ -203,8 +221,10 @@ function Orders(props: propsIF) {
                                             change.limitOrderId,
                                         ),
                                 );
-                                console.log('unique changes', uniqueChanges.length);
                                 if (uniqueChanges.length > 0) {
+                                    setPageDataCount(prev => {
+                                        return [...prev, uniqueChanges.length];
+                                    });
                                     resolve(true);
                                 } else {
                                     setMoreDataAvailable(false);
@@ -226,6 +246,7 @@ function Orders(props: propsIF) {
                             });
                         } else {
                             setMoreDataAvailable(false);
+                            resolve(false);
                         }
                     })
                     .catch(console.error);
@@ -265,8 +286,6 @@ function Orders(props: propsIF) {
                 : 0,
         [limitOrderData],
     );
-
-    console.log('oldest tx', (new Date().getTime() - new Date(oldestTxTime * 1000).getTime()) / 1000 / 60 / 60/ 24)
 
     const activeUserLimitOrdersLength = useMemo(
         () =>
@@ -328,13 +347,18 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits, sortData] =
         useSortedLimits('time', limitOrderData);
 
-    const dataPerPage = 50;
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
+
+        console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
+        console.log('pageDataCountVals', pageDataCountRef.current);
+        console.log('.............................')
         return isAccountView
             ? sortedLimits
             : sortedLimits.slice(
-                    pagesVisible[0] * dataPerPage,
-                    pagesVisible[1] * dataPerPage + dataPerPage,
+                    // pagesVisible[0] * dataPerPage,
+                    // pagesVisible[1] * dataPerPage + dataPerPage,
+                    getIndexForPages(true),
+                    getIndexForPages(false)
                 );
     }, [sortedLimits, pagesVisible,  isAccountView]);
 
@@ -585,6 +609,8 @@ function Orders(props: propsIF) {
                         extraPagesAvailable={extraPagesAvailable}
                         setExtraPagesAvailable={setExtraPagesAvailable}
                         tableKey='Orders'
+                        dataPerPage={dataPerPage}
+                        pageDataCount={pageDataCountRef.current}
                         />
                     )
                     :

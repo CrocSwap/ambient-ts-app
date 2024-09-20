@@ -1,4 +1,4 @@
-import { Dispatch, memo, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Dispatch, memo, SetStateAction, useEffect, useRef, useState} from 'react';
 import { RiArrowUpSLine } from 'react-icons/ri';
 import { } from '../../../ambient-utils/api';
 import {
@@ -26,6 +26,8 @@ interface propsIF {
     moreDataAvailable: boolean;
     extraPagesAvailable: number;
     setExtraPagesAvailable: Dispatch<SetStateAction<number>>;
+    pageDataCount?: number[];
+    dataPerPage?: number;
     tableKey?: string
 }
 
@@ -53,7 +55,9 @@ function TableRowsInfiniteScroll({
     moreDataAvailable,
     extraPagesAvailable,
     setExtraPagesAvailable,
-    tableKey
+    tableKey,
+    pageDataCount,
+    dataPerPage
     
 }: propsIF) {
 
@@ -61,12 +65,22 @@ function TableRowsInfiniteScroll({
 
     const wrapperID = tableKey ? tableKey : '';
 
-    const txSpanSelectorForScrollMethod =  isSmallScreen ? `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(1) > div:nth-child(1) > span`:
-        `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(2) > div > span`;
-    const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
-        'div:nth-child(2)';
+    // const txSpanSelectorForScrollMethod =  isSmallScreen ? `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(1) > div:nth-child(1) > span`:
+    //     `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(2) > div > span`;
+    const txSpanSelectorForScrollMethod =  `#infinite_scroll_wrapper_${wrapperID} div[data-label='id'] > span`;
+    // const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
+    //     'div:nth-child(2)';
+    const txSpanSelectorForBindMethod =  'div[data-label="id"]';
     
 
+
+    const debugMode = false;
+    const[manualMode, setManualMode] = useState(false);
+    const manualModeRef = useRef<boolean>();
+    manualModeRef.current = manualMode;
+
+    const [showManualScrollDown, setShowManualScrollDown] = useState(false);
+    const [showManualScrollUp, setShowManualScrollUp] = useState(false);
     
 
     const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
@@ -192,12 +206,13 @@ function TableRowsInfiniteScroll({
     };
 
     const shiftUp = (): void => {
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SHIFT UP')
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
     };
     
     const shiftDown = (): void => {
-        console.log('shift down')
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SHIFT DOWN')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
     };
@@ -208,9 +223,10 @@ function TableRowsInfiniteScroll({
         scrollToTop();
     }, [sortBy, showAllData]);
 
-    const markRows = true;
+    domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
+        console.log('scrollByTxID', txID);
 
         const txSpans = document.querySelectorAll(
             txSpanSelectorForScrollMethod
@@ -222,8 +238,8 @@ function TableRowsInfiniteScroll({
                 // row.style.backgroundColor = 'red';
 
                 const parent = row.parentElement as HTMLDivElement;
-                if (markRows) {
-                    parent.style.background = 'red';
+                if (debugMode) {
+                    parent.style.background = pos == ScrollPosition.BOTTOM ? 'red' : 'cyan';
                 }
                 parent.scrollIntoView({
                     block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
@@ -237,15 +253,14 @@ function TableRowsInfiniteScroll({
         const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
             const firstRow = rows[0] as HTMLDivElement;
-            if (markRows) {
-                firstRow.style.backgroundColor = 'cyan';
+            if (debugMode) {
+                firstRow.style.backgroundColor = 'orange';
             }
 
             const txDiv = firstRow.querySelector(txSpanSelectorForBindMethod);
             if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setFirstSeenTxID(txText || '');
-                domDebug('firstSeenTxID', txText);
             }
         }
     };
@@ -258,31 +273,47 @@ function TableRowsInfiniteScroll({
                 (row as HTMLDivElement).style.backgroundColor = 'transparent';
             });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            if (markRows) {
+            if (debugMode) {
                 lastRow.style.backgroundColor = 'blue';
+                console.log('bindlastseenrow',getKeyFieldFromRowRef(lastRow));
             }
 
             const txDiv = lastRow.querySelector(txSpanSelectorForBindMethod);
             if (txDiv) {
                 const txText = txDiv.querySelector('span')?.textContent;
                 setLastSeenTxID(txText || '');
-                domDebug('lastSeenTxID', txText);
             }
         }
     };
 
     const autoScrollAlternateSolutionActive = true;
 
+    const couldFirstPageLoop = () => {
+        if(dataPerPage && pageDataCount && pagesVisibleRef.current && pageDataCount.length > pagesVisibleRef.current[0]){
+            const firstPageIndex = pagesVisibleRef.current[0];
+            return pageDataCount[firstPageIndex] / dataPerPage < .5; 
+        }
+
+        return false;
+    }
 
 
     useEffect(() => {
         if (autoScroll) {
             if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
                 if (autoScrollDirection === ScrollDirection.DOWN) {
-                    scrollByTxID(
-                        lastSeenTxIDRef.current || '',
-                        ScrollPosition.BOTTOM,
-                    );
+                    if(pageDataCount && dataPerPage && couldFirstPageLoop()){
+                        console.log('edge CASE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                        scrollByTxID(
+                            lastSeenTxIDRef.current || '',
+                            ScrollPosition.TOP,
+                        );
+                    }else{
+                        scrollByTxID(
+                            lastSeenTxIDRef.current || '',
+                            ScrollPosition.BOTTOM,
+                        );
+                    }
                 } else if (autoScrollDirection === ScrollDirection.UP) {
                     scrollByTxID(
                         firstSeenTxIDRef.current || '',
@@ -314,28 +345,64 @@ function TableRowsInfiniteScroll({
         }
     };
 
+
+    const firstRowIntersectAction = () => {
+        const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
+        // first row is visible
+        if(pagesVisibleVal[0] > 0){
+            shiftUp()
+        }else{
+            bindTableReadyState(true);
+        }
+    }
+
+    const lastRowIntersectAction = () => {
+        const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
+        const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
+        const moreDataAvailableVal = moreDataAvailableRef.current ? moreDataAvailableRef.current : moreDataAvailable
+       
+        bindTableReadyState(false);
+        // last row is visible
+        extraPagesAvailableVal + 1 > pagesVisibleVal[1]
+            ? shiftDown()
+            : moreDataAvailableVal
+              ? addMoreData()
+              : bindTableReadyState(true);
+    }
+
+    const resetLastSeen = () => {
+        setLastSeenTxID('');
+    }
+
     useEffect(() => {
         if(moreDataLoadingRef.current) return;    
+        resetLastSeen();
         const observer = new IntersectionObserver(
             (entries) => {
 
                 const entry = entries[0];
 
-                const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
-                const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
-                const extraPagesAvailableVal = extraPagesAvailableRef.current ? extraPagesAvailableRef.current : extraPagesAvailable;
-                const moreDataAvailableVal = moreDataAvailableRef.current ? moreDataAvailableRef.current : moreDataAvailable
 
+                const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
+              
                 if (moreDataLoadingVal) return;
+                
                 if (entry.isIntersecting) {
-                    bindLastSeenRow();
-                    bindTableReadyState(false);
-                    // last row is visible
-                    extraPagesAvailableVal + 1 > pagesVisibleVal[1]
-                        ? shiftDown()
-                        : moreDataAvailableVal
-                          ? addMoreData()
-                          : bindTableReadyState(true);
+                    if(entries[0].target){
+                        console.log('.......')
+                        console.log('inersection trigger for ', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
+                        console.log('.......')
+                    }
+
+                    if(manualModeRef.current){
+                        bindLastSeenRow();                        
+                        setShowManualScrollDown(true);
+                    }else{
+                        bindLastSeenRow();
+                        lastRowIntersectAction();
+                    }
+                }else{
+                    setShowManualScrollDown(false);
                 }
             },
             {
@@ -368,26 +435,53 @@ function TableRowsInfiniteScroll({
         }
     }, [moreDataAvailable])
 
+
+    const getKeyFieldFromRowRef = (ref: HTMLDivElement | null) => {
+        if(ref && ref.parentElement){
+            const parent = ref.parentElement;
+            const spanSelector = 'div[data-label="id"] > span';
+            if(parent){
+                const txSpan = parent.querySelectorAll(spanSelector);
+                if(txSpan){
+                    return txSpan[0].textContent;
+                }
+            }
+        }
+
+        return null;
+    }
+
     useEffect(() => {
         domDebug('moreDataLoading', moreDataLoading);
         domDebug('page', pagesVisible[0]);
 
+        // console.log('first row', getKeyFieldFromRowRef(firstRowRef.current));
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
 
+              
                 const moreDataLoadingVal = moreDataLoadingRef.current ? moreDataLoadingRef.current : moreDataLoading;
                 
-                const pagesVisibleVal = pagesVisibleRef.current ? pagesVisibleRef.current : pagesVisible;
                 if (moreDataLoadingVal) return;
+
                 if (entry.isIntersecting) {
-                    // first row is visible
-                    if(pagesVisibleVal[0] > 0){
-                        shiftUp()
-                    }else{
-                        bindTableReadyState(true);
+                    if(entries[0].target){
+                        console.log('.......')
+                        console.log('inersection trigger for FIRST ROW', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
+                        console.log('.......')
                     }
-                    bindFirstSeenRow();
+    
+                    if(manualModeRef.current){
+                        setShowManualScrollUp(true);
+                        bindFirstSeenRow();                        
+                    }else{
+                        firstRowIntersectAction();
+                        bindFirstSeenRow();
+                    }
+                    
+                }else{
+                    setShowManualScrollUp(false);
                 }
             },
             {
@@ -411,10 +505,8 @@ function TableRowsInfiniteScroll({
 
 
     const addMoreData = async() => {
-        console.log('add more data')
         setMoreDataLoading(true);
         const changePage = await fetcherFunction();
-        console.log('change page', changePage);
         setMoreDataLoading(false);
         if(changePage){
             setExtraPagesAvailable((prev) => prev + 1);
@@ -429,6 +521,12 @@ function TableRowsInfiniteScroll({
         }
     }
 
+    useEffect(() => {
+
+        domDebug('lastSeen', lastSeenTxIDRef.current);
+        domDebug('firstSeen', firstSeenTxIDRef.current);
+    }, [lastSeenTxID, firstSeenTxID])
+
     return (
         <>
 <div id={`infinite_scroll_wrapper_${wrapperID}`}>
@@ -441,14 +539,23 @@ function TableRowsInfiniteScroll({
                 lastRowRef={lastRowRef}
                 firstRowRef={firstRowRef}
                 />
-                {pagesVisible[0] > 0 && !isSmallScreen && (
+            </div>
+            {pagesVisible[0] > 0 && !isSmallScreen && (
                     <ScrollToTopButton onClick={scrollToTop}>Scroll to Top</ScrollToTopButton>)}
                 {pagesVisible[0] > 0 && isSmallScreen && (
                     <ScrollToTopButtonMobile onClick={scrollToTop}>
 <RiArrowUpSLine size={20} color='white'/>
                     </ScrollToTopButtonMobile>)}
-                
-            </div>
+
+                {showManualScrollUp && (<div style={{padding: '.5rem 1rem', background: 'magenta', position: 'absolute', zIndex: 99, right: '8rem', top: '12rem'}} onClick={firstRowIntersectAction}>Scroll Up</div>)}
+                {showManualScrollDown && (<div style={{padding: '.5rem 1rem', background: 'orange', position: 'absolute', zIndex: 99, right: '8rem', top: '14rem'}} onClick={lastRowIntersectAction}>Scroll Down</div>)}
+                {
+                    debugMode && (
+                        <>
+                        <div style={{padding: '.5rem 1rem', opacity: manualModeRef.current ? '1':'.5', background: 'black', color: 'white', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>Manual Mode</div>
+                        </>
+                    )
+                }
                 {getOverlayComponentForLoadingState()}
 
         </>

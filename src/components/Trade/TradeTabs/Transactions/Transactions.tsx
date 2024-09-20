@@ -157,7 +157,6 @@ function Transactions(props: propsIF) {
         dataReceived: false,
         changes: [...transactionsByPool.changes],
     });
-    console.log('fetched transactions initial', fetchedTransactions.changes.length);
 
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 
@@ -624,7 +623,6 @@ function Transactions(props: propsIF) {
                                             change.txHash || change.txId,
                                         ),
                                 );
-                                console.log('unique changes', uniqueChanges.length);
                                 if (uniqueChanges.length > 0) {
                                     resolve(true);
                                 } else {
@@ -647,6 +645,7 @@ function Transactions(props: propsIF) {
                             });
                         } else {
                             setMoreDataAvailable(false);
+                            resolve(false);
                         }
                     })
                     .catch(console.error);
