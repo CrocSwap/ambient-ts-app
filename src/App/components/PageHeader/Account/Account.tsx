@@ -25,6 +25,8 @@ import LevelDropdown from './LevelDropdown/LevelDropdown';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import Modal from '../../../../components/Global/Modal/Modal';
+import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -45,6 +47,7 @@ export default function Account(props: propsIF) {
 
     const { connectedUserXp } = useContext(ChainDataContext);
     const smallScreen = useMediaQuery('(max-width: 500px)');
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
 
     const [_, copy] = useCopyToClipboard();
@@ -97,6 +100,27 @@ export default function Account(props: propsIF) {
         }
     }, [isEscapePressed]);
 
+    function closeWalletModal() {
+        setShowWalletDropdown(false);
+        if (!showWalletDropdown) {
+            appHeaderDropdown.setIsActive(true);
+        } else appHeaderDropdown.setIsActive(false);
+}
+
+    const walletDisplayModal = (
+        <Modal usingCustomHeader onClose={closeWalletModal}>
+            <ModalHeader title={'My Wallet'} onClose={closeWalletModal} />
+            <WalletDropdown
+                    ensName={ensName !== '' ? ensName : ''}
+                    accountAddress={props.accountAddress}
+                    handleCopyAddress={handleCopyAddress}
+                    clickLogout={clickLogout}
+                    accountAddressFull={props.accountAddressFull}
+                    clickOutsideHandler={clickOutsideWalletHandler}
+                />
+            </Modal>
+    )
+
     const walletDisplay = (
         <section
             style={{
@@ -122,7 +146,7 @@ export default function Account(props: propsIF) {
                     {connectedEnsOrAddressTruncated || '...'}
                 </WalletName>
             </TitleGradientButton>
-            {showWalletDropdown ? (
+            {showWalletDropdown ?  !desktopScreen ? walletDisplayModal :(
                 <WalletDropdown
                     ensName={ensName !== '' ? ensName : ''}
                     accountAddress={props.accountAddress}
@@ -197,7 +221,7 @@ export default function Account(props: propsIF) {
             overflow='visible'
             alignItems='center'
         >
-            {isUserConnected && !smallScreen && walletDisplay}
+            {isUserConnected &&walletDisplay }
             {isUserConnected && !smallScreen && levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
             <NotificationCenter />

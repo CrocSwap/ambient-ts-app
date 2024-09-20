@@ -1,9 +1,9 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styled, { css } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 
-import { FlexContainer, GridContainer } from '../Common';
+import { FlexContainer } from '../Common';
 const fixedStyles = `   
 position: fixed;
 top: 0;
@@ -208,37 +208,7 @@ export const CopyButton = styled.button`
     border: none;
 `;
 
-export const TokenContainer = styled.section`
-    font-size: var(--header2-size);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 10px;
 
-    &:not(:last-of-type) {
-        border-bottom: 1px solid var(--dark1);
-    }
-`;
-
-export const LogoName = styled(FlexContainer)`
-    img {
-        width: 25px;
-        height: 25px;
-    }
-`;
-
-export const TokenAmount = styled(FlexContainer)`
-    h3 {
-        color: var(--text1);
-        text-align: right;
-    }
-
-    h3,
-    h6 {
-        text-align: right;
-    }
-`;
 
 export const NameDisplayContainer = styled(FlexContainer)`
     margin: 0 auto;
@@ -251,66 +221,9 @@ export const NameDisplayContainer = styled(FlexContainer)`
     }
 `;
 
-export const ActionsContainer = styled(GridContainer)`
-    bottom: 0;
-    z-index: 9;
 
-    a:hover,
-    a:focus-visible {
-        color: var(--text-grey-white);
-    }
-`;
 
-export const AccountLink = styled(NavLink)`
-    cursor: pointer;
-    border: none;
-    outline: none;
-    padding: 6px 8px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    border-radius: var(--border-radius);
 
-    background: var(--dark3);
-    text-decoration: none;
-    color: var(--text2);
-`;
-
-export const WalletContent = styled.section`
-    background: var(--dark3);
-    padding: 8px 1rem;
-    border-radius: var(--border-radius);
-    display: flex;
-    flex-direction: column;
-    height: 200px;
-    overflow-y: hidden;
-    &::-webkit-scrollbar {
-        display: none;
-    }
-`;
-
-export const WalletWrapper = styled(FlexContainer)`
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
-    background: var(--dark2);
-    position: absolute;
-    top: 50px;
-    width: 347px;
-    height: 280px;
-    right: 0px;
-    z-index: 9999;
-    padding: 8px 1rem;
-    opacity: 1;
-    bottom: 85px;
-    pointer-events: auto;
-    border: 1px solid var(--accent1);
-    @media (max-width: 500px) {
-        width: 300px;
-        right: -100px;
-    }
-`;
 
 export const LevelWrapper = styled(FlexContainer)`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);

@@ -89,7 +89,7 @@ export const ChartContainer = styled.div<{
         height: calc(100% - 56px);
         left: 0;
         top: 56px;
-        z-index: 10;
+        z-index: 4;
 
         background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
     `
