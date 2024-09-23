@@ -351,6 +351,7 @@ input[type='number'] {
         top: 56px;
         bottom: 64px;
         z-index: 2;
+        display: none;
     }
 }
 

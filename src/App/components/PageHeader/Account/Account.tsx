@@ -74,10 +74,13 @@ export default function Account(props: propsIF) {
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const levelDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideWalletHandler = () => {
+        if (!desktopScreen) return null
         setShowWalletDropdown(false);
         appHeaderDropdown.setIsActive(false);
     };
     const clickOutsideLevelHandler = () => {
+        if (!desktopScreen) return null
+
         setShowLevelDropdown(false);
         appHeaderDropdown.setIsActive(false);
     };

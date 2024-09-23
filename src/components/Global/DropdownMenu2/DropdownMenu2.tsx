@@ -40,7 +40,8 @@ export default function DropdownMenu2(props: propsIF) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
-
+    const desktopScreen = useMediaQuery('(min-width: 1020px)');
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
     const isEscapePressed = useKeyPress('Escape');
     useEffect(() => {
         if (isEscapePressed) {
@@ -56,6 +57,7 @@ export default function DropdownMenu2(props: propsIF) {
         } else appHeaderDropdown.setIsActive(false);
     }
     const clickOutsideHandler = () => {
+        if (showMobileVersion) return null
         setIsMenuOpen(false);
     };
 
@@ -81,8 +83,7 @@ export default function DropdownMenu2(props: propsIF) {
         </motion.div>
     );
 
-    const desktopScreen = useMediaQuery('(min-width: 1020px)');
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+ 
 
     const showFullMenu = desktopScreen && brand !== 'futa';
 
