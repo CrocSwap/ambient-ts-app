@@ -74,7 +74,7 @@ function TableRowsInfiniteScroll({
     
 
 
-    const debugMode = false;
+    const debugMode = true;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
@@ -124,6 +124,10 @@ function TableRowsInfiniteScroll({
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
+    const [shiftLock, setShiftLock] = useState(false);
+    const shiftLockRef = useRef<boolean>();
+    shiftLockRef.current = shiftLock;
+
     const bindWrapperEl = () => {
         if(isSmallScreen){
             return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement;
@@ -131,6 +135,7 @@ function TableRowsInfiniteScroll({
             return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement?.parentElement?.parentElement;
         }
     }
+
     
     const wrapperEl = bindWrapperEl();
 
@@ -205,19 +210,53 @@ function TableRowsInfiniteScroll({
         );
     };
 
+    const lockShift = () => {
+        setShiftLock(true);
+        setTimeout(() => {
+            setShiftLock(false);
+        }, 500);
+    }
+
     const shiftUp = (): void => {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SHIFT UP')
+        if(shiftLockRef.current) {
+            bindTableReadyState(true);
+            return;
+        }
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
+        lockShift();
     };
     
     const shiftDown = (): void => {
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> SHIFT DOWN')
+        if(shiftLockRef.current) {
+            bindTableReadyState(true);
+            return;
+        }
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
+        lockShift();
     };
 
     
+
+    const renderDebugData = () => {
+
+        if(debugMode){
+
+            const renderedRows = document.querySelectorAll(txSpanSelectorForScrollMethod).length;
+
+            return (<>
+            <span style={{fontSize: '.72rem'}}>
+            <div style={{padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
+            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '1.2rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
+            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
+            </span>
+            </>)
+        }else{
+            return <></>
+        }
+    }
+
     useEffect(() => {
         domDebug('sortBy', sortBy);
         scrollToTop();
@@ -226,8 +265,6 @@ function TableRowsInfiniteScroll({
     domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
-        console.log('scrollByTxID', txID);
-
         const txSpans = document.querySelectorAll(
             txSpanSelectorForScrollMethod
         );
@@ -275,7 +312,6 @@ function TableRowsInfiniteScroll({
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
             if (debugMode) {
                 lastRow.style.backgroundColor = 'blue';
-                console.log('bindlastseenrow',getKeyFieldFromRowRef(lastRow));
             }
 
             const txDiv = lastRow.querySelector(txSpanSelectorForBindMethod);
@@ -303,7 +339,6 @@ function TableRowsInfiniteScroll({
             if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
                 if (autoScrollDirection === ScrollDirection.DOWN) {
                     if(pageDataCount && dataPerPage && couldFirstPageLoop()){
-                        console.log('edge CASE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
                         scrollByTxID(
                             lastSeenTxIDRef.current || '',
                             ScrollPosition.TOP,
@@ -388,11 +423,11 @@ function TableRowsInfiniteScroll({
                 if (moreDataLoadingVal) return;
                 
                 if (entry.isIntersecting) {
-                    if(entries[0].target){
-                        console.log('.......')
-                        console.log('inersection trigger for ', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
-                        console.log('.......')
-                    }
+                    // if(entries[0].target){
+                    //     console.log('.......')
+                    //     console.log('inersection trigger for ', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
+                    //     console.log('.......')
+                    // }
 
                     if(manualModeRef.current){
                         bindLastSeenRow();                        
@@ -436,20 +471,20 @@ function TableRowsInfiniteScroll({
     }, [moreDataAvailable])
 
 
-    const getKeyFieldFromRowRef = (ref: HTMLDivElement | null) => {
-        if(ref && ref.parentElement){
-            const parent = ref.parentElement;
-            const spanSelector = 'div[data-label="id"] > span';
-            if(parent){
-                const txSpan = parent.querySelectorAll(spanSelector);
-                if(txSpan){
-                    return txSpan[0].textContent;
-                }
-            }
-        }
+    // const getKeyFieldFromRowRef = (ref: HTMLDivElement | null) => {
+    //     if(ref && ref.parentElement){
+    //         const parent = ref.parentElement;
+    //         const spanSelector = 'div[data-label="id"] > span';
+    //         if(parent){
+    //             const txSpan = parent.querySelectorAll(spanSelector);
+    //             if(txSpan){
+    //                 return txSpan[0].textContent;
+    //             }
+    //         }
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 
     useEffect(() => {
         domDebug('moreDataLoading', moreDataLoading);
@@ -466,11 +501,11 @@ function TableRowsInfiniteScroll({
                 if (moreDataLoadingVal) return;
 
                 if (entry.isIntersecting) {
-                    if(entries[0].target){
-                        console.log('.......')
-                        console.log('inersection trigger for FIRST ROW', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
-                        console.log('.......')
-                    }
+                    // if(entries[0].target){
+                    //     console.log('.......')
+                    //     console.log('inersection trigger for FIRST ROW', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
+                    //     console.log('.......')
+                    // }
     
                     if(manualModeRef.current){
                         setShowManualScrollUp(true);
@@ -550,11 +585,7 @@ function TableRowsInfiniteScroll({
                 {showManualScrollUp && (<div style={{padding: '.5rem 1rem', background: 'magenta', position: 'absolute', zIndex: 99, right: '8rem', top: '12rem'}} onClick={firstRowIntersectAction}>Scroll Up</div>)}
                 {showManualScrollDown && (<div style={{padding: '.5rem 1rem', background: 'orange', position: 'absolute', zIndex: 99, right: '8rem', top: '14rem'}} onClick={lastRowIntersectAction}>Scroll Down</div>)}
                 {
-                    debugMode && (
-                        <>
-                        <div style={{padding: '.5rem 1rem', opacity: manualModeRef.current ? '1':'.5', background: 'black', color: 'white', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>Manual Mode</div>
-                        </>
-                    )
+                    renderDebugData()
                 }
                 {getOverlayComponentForLoadingState()}
 
