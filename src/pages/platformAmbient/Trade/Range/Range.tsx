@@ -60,7 +60,7 @@ function Range() {
         ethMainnetUsdPrice,
         crocEnv,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkBlast } =
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
     const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
     const {
@@ -861,12 +861,11 @@ function Range() {
     const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
         useState<number>(0.0005);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeePoolInGwei] = useState<number>(
-        isScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const amountToReduceNativeTokenQty =
