@@ -50,7 +50,12 @@ const allColors: allColorsIF = {
     border: borderColors,
 };
 
-export default function CSSDebug() {
+interface propsIF {
+    noSwap?: boolean;
+}
+
+export default function CSSDebug(props: propsIF) {
+    const { noSwap } = props;
     const SAMPLE_TEXT = 'Zero-to-One Decentralized Trading Protocol';
     const [sampleText, setSampleText] = useState<string>(SAMPLE_TEXT);
 
@@ -101,7 +106,7 @@ export default function CSSDebug() {
                     )
                 }
             </section>
-            <Swap />
+            {noSwap || <Swap />}
         </>
     );
 }
