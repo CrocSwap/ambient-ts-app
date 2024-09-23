@@ -3,12 +3,7 @@ import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownM
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import {
-    MenuContent,
-    ChainNameStatus,
-    NetworkItem,
-    DropdownMenuContainer,
-} from '../../../../styled/Components/Header';
+
 import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
@@ -30,10 +25,11 @@ import { BrandContext } from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-
+import styles from './NetworkSelector.module.css';
 interface propsIF {
     customBR?: string;
 }
+import { motion } from 'framer-motion';
 
 export default function NetworkSelector(props: propsIF) {
     const {
@@ -44,7 +40,6 @@ export default function NetworkSelector(props: propsIF) {
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { switchNetwork } = useSwitchNetwork();
     const smallScreen = useMediaQuery('(max-width: 600px)');
-
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();
@@ -119,7 +114,7 @@ export default function NetworkSelector(props: propsIF) {
 
     // JSX element to select ethereum mainnet network
     const ethereumNetwork: JSX.Element = (
-        <NetworkItem
+        <motion.li className={styles.networkItem}
             id='ethereum_network_selector'
             onClick={() => handleClick(chainMap.get('0x1'))}
             key='ethereum'
@@ -127,7 +122,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x1'}>
+            <div
+                className={`${styles.chainNameStatus}${chainId === '0x1' ? styles.activeChain : ''}`}
+                tabIndex={0}
+            >
                 <img
                     src={ETH}
                     alt='ethereum mainnet network'
@@ -141,12 +139,12 @@ export default function NetworkSelector(props: propsIF) {
                 >
                     Ethereum
                 </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     const blastNetwork: JSX.Element = (
-        <NetworkItem
+         <motion.li className={styles.networkItem}
             id='blast_network_selector'
             onClick={() => handleClick(chainMap.get('0x13e31'))}
             key='blast'
@@ -154,7 +152,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x13e31'}>
+            <div
+                className={`${styles.chainNameStatus} ${chainId === '0x13e31' ? styles.activeChain : ''}`}
+                tabIndex={0}
+            >
                 <img
                     src={blastLogo}
                     alt='blast network'
@@ -168,12 +169,12 @@ export default function NetworkSelector(props: propsIF) {
                 >
                     {'Blast'}
                 </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     const scrollNetwork: JSX.Element = (
-        <NetworkItem
+         <motion.li className={styles.networkItem}
             id='scroll_network_selector'
             onClick={() => handleClick(chainMap.get('0x82750'))}
             key='scroll'
@@ -181,7 +182,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
+            <div
+                className={`${styles.chainNameStatus} ${chainId === '0x82750' ? styles.activeChain : ''}`}
+                tabIndex={0}
+            >
                 <img
                     src={scrollLogo}
                     alt='scroll network'
@@ -195,13 +199,13 @@ export default function NetworkSelector(props: propsIF) {
                 >
                     {'Scroll'}
                 </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     // JSX element to select canto network (external link)
     const cantoNetwork: JSX.Element = (
-        <NetworkItem
+         <motion.li className={styles.networkItem}
             id='canto_network_selector'
             onClick={() => window.open('https://app.canto.io/lp', '_blank')}
             key='canto'
@@ -209,7 +213,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={false}>
+            <div
+                className={`${styles.chainNameStatus}`}
+                tabIndex={0}
+            >
                 <img
                     src={cantoLogo}
                     alt='canto network'
@@ -221,14 +228,14 @@ export default function NetworkSelector(props: propsIF) {
                     Canto
                 </Text>
                 <RiExternalLinkLine size={14} style={{ marginLeft: '55px' }} />
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     // JSX element to select sepolia network
     // uses the same logo as scroll network
     const sepoliaNetwork: JSX.Element = (
-        <NetworkItem
+         <motion.li className={styles.networkItem}
             id='sepolia_network_selector'
             onClick={() => handleClick(chainMap.get('0xaa36a7'))}
             key='sepolia'
@@ -236,7 +243,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
+            <div
+                className={`${styles.chainNameStatus} ${chainId === '0xaa36a7' ? styles.activeChain : ''}`}
+                tabIndex={0}
+            >
                 <img
                     src={sepoliaLogo}
                     alt='sepolia network'
@@ -256,12 +266,12 @@ export default function NetworkSelector(props: propsIF) {
                 <Text color={'accent1'} fontSize={'mini'} marginLeft='30px'>
                     Testnet
                 </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     const blastSepoliaNetwork: JSX.Element = (
-        <NetworkItem
+         <motion.li className={styles.networkItem}
             id='blast_sepolia_network_selector'
             onClick={() => handleClick(chainMap.get('0xa0c71fd'))}
             key='blast sepolia'
@@ -269,7 +279,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0xa0c71fd'}>
+            <div
+                className={`${styles.chainNameStatus} ${chainId === '0xa0c71fd' ? styles.activeChain : ''}`}
+                tabIndex={0}
+            >
                 <img
                     src={blastSepoliaLogo}
                     alt='blast network'
@@ -286,13 +299,13 @@ export default function NetworkSelector(props: propsIF) {
                 <Text color={'accent1'} fontSize={'mini'} marginLeft='50px'>
                     Testnet
                 </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     // JSX element to select scroll sepolia network
     const scrollSepoliaNetwork: JSX.Element = (
-        <NetworkItem
+         <motion.li className={styles.networkItem}
             id='scroll_sepolia_network_selector'
             onClick={() => handleClick(chainMap.get('0x8274f'))}
             key='scroll-scroll'
@@ -300,7 +313,10 @@ export default function NetworkSelector(props: propsIF) {
             variants={ItemEnterAnimation}
             tabIndex={0}
         >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
+            <div
+                className={`${styles.chainNameStatus} ${chainId === '0x82747' ? styles.activeChain : ''}`}
+                tabIndex={0}
+            >
                 <img
                     src={scrollSepoliaLogo}
                     alt='scroll sepolia network'
@@ -317,8 +333,8 @@ export default function NetworkSelector(props: propsIF) {
                 <Text color={'accent1'} fontSize={'mini'} marginLeft='47px'>
                     Testnet
                 </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+            </div>
+        </motion.li>
     );
 
     return (
@@ -328,11 +344,7 @@ export default function NetworkSelector(props: propsIF) {
                 borderRadius: props.customBR ? props.customBR : '4px',
             }}
         >
-            <DropdownMenuContainer
-                justifyContent='center'
-                alignItems='center'
-                gap={4}
-            >
+            <div className={styles.dropdownMenuContainer}>
                 <DropdownMenu2
                     marginTop={'50px'}
                     marginRight={smallScreen ? '70px' : ''}
@@ -363,7 +375,8 @@ export default function NetworkSelector(props: propsIF) {
                                     : ETH
                     }
                 >
-                    <MenuContent
+                    <ul
+                        className={styles.menuContent}
                         tabIndex={0}
                         aria-label={'Dropdown menu for networks.'}
                     >
@@ -376,9 +389,9 @@ export default function NetworkSelector(props: propsIF) {
                         {chainMap.has('0xaa36a7') && sepoliaNetwork}
                         {chainMap.has('0xa0c71fd') && blastSepoliaNetwork}
                         {chainMap.has('0x8274f') && scrollSepoliaNetwork}
-                    </MenuContent>
+                    </ul>
                 </DropdownMenu2>
-            </DropdownMenuContainer>
+            </div>
         </div>
     );
 }
