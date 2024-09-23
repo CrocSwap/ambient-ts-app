@@ -110,7 +110,10 @@ max-width: 100%;
         
     }
 
-
+.mobile_dropdown{
+    width: 100%;
+    justify-content: space-between;
+}
 
 @media (min-width: 768px) {
     

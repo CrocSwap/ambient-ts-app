@@ -7,22 +7,19 @@ import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconW
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
-import {
-    CopyButton,
-    NameDisplay,
-    NameDisplayContainer,
-    WalletDisplay,
-} from '../../../../styled/Components/Header';
+import styles from './UserProfileCard.module.css'
+
 interface LevelDropdownPropsIF {
     ensName: string;
     accountAddress: string;
     handleCopyAddress: () => void;
     accountAddressFull: string;
     padding?: string;
+    isMobileDropdown?: boolean;
 }
 
 export default function UserProfileCard(props: LevelDropdownPropsIF) {
-    const { ensName, accountAddress, handleCopyAddress, accountAddressFull } =
+    const { ensName, accountAddress, handleCopyAddress, accountAddressFull, isMobileDropdown } =
         props;
     const {
         chainData: { chainId },
@@ -35,7 +32,7 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
         : `/${userAddress}`;
 
     return (
-        <NameDisplayContainer gap={4} alignItems='center'>
+        <div className={`${styles.nameDisplayContainer} ${isMobileDropdown && styles.mobileDropdown}`}>
             <Link to={link}>
                 {userAddress &&
                     userAvatarData &&
@@ -43,7 +40,7 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
             </Link>
 
             <FlexContainer alignItems='center' flexDirection='column'>
-                <NameDisplay gap={16} alignItems='center'>
+                <div className={styles.nameDisplay}>
                     <h2>{ensName !== '' ? ensName : accountAddress}</h2>
 
                     <IconWithTooltip
@@ -64,19 +61,19 @@ export default function UserProfileCard(props: LevelDropdownPropsIF) {
                         title={`${'Copy wallet address to clipboard'}`}
                         placement='right'
                     >
-                        <CopyButton
+                        <button className={styles.copyButton}
                             onClick={handleCopyAddress}
                             aria-label='Copy address to clipboard'
                         >
                             <FiCopy />
-                        </CopyButton>
+                        </button>
                     </IconWithTooltip>
-                </NameDisplay>
-                <WalletDisplay gap={16} alignItems='center'>
+                </div>
+                <div className={styles.walletDisplay}>
                     <p>Connected Wallet:</p>
                     <p>{props.accountAddress}</p>
-                </WalletDisplay>
+                </div>
             </FlexContainer>
-        </NameDisplayContainer>
+        </div>
     );
 }

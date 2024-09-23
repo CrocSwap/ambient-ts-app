@@ -8,6 +8,7 @@ interface LevelDropdownPropsIF {
     handleCopyAddress: () => void;
     accountAddressFull: string;
     connectedUserXp?: UserXpDataIF;
+  
 }
 
 export default function LevelDropdown(props: LevelDropdownPropsIF) {
@@ -15,8 +16,10 @@ export default function LevelDropdown(props: LevelDropdownPropsIF) {
         props;
 
     return (
-        <div className={styles.container}>
-            <UserProfileCard
+        <div className={styles.container}
+            
+        >
+       <UserProfileCard
                 ensName={ensName !== '' ? ensName : ''}
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}

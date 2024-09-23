@@ -8,6 +8,12 @@ import styles from './ExchangeBalanceDropdown.module.css'
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 export const ExchangeBalanceDropdown = () => {
+
+    const isDevMenuEnabled = false
+        // import.meta.env.VITE_IS_DEV_MENU_ENABLED !== undefined
+        //     ? import.meta.env.VITE_IS_DEV_MENU_ENABLED === 'true'
+        //     : true;
+    
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
     const escapePressed = useKeyPress('Escape');
@@ -19,6 +25,7 @@ export const ExchangeBalanceDropdown = () => {
     }, [escapePressed]);
 
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
+ 
 
     const modalVersion = (
         <Modal usingCustomHeader onClose={() => setFullLayoutActive(false)}>
@@ -32,6 +39,15 @@ export const ExchangeBalanceDropdown = () => {
                 />
             </div>
             </Modal>
+    )
+
+    if (isDevMenuEnabled) return (
+        <ExchangeBalance
+                        fullLayoutActive={fullLayoutActive}
+                        setFullLayoutActive={setFullLayoutActive}
+                        setTokenModalOpen={setTokenModalOpen}
+                        isModalView
+                    />
     )
 
     return (

@@ -120,6 +120,8 @@ export default function Account(props: propsIF) {
             </Modal>
     )
 
+ 
+
     const walletDisplay = (
         <section
             style={{

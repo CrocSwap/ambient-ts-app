@@ -18,6 +18,7 @@ import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import TokenRow from '../TokenRow/TokenRow';
+import useIsPWA from '../../../../utils/hooks/useIsPWA';
 
 export type columnSlugs =
     | 'token'
@@ -59,6 +60,8 @@ function DexTokens(props: propsIF) {
     } = props;
 
     const { findPool } = useContext(PoolContext);
+    const isPWA = useIsPWA();
+
 
     const defaultTokensForChain: [TokenIF, TokenIF] =
         getDefaultPairForChain(chainId);
@@ -169,7 +172,9 @@ function DexTokens(props: propsIF) {
     );
 
     return (
-        <div className={styles.mainContainer}>
+        <div className={styles.mainContainer}
+        style={{ marginBottom: isPWA ? '0' : '50px' }}
+        >
             <ExploreToggle view={view} handleToggle={handleToggle} />
 
             {headerDisplay}

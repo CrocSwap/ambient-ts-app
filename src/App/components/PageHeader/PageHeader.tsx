@@ -52,6 +52,8 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../contexts/BrandContext';
+import MobileDropdown from './MobileDropdown/MobileDropdown';
+import { GiHamburgerMenu } from 'react-icons/gi';
 
 const PageHeader = function () {
     const {
@@ -60,6 +62,10 @@ const PageHeader = function () {
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
     const { headerImage } = useContext(BrandContext);
+    const isDevMenuEnabled =
+        import.meta.env.VITE_IS_DEV_MENU_ENABLED !== undefined
+            ? import.meta.env.VITE_IS_DEV_MENU_ENABLED === 'true'
+            : true;
 
     const {
         walletModal: { open: openWalletModal },
@@ -412,53 +418,70 @@ const PageHeader = function () {
         };
     }, []);
 
+    const [showDevMenu, setShowDevMenu] = useState(false);
+
     return (
-        <PrimaryHeader
-            data-testid={'page-header'}
-            fixed={false}
-            style={{ position: 'sticky', top: 0, zIndex: 10 }}
-        >
-            <div
-                onClick={(event: React.MouseEvent) => {
-                    event?.stopPropagation();
-                    if (appHeaderDropdown.isActive) {
-                        appHeaderDropdown.setIsActive(false);
-                    }
-                }}
+        <>
+            <PrimaryHeader
+                data-testid={'page-header'}
+                fixed={false}
+                style={{ position: 'sticky', top: 0, zIndex: 10 }}
             >
-                <LogoContainer to='/' aria-label='Home'>
-                    {desktopScreen ? (
-                        <img src={headerImage} alt='ambient' />
-                    ) : (
-                        <LogoText src={logo} alt='ambient' />
-                    )}
-                </LogoContainer>
-            </div>
-            {routeDisplay}
-            <RightSide>
-                {show ? (
-                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
-                        <TradeNowButton
-                            inNav
-                            fieldId='trade_now_btn_in_page_header'
-                        />
-                    </TradeNowDiv>
-                ) : (
-                    <div>
-                        <FlexContainer
+                <div
+                    onClick={(event: React.MouseEvent) => {
+                        event?.stopPropagation();
+                        if (appHeaderDropdown.isActive) {
+                            appHeaderDropdown.setIsActive(false);
+                        }
+                    }}
+                >
+                    <LogoContainer to='/' aria-label='Home'>
+                        {desktopScreen ? (
+                            <img src={headerImage} alt='ambient' />
+                        ) : (
+                            <LogoText src={logo} alt='ambient' />
+                        )}
+                    </LogoContainer>
+                </div>
+                {routeDisplay}
+                <RightSide>
+                    {show ? (
+                        <TradeNowDiv
+                            justifyContent='flex-end'
                             alignItems='center'
-                            gap={8}
-                            overflow='visible'
                         >
-                        
-                            <NetworkSelector />
-                            {!isUserConnected && connectWagmiButton}
-                            <Account {...accountProps} />
-                        </FlexContainer>
-                    </div>
-                )}
-            </RightSide>
-        </PrimaryHeader>
+                            <TradeNowButton
+                                inNav
+                                fieldId='trade_now_btn_in_page_header'
+                            />
+                        </TradeNowDiv>
+                    ) : (
+                        <div>
+                            <FlexContainer
+                                alignItems='center'
+                                gap={8}
+                                overflow='visible'
+                            >
+                                <NetworkSelector />
+
+                                
+
+                                {!isUserConnected && connectWagmiButton}
+                                    <Account {...accountProps} />
+                                    {isDevMenuEnabled && !desktopScreen &&  (
+                                    <GiHamburgerMenu
+                                        onClick={() =>
+                                            setShowDevMenu(!showDevMenu)
+                                        }
+                                    />
+                                )}
+                            </FlexContainer>
+                        </div>
+                    )}
+                </RightSide>
+            </PrimaryHeader>
+            {isDevMenuEnabled && showDevMenu && <MobileDropdown />}
+        </>
     );
 };
 

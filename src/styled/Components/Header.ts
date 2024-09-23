@@ -185,41 +185,41 @@ export const UnderlinedMotionDiv = styled(motion.div)`
 
 // WalletDropdown
 
-export const WalletDisplay = styled(FlexContainer)`
-    p {
-        font-size: var(--body-size);
-        line-height: var(--body-lh);
-        color: var(--text2);
-    }
-`;
+// export const WalletDisplay = styled(FlexContainer)`
+//     p {
+//         font-size: var(--body-size);
+//         line-height: var(--body-lh);
+//         color: var(--text2);
+//     }
+// `;
 
-export const NameDisplay = styled(FlexContainer)`
-    h2 {
-        font-size: var(--header2-size);
-        line-height: var(--header2-lh);
-        color: var(--text1);
-        font-weight: 100;
-    }
-`;
+// export const NameDisplay = styled(FlexContainer)`
+//     h2 {
+//         font-size: var(--header2-size);
+//         line-height: var(--header2-lh);
+//         color: var(--text1);
+//         font-weight: 100;
+//     }
+// `;
 
-export const CopyButton = styled.button`
-    cursor: pointer;
-    background: transparent;
-    border: none;
-`;
+// export const CopyButton = styled.button`
+//     cursor: pointer;
+//     background: transparent;
+//     border: none;
+// `;
 
 
 
-export const NameDisplayContainer = styled(FlexContainer)`
-    margin: 0 auto;
-    overflow: visible;
-    .image {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--title-gradient);
-    }
-`;
+// export const NameDisplayContainer = styled(FlexContainer)`
+//     margin: 0 auto;
+//     overflow: visible;
+//     .image {
+//         width: 50px;
+//         height: 50px;
+//         border-radius: 50%;
+//         background: var(--title-gradient);
+//     }
+// `;
 
 
 

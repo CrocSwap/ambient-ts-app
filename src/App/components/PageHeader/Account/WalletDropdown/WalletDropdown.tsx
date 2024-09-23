@@ -24,6 +24,7 @@ interface WalletDropdownPropsIF {
     clickOutsideHandler: () => void;
     clickLogout: () => void;
     accountAddressFull: string;
+    hideProfileCard? : boolean
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -40,6 +41,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         handleCopyAddress,
         clickOutsideHandler,
         clickLogout,
+        hideProfileCard
     } = props;
     const {
         chainData: { chainId },
@@ -221,16 +223,17 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     return (
         <div className={styles.walletWrapper}
+            style={{padding: hideProfileCard ? '0' : ''}}
             
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-            <UserProfileCard
+           {!hideProfileCard && <UserProfileCard
                 ensName={ensName !== '' ? ensName : ''}
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}
                 accountAddressFull={props.accountAddressFull}
-            />
+            />}
             <section className={styles.walletContent}>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
@@ -246,7 +249,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     />
                 ))}
             </section>
-            <div className={styles.actionsContainer}>
+            {!hideProfileCard && <div className={styles.actionsContainer}>
                 <Link className={styles.accountLink}
                     to={'/account'}
                     aria-label='Go to the account page '
@@ -257,7 +260,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     My Account
                 </Link>
                 <LogoutButton onClick={clickLogout} />
-            </div>
+            </div>}
         </div>
     );
 }
