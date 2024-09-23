@@ -213,7 +213,11 @@ export const AppStateContextProvider = (props: {
 
     useIdleTimer({
         onIdle,
-        onActive,
+        onActive: () => {
+            if (document.visibilityState === 'visible') {
+                onActive();
+            }
+        },
         timeout: 1000 * 60 * 1, // set user to idle after 1 minute
         promptTimeout: 0,
         events: [
@@ -227,7 +231,7 @@ export const AppStateContextProvider = (props: {
             'touchmove',
             'MSPointerDown',
             'MSPointerMove',
-            'visibilitychange',
+            'visibilitychange', // triggers on tab change
         ],
         immediateEvents: [],
         debounce: 0,
