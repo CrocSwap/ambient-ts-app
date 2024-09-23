@@ -27,6 +27,8 @@ import FooterNav from '../components/Global/FooterNav/FooterNav';
 import { RouteRenderer } from '../routes';
 import Navbar from '../components/Futa/Navbar/Navbar';
 import Footer from '../components/Futa/Footer/Footer';
+import { useModal } from '../components/Global/Modal/useModal';
+import CSSModal from '../pages/common/CSSDebug/CSSModal';
 
 /** ***** React Function *******/
 export default function App() {
@@ -123,6 +125,23 @@ export default function App() {
         </div>
     );
 
+    const [isCSSModalOpen, openCSSModal, closeCSSModal] = useModal();
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent): void => {
+            console.log(event.key);
+            if (event.key === 'k') {
+                console.log(event.key);
+                isCSSModalOpen ? closeCSSModal() : openCSSModal();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+    
+        return (() => {
+            window.removeEventListener('keydown', handleKeyDown);
+        });
+    }, [isCSSModalOpen]);
+
+
     return (
         <>
             {location.pathname == '/' && platformName !== 'futa' && (
@@ -170,6 +189,7 @@ export default function App() {
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
+            {isCSSModalOpen && <CSSModal noSwap />}
         </>
     );
 }
