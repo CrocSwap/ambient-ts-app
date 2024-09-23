@@ -6,6 +6,8 @@
     padding: 4px;
     gap: 6px;
     outline: 1px solid yellow;
+    color: antiquewhite;
+    background-color: grey;
 }
 
 .toggle_area > header {
