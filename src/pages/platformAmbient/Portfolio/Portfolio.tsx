@@ -35,6 +35,9 @@ import {
 import Level from '../Level/Level';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import styles from './Portfolio.module.css';
+import Modal from '../../../components/Global/Modal/Modal';
+import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
+import { TokenBalanceContext } from '../../../contexts';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
@@ -44,12 +47,19 @@ interface PortfolioPropsIF {
 }
 
 function Portfolio(props: PortfolioPropsIF) {
+
+
     const {
         userAddress,
+        isfetchNftTriggered,
+        setIsfetchNftTriggered,
+        setNftTestWalletAddress,
         setResolvedAddressInContext,
         ensName,
         setSecondaryEnsInContext,
     } = useContext(UserDataContext);
+    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
+        useContext(TokenBalanceContext);
     const { isLevelsPage, isRanksPage, isViewMoreActive, specificTab } = props;
 
     const isUserConnected = useSimulatedIsUserConnected();
@@ -202,10 +212,25 @@ function Portfolio(props: PortfolioPropsIF) {
     }, [connectedAccountActive, resolvedAddress, isActiveNetworkBlast]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
+    const [isAutoLayout, setIsAutoLayout] = useState<boolean>(true); // Tracks if the layout is being set automatically
+
+    const matchesMinWidth = useMediaQuery('(min-width: 768px)');
+    const matchesMaxWidth = useMediaQuery('(max-width: 1280px)');
+
+    useEffect(() => {
+        // Only change `fullLayoutActive` if it's set automatically
+        if (isAutoLayout && matchesMinWidth && matchesMaxWidth) {
+            setFullLayoutActive(true);
+        } else if (isAutoLayout && (!matchesMinWidth || !matchesMaxWidth)) {
+            setFullLayoutActive(false);
+        }
+    }, [isAutoLayout, matchesMinWidth, matchesMaxWidth]);
+
     const exchangeBalanceComponent = (
         <ExchangeBalance
             fullLayoutActive={fullLayoutActive}
             setFullLayoutActive={setFullLayoutActive}
+            setIsAutoLayout={setIsAutoLayout}
         />
     );
 
@@ -358,6 +383,14 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedUserBlastXp: resolvedUserBlastXp,
     };
 
+    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
+    const [showNFTPage, setShowNFTPage] = useState(false);
+
+    function handleTestWalletChange(nftTestWalletInput: string) {
+        setNftTestWalletAddress(() => nftTestWalletInput);
+        setIsfetchNftTriggered(() => true);
+    }
+
     const portfolioBannerProps = {
         ensName: connectedAccountActive
             ? ensName ?? ''
@@ -370,6 +403,11 @@ function Portfolio(props: PortfolioPropsIF) {
         resolvedUserXp: resolvedUserXp,
         showTabsAndNotExchange: showTabsAndNotExchange,
         setShowTabsAndNotExchange: setShowTabsAndNotExchange,
+
+        nftTestWalletInput, setNftTestWalletInput, showNFTPage, setShowNFTPage, handleTestWalletChange,
+        NFTData, NFTFetchSettings, setNFTFetchSettings,
+        userAddress,
+        
     };
 
     const truncatedAccountAddressOrEnsName = connectedAccountActive
@@ -428,6 +466,28 @@ function Portfolio(props: PortfolioPropsIF) {
     const bannerHeight = 115;
     const contentHeight = availableHeight - bannerHeight;
 
+ 
+
+
+    const mobileBannerSettings = !showNFTPage ? null : (
+        <Modal usingCustomHeader onClose={() => setShowNFTPage(false)}>
+            {NFTData && (
+                <NFTBannerAccount
+                    setShowNFTPage={setShowNFTPage}
+                    showNFTPage={showNFTPage}
+                    NFTData={NFTData}
+                    isfetchNftTriggered={isfetchNftTriggered}
+                    setIsfetchNftTriggered={setIsfetchNftTriggered}
+                    NFTFetchSettings={NFTFetchSettings}
+                    setNFTFetchSettings={setNFTFetchSettings}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    nftTestWalletInput={nftTestWalletInput}
+                    handleTestWalletChange={handleTestWalletChange}
+                />
+            )}
+        </Modal>
+    );
+
     const mobilePortfolio = (
         <div
             className={styles.mobile_layout}
@@ -437,6 +497,7 @@ function Portfolio(props: PortfolioPropsIF) {
             <div style={{ height: `${contentHeight}px`, overflowY: 'hidden' }}>
                 {contentToRenderOnMobile}
             </div>
+            {mobileBannerSettings}
         </div>
     );
 
@@ -469,23 +530,6 @@ function Portfolio(props: PortfolioPropsIF) {
         }
     }, [specificTab]);
 
-    // end of tab control on account from page header
-    // const mobilePortfolio = (
-    //     <div className={styles.mobile_container}>
-    //         {useMediaQuery('(min-height: 300px)') && (
-    //             <PortfolioBanner {...portfolioBannerProps} />
-    //         )}
-    //         <div className={styles.mobile_content}>
-    //             {
-    //                 connectedAccountActive &&
-    //                 mobileDataToggle}
-    //             {contentToRenderOnMobile}
-    //         </div>
-    //     </div>
-    // );
-
-    // const yes = false
-
     if (showActiveMobileComponent && !isLevelsPage) return mobilePortfolio;
     if (isLevelsPage) return <Level {...levelsProps} />;
 
@@ -514,6 +558,24 @@ function Portfolio(props: PortfolioPropsIF) {
                       : undefined}
             </div>
             <PortfolioBanner {...portfolioBannerProps} />
+
+            {
+                 showNFTPage &&
+                  NFTData && (
+                      <NFTBannerAccount
+                          setShowNFTPage={setShowNFTPage}
+                          showNFTPage={showNFTPage}
+                          NFTData={NFTData}
+                          isfetchNftTriggered={isfetchNftTriggered}
+                          setIsfetchNftTriggered={setIsfetchNftTriggered}
+                          NFTFetchSettings={NFTFetchSettings}
+                          setNFTFetchSettings={setNFTFetchSettings}
+                          setNftTestWalletInput={setNftTestWalletInput}
+                          nftTestWalletInput={nftTestWalletInput}
+                          handleTestWalletChange={handleTestWalletChange}
+                      />
+                  )
+                  }
         </div>
     );
 }

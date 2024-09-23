@@ -103,6 +103,8 @@ function TradeCharts(props: propsIF) {
     const { pathname } = useLocation();
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
+    const isFuta = ['futa'].includes(platformName);
+
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
 
@@ -206,13 +208,7 @@ function TradeCharts(props: propsIF) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     const resetAndRescaleDisplay = (
-        <div
-            className={
-                ['futa'].includes(platformName)
-                    ? styles.futa_chart_overlay_container
-                    : styles.chart_overlay_container
-            }
-        >
+        <div className={styles.chart_overlay_container}>
             {showLatest && (
                 <div className={styles.settings_container}>
                     <button
@@ -223,11 +219,7 @@ function TradeCharts(props: propsIF) {
                                 setLatest(true);
                             }
                         }}
-                        className={
-                            ['futa'].includes(platformName)
-                                ? styles.futa_non_active_selected_button
-                                : styles.non_active_selected_button
-                        }
+                        className={styles.non_active_selected_button}
                         aria-label='Show latest.'
                     >
                         Latest
@@ -242,13 +234,9 @@ function TradeCharts(props: propsIF) {
                         setRescale(true);
                     }}
                     className={
-                        ['futa'].includes(platformName)
-                            ? reset
-                                ? styles.futa_active_selected_button
-                                : styles.futa_non_active_selected_button
-                            : reset
-                              ? styles.active_selected_button
-                              : styles.non_active_selected_button
+                        reset
+                            ? styles.active_selected_button
+                            : styles.non_active_selected_button
                     }
                     aria-label='Reset.'
                 >
@@ -264,13 +252,9 @@ function TradeCharts(props: propsIF) {
                         });
                     }}
                     className={
-                        ['futa'].includes(platformName)
-                            ? rescale
-                                ? styles.futa_active_selected_button
-                                : styles.futa_non_active_selected_button
-                            : rescale
-                              ? styles.active_selected_button
-                              : styles.non_active_selected_button
+                        rescale
+                            ? styles.active_selected_button
+                            : styles.non_active_selected_button
                     }
                     aria-label='Auto rescale.'
                 >
@@ -312,9 +296,11 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            {!['futa'].includes(platformName) && (
+            {!isFuta && (
                 <div className={styles.mobile_settings_row}>
-                    <p className={styles.mobile_settings_header}>Curve/Depth:</p>
+                    <p className={styles.mobile_settings_header}>
+                        Curve/Depth:
+                    </p>
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
                 </div>
             )}
@@ -354,11 +340,12 @@ function TradeCharts(props: propsIF) {
                 fullHeight
                 fullWidth
                 style={{
-                    padding:
-                        isChartFullScreen || ['futa'].includes(platformName)
-                            ? '1rem'
-                            : '0',
-                    background: isChartFullScreen ? 'var(--dark2)' : '',
+                    padding: isChartFullScreen ? '1rem' : '0',
+                    background: isChartFullScreen
+                        ? isFuta
+                            ? 'var(--dark1)'
+                            : 'var(--dark2)'
+                        : '',
                 }}
                 ref={chartCanvasRef}
             >

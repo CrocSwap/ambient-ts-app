@@ -27,7 +27,17 @@ const NFTBannerAccountContainer = styled.div<{
 
     background: #0d1117;
 
-    z-index: 9999999;
+    z-index: 9999999 ;
+
+     @media (max-width: 768px) {
+        border: none;
+        position: static;
+        transform: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
 `;
 
 const NFTBannerHeader = styled.div`

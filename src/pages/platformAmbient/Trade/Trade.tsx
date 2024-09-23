@@ -54,7 +54,9 @@ import TradeCharts from './TradeCharts/TradeCharts';
 const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
-function Trade() {
+function Trade(props: { futaActiveTab?: string | undefined }) {
+    const { futaActiveTab } = props;
+
     const {
         chainData: { chainId },
         provider,
@@ -228,7 +230,7 @@ function Trade() {
     useEffect(() => {
         const calculateHeight = () => {
             const totalHeight = window.innerHeight;
-            const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+            const heightToSubtract = isFuta ? 56 + 56 + 55 : 56 + 56; // Subtract 56px from top and 56px from bottom
             setAvailableHeight(totalHeight - heightToSubtract);
         };
 
@@ -239,7 +241,9 @@ function Trade() {
     }, []);
 
     const contentHeight = availableHeight - 75;
-    const activeTabData = tabs.find((tab) => tab.id === activeTab)?.data;
+    const activeTabData = tabs.find(
+        (tab) => tab.id === (isFuta ? futaActiveTab : activeTab),
+    )?.data;
 
     const currencyCharacter = isDenomBase
         ? // denom in a, return token b character
@@ -276,8 +280,11 @@ function Trade() {
             className={styles.mobile_container}
             style={{ height: `${availableHeight}px` }}
         >
-            {mobileTabs}
-            <div className={styles.mobile_header}>
+            {!isFuta && mobileTabs}
+            <div
+                className={styles.mobile_header}
+                style={{ padding: isFuta ? '8px' : '' }}
+            >
                 <div
                     className={styles.mobile_token_icons}
                     onClick={toggleDidUserFlipDenom}
@@ -298,8 +305,11 @@ function Trade() {
                         alt={isDenomBase ? quoteToken.symbol : baseToken.symbol}
                         size={'s'}
                     />
-                    {isDenomBase ? baseToken.symbol : quoteToken.symbol} /
-                    {isDenomBase ? quoteToken.symbol : baseToken.symbol}
+                    <div>
+                        {isDenomBase ? baseToken.symbol : quoteToken.symbol}
+                        {'/'}
+                        {isDenomBase ? quoteToken.symbol : baseToken.symbol}
+                    </div>
                 </div>
                 <div
                     className={styles.conv_rate}
@@ -318,7 +328,9 @@ function Trade() {
                         {poolPriceChangeString}
                     </p>
                 </div>
-                {activeTab === 'Chart' && (
+                {(isFuta
+                    ? futaActiveTab === 'Chart'
+                    : activeTab === 'Chart') && (
                     <LuSettings
                         size={20}
                         onClick={openMobileSettingsModal}
@@ -359,8 +371,11 @@ function Trade() {
                     >
                         <ResizableContainer
                             showResizeable={
-                                !isCandleDataNull && !isChartFullScreen
+                                !isCandleDataNull &&
+                                !isChartFullScreen &&
+                                !isFuta
                             }
+                            isFuta={isFuta}
                             enable={{
                                 bottom: !isChartFullScreen,
                                 top: false,
@@ -444,7 +459,7 @@ function Trade() {
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
-                        {!isChartFullScreen && (
+                        {!isChartFullScreen && !isFuta && (
                             <FlexContainer
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}
