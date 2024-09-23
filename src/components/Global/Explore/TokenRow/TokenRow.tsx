@@ -11,7 +11,6 @@ import {
 import { GrLineChart } from 'react-icons/gr';
 import styles from './TokenRow.module.css';
 import { dexTokenData } from '../../../../pages/platformAmbient/Explore/useTokenStats';
-import { useMemo } from 'react';
 interface propsIF {
     token: dexTokenData;
     tokenMeta: TokenIF;
@@ -40,27 +39,24 @@ export default function TokenRow(props: propsIF) {
         event.stopPropagation();
     };
 
-    const tokenDisplay = useMemo(
-        () => (
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: '12px',
-                    textTransform: 'none',
-                }}
-            >
-                <TokenIcon
-                    token={tokenMeta}
-                    src={uriToHttp(tokenMeta.logoURI ?? '')}
-                    alt={tokenMeta.symbol ?? ''}
-                    size={!desktopView ? 's' : '2xl'}
-                />
-                <p>{tokenMeta.symbol}</p>
-            </div>
-        ),
-        [tokenMeta],
+    const tokenDisplay = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '12px',
+                textTransform: 'none',
+            }}
+        >
+            <TokenIcon
+                token={tokenMeta}
+                src={uriToHttp(tokenMeta.logoURI ?? '')}
+                alt={tokenMeta.symbol ?? ''}
+                size={!desktopView ? 's' : '2xl'}
+            />
+            <p>{tokenMeta.symbol}</p>
+        </div>
     );
 
     const poolNameDisplay = <p>{tokenMeta.name}</p>;
