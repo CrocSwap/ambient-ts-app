@@ -1,5 +1,5 @@
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     FetchContractDetailsFn,
     TokenPriceFn,
@@ -196,6 +196,11 @@ export const useTokenStats = (
             normalized: tokenStatsNormalized,
         };
     };
+
+    // redecorate token data when token lists are pulled for the first time
+    useEffect(() => {
+        fetchData();
+    }, [tokenMethods.tokenUniv.length]);
 
     return {
         data: dexTokens,

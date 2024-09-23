@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
 import Separator from '../../../components/Futa/Separator/Separator';
 import Comments from '../../../components/Futa/Comments/Comments';
@@ -11,15 +11,12 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 
-
 // import logo from '../../../assets/futa/logos/homeLogo.svg';
 
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
-
-   
 
     const { isCandleDataNull } = useContext(ChartContext);
 
@@ -31,49 +28,58 @@ function SwapFuta() {
         {
             id: 'Trade',
             label: 'Trade',
-            
-            data: <Swap isOnTradeRoute />
+
+            data: <Swap isOnTradeRoute />,
         },
-        !isCandleDataNull &&
-        isPoolInitialized ?  {
-            id: 'Chart',
-            label: 'Chart',
+        !isCandleDataNull && isPoolInitialized
+            ? {
+                  id: 'Chart',
+                  label: 'Chart',
+                  data: (
+                      <>
+                          <Trade futaActiveTab={activeTab} />
+                      </>
+                  ),
+              }
+            : null,
+        {
+            id: 'Comments',
+            label: 'Comments',
             data: (
-                <>
-                    <Trade/>
-                </>
+                <Comments
+                    isForTrade={true}
+                    resizeEffectorSelector={tradeWrapperID}
+                />
             ),
-        } : null,
-        { id: 'Comments', label: 'Comments', data: <Comments
-            isForTrade={true}
-            resizeEffectorSelector={tradeWrapperID}
-        /> },
-       
+        },
     ];
 
-    
-
-    
     const mobileTabs = (
-        <div 
+        <div
             className={styles.mobile_tabs_container}
             style={{
-                display: 'grid', 
-                gridTemplateColumns: `repeat(${tabs.length }, 1fr)` // Dynamic grid based on tab count
+                display: 'grid',
+                gridTemplateColumns: `repeat(${tabs.length}, 1fr)`, // Dynamic grid based on tab count
             }}
         >
             {tabs
-                .filter((tab) => tab !== null && tab !== undefined) 
+                .filter((tab) => tab !== null && tab !== undefined)
                 .map((tab) => (
                     <button
-                        key={tab?.id} 
+                        key={tab?.id}
                         className={`${styles.tabButton} ${activeTab === tab?.id ? styles.activeTab : ''}`}
                         onClick={() => {
-                            if (tab?.id) setActiveTab(tab.id); 
+                            if (tab?.id) setActiveTab(tab.id);
                         }}
                         style={{
-                            color: activeTab === tab?.id ? 'var(--accent1)' : 'var(--text2)',
-                            border: activeTab === tab?.id ? '1px solid var(--accent1)' : '1px solid transparent',
+                            color:
+                                activeTab === tab?.id
+                                    ? 'var(--accent1)'
+                                    : 'var(--text2)',
+                            border:
+                                activeTab === tab?.id
+                                    ? '1px solid var(--accent1)'
+                                    : '1px solid transparent',
                         }}
                     >
                         {tab?.label}
@@ -81,38 +87,23 @@ function SwapFuta() {
                 ))}
         </div>
     );
-    
-    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
 
-    useEffect(() => {
-        const calculateHeight = () => {
-            const totalHeight = window.innerHeight;
-            const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
-            setAvailableHeight(totalHeight - heightToSubtract);
-        };
-
-        calculateHeight(); // Calculate initial height
-        window.addEventListener('resize', calculateHeight);
-
-        return () => window.removeEventListener('resize', calculateHeight);
-    }, []);
-
-    const contentHeight = availableHeight - 75;
     const activeTabData = tabs.find((tab) => tab?.id === activeTab)?.data;
 
-
     const mobileSwap = (
-        <section className={styles.mobile_container}
-        style={{ height: `${availableHeight}px` }}
-        
+        <section
+            className={
+                activeTab === 'Chart'
+                    ? styles.chart_mobile_container
+                    : styles.mobile_container
+            }
+            style={{ height: '100%' }}
         >
             {mobileTabs}
-            
-            <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
+
+            <div style={{ height: '100%'}}>
                 {activeTabData}
             </div>
-
-      
         </section>
     );
 
@@ -122,7 +113,7 @@ function SwapFuta() {
         <section className={styles.mainSection}>
             <div className={styles.chartSection}>
                 <Divider count={2} />
-                <Trade />
+                <Trade futaActiveTab={activeTab} />
             </div>
 
             <div style={{ paddingBottom: '4px' }}>

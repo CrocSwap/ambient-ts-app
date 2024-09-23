@@ -5,6 +5,7 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { ChartTooltipDiv, CurrentDataDiv } from './ChartTooltipStyles';
 import useDollarPrice from '../../platformAmbient/Chart/ChartUtils/getDollarPrice';
+// import { BrandContext } from '../../../contexts/BrandContext';
 
 interface propsIF {
     showTooltip: boolean;
@@ -13,7 +14,8 @@ interface propsIF {
 export default function ChartTooltip(props: propsIF) {
     const { showTooltip, currentData } = props;
 
-    const { chartSettings,isToolbarOpen } = useContext(ChartContext);
+    const { chartSettings, isToolbarOpen, isFullScreen } =
+        useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
     const matchingCandleTime = candleTime.defaults.find(
@@ -29,7 +31,10 @@ export default function ChartTooltip(props: propsIF) {
     const getDollarPrice = useDollarPrice();
 
     const chartTooltip = (
-        <ChartTooltipDiv isToolbarOpen={isToolbarOpen}>
+        <ChartTooltipDiv
+            isToolbarOpen={isToolbarOpen}
+            isFullScreen={isFullScreen}
+        >
             {showTooltip && currentData ? (
                 <CurrentDataDiv>
                     <p>
