@@ -95,6 +95,9 @@ function Orders(props: propsIF) {
         limitOrders: [...limitOrdersByPool.limitOrders],
     });
 
+    const fetchedTransactionsRef = useRef<LimitOrdersByPool>();
+    fetchedTransactionsRef.current = fetchedTransactions;
+
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
     const getInitialDataPageCounts = () => {
@@ -129,6 +132,10 @@ function Orders(props: propsIF) {
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
+
+    const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
+
+
 
 
     
@@ -186,11 +193,9 @@ function Orders(props: propsIF) {
     }, [limitOrdersByPool]);
 
 
-    const autoScrollAlternateSolutionActive = true;
-
-    const addMoreData = async():Promise<boolean> => {
+    const fetchNewData = async(OLDEST_TIME:number):Promise<LimitOrderIF[]> => {
         return new Promise(resolve => {
-            if(!crocEnv || !provider) resolve(false);
+            if(!crocEnv || !provider) resolve([]);
             else{
                 fetchPoolLimitOrders({
                     tokenList: tokenList,
@@ -199,7 +204,7 @@ function Orders(props: propsIF) {
                     poolIdx: poolIndex,
                     chainId: chainId,
                     n: dataPerPage,
-                    timeBefore: oldestTxTime,
+                    timeBefore: OLDEST_TIME,
                     crocEnv: crocEnv,
                     graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider: provider,
@@ -209,53 +214,161 @@ function Orders(props: propsIF) {
                     cachedEnsResolve: cachedEnsResolve,
                 })
                     .then((poolChangesJsonData) => {
-                        if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                            // setTransactionsByPool((prev) => {
-                            setFetchedTransactions((prev) => {
-                                const existingChanges = new Set(
-                                    prev.limitOrders.map(
-                                        // (change) => change.positionHash || change.limitOrderId,
-                                        (change) => change.limitOrderId,
-                                    ),
-                                ); // Adjust if using a different unique identifier
-                                const uniqueChanges = poolChangesJsonData.filter(
-                                    (change) =>
-                                        !existingChanges.has(
-                                            // change.positionHash || change.limitOrderId,
-                                            change.limitOrderId,
-                                        ),
-                                );
-                                if (uniqueChanges.length > 0) {
-                                    setPageDataCount(prev => {
-                                        return [...prev, uniqueChanges.length];
-                                    });
-                                    resolve(true);
-                                } else {
-                                    setMoreDataAvailable(false);
-                                    resolve(false)
-                                }
-                                let newTxData = [];
-                                if (autoScrollAlternateSolutionActive) {
-                                    newTxData = sortData([
-                                        ...prev.limitOrders,
-                                        ...uniqueChanges,
-                                    ]);
-                                } else {
-                                    newTxData = [...prev.limitOrders, ...uniqueChanges];
-                                }
-                                return {
-                                    dataReceived: true,
-                                    limitOrders: newTxData,
-                                };
-                            });
-                        } else {
-                            setMoreDataAvailable(false);
-                            resolve(false);
+                        if(poolChangesJsonData && poolChangesJsonData.length > 0){
+                            resolve(poolChangesJsonData as LimitOrderIF[]);
+                        }else{
+                            resolve([]);
                         }
-                    })
-                    .catch(console.error);
+                    });
             }
-        })
+        });
+    }
+
+    const dataDiffCheck = (dirty: LimitOrderIF[]):LimitOrderIF[] => {
+        const txs = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.limitOrders : fetchedTransactions.limitOrders;
+
+        const existingChanges = new Set(
+            txs.map(
+                (change) => change.limitOrderId,
+            ),
+        ); 
+
+        const ret = dirty.filter(
+            (change) =>
+                !existingChanges.has(
+                    change.limitOrderId,
+                ),
+        );
+
+        return ret;
+        
+    }
+
+    const getOldestTime = (data: LimitOrderIF[]):number => {
+        let oldestTime = 0;
+        if(data.length > 0){
+            oldestTime = data.reduce((min, order) => {
+                return order.latestUpdateTime < min
+                    ? order.latestUpdateTime
+                    : min;
+            }, data[0].latestUpdateTime);
+        }
+        return oldestTime;
+    }
+
+    const addMoreData = async() => {
+
+                const targetCount = 30;
+                let addedDataCount = 0;
+
+                console.log('FETCHING MORE DATA');
+                const newTxData: LimitOrderIF[] = [];
+                let oldestTimeParam = oldestTxTime;
+                while((addedDataCount < targetCount)){
+                    console.log('...');
+                    // fetch data
+                    const dirtyData = await fetchNewData(oldestTimeParam);
+                    if (dirtyData.length == 0){
+                        break;
+                    }
+                    // check diff
+                    const cleanData = dataDiffCheck(dirtyData);
+                    console.log('cleanData', cleanData.length);
+                    if (cleanData.length == 0){
+                        break;
+                    }
+                    else {
+                        addedDataCount += cleanData.length;
+                        newTxData.push(...cleanData);
+                        const oldestTimeTemp = getOldestTime(newTxData);
+                        oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
+                    }
+                }
+                console.log('__________________________. . . . .____________________')
+                if(addedDataCount > 0){
+                     // new data found
+                     setFetchedTransactions((prev) => {
+                        const sortedData = sortData([
+                            ...prev.limitOrders,
+                            ...newTxData,
+                        ]);
+                        return {
+                            dataReceived: true,
+                            limitOrders: sortedData,
+                        };
+                    })
+                     setLastFetchedCount(addedDataCount);
+                     setPageDataCount(prev => {
+                        return [...prev, addedDataCount];
+                        });
+                    setExtraPagesAvailable((prev) => prev + 1);
+                    setPagesVisible((prev) => [
+                        prev[0] + 1,
+                        prev[1] + 1,
+                    ]);
+                }else{
+                    setMoreDataAvailable(false);
+                }
+
+                    // fetchPoolLimitOrders({
+                    //     tokenList: tokenList,
+                    //     base: baseToken.address,
+                    //     quote: quoteToken.address,
+                    //     poolIdx: poolIndex,
+                    //     chainId: chainId,
+                    //     n: dataPerPage,
+                    //     timeBefore: oldestTxTime,
+                    //     crocEnv: crocEnv,
+                    //     graphCacheUrl: activeNetwork.graphCacheUrl,
+                    //     provider: provider,
+                    //     cachedFetchTokenPrice: cachedFetchTokenPrice,
+                    //     cachedQuerySpotPrice: cachedQuerySpotPrice,
+                    //     cachedTokenDetails: cachedTokenDetails,
+                    //     cachedEnsResolve: cachedEnsResolve,
+                    // })
+                    //     .then((poolChangesJsonData) => {
+                    //         if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                    //             console.log('ADD MORE DATA LEN', poolChangesJsonData.length)
+                    //             // setTransactionsByPool((prev) => {
+                    //             setFetchedTransactions((prev) => {
+                    //                 const existingChanges = new Set(
+                    //                     prev.limitOrders.map(
+                    //                         // (change) => change.positionHash || change.limitOrderId,
+                    //                         (change) => change.limitOrderId,
+                    //                     ),
+                    //                 ); // Adjust if using a different unique identifier
+                    //                 const uniqueChanges = poolChangesJsonData.filter(
+                    //                     (change) =>
+                    //                         !existingChanges.has(
+                    //                             // change.positionHash || change.limitOrderId,
+                    //                             change.limitOrderId,
+                    //                         ),
+                    //                 );
+                    //                 if (uniqueChanges.length > 0) {
+                    //                     setPageDataCount(prev => {
+                    //                         return [...prev, uniqueChanges.length];
+                    //                     });
+                    //                     resolve(true);
+                    //                 } else {
+                    //                     setMoreDataAvailable(false);
+                    //                     resolve(false)
+                    //                 }
+                    //                 let newTxData = [];
+                    //                     newTxData = sortData([
+                    //                         ...prev.limitOrders,
+                    //                         ...uniqueChanges,
+                    //                     ]);
+                    //                 return {
+                    //                     dataReceived: true,
+                    //                     limitOrders: newTxData,
+                    //                 };
+                    //             });
+                    //         } else {
+                    //             setMoreDataAvailable(false);
+                    //             resolve(false);
+                    //         }
+                    //     })
+                    //     .catch(console.error);
     };
 
     const limitOrderData = useMemo<LimitOrderIF[]>(
@@ -611,10 +724,12 @@ function Orders(props: propsIF) {
                         pagesVisible={pagesVisible}
                         setPagesVisible={setPagesVisible}
                         extraPagesAvailable={extraPagesAvailable}
-                        setExtraPagesAvailable={setExtraPagesAvailable}
+                        // setExtraPagesAvailable={setExtraPagesAvailable}
                         tableKey='Orders'
                         dataPerPage={dataPerPage}
                         pageDataCount={pageDataCountRef.current}
+                        lastFetchedCount={lastFetchedCount}
+                        setLastFetchedCount={setLastFetchedCount}
                         />
                     )
                     :

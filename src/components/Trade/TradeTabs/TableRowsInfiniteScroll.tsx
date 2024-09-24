@@ -18,17 +18,19 @@ interface propsIF {
     data: TransactionIF[] | LimitOrderIF[] | PositionIF[];
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    fetcherFunction: () => Promise<boolean>;
+    fetcherFunction: () => void;
     sortBy: TxSortType | LimitSortType;
     showAllData: boolean;
     pagesVisible: [number, number];
     setPagesVisible: Dispatch<SetStateAction<[number, number]>>;
     moreDataAvailable: boolean;
     extraPagesAvailable: number;
-    setExtraPagesAvailable: Dispatch<SetStateAction<number>>;
+    // setExtraPagesAvailable: Dispatch<SetStateAction<number>>;
     pageDataCount?: number[];
     dataPerPage?: number;
     tableKey?: string
+    lastFetchedCount?: number
+    setLastFetchedCount?: Dispatch<SetStateAction<number>>;
 }
 
 enum ScrollDirection {
@@ -54,10 +56,12 @@ function TableRowsInfiniteScroll({
     setPagesVisible,
     moreDataAvailable,
     extraPagesAvailable,
-    setExtraPagesAvailable,
+    // setExtraPagesAvailable,
     tableKey,
     pageDataCount,
-    dataPerPage
+    dataPerPage,
+    lastFetchedCount,
+    setLastFetchedCount,
     
 }: propsIF) {
 
@@ -74,8 +78,8 @@ function TableRowsInfiniteScroll({
     
 
 
-    const debugMode = false;
-    const[manualMode, setManualMode] = useState(false);
+    const debugMode = true;
+    const[manualMode, setManualMode] = useState(true);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
 
@@ -178,6 +182,7 @@ function TableRowsInfiniteScroll({
   
 
     const scrollToTop = () => {
+        console.log(setMoreDataLoading)
         setLastSeenTxID('');
         setPagesVisible([0, 1]);
         if(wrapperEl){
@@ -265,6 +270,7 @@ function TableRowsInfiniteScroll({
     domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
+        console.log('scrollByTxID', txID, pos);
         const txSpans = document.querySelectorAll(
             txSpanSelectorForScrollMethod
         );
@@ -334,32 +340,38 @@ function TableRowsInfiniteScroll({
     }
 
 
-    useEffect(() => {
-        if (autoScroll) {
-            if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
-                if (autoScrollDirection === ScrollDirection.DOWN) {
-                    if(pageDataCount && dataPerPage && couldFirstPageLoop()){
-                        scrollByTxID(
-                            lastSeenTxIDRef.current || '',
-                            ScrollPosition.TOP,
-                        );
-                    }else{
-                        scrollByTxID(
-                            lastSeenTxIDRef.current || '',
-                            ScrollPosition.BOTTOM,
-                        );
-                    }
-                } else if (autoScrollDirection === ScrollDirection.UP) {
+    const doScroll = () => {
+        if (sortBy === 'time' || !autoScrollAlternateSolutionActive) {
+            if (autoScrollDirection === ScrollDirection.DOWN) {
+                if(pageDataCount && dataPerPage && couldFirstPageLoop()){
                     scrollByTxID(
-                        firstSeenTxIDRef.current || '',
+                        lastSeenTxIDRef.current || '',
                         ScrollPosition.TOP,
                     );
+                }else{
+                    scrollByTxID(
+                        lastSeenTxIDRef.current || '',
+                        ScrollPosition.BOTTOM,
+                    );
                 }
-            } else {
-                scrollWithAlternateStrategy();
+            } else if (autoScrollDirection === ScrollDirection.UP) {
+                scrollByTxID(
+                    firstSeenTxIDRef.current || '',
+                    ScrollPosition.TOP,
+                );
             }
+        } else {
+            scrollWithAlternateStrategy();
+        }
+    }
+
+    useEffect(() => {
+        console.log('data', data.length)
+        if (autoScroll) {
+           doScroll();
         }
     }, [data]);
+
 
 
     const scrollWithAlternateStrategy = () => {
@@ -540,21 +552,33 @@ function TableRowsInfiniteScroll({
 
 
     const addMoreData = async() => {
-        setMoreDataLoading(true);
-        const changePage = await fetcherFunction();
-        setMoreDataLoading(false);
-        if(changePage){
-            setExtraPagesAvailable((prev) => prev + 1);
-            setPagesVisible((prev) => [
-                prev[0] + 1,
-                prev[1] + 1,
-            ]);
+        // setMoreDataLoading(true);
+        fetcherFunction();
+        // setMoreDataLoading(false);
+        // if(changePage){
+        //     setExtraPagesAvailable((prev) => prev + 1);
+        //     setPagesVisible((prev) => [
+        //         prev[0] + 1,
+        //         prev[1] + 1,
+        //     ]);
             
-            triggerAutoScroll(ScrollDirection.DOWN);
-        }else{
-            bindTableReadyState(true);
-        }
+        //     triggerAutoScroll(ScrollDirection.DOWN);
+        // }else{
+        //     bindTableReadyState(true);
+        // }
     }
+
+    useEffect(() => {
+        if(lastFetchedCount && lastFetchedCount > 0 && setLastFetchedCount){
+            console.log('~~~~~lastFetchedCount~', lastFetchedCount)
+            console.log('lastSeen', lastSeenTxIDRef.current)
+            triggerAutoScroll(ScrollDirection.DOWN);
+            doScroll();
+            setTimeout(() => {
+                setLastFetchedCount(0);
+            }, 500)
+        }
+    }, [lastFetchedCount])
 
     useEffect(() => {
 

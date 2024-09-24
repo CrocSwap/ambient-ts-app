@@ -653,6 +653,12 @@ function Transactions(props: propsIF) {
         })
     };
 
+    
+console.log(addMoreData)
+console.log(sortedTxDataToDisplay)
+console.log(extraPagesAvailable)
+console.log(TableRowsInfiniteScroll)
+
     const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -667,7 +673,6 @@ function Transactions(props: propsIF) {
             setDebouncedIsLoading(isLoading);
         }
     }, [isLoading, txDataToDisplay.length]);
-
     const shouldDisplayNoTableData: boolean =
         !debouncedIsLoading &&
         !txDataToDisplay.length &&
@@ -801,20 +806,21 @@ function Transactions(props: propsIF) {
                     })}
                     {showInfiniteScroll ? 
                     (
-                    <TableRowsInfiniteScroll
-                        type='Transaction'
-                        data={sortedTxDataToDisplay}
-                        tableView={tableView}
-                        isAccountView={isAccountView}
-                        fetcherFunction={addMoreData}
-                        sortBy={sortBy}
-                        showAllData={showAllData}
-                        moreDataAvailable={moreDataAvailableRef.current}
-                        pagesVisible={pagesVisible}
-                        setPagesVisible={setPagesVisible}
-                        extraPagesAvailable={extraPagesAvailable}
-                        setExtraPagesAvailable={setExtraPagesAvailable}
-                        />
+                    // <TableRowsInfiniteScroll
+                    //     type='Transaction'
+                    //     data={sortedTxDataToDisplay}
+                    //     tableView={tableView}
+                    //     isAccountView={isAccountView}
+                    //     fetcherFunction={addMoreData}
+                    //     sortBy={sortBy}
+                    //     showAllData={showAllData}
+                    //     moreDataAvailable={moreDataAvailableRef.current}
+                    //     pagesVisible={pagesVisible}
+                    //     setPagesVisible={setPagesVisible}
+                    //     extraPagesAvailable={extraPagesAvailable}
+                    //     setExtraPagesAvailable={setExtraPagesAvailable}
+                    //     />
+                    <></>
 
                     )
                     :
