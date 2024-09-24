@@ -548,6 +548,8 @@ function Ranges(props: propsIF) {
                         firstMintTx: '', // unknown
                         aprEst: 0, // unknown
                     };
+                    const skipENSFetch = true;
+
                     const positionData = await getPositionData(
                         mockServerPosition,
                         tokens.tokenUniv,
@@ -558,7 +560,7 @@ function Ranges(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        true,
+                        skipENSFetch,
                     );
                     const onChainPosition: PositionIF = {
                         chainId: chainId,
