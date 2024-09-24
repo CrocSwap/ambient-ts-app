@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Swap from '../../platformAmbient/Swap/Swap';
 import styles from './CSSDebug.module.css';
 import ColorToggle from './ColorToggle';
-
+import { skins } from '../../../App/hooks/useSkin';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 
 export type colorFormats = 'text'|'background'|'border';
 
@@ -56,11 +57,38 @@ interface propsIF {
 
 export default function CSSDebug(props: propsIF) {
     const { noSwap } = props;
+    const { skin } = useContext<BrandContextIF>(BrandContext);
     const SAMPLE_TEXT = 'Zero-to-One Decentralized Trading Protocol';
     const [sampleText, setSampleText] = useState<string>(SAMPLE_TEXT);
 
     return (
         <>
+            {<select onChange={(e) => skin.set(e.target.value as skins)}>
+                    {
+                        skin.available.map((s: skins) => {
+                            const makeReadable = (str: string): string => {
+                                switch (str) {
+                                    case 'purple_dark':
+                                        return 'Purple Dark';
+                                    case 'purple_light':
+                                        return 'Purple Light';
+                                    case 'futa_dark':
+                                        return 'Orange Dark';
+                                    default:
+                                        return str;
+                                }
+                            }
+                            return (
+                                <option
+                                    key={s}
+                                    value={s}
+                                >
+                                    {makeReadable(s)}
+                                </option>
+                            )
+                        })
+                    }
+                </select>}
             <label htmlFor='sample_text_changer'>Sample text:</label>
             <input
                 type='text'

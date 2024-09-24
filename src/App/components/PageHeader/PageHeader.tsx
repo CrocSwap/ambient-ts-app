@@ -43,14 +43,12 @@ import {
 } from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-// import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
-import { skins } from '../../hooks/useSkin';
 
 const PageHeader = function () {
     const {
@@ -58,7 +56,7 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
-    const { headerImage, skin } = useContext<BrandContextIF>(BrandContext);
+    const { headerImage } = useContext<BrandContextIF>(BrandContext);
 
     const {
         walletModal: { open: openWalletModal },
@@ -132,7 +130,6 @@ const PageHeader = function () {
     const quoteSymbol = quoteToken.symbol;
     const baseAddressInRtk = baseToken.address;
     const quoteAddressInRtk = quoteToken.address;
-    const { chainData } = useContext(CrocEnvContext);
 
     useEffect(() => {
         if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
@@ -436,32 +433,6 @@ const PageHeader = function () {
             </div>
             {routeDisplay}
             <RightSide>
-                {chainData.chainId === '0x1' && <select onChange={(e) => skin.set(e.target.value as skins)}>
-                    {
-                        skin.available.map((s: skins) => {
-                            const makeReadable = (str: string): string => {
-                                switch (str) {
-                                    case 'purple_dark':
-                                        return 'Purple Dark';
-                                    case 'purple_light':
-                                        return 'Purple Light';
-                                    case 'futa_dark':
-                                        return 'Orange Dark';
-                                    default:
-                                        return str;
-                                }
-                            }
-                            return (
-                                <option
-                                    key={s}
-                                    value={s}
-                                >
-                                    {makeReadable(s)}
-                                </option>
-                            )
-                        })
-                    }
-                </select>}
                 {show ? (
                     <TradeNowDiv justifyContent='flex-end' alignItems='center'>
                         <TradeNowButton
