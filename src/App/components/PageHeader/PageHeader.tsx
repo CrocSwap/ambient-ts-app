@@ -52,6 +52,8 @@ import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../contexts/BrandContext';
+import MobileDropdown from './MobileDropdown/MobileDropdown';
+import { GiHamburgerMenu } from 'react-icons/gi';
 // import MobileDropdown from './MobileDropdown/MobileDropdown';
 // import { GiHamburgerMenu } from 'react-icons/gi';
 
@@ -62,10 +64,10 @@ const PageHeader = function () {
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
     const { headerImage } = useContext(BrandContext);
-    // const isDevMenuEnabled =
-    //     import.meta.env.VITE_IS_DEV_MENU_ENABLED !== undefined
-    //         ? import.meta.env.VITE_IS_DEV_MENU_ENABLED === 'true'
-    //         : true;
+    const isDevMenuEnabled =
+        import.meta.env.VITE_IS_DEV_MENU_ENABLED !== undefined
+            ? import.meta.env.VITE_IS_DEV_MENU_ENABLED === 'true'
+            : true;
 
     const {
         walletModal: { open: openWalletModal },
@@ -418,7 +420,7 @@ const PageHeader = function () {
         };
     }, []);
 
-    // const [showDevMenu, setShowDevMenu] = useState(false);
+    const [showDevMenu, setShowDevMenu] = useState(false);
 
     return (
         <>
@@ -468,19 +470,19 @@ const PageHeader = function () {
 
                                 {!isUserConnected && connectWagmiButton}
                                     <Account {...accountProps} />
-                                    {/* {isDevMenuEnabled && !desktopScreen &&  (
+                                    {isDevMenuEnabled && !desktopScreen &&  (
                                     <GiHamburgerMenu
                                         onClick={() =>
                                             setShowDevMenu(!showDevMenu)
                                         }
                                     />
-                                )} */}
+                                )}
                             </FlexContainer>
                         </div>
                     )}
                 </RightSide>
             </PrimaryHeader>
-            {/* {isDevMenuEnabled && showDevMenu && <MobileDropdown />} */}
+            {isDevMenuEnabled && showDevMenu && <MobileDropdown />}
         </>
     );
 };
