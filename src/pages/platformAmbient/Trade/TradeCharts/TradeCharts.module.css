@@ -1,5 +1,6 @@
 .chart_overlay_container {
     display: flex;
+    min-width: 180px;
     justify-content: flex-end;
     align-items: flex-end;
 }
