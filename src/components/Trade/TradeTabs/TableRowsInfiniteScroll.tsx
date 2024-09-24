@@ -25,7 +25,6 @@ interface propsIF {
     setPagesVisible: Dispatch<SetStateAction<[number, number]>>;
     moreDataAvailable: boolean;
     extraPagesAvailable: number;
-    // setExtraPagesAvailable: Dispatch<SetStateAction<number>>;
     pageDataCount?: number[];
     dataPerPage?: number;
     tableKey?: string
@@ -56,7 +55,6 @@ function TableRowsInfiniteScroll({
     setPagesVisible,
     moreDataAvailable,
     extraPagesAvailable,
-    // setExtraPagesAvailable,
     tableKey,
     pageDataCount,
     dataPerPage,
@@ -237,6 +235,7 @@ function TableRowsInfiniteScroll({
             bindTableReadyState(true);
             return;
         }
+        console.log('shift down')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
         lockShift();
@@ -365,16 +364,16 @@ function TableRowsInfiniteScroll({
         }
     }
 
-    useEffect(() => {
-        console.log('data', data.length)
-        if (autoScroll) {
-           doScroll();
-        }
-    }, [data]);
+    // useEffect(() => {
+    //     if (autoScroll) {
+    //        console.log('doScroll from [data]')
+    //        doScroll();
+    //     }
+    // }, [data]);
 
 
 
-    const scrollWithAlternateStrategy = () => {
+    const scrollWithAlternateStrategy = () => { 
 
 
         if(wrapperEl){
@@ -573,12 +572,20 @@ function TableRowsInfiniteScroll({
             console.log('~~~~~lastFetchedCount~', lastFetchedCount)
             console.log('lastSeen', lastSeenTxIDRef.current)
             triggerAutoScroll(ScrollDirection.DOWN);
-            doScroll();
+            // doScroll();
             setTimeout(() => {
                 setLastFetchedCount(0);
             }, 500)
         }
     }, [lastFetchedCount])
+
+
+    useEffect(() => {
+        if(pagesVisibleRef.current){
+            console.log('pagesVisibleRef.current[0]', pagesVisibleRef.current[0], 'pagesVisible[0]', pagesVisible[0])
+        }
+        doScroll();
+    }, [pagesVisible[0]])
 
     useEffect(() => {
 

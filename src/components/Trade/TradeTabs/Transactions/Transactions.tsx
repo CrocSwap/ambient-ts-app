@@ -158,6 +158,9 @@ function Transactions(props: propsIF) {
         changes: [...transactionsByPool.changes],
     });
 
+    const fetchedTransactionsRef = useRef<Changes>();
+    fetchedTransactionsRef.current = fetchedTransactions;
+
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
 
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
@@ -166,10 +169,13 @@ function Transactions(props: propsIF) {
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
+    const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
+
     useEffect(() => {
         setPagesVisible([0, 1]);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
+        setLastFetchedCount(0);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     useEffect(() => {
@@ -585,15 +591,34 @@ function Transactions(props: propsIF) {
 
 
 
-    const autoScrollAlternateSolutionActive = true;
+    const dataDiffCheck = (dirty: TransactionIF[]):TransactionIF[] => {
+        const txs = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.changes : fetchedTransactions.changes;
 
-    const addMoreData = async():Promise<boolean> => {
+        const existingChanges = new Set(
+            txs.map(
+                (change) => change.txHash || change.txId,
+            ),
+        ); 
+
+        const ret = dirty.filter(
+            (change) =>
+                !existingChanges.has(
+                    change.txHash || change.txId,
+                ),
+        );
+
+        return ret;
+        
+    }
+
+
+    const addMoreData = async() => {
         
         // retrieve pool recent changes
-        return new Promise(resolve => {
-            if(!crocEnv || !provider) resolve(false);
+            if(!crocEnv || !provider) return;
             else{
-                fetchPoolRecentChanges({
+
+                const poolChangesJsonData = await fetchPoolRecentChanges({
                     tokenList: tokens.tokenUniv,
                     base: selectedBaseAddress,
                     quote: selectedQuoteAddress,
@@ -608,56 +633,38 @@ function Transactions(props: propsIF) {
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
                     cachedTokenDetails: cachedTokenDetails,
                     cachedEnsResolve: cachedEnsResolve,
-                })
-                    .then((poolChangesJsonData) => {
-                        if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                });
+                    if (poolChangesJsonData && poolChangesJsonData.length > 0) {
+                        const cleanData = dataDiffCheck(poolChangesJsonData);
+
+                        if(cleanData.length > 0){
                             setFetchedTransactions((prev) => {
-                                const existingChanges = new Set(
-                                    prev.changes.map(
-                                        (change) => change.txHash || change.txId,
-                                    ),
-                                ); // Adjust if using a different unique identifier
-                                const uniqueChanges = poolChangesJsonData.filter(
-                                    (change) =>
-                                        !existingChanges.has(
-                                            change.txHash || change.txId,
-                                        ),
-                                );
-                                if (uniqueChanges.length > 0) {
-                                    resolve(true);
-                                } else {
-                                    setMoreDataAvailable(false);
-                                    resolve(false);
-                                }
-                                let newTxData = [];
-                                if (autoScrollAlternateSolutionActive) {
-                                    newTxData = sortData([
-                                        ...prev.changes,
-                                        ...uniqueChanges,
-                                    ]);
-                                } else {
-                                    newTxData = [...prev.changes, ...uniqueChanges];
-                                }
+                                const sortedData = sortData([
+                                    ...prev.changes,
+                                    ...cleanData,
+                                ]);
                                 return {
                                     dataReceived: true,
-                                    changes: newTxData,
+                                    changes: sortedData,
                                 };
-                            });
-                        } else {
-                            setMoreDataAvailable(false);
-                            resolve(false);
+                            })
+                            setLastFetchedCount(cleanData.length);
+                            setExtraPagesAvailable((prev) => prev + 1);
+                            setPagesVisible((prev) => [
+                                prev[0] + 1,
+                                prev[1] + 1,
+                            ]);
+                        } else{
+                          
+                            setMoreDataAvailable(false);  
                         }
-                    })
-                    .catch(console.error);
+
+                    } else {
+                        setMoreDataAvailable(false);
+                    }
             }
-        })
     };
 
-    
-console.log(addMoreData)
-console.log(sortedTxDataToDisplay)
-console.log(extraPagesAvailable)
-console.log(TableRowsInfiniteScroll)
 
     const [debouncedIsLoading, setDebouncedIsLoading] = useState<boolean>(true);
 
@@ -806,21 +813,21 @@ console.log(TableRowsInfiniteScroll)
                     })}
                     {showInfiniteScroll ? 
                     (
-                    // <TableRowsInfiniteScroll
-                    //     type='Transaction'
-                    //     data={sortedTxDataToDisplay}
-                    //     tableView={tableView}
-                    //     isAccountView={isAccountView}
-                    //     fetcherFunction={addMoreData}
-                    //     sortBy={sortBy}
-                    //     showAllData={showAllData}
-                    //     moreDataAvailable={moreDataAvailableRef.current}
-                    //     pagesVisible={pagesVisible}
-                    //     setPagesVisible={setPagesVisible}
-                    //     extraPagesAvailable={extraPagesAvailable}
-                    //     setExtraPagesAvailable={setExtraPagesAvailable}
-                    //     />
-                    <></>
+                    <TableRowsInfiniteScroll
+                        type='Transaction'
+                        data={sortedTxDataToDisplay}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                        fetcherFunction={addMoreData}
+                        sortBy={sortBy}
+                        showAllData={showAllData}
+                        moreDataAvailable={moreDataAvailableRef.current}
+                        pagesVisible={pagesVisible}
+                        setPagesVisible={setPagesVisible}
+                        extraPagesAvailable={extraPagesAvailable}
+                        lastFetchedCount={lastFetchedCount}
+                        setLastFetchedCount={setLastFetchedCount}
+                        />
 
                     )
                     :

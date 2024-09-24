@@ -101,12 +101,25 @@ function Orders(props: propsIF) {
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
     const getInitialDataPageCounts = () => {
-        return [fetchedTransactions.limitOrders.length > dataPerPage ? dataPerPage : fetchedTransactions.limitOrders.length , fetchedTransactions.limitOrders.length / dataPerPage  == 2 ? dataPerPage : fetchedTransactions.limitOrders.length - dataPerPage];
+        if(fetchedTransactions.limitOrders.length == 0){
+            return [0, 0];
+        }
+        return [fetchedTransactions.limitOrders.length > dataPerPage ? dataPerPage : fetchedTransactions.limitOrders.length , 
+            fetchedTransactions.limitOrders.length / dataPerPage  == 2 ? dataPerPage : fetchedTransactions.limitOrders.length - dataPerPage];
     }
+
     
     const dataPerPage = 50;
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
     const [pageDataCount, setPageDataCount] = useState<number[]>(getInitialDataPageCounts());
+    
+    useEffect(() => {
+        if(fetchedTransactions.limitOrders.length > 0 && pageDataCount[0] === 0){
+            setPageDataCount(getInitialDataPageCounts());
+            console.log('INITIAL PAGE COUNTS', getInitialDataPageCounts());
+        }
+    }, [fetchedTransactions]);
+
     const pageDataCountRef = useRef<number[]>();
     pageDataCountRef.current = pageDataCount;
 
@@ -150,10 +163,12 @@ function Orders(props: propsIF) {
 
 
     useEffect(() => {
+        console.log('RESET PAGE DATA');
         setPagesVisible([0, 1]);
-        setPageDataCount(getInitialDataPageCounts());
+        setPageDataCount([0, 0]);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
+        setLastFetchedCount(0);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     // useEffect(() => {
