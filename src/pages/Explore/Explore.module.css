@@ -38,9 +38,6 @@
     align-items: center;
     gap: 12px;
    
-
-   
-    
 }
 .title_text{
     font-size: var(--header1-lh);
