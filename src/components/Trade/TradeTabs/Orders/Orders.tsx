@@ -165,7 +165,7 @@ function Orders(props: propsIF) {
     useEffect(() => {
         console.log('RESET PAGE DATA');
         setPagesVisible([0, 1]);
-        setPageDataCount([0, 0]);
+        setPageDataCount(getInitialDataPageCounts());
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
