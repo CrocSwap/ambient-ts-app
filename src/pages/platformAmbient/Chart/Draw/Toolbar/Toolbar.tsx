@@ -80,7 +80,6 @@ function ChartToolbar() {
         setSelectedDrawnShape,
         chartContainerOptions,
         setIsMagnetActiveLocal,
-        isFullScreen,
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -334,9 +333,7 @@ function ChartToolbar() {
                 isFuta
                     ? mobileView || smallScreen
                         ? 'transparent'
-                        : isFullScreen
-                          ? 'var(--dark2)'
-                          : 'var(--dark1)'
+                        : 'var(--dark1)'
                     : mobileView
                       ? 'var(--dark1)'
                       : 'var(--dark2)'
