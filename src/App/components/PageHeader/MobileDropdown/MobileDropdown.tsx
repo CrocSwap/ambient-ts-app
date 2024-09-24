@@ -247,6 +247,10 @@ export default function MobileDropdown() {
         />
     );
 
+    const isDraft = true
+
+    if ( isDraft) return null
+
     return (
         <section className={styles.container}>
             {navigation}

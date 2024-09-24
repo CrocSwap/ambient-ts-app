@@ -1,6 +1,4 @@
-/* ------------------------------------------- */
 
-/* ----------------------------------- */
 .mainContainer {
     box-sizing: border-box;
     width: 100%;
@@ -141,6 +139,8 @@
 @media only screen and (min-width: 768px) {
     .mainContainer {
         border: none;
+      
+        
     }
     .no_results {
         height: 70%;
