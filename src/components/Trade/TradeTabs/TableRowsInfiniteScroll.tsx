@@ -157,11 +157,11 @@ function TableRowsInfiniteScroll({
             }else{
                 return <div style={{
                     transition: 'all .2s ease-in-out', 
-                    position: 'absolute', top: '0', left: '0', 
+                    position: 'absolute', top: '40px', left: '0', 
                     zIndex: isTableReadyRef.current ? '-1': '1',
                     backdropFilter: 'blur(10px)',
                     width: '100%',
-                    height: '100%'
+                    height: 'calc(100% - 40px)'
                 }}></div>
             }
     }
