@@ -76,7 +76,7 @@ function TableRowsInfiniteScroll({
     
 
 
-    const debugMode = true;
+    const debugMode = false;
     const[manualMode, setManualMode] = useState(true);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
