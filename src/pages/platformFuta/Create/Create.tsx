@@ -12,12 +12,17 @@ import {
     checkTickerValidity,
     createAuction,
     AuctionTxResponseIF,
+    getFormattedNumber,
 } from '../../../ambient-utils/dataLayer';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useNavigate } from 'react-router-dom';
-import { CURRENT_AUCTION_VERSION } from '../../../ambient-utils/constants';
+import {
+    CURRENT_AUCTION_VERSION,
+    GAS_DROPS_ESTIMATE_AUCTION_CREATE,
+    NUM_GWEI_IN_WEI,
+} from '../../../ambient-utils/constants';
 import SynthwaveGrid from '../Home/Animations/SynthwaveGrid';
 import { getActionTrigger } from '../../../components/Chat/ChatRenderUtils';
 
@@ -26,8 +31,8 @@ export default function Create() {
     const navigate = useNavigate();
 
     const { isUserConnected } = useContext(UserDataContext);
-    const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
@@ -85,7 +90,27 @@ export default function Create() {
 
     const liquidity = '0.25 ETH';
 
-    const networkFee = 0.01;
+    const [auctionCreateGasPriceinDollars, setAuctionCreateGasPriceinDollars] =
+        useState<string | undefined>();
+
+    // calculate price of gas for exchange balance deposit
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                NUM_GWEI_IN_WEI *
+                ethMainnetUsdPrice *
+                GAS_DROPS_ESTIMATE_AUCTION_CREATE;
+
+            setAuctionCreateGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
     const extraInfoData = [
         {
             id: 'auctions_create_liquidity',
@@ -97,7 +122,9 @@ export default function Create() {
             id: 'auctions_create_network_fee',
             title: 'NETWORK FEE',
             tooltipTitle: 'NETWORK FEE PAID IN ORDER TO TRANSACT',
-            data: networkFee ? '~' + networkFee : '...',
+            data: auctionCreateGasPriceinDollars
+                ? auctionCreateGasPriceinDollars
+                : '...',
         },
     ];
 
@@ -183,7 +210,11 @@ export default function Create() {
         <footer className={styles.footerContainer}>
             {extraInfoDisplay}
             <button
-                id={!isUserConnected ? 'auctions_create_connect_button' : 'auctions_create_button'}
+                id={
+                    !isUserConnected
+                        ? 'auctions_create_connect_button'
+                        : 'auctions_create_button'
+                }
                 className={
                     !isButtonDisabled
                         ? styles.create_button
@@ -229,8 +260,12 @@ export default function Create() {
             </div>
 
             <SynthwaveGrid hasVideoPlayedOnce isCreatePage />
-            {getActionTrigger('create_auction_input_trigger', () => {setTickerInput('MY TOKEN')})}
-            {getActionTrigger('create_auction_reset', () => {setTickerInput('')})}
+            {getActionTrigger('create_auction_input_trigger', () => {
+                setTickerInput('MY TOKEN');
+            })}
+            {getActionTrigger('create_auction_reset', () => {
+                setTickerInput('');
+            })}
         </section>
     );
 }

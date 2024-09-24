@@ -304,7 +304,7 @@ function TradeCharts(props: propsIF) {
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
                 </div>
             )}
-            <div className={styles.chart_overlay_container}>
+            <div>
                 {resetAndRescaleDisplay}
             </div>
         </section>

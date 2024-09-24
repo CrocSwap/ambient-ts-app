@@ -230,7 +230,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     useEffect(() => {
         const calculateHeight = () => {
             const totalHeight = window.innerHeight;
-            const heightToSubtract = isFuta ? 56 + 56 + 55 : 56 + 56; // Subtract 56px from top and 56px from bottom
+            const heightToSubtract = isFuta ? 56 + 56 + 25 : 56 + 56; // Subtract 56px from top and 56px from bottom
             setAvailableHeight(totalHeight - heightToSubtract);
         };
 
