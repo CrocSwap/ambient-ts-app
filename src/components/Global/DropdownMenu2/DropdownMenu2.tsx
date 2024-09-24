@@ -52,9 +52,9 @@ export default function DropdownMenu2(props: propsIF) {
 
     function toggleMenu(): void {
         setIsMenuOpen(!isMenuOpen);
-        if (!isMenuOpen) {
-            appHeaderDropdown.setIsActive(true);
-        } else appHeaderDropdown.setIsActive(false);
+        // if (!isMenuOpen) {
+        //     appHeaderDropdown.setIsActive(true);
+        // } else appHeaderDropdown.setIsActive(false);
     }
     const clickOutsideHandler = () => {
         if (showMobileVersion) return null

@@ -334,35 +334,35 @@ export const WalletName = styled.p`
 
 // NavbarDropdownMenu
 
-export const NavbarDropdown = styled.div<{ hasBorder?: boolean }>`
-    position: absolute;
-    top: 60px;
-    width: 240px;
-    height: auto;
-    transform: translateX(-45%);
-    border: none;
-    padding: 1rem;
-    overflow: hidden;
-    transition: all var(--animation-speed) ease;
-    background: var(--dark2);
-    border-radius: var(--border-radius);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
-    z-index: 999;
+// export const NavbarDropdown = styled.div<{ hasBorder?: boolean }>`
+//     position: absolute;
+//     top: 60px;
+//     width: 240px;
+//     height: auto;
+//     transform: translateX(-45%);
+//     border: none;
+//     padding: 1rem;
+//     overflow: hidden;
+//     transition: all var(--animation-speed) ease;
+//     background: var(--dark2);
+//     border-radius: var(--border-radius);
+//     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+//     z-index: 999;
 
-    ${(props) =>
-        props.hasBorder &&
-        css`
-            border: 1px solid var(--accent1);
-        `}
-`;
+//     ${(props) =>
+//         props.hasBorder &&
+//         css`
+//             border: 1px solid var(--accent1);
+//         `}
+// `;
 
-export const Menu = styled(motion.div)`
-    width: 100%;
-    z-index: 999;
-    outline: none;
-    border: none;
-    background: transparent;
-`;
+// export const Menu = styled(motion.div)`
+//     width: 100%;
+//     z-index: 999;
+//     outline: none;
+//     border: none;
+//     background: transparent;
+// `;
 
 export const MenuItem = styled(FlexContainer)`
     height: 50px;
@@ -386,13 +386,7 @@ export const MenuItem = styled(FlexContainer)`
     }
 `;
 
-export const NavbarLogoutContainer = styled(FlexContainer)`
-    margin-top: 8px;
 
-    &:focus-visible {
-        outline: none;
-    }
-`;
 
 export const ConnectButton = styled.button`
     cursor: pointer;

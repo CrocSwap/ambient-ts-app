@@ -23,6 +23,7 @@ interface NavItemPropsIF {
     setOpen: Dispatch<SetStateAction<boolean>>;
     allowClicksOutside?: boolean;
     square?: boolean;
+    blurBg?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
@@ -34,11 +35,13 @@ function NavItem(props: NavItemPropsIF) {
         setOpen,
         allowClicksOutside = false,
         square,
+        blurBg = true,
     } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
         if (!allowClicksOutside) setOpen(false);
+        appHeaderDropdown.setIsActive(false);
     };
 
     UseOnClickOutside(navItemRef, clickOutsideHandler);
@@ -61,14 +64,18 @@ function NavItem(props: NavItemPropsIF) {
             <NavItemIconButton
                 square={square}
                 onClick={() => {
-                    setOpen(!open);
-                    if (!open) {
-                        appHeaderDropdown.setIsActive(true);
-                    } else appHeaderDropdown.setIsActive(false);
+                    setOpen((prevOpen) => {
+                        const newOpen = !prevOpen;
+                        if (blurBg) {
+                            appHeaderDropdown.setIsActive(newOpen);
+                        }
+                        return newOpen;
+                    });
                 }}
             >
                 {icon}
             </NavItemIconButton>
+
             {open && childrenWithProps}
         </NavItemButton>
     );

@@ -59,6 +59,7 @@ export const ExchangeBalanceDropdown = () => {
             setOpen={setFullLayoutActive}
             allowClicksOutside={showMobileVersion}
             square={showMobileVersion}
+            blurBg={false}
         >
             {showMobileVersion ? (
                 modalVersion

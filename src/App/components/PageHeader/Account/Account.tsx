@@ -76,13 +76,13 @@ export default function Account(props: propsIF) {
     const clickOutsideWalletHandler = () => {
         if (!desktopScreen) return null
         setShowWalletDropdown(false);
-        appHeaderDropdown.setIsActive(false);
+        
     };
     const clickOutsideLevelHandler = () => {
         if (!desktopScreen) return null
 
         setShowLevelDropdown(false);
-        appHeaderDropdown.setIsActive(false);
+       
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideWalletHandler);
     UseOnClickOutside(levelDropdownItemRef, clickOutsideLevelHandler);
@@ -104,9 +104,7 @@ export default function Account(props: propsIF) {
 
     function closeWalletModal() {
         setShowWalletDropdown(false);
-        if (!showWalletDropdown) {
-            appHeaderDropdown.setIsActive(true);
-        } else appHeaderDropdown.setIsActive(false);
+       
 }
 
     const walletDisplayModal = (
@@ -139,9 +137,7 @@ export default function Account(props: propsIF) {
                 tabIndex={0}
                 onClick={() => {
                     setShowWalletDropdown(!showWalletDropdown);
-                    if (!showWalletDropdown) {
-                        appHeaderDropdown.setIsActive(true);
-                    } else appHeaderDropdown.setIsActive(false);
+                    
                 }}
                 aria-label={ariaLabel}
             >
@@ -183,9 +179,7 @@ export default function Account(props: propsIF) {
     
             function handleCloseLevel() {
                 setShowLevelDropdown(false);
-                if (!showLevelDropdown) {
-                    appHeaderDropdown.setIsActive(true);
-                } else appHeaderDropdown.setIsActive(false);
+                
             }
             const levelDisplayModal = (
                 <Modal usingCustomHeader onClose={handleCloseLevel}>
@@ -215,9 +209,7 @@ export default function Account(props: propsIF) {
                 tabIndex={0}
                 onClick={() => {
                     setShowLevelDropdown(!showLevelDropdown);
-                    if (!showLevelDropdown) {
-                        appHeaderDropdown.setIsActive(true);
-                    } else appHeaderDropdown.setIsActive(false);
+                    
                 }}
                 aria-label={ariaLabel}
                 large={formattedXpLevel.length >= 4}
