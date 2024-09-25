@@ -125,13 +125,15 @@ export default function App() {
         </div>
     );
 
+    // logic to handle opening and closing of the CSS modal
     const [isCSSModalOpen, openCSSModal, closeCSSModal] = useModal();
+    // bind keyboard event to toggle CSS modal open or closed
     useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent): void => {
+        const handleKeyDown = (e: KeyboardEvent): void => {
             if (
-                (event.ctrlKey || event.metaKey) &&
-                event.shiftKey
-                && event.key.toLowerCase() === 'k'
+                (e.ctrlKey || e.metaKey) &&
+                e.shiftKey
+                && e.key.toLowerCase() === 'k'
             ) {
                 isCSSModalOpen ? closeCSSModal() : openCSSModal();
             }
