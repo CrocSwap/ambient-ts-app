@@ -128,7 +128,11 @@ export default function App() {
     const [isCSSModalOpen, openCSSModal, closeCSSModal] = useModal();
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent): void => {
-            if (event.shiftKey && event.key.toLowerCase() === 'k') {
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.shiftKey
+                && event.key.toLowerCase() === 'k'
+            ) {
                 isCSSModalOpen ? closeCSSModal() : openCSSModal();
             }
         };
