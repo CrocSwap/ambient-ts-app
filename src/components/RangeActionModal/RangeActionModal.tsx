@@ -224,6 +224,7 @@ function RangeActionModal(props: propsIF) {
                         if (data && crocEnv && provider) {
                             // temporarily skip ENS fetch
                             const skipENSFetch = true;
+                            const forceOnchainLiqUpdate = true;
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
@@ -235,6 +236,7 @@ function RangeActionModal(props: propsIF) {
                                 cachedTokenDetails,
                                 cachedEnsResolve,
                                 skipENSFetch,
+                                forceOnchainLiqUpdate,
                             );
                             setPosLiqBaseDecimalCorrected(
                                 position.positionLiqBaseDecimalCorrected,
