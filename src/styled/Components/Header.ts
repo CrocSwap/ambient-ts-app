@@ -1,9 +1,9 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import styled, { css } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 
-import { FlexContainer, GridContainer } from '../Common';
+import { FlexContainer } from '../Common';
 const fixedStyles = `   
 position: fixed;
 top: 0;
@@ -185,161 +185,74 @@ export const UnderlinedMotionDiv = styled(motion.div)`
 
 // WalletDropdown
 
-export const WalletDisplay = styled(FlexContainer)`
-    p {
-        font-size: var(--body-size);
-        line-height: var(--body-lh);
-        color: var(--text2);
-    }
-`;
+// export const WalletDisplay = styled(FlexContainer)`
+//     p {
+//         font-size: var(--body-size);
+//         line-height: var(--body-lh);
+//         color: var(--text2);
+//     }
+// `;
 
-export const NameDisplay = styled(FlexContainer)`
-    h2 {
-        font-size: var(--header2-size);
-        line-height: var(--header2-lh);
-        color: var(--text1);
-        font-weight: 100;
-    }
-`;
+// export const NameDisplay = styled(FlexContainer)`
+//     h2 {
+//         font-size: var(--header2-size);
+//         line-height: var(--header2-lh);
+//         color: var(--text1);
+//         font-weight: 100;
+//     }
+// `;
 
-export const CopyButton = styled.button`
-    cursor: pointer;
-    background: transparent;
-    border: none;
-`;
+// export const CopyButton = styled.button`
+//     cursor: pointer;
+//     background: transparent;
+//     border: none;
+// `;
 
-export const TokenContainer = styled.section`
-    font-size: var(--header2-size);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 10px;
 
-    &:not(:last-of-type) {
-        border-bottom: 1px solid var(--dark1);
-    }
-`;
 
-export const LogoName = styled(FlexContainer)`
-    img {
-        width: 25px;
-        height: 25px;
-    }
-`;
+// export const NameDisplayContainer = styled(FlexContainer)`
+//     margin: 0 auto;
+//     overflow: visible;
+//     .image {
+//         width: 50px;
+//         height: 50px;
+//         border-radius: 50%;
+//         background: var(--title-gradient);
+//     }
+// `;
 
-export const TokenAmount = styled(FlexContainer)`
-    h3 {
-        color: var(--text1);
-        text-align: right;
-    }
 
-    h3,
-    h6 {
-        text-align: right;
-    }
-`;
 
-export const NameDisplayContainer = styled(FlexContainer)`
-    margin: 0 auto;
-    overflow: visible;
-    .image {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--title-gradient);
-    }
-`;
 
-export const ActionsContainer = styled(GridContainer)`
-    bottom: 0;
-    z-index: 9;
 
-    a:hover,
-    a:focus-visible {
-        color: var(--text-grey-white);
-    }
-`;
+// export const LevelWrapper = styled(FlexContainer)`
+//     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+//     box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
+//     background: var(--dark2);
+//     position: absolute;
+//     top: 50px;
+//     width: auto;
+//     min-width: 350px;
+//     right: 15px;
+//     z-index: 9999;
+//     padding: 8px 1rem;
+//     border: 1px solid var(--accent1);
 
-export const AccountLink = styled(NavLink)`
-    cursor: pointer;
-    border: none;
-    outline: none;
-    padding: 6px 8px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    border-radius: var(--border-radius);
+//     opacity: 1;
+//     bottom: 85px;
+//     pointer-events: auto;
 
-    background: var(--dark3);
-    text-decoration: none;
-    color: var(--text2);
-`;
+//     display: flex;
+//     flex-direction: column;
+//     height: 150px;
+//     gap: 8px;
+//     border-radius: 4px;
 
-export const WalletContent = styled.section`
-    background: var(--dark3);
-    padding: 8px 1rem;
-    border-radius: var(--border-radius);
-    display: flex;
-    flex-direction: column;
-    height: 200px;
-    overflow-y: hidden;
-    &::-webkit-scrollbar {
-        display: none;
-    }
-`;
-
-export const WalletWrapper = styled(FlexContainer)`
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
-    background: var(--dark2);
-    position: absolute;
-    top: 50px;
-    width: 347px;
-    height: 280px;
-    right: 0px;
-    z-index: 9999;
-    padding: 8px 1rem;
-    opacity: 1;
-    bottom: 85px;
-    pointer-events: auto;
-    border: 1px solid var(--accent1);
-    @media (max-width: 500px) {
-        width: 300px;
-        right: -100px;
-    }
-`;
-
-export const LevelWrapper = styled(FlexContainer)`
-    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
-    background: var(--dark2);
-    position: absolute;
-    top: 50px;
-    width: auto;
-    min-width: 350px;
-    right: 15px;
-    z-index: 9999;
-    padding: 8px 1rem;
-    border: 1px solid var(--accent1);
-
-    opacity: 1;
-    bottom: 85px;
-    pointer-events: auto;
-
-    display: flex;
-    flex-direction: column;
-    height: 150px;
-    gap: 8px;
-    border-radius: 4px;
-
-    @media (max-width: 500px) {
-        right: -50px;
-        width: 300px;
-    }
-`;
+//     @media (max-width: 500px) {
+//         right: -50px;
+//         width: 300px;
+//     }
+// `;
 export const AccountDropdownWrapper = styled(FlexContainer)`
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     box-shadow: 0px 45px 30px rgba(0, 0, 0, 0.5);
@@ -417,60 +330,39 @@ export const WalletName = styled.p`
 
 // ExchangeBalanceDropdown
 
-export const StyledExchangeBalanceDropdown = styled.div`
-    position: absolute;
-    top: 68px;
-    right: 5px;
-    height: 510px;
-    border: none;
-    overflow: hidden;
-    transition: all var(--animation-speed) ease;
-    z-index: 999;
-    background: var(--dark1);
-    border-radius: var(--border-radius);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
-    text-align: start;
-    border: 1px solid var(--accent1);
-
-    @media only screen and (max-width: 600px) {
-        width: auto;
-        height: auto;
-        background: transparent;
-        border-radius: var(--border-radius);
-    }
-`;
+// 
 
 // NavbarDropdownMenu
 
-export const NavbarDropdown = styled.div<{ hasBorder?: boolean }>`
-    position: absolute;
-    top: 60px;
-    width: 240px;
-    height: auto;
-    transform: translateX(-45%);
-    border: none;
-    padding: 1rem;
-    overflow: hidden;
-    transition: all var(--animation-speed) ease;
-    background: var(--dark2);
-    border-radius: var(--border-radius);
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
-    z-index: 999;
+// export const NavbarDropdown = styled.div<{ hasBorder?: boolean }>`
+//     position: absolute;
+//     top: 60px;
+//     width: 240px;
+//     height: auto;
+//     transform: translateX(-45%);
+//     border: none;
+//     padding: 1rem;
+//     overflow: hidden;
+//     transition: all var(--animation-speed) ease;
+//     background: var(--dark2);
+//     border-radius: var(--border-radius);
+//     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+//     z-index: 999;
 
-    ${(props) =>
-        props.hasBorder &&
-        css`
-            border: 1px solid var(--accent1);
-        `}
-`;
+//     ${(props) =>
+//         props.hasBorder &&
+//         css`
+//             border: 1px solid var(--accent1);
+//         `}
+// `;
 
-export const Menu = styled(motion.div)`
-    width: 100%;
-    z-index: 999;
-    outline: none;
-    border: none;
-    background: transparent;
-`;
+// export const Menu = styled(motion.div)`
+//     width: 100%;
+//     z-index: 999;
+//     outline: none;
+//     border: none;
+//     background: transparent;
+// `;
 
 export const MenuItem = styled(FlexContainer)`
     height: 50px;
@@ -494,13 +386,7 @@ export const MenuItem = styled(FlexContainer)`
     }
 `;
 
-export const NavbarLogoutContainer = styled(FlexContainer)`
-    margin-top: 8px;
 
-    &:focus-visible {
-        outline: none;
-    }
-`;
 
 export const ConnectButton = styled.button`
     cursor: pointer;
@@ -575,66 +461,66 @@ export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
     }
 `;
 
-export const DropdownMenuContainer = styled(FlexContainer)`
-    z-index: 99999;
-    background-color: var(--dark2);
-    padding: 0 4px;
-    border-radius: var(--border-radius);
-    height: 31px;
-`;
+// export const DropdownMenuContainer = styled(FlexContainer)`
+//     z-index: 99999;
+//     background-color: var(--dark2);
+//     padding: 0 4px;
+//     border-radius: var(--border-radius);
+//     height: 31px;
+// `;
 
-export const MenuContent = styled.ul`
-    width: 200px;
-    padding: 12px;
-    overflow: hidden;
-    z-index: 2;
-    background: var(--dark2);
-    border-radius: var(--border-radius);
-    z-index: 999;
-    border: 1px solid var(--accent1);
+// export const MenuContent = styled.ul`
+//     width: 200px;
+//     padding: 12px;
+//     overflow: hidden;
+//     z-index: 2;
+//     background: var(--dark2);
+//     border-radius: var(--border-radius);
+//     z-index: 999;
+//     border: 1px solid var(--accent1);
 
-    ul,
-    li {
-        text-decoration: none;
-        list-style-type: none;
-    }
-`;
+//     ul,
+//     li {
+//         text-decoration: none;
+//         list-style-type: none;
+//     }
+// `;
 
-export const NetworkItem = styled(motion.li)`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    transition: background 500ms;
-    padding: 4px;
-    cursor: pointer;
-    text-decoration: none;
+// export const NetworkItem = styled(motion.li)`
+//     display: flex;
+//     flex-direction: row;
+//     align-items: center;
+//     transition: background 500ms;
+//     padding: 4px;
+//     cursor: pointer;
+//     text-decoration: none;
 
-    &:hover {
-        backdrop-filter: blur(16.5px);
-        -webkit-backdrop-filter: blur(16.5px);
-        border-radius: var(--border-radius);
-    }
-`;
+//     &:hover {
+//         backdrop-filter: blur(16.5px);
+//         -webkit-backdrop-filter: blur(16.5px);
+//         border-radius: var(--border-radius);
+//     }
+// `;
 
-export const ChainNameStatus = styled.div<{ active: boolean }>`
-    display: flex;
-    align-items: center;
-    padding: 8px 0;
-    font-size: var(--header2-size);
-    width: 100%;
-    color: var(--text1);
-    z-index: 9999;
+// export const ChainNameStatus = styled.div<{ active: boolean }>`
+//     display: flex;
+//     align-items: center;
+//     padding: 8px 0;
+//     font-size: var(--header2-size);
+//     width: 100%;
+//     color: var(--text1);
+//     z-index: 9999;
 
-    &:hover,
-    &:focus-visible {
-        filter: drop-shadow(0 0 5px var(--text1));
-    }
+//     &:hover,
+//     &:focus-visible {
+//         filter: drop-shadow(0 0 5px var(--text1));
+//     }
 
-    img {
-        margin-right: 0.5em;
-        vertical-align: middle;
-    }
+//     img {
+//         margin-right: 0.5em;
+//         vertical-align: middle;
+//     }
 
-    border-bottom: ${(props) =>
-        props.active ? '1px solid var(--accent1)' : ''};
-`;
+//     border-bottom: ${(props) =>
+//         props.active ? '1px solid var(--accent1)' : ''};
+// `;

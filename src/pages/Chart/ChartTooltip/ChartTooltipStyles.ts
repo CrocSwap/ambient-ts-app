@@ -3,6 +3,7 @@ import styled from 'styled-components';
 const ChartTooltipDiv = styled.div<{
     isToolbarOpen: boolean;
     isFullScreen: boolean;
+    isFuta: boolean;
 }>`
     justify-content: space-between;
     text-wrap: wrap;
@@ -10,7 +11,7 @@ const ChartTooltipDiv = styled.div<{
     position: fixed;
 
     margin-top: -24px;
-    margin-left: 10px;
+    margin-left: ${({ isFuta }) => (isFuta ? '7px' : '10px')};
 
     p {
         margin-left: 0px;
@@ -32,7 +33,9 @@ const ChartTooltipDiv = styled.div<{
     }
 `;
 
-const CurrentDataDiv = styled.div`
+const CurrentDataDiv = styled.div<{
+    isFuta: boolean;
+}>`
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -47,7 +50,7 @@ const CurrentDataDiv = styled.div`
 
     color: var(--text2);
     min-height: 30px;
-    padding-left: 4px;
+    padding-left: ${({ isFuta }) => (isFuta ? '0px' : '4px')};
     margin-top: 5px;
 
     @media screen and (min-width: 768px) {

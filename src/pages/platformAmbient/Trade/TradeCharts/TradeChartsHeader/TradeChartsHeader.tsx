@@ -39,7 +39,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-
+      
        
 
     const {
@@ -173,7 +173,12 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             >
                 <HeaderButtons
                     mobileHide
-                    onClick={() => setIsChartFullScreen(!isChartFullScreen)}
+                    onClick={() => {
+                        setIsChartFullScreen(!isChartFullScreen)
+                        
+
+                    }
+                    }
                 >
                     <BsFullscreen
                         size={20}

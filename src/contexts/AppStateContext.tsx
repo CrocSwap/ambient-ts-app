@@ -198,6 +198,7 @@ export const AppStateContextProvider = (props: {
         ],
     );
 
+
     const onIdle = () => {
         setIsUserIdle(true);
     };

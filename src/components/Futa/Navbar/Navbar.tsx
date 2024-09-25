@@ -278,6 +278,7 @@ export default function Navbar() {
     );
 
     return (
+        <>
         <div className={styles.container}>
             <div className={styles.logoContainer}>
                 <Link to='/'>
@@ -348,8 +349,9 @@ export default function Navbar() {
                     )}
                     {/* </AnimatePresence> */}
                 </div>
-            <TutorialOverlayUrlBased />
             </div>
         </div>
+        <TutorialOverlayUrlBased />
+        </>
     );
 }

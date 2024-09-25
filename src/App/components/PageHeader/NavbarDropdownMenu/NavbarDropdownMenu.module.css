@@ -1,0 +1,39 @@
+
+
+.container{
+    position: absolute;
+    top: 60px;
+    width: 240px;
+    height: auto;
+    transform: translateX(-45%);
+    border: none;
+    padding: 1rem;
+    overflow: hidden;
+    transition: all var(--animation-speed) ease;
+    background: var(--dark2);
+    border-radius: var(--border-radius);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 999;
+
+   
+
+    border: 1px solid var(--accent1);
+}
+
+.menu{
+    width: 100%;
+    z-index: 999;
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+.navbarLogoutContainer {
+    display: flex;
+    margin-top: 8px;
+}
+
+.navbarLogoutContainer:focus-visible {
+    outline: none;
+}
+

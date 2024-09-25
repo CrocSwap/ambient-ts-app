@@ -410,51 +410,56 @@ const PageHeader = function () {
     }, []);
 
     return (
-        <PrimaryHeader
-            data-testid={'page-header'}
-            fixed={false}
-            style={{ position: 'sticky', top: 0, zIndex: 10 }}
-        >
-            <div
-                onClick={(event: React.MouseEvent) => {
-                    event?.stopPropagation();
-                    if (appHeaderDropdown.isActive) {
-                        appHeaderDropdown.setIsActive(false);
-                    }
-                }}
+        <>
+            <PrimaryHeader
+                data-testid={'page-header'}
+                fixed={false}
+                style={{ position: 'sticky', top: 0, zIndex: 10 }}
             >
-                <LogoContainer to='/' aria-label='Home'>
-                    {desktopScreen ? (
-                        <img src={headerImage} alt='ambient' />
-                    ) : (
-                        <LogoText src={logo} alt='ambient' />
-                    )}
-                </LogoContainer>
-            </div>
-            {routeDisplay}
-            <RightSide>
-                {show ? (
-                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
-                        <TradeNowButton
-                            inNav
-                            fieldId='trade_now_btn_in_page_header'
-                        />
-                    </TradeNowDiv>
-                ) : (
-                    <div>
-                        <FlexContainer
+                <div
+                    onClick={(event: React.MouseEvent) => {
+                        event?.stopPropagation();
+                        if (appHeaderDropdown.isActive) {
+                            appHeaderDropdown.setIsActive(false);
+                        }
+                    }}
+                >
+                    <LogoContainer to='/' aria-label='Home'>
+                        {desktopScreen ? (
+                            <img src={headerImage} alt='ambient' />
+                        ) : (
+                            <LogoText src={logo} alt='ambient' />
+                        )}
+                    </LogoContainer>
+                </div>
+                {routeDisplay}
+                <RightSide>
+                    {show ? (
+                        <TradeNowDiv
+                            justifyContent='flex-end'
                             alignItems='center'
-                            gap={8}
-                            overflow='visible'
                         >
-                            <NetworkSelector />
-                            {!isUserConnected && connectWagmiButton}
-                            <Account {...accountProps} />
-                        </FlexContainer>
-                    </div>
-                )}
-            </RightSide>
-        </PrimaryHeader>
+                            <TradeNowButton
+                                inNav
+                                fieldId='trade_now_btn_in_page_header'
+                            />
+                        </TradeNowDiv>
+                    ) : (
+                        <div>
+                            <FlexContainer
+                                alignItems='center'
+                                gap={8}
+                                overflow='visible'
+                            >
+                                <NetworkSelector />
+                                {!isUserConnected && connectWagmiButton}
+                                    <Account {...accountProps} />
+                            </FlexContainer>
+                        </div>
+                    )}
+                </RightSide>
+            </PrimaryHeader>
+        </>
     );
 };
 

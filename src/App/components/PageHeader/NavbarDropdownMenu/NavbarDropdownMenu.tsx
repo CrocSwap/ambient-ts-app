@@ -19,12 +19,10 @@ import {
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import {
-    NavbarDropdown,
-    Menu,
-    NavbarLogoutContainer,
-} from '../../../../styled/Components/Header';
+
+import { motion } from 'framer-motion';
 import NavbarDropdownItem from './NavbarDropdownItem';
+import styles from './NavbarDropdownMenu.module.css'
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -101,7 +99,10 @@ function NavbarDropdownMenu(props: propsIF) {
     ];
 
     return (
-        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel} hasBorder>
+        // <div className={styles.background_blur}>
+
+       
+        <div className={styles.container} ref={dropdownRef} aria-label={ariaLabel} >
             <CSSTransition
                 in={true}
                 unmountOnExit
@@ -109,7 +110,7 @@ function NavbarDropdownMenu(props: propsIF) {
                 classNames='menu-primary'
             >
                 {/* Menu with each drop down item */}
-                <Menu
+                <motion.div className={styles.menu}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
@@ -128,7 +129,7 @@ function NavbarDropdownMenu(props: propsIF) {
                         </NavbarDropdownItem>
                     ))}
                     {isUserLoggedIn ? (
-                        <NavbarLogoutContainer>
+                        <div className={styles.navbarLogoutContainer}>
                             <LogoutButton
                                 onClick={() => {
                                     clickLogout();
@@ -136,9 +137,9 @@ function NavbarDropdownMenu(props: propsIF) {
                                     appHeaderDropdown.setIsActive(false)
                                 }}
                             />
-                        </NavbarLogoutContainer>
+                        </div>
                     ) : (
-                        <NavbarLogoutContainer>
+                        <div className={styles.navbarLogoutContainer}>
                             <NavbarDropdownItem
                                 connectButton
                                     onClick={() => {
@@ -148,11 +149,12 @@ function NavbarDropdownMenu(props: propsIF) {
                             >
                                 Connect Wallet
                             </NavbarDropdownItem>
-                        </NavbarLogoutContainer>
+                        </div>
                     )}
-                </Menu>
+                </motion.div>
             </CSSTransition>
-        </NavbarDropdown>
+            </div>
+            // </div>
     );
 }
 
