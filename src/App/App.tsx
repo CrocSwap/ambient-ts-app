@@ -104,14 +104,6 @@ export default function App() {
     }, [location]);
 
     const showMobileVersion = useMediaQuery('(max-width: 800px)');
-    // const showChatPanel =
-    //     currentLocation !== '/' &&
-    //     currentLocation !== '/404' &&
-    //     currentLocation !== '/terms' &&
-    //     currentLocation !== '/privacy' &&
-    //     currentLocation !== '/faq' &&
-    //     !currentLocation.includes('/chat') &&
-    //     isChatEnabled;
     const ambientFooter = (
         <div data-theme={skin} className='footer_container'>
             {currentLocation !== '/' &&
