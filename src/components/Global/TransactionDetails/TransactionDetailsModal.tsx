@@ -56,9 +56,12 @@ function TransactionDetailsModal(props: propsIF) {
     >();
 
     useEffect(() => {
+        if (tx.entityType !== 'liqchange') return;
+
         const positionStatsCacheEndpoint = GCGO_OVERRIDE_URL
             ? GCGO_OVERRIDE_URL + '/position_stats?'
             : activeNetwork.graphCacheUrl + '/position_stats?';
+
         fetch(
             positionStatsCacheEndpoint +
                 new URLSearchParams({
@@ -79,7 +82,6 @@ function TransactionDetailsModal(props: propsIF) {
                 }
                 // temporarily skip ENS fetch
                 const skipENSFetch = true;
-                const forceOnchainLiqUpdate = true;
 
                 const positionPayload = json?.data as PositionServerIF;
                 const positionStats = await getPositionData(
@@ -93,7 +95,6 @@ function TransactionDetailsModal(props: propsIF) {
                     cachedTokenDetails,
                     cachedEnsResolve,
                     skipENSFetch,
-                    forceOnchainLiqUpdate,
                 );
 
                 if (positionStats.timeFirstMint) {
