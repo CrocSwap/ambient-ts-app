@@ -30,6 +30,7 @@ interface propsIF {
     tableKey?: string
     lastFetchedCount?: number
     setLastFetchedCount?: Dispatch<SetStateAction<number>>;
+    moreDataLoading: boolean;
 }
 
 enum ScrollDirection {
@@ -60,6 +61,7 @@ function TableRowsInfiniteScroll({
     dataPerPage,
     lastFetchedCount,
     setLastFetchedCount,
+    moreDataLoading
     
 }: propsIF) {
 
@@ -84,8 +86,6 @@ function TableRowsInfiniteScroll({
     const [showManualScrollDown, setShowManualScrollDown] = useState(false);
     const [showManualScrollUp, setShowManualScrollUp] = useState(false);
     
-
-    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
     const moreDataLoadingRef = useRef<boolean>();
     moreDataLoadingRef.current = moreDataLoading;
@@ -157,11 +157,11 @@ function TableRowsInfiniteScroll({
             }else{
                 return <div style={{
                     transition: 'all .2s ease-in-out', 
-                    position: 'absolute', top: '40px', left: '0', 
+                    position: 'absolute', top: '50px', left: '0', 
                     zIndex: isTableReadyRef.current ? '-1': '1',
                     backdropFilter: 'blur(10px)',
                     width: '100%',
-                    height: 'calc(100% - 40px)'
+                    height: 'calc(100% - 50px)'
                 }}></div>
             }
     }
@@ -180,7 +180,6 @@ function TableRowsInfiniteScroll({
   
 
     const scrollToTop = () => {
-        console.log(setMoreDataLoading)
         setLastSeenTxID('');
         setPagesVisible([0, 1]);
         if(wrapperEl){
@@ -235,7 +234,6 @@ function TableRowsInfiniteScroll({
             bindTableReadyState(true);
             return;
         }
-        console.log('shift down')
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
         lockShift();
@@ -269,7 +267,6 @@ function TableRowsInfiniteScroll({
     domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
-        console.log('scrollByTxID', txID, pos);
         const txSpans = document.querySelectorAll(
             txSpanSelectorForScrollMethod
         );
@@ -569,8 +566,6 @@ function TableRowsInfiniteScroll({
 
     useEffect(() => {
         if(lastFetchedCount && lastFetchedCount > 0 && setLastFetchedCount){
-            console.log('~~~~~lastFetchedCount~', lastFetchedCount)
-            console.log('lastSeen', lastSeenTxIDRef.current)
             triggerAutoScroll(ScrollDirection.DOWN);
             // doScroll();
             setTimeout(() => {
@@ -581,9 +576,6 @@ function TableRowsInfiniteScroll({
 
 
     useEffect(() => {
-        if(pagesVisibleRef.current){
-            console.log('pagesVisibleRef.current[0]', pagesVisibleRef.current[0], 'pagesVisible[0]', pagesVisible[0])
-        }
         doScroll();
     }, [pagesVisible[0]])
 

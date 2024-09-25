@@ -100,12 +100,19 @@ function Orders(props: propsIF) {
 
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
+
+
+    const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
+
     const getInitialDataPageCounts = () => {
-        if(fetchedTransactions.limitOrders.length == 0){
+        if(limitOrdersByPool.limitOrders.length == 0){
             return [0, 0];
         }
-        return [fetchedTransactions.limitOrders.length > dataPerPage ? dataPerPage : fetchedTransactions.limitOrders.length , 
-            fetchedTransactions.limitOrders.length / dataPerPage  == 2 ? dataPerPage : fetchedTransactions.limitOrders.length - dataPerPage];
+        // return [fetchedTransactions.limitOrders.length > dataPerPage ? dataPerPage : fetchedTransactions.limitOrders.length , 
+        //     fetchedTransactions.limitOrders.length / dataPerPage  == 2 ? dataPerPage : fetchedTransactions.limitOrders.length - dataPerPage];
+        
+        return [limitOrdersByPool.limitOrders.length > dataPerPage ? dataPerPage : limitOrdersByPool.limitOrders.length , 
+            limitOrdersByPool.limitOrders.length / dataPerPage  == 2 ? dataPerPage : limitOrdersByPool.limitOrders.length - dataPerPage];
     }
 
     
@@ -148,10 +155,8 @@ function Orders(props: propsIF) {
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
+    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
 
-
-
-    
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
@@ -164,13 +169,30 @@ function Orders(props: propsIF) {
 
     useEffect(() => {
         console.log('RESET PAGE DATA');
+        console.log(selectedBaseAddress + selectedQuoteAddress)
+        console.log('fetchedTransactions', fetchedTransactionsRef.current?.limitOrders.length)
         setPagesVisible([0, 1]);
-        setPageDataCount(getInitialDataPageCounts());
+        // setPageDataCount(getInitialDataPageCounts());
+        setPageDataCountShouldReset(true);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
     }, [selectedBaseAddress + selectedQuoteAddress]);
+    
+    // useEffect(() => {
+    //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    //     console.log('fetchedTransactions', fetchedTransactionsRef.current?.limitOrders.length)
+    //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    // }, [fetchedTransactionsRef.current])
+    useEffect(() => {
 
+        if(pageDataCountShouldReset){
+            console.log('page data count RESETTTTTTTTTTTTTTTTTTTTTTT')
+            setPageDataCount(getInitialDataPageCounts());
+            setPageDataCountShouldReset(false);
+        }
+
+    }, [limitOrdersByPool])
     // useEffect(() => {
     //     console.log('page', pagesVisible[0])
     // }, [pagesVisible]);
@@ -272,7 +294,7 @@ function Orders(props: propsIF) {
     }
 
     const addMoreData = async() => {
-
+            setMoreDataLoading(true);
                 const targetCount = 30;
                 let addedDataCount = 0;
 
@@ -325,65 +347,8 @@ function Orders(props: propsIF) {
                     setMoreDataAvailable(false);
                 }
 
-                    // fetchPoolLimitOrders({
-                    //     tokenList: tokenList,
-                    //     base: baseToken.address,
-                    //     quote: quoteToken.address,
-                    //     poolIdx: poolIndex,
-                    //     chainId: chainId,
-                    //     n: dataPerPage,
-                    //     timeBefore: oldestTxTime,
-                    //     crocEnv: crocEnv,
-                    //     graphCacheUrl: activeNetwork.graphCacheUrl,
-                    //     provider: provider,
-                    //     cachedFetchTokenPrice: cachedFetchTokenPrice,
-                    //     cachedQuerySpotPrice: cachedQuerySpotPrice,
-                    //     cachedTokenDetails: cachedTokenDetails,
-                    //     cachedEnsResolve: cachedEnsResolve,
-                    // })
-                    //     .then((poolChangesJsonData) => {
-                    //         if (poolChangesJsonData && poolChangesJsonData.length > 0) {
-                    //             console.log('ADD MORE DATA LEN', poolChangesJsonData.length)
-                    //             // setTransactionsByPool((prev) => {
-                    //             setFetchedTransactions((prev) => {
-                    //                 const existingChanges = new Set(
-                    //                     prev.limitOrders.map(
-                    //                         // (change) => change.positionHash || change.limitOrderId,
-                    //                         (change) => change.limitOrderId,
-                    //                     ),
-                    //                 ); // Adjust if using a different unique identifier
-                    //                 const uniqueChanges = poolChangesJsonData.filter(
-                    //                     (change) =>
-                    //                         !existingChanges.has(
-                    //                             // change.positionHash || change.limitOrderId,
-                    //                             change.limitOrderId,
-                    //                         ),
-                    //                 );
-                    //                 if (uniqueChanges.length > 0) {
-                    //                     setPageDataCount(prev => {
-                    //                         return [...prev, uniqueChanges.length];
-                    //                     });
-                    //                     resolve(true);
-                    //                 } else {
-                    //                     setMoreDataAvailable(false);
-                    //                     resolve(false)
-                    //                 }
-                    //                 let newTxData = [];
-                    //                     newTxData = sortData([
-                    //                         ...prev.limitOrders,
-                    //                         ...uniqueChanges,
-                    //                     ]);
-                    //                 return {
-                    //                     dataReceived: true,
-                    //                     limitOrders: newTxData,
-                    //                 };
-                    //             });
-                    //         } else {
-                    //             setMoreDataAvailable(false);
-                    //             resolve(false);
-                    //         }
-                    //     })
-                    //     .catch(console.error);
+                setMoreDataLoading(false);
+
     };
 
     const limitOrderData = useMemo<LimitOrderIF[]>(
@@ -745,6 +710,7 @@ function Orders(props: propsIF) {
                         pageDataCount={pageDataCountRef.current}
                         lastFetchedCount={lastFetchedCount}
                         setLastFetchedCount={setLastFetchedCount}
+                        moreDataLoading={moreDataLoading}
                         />
                     )
                     :

@@ -169,6 +169,9 @@ function Transactions(props: propsIF) {
     const moreDataAvailableRef = useRef<boolean>();
     moreDataAvailableRef.current = moreDataAvailable;
 
+    const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+
+
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
     useEffect(() => {
@@ -614,10 +617,13 @@ function Transactions(props: propsIF) {
 
     const addMoreData = async() => {
         
+        setMoreDataLoading(true);
         // retrieve pool recent changes
-            if(!crocEnv || !provider) return;
+            if(!crocEnv || !provider){
+                setMoreDataLoading(false);
+                return;
+            }
             else{
-
                 const poolChangesJsonData = await fetchPoolRecentChanges({
                     tokenList: tokens.tokenUniv,
                     base: selectedBaseAddress,
@@ -662,6 +668,7 @@ function Transactions(props: propsIF) {
                     } else {
                         setMoreDataAvailable(false);
                     }
+                    setMoreDataLoading(false);
             }
     };
 
@@ -827,6 +834,7 @@ function Transactions(props: propsIF) {
                         extraPagesAvailable={extraPagesAvailable}
                         lastFetchedCount={lastFetchedCount}
                         setLastFetchedCount={setLastFetchedCount}
+                        moreDataLoading={moreDataLoading}
                         />
 
                     )
