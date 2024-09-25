@@ -136,7 +136,7 @@ export default function App() {
             window.removeEventListener('keydown', handleKeyDown);
         });
     }, [isCSSModalOpen]);
-
+// console.log('skin.active: ', skin.active);
 
     return (
         <>

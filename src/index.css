@@ -241,10 +241,10 @@
     /* sizes */
     --footer-height: 24px;
 
-    --font-logo: 'Fira Mono', monospace;
-    --font-family: 'Fira Mono', monospace;
-    --roboto: 'Fira Mono', monospace;
-    --mono: 'Fira Mono', monospace;
+    --font-logo: 'Fira Mono';
+    --font-family: 'Fira Mono';
+    --roboto: 'Fira Mono';
+    --mono: 'Fira Mono';
 
     --scrollbar: none;
     --scrollbar-track: transparent;

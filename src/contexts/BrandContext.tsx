@@ -2,7 +2,6 @@ import {
     ReactNode,
     createContext,
     useContext,
-    useEffect,
     useMemo,
     useState,
 } from 'react';
@@ -92,6 +91,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         }
     }, [brand]);
 
+    // this is for testing premium-access features
     const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
     const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
     const premiumTheme1: string[] = [
@@ -101,21 +101,9 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
 
     const [skin, setSkin] = useState<skins>(getDefaultSkin());
 
-    useEffect(() => {
-        const hasPremium = !!(
-            userAddress && premiumTheme1.includes(userAddress.toLowerCase())
-        );
-        if (userAddress) {
-            setSkin(hasPremium ? 'futa_dark' : 'purple_dark');
-        } else {
-            setSkin('purple_dark');
-        }
-    }, [userAddress]);
-
     function getAvailableSkins(): skins[] {
         const networkSettings =
             brandAssets.networks[chainData.chainId as chainIds];
-
         const available: skins[] = networkSettings?.color ?? ['purple_dark'];
         const premium: skins[] = networkSettings?.premiumColor ?? [];
         const hasPremium = !!(
