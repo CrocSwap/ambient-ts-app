@@ -1249,6 +1249,7 @@ export default function Chart(props: propsIF) {
                         setPrevLastCandleTime(lastCandleData.time);
                         // check wheel end
                         wheelTimeout = setTimeout(() => {
+                            setShouldResetBuffer(false);
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
                             showLatestActive();
@@ -2711,7 +2712,6 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            setShouldResetBuffer(true);
             resetFunc();
             setReset(false);
             setShowLatest(false);
