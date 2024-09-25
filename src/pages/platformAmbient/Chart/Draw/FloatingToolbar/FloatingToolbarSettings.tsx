@@ -263,15 +263,15 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                 const oldData = structuredClone(item[changedItemIndex]);
 
                 const oldColor =
-                    item[changedItemIndex].extraData[selectedFibLevel]
+                    item[changedItemIndex].extraData[selectedFibLevel - 1]
                         .lineColor;
 
                 if (oldColor !== colorCodeLine) {
                     item[changedItemIndex].extraData[
-                        selectedFibLevel
+                        selectedFibLevel - 1
                     ].lineColor = colorCodeLine;
                     item[changedItemIndex].extraData[
-                        selectedFibLevel
+                        selectedFibLevel - 1
                     ].areaColor = colorCodeArea;
 
                     saveShapeAttiributesToLocalStorage(item[changedItemIndex]);
@@ -878,31 +878,19 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                     event.stopPropagation();
                                                     closeAllOptions(
                                                         'fib',
-                                                        index,
+                                                        index + 1,
                                                     );
                                                 }}
                                             ></OptionColor>
 
                                             {isFibBackgroundTabActive &&
-                                                index === selectedFibLevel && (
+                                                index + 1 === selectedFibLevel && (
                                                     <ColorPickerTab
                                                         style={{
                                                             position:
                                                                 'absolute',
                                                             zIndex: 199,
-                                                            top:
-                                                                70 +
-                                                                Number(
-                                                                    Math.floor(
-                                                                        (selectedFibLevel +
-                                                                            2) /
-                                                                            2,
-                                                                    ).toFixed(
-                                                                        0,
-                                                                    ),
-                                                                ) *
-                                                                    32 +
-                                                                'px',
+                                                            top: '15px',
                                                         }}
                                                         onClick={(
                                                             event: MouseEvent<HTMLElement>,
@@ -916,7 +904,7 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                                                                     ? selectedDrawnShape
                                                                           ?.data
                                                                           .extraData[
-                                                                          selectedFibLevel
+                                                                          selectedFibLevel - 1
                                                                       ]
                                                                           .lineColor
                                                                     : colorPicker.background

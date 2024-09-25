@@ -195,6 +195,7 @@ const FibLineSettings = styled.div`
 `;
 
 const FibLineOptions = styled.div`
+    position: relative;
     align-items: center;
     justify-content: center;
     display: grid;
@@ -297,7 +298,6 @@ const ListItem = styled.ul<{
 
 const CheckboxContainer = styled.div`
     display: flex;
-
 
     vertical-align: middle;
 `;
