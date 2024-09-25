@@ -16,6 +16,7 @@
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
     transition: var(--transition);
+    
 }
 
 .modal_body {

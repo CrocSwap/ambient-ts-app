@@ -25,6 +25,8 @@ import LevelDropdown from './LevelDropdown/LevelDropdown';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import NotificationCenter from '../../../../components/Global/NotificationCenter/NotificationCenter';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import Modal from '../../../../components/Global/Modal/Modal';
+import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -44,7 +46,7 @@ export default function Account(props: propsIF) {
     const { isUserConnected } = useContext(UserDataContext);
 
     const { connectedUserXp } = useContext(ChainDataContext);
-    const smallScreen = useMediaQuery('(max-width: 500px)');
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
 
     const [_, copy] = useCopyToClipboard();
@@ -72,12 +74,15 @@ export default function Account(props: propsIF) {
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const levelDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideWalletHandler = () => {
+        if (!desktopScreen) return null
         setShowWalletDropdown(false);
-        appHeaderDropdown.setIsActive(false);
+        
     };
     const clickOutsideLevelHandler = () => {
+        if (!desktopScreen) return null
+
         setShowLevelDropdown(false);
-        appHeaderDropdown.setIsActive(false);
+       
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideWalletHandler);
     UseOnClickOutside(levelDropdownItemRef, clickOutsideLevelHandler);
@@ -97,6 +102,27 @@ export default function Account(props: propsIF) {
         }
     }, [isEscapePressed]);
 
+    function closeWalletModal() {
+        setShowWalletDropdown(false);
+       
+}
+
+    const walletDisplayModal = (
+        <Modal usingCustomHeader onClose={closeWalletModal}>
+            <ModalHeader title={'My Wallet'} onClose={closeWalletModal} />
+            <WalletDropdown
+                    ensName={ensName !== '' ? ensName : ''}
+                    accountAddress={props.accountAddress}
+                    handleCopyAddress={handleCopyAddress}
+                    clickLogout={clickLogout}
+                    accountAddressFull={props.accountAddressFull}
+                    clickOutsideHandler={clickOutsideWalletHandler}
+                />
+            </Modal>
+    )
+
+ 
+
     const walletDisplay = (
         <section
             style={{
@@ -111,9 +137,7 @@ export default function Account(props: propsIF) {
                 tabIndex={0}
                 onClick={() => {
                     setShowWalletDropdown(!showWalletDropdown);
-                    if (!showWalletDropdown) {
-                        appHeaderDropdown.setIsActive(true);
-                    } else appHeaderDropdown.setIsActive(false);
+                    
                 }}
                 aria-label={ariaLabel}
             >
@@ -122,7 +146,7 @@ export default function Account(props: propsIF) {
                     {connectedEnsOrAddressTruncated || '...'}
                 </WalletName>
             </TitleGradientButton>
-            {showWalletDropdown ? (
+            {showWalletDropdown ?  !desktopScreen ? walletDisplayModal :(
                 <WalletDropdown
                     ensName={ensName !== '' ? ensName : ''}
                     accountAddress={props.accountAddress}
@@ -152,6 +176,23 @@ export default function Account(props: propsIF) {
         currentLevel !== undefined && currentLevel?.toString()?.length >= 2
             ? formattedXpLevel
             : currentLevel;
+    
+            function handleCloseLevel() {
+                setShowLevelDropdown(false);
+                
+            }
+            const levelDisplayModal = (
+                <Modal usingCustomHeader onClose={handleCloseLevel}>
+                    <ModalHeader title={'My Level'} onClose={handleCloseLevel} />
+                    <LevelDropdown
+                            ensName={ensName !== '' ? ensName : ''}
+                            accountAddress={props.accountAddress}
+                            handleCopyAddress={handleCopyAddress}
+                            accountAddressFull={props.accountAddressFull}
+                            connectedUserXp={connectedUserXp}
+                        />
+                    </Modal>
+            )
 
     const levelDisplay = (
         <section
@@ -168,16 +209,14 @@ export default function Account(props: propsIF) {
                 tabIndex={0}
                 onClick={() => {
                     setShowLevelDropdown(!showLevelDropdown);
-                    if (!showLevelDropdown) {
-                        appHeaderDropdown.setIsActive(true);
-                    } else appHeaderDropdown.setIsActive(false);
+                    
                 }}
                 aria-label={ariaLabel}
                 large={formattedXpLevel.length >= 4}
             >
                 {currentLevelDisplay}
             </LevelButton>
-            {showLevelDropdown ? (
+            {showLevelDropdown ?  !desktopScreen ? levelDisplayModal : (
                 <LevelDropdown
                     ensName={ensName !== '' ? ensName : ''}
                     accountAddress={props.accountAddress}
@@ -197,8 +236,8 @@ export default function Account(props: propsIF) {
             overflow='visible'
             alignItems='center'
         >
-            {isUserConnected && !smallScreen && walletDisplay}
-            {isUserConnected && !smallScreen && levelDisplay}
+            {isUserConnected &&walletDisplay }
+            {isUserConnected  && levelDisplay}
             {isUserConnected && <ExchangeBalanceDropdown />}
             <NotificationCenter />
 

@@ -380,7 +380,7 @@ export default function Transfer(props: propsIF) {
             {secondaryEnsOrNull}
             <Button
                 idForDOM='transfer_tokens_button'
-                style={{ textTransform: 'none' }}
+                style={{ textTransform: 'none', margin: '0 auto' }}
                 title={buttonMessage}
                 action={transferFn}
                 disabled={isButtonDisabled}

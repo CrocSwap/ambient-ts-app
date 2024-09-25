@@ -12,11 +12,10 @@ export default function BreadCrumb() {
                 </li>
                 {pathnames.map((value, index) => {
                     const to = `/${pathnames.slice(0, index + 1).join('/v1/')}`;
+                    const decodedString = decodeURIComponent(value);
                     return (
                         <li key={to}>
-                            <Link to={to}>
-                                {value.charAt(0).toUpperCase() + value.slice(1)}
-                            </Link>
+                            <Link to={to}>{decodedString}</Link>
                         </li>
                     );
                 })}
