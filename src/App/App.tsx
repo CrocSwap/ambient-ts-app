@@ -187,7 +187,7 @@ export default function App() {
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
-            {isCSSModalOpen && <CSSModal noSwap />}
+            {isCSSModalOpen && <CSSModal noSwap close={() => closeCSSModal()} />}
         </>
     );
 }
