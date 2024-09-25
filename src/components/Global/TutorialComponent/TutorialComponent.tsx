@@ -320,7 +320,24 @@ function TutorialComponent(props: propsIF) {
         <>
             {
                 forTooltip && isMobile ?
-                (<> </>)
+                (<> 
+                    {
+                    <div
+                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                        onClick={prevStep}
+                    >
+                        {'<'}
+                    </div>
+                }
+                {stepIndex < steps.length - 1 && (
+                    <div
+                        className={styles.step_btn + ' ' + styles.next_button}
+                        onClick={nextStep}
+                    >
+                        {'>'}
+                    </div>
+                )}
+                </>)
                 :
                 (<>
                     {
@@ -347,7 +364,7 @@ function TutorialComponent(props: propsIF) {
                     className={styles.step_btn + ' ' + styles.complete_button}
                     onClick={completeTutorial}
                 >
-                    Complete
+                    {isMobile && forTooltip ? 'X' : 'Complete'}
                 </div>
             )}
 

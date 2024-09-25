@@ -548,6 +548,8 @@ function Ranges(props: propsIF) {
                         firstMintTx: '', // unknown
                         aprEst: 0, // unknown
                     };
+                    const skipENSFetch = true;
+
                     const positionData = await getPositionData(
                         mockServerPosition,
                         tokens.tokenUniv,
@@ -558,7 +560,7 @@ function Ranges(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        true,
+                        skipENSFetch,
                     );
                     const onChainPosition: PositionIF = {
                         chainId: chainId,
@@ -703,8 +705,6 @@ function Ranges(props: propsIF) {
             );
         });
 
-   
-
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ): void => {
@@ -742,11 +742,11 @@ function Ranges(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%'}}>
+        <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%' }}>
             <ul
                 ref={listRef}
                 // id='current_row_scroll'
-                style={{height: '100%'}}
+                style={{ height: '100%' }}
             >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&
@@ -794,18 +794,24 @@ function Ranges(props: propsIF) {
         </div>
     );
 
-    if (isSmallScreen) return (
-        <div style={{  overflow: 'scroll', height:  '100%'}}>
-            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
-            {headerColumnsDisplay}
-
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {rangeDataOrNull}
+                </div>
             </div>
-            <div style={{overflowY: 'scroll', height: '100%'}}>
-                
-            {rangeDataOrNull}   
-</div>
-        </div>
-    )
+        );
     return (
         <FlexContainer
             flexDirection='column'

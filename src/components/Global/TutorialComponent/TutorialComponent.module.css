@@ -228,5 +228,6 @@
 
     .tutorial_steps{
         transform: translateX(-50%);
+        bottom: 5rem;
     }
 }

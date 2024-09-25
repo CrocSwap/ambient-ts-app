@@ -84,6 +84,8 @@ export default function Modal(props: ModalPropsIF) {
         <></>
     );
 
+   
+
     const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
 
     const footerOrNull = !footer ? null : footerJSX;
