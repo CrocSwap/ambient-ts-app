@@ -3,15 +3,14 @@ import styles from './CSSModal.module.css';
 
 interface propsIF {
     close: () => void;
-    noSwap?: boolean;
 }
 
 export default function CSSModal(props: propsIF) {
-    const { close, noSwap } = props;
+    const { close } = props;
     return (
         <div className={styles.css_modal}>
             <button onClick={close}>Close</button>
-            <CSSDebug noSwap={noSwap} />
+            <CSSDebug noSwap />
         </div>
     );
 }
