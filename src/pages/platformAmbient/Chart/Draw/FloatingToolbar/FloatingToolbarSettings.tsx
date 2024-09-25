@@ -1218,55 +1218,68 @@ function FloatingToolbarSettings(props: FloatingToolbarSettingsProps) {
                     )}
             </FloatingToolbarSettingsContainer>
 
-            {(isLineColorPickerTabActive ||
-                isBorderColorPickerTabActive ||
-                isBackgroundColorPickerTabActive) && (
-                <ColorPickerTab
-                    style={
-                        isNearestWindow
-                            ? {
-                                  bottom: '70px',
-                                  position: 'absolute',
-                                  zIndex: 199,
-                              }
-                            : {
-                                  position: 'absolute',
-                                  top:
-                                      (isLineColorPickerTabActive
-                                          ? 60
-                                          : isBorderColorPickerTabActive
-                                            ? 90
-                                            : 120) + 'px',
-                                  left: '85px',
-                              }
-                    }
-                    onClick={(event: MouseEvent<HTMLElement>) =>
-                        event.stopPropagation()
-                    }
-                >
-                    <SketchPicker
-                        color={
-                            isLineColorPickerTabActive
-                                ? colorPicker.lineColor
-                                : isBorderColorPickerTabActive
-                                  ? colorPicker.borderColor
-                                  : colorPicker.background
+            {selectedDrawnShape &&
+                (isLineColorPickerTabActive ||
+                    isBorderColorPickerTabActive ||
+                    isBackgroundColorPickerTabActive) && (
+                    <ColorPickerTab
+                        style={
+                            isNearestWindow
+                                ? {
+                                      bottom: '70px',
+                                      position: 'absolute',
+                                      zIndex: 199,
+                                  }
+                                : {
+                                      position: 'absolute',
+                                      top:
+                                          (isLineColorPickerTabActive
+                                              ? 30
+                                              : isBorderColorPickerTabActive
+                                                ? 30 +
+                                                  (!excludeLineOptions.includes(
+                                                      selectedDrawnShape?.data
+                                                          .type,
+                                                  )
+                                                      ? 30
+                                                      : 0)
+                                                : 60 +
+                                                  (!excludeLineOptions.includes(
+                                                      selectedDrawnShape?.data
+                                                          .type,
+                                                  )
+                                                      ? 30
+                                                      : 0)) + 'px',
+                                      left: '85px',
+                                  }
                         }
-                        width={'170px'}
-                        onChange={(item, event) => {
-                            event.stopPropagation();
-                            {
-                                handleEditColor(
-                                    item,
-                                    isLineColorPickerTabActive,
-                                    isBorderColorPickerTabActive,
-                                    isBackgroundColorPickerTabActive,
-                                );
+                        onClick={(event: MouseEvent<HTMLElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        <SketchPicker
+                            color={
+                                isLineColorPickerTabActive
+                                    ? colorPicker.lineColor
+                                    : isBorderColorPickerTabActive
+                                      ? colorPicker.borderColor
+                                      : colorPicker.background
                             }
-                        }}
-                    />
-                </ColorPickerTab>
-            )}
+                            width={'170px'}
+                            onChange={(item, event) => {
+                                event.stopPropagation();
+                                {
+                                    handleEditColor(
+                                        item,
+                                        isLineColorPickerTabActive,
+                                        isBorderColorPickerTabActive,
+                                        isBackgroundColorPickerTabActive,
+                                    );
+                                }
+                            }}
+                        />
+                    </ColorPickerTab>
+                )}
         </>
     );
 }
