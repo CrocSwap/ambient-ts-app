@@ -1,0 +1,174 @@
+.flexContainer {
+    display: flex;
+    flex-direction: column;
+    background: var(--dark2);
+    border-radius: 1rem;
+    gap: 8px;
+    padding: 8px 8px 8px 16px;
+    /* height: 81px; */
+}
+
+.text {
+    margin: 4px 0;
+    font-size: var(--body-size);
+    color: var(--text1);
+}
+
+.tokenQuantityContainer {
+    display: grid;
+    grid-template-columns: 1fr 145px;
+    min-height: 40px;
+    margin-bottom: 8px;
+}
+
+.inputDisabledText {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: var(--mini-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    font-weight: 100;
+}
+
+.tokenQuantityInput {
+    font-weight: 300;
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    color: var(--text1);
+    text-align: start;
+    width: 95%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0;
+    max-height: 23px;
+    margin: 8px 0;
+    border: none;
+    outline: 0;
+    background-color: transparent;
+    background-clip: padding-box;
+    transition:
+        border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
+    font-family: var(--mono);
+}
+
+.tokenQuantityInput::placeholder {
+    color: var(--text3);
+}
+
+.tokenSelectButton {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--dark1);
+    outline: none;
+    border: 0.5px solid transparent;
+    padding: 0 4px;
+    height: 40px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
+}
+
+.tokenSelectButton:hover {
+    border: 0.5px solid var(--accent1);
+    color: var(--accent1);
+    box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
+}
+
+.tokenSelectButton:focus-visible {
+    border: 1px solid var(--text1);
+}
+
+.justDisplay {
+    cursor: default;
+    pointer-events: none;
+    padding-left: 8px;
+    padding-right: 1.5rem;
+    
+}
+@keyframes shadow-pulse {
+    0% {
+        box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
+        border-radius: var(--border-radius);
+    }
+    100% {
+        box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+        border-radius: var(--border-radius);
+    }
+}
+
+.pulseAnimation {
+    animation: shadow-pulse 1s 6;
+}
+
+.futaLayout {
+    display: grid;
+    grid-template-columns: 70% 27%;
+    gap: 8px;
+    width: 100%;
+    font-family: 'Fira Mono';
+    height: 70px;
+}
+
+.futaLayoutLeft {
+    background: var(--dark2, #111a1e);
+    height: 100%;
+    display: flex;
+    padding: 8px;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex: 1 0 0;
+    align-self: stretch;
+    height: 70px;
+}
+
+.futaLayoutLeft p {
+    font-size: 14px;
+    color: var(--text2);
+}
+
+.futaLayoutRight {
+    height: 70px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.futaLayoutRight button {
+    background: var(--dark2, #111a1e);
+    outline: none;
+    border: none;
+}
+
+.tokenButton{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+    height: 60%;
+    color: var(--text1);
+    font-size: 18px;
+}
+.walletBalanceButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    font-size: 18px;
+    color: var(--text2);
+    cursor: pointer;
+    height: 39%;
+}

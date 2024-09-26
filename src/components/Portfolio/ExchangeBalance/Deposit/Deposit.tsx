@@ -427,7 +427,7 @@ export default function Deposit(props: propsIF) {
             <Button
                 idForDOM='deposit_tokens_button'
                 title={buttonMessage}
-                style={{ textTransform: 'none' }}
+                style={{ textTransform: 'none', margin: '0 auto' }}
                 action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();
                 }}

@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@material-ui/core';
 import {
     ReactNode,
     createContext,
@@ -18,6 +17,7 @@ import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { ReceiptContext } from './ReceiptContext';
 import { TransactionReceipt } from 'ethers';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 export interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;

@@ -6,6 +6,7 @@ interface propsIF {
     tempEnableDollarization: boolean;
     setTempEnableDollarization: Dispatch<SetStateAction<boolean>>;
     displayInSettings?: boolean;
+    isMobileChartSettings?: boolean;
 }
 
 export default function DollarizationModalControl(props: propsIF) {
@@ -13,6 +14,7 @@ export default function DollarizationModalControl(props: propsIF) {
         tempEnableDollarization,
         setTempEnableDollarization,
         displayInSettings,
+        isMobileChartSettings,
     } = props;
 
     const compKey = useId();
@@ -22,7 +24,13 @@ export default function DollarizationModalControl(props: propsIF) {
     } dollarization mode`;
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={
+                isMobileChartSettings
+                    ? styles.main_container_mobile_chart
+                    : styles.main_container
+            }
+        >
             {displayInSettings ? (
                 <p tabIndex={0}>{'Display prices in USD'}</p>
             ) : (

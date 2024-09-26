@@ -38,7 +38,8 @@ export function useHandleRangeButtonMessage(
         } else if (
             (tokenAmount === '0' ||
                 tokenAmount === '0.00' ||
-                tokenAmount === '') &&
+                tokenAmount === '' ||
+                parseFloat(tokenAmount) < 0) &&
             !isTokenInputDisabled
         ) {
             rangeButtonErrorMessage = 'Enter an Amount';

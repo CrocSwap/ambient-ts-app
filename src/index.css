@@ -5,6 +5,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
@@ -150,14 +152,23 @@
         0px 0px 12px rgba(205, 193, 255, 0.2),
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
+
+    --scrollbar: none;
+    --scrollbar-track: transparent;
+    --scrollbar-color: transparent;
+    --scrollbar-thumb: linear-gradient(
+        0deg,
+        var(--accent1) 0%,
+        var(--accent5) 49.48%,
+        var(--accent1) 100%
+    );
 }
 
-[data-theme='orange_dark'] {
-    --font-logo: 'Lexend Exa', sans-serif;
-    --font-family: 'Lexend Deca', sans-serif;
-    --roboto: 'Roboto Mono', monospace;
-    --mono: monospace, 'Lexend Deca' sans-serif;
-
+[data-theme='futa_dark'] {
+    /* subtract full height from navbar(56px) and footer(20px on desktop, 64 on mobile) */
+    --content-height: calc(100vh - 76px);
+    --content-height-mobile:
+            calc(100svh - 120px);
     /* font */
     --title-ts: 0px 0px 150px rgba(242, 153, 74, 0.5),
         0px 0px 100px rgba(242, 153, 74, 0.5),
@@ -182,30 +193,35 @@
     /* colors */
     --blur-bg: rgba(239, 178, 115, 0.5);
 
-    --text1: #f0f0f8;
-    --text2: #8b98a5;
-    --text3: #61646f;
+    --text1: #e1eeee;
+    --text2: #939c9e;
+    --text3: #4d5255;
 
-    --dark1: #06060c;
-    --dark2: #12121a;
-    --dark3: #1e1e24;
-    --dark4: #0e0e14;
-    --accent1: #f2883a;
-    --accent2: #ffae4d;
-    --accent3: #5ffff2;
+    --dark1: #0d0f13;
+    --dark2: #14161a;
+    --dark3: #1b1e22;
+    --dark4: #171f22;
+    --accent1: #62ebf1;
+    --accent2: #3c898e;
+    --accent3: #29585d;
+
     --accent4: #71b5fc;
-    --accent5: #fee0b5;
+    --accent5: #7be4ff;
 
-    --positive: #15be6f;
-    --negative: #f6385b;
+    --orange: #f1b162;
+    --green: #62f1b0;
+    --red: #f16962;
+
+    --positive: #62f1b0;
+    --negative: #f16962;
 
     --other-green: #6bae52;
     --other-red: #e75670;
 
     /* border */
     --color-border: 1px solid var(--accent1);
-    --border: var(--dark2);
-    --border-radius: 4px;
+    --border: #424649;
+    --border-radius: 0;
     --swap-border: var(--title-gradient);
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
@@ -220,86 +236,27 @@
     /* sizes */
     --footer-height: 24px;
 
-    /* gradients, shadows */
-    --shimmer: linear-gradient(to right, #bc6d24, #f39f4e);
-    --gradient-box-shadow: 0px 0px 20px 0px rgba(242, 153, 74, 0.25) inset;
+    --font-logo: 'Fira Mono', monospace;
+    --font-family: 'Fira Mono', monospace;
+    --roboto: 'Fira Mono', monospace;
+    --mono: 'Fira Mono', monospace;
 
-    --title-gradient: linear-gradient(
-        90deg,
+    --scrollbar: none;
+    --scrollbar-track: transparent;
+    --scrollbar-color: transparent;
+    --scrollbar-thumb: linear-gradient(
+        0deg,
         var(--accent1) 0%,
         var(--accent5) 49.48%,
         var(--accent1) 100%
     );
-    --primary-gradient: linear-gradient(
-        to right top,
-        #f2883a,
-        #ffae4d,
-        #ffca7d,
-        #ffdca1,
-        #fee0b5,
-        #fee0b5,
-        #fee0b5,
-        #fee0b5,
-        #ffdca1,
-        #ffca7d,
-        #ffae4d,
-        #f2883a
-    );
-    --chart-gradient: linear-gradient(to right, #87421e, #b26533);
-    --dark-gradient: linear-gradient(
-        90deg,
-        #7d5734 0%,
-        #aa7e4b 49.48%,
-        #8f6e42 100%
-    );
-    --highlight-gradient: linear-gradient(
-        270deg,
-        #f2993a,
-        #f9c06d,
-        #f06a2e,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
-    --red-gradient: linear-gradient(
-        90deg,
-        #ff6e34 32.38%,
-        #ff904c 51.39%,
-        #ff7a34 68.17%
-    );
-    --apr-gradient-primary: linear-gradient(
-        90deg,
-        #ffa15f 32.38%,
-        #ffd5b6 51.39%,
-        #ffa15f 68.17%
-    );
-    --apr-gradient-secondary: linear-gradient(
-        90deg,
-        #c7d80c 0%,
-        #e0ea74 49.48%,
-        #c7d80c 100%
-    );
 
-    --swap-box-shadow: none;
-    --dark-box-shadow: 1px 1px 1px #000, 0 0 1px #4e331f;
-    --dark1-box-shadow: 2px 2px 10px 0px var(--dark1);
-    --trade-box-shadow: 0 0 3px white, 0 0 5px white, 0 0 10px white,
-        0 0 30px #f2883a, 0 0 50px #f2883a, 0 0 80px #f2883a;
-    --glow-box-shadow: 0px 0px 100px rgba(254, 224, 181, 0.3),
-        0px 0px 60px rgba(254, 224, 181, 0.3),
-        0px 0px 20px rgba(254, 224, 181, 0.3),
-        0px 0px 12px rgba(254, 224, 181, 0.3),
-        0px 0px 6px rgba(254, 224, 181, 0.3),
-        0px 0px 3px rgba(254, 224, 181, 0.3);
-    --glow-light-box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
-
-    --font-logo: 'Kode Mono', sans-serif;
-    --font-family: 'Kode Mono', sans-serif;
-    --roboto: 'Kode Mono', monospace;
-    --mono: 'Kode Mono', 'Lexend Deca' sans-serif;
+    --title-gradient: linear-gradient(
+        90deg,
+        #62ebf1 0%,
+        #7be4ff 49.48%,
+        #62ebf1 100%
+    );
 }
 
 *::placeholder {

@@ -81,6 +81,7 @@ function RangeDetailsModal(props: propsIF) {
         ambientOrMax: highRangeDisplay,
         baseTokenCharacter,
         quoteTokenCharacter,
+        userMatchesConnectedAccount,
     } = useProcessRange(position, crocEnv, userAddress);
 
     const [serverPositionId, setServerPositionId] = useState<
@@ -391,7 +392,7 @@ function RangeDetailsModal(props: propsIF) {
                     setServerPositionId(json?.data?.positionId);
                     // temporarily skip ENS fetch
                     const skipENSFetch = true;
-                    const forceOnchainLiqUpdate = true;
+                    const forceOnchainLiqUpdate = userMatchesConnectedAccount;
                     const positionPayload = json?.data as PositionServerIF;
                     const positionStats = await getPositionData(
                         positionPayload,
@@ -416,6 +417,7 @@ function RangeDetailsModal(props: propsIF) {
         !!crocEnv,
         !!provider,
         chainId,
+        userMatchesConnectedAccount,
     ]);
 
     const [blastRewardsData, setBlastRewardsData] =

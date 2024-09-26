@@ -6,40 +6,64 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 
 // START: Import Other Local Files
 import { trimString } from '../../../ambient-utils/dataLayer';
-import {
-    PortfolioBannerLevelContainer,
-    PortfolioBannerRectangleContainer,
-} from '../../../styled/Components/Portfolio';
+
 import NoisyLines from '../../NoisyLines/NoisyLines';
-import {
-    UserDataContext,
-    UserXpDataIF,
-} from '../../../contexts/UserDataContext';
-import { useContext, useMemo } from 'react';
+import styles from './PortfolioBanner.module.css';
+import { UserXpDataIF } from '../../../contexts/UserDataContext';
+import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import UserLevelDisplay from '../../Global/LevelsCard/UserLevelDisplay';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import { AiOutlineDollarCircle } from 'react-icons/ai';
-import { HeaderButtons } from '../../../styled/Components/Chart';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { FlexContainer } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import {
+    NftFetchSettingsIF,
+    NftListByChain,
+} from '../../../contexts/TokenBalanceContext';
+
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
     connectedAccountActive: boolean;
     resolvedUserXp: UserXpDataIF;
+    showTabsAndNotExchange: boolean;
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
+
+    nftTestWalletInput: string;
+    setNftTestWalletInput: Dispatch<SetStateAction<string>>;
+
+    showNFTPage: boolean;
+    setShowNFTPage: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line
+    handleTestWalletChange: any;
+
+    NFTData: NftListByChain[] | undefined;
+    NFTFetchSettings: NftFetchSettingsIF;
+    setNFTFetchSettings: Dispatch<SetStateAction<NftFetchSettingsIF>>;
+    userAddress: `0x${string}` | undefined;
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const { ensName, resolvedAddress, connectedAccountActive, resolvedUserXp } =
-        props;
-    const { userAddress } = useContext(UserDataContext);
+    const {
+        ensName,
+        resolvedAddress,
+        connectedAccountActive,
+        resolvedUserXp,
+        showTabsAndNotExchange,
+        setShowTabsAndNotExchange,
+
+        showNFTPage,
+        setShowNFTPage,
+        handleTestWalletChange,
+        userAddress,
+    } = props;
     const { connectedUserXp } = useContext(ChainDataContext);
+
+    const desktopScreen = useMediaQuery('(min-width: 768px)');
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
-    const isSmallScreen = useMediaQuery('(max-width: 800px)');
 
     const xpData =
         connectedAccountActive || location.pathname === '/account/xp'
@@ -77,7 +101,7 @@ export default function PortfolioBanner(props: propsIF) {
     // ... gets a new address for programmatic generation
     const noisyLines = useMemo<JSX.Element | null>(() => {
         // early return if address is not available (first render)
-        if (!addressOfAccountDisplayed) return null;
+        if (!addressOfAccountDisplayed || !desktopScreen) return null;
         // locate rendered parent element in DOM by element ID
         const parentElem: HTMLElement | null =
             document.getElementById(BANNER_ID);
@@ -109,26 +133,18 @@ export default function PortfolioBanner(props: propsIF) {
         );
     }, [addressOfAccountDisplayed, document.getElementById(BANNER_ID)]);
 
+    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
+
     // early return is needed if the user is logged out
     if (!addressOfAccountDisplayed) return null;
 
     return (
-        <PortfolioBannerRectangleContainer
+        <div
+            className={styles.portfolio_banner_rectangle_container}
             id={BANNER_ID}
-            style={{ position: 'relative' }}
         >
             {noisyLines}
-            <FlexContainer
-                justifyContent={isSmallScreen ? 'flex-start' : 'flex-end'}
-                alignItems='baseline'
-                gap={16}
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    left: 20,
-                    zIndex: 1,
-                }} // Positioned above the NoisyLines component
-            >
+            <div className={styles.portfolio_banner_rectangle_content}>
                 <PortfolioBannerAccount
                     ensName={ensName}
                     ensNameAvailable={ensNameAvailable}
@@ -136,48 +152,49 @@ export default function PortfolioBanner(props: propsIF) {
                     truncatedAccountAddress={truncatedAccountAddress}
                     jazziconsToDisplay={jazziconsToDisplay}
                     connectedAccountActive={connectedAccountActive}
+                    showTabsAndNotExchange={showTabsAndNotExchange}
+                    setShowTabsAndNotExchange={setShowTabsAndNotExchange}
+                    nftTestWalletInput={nftTestWalletInput}
+                    setNftTestWalletInput={setNftTestWalletInput}
+                    showNFTPage={showNFTPage}
+                    setShowNFTPage={setShowNFTPage}
+                    handleTestWalletChange={handleTestWalletChange}
                 />
-                <DefaultTooltip
-                    interactive
-                    title={'Toggle USD Price Estimates'}
-                    enterDelay={500}
-                >
-                    <HeaderButtons
-                        mobileHide
-                        onClick={() =>
-                            setIsTradeDollarizationEnabled((prev) => !prev)
-                        }
-                        style={{ zIndex: '2' }}
+                {desktopScreen && (
+                    <DefaultTooltip
+                        interactive
+                        title={'Toggle USD Price Estimates'}
+                        enterDelay={500}
                     >
-                        <AiOutlineDollarCircle
-                            size={20}
-                            id='trade_dollarized_prices_button'
-                            aria-label='Toggle dollarized prices button'
-                            style={{
-                                color: isTradeDollarizationEnabled
-                                    ? 'var(--accent1)'
-                                    : undefined,
-                            }}
-                        />
-                    </HeaderButtons>
-                </DefaultTooltip>
-            </FlexContainer>
+                        <button
+                            className={styles.header_button}
+                            onClick={() =>
+                                setIsTradeDollarizationEnabled((prev) => !prev)
+                            }
+                            style={{ zIndex: '2' }}
+                        >
+                            <AiOutlineDollarCircle
+                                size={20}
+                                id='trade_dollarized_prices_button'
+                                aria-label='Toggle dollarized prices button'
+                                style={{
+                                    color: isTradeDollarizationEnabled
+                                        ? 'var(--accent1)'
+                                        : undefined,
+                                }}
+                            />
+                        </button>
+                    </DefaultTooltip>
+                )}
+            </div>
 
-            <PortfolioBannerLevelContainer
-                isAccountPage
-                style={{
-                    position: 'absolute',
-                    bottom: 20,
-                    right: 20,
-                    zIndex: 3,
-                }} // Positioned above the NoisyLines component
-            >
+            <div className={styles.portfolio_banner_level_container}>
                 <UserLevelDisplay
                     currentLevel={xpData?.data?.currentLevel}
                     globalPoints={xpData?.data?.globalPoints}
                     user={userLink}
                 />
-            </PortfolioBannerLevelContainer>
-        </PortfolioBannerRectangleContainer>
+            </div>
+        </div>
     );
 }

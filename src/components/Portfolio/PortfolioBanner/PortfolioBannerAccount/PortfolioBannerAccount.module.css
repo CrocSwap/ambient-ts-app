@@ -1,0 +1,48 @@
+.portfolio_banner_main_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(18, 18, 26, 0.3);
+    padding: 4px;
+    backdrop-filter: blur(2px);
+}
+.portfolio_settings_container{
+  
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 65px;
+        width: 65px;
+    }
+
+    .banner_settings_container{
+        background: red;
+      
+        z-index: 999;
+        position: absolute;
+    }
+
+    .deposit_button{
+        font-size: 12px;
+        outline: none;
+        background: transparent;
+        border: 1px solid var(--accent1);
+        color: var(--accent1);
+        padding: 4px;
+        border-radius: 20px;
+        min-width: 120px;
+
+    }
+
+    @media only screen and (min-width: 768px) {
+        .portfolio_banner_main_container{
+            width: 380.16px;
+            border-radius: 50px 4px 4px 50px;
+        }
+
+        .portfolio_settings_container{
+            height: 65px;
+        width: 65px;
+        }
+    }

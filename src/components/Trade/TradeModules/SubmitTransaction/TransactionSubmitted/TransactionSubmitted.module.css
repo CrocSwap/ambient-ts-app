@@ -67,6 +67,7 @@
     align-items: center;
     gap: 4px;
     transition: var(--transition);
+    border: 1px solid transparent;
 }
 
 .view_etherscan:hover,
