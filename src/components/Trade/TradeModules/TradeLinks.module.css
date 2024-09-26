@@ -1,0 +1,42 @@
+.container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+}
+.trade_link {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text1);
+    font-size: 18px;
+    border-radius: var(--border-radius);
+    transition: all var(--animation-speed) ease-in-out;
+    background: var(--dark2);
+}
+
+.trade_link_active {
+    background: var(--accent1);
+}
+
+.trade_link:hover {
+    background: var(--accent1);
+}
+
+@media only screen and (min-width: 769px) {
+    .trade_link {
+        
+        width: 116px;
+        height: 25px;
+    }
+    
+   
+.container{
+    height: 25px;
+    margin: 0 0 16px 0
+}
+
+}

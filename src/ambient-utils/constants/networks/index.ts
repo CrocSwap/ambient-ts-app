@@ -46,20 +46,29 @@ export const supportedNetworks: { [x: string]: NetworkIF } =
     brand === 'blast'
         ? getNetworks(Object.keys(blastBrandAssets.networks))
         : brand === 'scroll'
-        ? getNetworks(Object.keys(scrollBrandAssets.networks))
-        : brand === 'futa'
-        ? getNetworks(Object.keys(futaBrandAssets.networks))
-        : brand === 'ambientProduction'
-        ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
-        : brand === 'ambientTestnet'
-        ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
-        : getNetworks(Object.keys(defaultBrandAssets.networks));
+          ? getNetworks(Object.keys(scrollBrandAssets.networks))
+          : brand === 'futa'
+            ? getNetworks(Object.keys(futaBrandAssets.networks))
+            : brand === 'ambientProduction'
+              ? getNetworks(Object.keys(ambientProductionBrandAssets.networks))
+              : brand === 'ambientTestnet'
+                ? getNetworks(Object.keys(ambientTestnetBrandAssets.networks))
+                : getNetworks(Object.keys(defaultBrandAssets.networks));
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
-    return [
-        supportedNetworks[chainId].defaultPair[0],
-        supportedNetworks[chainId].defaultPair[1],
-    ];
+    if (brand === 'futa') {
+        return (
+            supportedNetworks[chainId].defaultPairFuta ?? [
+                supportedNetworks[chainId].defaultPair[0],
+                supportedNetworks[chainId].defaultPair[1],
+            ]
+        );
+    } else {
+        return [
+            supportedNetworks[chainId].defaultPair[0],
+            supportedNetworks[chainId].defaultPair[1],
+        ];
+    }
 }
 
 export { ethereumSepolia };

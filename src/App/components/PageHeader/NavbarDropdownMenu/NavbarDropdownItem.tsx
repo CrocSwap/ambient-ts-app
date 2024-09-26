@@ -1,10 +1,6 @@
 import { ReactNode } from 'react';
-import {
-    MenuItem,
-    IconRight,
-    ConnectButton,
-} from '../../../../styled/Components/Header';
 
+import styles from './NavbarDropdownMenu.module.css';
 interface propsIF {
     onClick: () => void;
     children: ReactNode;
@@ -16,33 +12,29 @@ export default function NavbarDropdownItem(props: propsIF) {
     const innerHtml = (
         <>
             <span>{props.children}</span>
-            <IconRight>{props.rightIcon}</IconRight>
+            <span className={styles.iconRight}>{props.rightIcon}</span>
         </>
     );
     if (props.connectButton) {
         return (
-            <ConnectButton
+            <button className={styles.connectButton}
                 onClick={() => props.onClick()}
                 tabIndex={0}
                 role='button'
             >
                 {innerHtml}
-            </ConnectButton>
+            </button>
         );
     }
 
     return (
-        <MenuItem
-            alignItems='center'
-            rounded
-            color='text1'
-            fontSize='header2'
+        <div
+            className={styles.menuItem}
             onClick={() => props.onClick()}
             tabIndex={0}
             role='button'
-            fullWidth
         >
             {innerHtml}
-        </MenuItem>
+        </div>
     );
 }

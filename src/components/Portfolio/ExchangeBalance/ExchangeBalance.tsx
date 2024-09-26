@@ -2,7 +2,7 @@ import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-
+import styles from './ExchangeBalance.module.css'
 import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
 import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
@@ -16,18 +16,10 @@ import {
 } from 'react';
 import { fetchEnsAddress } from '../../../ambient-utils/api';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 
-import { FlexContainer } from '../../../styled/Common';
 
-import {
-    PortfolioControlContainer,
-    PortfolioInfoText,
-    PortfolioMotionContainer,
-    PortfolioMotionSubContainer,
-} from '../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -37,6 +29,7 @@ interface propsIF {
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
+    setIsAutoLayout?: Dispatch<SetStateAction<boolean>> | undefined;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -45,6 +38,7 @@ export default function ExchangeBalance(props: propsIF) {
         setFullLayoutActive,
         isModalView = false,
         setTokenModalOpen = () => null,
+        setIsAutoLayout
     } = props;
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -247,11 +241,14 @@ export default function ExchangeBalance(props: propsIF) {
             icon: transferImage,
         },
     ];
-
+    const toggleFullLayoutActive = () => {
+        setFullLayoutActive(!fullLayoutActive);
+       setIsAutoLayout && setIsAutoLayout(false); // Mark that the layout is now manually controlled
+      };
     const exchangeControl = (
-        <PortfolioControlContainer
+        <div className={styles.portfolio_control_container}
             id='portfolio_sidebar_toggle'
-            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+            onClick={toggleFullLayoutActive}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
                 <img
@@ -261,41 +258,17 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-        </PortfolioControlContainer>
+        </div>
     );
 
-    const columnView = useMediaQuery('(max-width: 1200px)');
 
     return (
         <>
-            <PortfolioMotionContainer
-                animate={
-                    columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
-                }
-                fullWidth
-                flexDirection='column'
-                alignItems='center'
-                background='dark1'
-                rounded
-                fullHeight
-                xl={{ maxWidth: '400px' }}
-            >
-                <PortfolioMotionSubContainer
-                    fullHeight
-                    fullWidth
-                    alignItems='center'
-                    rounded
-                    id='subcont'
-                >
-                    <FlexContainer
-                        fullHeight
-                        fullWidth
-                        rounded
-                        background='dark1'
-                        justifyContent='center'
-                        position='relative'
-                    >
-                        {(!fullLayoutActive || columnView || isModalView) && (
+         
+            <div className={styles.portfolio_motion_container}>
+                <div className={styles.portfolio_motion_sub_container} id='subcont'>
+                    <div className={styles.tab_component_container}>
+                        {(!fullLayoutActive  || isModalView) && (
                             <TabComponent
                                 data={accountData}
                                 rightTabOptions={false}
@@ -304,16 +277,17 @@ export default function ExchangeBalance(props: propsIF) {
                             />
                         )}
                         {!isModalView && exchangeControl}
-                    </FlexContainer>
-                </PortfolioMotionSubContainer>
-                {(!fullLayoutActive || columnView || isModalView) && (
-                    <PortfolioInfoText>
+                    </div>
+                </div>
+                {(!fullLayoutActive  || isModalView) && (
+                    <p className={styles.portfolio_info_text}>
                         Collateral deposited into the Ambient Finance exchange
                         can be traded at lower gas costs and withdrawn at any
                         time.
-                    </PortfolioInfoText>
+                    </p>
                 )}
-            </PortfolioMotionContainer>
+                </div>
+           
         </>
     );
 }

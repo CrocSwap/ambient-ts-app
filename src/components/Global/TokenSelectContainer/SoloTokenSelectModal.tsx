@@ -23,7 +23,6 @@ import {
 } from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -31,8 +30,9 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
-
     noModal?: boolean;
+    platform?: 'ambient' | 'futa';
+    isFuta?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -43,6 +43,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
+        platform = 'ambient',
+        isFuta = false,
     } = props;
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
@@ -50,7 +52,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         chainData: { chainId },
         provider,
     } = useContext(CrocEnvContext);
-
+    isFuta;
     const {
         tokens,
         outputTokens,
@@ -67,13 +69,13 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
             tokens.acknowledge(tkn);
         }
-
         if (isSingleToken) setSoloToken(tkn);
 
         // array of recent tokens from App.tsx (current session only)
@@ -129,6 +131,37 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         }
         setInput('');
         // close the token modal
+        onClose();
+    };
+
+    const chooseTokenFuta = (tkn: TokenIF): void => {
+        if (tokenAorB === 'A') {
+            if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
+                reverseTokens && reverseTokens();
+                onClose();
+                return;
+            } else {
+                linkGenSwap.navigate({
+                    chain: chainId,
+                    tokenA: tkn.address,
+                    tokenB: tokenB.address,
+                });
+            }
+        } else if (tokenAorB === 'B') {
+            if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+                console.log('running');
+                console.log(reverseTokens);
+                reverseTokens && reverseTokens();
+                onClose();
+                return;
+            } else {
+                linkGenSwap.navigate({
+                    chain: chainId,
+                    tokenA: tokenA.address,
+                    tokenB: tkn.address,
+                });
+            }
+        }
         onClose();
     };
 
@@ -262,7 +295,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     {validatedInput && (
                         <button
                             className={styles.clearButton}
-                            onClick={() => setInput('')}
+                            onClick={() => {
+                                setInput('');
+                            }}
                             aria-label='Clear input'
                             tabIndex={0}
                         >
@@ -271,67 +306,133 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 <div style={{ padding: '1rem' }}>
-                    {isWrappedNativeToken(validatedInput) && (
-                        <WarningBox
-                            title=''
-                            details={WETH_WARNING}
-                            noBackground
-                            button={
-                                <button
-                                    onClick={() => {
-                                        try {
-                                            const wethToken =
-                                                tokens.getTokenByAddress(
-                                                    validatedInput,
-                                                );
-                                            if (wethToken) {
-                                                chooseToken(wethToken, false);
+                    {platform !== 'futa' &&
+                        isWrappedNativeToken(validatedInput) && (
+                            <WarningBox
+                                title=''
+                                details={WETH_WARNING}
+                                noBackground
+                                button={
+                                    <button
+                                        onClick={() => {
+                                            try {
+                                                const wethToken =
+                                                    tokens.getTokenByAddress(
+                                                        validatedInput,
+                                                    );
+                                                if (wethToken) {
+                                                    chooseToken(
+                                                        wethToken,
+                                                        false,
+                                                    );
+                                                }
+                                            } catch (err) {
+                                                IS_LOCAL_ENV &&
+                                                    console.warn(err);
+                                                onClose();
                                             }
-                                        } catch (err) {
-                                            IS_LOCAL_ENV && console.warn(err);
-                                            onClose();
-                                        }
-                                    }}
-                                >
-                                    I understand, use WETH
-                                </button>
-                            }
-                        />
-                    )}
+                                        }}
+                                    >
+                                        I understand, use WETH
+                                    </button>
+                                }
+                            />
+                        )}
                 </div>
-                {isWrappedNativeToken(validatedInput) &&
-                    [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
-                        (token: TokenIF) => (
-                            <TokenSelect
-                                key={JSON.stringify(token)}
-                                token={token}
+                {platform === 'ambient' && (
+                    <>
+                        {isWrappedNativeToken(validatedInput) &&
+                            [
+                                tokens.getTokenByAddress(
+                                    ZERO_ADDRESS,
+                                ) as TokenIF,
+                            ].map((token: TokenIF) => (
+                                <TokenSelect
+                                    key={JSON.stringify(token)}
+                                    token={token}
+                                    chooseToken={chooseToken}
+                                    fromListsText=''
+                                />
+                            ))}
+                        {showSoloSelectTokenButtons ? (
+                            <div className='custom_scroll_ambient'>
+                                {removeWrappedNative(chainId, outputTokens)
+                                    .slice(0, MAX_TOKEN_COUNT)
+                                    .map((token: TokenIF) => {
+                                        return (
+                                            <TokenSelect
+                                                key={JSON.stringify(token)}
+                                                token={token}
+                                                chooseToken={chooseToken}
+                                                fromListsText=''
+                                            />
+                                        );
+                                    })}
+                            </div>
+                        ) : (
+                            <SoloTokenImport
+                                customToken={customToken}
                                 chooseToken={chooseToken}
+                                chainId={chainId}
+                            />
+                        )}
+                    </>
+                )}
+                {platform === 'futa' &&
+                    tokens
+                        .getTokensFromList('/futa-token-list.json')
+                        .filter((tk: TokenIF) => {
+                            // fn to compare name and symbol to search input
+                            function matchSymbolOrName(
+                                ...args: [string, ...string[]]
+                            ): boolean {
+                                const isMatch: boolean = args.some(
+                                    (a: string) => {
+                                        return a
+                                            .toLowerCase()
+                                            .includes(
+                                                validatedInput.toLowerCase(),
+                                            );
+                                    },
+                                );
+                                return isMatch;
+                            }
+                            // fn to compare token address to search input
+                            function matchAddress(reference: string): boolean {
+                                let isMatch: boolean;
+                                if (reference.length === 42) {
+                                    isMatch =
+                                        reference.toLowerCase() ===
+                                        validatedInput.toLowerCase();
+                                    console.log(isMatch);
+                                } else if (reference.length === 40) {
+                                    isMatch =
+                                        '0x' + reference.toLowerCase() ===
+                                        validatedInput.toLowerCase();
+                                } else {
+                                    isMatch = false;
+                                }
+                                return isMatch;
+                            }
+                            // logic router for search type: name, symbol, address
+                            function checkForMatches(): boolean {
+                                return validatedInput.length === 40 ||
+                                    validatedInput.length === 42
+                                    ? matchAddress(tk.address)
+                                    : matchSymbolOrName(tk.name, tk.symbol);
+                            }
+                            // if user entered search input text, check for matches,
+                            // ... else return `true` (no tokens filtered out)
+                            return validatedInput ? checkForMatches() : true;
+                        })
+                        .map((ticker: TokenIF) => (
+                            <TokenSelect
+                                key={JSON.stringify(ticker)}
+                                token={ticker}
+                                chooseToken={chooseTokenFuta}
                                 fromListsText=''
                             />
-                        ),
-                    )}
-                {showSoloSelectTokenButtons ? (
-                    <div className='custom_scroll_ambient'>
-                        {removeWrappedNative(chainId, outputTokens)
-                            .slice(0, MAX_TOKEN_COUNT)
-                            .map((token: TokenIF) => {
-                                return (
-                                    <TokenSelect
-                                        key={JSON.stringify(token)}
-                                        token={token}
-                                        chooseToken={chooseToken}
-                                        fromListsText=''
-                                    />
-                                );
-                            })}
-                    </div>
-                ) : (
-                    <SoloTokenImport
-                        customToken={customToken}
-                        chooseToken={chooseToken}
-                        chainId={chainId}
-                    />
-                )}
+                        ))}
             </section>
         </Modal>
     );

@@ -1,5 +1,11 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
-import { useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
@@ -8,15 +14,13 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
-import {
-    PortfolioBannerMainContainer,
-    ProfileSettingsContainer,
-} from '../../../../styled/Components/Portfolio';
+import styles from './PortfolioBannerAccount.module.css';
+
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
-import NFTBannerAccount from './NFTBannerAccount';
+
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -24,13 +28,22 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     jazziconsToDisplay: JSX.Element | null;
     connectedAccountActive: boolean;
+    showTabsAndNotExchange: boolean;
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
+
+    nftTestWalletInput: string;
+    setNftTestWalletInput: Dispatch<SetStateAction<string>>;
+
+    showNFTPage: boolean;
+    setShowNFTPage: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line 
+    handleTestWalletChange: any;
 }
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
 ) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
-    const [showNFTPage, setShowNFTPage] = useState(false);
 
     const {
         ensName,
@@ -38,20 +51,27 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
         connectedAccountActive,
+        showTabsAndNotExchange,
+        setShowTabsAndNotExchange,
+
+        showNFTPage,
+        setShowNFTPage,
+
+        nftTestWalletInput,
+        setNftTestWalletInput,
+
+        handleTestWalletChange,
     } = props;
 
     const {
         userAddress,
         userProfileNFT,
-        isfetchNftTriggered,
-        setIsfetchNftTriggered,
+
         setUserProfileNFT,
         setUserThumbnailNFT,
-        setNftTestWalletAddress,
     } = useContext(UserDataContext);
 
-    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
-        useContext(TokenBalanceContext);
+    const { NFTData } = useContext(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -60,7 +80,7 @@ export default function PortfolioBannerAccount(
         // chainData: { blockExplorer, chainId },
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
-    const isSmallScreen = useMediaQuery('(max-width: 800px)');
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
     const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
 
@@ -141,16 +161,11 @@ export default function PortfolioBannerAccount(
         document.body.addEventListener('keydown', openWalletAddressPanel);
     }, []);
 
-    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
-
-    function handleTestWalletChange(nftTestWalletInput: string) {
-        setNftTestWalletAddress(() => nftTestWalletInput);
-        setIsfetchNftTriggered(() => true);
-    }
-
     return (
-        <PortfolioBannerMainContainer
-            animate={showAccountDetails ? 'open' : 'closed'}
+        <div
+            className={styles.portfolio_banner_main_container}
+
+            // animate={showAccountDetails ? 'open' : 'closed'}
         >
             <FlexContainer
                 alignItems='flex-end'
@@ -167,8 +182,13 @@ export default function PortfolioBannerAccount(
                         ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
-                    <ProfileSettingsContainer
-                        placement={NFTData ? true : false}
+                    <div
+                        className={styles.portfolio_settings_container}
+                        style={{
+                            transform: NFTData
+                                ? 'transform: translate(0%, 23%)'
+                                : '',
+                        }}
                     >
                         {(resolvedAddress || userAddress) &&
                             getAvatarForProfilePage(
@@ -183,26 +203,15 @@ export default function PortfolioBannerAccount(
                                     resolvedAddress.length > 0 &&
                                     !connectedAccountActive
                                     ? false
-                                    : // NFTData &&
-                                      //       NFTData.find(
-                                      //           (nftChainList) =>
-                                      //               nftChainList.chainId ===
-                                      //               chainId,
-                                      //       ) &&
-                                      //       NFTData.find(
-                                      //           (nftChainList) =>
-                                      //               nftChainList.chainId ===
-                                      //               chainId,
-                                      //       )?.userHasNFT &&
-                                      true,
+                                    : true,
                             )}
-                    </ProfileSettingsContainer>
+                    </div>
                 </span>
 
                 <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer
                         fontWeight='300'
-                        fontSize='header1'
+                        fontSize={isSmallScreen ? 'body' : 'header1'}
                         cursor='pointer'
                         letterSpacing
                         color='text1'
@@ -239,22 +248,20 @@ export default function PortfolioBannerAccount(
                         ) : null}
                     </FlexContainer>
                 </FlexContainer>
-            </FlexContainer>
 
-            {showNFTPage && NFTData && (
-                <NFTBannerAccount
-                    setShowNFTPage={setShowNFTPage}
-                    showNFTPage={showNFTPage}
-                    NFTData={NFTData}
-                    isfetchNftTriggered={isfetchNftTriggered}
-                    setIsfetchNftTriggered={setIsfetchNftTriggered}
-                    NFTFetchSettings={NFTFetchSettings}
-                    setNFTFetchSettings={setNFTFetchSettings}
-                    setNftTestWalletInput={setNftTestWalletInput}
-                    nftTestWalletInput={nftTestWalletInput}
-                    handleTestWalletChange={handleTestWalletChange}
-                />
-            )}
+                {isSmallScreen && connectedAccountActive && (
+                    <button
+                        onClick={() =>
+                            setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                        }
+                        className={styles.deposit_button}
+                    >
+                        {showTabsAndNotExchange
+                            ? 'Transactions'
+                            : 'Deposit/Withdraw'}
+                    </button>
+                )}
+            </FlexContainer>
 
             {isWalletPanelActive && (
                 <div
@@ -292,6 +299,6 @@ export default function PortfolioBannerAccount(
                     />
                 </div>
             )}
-        </PortfolioBannerMainContainer>
+        </div>
     );
 }
