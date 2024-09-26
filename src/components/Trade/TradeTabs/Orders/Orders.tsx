@@ -110,9 +110,14 @@ function Orders(props: propsIF) {
         }
         // return [fetchedTransactions.limitOrders.length > dataPerPage ? dataPerPage : fetchedTransactions.limitOrders.length , 
         //     fetchedTransactions.limitOrders.length / dataPerPage  == 2 ? dataPerPage : fetchedTransactions.limitOrders.length - dataPerPage];
-        
-        return [limitOrdersByPool.limitOrders.length > dataPerPage ? dataPerPage : limitOrdersByPool.limitOrders.length , 
-            limitOrdersByPool.limitOrders.length / dataPerPage  == 2 ? dataPerPage : limitOrdersByPool.limitOrders.length - dataPerPage];
+        if(limitOrdersByPool.limitOrders.length - dataPerPage < 0){
+            return [Math.ceil(limitOrdersByPool.limitOrders.length / 2), 
+                Math.floor(limitOrdersByPool.limitOrders.length / 2)];
+        }
+        else{
+            return [limitOrdersByPool.limitOrders.length > dataPerPage ? dataPerPage : limitOrdersByPool.limitOrders.length , 
+                limitOrdersByPool.limitOrders.length / dataPerPage  == 2 ? dataPerPage : limitOrdersByPool.limitOrders.length - dataPerPage];
+        }
     }
 
     
