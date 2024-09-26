@@ -78,6 +78,13 @@
 
     /* min-height: 250px; */
 }
+.drag_handle {
+    width: 40px;
+    height: 5px;
+    background-color: var(--accent1);
+    border-radius: 2.5px;
+    margin: 0 auto;
+}
 
 .modal_header svg:hover {
     color: var(--text1);

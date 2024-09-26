@@ -13,8 +13,8 @@ import {
 import styles from './MobileDropdown.module.css';
 import { openInNewTab, trimString } from '../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import UserProfileCard from '../Account/UserProfileCard';
-import WalletDropdown from '../Account/WalletDropdown/WalletDropdown';
+import UserProfileCard from '../UserMenu/UserProfileCard';
+import WalletDropdown from '../UserMenu/WalletDropdown/WalletDropdown';
 // import LevelDropdown from '../Account/LevelDropdown/LevelDropdown';
 import UserLevelDisplay from '../../../../components/Global/LevelsCard/UserLevelDisplay';
 import { Link } from 'react-router-dom';
@@ -247,9 +247,9 @@ export default function MobileDropdown() {
         />
     );
 
-    const isDraft = true
+    const isDraft = true;
 
-    if ( isDraft) return null
+    if (isDraft) return null;
 
     return (
         <section className={styles.container}>

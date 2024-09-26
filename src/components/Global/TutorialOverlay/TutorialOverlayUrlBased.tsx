@@ -11,6 +11,7 @@ import { TutorialIF, TutorialStepExternalComponent } from '../../Chat/ChatIFs';
 import { generateObjectHash, getLS, setLS } from '../../Chat/ChatUtils';
 import TutorialComponent from '../TutorialComponent/TutorialComponent';
 import styles from './TutorialOverlayUrlBased.module.css';
+import { useFutaHomeContext } from '../../../contexts/Futa/FutaHomeContext';
 // import { MdOutlineArrowForwardIos, MdOutlineArrowBackIos, MdClose} from 'react-icons/md'
 
 interface TutorialOverlayPropsIF {
@@ -37,6 +38,8 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
     const {
         walletModal: { open: openWalletModal },
     } = useContext(AppStateContext);
+
+    const {showTutosLocalStorage} = useFutaHomeContext();
 
 
     const connectButton =         (<button
@@ -171,7 +174,7 @@ function TutorialOverlayUrlBased(props: TutorialOverlayPropsIF) {
         stepsFiltered.length > 0 &&
         showTutorial &&
         isTutoBuild &&
-        (selectedTutorialRef.current && !selectedTutorialRef.current.disableDefault);
+        (selectedTutorialRef.current && !selectedTutorialRef.current.disableDefault && showTutosLocalStorage);
 
     return (
         <>
