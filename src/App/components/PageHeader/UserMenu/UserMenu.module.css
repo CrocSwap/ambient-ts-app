@@ -1,0 +1,56 @@
+.levelButton {
+    outline: none;
+    border: none;
+    background: var(--accent1);
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%;
+    padding: 4px 3px 4px 4px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text1);
+}
+
+.largeLevelButton {
+    width: 40px;
+    height: 40px;
+}
+.titleGradientButton {
+    outline: none;
+    border: none;
+    background: var(--dark2);
+    padding: 7.5px 12px 7.5px 6px;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.titleGradientButton:hover,
+.titleGradientButton:focus-visible {
+    box-shadow: var(--glow-light-box-shadow);
+}
+
+.titleGradientButton p {
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.walletName {
+    min-width: 80px;
+}
+
+@media (max-width: 600px) {
+    .walletName {
+        display: none;
+    }
+}

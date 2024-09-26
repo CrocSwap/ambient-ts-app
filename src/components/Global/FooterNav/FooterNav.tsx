@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { RiHome4Fill, RiSwapBoxFill } from 'react-icons/ri';
-import { GiTrade } from 'react-icons/gi';
-import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
-import { BsFillChatDotsFill } from 'react-icons/bs';
+import { RiChat3Line, RiHome2Line } from 'react-icons/ri';
+import {  MdOutlineExplore } from 'react-icons/md';
+import { HiArrowsRightLeft } from 'react-icons/hi2';
+import { VscAccount } from 'react-icons/vsc';
+
 import { motion } from 'framer-motion';
 import styles from './FooterNav.module.css';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
@@ -39,20 +40,20 @@ const FooterNav: React.FC = () => {
     // const { hideOnMobile } = useContext(SidebarContext);
 
     const linksData = [
-        { title: 'Home', destination: '/', icon: RiHome4Fill },
-        {
-            title: 'Swap',
-            destination: `/swap/${paramsSlug}`,
-            icon: RiSwapBoxFill,
-        },
+        { title: 'Home', destination: '/', icon: RiHome2Line },
+        // {
+        //     title: 'Swap',
+        //     destination: `/swap/${paramsSlug}`,
+        //     icon: RiSwapBoxFill,
+        // },
         {
             title: 'Trade',
             destination: `${tradeDestination}${paramsSlug}`,
-            icon: GiTrade,
+            icon: HiArrowsRightLeft,
         },
         { title: 'Explore', destination: '/explore', icon: MdOutlineExplore },
-        { title: 'Account', destination: '/account/', icon: MdAccountBox },
-        { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
+        { title: 'Account', destination: '/account/', icon: VscAccount },
+        { title: 'Chat', destination: '/chat/', icon: RiChat3Line },
     ];
 
     const path = location.pathname;
@@ -63,20 +64,21 @@ const FooterNav: React.FC = () => {
     useEffect(() => {
         const currentPath = location.pathname;
 
-        if (currentPath.includes('/swap')) {
-            setActiveIndex(1); // Swap
-        } else if (currentPath.includes('/trade')) {
-            setActiveIndex(2); // Trade
+        // if (currentPath.includes('/swap')) {
+        //     setActiveIndex(1); // Swap
+        // } else
+            if (currentPath.includes('/trade')) {
+            setActiveIndex(1); // Trade
         } else if (currentPath.includes('/explore')) {
-            setActiveIndex(3); // Explore
+            setActiveIndex(2); // Explore
         } else if (
             currentPath.includes('/account') ||
             isAddressEns ||
             isAddressHex
         ) {
-            setActiveIndex(4); // Account
+            setActiveIndex(3); // Account
         } else if (currentPath.includes('/chat')) {
-            setActiveIndex(5); // Chat
+            setActiveIndex(4); // Chat
         } else {
             setActiveIndex(0); // Home
         }
@@ -86,18 +88,21 @@ const FooterNav: React.FC = () => {
         <div className={styles.nav}>
             {linksData.map((link, index) => (
                 <motion.div
-                    key={link.destination}
+                    key={index}
                     className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
                     onClick={() => setActiveIndex(index)}
                     initial={{ flexGrow: 1 }}
                     animate={{ flexGrow: index === activeIndex ? 3 : 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                    <Link to={link.destination} className={styles.link}>
+                    <Link to={link.destination} className={styles.link}
+                      
+                    
+                    >
                         <link.icon
                             size={24}
                             color={
-                                index === activeIndex ? 'var(--accent1)' : ''
+                                index === activeIndex ? 'var(--accent1)' : 'var(--text1)'
                             }
                             className={styles.icon}
                         />

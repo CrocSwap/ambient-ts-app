@@ -5,8 +5,14 @@ import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
+import Modal from '../Modal/Modal';
+import ModalHeader from '../ModalHeader/ModalHeader';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 const NotificationCenter = () => {
+
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const [showNotificationTable, setShowNotificationTable] =
         useState<boolean>(false);
 
@@ -45,6 +51,20 @@ const NotificationCenter = () => {
     };
     UseOnClickOutside(activityCenterRef, clickOutsideHandler);
     UseOnClickOutside(notificationItemRef, clickOutsideHandler);
+
+    const modalVersion = (
+        <Modal usingCustomHeader onClose={() => setShowNotificationTable(false)}>
+            <ModalHeader title={'Recent Transactions'} onClose={() => setShowNotificationTable(false)} />
+            <NotificationTable
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                        pendingTransactions={currentPendingTransactionsArray}
+                        notificationItemRef={notificationItemRef}
+                    />
+            </Modal>
+    )
+
+    if ( showMobileVersion &&  showNotificationTable) return modalVersion
 
     return (
         <AnimateSharedLayout>

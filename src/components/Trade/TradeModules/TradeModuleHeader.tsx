@@ -9,12 +9,13 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { useModal } from '../../Global/Modal/useModal';
-import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModules';
-import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { dexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import TradeLinks from './TradeLinks';
+import styles from './TradeModuleHeader.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     slippage: SlippageMethodsIF;
     dexBalSwap?: dexBalanceMethodsIF;
@@ -22,6 +23,7 @@ interface propsIF {
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
+import { LuSettings2 } from 'react-icons/lu';
 
 function TradeModuleHeader(props: propsIF) {
     const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
@@ -32,8 +34,18 @@ function TradeModuleHeader(props: propsIF) {
 
     const [isShareModalOpen, openShareModal, closeShareModal] = useModal();
 
-    const { baseToken, quoteToken, isDenomBase, toggleDidUserFlipDenom } =
-        useContext(TradeDataContext);
+    const smallScreen = useMediaQuery('(max-width: 768px)');
+
+    const {
+        baseToken,
+        quoteToken,
+        isDenomBase,
+        toggleDidUserFlipDenom,
+        limitTick,
+    } = useContext(TradeDataContext);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
@@ -41,17 +53,46 @@ function TradeModuleHeader(props: propsIF) {
     // TODO:    refactor this file to have only a single top-level return and remove
     // TODO:    ... the `<div>` wrapper around the `TradeModuleHeaderContainer` element
 
+    if (smallScreen)
+        return (
+            <>
+                <div className={styles.mobile_container}>
+                    <div style={{ width: '100%' }}>
+                        <TradeLinks
+                            chainId={chainId}
+                            tokenA={baseToken}
+                            tokenB={quoteToken}
+                            limitTick={limitTick}
+                        />
+                    </div>
+
+                    <button
+                        onClick={openSettingsModal}
+                        id='settings_button'
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Settings button'
+                        className={styles.icon_container}
+                    >
+                        <LuSettings2 size={22} />
+                    </button>
+                </div>
+                {isSettingsModalOpen && (
+                    <TransactionSettingsModal
+                        module={settingsTitle}
+                        slippage={slippage}
+                        dexBalSwap={dexBalSwap}
+                        bypassConfirm={bypassConfirm}
+                        onClose={closeSettingsModal}
+                    />
+                )}
+            </>
+        );
+
     return (
         <>
             <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
-                <TradeModuleHeaderContainer
-                    flexDirection='row'
-                    alignItems='center'
-                    justifyContent='space-between'
-                    fullWidth
-                    fontSize='header1'
-                    color='text2'
-                >
+                <header className={styles.main_container}>
                     <AiOutlineShareAlt
                         onClick={openShareModal}
                         id='share_button'
@@ -61,22 +102,22 @@ function TradeModuleHeader(props: propsIF) {
                     />
 
                     {isSwapPage ? (
-                        <Text id='swap_header_token_pair' as='h4' color='text1'>
+                        <h4
+                            id='swap_header_token_pair'
+                            className={styles.swap_title}
+                        >
                             Swap
-                        </Text>
+                        </h4>
                     ) : (
-                        <Text
+                        <h4
+                            className={styles.token_pair}
                             id='trade_header_token_pair'
-                            as='h4'
-                            color='text1'
-                            fontSize='header1'
                             role='button'
-                            cursor='pointer'
                             onClick={() => toggleDidUserFlipDenom()}
                         >
                             {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                             {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                        </Text>
+                        </h4>
                     )}
                     <IconWithTooltip title='Settings' placement='left'>
                         <div
@@ -89,7 +130,7 @@ function TradeModuleHeader(props: propsIF) {
                             {<SettingsSvg />}
                         </div>
                     </IconWithTooltip>
-                </TradeModuleHeaderContainer>
+                </header>
             </div>
             {isSettingsModalOpen && (
                 <TransactionSettingsModal

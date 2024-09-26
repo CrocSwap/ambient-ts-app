@@ -1,4 +1,5 @@
 // token lists recognized by the app
+
 // list 'broken' exists for testing purposes only
 export const tokenListURIs = {
     ethereumCoingecko: 'https://tokens.coingecko.com/ethereum/all.json',
@@ -10,6 +11,8 @@ export const tokenListURIs = {
     testnet: '/testnet-token-list.json',
     uniswap: 'https://tokens.uniswap.org',
     ambient: '/ambient-token-list.json',
+    futa: '/futa-token-list.json',
+    baseCoingecko: 'https://tokens.coingecko.com/base/all.json',
 };
 
 export type TokenListURITypes = keyof typeof tokenListURIs;

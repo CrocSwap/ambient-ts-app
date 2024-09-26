@@ -651,6 +651,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         const userPoolPositionsCacheEndpoint = GCGO_OVERRIDE_URL
                             ? GCGO_OVERRIDE_URL + '/user_pool_positions?'
                             : props.graphCacheUrl + '/user_pool_positions?';
+                        const forceOnchainLiqUpdate = true;
                         fetch(
                             userPoolPositionsCacheEndpoint +
                                 new URLSearchParams({
@@ -684,6 +685,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     props.cachedTokenDetails,
                                                     props.cachedEnsResolve,
                                                     skipENSFetch,
+                                                    forceOnchainLiqUpdate,
                                                 );
                                             },
                                         ),

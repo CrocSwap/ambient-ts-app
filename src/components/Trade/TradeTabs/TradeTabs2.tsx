@@ -28,6 +28,7 @@ import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface propsIF {
     filter: CandleDataIF | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleDataIF | undefined>>;
@@ -61,6 +62,9 @@ function TradeTabs2(props: propsIF) {
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const { isUserConnected, userAddress } = useContext(UserDataContext);
+
+    const smallScreen = useMediaQuery('(max-width: 768px)');
+
 
     const selectedBaseAddress = baseToken.address;
     const selectedQuoteAddress = quoteToken.address;
@@ -144,6 +148,36 @@ function TradeTabs2(props: propsIF) {
                   showRightSideOption: false,
                   //   onClick: handleChartHeightOnInfo,
               },
+          ];
+    const tradeTabDataMobile = isCandleSelected
+        ? [
+              {
+                  label: 'Transactions',
+                  content: <Transactions {...transactionsProps} />,
+                  icon: recentTransactionsImage,
+                  showRightSideOption: true,
+              },
+          ]
+        : [
+              {
+                  label: 'Transactions',
+                  content: <Transactions {...transactionsProps} />,
+                  icon: recentTransactionsImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Limits',
+                  content: <Orders {...ordersProps} />,
+                  icon: openOrdersImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Liquidity',
+                  content: <Ranges {...rangesProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: false,
+              },
+             
           ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -231,12 +265,13 @@ function TradeTabs2(props: propsIF) {
                         tradeTableState !== 'Expanded'
                             ? 'var(--border-radius)'
                             : '',
+                    border: smallScreen ? '1px solid var(--dark3)' : ''
                 }}
             >
                 {isCandleSelected ? selectedMessageContent : null}
                 <TabComponent
-                    data={tradeTabData}
-                    rightTabOptions={
+                    data={smallScreen ? tradeTabDataMobile :  tradeTabData}
+                    rightTabOptions={ !smallScreen &&
                         <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                     }
                 />
