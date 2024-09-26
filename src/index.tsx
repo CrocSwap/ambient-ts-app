@@ -10,6 +10,7 @@ import { createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
 
 import { GlobalContexts } from './contexts/GlobalContexts';
 import {
+    brand,
     GLOBAL_MODAL_PORTAL_ID,
     supportedNetworks,
     WALLETCONNECT_PROJECT_ID,
@@ -76,7 +77,7 @@ const modal = createWeb3Modal({
         '--w3m-color-mix': 'var(--dark2)',
         '--w3m-color-mix-strength': 10,
         '--w3m-font-family': 'var(--font-family)',
-        '--w3m-accent': 'var(--accent1)',
+        '--w3m-accent': brand === 'futa' ? '#0CCDFF' : 'var(--accent1)',
     },
     featuredWalletIds: [
         'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask

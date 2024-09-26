@@ -3,12 +3,7 @@ import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownM
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import {
-    MenuContent,
-    ChainNameStatus,
-    NetworkItem,
-    DropdownMenuContainer,
-} from '../../../../styled/Components/Header';
+
 import { supportedNetworks } from '../../../../ambient-utils/constants';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { useSearchParams } from 'react-router-dom';
@@ -29,8 +24,26 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { BrandContext } from '../../../../contexts/BrandContext';
 import { lookupChainId } from '../../../../ambient-utils/dataLayer';
 import { useSwitchNetwork, useWeb3ModalAccount } from '@web3modal/ethers/react';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import styles from './NetworkSelector.module.css';
+interface propsIF {
+    customBR?: string;
+}
+import { motion } from 'framer-motion';
 
-export default function NetworkSelector() {
+interface NetworkIF {
+    id: string;
+    chainId: string;
+    name: string;
+    logo: string;
+    custom: number;
+    isExternal: boolean;
+    testnet: boolean;
+    link: string;
+    condition: boolean;
+}
+
+export default function NetworkSelector(props: propsIF) {
     const {
         chooseNetwork,
         chainData: { chainId },
@@ -38,6 +51,7 @@ export default function NetworkSelector() {
     } = useContext(CrocEnvContext);
     const { networks, platformName, includeCanto } = useContext(BrandContext);
     const { switchNetwork } = useSwitchNetwork();
+    const smallScreen = useMediaQuery('(max-width: 600px)');
 
     const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
     const [searchParams, setSearchParams] = useSearchParams();
@@ -107,222 +121,154 @@ export default function NetworkSelector() {
         }
     }, [isConnected, initialLoadComplete]);
 
-    // !important:  network data is manually coded because the data used to generate
-    // !important:  ... elements does not follow a consistent shape (due to Canto)
+    const networksData: NetworkIF[] = [
+        {
+            id: 'ethereum_network_selector',
+            chainId: '0x1',
+            name: 'Ethereum',
+            logo: ETH,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x1'),
+        },
+        {
+            id: 'blast_network_selector',
+            chainId: '0x13e31',
+            name: 'Blast',
+            logo: blastLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x13e31'),
+        },
+        {
+            id: 'scroll_network_selector',
+            chainId: '0x82750',
+            name: 'Scroll',
+            logo: scrollLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: false,
+            link: '',
+            condition: chainMap.has('0x82750'),
+        },
+        {
+            id: 'canto_network_selector',
+            chainId: '',
+            name: 'Canto',
+            logo: cantoLogo,
+            custom: chains.length + 1,
+            isExternal: true,
+            testnet: false,
+            link: 'https://app.canto.io/lp',
+            condition: includeCanto && platformName === 'ambient',
+        },
+        {
+            id: 'sepolia_network_selector',
+            chainId: '0xaa36a7',
+            name: 'Sepolia',
+            logo: sepoliaLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0xaa36a7'),
+        },
+        {
+            id: 'blast_sepolia_network_selector',
+            chainId: '0xa0c71fd',
+            name: 'Blast',
+            logo: blastSepoliaLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0xa0c71fd'),
+        },
+        {
+            id: 'scroll_sepolia_network_selector',
+            chainId: '0x8274f',
+            name: 'Scroll',
+            logo: scrollSepoliaLogo,
+            custom: 0,
+            isExternal: false,
+            testnet: true,
+            link: '',
+            condition: chainMap.has('0x8274f'),
+        },
+    ];
 
-    // JSX element to select ethereum mainnet network
-    const ethereumNetwork: JSX.Element = (
-        <NetworkItem
-            id='ethereum_network_selector'
-            onClick={() => handleClick(chainMap.get('0x1'))}
-            key='ethereum'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x1'}>
-                <img
-                    src={ETH}
-                    alt='ethereum mainnet network'
-                    width='25px'
-                    height='25px'
-                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
-                />
-                <Text
-                    color={chainId === '0x1' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '1px' }}
+    const networkItems = networksData.map((network) =>
+        network.condition ? (
+            <motion.li
+                className={styles.networkItem}
+                id={network.id}
+                onClick={() =>
+                    network.isExternal
+                        ? window.open(network.link, '_blank')
+                        : handleClick(chainMap.get(network.chainId))
+                }
+                key={network.id}
+                custom={network.custom}
+                variants={ItemEnterAnimation}
+                tabIndex={0}
+            >
+                <div
+                    className={`${styles.chainNameStatus} ${chainId === network.chainId ? styles.activeChain : ''}`}
+                    tabIndex={0}
                 >
-                    Ethereum
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
-    const blastNetwork: JSX.Element = (
-        <NetworkItem
-            id='blast_network_selector'
-            onClick={() => handleClick(chainMap.get('0x13e31'))}
-            key='blast'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x13e31'}>
-                <img
-                    src={blastLogo}
-                    alt='blast network'
-                    width='25px'
-                    height='25px'
-                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
-                />
-                <Text
-                    color={chainId === '0x13e31' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '1px' }}
-                >
-                    {'Blast'}
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
-    const scrollNetwork: JSX.Element = (
-        <NetworkItem
-            id='scroll_network_selector'
-            onClick={() => handleClick(chainMap.get('0x82750'))}
-            key='scroll'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x82750'}>
-                <img
-                    src={scrollLogo}
-                    alt='scroll network'
-                    width='22px'
-                    height='22px'
-                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
-                />
-                <Text
-                    color={chainId === '0x82750' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '5px' }}
-                >
-                    {'Scroll'}
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
-    // JSX element to select canto network (external link)
-    const cantoNetwork: JSX.Element = (
-        <NetworkItem
-            id='canto_network_selector'
-            onClick={() => window.open('https://app.canto.io/lp', '_blank')}
-            key='canto'
-            custom={chains.length + 1}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={false}>
-                <img
-                    src={cantoLogo}
-                    alt='canto network'
-                    width='21px'
-                    height='21px'
-                    style={{ borderRadius: '50%' }}
-                />
-                <Text color='white' marginRight='10px' marginLeft='4px'>
-                    Canto
-                </Text>
-                <RiExternalLinkLine size={14} style={{ marginLeft: '55px' }} />
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
-    // JSX element to select sepolia network
-    // uses the same logo as scroll network
-    const sepoliaNetwork: JSX.Element = (
-        <NetworkItem
-            id='sepolia_network_selector'
-            onClick={() => handleClick(chainMap.get('0xaa36a7'))}
-            key='sepolia'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0xaa36a7'}>
-                <img
-                    src={sepoliaLogo}
-                    alt='sepolia network'
-                    width='25px'
-                    height='25px'
-                    style={{
-                        borderRadius: '50%',
-                        marginLeft: '-2px',
-                    }}
-                />
-                <Text
-                    color={chainId === '0xaa36a7' ? 'accent1' : 'white'}
-                    marginLeft='1px'
-                >
-                    Sepolia
-                </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='30px'>
-                    Testnet
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
-    const blastSepoliaNetwork: JSX.Element = (
-        <NetworkItem
-            id='blast_sepolia_network_selector'
-            onClick={() => handleClick(chainMap.get('0xa0c71fd'))}
-            key='blast sepolia'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0xa0c71fd'}>
-                <img
-                    src={blastSepoliaLogo}
-                    alt='blast network'
-                    width='25px'
-                    height='25px'
-                    style={{ borderRadius: '50%', marginLeft: '-2px' }}
-                />
-                <Text
-                    color={chainId === '0xa0c71fd' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '2px' }}
-                >
-                    Blast
-                </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='50px'>
-                    Testnet
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
-    );
-
-    // JSX element to select scroll sepolia network
-    const scrollSepoliaNetwork: JSX.Element = (
-        <NetworkItem
-            id='scroll_sepolia_network_selector'
-            onClick={() => handleClick(chainMap.get('0x8274f'))}
-            key='scroll-scroll'
-            custom={0}
-            variants={ItemEnterAnimation}
-            tabIndex={0}
-        >
-            <ChainNameStatus tabIndex={0} active={chainId === '0x8274f'}>
-                <img
-                    src={scrollSepoliaLogo}
-                    alt='scroll sepolia network'
-                    width='22px'
-                    height='22px'
-                    style={{ borderRadius: '50%' }}
-                />
-                <Text
-                    color={chainId === '0x8274f' ? 'accent1' : 'white'}
-                    style={{ marginLeft: '3px' }}
-                >
-                    Scroll
-                </Text>
-                <Text color={'accent1'} fontSize={'mini'} marginLeft='47px'>
-                    Testnet
-                </Text>
-            </ChainNameStatus>
-        </NetworkItem>
+                    <img
+                        src={network.logo}
+                        alt={`${network.name} network`}
+                        width={network.name === 'Scroll' ? '22px' : '25px'}
+                        height={network.name === 'Scroll' ? '22px' : '25px'}
+                        style={{ borderRadius: '50%', marginLeft: '-2px' }}
+                    />
+                    <Text
+                        color={
+                            chainId === network.chainId ? 'accent1' : 'white'
+                        }
+                        style={{
+                            marginLeft:
+                                network.name === 'Scroll' ? '5px' : '1px',
+                        }}
+                    >
+                        {network.name}
+                    </Text>
+                    {network.testnet && (
+                        <Text
+                            color={'accent1'}
+                            fontSize={'mini'}
+                            marginLeft='30px'
+                        >
+                            Testnet
+                        </Text>
+                    )}
+                    {network.isExternal && (
+                        <RiExternalLinkLine
+                            size={14}
+                            style={{ marginLeft: '55px' }}
+                        />
+                    )}
+                </div>
+            </motion.li>
+        ) : null,
     );
 
     return (
-        <div style={{ position: 'relative' }}>
-            <DropdownMenuContainer
-                justifyContent='center'
-                alignItems='center'
-                gap={4}
-            >
+        <div
+            style={{
+                position: 'relative',
+                borderRadius: props.customBR ? props.customBR : '4px',
+            }}
+        >
+            <div className={styles.dropdownMenuContainer}>
                 <DropdownMenu2
                     marginTop={'50px'}
+                    marginRight={smallScreen ? '70px' : ''}
                     titleWidth={'80px'}
                     title={lookupChain(chainId).displayName}
                     expandable={networks.length > 1}
@@ -350,22 +296,15 @@ export default function NetworkSelector() {
                                     : ETH
                     }
                 >
-                    <MenuContent
+                    <ul
+                        className={styles.menuContent}
                         tabIndex={0}
                         aria-label={'Dropdown menu for networks.'}
                     >
-                        {chainMap.has('0x1') && ethereumNetwork}
-                        {chainMap.has('0x13e31') && blastNetwork}
-                        {chainMap.has('0x82750') && scrollNetwork}
-                        {includeCanto &&
-                            platformName === 'ambient' &&
-                            cantoNetwork}
-                        {chainMap.has('0xaa36a7') && sepoliaNetwork}
-                        {chainMap.has('0xa0c71fd') && blastSepoliaNetwork}
-                        {chainMap.has('0x8274f') && scrollSepoliaNetwork}
-                    </MenuContent>
+                        {networkItems}
+                    </ul>
                 </DropdownMenu2>
-            </DropdownMenuContainer>
+            </div>
         </div>
     );
 }

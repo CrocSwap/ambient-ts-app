@@ -16,6 +16,7 @@
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
     transition: var(--transition);
+    
 }
 
 .modal_body {
@@ -35,6 +36,8 @@
     /* max-height: 80vh; */
     color: var(--text1);
     /* min-height: 80vh; */
+
+   
 }
 
 .box_shadow {
@@ -70,10 +73,17 @@
 
     border-radius: var(--border-radius);
 
-
-
+    scrollbar-width: 5px !important;
+    scrollbar-color: var(--accent1) var(--dark2);
 
     /* min-height: 250px; */
+}
+.drag_handle {
+    width: 40px;
+    height: 5px;
+    background-color: var(--accent1);
+    border-radius: 2.5px;
+    margin: 0 auto;
 }
 
 .modal_header svg:hover {
@@ -87,6 +97,35 @@
 @media only screen and (min-width: 500px) {
     .modal_body {
         min-width: 400px;
-
     }
+}
+
+@media only screen and (max-width: 500px) {
+    .outside_modal {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+    .modal_body {
+        bottom: 0;
+        position: absolute;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        border-bottom: none;
+        width: 100svw;
+
+        border-color: var(--dark3);
+
+        /* min-height: 80vh; */
+    }
+
+    .modal_content {
+        width: 100%;
+    }
+}
+
+
+
+.modal_content{
+    scrollbar-width: 5px !important;
+    scrollbar-color: var(--accent1) var(--dark2); 
 }
