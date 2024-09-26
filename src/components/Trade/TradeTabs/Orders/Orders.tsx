@@ -184,22 +184,17 @@ function Orders(props: propsIF) {
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
-    }, [pairRef.current]);
+    }, [selectedBaseAddress + selectedQuoteAddress]);
     
     // useEffect(() => {
     //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
     //     console.log('fetchedTransactions', fetchedTransactionsRef.current?.limitOrders.length)
     //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
     // }, [fetchedTransactionsRef.current])
-    useEffect(() => {
 
-        if(pageDataCountShouldReset){
-            console.log('page data count RESETTTTTTTTTTTTTTTTTTTTTTT')
-            setPageDataCount(getInitialDataPageCounts());
-            setPageDataCountShouldReset(false);
-        }
-
-    }, [limitOrdersByPool])
+    useEffect(()=> {
+        console.log('should reset ', pageDataCountShouldReset, ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    }, [pageDataCountShouldReset])
     // useEffect(() => {
     //     console.log('page', pagesVisible[0])
     // }, [pagesVisible]);
@@ -232,6 +227,13 @@ function Orders(props: propsIF) {
                         limitOrders: [...uniqueChanges, ...prev.limitOrders],
                     };
                 });
+            }
+
+            if(pageDataCountShouldReset){
+                console.log('reset page data count !!!!!!!!!!!!!!!!!!!!!!!!')
+                setPagesVisible([0, 1]);
+                setPageDataCount(getInitialDataPageCounts());
+                setPageDataCountShouldReset(false);
             }
         }
     }, [limitOrdersByPool]);
@@ -450,6 +452,7 @@ function Orders(props: propsIF) {
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
 
         console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
+        console.log('p0', pagesVisible[0], '| p1', pagesVisible[1]);
         console.log('pageDataCountVals', pageDataCountRef.current);
         console.log('.............................')
         return isAccountView
