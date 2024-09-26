@@ -134,7 +134,7 @@ export const useTokenSearch = (
                     : chainId === '0x82750'
                       ? patchLists(
                             tokens.getTokensFromList(tokenListURIs.ambient),
-                            tokens.getTokensFromList(tokenListURIs.scrollTech),
+                            // tokens.getTokensFromList(tokenListURIs.scrollTech),
                             tokens.getTokensFromList(
                                 tokenListURIs.scrollCoingecko,
                             ),
@@ -146,7 +146,12 @@ export const useTokenSearch = (
                                   tokenListURIs.blastCoingecko,
                               ),
                           )
-                        : tokens.getTokensFromList(tokenListURIs.ambient);
+                        : chainId === '0xaa36a7'
+                          ? patchLists(
+                                tokens.getTokensFromList(tokenListURIs.ambient),
+                                tokens.getTokensFromList(tokenListURIs.futa),
+                            )
+                          : tokens.getTokensFromList(tokenListURIs.ambient);
 
             // ERC-20 tokens from connected wallet subject to universe verification
             const verifiedWalletTokens: TokenIF[] = walletTokens.filter(

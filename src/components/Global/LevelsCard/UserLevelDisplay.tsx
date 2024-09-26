@@ -13,11 +13,12 @@ interface Props {
     currentLevel: number | undefined;
     globalPoints: number | undefined;
     user: string;
+    isMobileDropdown?: boolean;
 }
 export default function UserLevelDisplay(props: Props) {
     const { userAddress, resolvedAddressFromContext } =
         useContext(UserDataContext);
-    const { currentLevel, globalPoints, user } = props;
+    const { currentLevel, globalPoints, user, isMobileDropdown } = props;
 
     const isglobalPointsLong =
         globalPoints && globalPoints.toString().length > 6;
@@ -51,7 +52,7 @@ export default function UserLevelDisplay(props: Props) {
     });
 
     return (
-        <Link to={linkToNavigateTo} className={styles.level_only_container}>
+        <Link to={linkToNavigateTo} className={`${styles.level_only_container} ${isMobileDropdown && styles.mobile_dropdown}`}>
             <div
                 className={`${styles.level_border} ${
                     formattedXpLevel.length > 2 ? styles.auto_width : ''

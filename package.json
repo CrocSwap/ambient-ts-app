@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.8.11",
+    "version": "2.9.0",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -31,6 +31,8 @@
         "modern-screenshot": "^4.4.25",
         "moment": "^2.30.1",
         "numbro": "^2.5.0",
+        "p5": "^1.9.4",
+        "p5.j5": "^1.2.0",
         "re-resizable": "^6.6.11",
         "react": "^18.3.1",
         "react-blockies": "^1.4.1",
@@ -58,6 +60,8 @@
         "ambi": "yarn start --force",
         "start": "yarn install && vite",
         "start-only": "vite",
+        "force": "yarn start --force",
+        "futa": "yarn start --force --mode futa --port 3001",
         "build": "tsc && vite build",
         "preview": "vite preview",
         "dev": "vite --host",
@@ -84,6 +88,7 @@
         "@testing-library/user-event": "^14.5.2",
         "@types/adm-zip": "^0.5.4",
         "@types/d3": "^7.1.0",
+        "@types/p5": "^1.7.6",
         "@typescript-eslint/eslint-plugin": "^5.22.0",
         "@typescript-eslint/parser": "^7.1.0",
         "adm-zip": "^0.5.10",

@@ -1,0 +1,176 @@
+.container {
+    width: 100%;
+    height: calc(100svh - 154px);
+    background: var(--dark1);
+
+    display: flex;
+    padding: 8px 16px;
+    flex-direction: column;
+    gap: 8px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    font-family: 'Fira Mono';
+    justify-content: space-between;
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.content h2 {
+    color: var(--text1, #ceffff);
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+.claimAllContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    /* padding-top: 2.7rem; */
+}
+
+.claimAllContainer h3 {
+    color: var(--text1, #ceffff);
+    font-size: 20px;
+}
+.claimAllText {
+    padding: 0 16px;
+}
+
+.claimAllContainer p {
+    color: var(--text2);
+    font-size: 12px;
+    text-align: center;
+}
+
+.extraFeeContainer {
+    width: 100%;
+    border: 1px solid var(--dark3, #1e1e24);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+}
+
+.alignCenter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+.claimButton {
+    display: flex;
+    padding: 2px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    outline: none;
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1);
+    border: none;
+    cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
+}
+.claimButton:hover {
+    background: var(--accent2);
+    color: var(--dark1);
+}
+
+.disabledButton {
+    background: var(--dark4);
+    color: var(--text2);
+    pointer-events: none;
+}
+
+/* desktop */
+.desktopContainer {
+    background: var(--dark1);
+    display: grid;
+    grid-template-columns: auto 4px 390px;
+    padding: 0 16px;
+    height: calc(100vh - 56px);
+    gap: 16px;
+}
+.separatorContainer {
+    height: calc(100vh - 80px);
+}
+
+.rightLayout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.connectWalletContent {
+    width: 100%;
+    height: calc(100vh - 56px);
+    gap: 16px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.connectWalletContent button,
+.connectWalletContent a {
+    display: flex;
+    padding: 2px 8px;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
+    text-transform: uppercase;
+    background: var(--accent1, #0ccdff);
+    color: var(--dark1);
+    border: none;
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    outline: none;
+
+    margin: 0 auto;
+}
+
+.connectWalletContent a {
+    color: var(--dark1);
+}
+
+.connectWalletContent button:hover,
+.connectWalletContent a:hover {
+    background: var(--accent2);
+    color: var(--dark1);
+}
+
+.justifyRow {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+@media (max-width: 780px) {
+    .claimAllContainer h3 {
+        text-align: center;
+    }
+    .claimButton {
+        margin: 5px 0;
+    }
+
+    .container {
+      
+        height: calc(100svh - 280px);
+       
+    }
+}
