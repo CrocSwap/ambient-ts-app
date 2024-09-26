@@ -49,6 +49,15 @@ export const mainnetSWETH: TokenIF = {
     symbol: 'swETH',
 };
 
+export const mainnetRSWETH: TokenIF = {
+    address: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/rsweth_32.png?=v3',
+    name: 'Restaked Swell ETH',
+    symbol: 'rswETH',
+};
+
 export const mainnetLIDO: TokenIF = {
     address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
     chainId: 1,
@@ -697,6 +706,7 @@ export const defaultTokens: TokenIF[] = [
     mainnetWstETH,
     mainnetMATIC,
     mainnetSWETH,
+    mainnetRSWETH,
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
