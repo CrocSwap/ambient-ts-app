@@ -13,7 +13,7 @@ export default function GlobalModalPortal(props: propsIF) {
 
     const getGlobalModalPortal = (elem: ReactNode) => {
         return createPortal(
-            <div onClick={(e) => e.stopPropagation()} data-theme={skin}>
+            <div onClick={(e) => e.stopPropagation()} data-theme={skin.active}>
                 {elem}
             </div>,
             document.getElementById(GLOBAL_MODAL_PORTAL_ID) ?? document.body,

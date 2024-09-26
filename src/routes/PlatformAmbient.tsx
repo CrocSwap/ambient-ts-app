@@ -9,7 +9,6 @@ import InitPool from '../pages/platformAmbient/InitPool/InitPool';
 import Portfolio from '../pages/platformAmbient/Portfolio/Portfolio';
 import Explore from '../pages/platformAmbient/Explore/Explore';
 import Swap from '../pages/platformAmbient/Swap/Swap';
-
 import NotFound from '../pages/common/NotFound/NotFound';
 import ExampleForm from '../pages/platformAmbient/InitPool/FormExample';
 import Limit from '../pages/platformAmbient/Trade/Limit/Limit';
@@ -21,7 +20,6 @@ import FAQPoints from '../pages/common/FAQ/FAQPoints';
 import PrivacyPolicy from '../pages/common/PrivacyPolicy/PrivacyPolicy';
 import TermsOfService from '../pages/common/TermsOfService/TermsOfService';
 import TestPage from '../pages/common/TestPage/TestPage';
-import CSSDebug from '../pages/common/CSSDebug/CSSDebug';
 
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
