@@ -120,12 +120,12 @@ function Orders(props: propsIF) {
     const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
     const [pageDataCount, setPageDataCount] = useState<number[]>(getInitialDataPageCounts());
     
-    useEffect(() => {
-        if(fetchedTransactions.limitOrders.length > 0 && pageDataCount[0] === 0){
-            setPageDataCount(getInitialDataPageCounts());
-            console.log('INITIAL PAGE COUNTS', getInitialDataPageCounts());
-        }
-    }, [fetchedTransactions]);
+    // useEffect(() => {
+    //     if(fetchedTransactions.limitOrders.length > 0 && pageDataCount[0] === 0){
+    //         setPageDataCount(getInitialDataPageCounts());
+    //         console.log('INITIAL PAGE COUNTS', getInitialDataPageCounts());
+    //     }
+    // }, [fetchedTransactions]);
 
     const pageDataCountRef = useRef<number[]>();
     pageDataCountRef.current = pageDataCount;
@@ -160,6 +160,9 @@ function Orders(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
+    const pairRef = useRef<string>();
+    pairRef.current = selectedBaseAddress + selectedQuoteAddress; 
+
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
     
     useEffect(() => {
@@ -167,9 +170,13 @@ function Orders(props: propsIF) {
     }, [isAccountView, showAllData]);
 
 
+
+
+
     useEffect(() => {
         console.log('RESET PAGE DATA');
-        console.log(selectedBaseAddress + selectedQuoteAddress)
+        console.log('concat: ', selectedBaseAddress, selectedQuoteAddress);
+        console.log('ref: ', pairRef.current);
         console.log('fetchedTransactions', fetchedTransactionsRef.current?.limitOrders.length)
         setPagesVisible([0, 1]);
         // setPageDataCount(getInitialDataPageCounts());
@@ -177,7 +184,7 @@ function Orders(props: propsIF) {
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
-    }, [selectedBaseAddress + selectedQuoteAddress]);
+    }, [pairRef.current]);
     
     // useEffect(() => {
     //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
@@ -298,11 +305,9 @@ function Orders(props: propsIF) {
                 const targetCount = 30;
                 let addedDataCount = 0;
 
-                console.log('FETCHING MORE DATA');
                 const newTxData: LimitOrderIF[] = [];
                 let oldestTimeParam = oldestTxTime;
                 while((addedDataCount < targetCount)){
-                    console.log('...');
                     // fetch data
                     const dirtyData = await fetchNewData(oldestTimeParam);
                     if (dirtyData.length == 0){
@@ -310,7 +315,6 @@ function Orders(props: propsIF) {
                     }
                     // check diff
                     const cleanData = dataDiffCheck(dirtyData);
-                    console.log('cleanData', cleanData.length);
                     if (cleanData.length == 0){
                         break;
                     }
@@ -321,7 +325,6 @@ function Orders(props: propsIF) {
                         oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
                     }
                 }
-                console.log('__________________________. . . . .____________________')
                 if(addedDataCount > 0){
                      // new data found
                      setFetchedTransactions((prev) => {
