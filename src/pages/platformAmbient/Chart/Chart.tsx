@@ -1214,6 +1214,8 @@ export default function Chart(props: propsIF) {
             let zoomTimeout: number | undefined = undefined;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let previousTouch: any | undefined = undefined; // event
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let startTouch: any | undefined = undefined;
             let previousDeltaTouch: number | undefined = undefined;
             let previousDeltaTouchLocation: number | undefined = undefined;
             const lastCandleDate = lastCandleData?.time * 1000;
@@ -1267,6 +1269,7 @@ export default function Chart(props: propsIF) {
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
                             previousTouch = event.sourceEvent.touches[0];
+                            startTouch = event.sourceEvent.touches[0];
 
                             if (event.sourceEvent.touches.length > 1) {
                                 previousDeltaTouch = Math.hypot(
@@ -1429,6 +1432,41 @@ export default function Chart(props: propsIF) {
                             setCursorStyleTrigger(false);
                             setChartZoomEvent('');
 
+                            if (
+                                event.sourceEvent.type.includes('touch') &&
+                                zoomTimeout &&
+                                event.sourceEvent.timeStamp - zoomTimeout >
+                                    100 &&
+                                startTouch.clientX ===
+                                    event.sourceEvent.changedTouches[0]
+                                        .clientX &&
+                                startTouch.clientY ===
+                                    event.sourceEvent.changedTouches[0].clientY
+                            ) {
+                                const canvas = d3
+                                    .select(d3CanvasMain.current)
+                                    .select('canvas')
+                                    .node() as HTMLCanvasElement;
+
+                                const rectCanvas =
+                                    canvas.getBoundingClientRect();
+
+                                setContextMenuPlacement({
+                                    top: rectCanvas.top,
+                                    left: rectCanvas.left + 10,
+                                    isReversed: false,
+                                });
+
+                                setContextmenu(true);
+                            }
+
+                            if (
+                                event.sourceEvent.type.includes('touch') &&
+                                contextmenu
+                            ) {
+                                setContextmenu(false);
+                            }
+
                             if (clickedForLine) {
                                 // fires click event when zoom takes too short
                                 if (
@@ -1548,6 +1586,7 @@ export default function Chart(props: propsIF) {
         isChartZoom,
         liqMaxActiveLiq,
         zoomBase,
+        contextmenu,
     ]);
 
     useEffect(() => {
@@ -4619,10 +4658,12 @@ export default function Chart(props: propsIF) {
                 const offsetX = event.offsetX;
                 const offsetY = event.offsetY;
 
-                if (shouldDisableChartSettings) {
-                    setContextmenu(false);
-                } else {
-                    setCloseOutherChartSetting(true);
+                if (event.pointerType !== 'touch') {
+                    if (shouldDisableChartSettings) {
+                        setContextmenu(false);
+                    } else {
+                        setCloseOutherChartSetting(true);
+                    }
                 }
 
                 let isOrderHistorySelected = undefined;
