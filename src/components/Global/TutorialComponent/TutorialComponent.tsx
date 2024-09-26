@@ -16,7 +16,9 @@ interface propsIF {
 }
 
 function TutorialComponent(props: propsIF) {
+
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
+    console.log(tutoKey, steps)
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
     const hasTriggeredRef = useRef<boolean>(false);
@@ -52,6 +54,8 @@ function TutorialComponent(props: propsIF) {
         buildOnCompletes();
         if (steps.length > 0) {
             triggerTutorial();
+        }else{
+            completeTutorial();
         }
     }, [tutoKey]);
 
