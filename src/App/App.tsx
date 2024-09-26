@@ -105,7 +105,7 @@ export default function App() {
 
     const showMobileVersion = useMediaQuery('(max-width: 800px)');
     const ambientFooter = (
-        <div data-theme={skin} className='footer_container'>
+        <div data-theme={skin.active} className='footer_container'>
             {currentLocation !== '/' &&
                 currentLocation !== '/404' &&
                 currentLocation !== '/terms' &&
@@ -136,7 +136,6 @@ export default function App() {
             window.removeEventListener('keydown', handleKeyDown);
         });
     }, [isCSSModalOpen]);
-// console.log('skin.active: ', skin.active);
 
     return (
         <>
@@ -167,22 +166,14 @@ export default function App() {
                 ) : (
                     location.pathname !== '/' && <PageHeader />
                 )}
-                {/* <div
-                    className={appHeaderDropdown.isActive ? 'app_blur' : ''}
-                    onClick={() => appHeaderDropdown.setIsActive(false)}
-                    
-                    onTouchMoveCapture={() =>
-                        appHeaderDropdown.setIsActive(false)
-                    }
-                /> */}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
             {platformName === 'futa' ? (
-                <Footer data-theme={skin} />
+                <Footer data-theme={skin.active} />
             ) : (
                 ambientFooter
             )}
-            <GlobalPopup data-theme={skin} />
+            <GlobalPopup data-theme={skin.active} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
             {isCSSModalOpen && <CSSModal close={() => closeCSSModal()} />}
