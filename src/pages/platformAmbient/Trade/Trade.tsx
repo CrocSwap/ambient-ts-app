@@ -362,7 +362,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                         </div>
                     )}
 
-                    <TradeChartsHeader tradePage />
+                    {!isChartFullScreen && <TradeChartsHeader tradePage />}
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer
                         flexDirection='column'
