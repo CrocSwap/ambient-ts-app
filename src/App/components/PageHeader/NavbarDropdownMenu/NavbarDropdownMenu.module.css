@@ -37,3 +37,19 @@
     outline: none;
 }
 
+@media only screen and (max-width: 600px) {
+    .background_blur {
+        width: 100vw;
+        height: 100vh;
+        backdrop-filter: blur(10px);
+
+        position: fixed;
+        top: 56px;
+        bottom: 64px;
+        left: 0;
+        right: 0;
+        z-index: 99;
+        pointer-events: auto;
+        /* display: none; */
+    }
+}
