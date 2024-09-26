@@ -14,11 +14,7 @@ import {
     trimString,
 } from '../../../../ambient-utils/dataLayer';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
-import {
-    LevelButton,
-    TitleGradientButton,
-    WalletName,
-} from '../../../../styled/Components/Header';
+
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import LevelDropdown from './LevelDropdown/LevelDropdown';
@@ -27,6 +23,7 @@ import NotificationCenter from '../../../../components/Global/NotificationCenter
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import Modal from '../../../../components/Global/Modal/Modal';
 import ModalHeader from '../../../../components/Global/ModalHeader/ModalHeader';
+import styles from './UserMenu.module.css'
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -35,7 +32,7 @@ interface propsIF {
     ensName: string;
 }
 
-export default function Account(props: propsIF) {
+export default function UserMenu(props: propsIF) {
     const { clickLogout, ensName } = props;
 
     const {
@@ -133,7 +130,7 @@ export default function Account(props: propsIF) {
             ref={walletDropdownItemRef}
             aria-label={mainAriaLabel}
         >
-            <TitleGradientButton
+            <button className={styles.titleGradientButton}
                 tabIndex={0}
                 onClick={() => {
                     setShowWalletDropdown(!showWalletDropdown);
@@ -142,10 +139,10 @@ export default function Account(props: propsIF) {
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
-                <WalletName>
+                <p className={styles.walletName}>
                     {connectedEnsOrAddressTruncated || '...'}
-                </WalletName>
-            </TitleGradientButton>
+                </p>
+            </button>
             {showWalletDropdown ?  !desktopScreen ? walletDisplayModal :(
                 <WalletDropdown
                     ensName={ensName !== '' ? ensName : ''}
@@ -205,17 +202,16 @@ export default function Account(props: propsIF) {
             ref={levelDropdownItemRef}
             aria-label={mainAriaLabel}
         >
-            <LevelButton
+            <button className={`${styles.levelButton} ${formattedXpLevel.length >= 4 ? styles.largeLevelButton : ''}`}
                 tabIndex={0}
                 onClick={() => {
                     setShowLevelDropdown(!showLevelDropdown);
                     
                 }}
                 aria-label={ariaLabel}
-                large={formattedXpLevel.length >= 4}
             >
                 {currentLevelDisplay}
-            </LevelButton>
+            </button>
             {showLevelDropdown ?  !desktopScreen ? levelDisplayModal : (
                 <LevelDropdown
                     ensName={ensName !== '' ? ensName : ''}
