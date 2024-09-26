@@ -190,7 +190,6 @@ const PlatformAmbientRoutes: React.FC = () => {
             {IS_LOCAL_ENV && (
                 <Route path='template/form' element={<ExampleForm />} />
             )}
-            <Route path='/css-debug' element={<CSSDebug />} />
             <Route path='/404' element={<NotFound />} />
             <Route path='*' element={<Navigate to='/404' replace />} />
         </Routes>

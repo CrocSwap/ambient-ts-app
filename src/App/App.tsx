@@ -181,7 +181,6 @@ export default function App() {
             ) : (
                 ambientFooter
             )}
-
             <GlobalPopup data-theme={skin} />
             <SnackbarComponent />
             {isWalletModalOpen && <GateWalletModal />}
