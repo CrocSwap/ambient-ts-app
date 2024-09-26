@@ -37,3 +37,80 @@
     outline: none;
 }
 
+/* navbardropdownitem */
+.menuItem {
+    width: 100%;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    color: var(--text1);
+    font-size: var(--header2-size);
+    height: 50px;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-family: var(--font-deca);
+    font-weight: 300;
+    line-height: var(--header2-lh);
+    outline: none;
+    border: none;
+    background: transparent;
+    transition: all var(--animation-speed) ease-out;
+    background-position: 1% 50%;
+    background-size: 400% 300%;
+    text-decoration: none;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+    filter: drop-shadow(0 0 5px var(--text1));
+}
+
+.connectButton {
+    cursor: pointer;
+    width: 100%;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
+    border: none;
+    outline: none;
+    background: var(--accent1);
+    padding: 6px 8px;
+    gap: 4px;
+    border-radius: var(--border-radius);
+}
+
+.connectButton:hover,
+.connectButton:focus-visible {
+    color: var(--accent1);
+    background: var(--dark2);
+    border: solid 1px var(--accent1);
+}
+
+
+.iconRight {
+    margin-left: auto;
+}
+
+.iconRight svg {
+    color: var(--text1);
+}
+
+
+
+
+@media only screen and (max-width: 600px) {
+    .background_blur {
+        width: 100vw;
+        height: 100vh;
+        backdrop-filter: blur(10px);
+
+        position: fixed;
+        top: 56px;
+        bottom: 64px;
+        left: 0;
+        right: 0;
+        z-index: 99;
+        pointer-events: auto;
+        /* display: none; */
+    }
+}

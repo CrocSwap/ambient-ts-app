@@ -109,7 +109,7 @@ export default function Navbar() {
 
     const { selectedTicker } = useContext(AuctionsContext);
 
-    const { showHomeVideoLocalStorage, setShowHomeVideoLocalStorage } =
+    const { showHomeVideoLocalStorage, setShowHomeVideoLocalStorage, showTutosLocalStorage, bindShowTutosLocalStorage } =
         useFutaHomeContext();
 
     // set page title
@@ -273,6 +273,24 @@ export default function Navbar() {
                 Width={36}
                 id='show_home_video_futa_toggle'
                 disabled={false}
+                />
+        </motion.div>
+    );
+    
+    const showTutosToggle = (
+        <motion.div
+        variants={dropdownItemVariants}
+        className={styles.skipAnimationContainer}
+        >
+            <p>Show Tutorials</p>
+            <Toggle
+                isOn={showTutosLocalStorage}
+                handleToggle={() =>
+                    bindShowTutosLocalStorage(!showTutosLocalStorage)
+                }
+                Width={36}
+                id='show_tutos_futa_toggle'
+                disabled={false}
             />
         </motion.div>
     );
@@ -329,6 +347,7 @@ export default function Navbar() {
                                     }`}
                             </motion.p>
                             {skipAnimationToggle}
+                            {showTutosToggle}
                             <motion.p
                                 className={styles.version}
                                 variants={dropdownItemVariants}

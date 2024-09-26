@@ -167,13 +167,14 @@ export default function App() {
                 ) : (
                     location.pathname !== '/' && <PageHeader />
                 )}
-                <div
+                {/* <div
                     className={appHeaderDropdown.isActive ? 'app_blur' : ''}
                     onClick={() => appHeaderDropdown.setIsActive(false)}
+                    
                     onTouchMoveCapture={() =>
                         appHeaderDropdown.setIsActive(false)
                     }
-                />
+                /> */}
                 <RouteRenderer platformName={platformName} />
             </FlexContainer>
             {platformName === 'futa' ? (
