@@ -215,7 +215,6 @@ function TradeCharts(props: propsIF) {
     const resetAndRescaleDisplay = (
         <div className={styles.chart_overlay_container}>
             <div className={styles.mobile_settings_row}>
-                
                 {showLatest && (
                     <div className={styles.settings_container}>
                         <button
@@ -313,19 +312,17 @@ function TradeCharts(props: propsIF) {
                 </div>
             )}
             <div className={styles.mobile_settings_row}>
-            <p className={styles.mobile_settings_header}>Chart Scale:</p>
+                <p className={styles.mobile_settings_header}>Chart Scale:</p>
                 <div>{resetAndRescaleDisplay}</div>
-                
             </div>
-           {smallScreen &&  <DollarizationModalControl
-                            tempEnableDollarization={
-                                isTradeDollarizationEnabled
-                            }
-                            setTempEnableDollarization={
-                                setIsTradeDollarizationEnabled
-                            }
-                            displayInSettings={true}
-                        />}
+            {smallScreen && (
+                <DollarizationModalControl
+                    tempEnableDollarization={isTradeDollarizationEnabled}
+                    setTempEnableDollarization={setIsTradeDollarizationEnabled}
+                    displayInSettings={true}
+                    isMobileChartSettings={true}
+                />
+            )}
         </section>
     );
     const timeFrameContent = smallScreen ? (
@@ -336,8 +333,7 @@ function TradeCharts(props: propsIF) {
                     title='Chart Settings'
                 >
                     {timeFrameContentDesktop}
-                        
-                  
+
                     <div className={styles.settings_apply_button_container}>
                         <button onClick={closeMobileSettingsModal}>
                             Apply
