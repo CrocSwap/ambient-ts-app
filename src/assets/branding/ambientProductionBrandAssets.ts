@@ -7,7 +7,7 @@ export const ambientProductionBrandAssets: brandIF = {
     networks: {
         // scroll mainnet
         '0x82750': {
-            color: ['purple_dark'],
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
                 { content: 'ambient', processAs: 'text' },
@@ -17,7 +17,7 @@ export const ambientProductionBrandAssets: brandIF = {
         },
         // blast mainnet
         '0x13e31': {
-            color: ['purple_dark'],
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
                 { content: 'ambient', processAs: 'text' },
@@ -27,8 +27,8 @@ export const ambientProductionBrandAssets: brandIF = {
         },
         // ethereum mainnet
         '0x1': {
-            color: ['purple_dark', 'purple_light'],
-            premiumColor: ['futa_dark'],
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
+            premiumColor: [],
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
     },

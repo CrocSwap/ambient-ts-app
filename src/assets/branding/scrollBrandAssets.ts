@@ -6,7 +6,7 @@ export const scrollBrandAssets: brandIF = {
     networks: {
         // scroll mainnet
         '0x82750': {
-            color: ['purple_dark'],
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
                 { content: 'ambient', processAs: 'text' },
