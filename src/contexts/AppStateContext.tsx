@@ -211,13 +211,29 @@ export const AppStateContextProvider = (props: {
         setIsUserIdle10min(false);
     };
 
-    useIdleTimer({
-        onIdle,
-        onActive: () => {
+    // Custom visibility change handler to trigger onActive when the tab becomes visible
+    useEffect(() => {
+        const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
+                // If the tab is visible, manually trigger onActive
                 onActive();
             }
-        },
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Clean up the event listener on component unmount
+        return () => {
+            document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange,
+            );
+        };
+    }, [onActive]);
+
+    useIdleTimer({
+        onIdle,
+        onActive,
         timeout: 1000 * 60 * 1, // set user to idle after 1 minute
         promptTimeout: 0,
         events: [
