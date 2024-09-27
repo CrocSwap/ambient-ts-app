@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { RiChat3Line, RiHome2Line } from 'react-icons/ri';
-import {  MdOutlineExplore } from 'react-icons/md';
+import { RiChat3Line } from 'react-icons/ri';
+import { MdOutlineExplore } from 'react-icons/md';
 import { HiArrowsRightLeft } from 'react-icons/hi2';
 import { VscAccount } from 'react-icons/vsc';
 
-import { motion } from 'framer-motion';
 import styles from './FooterNav.module.css';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
@@ -13,7 +12,6 @@ import {
     chainNumToString,
     checkEoaHexAddress,
 } from '../../../ambient-utils/dataLayer';
-// import { SidebarContext } from '../../contexts/SidebarContext';
 
 const FooterNav: React.FC = () => {
     const location = useLocation();
@@ -37,10 +35,9 @@ const FooterNav: React.FC = () => {
         tokenB: tokenB.address,
     });
 
-    // const { hideOnMobile } = useContext(SidebarContext);
 
     const linksData = [
-        { title: 'Home', destination: '/', icon: RiHome2Line },
+        // { title: 'Home', destination: '/', icon: RiHome2Line },
         // {
         //     title: 'Swap',
         //     destination: `/swap/${paramsSlug}`,
@@ -67,18 +64,18 @@ const FooterNav: React.FC = () => {
         // if (currentPath.includes('/swap')) {
         //     setActiveIndex(1); // Swap
         // } else
-            if (currentPath.includes('/trade')) {
-            setActiveIndex(1); // Trade
+        if (currentPath.includes('/trade')) {
+            setActiveIndex(0); // Trade
         } else if (currentPath.includes('/explore')) {
-            setActiveIndex(2); // Explore
+            setActiveIndex(1); // Explore
         } else if (
             currentPath.includes('/account') ||
             isAddressEns ||
             isAddressHex
         ) {
-            setActiveIndex(3); // Account
+            setActiveIndex(2); // Account
         } else if (currentPath.includes('/chat')) {
-            setActiveIndex(4); // Chat
+            setActiveIndex(3); // Chat
         } else {
             setActiveIndex(0); // Home
         }
@@ -87,40 +84,24 @@ const FooterNav: React.FC = () => {
     return (
         <div className={styles.nav}>
             {linksData.map((link, index) => (
-                <motion.div
+                <div
                     key={index}
                     className={`${styles.navItem} ${index === activeIndex ? styles.active : ''}`}
                     onClick={() => setActiveIndex(index)}
-                    initial={{ flexGrow: 1 }}
-                    animate={{ flexGrow: index === activeIndex ? 3 : 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                    <Link to={link.destination} className={styles.link}
-                      
-                    
-                    >
+                    <Link to={link.destination} className={styles.link}>
                         <link.icon
                             size={24}
                             color={
-                                index === activeIndex ? 'var(--accent1)' : 'var(--text1)'
+                                index === activeIndex
+                                    ? 'var(--accent1)'
+                                    : 'var(--text1)'
                             }
                             className={styles.icon}
                         />
-                        <motion.span
-                            className={styles.navText}
-                            initial={{ opacity: 0, width: 0 }}
-                            animate={{
-                                opacity: index === activeIndex ? 1 : 0,
-                                width: index === activeIndex ? 'auto' : 0,
-                                display:
-                                    index === activeIndex ? 'inline' : 'none',
-                            }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {link.title}
-                        </motion.span>
+                        <span className={styles.navText}>{link.title}</span>
                     </Link>
-                </motion.div>
+                </div>
             ))}
         </div>
     );
