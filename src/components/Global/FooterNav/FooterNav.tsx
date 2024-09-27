@@ -35,7 +35,6 @@ const FooterNav: React.FC = () => {
         tokenB: tokenB.address,
     });
 
-
     const linksData = [
         // { title: 'Home', destination: '/', icon: RiHome2Line },
         // {
@@ -77,7 +76,7 @@ const FooterNav: React.FC = () => {
         } else if (currentPath.includes('/chat')) {
             setActiveIndex(3); // Chat
         } else {
-            setActiveIndex(0); // Home
+            setActiveIndex(-1); // Home
         }
     }, [location.pathname]);
 
