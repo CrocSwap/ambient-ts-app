@@ -26,6 +26,7 @@ import { fetchPoolLimitOrders } from '../../../../ambient-utils/api/fetchPoolLim
 import { TokenContextIF, TokenContext } from '../../../../contexts/TokenContext';
 import { CachedDataIF, CachedDataContext } from '../../../../contexts/CachedDataContext';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
+import { PageDataCountIF } from '../../../Chat/ChatIFs';
 
 // interface for props for react functional component
 interface propsIF {
@@ -101,57 +102,6 @@ function Orders(props: propsIF) {
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
 
-
-    const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
-
-    const getInitialDataPageCounts = () => {
-        if(limitOrdersByPool.limitOrders.length == 0){
-            return [0, 0];
-        }
-        // return [fetchedTransactions.limitOrders.length > dataPerPage ? dataPerPage : fetchedTransactions.limitOrders.length , 
-        //     fetchedTransactions.limitOrders.length / dataPerPage  == 2 ? dataPerPage : fetchedTransactions.limitOrders.length - dataPerPage];
-        if(limitOrdersByPool.limitOrders.length - dataPerPage < 0){
-            return [Math.ceil(limitOrdersByPool.limitOrders.length / 2), 
-                Math.floor(limitOrdersByPool.limitOrders.length / 2)];
-        }
-        else{
-            return [limitOrdersByPool.limitOrders.length > dataPerPage ? dataPerPage : limitOrdersByPool.limitOrders.length , 
-                limitOrdersByPool.limitOrders.length / dataPerPage  == 2 ? dataPerPage : limitOrdersByPool.limitOrders.length - dataPerPage];
-        }
-    }
-
-    
-    const dataPerPage = 50;
-    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
-    const [pageDataCount, setPageDataCount] = useState<number[]>(getInitialDataPageCounts());
-    
-    // useEffect(() => {
-    //     if(fetchedTransactions.limitOrders.length > 0 && pageDataCount[0] === 0){
-    //         setPageDataCount(getInitialDataPageCounts());
-    //         console.log('INITIAL PAGE COUNTS', getInitialDataPageCounts());
-    //     }
-    // }, [fetchedTransactions]);
-
-    const pageDataCountRef = useRef<number[]>();
-    pageDataCountRef.current = pageDataCount;
-
-    const getIndexForPages = (start: boolean) => {
-        const pageDataCountVal = pageDataCountRef.current ? pageDataCountRef.current : pageDataCount;
-        let ret = 0;
-        if(start){
-            for(let i = 0 ; i < pagesVisible[0]; i++){
-                ret += pageDataCountVal[i];
-            }
-        }else{
-            for(let i = 0 ; i <= pagesVisible[1]; i++){
-                ret += pageDataCountVal[i];
-            }
-            ret -= 1;
-        }
-
-        return ret;
-    }
-
     const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
 
     const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
@@ -177,12 +127,8 @@ function Orders(props: propsIF) {
 
 
 
-
     useEffect(() => {
         console.log('RESET PAGE DATA');
-        console.log('concat: ', selectedBaseAddress, selectedQuoteAddress);
-        console.log('ref: ', pairRef.current);
-        console.log('fetchedTransactions', fetchedTransactionsRef.current?.limitOrders.length)
         setPagesVisible([0, 1]);
         // setPageDataCount(getInitialDataPageCounts());
         setPageDataCountShouldReset(true);
@@ -191,18 +137,73 @@ function Orders(props: propsIF) {
         setLastFetchedCount(0);
     }, [selectedBaseAddress + selectedQuoteAddress]);
     
-    // useEffect(() => {
-    //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    //     console.log('fetchedTransactions', fetchedTransactionsRef.current?.limitOrders.length)
-    //     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    // }, [fetchedTransactionsRef.current])
+    
 
-    useEffect(()=> {
-        console.log('should reset ', pageDataCountShouldReset, ' >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    }, [pageDataCountShouldReset])
-    // useEffect(() => {
-    //     console.log('page', pagesVisible[0])
-    // }, [pagesVisible]);
+
+    const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
+
+    const getInitialDataPageCounts = () => {
+        let counts;
+        if(limitOrdersByPool.limitOrders.length == 0){
+            counts = [0, 0];
+        }
+        if(limitOrdersByPool.limitOrders.length - dataPerPage < 0){
+            counts = [Math.ceil(limitOrdersByPool.limitOrders.length / 2), 
+                Math.floor(limitOrdersByPool.limitOrders.length / 2)];
+        }
+        else{
+            counts = [limitOrdersByPool.limitOrders.length > dataPerPage ? dataPerPage : limitOrdersByPool.limitOrders.length , 
+                limitOrdersByPool.limitOrders.length / dataPerPage  == 2 ? dataPerPage : limitOrdersByPool.limitOrders.length - dataPerPage];
+        }
+
+        return {
+            pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
+            counts: counts
+        }
+
+    }
+
+    const updatePageDataCount = (dataCount: number) => {
+        setPageDataCount(prev => {
+            return {
+                pair: prev.pair,
+                counts: [...prev.counts, dataCount]
+            }
+        })
+
+    }
+    
+    const dataPerPage = 50;
+    const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+    const [pageDataCount, setPageDataCount] = useState<PageDataCountIF>(getInitialDataPageCounts());
+    
+    const pageDataCountRef = useRef<PageDataCountIF>();
+    pageDataCountRef.current = pageDataCount;
+    
+    const getIndexForPages = (start: boolean) => {
+        const pageDataCountVal = (pageDataCountRef.current ? pageDataCountRef.current : pageDataCount).counts;
+        let ret = 0;
+        if(start){
+            for(let i = 0 ; i < pagesVisible[0]; i++){
+                ret += pageDataCountVal[i];
+            }
+        }else{
+            for(let i = 0 ; i <= pagesVisible[1]; i++){
+                ret += pageDataCountVal[i];
+            }
+            ret -= 1;
+        }
+
+        return ret;
+    }
+
+    const getCurrentDataPair = () => {
+        if(limitOrdersByPool.limitOrders.length > 0){
+            return (limitOrdersByPool.limitOrders[0].base + limitOrdersByPool.limitOrders[0].quote).toLowerCase();
+        }else{
+            return '';
+        }
+    }
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -234,14 +235,25 @@ function Orders(props: propsIF) {
                 });
             }
 
-            if(pageDataCountShouldReset){
-                console.log('reset page data count !!!!!!!!!!!!!!!!!!!!!!!!')
-                setPagesVisible([0, 1]);
-                setPageDataCount(getInitialDataPageCounts());
-                setPageDataCountShouldReset(false);
-            }
+            
         }
     }, [limitOrdersByPool]);
+
+
+
+
+    useEffect(() => {
+        
+        console.log('getCurrentDataPair', getCurrentDataPair());
+        if(pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair()){
+            console.log('reset page data count')
+            setPagesVisible([0, 1]);
+            setPageDataCount(getInitialDataPageCounts());
+            setPageDataCountShouldReset(false);
+        }
+    }, [fetchedTransactions])
+
+
 
 
     const fetchNewData = async(OLDEST_TIME:number):Promise<LimitOrderIF[]> => {
@@ -345,9 +357,7 @@ function Orders(props: propsIF) {
                         };
                     })
                      setLastFetchedCount(addedDataCount);
-                     setPageDataCount(prev => {
-                        return [...prev, addedDataCount];
-                        });
+                     updatePageDataCount(addedDataCount);
                     setExtraPagesAvailable((prev) => prev + 1);
                     setPagesVisible((prev) => [
                         prev[0] + 1,
@@ -718,7 +728,7 @@ function Orders(props: propsIF) {
                         // setExtraPagesAvailable={setExtraPagesAvailable}
                         tableKey='Orders'
                         dataPerPage={dataPerPage}
-                        pageDataCount={pageDataCountRef.current}
+                        pageDataCount={pageDataCountRef.current.counts}
                         lastFetchedCount={lastFetchedCount}
                         setLastFetchedCount={setLastFetchedCount}
                         moreDataLoading={moreDataLoading}

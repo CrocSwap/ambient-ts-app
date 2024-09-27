@@ -73,3 +73,8 @@ export interface TutorialStepIF {
     actionTrigger?: string;
     navigate?: { label: string; path: string };
 }
+
+export interface PageDataCountIF {
+    pair: string;
+    counts: number[];
+}
