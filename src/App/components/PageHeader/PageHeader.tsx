@@ -446,7 +446,8 @@ const PageHeader = function () {
                             <img
                                 className={styles.logoText}
                                 src={logo}
-                                alt='ambient'
+                                    alt='ambient'
+                                    width='70px'
                             />
                         )}
                     </Link>
