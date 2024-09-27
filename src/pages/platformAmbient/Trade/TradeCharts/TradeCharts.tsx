@@ -36,6 +36,8 @@ import CurveDepth from './TradeChartsComponents/CurveDepth';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import Modal from '../../../../components/Global/Modal/Modal';
+import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
+import { PoolContext } from '../../../../contexts';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -85,6 +87,9 @@ function TradeCharts(props: propsIF) {
 
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
+
+    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
+        useContext(PoolContext);
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -209,57 +214,59 @@ function TradeCharts(props: propsIF) {
 
     const resetAndRescaleDisplay = (
         <div className={styles.chart_overlay_container}>
-            {showLatest && (
+            <div className={styles.mobile_settings_row}>
+                {showLatest && (
+                    <div className={styles.settings_container}>
+                        <button
+                            onClick={() => {
+                                if (rescale) {
+                                    setReset(true);
+                                } else {
+                                    setLatest(true);
+                                }
+                            }}
+                            className={styles.non_active_selected_button}
+                            aria-label='Show latest.'
+                        >
+                            Latest
+                        </button>
+                    </div>
+                )}
+
                 <div className={styles.settings_container}>
                     <button
                         onClick={() => {
-                            if (rescale) {
-                                setReset(true);
-                            } else {
-                                setLatest(true);
-                            }
+                            setReset(true);
+                            setRescale(true);
                         }}
-                        className={styles.non_active_selected_button}
-                        aria-label='Show latest.'
+                        className={
+                            reset
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                        aria-label='Reset.'
                     >
-                        Latest
+                        Reset
                     </button>
                 </div>
-            )}
 
-            <div className={styles.settings_container}>
-                <button
-                    onClick={() => {
-                        setReset(true);
-                        setRescale(true);
-                    }}
-                    className={
-                        reset
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
-                    }
-                    aria-label='Reset.'
-                >
-                    Reset
-                </button>
-            </div>
-
-            <div className={styles.settings_container}>
-                <button
-                    onClick={() => {
-                        setRescale((prevState) => {
-                            return !prevState;
-                        });
-                    }}
-                    className={
-                        rescale
-                            ? styles.active_selected_button
-                            : styles.non_active_selected_button
-                    }
-                    aria-label='Auto rescale.'
-                >
-                    Auto
-                </button>
+                <div className={styles.settings_container}>
+                    <button
+                        onClick={() => {
+                            setRescale((prevState) => {
+                                return !prevState;
+                            });
+                        }}
+                        className={
+                            rescale
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                        aria-label='Auto rescale.'
+                    >
+                        Auto
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -304,9 +311,18 @@ function TradeCharts(props: propsIF) {
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
                 </div>
             )}
-            <div>
-                {resetAndRescaleDisplay}
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Chart Scale:</p>
+                <div>{resetAndRescaleDisplay}</div>
             </div>
+            {smallScreen && (
+                <DollarizationModalControl
+                    tempEnableDollarization={isTradeDollarizationEnabled}
+                    setTempEnableDollarization={setIsTradeDollarizationEnabled}
+                    displayInSettings={true}
+                    isMobileChartSettings={true}
+                />
+            )}
         </section>
     );
     const timeFrameContent = smallScreen ? (
@@ -317,6 +333,7 @@ function TradeCharts(props: propsIF) {
                     title='Chart Settings'
                 >
                     {timeFrameContentDesktop}
+
                     <div className={styles.settings_apply_button_container}>
                         <button onClick={closeMobileSettingsModal}>
                             Apply

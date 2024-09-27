@@ -10,12 +10,9 @@ import React, {
     useContext,
 } from 'react';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import {
-    NavItemButton,
-    NavItemIconButton,
-} from '../../../../styled/Components/Header';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import styles from './NavItem.module.css'
 interface NavItemPropsIF {
     children: ReactNode;
     icon: ReactNode;
@@ -34,7 +31,6 @@ function NavItem(props: NavItemPropsIF) {
         open,
         setOpen,
         allowClicksOutside = false,
-        square,
         blurBg = true,
     } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
@@ -55,14 +51,13 @@ function NavItem(props: NavItemPropsIF) {
     });
 
     return (
-        <NavItemButton
-            className='nav_item'
+        <button className={styles.navItemButton}
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
         >
-            <NavItemIconButton
-                square={square}
+            <div className={styles.navItemIconButton}
+                
                 onClick={() => {
                     setOpen((prevOpen) => {
                         const newOpen = !prevOpen;
@@ -74,10 +69,10 @@ function NavItem(props: NavItemPropsIF) {
                 }}
             >
                 {icon}
-            </NavItemIconButton>
+            </div>
 
             {open && childrenWithProps}
-        </NavItemButton>
+        </button>
     );
 }
 

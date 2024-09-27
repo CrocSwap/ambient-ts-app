@@ -21,6 +21,7 @@ import {
     scrollWstETH,
     blastEzETH,
     mainnetSWETH,
+    mainnetRSWETH,
     scrollWrsETH,
     blastWrsETH,
     blastUSDPLUS,
@@ -132,6 +133,7 @@ export const WBTC_TOKENS = [mainnetWBTC.address, scrollWBTC.address].map((x) =>
 export const STAKED_ETH_TOKENS = [
     mainnetWstETH.address,
     mainnetSWETH.address,
+    mainnetRSWETH.address,
     scrollWstETH.address,
     scrollWrsETH.address,
     scrollSTONE.address,

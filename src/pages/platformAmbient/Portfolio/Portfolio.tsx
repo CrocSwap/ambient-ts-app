@@ -38,6 +38,7 @@ import styles from './Portfolio.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
 import { TokenBalanceContext } from '../../../contexts';
+import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
@@ -214,6 +215,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const [isAutoLayout, setIsAutoLayout] = useState<boolean>(true); // Tracks if the layout is being set automatically
 
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
     const matchesMinWidth = useMediaQuery('(min-width: 768px)');
     const matchesMaxWidth = useMediaQuery('(max-width: 1280px)');
 
@@ -226,7 +228,24 @@ function Portfolio(props: PortfolioPropsIF) {
         }
     }, [isAutoLayout, matchesMinWidth, matchesMaxWidth]);
 
-    const exchangeBalanceComponent = (
+
+    const modalVersion = (
+        <Modal usingCustomHeader onClose={() => setShowTabsAndNotExchange(false)}>
+            <ModalHeader
+                title={'Exchange Balance'}
+                onClose={() => setShowTabsAndNotExchange(false)}
+            />
+            <div className={styles.container}>
+                <ExchangeBalance
+                    fullLayoutActive={fullLayoutActive}
+                    setFullLayoutActive={setFullLayoutActive}
+                    isModalView
+                />
+            </div>
+        </Modal>
+    );
+
+    const exchangeBalanceComponent = showMobileVersion ? modalVersion : (
         <ExchangeBalance
             fullLayoutActive={fullLayoutActive}
             setFullLayoutActive={setFullLayoutActive}
