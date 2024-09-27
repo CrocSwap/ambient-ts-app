@@ -261,7 +261,7 @@ function RangesRow(props: propsIF) {
                 )}
                 {(tableView === 'medium' ||
                     (!isAccountView && tableView === 'small')) &&
-                    txIdColumnComponent}
+                    walletWithTooltip}
                 {tableView === 'large' && fullScreenMinDisplay}
                 {tableView === 'large' && fullScreenMaxDisplay}
                 {tableView === 'medium' && priceDisplay}

@@ -344,7 +344,7 @@ function Transactions(props: propsIF) {
             sortable: true,
         },
         {
-            name: walID,
+            name: 'Wallet',
             show: tableView !== 'large',
             slug: 'walletid',
             sortable: !isAccountView,

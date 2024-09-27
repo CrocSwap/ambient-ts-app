@@ -252,7 +252,7 @@ function OrderRow(props: propsIF) {
                 {tableView === 'large' && !isAccountView && (
                     <div>{walletWithTooltip}</div>
                 )}
-                {tableView !== 'large' && txIdColumnComponent}
+                {tableView !== 'large' && walletWithTooltip}
                 {tableView !== 'small' && priceDisplay}
                 {tableView === 'large' && sideDisplay}
                 {tableView === 'large' && typeDisplay}

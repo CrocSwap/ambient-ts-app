@@ -216,7 +216,7 @@ function Orders(props: propsIF) {
             sortable: showAllData,
         },
         {
-            name: walID,
+            name: 'Wallet',
             className: 'wallet_it',
             show: tableView !== 'large',
             slug: 'walletid',
