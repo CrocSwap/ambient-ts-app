@@ -3,7 +3,8 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    gap: 1rem;
+   
+   
 }
 /* 
 .mobile_container > *{
@@ -11,16 +12,21 @@
 } */
 
 .mobile_tabs_container {
-    padding: 0 1rem;
+    padding:   1rem;
+   
 
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(4, 1fr);
     align-items: center;
+    justify-content: center;
     gap: 8px;
+
+    height: 30px;
+    
 }
 .mobile_tabs_container button {
     width: 100%;
-    background: var(--dark3);
+    background: var(--dark2);
     outline: none;
     border: 1px solid transparent;
     color: var(--text2);
@@ -39,7 +45,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 8px 1rem;
+
+   
+    
 }
 .mobile_token_icons {
     display: flex;
