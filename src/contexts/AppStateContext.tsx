@@ -198,7 +198,6 @@ export const AppStateContextProvider = (props: {
         ],
     );
 
-
     const onIdle = () => {
         setIsUserIdle(true);
     };
@@ -247,7 +246,7 @@ export const AppStateContextProvider = (props: {
     useIdleTimer({
         onIdle: onIdle10,
         onActive,
-        timeout: 1000 * 60 * 10, // set user to idle after 10 minutes
+        timeout: 1000 * 60 * 20, // set user to idle after 20 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
