@@ -6,8 +6,9 @@
     z-index: 99999;
     background-color: var(--dark2);
     padding: 0 4px;
-    border-radius: var(--border-radius);
-    height: 31px;
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
 }
 .menuContent {
     width: 100%;
@@ -64,6 +65,13 @@
 
 
 @media only screen and (min-width: 768px) {
+
+    .dropdownMenuContainer{
+        border-radius: var(--border-radius);
+        width: auto;
+        height: 31px;
+
+    }
 
     .menuContent {
         width: 200px;

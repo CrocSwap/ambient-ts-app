@@ -149,7 +149,7 @@ export default function DropdownMenu2(props: propsIF) {
                         />
                     )}
                 </div>
-                {expandable && (
+                {expandable && !showMobileVersion && (
                     <FaAngleDown
                         style={{ marginLeft: '4px', marginTop: '2px' }}
                     />
