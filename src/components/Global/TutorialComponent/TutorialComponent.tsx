@@ -16,7 +16,9 @@ interface propsIF {
 }
 
 function TutorialComponent(props: propsIF) {
+
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
+    console.log(tutoKey, steps)
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
     const hasTriggeredRef = useRef<boolean>(false);
@@ -52,6 +54,8 @@ function TutorialComponent(props: propsIF) {
         buildOnCompletes();
         if (steps.length > 0) {
             triggerTutorial();
+        }else{
+            completeTutorial();
         }
     }, [tutoKey]);
 
@@ -320,7 +324,24 @@ function TutorialComponent(props: propsIF) {
         <>
             {
                 forTooltip && isMobile ?
-                (<> </>)
+                (<> 
+                    {
+                    <div
+                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                        onClick={prevStep}
+                    >
+                        {'<'}
+                    </div>
+                }
+                {stepIndex < steps.length - 1 && (
+                    <div
+                        className={styles.step_btn + ' ' + styles.next_button}
+                        onClick={nextStep}
+                    >
+                        {'>'}
+                    </div>
+                )}
+                </>)
                 :
                 (<>
                     {
@@ -347,7 +368,7 @@ function TutorialComponent(props: propsIF) {
                     className={styles.step_btn + ' ' + styles.complete_button}
                     onClick={completeTutorial}
                 >
-                    Complete
+                    {isMobile && forTooltip ? 'X' : 'Complete'}
                 </div>
             )}
 
