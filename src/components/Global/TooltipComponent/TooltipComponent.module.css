@@ -19,7 +19,7 @@
     width: 100%;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    padding: 0 8px;
+    padding-right: 8px;
    
    
 }
