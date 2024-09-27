@@ -51,7 +51,7 @@ export interface AppStateContextIF {
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
-    isUserIdle10min: boolean;
+    isUserIdle20min: boolean;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -68,7 +68,7 @@ export const AppStateContextProvider = (props: {
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
-    const [isUserIdle10min, setIsUserIdle10min] = useState(false);
+    const [isUserIdle20min, setIsUserIdle20min] = useState(false);
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -158,7 +158,7 @@ export const AppStateContextProvider = (props: {
             },
             server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
             isUserIdle,
-            isUserIdle10min,
+            isUserIdle20min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             walletModal: {
                 isOpen: isGateWalletModalOpen,
@@ -202,13 +202,13 @@ export const AppStateContextProvider = (props: {
         setIsUserIdle(true);
     };
 
-    const onIdle10 = () => {
-        setIsUserIdle10min(true);
+    const onIdle20 = () => {
+        setIsUserIdle20min(true);
     };
 
     const onActive = () => {
         setIsUserIdle(false);
-        setIsUserIdle10min(false);
+        setIsUserIdle20min(false);
     };
 
     useIdleTimer({
@@ -244,7 +244,7 @@ export const AppStateContextProvider = (props: {
     });
 
     useIdleTimer({
-        onIdle: onIdle10,
+        onIdle: onIdle20,
         onActive,
         timeout: 1000 * 60 * 20, // set user to idle after 20 minutes
         promptTimeout: 0,
