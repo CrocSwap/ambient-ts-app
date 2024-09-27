@@ -5403,8 +5403,6 @@ export default function Chart(props: propsIF) {
                     scaleData.yScale((localOpen + localClose) / 2) -
                     30;
 
-                setLastCandleDataCenterY(location);
-
                 const positionX =
                     mainCanvasBoundingClientRect.left +
                     scaleData?.xScale(
@@ -5412,7 +5410,38 @@ export default function Chart(props: propsIF) {
                     ) +
                     bandwidth * 2;
 
-                setLastCandleDataCenterX(positionX);
+                const positionXReversed =
+                    mainCanvasBoundingClientRect.left +
+                    scaleData?.xScale(
+                        lastCandleData?.time * 1000 + period * 1000,
+                    ) -
+                    260 -
+                    bandwidth * 2;
+
+                const mobilePlacement =
+                    positionXReversed < 5 && mobileView
+                        ? (mainCanvasBoundingClientRect.left +
+                              window.innerWidth) /
+                          2
+                        : positionXReversed;
+
+                const checkTooltipPlacement =
+                    positionX + 260 > window.innerWidth
+                        ? mobilePlacement - 130
+                        : positionX;
+
+                const localMobile = scaleData.yScale(localOpen) - 20;
+
+                const mobileYPlacement =
+                    positionXReversed < 5 && mobileView
+                        ? localMobile < 0
+                            ? 5
+                            : localMobile
+                        : location;
+
+                setLastCandleDataCenterY(mobileYPlacement);
+
+                setLastCandleDataCenterX(checkTooltipPlacement);
             }
 
             setIsShowLastCandleTooltip(true);
