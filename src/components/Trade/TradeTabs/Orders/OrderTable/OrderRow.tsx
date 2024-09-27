@@ -211,7 +211,6 @@ function OrderRow(props: propsIF) {
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
         OrderTimeWithTooltip,
-        txIdColumnComponent,
         priceDisplay,
         typeDisplay,
         sideDisplay,

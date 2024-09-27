@@ -225,7 +225,6 @@ function RangesRow(props: propsIF) {
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
         rangeTimeWithTooltip,
-        txIdColumnComponent,
         fullScreenMinDisplay,
         fullScreenMaxDisplay,
         priceDisplay,

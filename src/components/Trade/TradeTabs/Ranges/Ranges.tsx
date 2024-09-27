@@ -254,13 +254,7 @@ function Ranges(props: propsIF) {
         </FlexContainer>
     );
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
+   
     const minMax = (
         <>
             <p>Min</p>

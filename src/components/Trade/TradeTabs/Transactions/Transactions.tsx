@@ -298,12 +298,7 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    const walID: JSX.Element = (
-        <>
-            <p>ID</p>
-            Wallet
-        </>
-    );
+  
     const sideType: JSX.Element = (
         <>
             <p>Type</p>

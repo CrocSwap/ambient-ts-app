@@ -164,13 +164,7 @@ function Orders(props: propsIF) {
               ? 'medium'
               : 'large';
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
+ 
     const sideType = (
         <>
             <p>Type</p>

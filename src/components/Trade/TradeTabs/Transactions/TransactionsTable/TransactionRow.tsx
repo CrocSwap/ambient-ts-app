@@ -195,7 +195,6 @@ function TransactionRow(props: propsIF) {
         tokenPair,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
-        txIdColumnComponent,
         TxTimeWithTooltip,
         sideDisplay,
         baseQuoteQtyDisplayColumn,
