@@ -180,11 +180,7 @@ function Ranges(props: propsIF) {
             !isLargeScreenAccount &&
             isSidebarOpen)
             ? 'small'
-            : (!isSmallScreen && !isLargeScreen) ||
-                (isAccountView &&
-                    connectedAccountActive &&
-                    isLargeScreenAccount &&
-                    isSidebarOpen)
+            : !isSmallScreen && !isLargeScreen
               ? 'medium'
               : 'large';
 
@@ -268,6 +264,7 @@ function Ranges(props: propsIF) {
             <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
+
     const headerColumns = [
         {
             name: 'Last Updated',
