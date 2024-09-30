@@ -5,14 +5,10 @@ import React, {
     SetStateAction,
     useContext,
 } from 'react';
-import { AnimatePresence, useAnimation } from 'framer-motion';
+import { AnimatePresence, useAnimation, motion } from 'framer-motion';
+import styles from './ActivityIndicator.module.css'
 
-import {
-    ActivityIndicatorDiv,
-    Circle,
-    CircleButton,
-    Ring,
-} from './ActivityIndicator.styles';
+
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
 
@@ -61,16 +57,16 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
     const isFuta = ['futa'].includes(platformName);
 
     const pendingCircle = (
-        <Circle onClick={toggleNotificationCenter} isFuta={isFuta}>
-            <Ring isFuta={isFuta} />
-        </Circle>
+        <button className={`${styles.circleContainer}${isFuta ? styles.circleContainerFuta : ''}`} onClick={toggleNotificationCenter} >
+            <span className={`${styles.ring}${isFuta ? styles.ringFuta : ''}`}  />
+        </button>
     );
 
     if (pending) return pendingCircle;
     return (
         <AnimatePresence>
             {value > 0 && (
-                <CircleButton
+                <motion.button className={styles.circleButton}
                     initial={false}
                     exit='hidden'
                     animate='visible'
@@ -80,12 +76,13 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                     tabIndex={0}
                     aria-label='Notification center'
                 >
-                    <ActivityIndicatorDiv
+                    <motion.div className={styles.activityIndicatorDiv}
+                        style={{borderRadius: isFuta ? '0' : '50%'}}
                         animate={controls}
                         whileHover='hover'
                         whileTap='pressed'
                         variants={animStates}
-                        isFuta={isFuta}
+                        
                     >
                         <span
                             aria-live='polite'
@@ -94,8 +91,8 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                         >
                             {value}
                         </span>
-                    </ActivityIndicatorDiv>
-                </CircleButton>
+                    </motion.div>
+                </motion.button>
             )}
         </AnimatePresence>
     );
