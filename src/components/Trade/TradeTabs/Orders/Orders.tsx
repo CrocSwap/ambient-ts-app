@@ -381,10 +381,11 @@ function Orders(props: propsIF) {
             activeAccountLimitOrderData,
             limitOrdersByPool,
             activeUserLimitOrdersByPool,
-            fetchedTransactions
+            fetchedTransactions  // infinite scroll
         ],
     );
 
+     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const oldestTxTime = useMemo(
         () =>
             limitOrderData.length > 0
@@ -396,6 +397,8 @@ function Orders(props: propsIF) {
                 : 0,
         [limitOrderData],
     );
+
+    // ------------------------------------------------------------------------------------------------------------------------------
 
     const activeUserLimitOrdersLength = useMemo(
         () =>
@@ -457,6 +460,7 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits, sortData] =
         useSortedLimits('time', limitOrderData);
 
+    // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
 
         console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
@@ -471,6 +475,7 @@ function Orders(props: propsIF) {
                 );
     }, [sortedLimits, pagesVisible,  isAccountView]);
 
+    // -----------------------------------------------------------------------------------------------------------------------------
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');

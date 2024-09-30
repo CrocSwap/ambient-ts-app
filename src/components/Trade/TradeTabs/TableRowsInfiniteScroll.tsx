@@ -12,6 +12,7 @@ import { domDebug } from '../../Chat/DomDebugger/DomDebuggerUtils';
 import TableRows from './TableRows';
 import { TxSortType } from './useSortedTxs';
 import { LimitSortType } from './useSortedLimits';
+import { RangeSortType } from './useSortedPositions';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -19,7 +20,7 @@ interface propsIF {
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
     fetcherFunction: () => void;
-    sortBy: TxSortType | LimitSortType;
+    sortBy: TxSortType | LimitSortType | RangeSortType;
     showAllData: boolean;
     pagesVisible: [number, number];
     setPagesVisible: Dispatch<SetStateAction<[number, number]>>;

@@ -13,7 +13,7 @@ import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
 import {
     HideEmptyPositionContainer,
     RangeRow as RangeRowStyled,
@@ -21,7 +21,7 @@ import {
 import { FlexContainer } from '../../../../styled/Common';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
-import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { GraphDataContext, PositionsByPool } from '../../../../contexts/GraphDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
@@ -35,10 +35,13 @@ import {
     priceToTick,
 } from '@crocswap-libs/sdk';
 import { getPositionData } from '../../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../../contexts/TokenContext';
+import { TokenContextIF, TokenContext } from '../../../../contexts/TokenContext';
 import { getPositionHash } from '../../../../ambient-utils/dataLayer/functions/getPositionHash';
 import { LS_KEY_HIDE_EMPTY_POSITIONS_ON_ACCOUNT } from '../../../../ambient-utils/constants';
 import Toggle from '../../../Form/Toggle';
+import { PageDataCountIF } from '../../../Chat/ChatIFs';
+import { fetchPoolPositions } from '../../../../ambient-utils/api/fetchPoolPositions';
+import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 
 // interface for props
 interface propsIF {
@@ -64,11 +67,16 @@ function Ranges(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
+    
     const {
         crocEnv,
+        activeNetwork,
         provider,
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+       chainData: {
+           chainId,
+           poolIndex,
+       },
+   } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const {
         cachedFetchTokenPrice,
@@ -127,23 +135,316 @@ function Ranges(props: propsIF) {
         [userPositionsByPool],
     );
 
+          
+    // infinite scroll props, methods ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    
+    const [fetchedTransactions, setFetchedTransactions] = useState<PositionsByPool>({
+        dataReceived: false,
+    positions: [...positionsByPool.positions],
+});
+
+const fetchedTransactionsRef = useRef<PositionsByPool>();
+fetchedTransactionsRef.current = fetchedTransactions;
+
+const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
+
+
+const [extraPagesAvailable, setExtraPagesAvailable] = useState<number>(0);
+
+const [moreDataAvailable, setMoreDataAvailable] = useState<boolean>(true);
+const moreDataAvailableRef = useRef<boolean>();
+moreDataAvailableRef.current = moreDataAvailable;
+
+const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
+
+const [moreDataLoading, setMoreDataLoading] = useState<boolean>(false);
+
+const selectedBaseAddress: string = baseToken.address;
+const selectedQuoteAddress: string = quoteToken.address;
+
+const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+
+useEffect(() => {
+    setShowInfiniteScroll(!isAccountView && showAllData);
+}, [isAccountView, showAllData]);
+
+
+
+
+useEffect(() => {
+    setPagesVisible([0, 1]);
+    setPageDataCountShouldReset(true);
+    setExtraPagesAvailable(0);
+    setMoreDataAvailable(true);
+    setLastFetchedCount(0);
+}, [selectedBaseAddress + selectedQuoteAddress]);
+
+const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
+
+const getInitialDataPageCounts = () => {
+    let counts;
+    if(positionsByPool.positions.length == 0){
+        counts = [0, 0];
+    }
+    if(positionsByPool.positions.length / dataPerPage < 2){
+        counts = [Math.ceil(positionsByPool.positions.length / 2), 
+            Math.floor(positionsByPool.positions.length / 2)];
+    }
+    else{
+        counts = [positionsByPool.positions.length > dataPerPage ? dataPerPage : positionsByPool.positions.length , 
+            positionsByPool.positions.length / dataPerPage  == 2 ? dataPerPage : positionsByPool.positions.length - dataPerPage];
+    }
+
+    return {
+        pair: (selectedBaseAddress + selectedQuoteAddress).toLowerCase(),
+        counts: counts
+    }
+
+}
+
+const updatePageDataCount = (dataCount: number) => {
+    setPageDataCount(prev => {
+        return {
+            pair: prev.pair,
+            counts: [...prev.counts, dataCount]
+        }
+    })
+}
+
+const dataPerPage = 50;
+const [pagesVisible, setPagesVisible] = useState<[number, number]>([0, 1]);
+const [pageDataCount, setPageDataCount] = useState<PageDataCountIF>(getInitialDataPageCounts());
+const pageDataCountRef = useRef<PageDataCountIF>();
+pageDataCountRef.current = pageDataCount;
+
+const getIndexForPages = (start: boolean) => {
+    const pageDataCountVal = (pageDataCountRef.current ? pageDataCountRef.current : pageDataCount).counts;
+    let ret = 0;
+    if(start){
+        for(let i = 0 ; i < pagesVisible[0]; i++){
+            ret += pageDataCountVal[i];
+        }
+    }else{
+        for(let i = 0 ; i <= pagesVisible[1]; i++){
+            ret += pageDataCountVal[i];
+        }
+        ret -= 1;
+    }
+
+    return ret;
+}
+
+const getCurrentDataPair = () => {
+    if(positionsByPool.positions.length > 0){
+        return (positionsByPool.positions[0].base + positionsByPool.positions[0].quote).toLowerCase();
+    }else{
+        return '';
+    }
+}
+
+useEffect(() => {
+    // clear fetched transactions when switching pools
+    if (positionsByPool.positions.length === 0) {
+        setFetchedTransactions({
+            dataReceived: true,
+            positions: [],
+        });
+    }
+    else{
+        const existingChanges = new Set(
+            fetchedTransactions.positions.map(
+                // (change) => change.positionHash || change.positionId,
+                (change) => change.positionId,
+            ),
+        ); // Adjust if using a different unique identifier
+
+        const uniqueChanges = positionsByPool.positions.filter(
+            // (change) => !existingChanges.has(change.positionHash || change.positionId),
+            (change) => !existingChanges.has(change.positionId),
+        );
+
+        if (uniqueChanges.length > 0) {
+            setFetchedTransactions((prev) => {
+                return {
+                    dataReceived: true,
+                    positions: [...uniqueChanges, ...prev.positions],
+                };
+            });
+        }
+
+        
+    }
+}, [positionsByPool]);
+
+
+
+
+useEffect(() => {
+    
+    if(pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair() && fetchedTransactions.positions.length > 0){
+        setPagesVisible([0, 1]);
+        setPageDataCount(getInitialDataPageCounts());
+        setPageDataCountShouldReset(false);
+    }
+}, [fetchedTransactions])
+
+
+
+
+const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
+    return new Promise(resolve => {
+        if(!crocEnv || !provider) resolve([]);
+        else{
+            fetchPoolPositions({
+                tokenList: tokenList,
+                base: baseToken.address,
+                quote: quoteToken.address,
+                poolIdx: poolIndex,
+                chainId: chainId,
+                n: dataPerPage,
+                timeBefore: OLDEST_TIME,
+                crocEnv: crocEnv,
+                graphCacheUrl: activeNetwork.graphCacheUrl,
+                provider: provider,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
+            })
+                .then((poolChangesJsonData) => {
+                    if(poolChangesJsonData && poolChangesJsonData.length > 0){
+                        resolve(poolChangesJsonData as PositionIF[]);
+                    }else{
+                        resolve([]);
+                    }
+                });
+        }
+    });
+}
+
+const dataDiffCheck = (dirty: PositionIF[]):PositionIF[] => {
+    const txs = fetchedTransactionsRef.current ? fetchedTransactionsRef.current.positions : fetchedTransactions.positions;
+
+    const existingChanges = new Set(
+        txs.map(
+            (change) => change.positionId,
+        ),
+    ); 
+
+    const ret = dirty.filter(
+        (change) =>
+            !existingChanges.has(
+                change.positionId,
+            ),
+    );
+
+    return ret;
+    
+}
+
+const getOldestTime = (data: PositionIF[]):number => {
+    let oldestTime = 0;
+    if(data.length > 0){
+        oldestTime = data.reduce((min, order) => {
+            return order.latestUpdateTime < min
+                ? order.latestUpdateTime
+                : min;
+        }, data[0].latestUpdateTime);
+    }
+    return oldestTime;
+}
+
+const addMoreData = async() => {
+        setMoreDataLoading(true);
+            const targetCount = 30;
+            let addedDataCount = 0;
+
+            const newTxData: PositionIF[] = [];
+            let oldestTimeParam = oldestTxTime;
+            while((addedDataCount < targetCount)){
+                // fetch data
+                const dirtyData = await fetchNewData(oldestTimeParam);
+                if (dirtyData.length == 0){
+                    break;
+                }
+                // check diff
+                const cleanData = dataDiffCheck(dirtyData);
+                if (cleanData.length == 0){
+                    break;
+                }
+                else {
+                    addedDataCount += cleanData.length;
+                    newTxData.push(...cleanData);
+                    const oldestTimeTemp = getOldestTime(newTxData);
+                    oldestTimeParam = oldestTimeTemp < oldestTimeParam ? oldestTimeTemp : oldestTimeParam;
+                }
+            }
+            if(addedDataCount > 0){
+                 // new data found
+                 setFetchedTransactions((prev) => {
+                    const sortedData = sortData([
+                        ...prev.positions,
+                        ...newTxData,
+                    ]);
+                    return {
+                        dataReceived: true,
+                        positions: sortedData,
+                    };
+                })
+                 setLastFetchedCount(addedDataCount);
+                 updatePageDataCount(addedDataCount);
+                setExtraPagesAvailable((prev) => prev + 1);
+                setPagesVisible((prev) => [
+                    prev[0] + 1,
+                    prev[1] + 1,
+                ]);
+            }else{
+                setMoreDataAvailable(false);
+            }
+
+            setMoreDataLoading(false);
+
+};
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
     const rangeData = useMemo(
         () =>
             isAccountView
                 ? activeAccountPositionData || []
                 : !showAllData
                   ? activeUserPositionsByPool
-                  : positionsByPool.positions.filter(
-                        (position) => position.positionLiq != 0,
-                    ),
+                //   : positionsByPool.positions.filter(
+                //         (position) => position.positionLiq != 0,
+                //     ),
+                : fetchedTransactions.positions,
         [
             showAllData,
             isAccountView,
             activeAccountPositionData,
             positionsByPool,
             activeUserPositionsByPool,
+            fetchedTransactions  // infinite scroll
         ],
     );
+
+    // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
+    const oldestTxTime = useMemo(
+        () =>
+            rangeData.length > 0
+                ? rangeData.reduce((min, order) => {
+                        return order.latestUpdateTime < min
+                            ? order.latestUpdateTime
+                            : min;
+                    }, rangeData[0].latestUpdateTime)
+                : 0,
+        [rangeData],
+    );
+
+    // ------------------------------------------------------------------------------------------------------------------------------
+    
 
     const isLoading = useMemo(
         () =>
@@ -165,8 +466,26 @@ function Ranges(props: propsIF) {
         ],
     );
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions, sortData] =
         useSortedPositions('time', rangeData);
+
+            // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
+    const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
+
+        console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
+        console.log('p0', pagesVisible[0], '| p1', pagesVisible[1]);
+        console.log('pageDataCountVals', pageDataCountRef.current?.counts);
+        console.log('.............................')
+        return isAccountView
+            ? sortedPositions
+            : sortedPositions.slice(
+                    getIndexForPages(true),
+                    getIndexForPages(false)
+                );
+    }, [sortedPositions, pagesVisible,  isAccountView]);
+
+    // -----------------------------------------------------------------------------------------------------------------------------
+
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -764,32 +1083,58 @@ function Ranges(props: propsIF) {
                                 tableView={tableView}
                             />
                         ))}
-
-                <TableRows
-                    type='Range'
-                    data={unindexedUpdatedPositions.concat(
-                        filteredSortedPositions
-                            .filter(
-                                (pos) =>
-                                    // remove existing row for adds
-                                    !unindexedUpdatedPositionHashes.includes(
-                                        pos.positionId,
-                                    ),
-                            )
-                            // only show empty positions on account view
-                            .filter(
-                                (pos) =>
-                                    (isAccountView &&
-                                        !hideEmptyPositionsOnAccount) ||
-                                    pos.positionLiq !== 0,
-                            ),
-                    )}
-                    fullData={unindexedUpdatedPositions.concat(
-                        filteredSortedPositions,
-                    )}
-                    isAccountView={isAccountView}
-                    tableView={tableView}
-                />
+                {showInfiniteScroll ? 
+                    (
+                    <TableRowsInfiniteScroll
+                        type='Range'
+                        data={sortedLimitDataToDisplay}
+                        tableView={tableView}
+                        isAccountView={isAccountView}
+                        fetcherFunction={addMoreData}
+                        sortBy={sortBy}
+                        showAllData={showAllData}
+                        moreDataAvailable={moreDataAvailableRef.current}
+                        pagesVisible={pagesVisible}
+                        setPagesVisible={setPagesVisible}
+                        extraPagesAvailable={extraPagesAvailable}
+                        // setExtraPagesAvailable={setExtraPagesAvailable}
+                        tableKey='Ranges'
+                        dataPerPage={dataPerPage}
+                        pageDataCount={pageDataCountRef.current.counts}
+                        lastFetchedCount={lastFetchedCount}
+                        setLastFetchedCount={setLastFetchedCount}
+                        moreDataLoading={moreDataLoading}
+                        />
+                    )
+                    :
+                    
+                    (<TableRows
+                        type='Range'
+                        data={unindexedUpdatedPositions.concat(
+                            filteredSortedPositions
+                                .filter(
+                                    (pos) =>
+                                        // remove existing row for adds
+                                        !unindexedUpdatedPositionHashes.includes(
+                                            pos.positionId,
+                                        ),
+                                )
+                                // only show empty positions on account view
+                                .filter(
+                                    (pos) =>
+                                        (isAccountView &&
+                                            !hideEmptyPositionsOnAccount) ||
+                                        pos.positionLiq !== 0,
+                                ),
+                        )}
+                        fullData={unindexedUpdatedPositions.concat(
+                            filteredSortedPositions,
+                        )}
+                        isAccountView={isAccountView}
+                        tableView={tableView}
+                    />)
+                }
+                
             </ul>
         </div>
     );

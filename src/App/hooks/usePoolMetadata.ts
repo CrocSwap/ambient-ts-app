@@ -359,7 +359,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 quote: quoteTokenAddress.toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
-                                n: '200',
+                                n: '100',
                             }),
                     )
                         .then((response) => response.json())

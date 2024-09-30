@@ -156,6 +156,13 @@ function TableRows({
                     <RangesRow
                         key={idx}
                         position={position}
+                        observedRowRef={
+                            idx === 0
+                                ? firstRowRef
+                                : idx === data.length - 1
+                                  ? lastRowRef
+                                  : undefined
+                        }
                         tableView={tableView}
                         isAccountView={isAccountView}
                         isLeaderboard={isLeaderboard}
