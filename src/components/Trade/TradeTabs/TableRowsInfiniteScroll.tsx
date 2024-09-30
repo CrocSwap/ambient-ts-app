@@ -361,15 +361,6 @@ function TableRowsInfiniteScroll({
         }
     }
 
-    // useEffect(() => {
-    //     if (autoScroll) {
-    //        console.log('doScroll from [data]')
-    //        doScroll();
-    //     }
-    // }, [data]);
-
-
-
     const scrollWithAlternateStrategy = () => { 
 
 
@@ -431,11 +422,6 @@ function TableRowsInfiniteScroll({
                 if (moreDataLoadingVal) return;
                 
                 if (entry.isIntersecting) {
-                    // if(entries[0].target){
-                    //     console.log('.......')
-                    //     console.log('inersection trigger for ', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
-                    //     console.log('.......')
-                    // }
 
                     if(manualModeRef.current){
                         bindLastSeenRow();                        
@@ -498,7 +484,6 @@ function TableRowsInfiniteScroll({
         domDebug('moreDataLoading', moreDataLoading);
         domDebug('page', pagesVisible[0]);
 
-        // console.log('first row', getKeyFieldFromRowRef(firstRowRef.current));
         const observer = new IntersectionObserver(
             (entries) => {
                 const entry = entries[0];
@@ -509,11 +494,6 @@ function TableRowsInfiniteScroll({
                 if (moreDataLoadingVal) return;
 
                 if (entry.isIntersecting) {
-                    // if(entries[0].target){
-                    //     console.log('.......')
-                    //     console.log('inersection trigger for FIRST ROW', getKeyFieldFromRowRef(entries[0].target as HTMLDivElement))
-                    //     console.log('.......')
-                    // }
     
                     if(manualModeRef.current){
                         setShowManualScrollUp(true);

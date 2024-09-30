@@ -75,22 +75,24 @@ function Orders(props: propsIF) {
     } = useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
-    
+
     const { transactionsByType } = useContext(ReceiptContext);
-    
+
     const { baseToken, quoteToken } = useContext(TradeDataContext);
 
     const baseTokenSymbol = baseToken.symbol;
     const quoteTokenSymbol = quoteToken.symbol;
-    
+
     const activeUserLimitOrdersByPool = useMemo(
         () =>
             userLimitOrdersByPool?.limitOrders.filter(
                 (order) => order.positionLiq != 0 || order.claimableLiq !== 0,
             ),
-            [userLimitOrdersByPool],
-        );
-        
+        [userLimitOrdersByPool],
+    );
+       
+    // infinite scroll props, methods ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
     const [fetchedTransactions, setFetchedTransactions] = useState<LimitOrdersByPool>({
             dataReceived: false,
         limitOrders: [...limitOrdersByPool.limitOrders],
@@ -115,9 +117,6 @@ function Orders(props: propsIF) {
     const selectedBaseAddress: string = baseToken.address;
     const selectedQuoteAddress: string = quoteToken.address;
 
-    const pairRef = useRef<string>();
-    pairRef.current = selectedBaseAddress + selectedQuoteAddress; 
-
     const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
     
     useEffect(() => {
@@ -128,17 +127,12 @@ function Orders(props: propsIF) {
 
 
     useEffect(() => {
-        console.log('RESET PAGE DATA');
         setPagesVisible([0, 1]);
-        // setPageDataCount(getInitialDataPageCounts());
         setPageDataCountShouldReset(true);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
     }, [selectedBaseAddress + selectedQuoteAddress]);
-    
-    
-
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
 
@@ -147,7 +141,7 @@ function Orders(props: propsIF) {
         if(limitOrdersByPool.limitOrders.length == 0){
             counts = [0, 0];
         }
-        if(limitOrdersByPool.limitOrders.length - dataPerPage < 0){
+        if(limitOrdersByPool.limitOrders.length / dataPerPage < 2){
             counts = [Math.ceil(limitOrdersByPool.limitOrders.length / 2), 
                 Math.floor(limitOrdersByPool.limitOrders.length / 2)];
         }
@@ -170,7 +164,6 @@ function Orders(props: propsIF) {
                 counts: [...prev.counts, dataCount]
             }
         })
-
     }
     
     const dataPerPage = 50;
@@ -244,9 +237,7 @@ function Orders(props: propsIF) {
 
     useEffect(() => {
         
-        console.log('getCurrentDataPair', getCurrentDataPair());
-        if(pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair()){
-            console.log('reset page data count')
+        if(pageDataCountShouldReset && pageDataCountRef.current?.pair !== getCurrentDataPair() && fetchedTransactions.limitOrders.length > 0){
             setPagesVisible([0, 1]);
             setPageDataCount(getInitialDataPageCounts());
             setPageDataCountShouldReset(false);
@@ -371,6 +362,8 @@ function Orders(props: propsIF) {
 
     };
 
+    // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     const limitOrderData = useMemo<LimitOrderIF[]>(
         () =>
             isAccountView
@@ -468,13 +461,11 @@ function Orders(props: propsIF) {
 
         console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
         console.log('p0', pagesVisible[0], '| p1', pagesVisible[1]);
-        console.log('pageDataCountVals', pageDataCountRef.current);
+        console.log('pageDataCountVals', pageDataCountRef.current?.counts);
         console.log('.............................')
         return isAccountView
             ? sortedLimits
             : sortedLimits.slice(
-                    // pagesVisible[0] * dataPerPage,
-                    // pagesVisible[1] * dataPerPage + dataPerPage,
                     getIndexForPages(true),
                     getIndexForPages(false)
                 );
