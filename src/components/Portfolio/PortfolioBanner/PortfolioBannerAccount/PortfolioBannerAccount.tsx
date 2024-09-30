@@ -29,11 +29,9 @@ interface propsIF {
     jazziconsToDisplay: JSX.Element | null;
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
-    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
-
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
     nftTestWalletInput: string;
     setNftTestWalletInput: Dispatch<SetStateAction<string>>;
-
     showNFTPage: boolean;
     setShowNFTPage: Dispatch<SetStateAction<boolean>>;
     // eslint-disable-next-line 
@@ -41,8 +39,6 @@ interface propsIF {
 }
 
 export default function PortfolioBannerAccount(props: propsIF) {
-    const [showAccountDetails, setShowAccountDetails] = useState(false);
-
     const {
         ensName,
         resolvedAddress,
@@ -51,20 +47,16 @@ export default function PortfolioBannerAccount(props: propsIF) {
         connectedAccountActive,
         showTabsAndNotExchange,
         setShowTabsAndNotExchange,
-
         showNFTPage,
         setShowNFTPage,
-
         nftTestWalletInput,
         setNftTestWalletInput,
-
         handleTestWalletChange,
     } = props;
 
     const {
         userAddress,
         userProfileNFT,
-
         setUserProfileNFT,
         setUserThumbnailNFT,
     } = useContext(UserDataContext);
@@ -80,13 +72,15 @@ export default function PortfolioBannerAccount(props: propsIF) {
     } = useContext(CrocEnvContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
+    const [showAccountDetails, setShowAccountDetails] = useState(false);
+
     const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
 
     const addressToDisplay = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
-          ? truncatedAccountAddress
-          : userAddress;
+            ? truncatedAccountAddress
+            : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -130,6 +124,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
+
     function handleCopyAddress() {
         copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
