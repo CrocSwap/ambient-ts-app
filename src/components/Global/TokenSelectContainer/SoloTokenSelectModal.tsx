@@ -5,6 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    ChangeEvent,
 } from 'react';
 import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
@@ -249,11 +250,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         setShowSoloSelectTokenButtons(contentRouter !== 'from chain');
     }, [contentRouter]);
 
-    const clearInputFieldAndCloseModal = () => {
-        setInput('');
-        onClose();
-    }
-
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
@@ -265,31 +261,39 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
     return (
-        <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
+        <Modal
+            title='Select Token'
+            onClose={() => {
+                setInput('');
+                onClose();
+            }}
+        >
             <section className={styles.container}>
                 <div className={styles.input_control_container}>
                     <input
-                        id='token_select_input_field'
-                        spellCheck='false'
                         type='text'
+                        id='token_select_input_field'
+                        style={{
+                            color: showSoloSelectTokenButtons
+                                ? 'var(--text2)'
+                                : 'var(--text3)',
+                        }}
+                        value={rawInput}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+                        spellCheck='false'
+                        autoComplete='off'
                         autoFocus={INPUT_HAS_AUTOFOCUS}
                         // needed to remove placeholder text when focused
                         onFocus={() => setHidePlaceholderText(true)}
                         // needed to add placeholder text when not focused
                         onBlur={() => setHidePlaceholderText(false)}
-                        value={rawInput}
-                        autoComplete='off'
-                        onChange={(e) => setInput(e.target.value)}
+                        // variable placeholder text (disappears when field is focused)
                         placeholder={
                             hidePlaceholderText
                                 ? ''
                                 : '🔍 Search name or paste address'
                         }
-                        style={{
-                            color: showSoloSelectTokenButtons
-                                ? 'var(--text2)'
-                                : 'var(--text3)',
-                        }}                    />
+                    />
                     {validatedInput && (
                         <button
                             className={styles.clearButton}
