@@ -181,7 +181,7 @@ export const RangeRow = styled(Row)<{
                 : !leaderboard
                   ? size === 'small'
                       ? `grid-template-columns:
-                            minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                            minmax(120px, 1fr) minmax(70px, 1fr) minmax(70px, 1fr)
                             minmax(25px, 1fr) minmax(30px, 20%)`
                       : size === 'medium'
                         ? `grid-template-columns:
