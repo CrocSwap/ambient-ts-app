@@ -274,7 +274,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
     const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
+    // control whether the `<input>` has DOM focus by default
     const INPUT_HAS_AUTOFOCUS = false;
+    // logic to add and remove placeholder text from the `<input>` field
     const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
     return (
@@ -286,7 +288,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         spellCheck='false'
                         type='text'
                         autoFocus={INPUT_HAS_AUTOFOCUS}
+                        // needed to remove placeholder text when focused
                         onFocus={() => setHidePlaceholderText(true)}
+                        // needed to add placeholder text when not focused
                         onBlur={() => setHidePlaceholderText(false)}
                         value={rawInput}
                         autoComplete='off'
