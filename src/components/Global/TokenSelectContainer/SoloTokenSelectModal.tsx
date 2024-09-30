@@ -275,6 +275,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
     const INPUT_HAS_AUTOFOCUS = false;
+    const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
     return (
         <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
@@ -285,17 +286,21 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         spellCheck='false'
                         type='text'
                         autoFocus={INPUT_HAS_AUTOFOCUS}
+                        onFocus={() => setHidePlaceholderText(true)}
+                        onBlur={() => setHidePlaceholderText(false)}
                         value={rawInput}
                         autoComplete='off'
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder='🔍 Search name or paste address'
+                        placeholder={
+                            hidePlaceholderText
+                                ? ''
+                                : '🔍 Search name or paste address'
+                        }
                         style={{
                             color: showSoloSelectTokenButtons
                                 ? 'var(--text2)'
                                 : 'var(--text3)',
-                        }}
-                        onFocus={() => console.log('wowee!')}
-                    />
+                        }}                    />
                     {validatedInput && (
                         <button
                             className={styles.clearButton}
