@@ -17,9 +17,19 @@
     outline: 3px solid green;
 }
 
+.address_or_ens {
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    font-weight: 300;
+    cursor: pointer;
+    color: var(--text1);
+    letter-spacing: -0.02em;
+}
+
 .address_detail {
     font-weight: 300;
     font-size: var(--body-size);
+    line-height: var(--body-lh);
     gap: 8px;
     cursor: pointer;
     color: var(--text1);
@@ -34,6 +44,12 @@
     padding: 4px;
     border-radius: 20px;
     min-width: 120px;
+}
+
+@media only screen and (max-width: 768px) {
+    .address_or_ens {
+        font-size: var(--body-size);
+    }
 }
 
 @media only screen and (min-width: 768px) {

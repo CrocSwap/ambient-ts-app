@@ -195,18 +195,14 @@ export default function PortfolioBannerAccount(props: propsIF) {
                 </div>
 
                 <FlexContainer flexDirection='column' gap={4}>
-                    <FlexContainer
-                        fontWeight='300'
-                        fontSize={isSmallScreen ? 'body' : 'header1'}
-                        cursor='pointer'
-                        letterSpacing
-                        color='text1'
+                    <h3
+                        className={styles.address_or_ens}
                         onClick={handleCopyEnsName}
                     >
                         {isSmallScreen
                             ? trimString(ensNameToDisplay, 18, 3, '...')
                             : ensNameToDisplay}
-                    </FlexContainer>
+                    </h3>
                     <div
                         className={styles.address_detail}
                         onClick={handleCopyAddress}
