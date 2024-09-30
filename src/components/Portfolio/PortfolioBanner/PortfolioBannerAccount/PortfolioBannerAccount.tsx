@@ -21,7 +21,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
 
-interface IPortfolioBannerAccountPropsIF {
+interface propsIF {
     ensName: string;
     resolvedAddress: string;
     truncatedAccountAddress: string;
@@ -40,9 +40,7 @@ interface IPortfolioBannerAccountPropsIF {
     handleTestWalletChange: any;
 }
 
-export default function PortfolioBannerAccount(
-    props: IPortfolioBannerAccountPropsIF,
-) {
+export default function PortfolioBannerAccount(props: propsIF) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
     const {
