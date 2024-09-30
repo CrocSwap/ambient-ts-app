@@ -61,6 +61,11 @@
     gap: 4px;
 }
 
+.input_control_container > input::placeholder {
+    text-align: center;
+    font-size: 12px;
+}
+
 .input_control_container button {
     background: transparent;
     padding: 6px 0;

@@ -245,6 +245,11 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // const isInit = location.pathname.startsWith('/initpool');
 
+    // control whether the `<input>` has DOM focus by default
+    const INPUT_HAS_AUTOFOCUS = false;
+    // logic to add and remove placeholder text from the `<input>` field
+    const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
+
     return (
         <section className={styles.container}>
             <header className={styles.header}>
@@ -259,8 +264,18 @@ export const SoloTokenSelect = (props: propsIF) => {
                     type='text'
                     value={rawInput}
                     autoComplete='off'
+                    autoFocus={INPUT_HAS_AUTOFOCUS}
+                    // needed to remove placeholder text when focused
+                    onFocus={() => setHidePlaceholderText(true)}
+                    // needed to add placeholder text when not focused
+                    onBlur={() => setHidePlaceholderText(false)}
+                    // variable placeholder text (disappears when field is focused)
+                    placeholder={
+                        hidePlaceholderText
+                            ? ''
+                            : '🔍 Search name or paste address'
+                    }
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder=' Search name or paste address'
                     style={{
                         color: showSoloSelectTokenButtons
                             ? 'var(--text2)'
