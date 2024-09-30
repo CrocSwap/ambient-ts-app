@@ -162,7 +162,13 @@ export default function PortfolioBannerAccount(props: propsIF) {
                 gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                <span
+                <div
+                    className={styles.jazzicon}
+                    style={{
+                        transform: NFTData
+                            ? 'transform: translate(0%, 23%)'
+                            : '',
+                    }}
                     onClick={() => {
                         !(
                             resolvedAddress !== undefined &&
@@ -171,31 +177,22 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
-                    <div
-                        className={styles.portfolio_settings}
-                        style={{
-                            transform: NFTData
-                                ? 'transform: translate(0%, 23%)'
-                                : '',
-                        }}
-                    >
-                        {(resolvedAddress || userAddress) &&
-                            getAvatarForProfilePage(
-                                resolvedAddress
-                                    ? resolvedAddress
-                                    : userAddress
-                                      ? userAddress
-                                      : '',
-                                userProfileNFT,
-                                65,
-                                resolvedAddress !== undefined &&
-                                    resolvedAddress.length > 0 &&
-                                    !connectedAccountActive
-                                    ? false
-                                    : true,
-                            )}
-                    </div>
-                </span>
+                    {(resolvedAddress || userAddress) &&
+                        getAvatarForProfilePage(
+                            resolvedAddress
+                                ? resolvedAddress
+                                : userAddress
+                                    ? userAddress
+                                    : '',
+                            userProfileNFT,
+                            65,
+                            resolvedAddress !== undefined &&
+                                resolvedAddress.length > 0 &&
+                                !connectedAccountActive
+                                ? false
+                                : true,
+                        )}
+                </div>
 
                 <FlexContainer flexDirection='column' gap={4}>
                     <FlexContainer
