@@ -210,11 +210,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             ? trimString(ensNameToDisplay, 18, 3, '...')
                             : ensNameToDisplay}
                     </FlexContainer>
-                    <FlexContainer
-                        fontWeight='300'
-                        fontSize='body'
-                        gap={8}
-                        cursor='pointer'
+                    <div
+                        className={styles.address_detail}
                         onClick={handleCopyAddress}
                     >
                         {isSmallScreen
@@ -232,7 +229,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                 }}
                             />
                         ) : null}
-                    </FlexContainer>
+                    </div>
                 </FlexContainer>
 
                 {isSmallScreen && connectedAccountActive && (
