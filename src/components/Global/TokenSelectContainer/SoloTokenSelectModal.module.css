@@ -11,27 +11,13 @@
     display: none;
 }
 
-.no_modal_container {
-    overflow-y: scroll;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    background: var(--dark1);
-    border-radius: var(--border-radius);
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-}
-
-.container h2, .no_modal_container h2 {
+.container h2 {
     font-size: var(--body-size);
     line-height: var(--header2-lh);
     color: var(--text2);
 }
 
-.container input, .no_modal_container input {
+.container input {
     width: 100%;
     height: 30px;
     background: var(--dark2);
@@ -123,9 +109,5 @@
 @media only screen and (min-width: 768px) {
     .container {
         width: 448px;
-    }
-
-    .no_modal_container{
-        width: 772px;
     }
 }
