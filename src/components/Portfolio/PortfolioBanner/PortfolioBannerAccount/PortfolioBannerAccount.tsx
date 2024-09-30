@@ -204,9 +204,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         className={styles.address_detail}
                         onClick={handleCopyAddress}
                     >
-                        {isSmallScreen
-                            ? trimString(addressToDisplay ?? '', 7, 4, '...')
-                            : trimString(addressToDisplay ?? '', 6, 4, '…')}
+                        {addressToDisplay}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
                             <FiExternalLink
@@ -246,7 +244,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     }}
                 >
                     <input
-                        id='token_select_input_field'
                         spellCheck='false'
                         type='text'
                         value={nftTestWalletInput}
