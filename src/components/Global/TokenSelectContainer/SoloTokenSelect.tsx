@@ -267,7 +267,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 />
                 {validatedInput && (
                     <button
-                        className={styles.clearButton}
                         onClick={() => setInput('')}
                         aria-label='Clear input'
                         tabIndex={0}
