@@ -10,11 +10,11 @@ import { TokenIF } from '../../../ambient-utils/types';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../contexts/CrocEnvContext';
 import { ethers } from 'ethers';
-import { TokenContext } from '../../../contexts/TokenContext';
+import { TokenContext, TokenContextIF } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { CachedDataContext, CachedDataIF } from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
 import {
@@ -22,7 +22,7 @@ import {
     isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+import { TradeDataContext, TradeDataContextIF } from '../../../contexts/TradeDataContext';
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
@@ -47,11 +47,11 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         isFuta = false,
     } = props;
 
-    const { cachedTokenDetails } = useContext(CachedDataContext);
+    const { cachedTokenDetails } = useContext<CachedDataIF>(CachedDataContext);
     const {
         chainData: { chainId },
         provider,
-    } = useContext(CrocEnvContext);
+    } = useContext<CrocEnvContextIF>(CrocEnvContext);
     isFuta;
     const {
         tokens,
@@ -62,9 +62,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         searchType,
         addRecentToken,
         getRecentTokens,
-    } = useContext(TokenContext);
+    } = useContext<TokenContextIF>(TokenContext);
 
-    const { tokenA, tokenB, setSoloToken } = useContext(TradeDataContext);
+    const { tokenA, tokenB, setSoloToken } = useContext<TradeDataContextIF>(TradeDataContext);
 
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
@@ -246,11 +246,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     }, [validatedInput, searchType]);
 
     useEffect(() => {
-        if (contentRouter === 'from chain') {
-            setShowSoloSelectTokenButtons(false);
-        } else {
-            setShowSoloSelectTokenButtons(true);
-        }
+        setShowSoloSelectTokenButtons(contentRouter !== 'from chain');
     }, [contentRouter]);
 
     const clearInputFieldAndCloseModal = () => {
