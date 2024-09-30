@@ -20,14 +20,12 @@ import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import TableRows from '../TableRows';
 
-// interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
 }
 
-// main react functional component
 function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
@@ -52,6 +50,7 @@ function Orders(props: propsIF) {
         limitOrdersByPool,
         unindexedNonFailedSessionLimitOrderUpdates,
     } = useContext(GraphDataContext);
+
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
