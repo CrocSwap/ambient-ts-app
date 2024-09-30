@@ -142,19 +142,20 @@ export default function PortfolioBannerAccount(props: propsIF) {
     // Nft Fetch For Test Wallet
     const [isWalletPanelActive, setIsWalletPanelActive] = useState<boolean>(false);
 
-    function openWalletAddressPanel(e: KeyboardEvent): void {
-        if (e.code === 'KeyQ' && e.altKey) {
-            setIsWalletPanelActive((prev) => !prev);
-            document.removeEventListener('keydown', openWalletAddressPanel);
-        }
-    }
-
+    // functionality to show panel for NFT test fetch
     useEffect(() => {
+        function openWalletAddressPanel(e: KeyboardEvent): void {
+            if (e.code === 'KeyQ' && e.altKey) {
+                setIsWalletPanelActive((prev) => !prev);
+                document.removeEventListener('keydown', openWalletAddressPanel);
+            }
+        }
         document.body.addEventListener('keydown', openWalletAddressPanel);
+        return document.body.removeEventListener('keydown', openWalletAddressPanel);
     }, []);
 
     return (
-        <div className={styles.portfolio_banner}>
+        <div className={styles.portfolio_banner_account}>
             <FlexContainer
                 alignItems='flex-end'
                 zIndex={1}

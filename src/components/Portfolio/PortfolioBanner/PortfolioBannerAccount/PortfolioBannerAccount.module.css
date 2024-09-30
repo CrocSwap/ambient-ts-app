@@ -1,4 +1,4 @@
-.portfolio_banner {
+.portfolio_banner_account {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -14,6 +14,7 @@
     align-items: center;
     height: 65px;
     width: 65px;
+    outline: 3px solid green;
 }
 
 .deposit_button {
