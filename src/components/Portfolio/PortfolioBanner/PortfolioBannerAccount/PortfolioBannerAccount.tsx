@@ -9,10 +9,10 @@ import {
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
+import { TokenBalanceContext, TokenBalanceContextIF } from '../../../../contexts/TokenBalanceContext';
+import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
 import { FlexContainer } from '../../../../styled/Common';
 import styles from './PortfolioBannerAccount.module.css';
 
@@ -59,23 +59,25 @@ export default function PortfolioBannerAccount(props: propsIF) {
         userProfileNFT,
         setUserProfileNFT,
         setUserThumbnailNFT,
-    } = useContext(UserDataContext);
+    } = useContext<UserDataContextIF>(UserDataContext);
 
-    const { NFTData } = useContext(TokenBalanceContext);
+    const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
+
     const {
         chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
-    const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
-    const [showAccountDetails, setShowAccountDetails] = useState(false);
+    const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
+    const [showAccountDetails, setShowAccountDetails] = useState<boolean>(false);
 
-    const addressToDisplay = resolvedAddress
+    const ensNameToDisplay: string = ensName !== '' ? ensName : truncatedAccountAddress;
+
+    const addressToDisplay: string | undefined = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
             ? truncatedAccountAddress
@@ -107,7 +109,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         setShowNFTPage(false);
     }, [resolvedAddress]);
 
-    function handleCopyEnsName() {
+    function handleCopyEnsName(): void {
         copy(
             ensNameAvailable
                 ? ensName
@@ -124,13 +126,13 @@ export default function PortfolioBannerAccount(props: propsIF) {
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
-    function handleCopyAddress() {
+    function handleCopyAddress(): void {
         copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
-    function handleOpenExplorer(address: string) {
+    function handleOpenExplorer(address: string): void {
         if (address && blockExplorer) {
             const explorerUrl = `${blockExplorer}address/${address}`;
             window.open(explorerUrl);
@@ -138,12 +140,11 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }
 
     // Nft Fetch For Test Wallet
-    const [isWalletPanelActive, setIsWalletPanelActive] = useState(false);
+    const [isWalletPanelActive, setIsWalletPanelActive] = useState<boolean>(false);
 
-    function openWalletAddressPanel(e: KeyboardEvent) {
+    function openWalletAddressPanel(e: KeyboardEvent): void {
         if (e.code === 'KeyQ' && e.altKey) {
             setIsWalletPanelActive((prev) => !prev);
-
             document.removeEventListener('keydown', openWalletAddressPanel);
         }
     }
