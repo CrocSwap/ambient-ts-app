@@ -67,7 +67,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
-        // chainData: { blockExplorer, chainId },
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -128,7 +127,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
     function handleCopyAddress() {
         copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
-
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
@@ -155,11 +153,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }, []);
 
     return (
-        <div
-            className={styles.portfolio_banner_main_container}
-
-            // animate={showAccountDetails ? 'open' : 'closed'}
-        >
+        <div className={styles.portfolio_banner_main_container}>
             <FlexContainer
                 alignItems='flex-end'
                 zIndex={1}
@@ -213,9 +207,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         {isSmallScreen
                             ? trimString(ensNameToDisplay, 18, 3, '...')
                             : ensNameToDisplay}
-                        {/* {isSmallScreen
-                            ? trimString(truncatedAccountAddress, 5, 3, '...')
-                            : truncatedAccountAddress} */}
                     </FlexContainer>
                     <FlexContainer
                         fontWeight='300'
