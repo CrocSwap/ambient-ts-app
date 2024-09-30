@@ -195,33 +195,19 @@ function Orders(props: propsIF) {
         },
         {
             name: 'Position ID',
-            className: 'ID',
-            show: tableView === 'large',
-            slug: 'id',
+            className: 'position_id',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
+            slug: 'positionid',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
             sortable: showAllData,
-        },
-        {
-            name: 'Wallet',
-            className: 'wallet_id',
-            show:
-                !isAccountView &&
-                (tableView === 'medium' || tableView === 'small'),
-            slug: 'walletid',
-            sortable: !isAccountView,
-        },
-        {
-            name: 'Position ID',
-            className: 'position_id',
-            show: isAccountView && tableView !== 'small',
-            slug: 'positionid',
-            sortable: false,
         },
         {
             name: 'Limit Price',

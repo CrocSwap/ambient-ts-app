@@ -322,24 +322,17 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Transaction ID',
-            show: isAccountView && tableView !== 'small',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
             sortable: showAllData,
-        },
-        {
-            name: 'Wallet',
-            show:
-                !isAccountView &&
-                (tableView === 'medium' || tableView === 'small'),
-            slug: 'walletid',
-            sortable: !isAccountView,
-            alignCenter: false,
         },
         {
             name: 'Price',

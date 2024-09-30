@@ -220,7 +220,8 @@ function TransactionRow(props: propsIF) {
             >
                 {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView !== 'small' && isAccountView && (
+                {(tableView === 'large' ||
+                    (tableView === 'medium' && isAccountView)) && (
                     <div>{IDWithTooltip}</div>
                 )}
                 {!isAccountView && walletWithTooltip}
