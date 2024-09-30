@@ -188,7 +188,7 @@ export const RangeRow = styled(Row)<{
                                 minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                                 minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
                         : ` grid-template-columns:
-                               minmax(80px, 1fr)   minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr)
+                               minmax(80px, 1fr)   minmax(80px, 1fr) minmax(100px, 1fr) 
                                 minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                                 minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr) minmax(107px, 2fr)`
                   : size === 'small'
