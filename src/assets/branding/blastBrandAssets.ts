@@ -5,6 +5,7 @@ import blastLogo from '../../assets/images/logos/blast_logo.svg';
 export const blastBrandAssets: brandIF = {
     networks: {
         '0x13e31': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [

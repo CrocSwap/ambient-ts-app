@@ -7,6 +7,7 @@ export const defaultBrandAssets: brandIF = {
     networks: {
         // scroll mainnet
         '0x82750': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
@@ -17,6 +18,7 @@ export const defaultBrandAssets: brandIF = {
         },
         // blast mainnet
         '0x13e31': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
@@ -27,18 +29,21 @@ export const defaultBrandAssets: brandIF = {
         },
         // ethereum mainnet
         '0x1': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // ethereum sepolia
         '0xaa36a7': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [{ content: 'ambient', processAs: 'text' }],
         },
         // scroll sepolia
         '0x8274f': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
@@ -49,6 +54,7 @@ export const defaultBrandAssets: brandIF = {
         },
         // blast sepolia
         '0xa0c71fd': {
+            // first value in array is default color scheme
             color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [
