@@ -7,7 +7,6 @@ import {
     useState,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useTokens } from '../../../../App/hooks/useTokens';
 import { PoolIF, TokenIF } from '../../../../ambient-utils/types';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
@@ -32,6 +31,7 @@ import {
     getDefaultPairForChain,
     ZERO_ADDRESS,
 } from '../../../../ambient-utils/constants';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
     selectedRoom: string;
@@ -99,10 +99,7 @@ export default function Room(props: propsIF) {
         topPools,
     } = useContext(CrocEnvContext);
 
-    const { getTokensByNameOrSymbol, getTokenByAddress } = useTokens(
-        chainId,
-        undefined,
-    );
+    const { tokens } = useContext(TokenContext);
 
     const processRoomList = async () => {
         if (!props.isChatOpen) return;
@@ -256,9 +253,9 @@ export default function Room(props: propsIF) {
         if (room && room.base && room.quote) {
             const foundBase =
                 room.base === 'ETH'
-                    ? [getTokenByAddress(ZERO_ADDRESS) || dfltTokenA]
-                    : getTokensByNameOrSymbol(room.base, true);
-            const foundQuote = getTokensByNameOrSymbol(room.quote, true);
+                    ? [tokens.getTokenByAddress(ZERO_ADDRESS) || dfltTokenA]
+                    : tokens.getTokensByNameOrSymbol(room.base, true);
+            const foundQuote = tokens.getTokensByNameOrSymbol(room.quote, true);
 
             if (foundBase.length > 0 && foundQuote.length > 0) {
                 const base = foundBase[0];
@@ -381,7 +378,7 @@ export default function Room(props: propsIF) {
                 </div>
             </div>
             {isActive && (
-                <div className={styles.dropdow_content}>
+                <div className={styles.dropdown_content}>
                     <div className={styles.item}>
                         {roomList
                             .filter((e) => e.name !== props.selectedRoom)

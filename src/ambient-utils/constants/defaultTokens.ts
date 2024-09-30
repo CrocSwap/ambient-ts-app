@@ -49,6 +49,15 @@ export const mainnetSWETH: TokenIF = {
     symbol: 'swETH',
 };
 
+export const mainnetRSWETH: TokenIF = {
+    address: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
+    chainId: 1,
+    decimals: 18,
+    logoURI: 'https://etherscan.io/token/images/rsweth_32.png?=v3',
+    name: 'Restaked Swell ETH',
+    symbol: 'rswETH',
+};
+
 export const mainnetLIDO: TokenIF = {
     address: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
     chainId: 1,
@@ -84,6 +93,16 @@ export const mainnetSYN: TokenIF = {
         'https://assets.coingecko.com/coins/images/18024/thumb/syn.png?1635002049',
     name: 'Synapse',
     symbol: 'SYN',
+};
+
+export const mainnetPENDLE: TokenIF = {
+    address: '0x808507121b80c02388fad14726482e061b8da827',
+    chainId: 1,
+    decimals: 18,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/15069/thumb/Pendle_Logo_Normal-03.png',
+    name: 'Pendle',
+    symbol: 'PENDLE',
 };
 
 export const mainnetDAI: TokenIF = {
@@ -413,6 +432,7 @@ export const scrollWstETH: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scroll-tech.github.io/token-list/data/wstETH/logo.svg',
 };
+
 export const scrollWeETH: TokenIF = {
     name: 'Wrapped eETH',
     address: '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
@@ -421,6 +441,62 @@ export const scrollWeETH: TokenIF = {
     chainId: 534352,
     logoURI:
         'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
+};
+
+export const scrollSCROLLY: TokenIF = {
+    name: 'Scrolly The Map',
+    address: '0xb65aD8d81d1E4Cb2975352338805AF6e39BA8Be8',
+    symbol: 'SCROLLY',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://scrollscan.com/token/images/scrollythemap_32.png',
+};
+
+export const scrollSTG: TokenIF = {
+    name: 'StargateToken',
+    address: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
+    symbol: 'STG',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/24413/standard/STG_LOGO.png',
+};
+
+export const scrollSCRIBES: TokenIF = {
+    name: 'SCRIBES',
+    address: '0x750351a9F75F98f2c2E91D4eDb3BeB14e719557E',
+    symbol: 'SCRIBES',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
+
+export const scrollSKY: TokenIF = {
+    name: 'Skydrome',
+    address: '0x95a52EC1d60e74CD3Eb002fE54A2c74b185A4C16',
+    symbol: 'SKY',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/33902/standard/icon_200x200.png?1703237670',
+};
+
+export const scrollPANDA: TokenIF = {
+    name: 'PANDA',
+    address: '0x61a9cC561b6c1F9C31bcDeb447aFeCf25f33Bbf9',
+    symbol: 'PANDA',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: 'https://assets.coingecko.com/coins/images/35746/thumb/panda.jpeg',
+};
+
+export const scrollSOL: TokenIF = {
+    name: 'Wrapped SOL',
+    address: '0xCDf95E1F720caade4b1DC83ABfE15400D2a458AD',
+    symbol: 'SOL',
+    decimals: 9,
+    chainId: 534352,
+    logoURI: '',
 };
 
 export const scrollWrsETH: TokenIF = {
@@ -560,6 +636,14 @@ export const scrollKNC: TokenIF = {
     chainId: 534352,
     logoURI: 'https://scrollscan.com/token/images/kybernetworkknc_32.png',
 };
+export const scrollSINU: TokenIF = {
+    name: 'Scroll Inu',
+    address: '0x3660020acc6e993bbdc618dd63b15ad2a3a6d139',
+    symbol: 'SINU',
+    decimals: 18,
+    chainId: 534352,
+    logoURI: '',
+};
 export const scrollSOLVBTC: TokenIF = {
     name: 'Free Bridged SolvBTC.b',
     address: '0x3Ba89d490AB1C0c9CC2313385b30710e838370a4',
@@ -616,11 +700,13 @@ export const defaultTokens: TokenIF[] = [
     mainnetDAI,
     mainnetFRAX,
     mainnetSYN,
+    mainnetPENDLE,
     mainnetUSDT,
     mainnetRPL,
     mainnetWstETH,
     mainnetMATIC,
     mainnetSWETH,
+    mainnetRSWETH,
     mainnetMKR,
     mainnetLIDO,
     mainnetLUSD,
@@ -652,6 +738,7 @@ export const defaultTokens: TokenIF[] = [
     scrollDAI,
     scrollUSDT,
     scrollKNC,
+    scrollSINU,
     scrollSOLVBTC,
     scrollBalancer,
     scrollAxlUSDC,
@@ -663,6 +750,11 @@ export const defaultTokens: TokenIF[] = [
     scrollWrappedETH,
     scrollWstETH,
     scrollWeETH,
+    scrollSCROLLY,
+    scrollSTG,
+    scrollSCRIBES,
+    scrollSKY,
+    scrollSOL,
     scrollWrsETH,
     scrollSTONE,
     scrollUniETH,

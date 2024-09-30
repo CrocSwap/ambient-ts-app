@@ -12,7 +12,7 @@ import {
     isETHorStakedEthToken,
 } from '../../ambient-utils/dataLayer';
 // import { estimateFrom24HrRangeApr } from '../../ambient-utils/api';
-import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
+import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF, PoolStatIF } from '../../ambient-utils/types';
@@ -20,7 +20,13 @@ import { CACHE_UPDATE_FREQ_IN_MS } from '../../ambient-utils/constants';
 import { TokenContext } from '../../contexts/TokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 
-const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
+const useFetchPoolStats = (
+    pool: PoolIF,
+    spotPriceRetrieved: number | undefined,
+    isTradePair = false,
+    enableTotalSupply = false,
+    didUserFlipDenom = false,
+): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
         isUserIdle,
@@ -33,6 +39,9 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     } = useContext(CachedDataContext);
     const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
+    const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
+        [string, number] | undefined
+    >();
     const {
         crocEnv,
         activeNetwork,
@@ -74,25 +83,33 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         : pool?.base.logoURI;
 
     const poolPriceCacheTime = isTradePair
-        ? Math.floor(Date.now() / 5000) // 5 second cache for trade pair
+        ? isUserIdle
+            ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+            : Math.floor(Date.now() / 5000) // 5 second cache for trade pair
         : isUserIdle
-          ? Math.floor(Date.now() / 30000) // 30 second interval if  idle
+          ? Math.floor(Date.now() / 60000) // 30 second interval if  idle
           : Math.floor(Date.now() / 10000); // 10 second interval if not idle
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (isServerEnabled && crocEnv) {
             (async () => {
-                const spotPrice = await cachedQuerySpotPrice(
-                    crocEnv,
-                    pool.base.address,
-                    pool.quote.address,
-                    chainId,
-                    poolPriceCacheTime,
-                );
-
+                const spotPrice =
+                    spotPriceRetrieved !== undefined
+                        ? spotPriceRetrieved
+                        : await cachedQuerySpotPrice(
+                              crocEnv,
+                              pool.base.address,
+                              pool.quote.address,
+                              chainId,
+                              poolPriceCacheTime,
+                          );
                 if (spotPrice) {
                     setIsPoolInitialized(true);
+                    setLocalPoolPriceNonDisplay([
+                        pool.base.address + pool.quote.address,
+                        spotPrice,
+                    ]);
 
                     if (
                         isTradePair &&
@@ -137,6 +154,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
             })();
         }
     }, [
+        spotPriceRetrieved,
         isServerEnabled,
         chainId,
         crocEnv !== undefined,
@@ -174,10 +192,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-        pool?.base.address,
-        pool?.quote.address,
-    );
+    const [baseAddr, quoteAddr] = [pool?.base.address, pool?.quote.address];
 
     // Reset pool metric states that require asynchronous updates when pool changes
     const resetPoolStats = () => {
@@ -268,7 +283,11 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
             lastBlockNumber &&
             shouldInvertDisplay !== undefined &&
             crocEnv &&
-            provider
+            provider &&
+            localPoolPriceNonDisplay !== undefined &&
+            // check if the local pool price for the current pool
+            localPoolPriceNonDisplay[0] ===
+                pool.base.address + pool.quote.address
         ) {
             const poolStatsNow = await cachedPoolStatsFetch(
                 chainId,
@@ -288,7 +307,8 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.tokenUniv,
+                tokens.allDefaultTokens,
+                enableTotalSupply,
             );
 
             const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
@@ -312,14 +332,14 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                 cachedFetchTokenPrice,
                 cachedTokenDetails,
                 cachedQuerySpotPrice,
-                tokens.tokenUniv,
+                tokens.allDefaultTokens,
             );
 
             const volumeTotalNow = expandedPoolStatsNow?.volumeTotalUsd;
             const volumeTotal24hAgo = expandedPoolStats24hAgo?.volumeTotalUsd;
             const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-            const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+            const nowPrice = localPoolPriceNonDisplay[1];
             const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
             const priceChangeResult =
@@ -414,29 +434,40 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
                     setIsPoolPriceChangePositive(true);
                     return;
                 }
+                const priceChangePercent = priceChangeResult * 100;
 
                 if (priceChangeResult > -0.0001 && priceChangeResult < 0.0001) {
                     setPoolPriceChangePercent('No Change');
                     setIsPoolPriceChangePositive(true);
                 } else {
-                    priceChangeResult > 0
+                    (priceChangeResult > 0 && !didUserFlipDenom) ||
+                    (priceChangeResult < 0 && didUserFlipDenom)
                         ? setIsPoolPriceChangePositive(true)
                         : setIsPoolPriceChangePositive(false);
 
-                    const priceChangePercent = priceChangeResult * 100;
-
                     const priceChangeString =
-                        priceChangePercent > 0
+                        (priceChangeResult > 0 && !didUserFlipDenom) ||
+                        (priceChangeResult < 0 && didUserFlipDenom)
                             ? '+' +
-                              priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) +
+                              Math.abs(priceChangePercent).toLocaleString(
+                                  undefined,
+                                  {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  },
+                              ) +
                               '%'
-                            : priceChangePercent.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              }) + '%';
+                            : priceChangeResult > 0 && didUserFlipDenom
+                              ? '-' +
+                                priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) +
+                                '%'
+                              : priceChangePercent.toLocaleString(undefined, {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }) + '%';
                     setPoolPriceChangePercent(priceChangeString);
                 }
             } catch (error) {
@@ -461,7 +492,7 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
     });
 
     useEffect(() => {
-        if (isServerEnabled) fetchPoolStats();
+        if (isServerEnabled && lastBlockNumber !== 0) fetchPoolStats();
     }, [
         isUserIdle
             ? Math.floor(Date.now() / 120000)
@@ -469,11 +500,13 @@ const useFetchPoolStats = (pool: PoolIF, isTradePair = false): PoolStatIF => {
         poolVolume === undefined,
         isServerEnabled,
         shouldInvertDisplay,
-        lastBlockNumber === 0,
+        lastBlockNumber !== 0,
         !!crocEnv,
         !!provider,
         poolIndex,
         pool.base.address + pool.quote.address,
+        localPoolPriceNonDisplay,
+        didUserFlipDenom,
     ]);
 
     return {

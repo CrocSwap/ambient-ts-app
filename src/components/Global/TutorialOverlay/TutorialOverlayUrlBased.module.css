@@ -1,0 +1,52 @@
+
+.replay_tuto_btn{
+    position: fixed;
+    z-index: 99999;
+    top: 1.2rem;
+    right: 4rem;
+    line-height: 1.5rem;
+    text-align: center;
+    /* background-color: var(--accent1); */
+    border-radius: 100vw;
+    font-size: 1.3rem;
+    cursor: pointer;
+    animation: opaAnim .5s ease-in-out forwards;
+    opacity: 0;
+
+}
+
+@keyframes opaAnim{
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+.not_connected{
+    right: 14rem;
+}
+
+.replay_tuto_btn svg{
+    /* color: black; */
+}
+
+@media only screen and (max-width: 600px){
+    .replay_tuto_btn{
+        right: 7rem;
+    }
+
+    .not_connected{
+        right: 12rem;
+    }
+}
+
+.connectButton{
+    background: var(--accent1, #0ccdff);
+    padding: 0 .5rem;
+    margin: 0 .5rem;
+    cursor: pointer;
+    border: none;
+}
+    

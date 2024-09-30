@@ -5,7 +5,10 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../../styled/Common';
-import { truncateDecimals } from '../../../../ambient-utils/dataLayer';
+import {
+    precisionOfInput,
+    truncateDecimals,
+} from '../../../../ambient-utils/dataLayer';
 import {
     limitParamsIF,
     linkGenMethodsIF,
@@ -17,6 +20,7 @@ import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalan
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -24,7 +28,7 @@ interface propsIF {
     limitTickDisplayPrice: number;
     isWithdrawFromDexChecked: boolean;
     isSaveAsDexSurplusChecked: boolean;
-    handleLimitButtonMessage: (val: number) => void;
+    handleLimitButtonMessage: (val: bigint) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     amountToReduceNativeTokenQty: number;
     usdValueTokenA: number | undefined;
@@ -111,19 +115,23 @@ function LimitTokenInput(props: propsIF) {
     }, [limitTickDisplayPrice]);
 
     useEffect(() => {
-        handleLimitButtonMessage(parseFloat(tokenAInputQty));
+        handleLimitButtonMessage(
+            fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+        );
     }, [isWithdrawFromDexChecked]);
 
     const handleTokenAChangeEvent = (value?: string) => {
         let rawTokenBQty = 0;
         if (value !== undefined) {
-            const inputStr = formatTokenInput(value, tokenA);
-            const inputNum = parseFloat(inputStr);
+            // const inputStr = formatTokenInput(value, tokenA);
+            // value = value || '0.00';
+            const inputNum = parseFloat(value);
+            const inputBigNum = fromDisplayQty(value || '0', tokenA.decimals);
 
             // set token input quantity to be unparsed input
             setTokenAInputQty(value);
             setIsTokenAPrimary(true);
-            setPrimaryQuantity(inputStr);
+            setPrimaryQuantity(value);
 
             if (!isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -134,7 +142,7 @@ function LimitTokenInput(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * inputNum
                     : limitTickDisplayPrice * inputNum;
             }
-            handleLimitButtonMessage(inputNum);
+            handleLimitButtonMessage(inputBigNum);
         } else {
             if (!isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -145,12 +153,39 @@ function LimitTokenInput(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
                     : limitTickDisplayPrice * parseFloat(primaryQuantity);
             }
-            handleLimitButtonMessage(parseFloat(tokenAInputQty));
+            handleLimitButtonMessage(
+                fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+            );
         }
+
+        let precisionForTruncation = 6;
+
+        const fixedTokenBQty = parseFloat(
+            rawTokenBQty.toFixed(tokenB.decimals),
+        );
+
+        const precisionOfTruncatedTokenBQty = precisionOfInput(
+            fixedTokenBQty.toPrecision(precisionForTruncation),
+        );
+
+        // find the largest precision that doesn't exceed the token's decimal places
+        while (
+            precisionOfTruncatedTokenBQty > tokenB.decimals &&
+            precisionForTruncation > 1
+        ) {
+            precisionForTruncation--;
+        }
+
+        const truncatedTokenBQtyIsZero =
+            fixedTokenBQty.toPrecision(precisionForTruncation) === '0.00000';
 
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(6)
+                ? truncatedTokenBQtyIsZero
+                    ? '0'
+                    : fixedTokenBQty
+                          .toPrecision(precisionForTruncation)
+                          .replace(/\.?0+$/, '') // Remove trailing zeros
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
@@ -161,13 +196,17 @@ function LimitTokenInput(props: propsIF) {
     const handleTokenBChangeEvent = (value?: string) => {
         let rawTokenAQty = 0;
         if (value !== undefined) {
-            const inputStr = formatTokenInput(value, tokenA);
-            const inputNum = parseFloat(inputStr);
+            const inputNum = parseFloat(value);
 
             // set token input quantity to be unparsed input
             setTokenBInputQty(value);
             setIsTokenAPrimary(false);
-            setPrimaryQuantity(inputStr);
+            setPrimaryQuantity(value);
+
+            if (value === '') {
+                setTokenAInputQty('');
+                return;
+            }
 
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
@@ -178,23 +217,65 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
-            handleLimitButtonMessage(rawTokenAQty);
+            if (rawTokenAQty === Infinity || isNaN(rawTokenAQty)) return;
+            const formattedRawTokenAQty = formatTokenInput(
+                rawTokenAQty.toString(),
+                tokenA,
+            );
+            handleLimitButtonMessage(
+                fromDisplayQty(formattedRawTokenAQty, tokenA.decimals),
+            );
         } else {
+            if (primaryQuantity === '') {
+                setTokenAInputQty('');
+                return;
+            }
             if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
-                    : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                      (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
+                    : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             } else {
                 rawTokenAQty = !isSellTokenBase
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
-            handleLimitButtonMessage(rawTokenAQty);
+            if (rawTokenAQty === Infinity || isNaN(rawTokenAQty)) return;
+            const formattedRawTokenAQty = formatTokenInput(
+                rawTokenAQty.toString(),
+                tokenA,
+            );
+            handleLimitButtonMessage(
+                fromDisplayQty(formattedRawTokenAQty, tokenA.decimals),
+            );
         }
+        let precisionForTruncation = 6;
+
+        const fixedTokenAQty = parseFloat(
+            rawTokenAQty.toFixed(tokenA.decimals),
+        );
+
+        const precisionOfTruncatedTokenAQty = precisionOfInput(
+            fixedTokenAQty.toPrecision(precisionForTruncation),
+        );
+
+        // find the largest precision that doesn't exceed the token's decimal places
+        while (
+            precisionOfTruncatedTokenAQty > tokenA.decimals &&
+            precisionForTruncation > 1
+        ) {
+            precisionForTruncation--;
+        }
+
+        const truncatedTokenAQtyIsZero =
+            fixedTokenAQty.toPrecision(precisionForTruncation) === '0.00000';
+
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 2
-                ? rawTokenAQty.toPrecision(6)
+                ? truncatedTokenAQtyIsZero
+                    ? '0'
+                    : fixedTokenAQty
+                          .toPrecision(precisionForTruncation)
+                          .replace(/\.?0+$/, '')
                 : truncateDecimals(rawTokenAQty, 2)
             : '';
 

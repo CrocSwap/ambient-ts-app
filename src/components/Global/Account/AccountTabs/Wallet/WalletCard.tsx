@@ -12,6 +12,7 @@ import {
     uriToHttp,
 } from '../../../../../ambient-utils/dataLayer';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     token: TokenIF;
@@ -27,6 +28,8 @@ export default function WalletCard(props: propsIF) {
         chainData: { chainId },
         crocEnv,
     } = useContext(CrocEnvContext);
+
+    const isMobile = useMediaQuery('(max-width: 800px)');
 
     const tokenMapKey = token?.address?.toLowerCase() + '_' + chainId;
 
@@ -107,13 +110,15 @@ export default function WalletCard(props: propsIF) {
     const tokenInfo = (
         <div className={styles.token_info}>
             {iconAndSymbolWithTooltip}
-            <p>
-                {tokenFromMap?.name
-                    ? tokenFromMap?.name
-                    : token?.name
-                    ? token?.name
-                    : '???'}
-            </p>
+            {!isMobile && (
+                <p>
+                    {tokenFromMap?.name
+                        ? tokenFromMap?.name
+                        : token?.name
+                          ? token?.name
+                          : '???'}
+                </p>
+            )}
         </div>
     );
 

@@ -1,0 +1,82 @@
+.dropdownMenuContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    z-index: 99999;
+    background-color: var(--dark2);
+    padding: 0 4px;
+    border-radius: 50%;
+    height: 35px;
+    width: 35px;
+}
+.menuContent {
+    width: 100%;
+    padding: 12px;
+    overflow: hidden;
+    z-index: 999;
+   
+    
+}
+
+.menuContent ul,
+.menuContent li {
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.chainNameStatus{
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: var(--header2-size);
+    width: 100%;
+    color: var(--text1);
+    z-index: 9999;
+}
+.chainNameStatus:hover,
+.chainNameStatus:focus-visible {
+    filter: drop-shadow(0 0 5px var(--text1));
+}
+
+.chainNameStatus img {
+    margin-right: 0.5em;
+    vertical-align: middle;
+}
+.activeChain {
+    border-bottom: 1px solid var(--accent1);
+}
+
+.networkItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: background 500ms;
+    padding: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.networkItem:hover {
+    backdrop-filter: blur(16.5px);
+    -webkit-backdrop-filter: blur(16.5px);
+    border-radius: var(--border-radius);
+}
+
+
+@media only screen and (min-width: 768px) {
+
+    .dropdownMenuContainer{
+        border-radius: var(--border-radius);
+        width: auto;
+        height: 31px;
+
+    }
+
+    .menuContent {
+        width: 200px;
+        background: var(--dark2);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--accent1);
+    }
+}

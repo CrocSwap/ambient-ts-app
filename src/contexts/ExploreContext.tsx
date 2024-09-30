@@ -9,7 +9,6 @@ import {
     useState,
 } from 'react';
 import { CachedDataContext } from './CachedDataContext';
-import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { PoolIF } from '../ambient-utils/types';
 import {
@@ -22,7 +21,10 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { CACHE_UPDATE_FREQ_IN_MS } from '../ambient-utils/constants';
 import ambientTokenList from '../ambient-utils/constants/ambient-token-list.json';
 import { PoolContext } from './PoolContext';
-import { useTokenStatsIF, useTokenStats } from '../pages/Explore/useTokenStats';
+import {
+    useTokenStatsIF,
+    useTokenStats,
+} from '../pages/platformAmbient/Explore/useTokenStats';
 import { TokenContext } from './TokenContext';
 
 export interface ExploreContextIF {
@@ -64,8 +66,6 @@ export const ExploreContext = createContext<ExploreContextIF>(
 );
 
 export const ExploreContextProvider = (props: { children: ReactNode }) => {
-    const { isActiveNetworkBlast } = useContext(ChainDataContext);
-
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
@@ -147,6 +147,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
 
+        // spot price for pool
+        const spotPrice: number = await cachedQuerySpotPrice(
+            crocEnv,
+            pool.base.address,
+            pool.quote.address,
+            chainId,
+            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
+        );
+
         const poolStatsNow = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
@@ -196,7 +205,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
         const volumeChange24h = volumeTotalNow - volumeTotal24hAgo;
 
-        const nowPrice = expandedPoolStatsNow?.lastPriceIndic;
+        const nowPrice = spotPrice;
         const ydayPrice = expandedPoolStats24hAgo?.lastPriceIndic;
 
         const feesTotalNow = expandedPoolStatsNow?.feesTotalUsd;
@@ -209,10 +218,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     ? ydayPrice / nowPrice - 1.0
                     : nowPrice / ydayPrice - 1.0
                 : 0.0;
-        if (
-            !expandedPoolStatsNow ||
-            (!isActiveNetworkBlast && expandedPoolStatsNow.tvlTotalUsd < 100)
-        ) {
+        if (!expandedPoolStatsNow || expandedPoolStatsNow.tvlTotalUsd < 100) {
             // return early
             const poolData: PoolDataIF = {
                 ...pool,
@@ -262,7 +268,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = '';
         } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
-                '+ ' +
+                '+' +
                 (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
@@ -278,14 +284,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             priceChangePercent = 'No Change';
         }
 
-        // spot price for pool
-        const spotPrice: number = await cachedQuerySpotPrice(
-            crocEnv,
-            pool.base.address,
-            pool.quote.address,
-            chainId,
-            Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-        );
         // display price, inverted if necessary
         const displayPrice: number = shouldInvert
             ? 1 /

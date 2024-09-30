@@ -16,7 +16,10 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { FlexContainer } from '../../../styled/Common';
-import { truncateDecimals } from '../../../ambient-utils/dataLayer';
+import {
+    precisionOfInput,
+    truncateDecimals,
+} from '../../../ambient-utils/dataLayer';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { formatTokenInput } from '../../../utils/numbers';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
@@ -152,7 +155,7 @@ function SwapTokenInput(props: propsIF) {
         input: string,
         sellToken: boolean,
     ): Promise<number | undefined> {
-        if (isNaN(parseFloat(input)) || parseFloat(input) === 0 || !crocEnv) {
+        if (isNaN(parseFloat(input)) || parseFloat(input) <= 0 || !crocEnv) {
             setIsLiquidityInsufficient(false);
 
             return undefined;
@@ -175,10 +178,24 @@ function SwapTokenInput(props: propsIF) {
             });
         }
         if (sellToken) {
+            let precisionForTruncation = 6;
+
             const rawTokenBQty = impact?.buyQty ? parseFloat(impact.buyQty) : 0;
+
+            // find the largest precision that doesn't exceed the token's decimal places
+            while (
+                precisionOfInput(
+                    rawTokenBQty.toPrecision(precisionForTruncation),
+                ) > tokenB.decimals &&
+                precisionForTruncation > 1
+            ) {
+                precisionForTruncation--;
+            }
             const truncatedTokenBQty = rawTokenBQty
                 ? rawTokenBQty < 2
-                    ? rawTokenBQty.toPrecision(6)
+                    ? rawTokenBQty
+                          .toPrecision(precisionForTruncation)
+                          .replace(/\.?0+$/, '')
                     : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
 
@@ -188,12 +205,27 @@ function SwapTokenInput(props: propsIF) {
                 setIsBuyLoading(false);
             }
         } else {
+            let precisionForTruncation = 6;
+
             const rawTokenAQty = impact?.sellQty
                 ? parseFloat(impact.sellQty)
                 : 0;
+
+            // find the largest precision that doesn't exceed the token's decimal places
+            while (
+                precisionOfInput(
+                    rawTokenAQty.toPrecision(precisionForTruncation),
+                ) > tokenA.decimals &&
+                precisionForTruncation > 1
+            ) {
+                precisionForTruncation--;
+            }
+
             const truncatedTokenAQty = rawTokenAQty
                 ? rawTokenAQty < 2
-                    ? rawTokenAQty.toPrecision(6)
+                    ? rawTokenAQty
+                          .toPrecision(precisionForTruncation)
+                          .replace(/\.?0+$/, '')
                     : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
                 : '';
 
@@ -250,9 +282,20 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenAChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            if (value === '') {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsBuyLoading(false);
+                return;
+            }
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenA);
                 await refreshImpact(truncatedInputStr, true);
+            } else {
+                setBuyQtyString('');
+                setPrimaryQuantity(value);
+                setIsBuyLoading(false);
             }
         } else {
             lastQuery.current = {
@@ -265,9 +308,20 @@ function SwapTokenInput(props: propsIF) {
 
     const handleTokenBChangeEvent = async (value?: string) => {
         if (value !== undefined) {
+            if (value === '') {
+                setBuyQtyString('');
+                setSellQtyString('');
+                setPrimaryQuantity('');
+                setIsSellLoading(false);
+                return;
+            }
             if (parseFloat(value) !== 0) {
                 const truncatedInputStr = formatTokenInput(value, tokenB);
                 await refreshImpact(truncatedInputStr, false);
+            } else {
+                setSellQtyString('');
+                setPrimaryQuantity(value);
+                setIsSellLoading(false);
             }
         } else {
             lastQuery.current = {
@@ -307,6 +361,25 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [isTokenAPrimary, sellQtyString, buyQtyString, primaryQuantity]);
 
+    function reverseForAmbient(): void {
+        isTokenAPrimary
+            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                ? setIsSellLoading(true)
+                : null
+            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+              ? setIsBuyLoading(true)
+              : null;
+
+        if (!isTokenAPrimary) {
+            setSellQtyString(primaryQuantity);
+        } else {
+            setBuyQtyString(primaryQuantity);
+        }
+        setIsTokenAPrimary(!isTokenAPrimary);
+
+        reverseTokens();
+    }
+
     return (
         <FlexContainer flexDirection='column' gap={8}>
             <TokenInputWithWalletBalance
@@ -325,6 +398,7 @@ function SwapTokenInput(props: propsIF) {
                 isTokenEth={isSellTokenEth}
                 isDexSelected={isWithdrawFromDexChecked}
                 isLoading={isSellLoading && buyQtyString !== ''}
+                impactCalculationPending={isBuyLoading && sellQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
@@ -341,11 +415,7 @@ function SwapTokenInput(props: propsIF) {
                 justifyContent='center'
                 alignItems='center'
             >
-                <TokensArrow
-                    onClick={() => {
-                        reverseTokens();
-                    }}
-                />
+                <TokensArrow onClick={() => reverseForAmbient()} />
             </FlexContainer>
             <TokenInputWithWalletBalance
                 fieldId='swap_buy'
@@ -363,6 +433,7 @@ function SwapTokenInput(props: propsIF) {
                 isTokenEth={isBuyTokenEth}
                 isDexSelected={isSaveAsDexSurplusChecked}
                 isLoading={isBuyLoading && sellQtyString !== ''}
+                impactCalculationPending={isSellLoading && buyQtyString !== ''}
                 showPulseAnimation={showSwapPulseAnimation}
                 handleTokenInputEvent={debouncedTokenBChangeEvent}
                 reverseTokens={reverseTokens}

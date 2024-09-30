@@ -4,18 +4,35 @@ import styled from 'styled-components/macro';
 export const MainSection = styled.section<{
     isDropdown?: boolean;
     isSmallScreen?: boolean;
+    isFill: boolean;
 }>`
     display: ${(props) => (props.isDropdown ? 'flex' : 'grid')};
     gap: ${(props) => (props.isDropdown ? '8px' : 'initial')};
 
-    grid-template-columns: auto 380px;
-    height: calc(100dvh - 150px);
+    ${({ isFill }) => {
+        if (!isFill) {
+            return 'grid-template-columns: auto 380px;';
+        }
+    }}
+
+    height: ${(props) =>
+        props.isDropdown && !props.isSmallScreen
+            ? 'calc(100dvh - 85px)'
+            : 'calc(100dvh - 150px)'};
 
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
     @media (max-width: 1200px) {
-        display: flex;
-        flex-direction: column;
+        ${({ isFill }) => {
+            if (!isFill) {
+                return `
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */
+        margin: 0 auto;
+       
+      `;
+            }
+        }}
     }
 
     @media (max-width: 600px) {
@@ -26,6 +43,86 @@ export const MainSection = styled.section<{
 
     @media (max-width: 700px) and (min-width: 500px) {
         height: calc(100dvh - 85px);
+    }
+`;
+
+export const ResizableContainer = styled(Resizable)<{
+    showResizeable: boolean;
+    isFuta?: boolean;
+}>`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    max-height: ${({ isFuta }) =>
+        isFuta ? 'calc(100% - 5px)' : 'calc(100% - 54px)'};
+    min-height: 0px;
+
+    ${({ showResizeable }) =>
+        showResizeable &&
+        `
+      & > div:last-child > * {
+          bottom: 0 !important;
+          height: 5px !important;
+          background-color: var(--dark3);
+          z-index: 8;
+      }
+  
+      & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
+          z-index: -1;
+          display: none;
+      }
+    `}
+`;
+
+export const ChartContainer = styled.div<{
+    fullScreen: boolean;
+    isFuta: boolean;
+}>`
+    ${({ fullScreen, isFuta }) =>
+        fullScreen
+            ? `
+        transition: var(--transition);
+        background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
+        position: fixed;
+        width: 100%;
+        height: calc(100% - 56px);
+        left: 0;
+        top: 56px;
+        z-index: 4;
+
+        background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
+    `
+            : `
+        flex: 1 0;
+        padding: 0px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        min-height: 200px;
+        height: 100%;
+        overflow: hidden;
+
+        @media (min-width: 1200px) {
+            background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
+        }
+            
+        @media ((min-width: 801px) and (max-width:1200px)) {
+            padding-bottom: 30px;
+        }
+
+        @media (max-width: 320px) {
+            padding-bottom: 80px;
+        }
+    `}
+
+    ${({ isFuta }) => (isFuta ? 'padding-bottom: 30px;' : '')}
+
+    &::-webkit-scrollbar {
+        display: none;
     }
 `;
 
@@ -62,78 +159,4 @@ export const TradeDropdownButton = styled.button<{ activeText?: boolean }>`
     color: ${(props) => (props.activeText ? 'var(--text1)' : 'var(--text2)')};
     font-size: ${(props) =>
         props.activeText ? 'var(--header1-size)' : 'inherit'};
-`;
-
-export const ResizableContainer = styled(Resizable)<{
-    showResizeable: boolean;
-}>`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-
-    max-height: calc(100% - 54px);
-    min-height: 0px;
-
-    ${({ showResizeable }) =>
-        showResizeable &&
-        `
-    & > div:last-child > * {
-        bottom: 0 !important;
-        height: 5px !important;
-        background-color: var(--dark3);
-        z-index: 99;
-    }
-    
-    & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
-        z-index: -1;
-        display: none;
-    }
-    `}
-`;
-
-export const ChartContainer = styled.div<{ fullScreen: boolean }>`
-    ${({ fullScreen }) =>
-        fullScreen
-            ? `
-        transition: var(--transition);
-        background: var(--dark2);
-        position: fixed;
-        width: 100%;
-        height: calc(100% - 56px);
-        left: 0;
-        top: 56px;
-        z-index: 10;
-
-        background: var(--dark2);
-    `
-            : `
-        flex: 1 0;
-        padding: 0px;
-
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-        min-height: 200px;
-        height: 100%;
-        overflow: hidden;
-
-        @media (min-width: 1200px) {
-            background: var(--dark2);
-           
-        }
-
-        @media ((min-width: 801px) and (max-width:1200px)) {
-            padding-bottom: 30px;
-        }
-
-        @media (max-width: 320px) {
-            padding-bottom: 80px;
-        }
-    `}
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
 `;

@@ -10,7 +10,6 @@ import {
     memo,
     useMemo,
 } from 'react';
-
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
@@ -108,7 +107,8 @@ function Transactions(props: propsIF) {
         provider,
         chainData: { chainId, poolIndex },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
-    const { setOutsideControl } =
+
+    const { setOutsideControl, showAllData: showAllDataSelection } =
         useContext<TradeTableContextIF>(TradeTableContext);
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
@@ -139,17 +139,20 @@ function Transactions(props: propsIF) {
         TransactionIF[]
     >([]);
 
-    const showAllData = true;
+    const showAllData = !isAccountView && showAllDataSelection;
 
     const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
                 ? activeAccountTransactionData || []
-                : transactionsByPool.changes,
+                : !showAllData
+                  ? userTransactionsByPool.changes
+                  : transactionsByPool.changes,
         [
             activeAccountTransactionData,
             userTransactionsByPool,
             transactionsByPool,
+            showAllData,
         ],
     );
 
@@ -206,23 +209,18 @@ function Transactions(props: propsIF) {
     );
 
     // TODO: Use these as media width constants
-    const isSmallScreen: boolean = useMediaQuery('(max-width: 800px)');
+    const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
-    const tableView: 'small' | 'medium' | 'large' =
-        isSmallScreen ||
-        (isAccountView &&
-            !isLargeScreen &&
-            isSidebarOpen &&
-            fullLayoutActive === false)
-            ? 'small'
-            : (!isSmallScreen && !isLargeScreen) ||
-                (isAccountView &&
-                    isLargeScreen &&
-                    isSidebarOpen &&
-                    fullLayoutActive === false)
-              ? 'medium'
-              : 'large';
+    const tableView: 'small' | 'medium' | 'large' = isSmallScreen
+        ? 'small'
+        : (!isSmallScreen && !isLargeScreen) ||
+            (isAccountView &&
+                isLargeScreen &&
+                isSidebarOpen &&
+                fullLayoutActive === false)
+          ? 'medium'
+          : 'large';
 
     const getCandleData = (): Promise<void> | undefined =>
         crocEnv &&
@@ -295,12 +293,6 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    const walID: JSX.Element = (
-        <>
-            <p>ID</p>
-            Wallet
-        </>
-    );
     const sideType: JSX.Element = (
         <>
             <p>Type</p>
@@ -329,23 +321,18 @@ function Transactions(props: propsIF) {
             sortable: true,
         },
         {
-            name: 'ID',
-            show: tableView === 'large',
+            name: 'Transaction ID',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
-            sortable: true,
-        },
-        {
-            name: walID,
-            show: tableView !== 'large',
-            slug: 'walletid',
-            sortable: !isAccountView,
-            alignCenter: false,
+            sortable: showAllData,
         },
         {
             name: 'Price',
@@ -487,17 +474,14 @@ function Transactions(props: propsIF) {
             }
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction}>
+        <div
+            onKeyDown={handleKeyDownViewTransaction}
+            style={{ height: '100%' }}
+        >
             <ul
                 ref={listRef}
-                id='current_row_scroll'
-                style={
-                    isSmallScreen
-                        ? isAccountView
-                            ? { maxHeight: 'calc(100svh - 310px)' }
-                            : { height: 'calc(100svh - 330px)' }
-                        : undefined
-                }
+                // id='current_row_scroll'
+                style={{ height: '100%' }}
             >
                 {!isAccountView &&
                     unindexedNonFailedTransactions.length > 0 &&
@@ -615,11 +599,27 @@ function Transactions(props: propsIF) {
         </div>
     );
 
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {transactionDataOrNull}
+                </div>
+            </div>
+        );
+
     return (
-        <FlexContainer
-            flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%' }}
-        >
+        <FlexContainer flexDirection='column' style={{ height: '100%' }}>
             <div>{headerColumnsDisplay}</div>
 
             <div

@@ -1,5 +1,5 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { blastETH, blastUSDB, blastEzETH, blastBLAST } from '../defaultTokens';
+import { blastETH, blastUSDB, blastBLAST, blastEzETH } from '../defaultTokens';
 import { NetworkIF } from '../../types/NetworkIF';
 import { TopPool } from './TopPool';
 import { Provider } from 'ethers';

@@ -20,7 +20,7 @@ const PREMIUM_THEMES_IN_ENV = {
 
 type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
-interface BrandContextIF {
+export interface BrandContextIF {
     skin: skins;
     fontSet: fontSets;
     colorAndFont: string;
@@ -88,7 +88,7 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         const networkPrefs =
             brandAssets.networks[chainData.chainId as chainIds];
         return networkPrefs ? networkPrefs.color : 'purple_dark';
-        // return premiumAccess.get('theme1') ? 'orange_dark' : 'purple_dark';
+        // return premiumAccess.get('theme1') ? 'futa_dark' : 'purple_dark';
     }
 
     function getHero(): heroItem[] {

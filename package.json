@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "2.7.8",
+    "version": "2.9.1",
     "private": true,
     "type": "module",
     "dependencies": {
@@ -15,7 +15,7 @@
         "@types/react-blockies": "^1.4.4",
         "@types/react-color": "^3.0.12",
         "@vitejs/plugin-react": "^4.3.1",
-        "@web3modal/ethers": "^4.2.3",
+        "@web3modal/ethers": "4.2.1",
         "alchemy-sdk": "^3.2.0",
         "alea": "^1.0.1",
         "babel-plugin-styled-components": "^2.1.4",
@@ -31,6 +31,7 @@
         "modern-screenshot": "^4.4.25",
         "moment": "^2.30.1",
         "numbro": "^2.5.0",
+        "p5": "^1.11.0",
         "re-resizable": "^6.6.11",
         "react": "^18.3.1",
         "react-blockies": "^1.4.1",
@@ -58,6 +59,8 @@
         "ambi": "yarn start --force",
         "start": "yarn install && vite",
         "start-only": "vite",
+        "force": "yarn start --force",
+        "futa": "yarn start --force --mode futa --port 3001",
         "build": "tsc && vite build",
         "preview": "vite preview",
         "dev": "vite --host",
@@ -65,8 +68,7 @@
         "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
         "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
         "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
-        "pre-commit": "yarn lint:fix && yarn format && yarn test:nowatch",
-        "prepare": "husky install"
+        "pre-commit": "yarn lint:fix && yarn format && yarn test:nowatch"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -85,6 +87,7 @@
         "@testing-library/user-event": "^14.5.2",
         "@types/adm-zip": "^0.5.4",
         "@types/d3": "^7.1.0",
+        "@types/p5": "^1.7.6",
         "@typescript-eslint/eslint-plugin": "^5.22.0",
         "@typescript-eslint/parser": "^7.1.0",
         "adm-zip": "^0.5.10",
@@ -95,7 +98,6 @@
         "eslint-plugin-prettier": "^4.0.0",
         "eslint-plugin-react": "^7.35.0",
         "eslint-plugin-react-hooks": "^4.6.2",
-        "husky": "^9.0.11",
         "lint-staged": "^15.2.8",
         "playwright": "^1.45.3",
         "prettier": "^3.3.1",
