@@ -1,6 +1,8 @@
 .portfolio_banner_account {
     display: flex;
     flex-direction: column;
+    align-items:flex-start;
+    width: 100%;
     gap: 8px;
     background: rgba(18, 18, 26, 0.3);
     padding: 4px;
@@ -12,7 +14,7 @@
     flex-direction: row;
     align-items: flex-end;
     z-index: 1;
-    gap: 22px;
+    gap: 12px;
 }
 
 .jazzicon {
@@ -22,12 +24,12 @@
     align-items: center;
     height: 65px;
     width: 65px;
-    outline: 3px solid green;
 }
 
 .wallet_info {
     display: flex;
     flex-direction: column;
+    min-width: 130px;
     gap: 4px;
 }
 
@@ -41,6 +43,8 @@
 }
 
 .address_detail {
+    display: flex;
+    flex-direction: row;
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -61,18 +65,23 @@
 }
 
 @media only screen and (max-width: 768px) {
+    .user_facing_content {
+        justify-content: space-between;
+        width: 100%;
+    }
+    
     .address_or_ens {
         font-size: var(--body-size);
     }
 }
 
 @media only screen and (min-width: 768px) {
-    .portfolio_banner_main_container{
+    .portfolio_banner_account {
         width: 380.16px;
         border-radius: 50px 4px 4px 50px;
     }
 
-    .portfolio_settings_container{
+    .jazzicon {
         height: 65px;
         width: 65px;
     }
