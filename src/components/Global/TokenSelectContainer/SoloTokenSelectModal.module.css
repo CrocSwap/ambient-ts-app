@@ -5,21 +5,19 @@
     flex-direction: column;
     padding: 1rem;
     border-radius: var(--border-radius);
-    
 }
+
 .container::-webkit-scrollbar {
     display: none;
-  }
+}
 
-.no_modal_container{
-   
+.no_modal_container {
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
     padding: 1rem;
     background: var(--dark1);
     border-radius: var(--border-radius);
-
     position: absolute;
     top: 0;
     width: 100%;
@@ -77,6 +75,7 @@
     cursor: pointer;
     transition: var(--transition);
 }
+
 .clearButton {
     transform: translateY(-16%);
 }

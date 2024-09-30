@@ -285,7 +285,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         value={rawInput}
                         autoComplete='off'
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder=' Search name or paste address'
+                        placeholder={' Search name or paste address'}
                         style={{
                             color: showSoloSelectTokenButtons
                                 ? 'var(--text2)'
