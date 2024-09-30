@@ -254,7 +254,6 @@ function Ranges(props: propsIF) {
         </FlexContainer>
     );
 
-   
     const minMax = (
         <>
             <p>Min</p>
@@ -302,10 +301,17 @@ function Ranges(props: propsIF) {
             name: 'Wallet',
             className: 'wallet_id',
             show:
-                tableView === 'medium' ||
-                (!isAccountView && tableView === 'small'),
+                !isAccountView &&
+                (tableView === 'medium' || tableView === 'small'),
             slug: 'walletid',
             sortable: !isAccountView,
+        },
+        {
+            name: 'Position ID',
+            className: 'position_id',
+            show: isAccountView && tableView !== 'small',
+            slug: 'positionid',
+            sortable: false,
         },
         {
             name: 'Min',

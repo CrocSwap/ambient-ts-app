@@ -220,11 +220,10 @@ function TransactionRow(props: propsIF) {
             >
                 {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <div>{IDWithTooltip}</div>}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
+                {tableView !== 'small' && isAccountView && (
+                    <div>{IDWithTooltip}</div>
                 )}
-                {tableView !== 'large' && walletWithTooltip}
+                {!isAccountView && walletWithTooltip}
                 {tableView !== 'small' &&
                     (tx.entityType === 'liqchange'
                         ? tx.positionType === 'ambient'

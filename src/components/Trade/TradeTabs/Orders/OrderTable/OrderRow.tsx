@@ -247,11 +247,8 @@ function OrderRow(props: propsIF) {
             >
                 {tableView === 'large' && OrderTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <div>{IDWithTooltip}</div>}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
-                )}
-                {tableView !== 'large' && walletWithTooltip}
+                {!isAccountView && walletWithTooltip}
+                {tableView !== 'small' && isAccountView && IDWithTooltip}
                 {tableView !== 'small' && priceDisplay}
                 {tableView === 'large' && sideDisplay}
                 {tableView === 'large' && typeDisplay}

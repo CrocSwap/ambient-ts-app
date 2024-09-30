@@ -394,7 +394,11 @@ export const txRowConstants = (props: propsIF) => {
                                 ? `${tx.quoteSymbol} / ${tx.baseSymbol}`
                                 : `${tx.baseSymbol} / ${tx.quoteSymbol}`}
                         </span>
-                       
+                        <FiExternalLink
+                            size={10}
+                            color='white'
+                            style={{ marginLeft: '.5rem' }}
+                        />
                     </Link>
                 </RowItem>
             ) : (
@@ -404,7 +408,6 @@ export const txRowConstants = (props: propsIF) => {
                             <span style={{ textTransform: 'none' }}>
                                 {tx.baseSymbol} / {tx.quoteSymbol}
                             </span>
-                            
                         </div>
                     </a>
                 </RowItem>

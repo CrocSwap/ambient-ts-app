@@ -255,12 +255,8 @@ function RangesRow(props: propsIF) {
                 {!isLeaderboard && tableView === 'large' && (
                     <div>{IDWithTooltip}</div>
                 )}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
-                )}
-                {(tableView === 'medium' ||
-                    (!isAccountView && tableView === 'small')) &&
-                    walletWithTooltip}
+                {!isAccountView && walletWithTooltip}
+                {tableView !== 'small' && isAccountView && IDWithTooltip}
                 {tableView === 'large' && fullScreenMinDisplay}
                 {tableView === 'large' && fullScreenMaxDisplay}
                 {tableView === 'medium' && priceDisplay}

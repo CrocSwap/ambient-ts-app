@@ -115,7 +115,7 @@ export const TransactionRow = styled(Row)`
         account
             ? size === 'small'
                 ? `grid-template-columns: minmax(55px, 1.5fr)
-                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                     minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
                   ? `grid-template-columns: minmax(70px, 1fr) minmax(110px, 1.5fr)
@@ -144,7 +144,7 @@ export const OrderRow = styled(Row)`
         account
             ? size === 'small'
                 ? `grid-template-columns: minmax(55px, 1.5fr)
-                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                    minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
                   ? 'grid-template-columns: minmax(100px, 1fr) minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(170px, 2fr)'

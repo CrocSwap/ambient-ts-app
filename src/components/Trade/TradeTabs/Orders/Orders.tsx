@@ -164,7 +164,6 @@ function Orders(props: propsIF) {
               ? 'medium'
               : 'large';
 
- 
     const sideType = (
         <>
             <p>Type</p>
@@ -211,10 +210,19 @@ function Orders(props: propsIF) {
         },
         {
             name: 'Wallet',
-            className: 'wallet_it',
-            show: tableView !== 'large',
+            className: 'wallet_id',
+            show:
+                !isAccountView &&
+                (tableView === 'medium' || tableView === 'small'),
             slug: 'walletid',
             sortable: !isAccountView,
+        },
+        {
+            name: 'Position ID',
+            className: 'position_id',
+            show: isAccountView && tableView !== 'small',
+            slug: 'positionid',
+            sortable: false,
         },
         {
             name: 'Limit Price',
@@ -351,11 +359,11 @@ function Orders(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserLimitOrdersByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%'}}>
+        <div onKeyDown={handleKeyDownViewOrder} style={{ height: '100%' }}>
             <ul
                 ref={listRef}
                 // id='current_row_scroll'
-                style={{height: '100%'}}
+                style={{ height: '100%' }}
             >
                 {!isAccountView &&
                     relevantTransactionsByType.length > 0 &&
@@ -384,18 +392,24 @@ function Orders(props: propsIF) {
         </div>
     );
 
-    if (isSmallScreen) return (
-        <div style={{  overflow: 'scroll', height:  '100%'}}>
-            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
-            {headerColumnsDisplay}
-
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {orderDataOrNull}
+                </div>
             </div>
-            <div style={{overflowY: 'scroll', height: '100%'}}>
-                
-            {orderDataOrNull}   
-</div>
-        </div>
-    )
+        );
 
     return (
         <FlexContainer
