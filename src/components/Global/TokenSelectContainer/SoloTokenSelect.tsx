@@ -179,8 +179,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 setCustomToken(null);
             });
     }, [searchType, validatedInput, provider, cachedTokenDetails]);
-    // EDS Test Token 2 address (please do not delete!)
-    // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
     // value to determine what should be displayed in the DOM
     // this approach is necessary because not all data takes the same shape
@@ -222,11 +220,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const clearInputFieldAndCloseModal = () => {
-        setInput('');
-        onClose();
-    };
-
     const deviceHasKeyboard = 'ontouchstart' in document.documentElement;
 
     useEffect(() => {
@@ -243,8 +236,6 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
-    // const isInit = location.pathname.startsWith('/initpool');
-
     // control whether the `<input>` has DOM focus by default
     const INPUT_HAS_AUTOFOCUS = false;
     // logic to add and remove placeholder text from the `<input>` field
@@ -253,7 +244,10 @@ export const SoloTokenSelect = (props: propsIF) => {
     return (
         <section className={styles.container}>
             <header className={styles.header}>
-                <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
+                <IoIosArrowBack onClick={() => {
+                    setInput('');
+                    onClose();
+                }} />
                 <p>Select Token</p>
                 <p />
             </header>
