@@ -154,7 +154,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }, []);
 
     return (
-        <div className={styles.portfolio_banner_main_container}>
+        <div className={styles.portfolio_banner}>
             <FlexContainer
                 alignItems='flex-end'
                 zIndex={1}
@@ -171,7 +171,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     }}
                 >
                     <div
-                        className={styles.portfolio_settings_container}
+                        className={styles.portfolio_settings}
                         style={{
                             transform: NFTData
                                 ? 'transform: translate(0%, 23%)'
@@ -236,10 +236,10 @@ export default function PortfolioBannerAccount(props: propsIF) {
 
                 {isSmallScreen && connectedAccountActive && (
                     <button
+                        className={styles.deposit_button}
                         onClick={() =>
                             setShowTabsAndNotExchange(!showTabsAndNotExchange)
                         }
-                        className={styles.deposit_button}
                     >
                         {showTabsAndNotExchange
                             ? 'Transactions'

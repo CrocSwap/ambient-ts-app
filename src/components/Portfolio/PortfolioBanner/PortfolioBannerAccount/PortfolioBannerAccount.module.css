@@ -1,4 +1,4 @@
-.portfolio_banner_main_container {
+.portfolio_banner {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -7,19 +7,13 @@
     backdrop-filter: blur(2px);
 }
 
-.portfolio_settings_container {
+.portfolio_settings {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 65px;
     width: 65px;
-}
-
-.banner_settings_container {
-    background: red;
-    z-index: 999;
-    position: absolute;
 }
 
 .deposit_button {
