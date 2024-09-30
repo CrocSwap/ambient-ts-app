@@ -1847,7 +1847,7 @@
   dependencies:
     "@d3fc/d3fc-rebind" "^6.0.1"
 
-"@emotion/babel-plugin@^11.10.5", "@emotion/babel-plugin@^11.12.0":
+"@emotion/babel-plugin@^11.10.5":
   version "11.12.0"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.12.0.tgz#7b43debb250c313101b3f885eba634f1d723fcc2"
   integrity sha512-y2WQb+oP8Jqvvclh8Q55gLUyb7UFvgv7eJfsj7td5TToBrIUtPay2kMrZi4xjq9qw2vD0ZR5fSho0yqoFgX7Rw==
