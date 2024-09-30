@@ -180,11 +180,7 @@ function Ranges(props: propsIF) {
             !isLargeScreenAccount &&
             isSidebarOpen)
             ? 'small'
-            : (!isSmallScreen && !isLargeScreen) ||
-                (isAccountView &&
-                    connectedAccountActive &&
-                    isLargeScreenAccount &&
-                    isSidebarOpen)
+            : !isSmallScreen && !isLargeScreen
               ? 'medium'
               : 'large';
 
@@ -254,13 +250,6 @@ function Ranges(props: propsIF) {
         </FlexContainer>
     );
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
     const minMax = (
         <>
             <p>Min</p>
@@ -275,6 +264,7 @@ function Ranges(props: propsIF) {
             <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
+
     const headerColumns = [
         {
             name: 'Last Updated',
@@ -305,13 +295,20 @@ function Ranges(props: propsIF) {
             sortable: showAllData,
         },
         {
-            name: walID,
+            name: 'Wallet',
             className: 'wallet_id',
             show:
-                tableView === 'medium' ||
-                (!isAccountView && tableView === 'small'),
+                !isAccountView &&
+                (tableView === 'medium' || tableView === 'small'),
             slug: 'walletid',
             sortable: !isAccountView,
+        },
+        {
+            name: 'Position ID',
+            className: 'position_id',
+            show: isAccountView && tableView !== 'small',
+            slug: 'positionid',
+            sortable: false,
         },
         {
             name: 'Min',
