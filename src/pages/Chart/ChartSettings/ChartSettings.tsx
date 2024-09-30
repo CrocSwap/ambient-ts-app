@@ -702,7 +702,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 ? 'var(--accent1)'
                                 : 'var(--text1)'
                         }
-                        width={'98px'}
+                        width={'auto'}
                         onClick={() =>
                             handleApplyDefaults(defaultChartSettings)
                         }
