@@ -266,11 +266,9 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         placeholder=' Test wallet address'
                         style={{
                             borderRadius: '3px',
-
                             borderWidth: '1.5px',
                             borderStyle: 'solid',
                             borderColor: 'rgba(121, 133, 148, 0.7)',
-
                             fontSize: '15px',
                             color: 'rgba(204, 204, 204)',
                             background: '#2f3d52',
