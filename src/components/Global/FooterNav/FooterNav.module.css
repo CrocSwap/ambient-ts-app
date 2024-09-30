@@ -16,18 +16,21 @@
     width: 98%;
     margin: 0 auto;
     border-top: 1px solid var(--dark3);
+    gap: 4px;
 }
 
 .navItem {
-    flex: 1;
+   width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer !important;
     transition: all 0.2s ease-out;
+  
 }
 
 .link {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,6 +39,7 @@
     gap: 4px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
+
 }
 
 .icon {

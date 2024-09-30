@@ -73,12 +73,6 @@ function Leaderboard() {
     const quoteTokenSymbol = quoteToken?.symbol;
     const baseTokenSymbol = baseToken?.symbol;
 
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
     const minMax = (
         <>
             <p>Min</p>
@@ -115,7 +109,7 @@ function Leaderboard() {
             sortable: false,
         },
         {
-            name: walID,
+            name: 'Wallet',
             className: 'wallet_id',
             show: tableView !== 'large',
             slug: 'walletid',
