@@ -44,7 +44,6 @@ function TooltipComponent(props: TooltipComponentProps) {
     const mobilePopup = (
         <div className={styles.mobilePopupContainer}>{props.title}</div>
     );
-    console.log(props.title);
     if (props.noBg)
         return (
             <TextOnlyTooltip
@@ -66,7 +65,7 @@ function TooltipComponent(props: TooltipComponentProps) {
         );
     return (
         <>
-            {open && props.usePopups && isMobile &&  mobilePopup}
+            {open && props.usePopups && isMobile && mobilePopup}
             <DefaultTooltip
                 title={props.title}
                 interactive
