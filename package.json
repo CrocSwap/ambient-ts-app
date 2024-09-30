@@ -53,8 +53,7 @@
         "web-vitals": "^2.1.0"
     },
     "resolutions": {
-        "@coinbase/wallet-sdk": "npm:@coinbase/wallet-sdk@4.0.3",
-        "path-to-regexp": "3.3.0"
+        "@coinbase/wallet-sdk": "npm:@coinbase/wallet-sdk@4.0.3"
     },
     "scripts": {
         "ambi": "yarn start --force",
