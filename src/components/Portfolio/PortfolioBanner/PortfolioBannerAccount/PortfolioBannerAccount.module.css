@@ -17,6 +17,12 @@
     outline: 3px solid green;
 }
 
+.wallet_info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .address_or_ens {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);

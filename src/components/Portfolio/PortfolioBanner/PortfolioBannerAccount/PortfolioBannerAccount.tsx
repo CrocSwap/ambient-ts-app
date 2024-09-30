@@ -194,7 +194,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         )}
                 </div>
 
-                <FlexContainer flexDirection='column' gap={4}>
+                <div className={styles.wallet_info}>
                     <h3
                         className={styles.address_or_ens}
                         onClick={handleCopyEnsName}
@@ -223,7 +223,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             />
                         ) : null}
                     </div>
-                </FlexContainer>
+                </div>
 
                 {isSmallScreen && connectedAccountActive && (
                     <button
