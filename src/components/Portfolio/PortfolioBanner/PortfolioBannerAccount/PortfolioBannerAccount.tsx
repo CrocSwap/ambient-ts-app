@@ -13,7 +13,6 @@ import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStat
 import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
 import { TokenBalanceContext, TokenBalanceContextIF } from '../../../../contexts/TokenBalanceContext';
 import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
-import { FlexContainer } from '../../../../styled/Common';
 import styles from './PortfolioBannerAccount.module.css';
 
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
@@ -156,10 +155,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
 
     return (
         <div className={styles.portfolio_banner_account}>
-            <FlexContainer
-                alignItems='flex-end'
-                zIndex={1}
-                gap={22}
+            <div
+                className={styles.user_facing_content}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
                 <div
@@ -237,7 +234,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             : 'Deposit/Withdraw'}
                     </button>
                 )}
-            </FlexContainer>
+            </div>
 
             {isWalletPanelActive && (
                 <div

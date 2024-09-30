@@ -7,6 +7,14 @@
     backdrop-filter: blur(2px);
 }
 
+.user_facing_content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    z-index: 1;
+    gap: 22px;
+}
+
 .jazzicon {
     display: flex;
     flex-direction: column;
