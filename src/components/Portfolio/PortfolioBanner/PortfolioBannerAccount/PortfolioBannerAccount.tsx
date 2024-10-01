@@ -204,7 +204,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         className={styles.address_detail}
                         onClick={handleCopyAddress}
                     >
-                        {addressToDisplay}
+                        {addressToDisplay && addressToDisplay.length > 8 ? trimString(addressToDisplay, 5, 3) : addressToDisplay}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
                             <FiExternalLink
