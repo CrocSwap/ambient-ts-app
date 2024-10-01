@@ -144,7 +144,6 @@ function TableRowsInfiniteScroll({
 
     const getOverlayComponentForLoadingState = () => {
 
-
             if(isSmallScreen){
                 return <div style={{
                     transition: 'all .2s ease-in-out', 
@@ -188,6 +187,13 @@ function TableRowsInfiniteScroll({
                 top: 0,
                 behavior: 'instant' as ScrollBehavior,
             });
+
+            setTimeout(() => {
+                wrapperEl.scrollTo({
+                    top: 0,
+                    behavior: 'instant' as ScrollBehavior,
+                });
+            }, 100)
         }
     };
     
@@ -309,9 +315,9 @@ function TableRowsInfiniteScroll({
         const rows = document.querySelectorAll(`#infinite_scroll_wrapper_${wrapperID} > div`);
         if (rows.length > 0) {
             // const lastRow = rows[rows.length - 1] as HTMLDivElement;
-            rows.forEach((row) => {
-                (row as HTMLDivElement).style.backgroundColor = 'transparent';
-            });
+            // rows.forEach((row) => {
+            //     (row as HTMLDivElement).style.backgroundColor = 'transparent';
+            // });
             const lastRow = rows[rows.length - 1] as HTMLDivElement;
             if (debugMode) {
                 lastRow.style.backgroundColor = 'blue';

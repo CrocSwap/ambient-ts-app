@@ -141,7 +141,7 @@ function Ranges(props: propsIF) {
     
     const [fetchedTransactions, setFetchedTransactions] = useState<PositionsByPool>({
         dataReceived: false,
-    positions: [...positionsByPool.positions],
+    positions: [...positionsByPool.positions.filter(e=>e.positionLiq !== 0)],
 });
 
 const fetchedTransactionsRef = useRef<PositionsByPool>();
@@ -183,17 +183,19 @@ useEffect(() => {
 const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
 
 const getInitialDataPageCounts = () => {
+    
+    const data = positionsByPool.positions.filter(e=>e.positionLiq !== 0);
     let counts;
-    if(positionsByPool.positions.length == 0){
+    if(data.length == 0){
         counts = [0, 0];
     }
-    if(positionsByPool.positions.length / dataPerPage < 2){
-        counts = [Math.ceil(positionsByPool.positions.length / 2), 
-            Math.floor(positionsByPool.positions.length / 2)];
+    if(data.length / dataPerPage < 2){
+        counts = [Math.ceil(data.length / 2), 
+            Math.floor(data.length / 2)];
     }
     else{
-        counts = [positionsByPool.positions.length > dataPerPage ? dataPerPage : positionsByPool.positions.length , 
-            positionsByPool.positions.length / dataPerPage  == 2 ? dataPerPage : positionsByPool.positions.length - dataPerPage];
+        counts = [data.length > dataPerPage ? dataPerPage : data.length , 
+            data.length / dataPerPage  == 2 ? dataPerPage : data.length - dataPerPage];
     }
 
     return {
@@ -261,7 +263,7 @@ useEffect(() => {
 
         const uniqueChanges = positionsByPool.positions.filter(
             // (change) => !existingChanges.has(change.positionHash || change.positionId),
-            (change) => !existingChanges.has(change.positionId),
+            (change) => !existingChanges.has(change.positionId) && change.positionLiq !== 0,
         );
 
         if (uniqueChanges.length > 0) {
@@ -314,7 +316,8 @@ const fetchNewData = async(OLDEST_TIME:number):Promise<PositionIF[]> => {
             })
                 .then((poolChangesJsonData) => {
                     if(poolChangesJsonData && poolChangesJsonData.length > 0){
-                        resolve(poolChangesJsonData as PositionIF[]);
+                        // resolve(poolChangesJsonData as PositionIF[]);
+                        resolve((poolChangesJsonData as PositionIF[]).filter(e=>e.positionLiq !== 0));
                     }else{
                         resolve([]);
                     }
@@ -370,6 +373,7 @@ const addMoreData = async() => {
                 }
                 // check diff
                 const cleanData = dataDiffCheck(dirtyData);
+                console.log('package: ', cleanData.length)
                 if (cleanData.length == 0){
                     break;
                 }
