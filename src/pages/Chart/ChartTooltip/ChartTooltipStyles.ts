@@ -10,7 +10,7 @@ const ChartTooltipDiv = styled.div<{
     align-items: center;
     position: fixed;
 
-    margin-top: -24px;
+    margin-top: -15px;
     margin-left: ${({ isFuta }) => (isFuta ? '7px' : '10px')};
 
     p {
@@ -27,7 +27,7 @@ const ChartTooltipDiv = styled.div<{
             isToolbarOpen ? '38px' : '12px'};
 
         p {
-            margin-left: 2px;
+            margin-left: 5px;
             max-width: 1000px;
         }
     }
@@ -50,12 +50,12 @@ const CurrentDataDiv = styled.div<{
 
     color: var(--text2);
     min-height: 30px;
-    padding-left: ${({ isFuta }) => (isFuta ? '0px' : '4px')};
-    margin-top: 5px;
+    margin-top: 0px;
 
     @media screen and (min-width: 768px) {
         font-size: var(--body-size);
         flex-direction: row;
+        margin-top: 5px;
     }
 `;
 

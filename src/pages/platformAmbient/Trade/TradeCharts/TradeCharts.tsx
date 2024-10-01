@@ -273,10 +273,12 @@ function TradeCharts(props: propsIF) {
 
     const timeFrameContentDesktop = (
         <section className={styles.time_frame_container}>
-            <div className={styles.mobile_settings_row}>
-                <p className={styles.mobile_settings_header}>Time Frame:</p>
-                <TimeFrame candleTime={chartSettings.candleTime.global} />
-            </div>
+            {!isMobileSettingsModalOpen && (
+                <div className={styles.mobile_settings_row}>
+                    <p className={styles.mobile_settings_header}>Time Frame:</p>
+                    <TimeFrame candleTime={chartSettings.candleTime.global} />
+                </div>
+            )}
             <div className={styles.mobile_settings_row}>
                 <p className={styles.mobile_settings_header}>Volume:</p>
 

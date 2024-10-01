@@ -62,6 +62,7 @@ export default function TableInfo() {
                 className='custom_scroll_ambient'
                 fullWidth
                 fullHeight
+                style={{overflow: 'hidden'}}
             >
                 <GridContainer
                     numCols={smallScreen ? 1 : 2}
@@ -81,7 +82,7 @@ export default function TableInfo() {
                     </GridContainer>
 
                     <GridContainer gap={28} customRows='46px 46px auto'>
-                        <GridContainer numCols={4} gap={8}>
+                        <GridContainer numCols={smallScreen ? 2 : 4} gap={8}>
                             {/* first 4 row items go here */}
                             <DetailedBox
                                 label='Total Vol.'

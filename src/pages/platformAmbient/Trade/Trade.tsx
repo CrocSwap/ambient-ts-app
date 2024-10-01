@@ -50,6 +50,7 @@ import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { LuSettings } from 'react-icons/lu';
 import TradeCharts from './TradeCharts/TradeCharts';
+import TimeFrame from './TradeCharts/TradeChartsComponents/TimeFrame';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -328,16 +329,28 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                         {poolPriceChangeString}
                     </p>
                 </div>
-                {(isFuta
-                    ? futaActiveTab === 'Chart'
-                    : activeTab === 'Chart') && (
+            </div>
+
+            {(isFuta ? futaActiveTab === 'Chart' : activeTab === 'Chart') && (
+                <FlexContainer
+                    style={{
+                        justifyContent: 'space-between',
+                        padding: '0px 1rem 1rem 0.5rem',
+                    }}
+                >
+                    <div className={styles.mobile_settings_row}>
+                        <TimeFrame
+                            candleTime={chartSettings.candleTime.global}
+                        />
+                    </div>
+
                     <LuSettings
                         size={20}
                         onClick={openMobileSettingsModal}
                         color='var(--text2)'
                     />
-                )}
-            </div>
+                </FlexContainer>
+            )}
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
                 {activeTabData}
             </div>

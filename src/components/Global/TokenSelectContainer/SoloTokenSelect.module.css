@@ -1,25 +1,19 @@
-
-
-.container{
-   z-index: 2;
+.container {
+    z-index: 2;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
     padding: 1rem;
     background: var(--dark1);
     border-radius: var(--border-radius);
-
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     width: 100%;
- 
     height: 100%;
     z-index: 9999;
-
-   
 }
 
 .container h2 {
@@ -61,7 +55,12 @@
     gap: 4px;
 }
 
-.input_control_container button {
+.input_control_container > input::placeholder {
+    text-align: center;
+    font-size: 12px;
+}
+
+.input_control_container > button {
     background: transparent;
     padding: 6px 0;
     color: var(--text2);
@@ -71,12 +70,10 @@
     outline: none;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
-}
-.clearButton {
     transform: translateY(-16%);
 }
 
-.input_control_container button:hover {
+.input_control_container > button:hover {
     color: var(--text1);
 }
 
@@ -104,7 +101,7 @@
     padding: 1rem;
 }
 
-.header, .container header{
+.header, .container header {
     height: 41px !important;
     display: flex;
     flex-direction: row;
