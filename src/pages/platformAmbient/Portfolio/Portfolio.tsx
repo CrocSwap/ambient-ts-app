@@ -570,7 +570,6 @@ function Portfolio(props: PortfolioPropsIF) {
                 {isUserConnected || addressFromParams ? (
                     <PortfolioTabs {...portfolioTabsProps} />
                 ) : undefined}
-                {exchangeBalanceComponent}
 
                 {connectedAccountActive 
                     ? exchangeBalanceComponent
