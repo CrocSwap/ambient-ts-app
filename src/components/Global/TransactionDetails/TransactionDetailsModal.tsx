@@ -113,7 +113,6 @@ function TransactionDetailsModal(props: propsIF) {
         chainId,
     ]);
 
-    const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const detailsRef = useRef(null);
@@ -183,22 +182,11 @@ function TransactionDetailsModal(props: propsIF) {
         </div>
     );
 
-    const transactionDetailsHeaderProps = {
-        showSettings,
-        setShowSettings,
-        handleCopyAction: copyTransactionDetailsToClipboard,
-        setShowShareComponent: setShowShareComponent,
-        showShareComponent: showShareComponent,
-        handleCopyAddress,
-        onClose,
-        tooltipCopyAction: 'Copy transaction hash to clipboard',
-        tooltipCopyImage: 'Copy shareable image',
-    };
+ 
 
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-                {/* <DetailsHeader {...transactionDetailsHeaderProps} /> */}
                 <DetailsHeader
                     onClose={onClose}
                     handleCopyAction={handleCopyAddress}
@@ -207,7 +195,6 @@ function TransactionDetailsModal(props: propsIF) {
                     setShowShareComponent={setShowShareComponent}
                     tooltipCopyAction='Copy transaction hash to clipboard'
                     tooltipCopyImage='Copy shareable image'
-                    // isMobileLayout={true} // to enable the mobile-specific layout
                 />
                 {showShareComponent ? (
                     shareComponent

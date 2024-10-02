@@ -1,11 +1,13 @@
 import { Dispatch, SetStateAction } from 'react';
-import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import styles from './DetailsHeader.module.css'
+import styles from './DetailsHeader.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../assets/images/logos/logo_text.png';
+import { RiScreenshot2Fill } from 'react-icons/ri';
+import { LuCopy, LuShare2 } from 'react-icons/lu';
+import { TbListDetails } from 'react-icons/tb';
 interface DetailsHeaderPropsIF {
     onClose: () => void;
     handleCopyAction: () => void; // e.g., copy position ID, transaction hash, etc.
@@ -26,15 +28,14 @@ export default function DetailsHeader(props: DetailsHeaderPropsIF) {
         setShowShareComponent,
         tooltipCopyAction,
         tooltipCopyImage,
-        isMobileLayout = false, // default to false if not provided
     } = props;
 
-    const isMobile = useMediaQuery('(max-width: 800px)') || isMobileLayout;
+    const isMobile = useMediaQuery('(max-width: 600px)');
 
     const copyActionIconWithTooltip = (
         <IconWithTooltip title={tooltipCopyAction} placement='bottom'>
             <div onClick={handleCopyAction}>
-                <FiCopy size={25} color='var(--text3)' />
+                <LuCopy size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -42,7 +43,7 @@ export default function DetailsHeader(props: DetailsHeaderPropsIF) {
     const copyImageIconWithTooltip = (
         <IconWithTooltip title={tooltipCopyImage} placement='bottom'>
             <div onClick={copyToClipboard}>
-                <FiCopy size={25} color='var(--text3)' />
+                <RiScreenshot2Fill size={25} color='var(--text3)' />
             </div>
         </IconWithTooltip>
     );
@@ -51,40 +52,38 @@ export default function DetailsHeader(props: DetailsHeaderPropsIF) {
         <div className={styles.container}>
             <section className={styles.logo_container}>
                 <img src={logo} alt='ambient' className={styles.logo} />
-                <img src={logoText} alt='ambient' className={styles.logo_text} />
+                <img
+                    src={logoText}
+                    alt='ambient'
+                    className={styles.logo_text}
+                />
             </section>
+            {/* <div>something here</div> */}
 
-            {isMobile ? (
-                <section className={styles.settings_control_mobile}>
-                    <div className={styles.mobile_close_header}>
-                        {!showShareComponent ? copyActionIconWithTooltip : null}
-                        {showShareComponent ? copyImageIconWithTooltip : null}
-                        <div onClick={onClose}>
-                            <CgClose size={28} color='var(--text3)' />
-                        </div>
-                    </div>
-                    <button
-                        className={styles.info_button}
-                        onClick={() => setShowShareComponent(!showShareComponent)}
-                    >
-                        {showShareComponent ? 'Details' : 'Share'}
-                    </button>
-                </section>
-            ) : (
-                <section className={styles.settings_control}>
+            <section className={styles.settings_control}>
                     {!showShareComponent ? copyActionIconWithTooltip : null}
                     {showShareComponent ? copyImageIconWithTooltip : null}
-                    <button
-                        className={styles.info_button}
-                        onClick={() => setShowShareComponent(!showShareComponent)}
-                    >
-                        {showShareComponent ? 'Details' : 'Share'}
-                    </button>
-                    <div onClick={onClose}>
+              
+                <button
+                    className={styles.info_button}
+                    onClick={() => setShowShareComponent(!showShareComponent)}
+                >
+                    {showShareComponent ? (
+                        isMobile ? (
+                            <TbListDetails size={25} color='var(--text3)' />
+                        ) : (
+                            'Details'
+                        )
+                    ) : isMobile ? (
+                        <LuShare2 size={25} color='var(--text3)' />
+                    ) : (
+                        'Share'
+                    )}
+                </button>
+                <div onClick={onClose}>
                         <CgClose size={28} color='var(--text3)' />
                     </div>
-                </section>
-            )}
+            </section>
         </div>
     );
 }
