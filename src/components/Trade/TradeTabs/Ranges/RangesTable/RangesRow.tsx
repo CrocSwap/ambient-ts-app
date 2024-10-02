@@ -251,6 +251,7 @@ function RangesRow(props: propsIF) {
                 onClick={openDetailsModal}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
+                data-type='infinite-scroll-row'
             >
                 {tableView === 'large' && rankingOrNull}
                 {tableView === 'large' && rangeTimeWithTooltip}

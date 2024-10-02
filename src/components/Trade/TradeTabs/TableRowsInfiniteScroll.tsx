@@ -259,6 +259,7 @@ function TableRowsInfiniteScroll({
             <div style={{padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '1.2rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
+            <div style={{left: '12rem', top: '1.2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>lastSeenTX : {lastSeenTxIDRef.current}</div>
             </span>
             </>)
         }else{
@@ -274,23 +275,34 @@ function TableRowsInfiniteScroll({
     domDebug('moreDataAvailable', moreDataAvailableRef.current);
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
+        if(txID.length === 0) return;
         const txSpans = document.querySelectorAll(
             txSpanSelectorForScrollMethod
         );
 
         txSpans.forEach((span) => {
             if (span.textContent === txID) {
-                const row = span.parentElement?.parentElement as HTMLDivElement;
-                // row.style.backgroundColor = 'red';
 
-                const parent = row.parentElement as HTMLDivElement;
-                if (debugMode) {
-                    parent.style.background = pos == ScrollPosition.BOTTOM ? 'red' : 'cyan';
+                const row = span.closest('div[data-type="infinite-scroll-row"]') as HTMLDivElement;
+                if(row){
+                    if (debugMode) {
+                        row.style.background = pos == ScrollPosition.BOTTOM ? 'purple' : 'cyan';
+                    }
+                    row.scrollIntoView({
+                        block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
+                        behavior: 'instant' as ScrollBehavior,
+                    });
                 }
-                parent.scrollIntoView({
-                    block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
-                    behavior: 'instant' as ScrollBehavior,
-                });
+                // const row = span.parentElement?.parentElement as HTMLDivElement;
+
+                // const parent = row.parentElement as HTMLDivElement;
+                // if (debugMode) {
+                //     parent.style.background = pos == ScrollPosition.BOTTOM ? 'purple' : 'cyan';
+                // }
+                // parent.scrollIntoView({
+                //     block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
+                //     behavior: 'instant' as ScrollBehavior,
+                // });
             }
         });
     };

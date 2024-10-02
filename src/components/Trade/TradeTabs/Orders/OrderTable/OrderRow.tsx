@@ -246,6 +246,7 @@ function OrderRow(props: propsIF) {
                 ref={currentLimitOrderActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
+                data-type='infinite-scroll-row'
             >
                 {tableView === 'large' && OrderTimeWithTooltip}
                 {isAccountView && tokenPair}

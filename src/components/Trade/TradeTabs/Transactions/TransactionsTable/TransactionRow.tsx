@@ -224,6 +224,7 @@ function TransactionRow(props: propsIF) {
                 ref={currentTxActiveInTransactions ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
+                data-type='infinite-scroll-row'
             >
                 {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
