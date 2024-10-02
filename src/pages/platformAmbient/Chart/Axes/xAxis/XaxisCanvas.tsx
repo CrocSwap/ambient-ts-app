@@ -8,6 +8,7 @@ import {
 } from '../../../../../ambient-utils/dataLayer';
 import {
     crosshair,
+    isIOS,
     renderCanvasArray,
     scaleData,
     selectedDrawnData,
@@ -243,7 +244,10 @@ function XAxisCanvas(props: xAxisIF) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
                         context.fillStyle = 'rgba(240, 240, 248, 0.8)';
-                        context.font = width < 500 ? '250 11.5px Lexend Deca' :'50 11.5px Lexend Deca';
+                        context.font =
+                            width < 500
+                                ? '250 11.5px Lexend Deca'
+                                : '50 11.5px Lexend Deca';
                         context.filter = ' blur(0px)';
 
                         const formatValue = formatDateTicks(d.date, 'tick');
@@ -256,7 +260,10 @@ function XAxisCanvas(props: xAxisIF) {
                                 xScale(crosshairData[0].x) + _width &&
                             d.date !== crosshairData[0].x
                         ) {
-                            context.filter = ' blur(7px)';
+                            context.filter = 'blur(7px)';
+                            if (isIOS() && width < 500) {
+                                return;
+                            }
                         }
 
                         if (d.style) {
