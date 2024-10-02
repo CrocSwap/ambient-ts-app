@@ -243,7 +243,7 @@ function XAxisCanvas(props: xAxisIF) {
                         context.textAlign = 'center';
                         context.textBaseline = 'top';
                         context.fillStyle = 'rgba(240, 240, 248, 0.8)';
-                        context.font = '50 11.5px Lexend Deca';
+                        context.font = width < 500 ? '250 11.5px Lexend Deca' :'50 11.5px Lexend Deca';
                         context.filter = ' blur(0px)';
 
                         const formatValue = formatDateTicks(d.date, 'tick');
