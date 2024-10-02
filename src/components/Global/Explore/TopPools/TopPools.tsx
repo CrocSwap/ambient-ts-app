@@ -14,6 +14,7 @@ import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
+import useIsPWA from '../../../../utils/hooks/useIsPWA';
 
 export type HeaderItem = {
     label: string;
@@ -45,6 +46,7 @@ function TopPools(props: propsIF) {
         handleToggle,
     } = props;
 
+    const isPWA = useIsPWA();
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
     const desktopView = useMediaQuery('(min-width: 768px)');
@@ -158,7 +160,10 @@ function TopPools(props: propsIF) {
     );
 
     return (
-        <div className={styles.mainContainer}>
+        <div
+            className={styles.mainContainer}
+            style={{ marginBottom: isPWA ? '0' : '50px' }}
+        >
             <ExploreToggle view={view} handleToggle={handleToggle} />
             {headerDisplay}
             <div className={`${styles.contentContainer} custom_scroll_ambient`}>

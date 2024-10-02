@@ -86,7 +86,7 @@
     background: var(--dark3);
     padding: 1px;
     border-radius: var(--border-radius);
-    z-index: 100;
+    z-index: 1;
 }
 
 .dropdown_btn {

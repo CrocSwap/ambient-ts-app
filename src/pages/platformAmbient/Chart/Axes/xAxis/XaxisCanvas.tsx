@@ -18,7 +18,6 @@ import { CandleContext } from '../../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
 import { CandleDataIF } from '../../../../../ambient-utils/types';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { xAxisHeightPixel } from '../../ChartUtils/chartConstants';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 interface xAxisIF {
@@ -88,8 +87,6 @@ function XAxisCanvas(props: xAxisIF) {
     const utcDiffHours = Math.floor(utcDiff / 60);
 
     const location = useLocation();
-
-    const mobileView = useMediaQuery('(max-width: 600px)');
 
     const { platformName } = useContext(BrandContext);
 
@@ -178,7 +175,7 @@ function XAxisCanvas(props: xAxisIF) {
         Y: number,
     ) => {
         if (scaleData) {
-            const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
+            const _width = 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
 
             const timeOfEndCandleLocation = timeOfEndCandle

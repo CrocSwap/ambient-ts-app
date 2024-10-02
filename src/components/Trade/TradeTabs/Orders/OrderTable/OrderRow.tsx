@@ -214,7 +214,6 @@ function OrderRow(props: propsIF) {
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
         OrderTimeWithTooltip,
-        txIdColumnComponent,
         priceDisplay,
         typeDisplay,
         sideDisplay,
@@ -232,7 +231,6 @@ function OrderRow(props: propsIF) {
             // These will be shortcuts for the row menu. I will implement these at another time. -JR
         }
     };
-
     return (
         <>
             <OrderRowStyled
@@ -251,11 +249,10 @@ function OrderRow(props: propsIF) {
             >
                 {tableView === 'large' && OrderTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <div>{IDWithTooltip}</div>}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
-                )}
-                {tableView !== 'large' && txIdColumnComponent}
+                {(tableView === 'large' ||
+                    (tableView === 'medium' && isAccountView)) &&
+                    IDWithTooltip}
+                {!isAccountView && walletWithTooltip}
                 {tableView !== 'small' && priceDisplay}
                 {tableView === 'large' && sideDisplay}
                 {tableView === 'large' && typeDisplay}

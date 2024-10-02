@@ -5,15 +5,8 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenIF } from '../../../../../ambient-utils/types';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
-import {
-    TokenContainer,
-    LogoName,
-    TokenAmount,
-    ActionsContainer,
-    WalletContent,
-    WalletWrapper,
-    AccountLink,
-} from '../../../../../styled/Components/Header';
+import styles from './WalletDropdown.module.css'
+
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     ZERO_ADDRESS,
@@ -22,6 +15,7 @@ import {
 import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 import UserProfileCard from '../UserProfileCard';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { Link } from 'react-router-dom';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -30,6 +24,7 @@ interface WalletDropdownPropsIF {
     clickOutsideHandler: () => void;
     clickLogout: () => void;
     accountAddressFull: string;
+    hideProfileCard? : boolean
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -46,6 +41,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         handleCopyAddress,
         clickOutsideHandler,
         clickLogout,
+        hideProfileCard
     } = props;
     const {
         chainData: { chainId },
@@ -71,16 +67,16 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         const { logo, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
-            <TokenContainer tabIndex={0} aria-label={ariaLabel}>
-                <LogoName alignItems='center' gap={4}>
+            <section className={styles.tokenContainer} tabIndex={0} aria-label={ariaLabel}>
+                <div className={styles.logoName} >
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
-                </LogoName>
-                <TokenAmount gap={4} flexDirection={'column'}>
+                </div>
+                <div className={styles.tokenAmount} >
                     <h3>{amount}</h3>
                     <h6>{value !== undefined ? value : '...'}</h6>
-                </TokenAmount>
-            </TokenContainer>
+                </div>
+            </section>
         );
     }
 
@@ -226,21 +222,19 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     }
 
     return (
-        <WalletWrapper
-            flexDirection='column'
-            justifyContent='space-between'
-            gap={16}
-            rounded
+        <div className={styles.walletWrapper}
+            style={{padding: hideProfileCard ? '0' : ''}}
+            
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-            <UserProfileCard
+           {!hideProfileCard && <UserProfileCard
                 ensName={ensName !== '' ? ensName : ''}
                 accountAddress={props.accountAddress}
                 handleCopyAddress={handleCopyAddress}
                 accountAddressFull={props.accountAddressFull}
-            />
-            <WalletContent>
+            />}
+            <section className={styles.walletContent}>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
                         amount={
@@ -254,9 +248,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={JSON.stringify(tokenData)}
                     />
                 ))}
-            </WalletContent>
-            <ActionsContainer numCols={2} gap={16} fullWidth={true}>
-                <AccountLink
+            </section>
+            {!hideProfileCard && <div className={styles.actionsContainer}>
+                <Link className={styles.accountLink}
                     to={'/account'}
                     aria-label='Go to the account page '
                     tabIndex={0}
@@ -264,9 +258,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 >
                     <CgProfile />
                     My Account
-                </AccountLink>
+                </Link>
                 <LogoutButton onClick={clickLogout} />
-            </ActionsContainer>
-        </WalletWrapper>
+            </div>}
+        </div>
     );
 }

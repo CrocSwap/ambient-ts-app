@@ -753,14 +753,16 @@ export default function TickerComponent(props: PropsIF) {
     ) => {
         const { top, left, bottom, right } = el.getBoundingClientRect();
         const { innerHeight, innerWidth } = window;
+        const futaBottomScrollableArea = bottom + 100;
         return partiallyVisible
             ? ((top > 0 && top < innerHeight) ||
-                  (bottom > 0 && bottom < innerHeight)) &&
+                  (futaBottomScrollableArea > 0 &&
+                      futaBottomScrollableArea < innerHeight)) &&
                   ((left > 0 && left < innerWidth) ||
                       (right > 0 && right < innerWidth))
             : top >= 0 &&
                   left >= 0 &&
-                  bottom <= innerHeight &&
+                  futaBottomScrollableArea <= innerHeight &&
                   right <= innerWidth;
     };
 

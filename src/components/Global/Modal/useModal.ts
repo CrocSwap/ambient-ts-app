@@ -35,6 +35,7 @@ export const useModal = (
 
     useKeyPress('Escape', closeModal);
 
+
     // return all data and functions needed for local use
     return [isModalOpen, openModal, closeModal];
 };

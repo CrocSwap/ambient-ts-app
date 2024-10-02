@@ -40,6 +40,9 @@ import {
     REGEX_NOT_EMOJI,
 } from '../../ChatConstants/ChatConstants';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import scrollLogo from '../../../../assets/images/networks/scroll_logo.svg';
+import blastLogo from '../../../../assets/images/networks/blast_logo.png';
+import ethLogo from '../../../../assets/images/networks/ethereum_logo.svg';
 
 interface SentMessageProps {
     message: Message;
@@ -822,10 +825,24 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 <img
                                                     className={`${styles.chain_logo} ${isChainNameTestnet(lookupChain(props.message.chainId).displayName) ? styles.testnet : ' '} `}
                                                     src={
-                                                        lookupChain(
+                                                        [
+                                                            '0x13e31',
+                                                            '0xa0c71fd',
+                                                        ].includes(
                                                             props.message
                                                                 .chainId,
-                                                        ).logoUrl
+                                                        )
+                                                            ? blastLogo
+                                                            : [
+                                                                    '0x82750',
+                                                                    '0x8274f',
+                                                                ].includes(
+                                                                    props
+                                                                        .message
+                                                                        .chainId,
+                                                                )
+                                                              ? scrollLogo
+                                                              : ethLogo
                                                     }
                                                 ></img>
                                             )}

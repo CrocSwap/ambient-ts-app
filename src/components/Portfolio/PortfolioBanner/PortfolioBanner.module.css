@@ -38,6 +38,7 @@
 
 .portfolio_banner_rectangle_content {
     display: flex;
+    flex-direction: row;
     justify-content: flex-start;
     align-items: baseline;
     gap: 16px;
@@ -79,6 +80,13 @@
 .header_button:focus-visible {
     box-shadow: var(--glow-light-box-shadow);
 }
+
+@media only screen and (max-width: 768px) {
+    .portfolio_banner_rectangle_content {
+        width: 100%;
+    }
+}
+
 @media only screen and (min-width: 768px) {
     .portfolio_banner_level_container {
         display: flex;
@@ -86,15 +94,17 @@
     }
 
     .portfolio_banner_rectangle_container {
+        justify-content: space-between;
         border-radius: 24px 24px 0px 0px;
         height: 150px;
         margin-top: 0;
         background: var(--dark1);
         padding: 1rem;
         border: none;
+        overflow: hidden;
     }
     .portfolio_banner_rectangle_content {
-        justify-content: flex-end;
+        justify-content: flex-start;
         margin-bottom: 10px;
     }
 }

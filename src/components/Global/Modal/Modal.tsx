@@ -1,17 +1,13 @@
-// START: Import React and Dongles
-import { ReactNode, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import { motion, useAnimation, PanInfo } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
-
-// START: Import Local Files
 import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 import { Container } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
-// interface for React functional component
 interface ModalPropsIF {
     onClose: () => void;
     handleBack?: () => void;
@@ -25,7 +21,6 @@ interface ModalPropsIF {
     usingCustomHeader?: boolean;
 }
 
-// React functional component
 export default function Modal(props: ModalPropsIF) {
     const {
         handleBack,
@@ -40,33 +35,51 @@ export default function Modal(props: ModalPropsIF) {
         onClose = () => null,
     } = props;
 
+    const [isDragging, setIsDragging] = useState(false);
+    const controls = useAnimation();
+    const isMobile = useMediaQuery('(max-width: 500px)');
+
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
             onClose();
         }
-    }, []);
+    }, [onClose]);
 
     useEffect(() => {
         document.addEventListener('keydown', escFunction, false);
         return () => {
             document.removeEventListener('keydown', escFunction, false);
         };
-    }, []);
+    }, [escFunction]);
 
-    // jsx for the back element
-    const backElement = (
-        <div style={{ cursor: 'pointer' }}>
-            <BiArrowBack size={27} onClick={handleBack} />
-        </div>
-    );
-    // JSX for the header element
+    useEffect(() => {
+        controls.start('visible');
+    }, [controls]);
+
+    const handleDragStart = () => {
+        setIsDragging(true);
+    };
+
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        setIsDragging(false);
+        if (info.offset.y > 100 && isMobile) {
+            onClose();
+        } else {
+            controls.start({ y: 0 });
+        }
+    };
+
     const headerJSX = !usingCustomHeader ? (
         <header className={styles.modal_header}>
-            {showBackButton && backElement}
+            {showBackButton && (
+                <div style={{ cursor: 'pointer' }}>
+                    <BiArrowBack size={27} onClick={handleBack} />
+                </div>
+            )}
             {centeredTitle && <div />}
             <h2 className={styles.modal_title}>{title}</h2>
             <div className={styles.header_right}>
-                {headerRightItems && headerRightItems}
+                {headerRightItems}
                 <span />
                 <RiCloseFill
                     id='close_modal_button'
@@ -80,23 +93,15 @@ export default function Modal(props: ModalPropsIF) {
                 />
             </div>
         </header>
-    ) : (
-        <></>
-    );
+    ) : null;
 
-    const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
+    const footerJSX = footer ? (
+        <footer className={styles.modal_footer}>{footer}</footer>
+    ) : null;
 
-    const footerOrNull = !footer ? null : footerJSX;
-    const isMobile = useMediaQuery('(max-width: 500px)');
-
-    const mobileAnimation = {
-        initial: { opacity: 0, y: '100%' },
-        animate: { opacity: 1, y: 0 },
-    };
-
-    const desktopAnimation = {
-        initial: { opacity: 0, scale: 0.5 },
-        animate: { opacity: 1, scale: 1 },
+    const variants = {
+        hidden: { opacity: 0, y: isMobile ? '100%' : 0, scale: isMobile ? 1 : 0.5 },
+        visible: { opacity: 1, y: 0, scale: 1 },
     };
 
     return (
@@ -104,31 +109,30 @@ export default function Modal(props: ModalPropsIF) {
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={onClose}
+                onMouseDown={!isDragging ? onClose : undefined}
                 role='dialog'
                 aria-modal='true'
             >
                 <motion.div
-                    initial={
-                        isMobile
-                            ? mobileAnimation.initial
-                            : desktopAnimation.initial
-                    }
-                    animate={
-                        isMobile
-                            ? mobileAnimation.animate
-                            : desktopAnimation.animate
-                    }
+                    drag={isMobile ? 'y' : false}
+                    dragConstraints={{ top: 0, bottom: 0 }}
+                    dragElastic={0.2}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    initial="hidden"
+                    animate={controls}
+                    exit="hidden"
+                    variants={variants}
                     transition={{ duration: 0.4 }}
-                    className={`
-                ${styles.modal_body}
-                ${noBackground ? styles.no_background_modal : null}
-                `}
+                    className={`${styles.modal_body} ${noBackground ? styles.no_background_modal : ''}`}
                     onMouseDown={(e) => e.stopPropagation()}
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <Container boxShadow='gradient'>
+                    <Container boxShadow={!isMobile ? 'gradient' : undefined}>
+                        {isMobile && (
+                            <div className={styles.drag_handle} />
+                        )}
                         {headerJSX}
                         <section
                             className={styles.modal_content}
@@ -138,7 +142,7 @@ export default function Modal(props: ModalPropsIF) {
                         >
                             {children}
                         </section>
-                        {footerOrNull}
+                        {footerJSX}
                     </Container>
                 </motion.div>
             </aside>

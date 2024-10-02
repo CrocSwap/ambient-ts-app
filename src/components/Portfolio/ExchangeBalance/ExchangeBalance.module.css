@@ -38,10 +38,11 @@
 
 .portfolio_control_container {
     cursor: pointer;
-    display: none;
+    display: flex;
     position: absolute;
     right: 8px;
     top: 8px;
+    border-radius: var(--border-radius);
 }
 
 
@@ -54,12 +55,15 @@
     border-radius: var(--border-radius);
     background: var(--dark1);
 }
+@media only screen and (max-width: 768px) {
+    .portfolio_control_container{
+        display: none;
+    }
+
+}
 @media only screen and (min-width: 1280px) {
     .portfolio_motion_container {
         max-width: 400px;
     }
-    .portfolio_control_container {
-        display: flex;
-        border-radius: var(--border-radius);
-    }
+   
 }

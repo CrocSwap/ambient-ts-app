@@ -28,14 +28,12 @@ import { CachedDataIF, CachedDataContext } from '../../../../contexts/CachedData
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { PageDataCountIF } from '../../../Chat/ChatIFs';
 
-// interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     isAccountView: boolean;
 }
 
-// main react functional component
 function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
@@ -73,6 +71,7 @@ function Orders(props: propsIF) {
         limitOrdersByPool,
         unindexedNonFailedSessionLimitOrderUpdates,
     } = useContext(GraphDataContext);
+
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
@@ -492,13 +491,6 @@ function Orders(props: propsIF) {
               ? 'medium'
               : 'large';
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
     const sideType = (
         <>
             <p>Type</p>
@@ -531,24 +523,19 @@ function Orders(props: propsIF) {
         },
         {
             name: 'Position ID',
-            className: 'ID',
-            show: tableView === 'large',
-            slug: 'id',
+            className: 'position_id',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
+            slug: 'positionid',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
             sortable: showAllData,
-        },
-        {
-            name: walID,
-            className: 'wallet_it',
-            show: tableView !== 'large',
-            slug: 'walletid',
-            sortable: !isAccountView,
         },
         {
             name: 'Limit Price',

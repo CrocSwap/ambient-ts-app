@@ -115,7 +115,7 @@ export const TransactionRow = styled(Row)`
         account
             ? size === 'small'
                 ? `grid-template-columns: minmax(55px, 1.5fr)
-                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                     minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
                   ? `grid-template-columns: minmax(70px, 1fr) minmax(110px, 1.5fr)
@@ -144,10 +144,10 @@ export const OrderRow = styled(Row)`
         account
             ? size === 'small'
                 ? `grid-template-columns: minmax(55px, 1.5fr)
-                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                    minmax(45px, 1.3fr)
                     minmax(60px, 1fr) minmax(30px, 1fr)`
                 : size === 'medium'
-                  ? 'grid-template-columns: minmax(100px, 1fr) minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(170px, 2fr)'
+                  ? 'grid-template-columns: minmax(100px, 1.5fr) minmax(80px, 1fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(170px, 2fr)'
                   : `grid-template-columns:
                     minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
                     minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr) 2fr 2fr 1.2fr minmax(170px, 2fr)`
@@ -175,20 +175,20 @@ export const RangeRow = styled(Row)<{
                         minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                         minmax(86px, 1fr) minmax(44px, 1fr) minmax(25px, 1fr) minmax(100px, 1fr)`
                       : ` grid-template-columns:
-                        minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
+                         minmax(80px, 1fr) minmax(80px, 1fr) minmax(110px, 1fr) minmax(125px, 1fr)
                         minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                         minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
                 : !leaderboard
                   ? size === 'small'
                       ? `grid-template-columns:
-                            minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                            minmax(120px, 1fr) minmax(70px, 1fr) minmax(70px, 1fr)
                             minmax(25px, 1fr) minmax(30px, 20%)`
                       : size === 'medium'
                         ? `grid-template-columns:
                                 minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
                                 minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
                         : ` grid-template-columns:
-                                minmax(80px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr)
+                               minmax(80px, 1fr)   minmax(80px, 1fr) minmax(100px, 1fr) 
                                 minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
                                 minmax(100px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr) minmax(107px, 2fr)`
                   : size === 'small'

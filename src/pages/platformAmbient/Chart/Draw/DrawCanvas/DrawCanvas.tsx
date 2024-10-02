@@ -507,7 +507,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     offsetY,
                 );
 
-                setCrossHairDataFunc(valueX, offsetY);
+                setCrossHairDataFunc(valueX / 1000, offsetX, offsetY);
 
                 if (!isDrawing || activeDrawingType === 'Ray') return;
 

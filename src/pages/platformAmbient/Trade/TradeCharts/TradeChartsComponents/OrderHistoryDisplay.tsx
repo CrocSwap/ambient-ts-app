@@ -2,13 +2,10 @@ import styles from './VolumeTVLFee.module.css';
 import {
     Dispatch,
     SetStateAction,
-    useState,
-    useRef,
     memo,
     useContext,
 } from 'react';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { LS_KEY_ORDER_HISTORY_SETTINGS } from '../../../../../ambient-utils/constants';
 import { BrandContext } from '../../../../../contexts/BrandContext';
 
@@ -43,12 +40,9 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         );
     };
 
-    const [
-        showOrderHistoryDisplayDropdown,
-        setShowOrderHistoryDisplayDropdown,
-    ] = useState(false);
 
-    const mobileView = useMediaQuery('(max-width: 968px)');
+
+    const mobileView = useMediaQuery('(max-width: 768px)');
 
     const handleSwapToggle = () => {
         setShowSwap(!showSwap);
@@ -90,41 +84,15 @@ function OrderHistoryDisplay(props: OrderHistoryDisplayPropsIF) {
         // },
     ];
 
-    const wrapperStyle = showOrderHistoryDisplayDropdown
-        ? styles.dropdown_wrapper_active
-        : styles.dropdown_wrapper;
-
-    const dropdownItemRef = useRef<HTMLDivElement>(null);
-    const clickOutsideHandler = () => {
-        setShowOrderHistoryDisplayDropdown(false);
-    };
-    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
-
     function handleCurveDepthClickMobile(action: () => void) {
         action();
-        setShowOrderHistoryDisplayDropdown(false);
+        
     }
 
     const OrderHistoryDisplayMobile = (
-        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
-            <button
-                className={styles.volume_tvl_fee_mobile_button}
-                onClick={() =>
-                    setShowOrderHistoryDisplayDropdown(
-                        !showOrderHistoryDisplayDropdown,
-                    )
-                }
-                tabIndex={0}
-                aria-label='Open volume and tvl dropdown.'
-            >
-                Buys/Sells
-                {/* {showSwap ? 'Buys/Sells' : showHistorical ? 'Historical' : ''} */}
-                {/* showLiquidity
-                    ? 'Liquidity'
-                    : ''} */}
-            </button>
+        <div className={styles.dropdown_menu} >
 
-            <div className={wrapperStyle}>
+            <div className={styles.mobile_container}>
                 {orderHistoryDisplay.map((button, idx) => (
                     <div className={styles.volume_tvl_container} key={idx}>
                         <button

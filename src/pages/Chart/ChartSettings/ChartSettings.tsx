@@ -452,7 +452,10 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 checked={item.checked}
                                 onClick={() => item.action(!item.checked)}
                             >
-                                <Icon viewBox='0 0 24 24'>
+                                <Icon
+                                    viewBox='0 0 24 24'
+                                    style={{ width: '24px', height: '24px' }}
+                                >
                                     <polyline points='20 6 9 17 4 12' />
                                 </Icon>
                             </StyledCheckbox>
@@ -699,7 +702,7 @@ export default function ChartSettings(props: ContextMenuIF) {
                                 ? 'var(--accent1)'
                                 : 'var(--text1)'
                         }
-                        width={'98px'}
+                        width={'auto'}
                         onClick={() =>
                             handleApplyDefaults(defaultChartSettings)
                         }

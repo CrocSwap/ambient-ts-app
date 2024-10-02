@@ -39,6 +39,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
         useContext(PoolContext);
+      
+       
 
     const {
         isCondensedModeEnabled,
@@ -54,6 +56,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     } = useContext(TradeDataContext);
 
     const { platformName } = useContext(BrandContext);
+    const isFuta = ['futa'].includes(platformName);
 
     const { activeMobileComponent } = useContext(TradeTableContext);
 
@@ -86,14 +89,14 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
 
     const graphSettingsContent = (
         <FlexContainer justifyContent='flex-end' alignItems='center' gap={8}>
-            {['futa'].includes(platformName) && (
+            {isFuta && (
                 <DefaultTooltip
                     interactive
                     title={!showFutaCandles ? 'Candle Chart' : 'Line Chart'}
                     enterDelay={500}
                 >
                     <HeaderButtons
-                        isFuta={['futa'].includes(platformName)}
+                        isFuta={isFuta}
                         onClick={() => setShowFutaCandles(!showFutaCandles)}
                     >
                         <FutaHeaderButton isActive={!showFutaCandles}>
@@ -170,7 +173,12 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             >
                 <HeaderButtons
                     mobileHide
-                    onClick={() => setIsChartFullScreen(!isChartFullScreen)}
+                    onClick={() => {
+                        setIsChartFullScreen(!isChartFullScreen)
+                        
+
+                    }
+                    }
                 >
                     <BsFullscreen
                         size={20}
@@ -229,6 +237,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 useMediaQuery('(min-width: 2000px)') ? 'center' : 'flex-start'
             }
             padding={props.tradePage ? ' 8px' : '4px 4px 8px 4px'}
+            style={{background: isFuta ? 'var(--dark1)' : 'var(--dark2)'}}
         >
             <TradeChartsTokenInfo />
             {tradeTableState === 'Expanded' || showNoChartData

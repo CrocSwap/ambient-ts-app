@@ -1,0 +1,92 @@
+.NFTBannerAccountContainer {
+    width: 100%;
+    height: 100%;
+    display: grid;
+
+    gap: 16px;
+
+  
+    border-radius: 4px;
+}
+.NFTBannerHeader {
+    display: flex;
+
+    height: 40px;
+
+    margin: 0px 10px 5px 10px;
+
+    align-items: center;
+    justify-content: space-between;
+}
+
+.NFTHeaderSettings{
+    display: flex;
+
+    gap: 5px;
+
+    flex-direction: column;
+}
+
+.SelectedNftCotainer {
+    display: flex;
+
+    gap: 10px;
+
+    justify-content: center;
+    align-items: center;
+}
+.IconContainer {
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 2px;
+
+    font-size: 13px;
+    line-height: var(--body-lh);
+    color: var(--text1);
+}
+.SelectedNFTImg {
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    cursor: pointer;
+    border: 2.25px solid transparent;
+}
+
+.Selected {
+    border-color: #ff9800;
+}
+
+.IsSelectThumbnail {
+    border-color: #7bede4;
+}
+
+.SelectedNFTImg:hover {
+    border-color: #ff9800;
+}
+
+@media only screen and (min-width: 768px) {
+    .NFTBannerAccountContainer {
+        display: grid;
+        box-shadow: 4px 4px 6px #0d1117;
+    /* position: absolute; */
+    position: absolute;
+    top: 160px;
+    left: 100px;
+       
+
+        border-color: var(--accent1);
+        background: #0d1117;
+        z-index: 9999999;
+        border-width: 0.5px;
+        border-style: solid;
+        width: 350px;
+        max-height: 570px;
+        height: auto;
+
+        
+    }
+}

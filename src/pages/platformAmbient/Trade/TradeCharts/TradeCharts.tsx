@@ -36,6 +36,8 @@ import CurveDepth from './TradeChartsComponents/CurveDepth';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import Modal from '../../../../components/Global/Modal/Modal';
+import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
+import { PoolContext } from '../../../../contexts';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -86,6 +88,9 @@ function TradeCharts(props: propsIF) {
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
         useContext(SidebarContext);
 
+    const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
+        useContext(PoolContext);
+
     const {
         tutorial: { isActive: isTutorialActive },
     } = useContext(AppStateContext);
@@ -102,6 +107,8 @@ function TradeCharts(props: propsIF) {
 
     const { pathname } = useLocation();
     const smallScreen = useMediaQuery('(max-width: 768px)');
+
+    const isFuta = ['futa'].includes(platformName);
 
     const isMarketOrLimitModule =
         pathname.includes('market') || pathname.includes('limit');
@@ -206,86 +213,72 @@ function TradeCharts(props: propsIF) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     const resetAndRescaleDisplay = (
-        <div
-            className={
-                ['futa'].includes(platformName)
-                    ? styles.futa_chart_overlay_container
-                    : styles.chart_overlay_container
-            }
-        >
-            {showLatest && (
+        <div className={styles.chart_overlay_container}>
+            <div className={styles.mobile_settings_row}>
+                {showLatest && (
+                    <div className={styles.settings_container}>
+                        <button
+                            onClick={() => {
+                                if (rescale) {
+                                    setReset(true);
+                                } else {
+                                    setLatest(true);
+                                }
+                            }}
+                            className={styles.non_active_selected_button}
+                            aria-label='Show latest.'
+                        >
+                            Latest
+                        </button>
+                    </div>
+                )}
+
                 <div className={styles.settings_container}>
                     <button
                         onClick={() => {
-                            if (rescale) {
-                                setReset(true);
-                            } else {
-                                setLatest(true);
-                            }
+                            setReset(true);
+                            setRescale(true);
                         }}
                         className={
-                            ['futa'].includes(platformName)
-                                ? styles.futa_non_active_selected_button
+                            reset
+                                ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
-                        aria-label='Show latest.'
+                        aria-label='Reset.'
                     >
-                        Latest
+                        Reset
                     </button>
                 </div>
-            )}
 
-            <div className={styles.settings_container}>
-                <button
-                    onClick={() => {
-                        setReset(true);
-                        setRescale(true);
-                    }}
-                    className={
-                        ['futa'].includes(platformName)
-                            ? reset
-                                ? styles.futa_active_selected_button
-                                : styles.futa_non_active_selected_button
-                            : reset
-                              ? styles.active_selected_button
-                              : styles.non_active_selected_button
-                    }
-                    aria-label='Reset.'
-                >
-                    Reset
-                </button>
-            </div>
-
-            <div className={styles.settings_container}>
-                <button
-                    onClick={() => {
-                        setRescale((prevState) => {
-                            return !prevState;
-                        });
-                    }}
-                    className={
-                        ['futa'].includes(platformName)
-                            ? rescale
-                                ? styles.futa_active_selected_button
-                                : styles.futa_non_active_selected_button
-                            : rescale
-                              ? styles.active_selected_button
-                              : styles.non_active_selected_button
-                    }
-                    aria-label='Auto rescale.'
-                >
-                    Auto
-                </button>
+                <div className={styles.settings_container}>
+                    <button
+                        onClick={() => {
+                            setRescale((prevState) => {
+                                return !prevState;
+                            });
+                        }}
+                        className={
+                            rescale
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                        aria-label='Auto rescale.'
+                    >
+                        Auto
+                    </button>
+                </div>
             </div>
         </div>
     );
 
     const timeFrameContentDesktop = (
         <section className={styles.time_frame_container}>
-            <div className={styles.mobile_settings_row}>
-                <p className={styles.mobile_settings_header}>Time Frame:</p>
-                <TimeFrame candleTime={chartSettings.candleTime.global} />
-            </div>
+            {!isMobileSettingsModalOpen && (
+                <div className={styles.mobile_settings_row}>
+                    <p className={styles.mobile_settings_header}>Time Frame:</p>
+                    <TimeFrame candleTime={chartSettings.candleTime.global} />
+                </div>
+            )}
             <div className={styles.mobile_settings_row}>
                 <p className={styles.mobile_settings_header}>Volume:</p>
 
@@ -312,14 +305,26 @@ function TradeCharts(props: propsIF) {
                     />
                 </div>
             )}
-            {!['futa'].includes(platformName) && (
-                <div>
+            {!isFuta && (
+                <div className={styles.mobile_settings_row}>
+                    <p className={styles.mobile_settings_header}>
+                        Curve/Depth:
+                    </p>
                     <CurveDepth overlayMethods={chartSettings.poolOverlay} />
                 </div>
             )}
-            <div className={styles.chart_overlay_container}>
-                {resetAndRescaleDisplay}
+            <div className={styles.mobile_settings_row}>
+                <p className={styles.mobile_settings_header}>Chart Scale:</p>
+                <div>{resetAndRescaleDisplay}</div>
             </div>
+            {smallScreen && (
+                <DollarizationModalControl
+                    tempEnableDollarization={isTradeDollarizationEnabled}
+                    setTempEnableDollarization={setIsTradeDollarizationEnabled}
+                    displayInSettings={true}
+                    isMobileChartSettings={true}
+                />
+            )}
         </section>
     );
     const timeFrameContent = smallScreen ? (
@@ -330,6 +335,7 @@ function TradeCharts(props: propsIF) {
                     title='Chart Settings'
                 >
                     {timeFrameContentDesktop}
+
                     <div className={styles.settings_apply_button_container}>
                         <button onClick={closeMobileSettingsModal}>
                             Apply
@@ -353,11 +359,12 @@ function TradeCharts(props: propsIF) {
                 fullHeight
                 fullWidth
                 style={{
-                    padding:
-                        isChartFullScreen || ['futa'].includes(platformName)
-                            ? '1rem'
-                            : '0',
-                    background: isChartFullScreen ? 'var(--dark2)' : '',
+                    padding: isChartFullScreen ? '1rem' : '0',
+                    background: isChartFullScreen
+                        ? isFuta
+                            ? 'var(--dark1)'
+                            : 'var(--dark2)'
+                        : '',
                 }}
                 ref={chartCanvasRef}
             >

@@ -92,6 +92,7 @@ const decorateUserPositions = async ({
     cachedEnsResolve: FetchAddrFn;
 }) => {
     const skipENSFetch = true;
+    const forceOnchainLiqUpdate = true;
     if (recordType == RecordType.LimitOrder) {
         return await Promise.all(
             (userPositions as LimitOrderServerIF[]).map(
@@ -133,6 +134,7 @@ const decorateUserPositions = async ({
                         cachedTokenDetails,
                         cachedEnsResolve,
                         skipENSFetch,
+                        forceOnchainLiqUpdate,
                     );
                 },
             ),

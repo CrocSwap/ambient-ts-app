@@ -5,7 +5,6 @@
     display: block;
     width: 100vw;
     height: 100vh;
-    /* background-color: rgba(255,0,0,.1); */
 }
 
 .focus_outline{
@@ -137,10 +136,15 @@
     border: 1px solid color-mix(in srgb, white 30%, transparent);
 }
 
-.step_btn:not(.disabled):hover{
+.step_btn:not(.disabled):not(.dismiss_button):hover{
     background: var(--accent1);
     color: black;
 }
+
+.step_btn.dismiss_button:hover{
+    opacity: 1;
+}
+
 
 .step_btn.disabled{
     opacity: .5;
@@ -189,11 +193,24 @@
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
 }
+.dismiss_button{
+    opacity: .7;
+    border: 1px solid color-mix(in srgb, white 50%, transparent);
+    color: white;
+}
+
+.for_tooltip{
+    position: absolute;
+    right: -3rem;
+    top: 0;
+}
 
 .complete_button{
     border: 1px solid color-mix(in srgb, var(--accent1) 50%, transparent);
     color: var(--accent1);
 }
+
+
 
 @media only screen and (max-width: 600px){
 
@@ -211,5 +228,6 @@
 
     .tutorial_steps{
         transform: translateX(-50%);
+        bottom: 5rem;
     }
 }

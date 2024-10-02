@@ -19,12 +19,10 @@ import {
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import {
-    NavbarDropdown,
-    Menu,
-    NavbarLogoutContainer,
-} from '../../../../styled/Components/Header';
+
+import { motion } from 'framer-motion';
 import NavbarDropdownItem from './NavbarDropdownItem';
+import styles from './NavbarDropdownMenu.module.css';
 
 interface propsIF {
     isUserLoggedIn: boolean | undefined;
@@ -39,6 +37,7 @@ function NavbarDropdownMenu(props: propsIF) {
 
     const {
         walletModal: { open: openWalletModal },
+        appHeaderDropdown,
     } = useContext(AppStateContext);
 
     const [, , termsUrls] = useTermsAgreed();
@@ -101,54 +100,72 @@ function NavbarDropdownMenu(props: propsIF) {
     ];
 
     return (
-        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel} hasBorder>
-            <CSSTransition
-                in={true}
-                unmountOnExit
-                timeout={300}
-                classNames='menu-primary'
+        <>
+            <div
+                className={styles.background_blur}
+                onClick={(event: React.MouseEvent) => {
+                    event?.stopPropagation();
+                    closeMenu && closeMenu()
+                }}
+            />
+            <div
+                className={styles.container}
+                ref={dropdownRef}
+                aria-label={ariaLabel}
             >
-                {/* Menu with each drop down item */}
-                <Menu
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    tabIndex={0}
+                <CSSTransition
+                    in={true}
+                    unmountOnExit
+                    timeout={300}
+                    classNames='menu-primary'
                 >
-                    {navData.map((item: navDataIF) => (
-                        <NavbarDropdownItem
-                            key={item.text}
-                            rightIcon={item.icon}
-                            onClick={() => {
-                                openInNewTab(item.resource);
-                                closeMenu && closeMenu();
-                            }}
-                        >
-                            {item.text}
-                        </NavbarDropdownItem>
-                    ))}
-                    {isUserLoggedIn ? (
-                        <NavbarLogoutContainer>
-                            <LogoutButton
+                    {/* Menu with each drop down item */}
+                    <motion.div
+                        className={styles.menu}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        tabIndex={0}
+                    >
+                        {navData.map((item: navDataIF) => (
+                            <NavbarDropdownItem
+                                key={item.text}
+                                rightIcon={item.icon}
                                 onClick={() => {
-                                    clickLogout();
+                                    openInNewTab(item.resource);
                                     closeMenu && closeMenu();
                                 }}
-                            />
-                        </NavbarLogoutContainer>
-                    ) : (
-                        <NavbarLogoutContainer>
-                            <NavbarDropdownItem
-                                connectButton
-                                onClick={openWalletModal}
                             >
-                                Connect Wallet
+                                {item.text}
                             </NavbarDropdownItem>
-                        </NavbarLogoutContainer>
-                    )}
-                </Menu>
-            </CSSTransition>
-        </NavbarDropdown>
+                        ))}
+                        {isUserLoggedIn ? (
+                            <div className={styles.navbarLogoutContainer}>
+                                <LogoutButton
+                                    onClick={() => {
+                                        clickLogout();
+                                        closeMenu && closeMenu();
+                                        appHeaderDropdown.setIsActive(false);
+                                    }}
+                                />
+                            </div>
+                        ) : (
+                            <div className={styles.navbarLogoutContainer}>
+                                <NavbarDropdownItem
+                                    connectButton
+                                    onClick={() => {
+                                        openWalletModal();
+                                        appHeaderDropdown.setIsActive(false);
+                                    }}
+                                >
+                                    Connect Wallet
+                                </NavbarDropdownItem>
+                            </div>
+                        )}
+                    </motion.div>
+                </CSSTransition>
+            </div>
+        </>
     );
 }
 

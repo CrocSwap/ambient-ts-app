@@ -332,21 +332,15 @@ function Transactions(props: propsIF) {
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
-
-    const tableView: 'small' | 'medium' | 'large' =
-        isSmallScreen ||
-        (isAccountView &&
-            !isLargeScreen &&
-            isSidebarOpen &&
-            fullLayoutActive === false)
-            ? 'small'
-            : (!isSmallScreen && !isLargeScreen) ||
-                (isAccountView &&
-                    isLargeScreen &&
-                    isSidebarOpen &&
-                    fullLayoutActive === false)
-              ? 'medium'
-              : 'large';
+    const tableView: 'small' | 'medium' | 'large' = isSmallScreen
+        ? 'small'
+        : (!isSmallScreen && !isLargeScreen) ||
+            (isAccountView &&
+                isLargeScreen &&
+                isSidebarOpen &&
+                fullLayoutActive === false)
+          ? 'medium'
+          : 'large';
 
     const getCandleData = (): Promise<void> | undefined =>
         crocEnv &&
@@ -419,12 +413,6 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    const walID: JSX.Element = (
-        <>
-            <p>ID</p>
-            Wallet
-        </>
-    );
     const sideType: JSX.Element = (
         <>
             <p>Type</p>
@@ -453,23 +441,18 @@ function Transactions(props: propsIF) {
             sortable: true,
         },
         {
-            name: 'ID',
-            show: tableView === 'large',
+            name: 'Transaction ID',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
-            sortable: true,
-        },
-        {
-            name: walID,
-            show: tableView !== 'large',
-            slug: 'walletid',
-            sortable: !isAccountView,
-            alignCenter: false,
+            sortable: showAllData,
         },
         {
             name: 'Price',
