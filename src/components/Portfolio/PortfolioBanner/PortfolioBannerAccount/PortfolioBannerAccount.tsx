@@ -70,6 +70,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         userProfileNFT,
         setUserProfileNFT,
         setUserThumbnailNFT,
+        isUserConnected
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
@@ -240,7 +241,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     </div>
                 </div>
 
-                {isSmallScreen && connectedAccountActive && (
+                {isSmallScreen && isUserConnected && (
                     <button
                         className={styles.deposit_button}
                         onClick={() =>
