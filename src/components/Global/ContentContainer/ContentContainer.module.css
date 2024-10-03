@@ -50,7 +50,7 @@
 
 @media (min-width: 768px) {
     .swap_route {
-        max-width: 440px;
+       width: 440px;
     }
 
     .main_content {
