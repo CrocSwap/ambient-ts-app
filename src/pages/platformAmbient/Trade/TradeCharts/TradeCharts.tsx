@@ -213,66 +213,7 @@ function TradeCharts(props: propsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    const resetAndRescaleDisplay = (
-        <div className={styles.chart_overlay_container}>
-            <div className={styles.mobile_settings_row}>
-                {showLatest && (
-                    <div className={styles.settings_container}>
-                        <button
-                            onClick={() => {
-                                if (rescale) {
-                                    setReset(true);
-                                } else {
-                                    setLatest(true);
-                                }
-                            }}
-                            className={styles.non_active_selected_button}
-                            aria-label='Show latest.'
-                        >
-                            Latest
-                        </button>
-                    </div>
-                )}
-
-                <div className={styles.settings_container}>
-                    <button
-                        onClick={() => {
-                            setReset(true);
-                            setRescale(true);
-                        }}
-                        className={
-                            reset
-                                ? styles.active_selected_button
-                                : styles.non_active_selected_button
-                        }
-                        aria-label='Reset.'
-                    >
-                        Reset
-                    </button>
-                </div>
-
-                <div className={styles.settings_container}>
-                    <button
-                        onClick={() => {
-                            setRescale((prevState) => {
-                                return !prevState;
-                            });
-                        }}
-                        className={
-                            rescale
-                                ? styles.active_selected_button
-                                : styles.non_active_selected_button
-                        }
-                        aria-label='Auto rescale.'
-                    >
-                        Auto
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
-    const timeFrameContentDesktop = (
+    const settingsContent: JSX.Element = (
         <section className={styles.time_frame_container}>
             {!isMobileSettingsModalOpen && (
                 <div className={styles.mobile_settings_row}>
@@ -316,7 +257,61 @@ function TradeCharts(props: propsIF) {
             )}
             <div className={styles.mobile_settings_row}>
                 <p className={styles.mobile_settings_header}>Chart Scale:</p>
-                <div>{resetAndRescaleDisplay}</div>
+                <div className={styles.chart_overlay_container}>
+                    <div className={styles.mobile_settings_row}>
+                        {showLatest && (
+                            <div className={styles.settings_container}>
+                                <button
+                                    onClick={() => {
+                                        if (rescale) {
+                                            setReset(true);
+                                        } else {
+                                            setLatest(true);
+                                        }
+                                    }}
+                                    className={styles.non_active_selected_button}
+                                    aria-label='Show latest.'
+                                >
+                                    Latest
+                                </button>
+                            </div>
+                        )}
+
+                        <div className={styles.settings_container}>
+                            <button
+                                onClick={() => {
+                                    setReset(true);
+                                    setRescale(true);
+                                }}
+                                className={
+                                    reset
+                                        ? styles.active_selected_button
+                                        : styles.non_active_selected_button
+                                }
+                                aria-label='Reset.'
+                            >
+                                Reset
+                            </button>
+                        </div>
+                        <div className={styles.settings_container}>
+                            <button
+                                onClick={() => {
+                                    setRescale((prevState) => {
+                                        return !prevState;
+                                    });
+                                }}
+                                className={
+                                    rescale
+                                        ? styles.active_selected_button
+                                        : styles.non_active_selected_button
+                                }
+                                aria-label='Auto rescale.'
+                            >
+                                Auto
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             {smallScreen && (
                 <DollarizationModalControl
@@ -328,6 +323,7 @@ function TradeCharts(props: propsIF) {
             )}
         </section>
     );
+
     const timeFrameContent = smallScreen ? (
         <>
             {isMobileSettingsModalOpen && (
@@ -335,7 +331,7 @@ function TradeCharts(props: propsIF) {
                     onClose={closeMobileSettingsModal}
                     title='Chart Settings'
                 >
-                    {timeFrameContentDesktop}
+                    {settingsContent}
 
                     <div className={styles.settings_apply_button_container}>
                         <button onClick={closeMobileSettingsModal}>
@@ -346,7 +342,7 @@ function TradeCharts(props: propsIF) {
             )}
         </>
     ) : (
-        timeFrameContentDesktop
+        settingsContent
     );
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
