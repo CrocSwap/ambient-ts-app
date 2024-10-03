@@ -324,7 +324,7 @@ function TradeCharts(props: propsIF) {
         </section>
     );
 
-    const timeFrameContent = smallScreen ? (
+    const settingsContentForScreen = smallScreen ? (
         <>
             {isMobileSettingsModalOpen && (
                 <Modal
@@ -380,7 +380,7 @@ function TradeCharts(props: propsIF) {
                     </FlexContainer>
                 )}
                 {isChartFullScreen && <TradeChartsHeader />}
-                {timeFrameContent}
+                {settingsContentForScreen}
                 <div
                     style={{ width: '100%', height: '100%' }}
                     onClick={() => {
