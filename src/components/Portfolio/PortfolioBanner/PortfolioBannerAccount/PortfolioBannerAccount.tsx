@@ -70,7 +70,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         userProfileNFT,
         setUserProfileNFT,
         setUserThumbnailNFT,
-        isUserConnected
+        isUserConnected,
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
