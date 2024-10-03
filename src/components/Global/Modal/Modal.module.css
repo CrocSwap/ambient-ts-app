@@ -8,7 +8,7 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 99999;
+    z-index: 99999999;
 
     background: rgba(1, 0, 16, 0.25);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -16,6 +16,7 @@
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
     transition: var(--transition);
+
     
 }
 
@@ -104,6 +105,7 @@
     .outside_modal {
         backdrop-filter: blur(2px);
         -webkit-backdrop-filter: blur(2px);
+        
     }
     .modal_body {
         bottom: 0;

@@ -2,17 +2,10 @@ import { AnimateSharedLayout } from 'framer-motion';
 import { useEffect, useRef, useState, useMemo, useContext } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
-import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import Modal from '../Modal/Modal';
-import ModalHeader from '../ModalHeader/ModalHeader';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 const NotificationCenter = () => {
-
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
     const [showNotificationTable, setShowNotificationTable] =
         useState<boolean>(false);
 
@@ -37,34 +30,6 @@ const NotificationCenter = () => {
 
     const notificationItemRef = useRef<HTMLDivElement>(null);
     const activityCenterRef = useRef<HTMLDivElement>(null);
-
-    const clickOutsideHandler = (event: Event) => {
-        if (
-            !activityCenterRef.current?.contains(event?.target as Node) &&
-            !notificationItemRef.current?.contains(event?.target as Node)
-
-            // event.target !== activityCenterRef.current &&
-            // event.target !== notificationItemRef.current
-        ) {
-            setShowNotificationTable(false);
-        }
-    };
-    UseOnClickOutside(activityCenterRef, clickOutsideHandler);
-    UseOnClickOutside(notificationItemRef, clickOutsideHandler);
-
-    const modalVersion = (
-        <Modal usingCustomHeader onClose={() => setShowNotificationTable(false)}>
-            <ModalHeader title={'Recent Transactions'} onClose={() => setShowNotificationTable(false)} />
-            <NotificationTable
-                        showNotificationTable={showNotificationTable}
-                        setShowNotificationTable={setShowNotificationTable}
-                        pendingTransactions={currentPendingTransactionsArray}
-                        notificationItemRef={notificationItemRef}
-                    />
-            </Modal>
-    )
-
-    if ( showMobileVersion &&  showNotificationTable) return modalVersion
 
     return (
         <AnimateSharedLayout>
