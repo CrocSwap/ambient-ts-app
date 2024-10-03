@@ -50,7 +50,7 @@ export const fetchContractDetails = async (
                         address,
                         error,
                     });
-                    return 18; // Default to 18 if it fails
+                    return NaN; // preserve type but return falsy value
                 }),
                 contract.totalSupply().catch((error) => {
                     console.warn('Failed to fetch totalSupply:', {
