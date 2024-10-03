@@ -165,6 +165,10 @@ export type orderHistory = {
     tokenB: string;
     tokenBAmount: number;
 };
+export const isIOS = (): boolean => {
+    const userAgent = navigator.userAgent;
+    return /iPad|iPhone|iPod/.test(userAgent);
+};
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
     const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;

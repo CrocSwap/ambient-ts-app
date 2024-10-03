@@ -49,12 +49,15 @@ import TokenIcon from '../../../components/Global/TokenIcon/TokenIcon';
 import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { LuSettings } from 'react-icons/lu';
-import TradeCharts from '../../Trade/TradeCharts/TradeCharts/TradeCharts';
+import TradeCharts from './TradeCharts/TradeCharts';
+import TimeFrame from './TradeCharts/TradeChartsComponents/TimeFrame';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
-function Trade() {
+function Trade(props: { futaActiveTab?: string | undefined }) {
+    const { futaActiveTab } = props;
+
     const {
         chainData: { chainId },
         provider,
@@ -78,7 +81,6 @@ function Trade() {
     const { platformName } = useContext(BrandContext);
 
     const isFuta = ['futa'].includes(platformName);
-
 
     const { tokens } = useContext(TokenContext);
 
@@ -142,7 +144,7 @@ function Trade() {
         updateURL,
         isMobileSettingsModalOpen,
         openMobileSettingsModal,
-        closeMobileSettingsModal
+        closeMobileSettingsModal,
     };
 
     const tradeTabsProps = {
@@ -229,7 +231,7 @@ function Trade() {
     useEffect(() => {
         const calculateHeight = () => {
             const totalHeight = window.innerHeight;
-            const heightToSubtract = 56 + 56; // Subtract 56px from top and 56px from bottom
+            const heightToSubtract = isFuta ? 56 + 56 + 25 : 56 + 56; // Subtract 56px from top and 56px from bottom
             setAvailableHeight(totalHeight - heightToSubtract);
         };
 
@@ -240,7 +242,9 @@ function Trade() {
     }, []);
 
     const contentHeight = availableHeight - 75;
-    const activeTabData = tabs.find((tab) => tab.id === activeTab)?.data;
+    const activeTabData = tabs.find(
+        (tab) => tab.id === (isFuta ? futaActiveTab : activeTab),
+    )?.data;
 
     const currencyCharacter = isDenomBase
         ? // denom in a, return token b character
@@ -277,8 +281,11 @@ function Trade() {
             className={styles.mobile_container}
             style={{ height: `${availableHeight}px` }}
         >
-            {mobileTabs}
-            <div className={styles.mobile_header}>
+            {!isFuta && mobileTabs}
+            <div
+                className={styles.mobile_header}
+                style={{ padding: isFuta ? '8px' : '' }}
+            >
                 <div
                     className={styles.mobile_token_icons}
                     onClick={toggleDidUserFlipDenom}
@@ -299,8 +306,11 @@ function Trade() {
                         alt={isDenomBase ? quoteToken.symbol : baseToken.symbol}
                         size={'s'}
                     />
-                    {isDenomBase ? baseToken.symbol : quoteToken.symbol} /
-                    {isDenomBase ? quoteToken.symbol : baseToken.symbol}
+                    <div>
+                        {isDenomBase ? baseToken.symbol : quoteToken.symbol}
+                        {'/'}
+                        {isDenomBase ? quoteToken.symbol : baseToken.symbol}
+                    </div>
                 </div>
                 <div
                     className={styles.conv_rate}
@@ -319,8 +329,28 @@ function Trade() {
                         {poolPriceChangeString}
                     </p>
                 </div>
-               {activeTab === 'Chart' && <LuSettings size={20} onClick={openMobileSettingsModal} color='var(--text2)'/>}
             </div>
+
+            {(isFuta ? futaActiveTab === 'Chart' : activeTab === 'Chart') && (
+                <FlexContainer
+                    style={{
+                        justifyContent: 'space-between',
+                        padding: '0px 1rem 1rem 0.5rem',
+                    }}
+                >
+                    <div className={styles.mobile_settings_row}>
+                        <TimeFrame
+                            candleTime={chartSettings.candleTime.global}
+                        />
+                    </div>
+
+                    <LuSettings
+                        size={20}
+                        onClick={openMobileSettingsModal}
+                        color='var(--text2)'
+                    />
+                </FlexContainer>
+            )}
             <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
                 {activeTabData}
             </div>
@@ -345,7 +375,7 @@ function Trade() {
                         </div>
                     )}
 
-                    <TradeChartsHeader tradePage />
+                    {!isChartFullScreen && <TradeChartsHeader tradePage />}
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer
                         flexDirection='column'
@@ -354,8 +384,11 @@ function Trade() {
                     >
                         <ResizableContainer
                             showResizeable={
-                                !isCandleDataNull && !isChartFullScreen
+                                !isCandleDataNull &&
+                                !isChartFullScreen &&
+                                !isFuta
                             }
+                            isFuta={isFuta}
                             enable={{
                                 bottom: !isChartFullScreen,
                                 top: false,
@@ -429,14 +462,17 @@ function Trade() {
                                 />
                             )}
                             {!isCandleDataNull && isPoolInitialized && (
-                                <ChartContainer fullScreen={isChartFullScreen} isFuta={isFuta}>
+                                <ChartContainer
+                                    fullScreen={isChartFullScreen}
+                                    isFuta={isFuta}
+                                >
                                     {!isCandleDataNull && (
                                         <TradeCharts {...tradeChartsProps} />
                                     )}
                                 </ChartContainer>
                             )}
                         </ResizableContainer>
-                        {!isChartFullScreen && (
+                        {!isChartFullScreen && !isFuta && (
                             <FlexContainer
                                 ref={tradeTableRef}
                                 style={{ flex: 1 }}

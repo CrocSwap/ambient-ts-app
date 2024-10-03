@@ -16,6 +16,7 @@
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
     transition: var(--transition);
+    
 }
 
 .modal_body {
@@ -76,6 +77,13 @@
     scrollbar-color: var(--accent1) var(--dark2);
 
     /* min-height: 250px; */
+}
+.drag_handle {
+    width: 40px;
+    height: 5px;
+    background-color: var(--accent1);
+    border-radius: 2.5px;
+    margin: 0 auto;
 }
 
 .modal_header svg:hover {

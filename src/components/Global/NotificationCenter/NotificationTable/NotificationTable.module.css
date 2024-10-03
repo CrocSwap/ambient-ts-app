@@ -1,0 +1,97 @@
+.mainContainer{
+    z-index: 15;
+    
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    min-height: 400px;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    z-index: 10;
+    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+}
+
+.header{
+    display: none;
+    color: var(--text1);
+    padding: 1rem;
+    background: var(--dark1);
+    border-radius: var(--border-radius);
+    height: 50px;
+    font-size: 16px;
+}
+.content{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 300px;
+    overflow-y: scroll;
+    padding: 8px;
+}
+
+.content::-webkit-scrollbar {
+    width: 0.25rem;
+}
+.footerButton {
+    padding: 4px 16px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    display: block;
+    max-height: 3rem;
+    cursor: pointer;
+    text-align: center;
+    background: transparent;
+    text-transform: capitalize;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    background: var(--accent1);
+    background-position: 1% 50%;
+    background-size: 300% 300%;
+    text-decoration: none;
+    border: 1px solid var(--accent1);
+}
+
+.footerButton:hover,
+.footerButton:focus-visible {
+    color: var(--accent1);
+    background: var(--dark2);
+}
+
+@media only screen and (min-width: 768px) {
+    
+    .mainContainer{
+        width: 380px;
+        height: calc(100vh - 9rem);
+        position: absolute;
+        right: 0;
+        top: 60px;
+    ;
+    }
+    
+    .containerFuta{
+        width: 95%;
+        right: 2.2rem;
+    }
+    .container{
+        width: 100%;
+        border: 1px solid var(--accent1);
+        height: 400px;
+        position: absolute;
+        box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
+        border-radius: var(--border-radius);
+        background: var(--dark1)
+        
+}
+.header{
+display: flex;
+}
+
+
+}

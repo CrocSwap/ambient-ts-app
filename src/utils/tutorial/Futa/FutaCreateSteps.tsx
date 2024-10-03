@@ -14,24 +14,25 @@ export const futaCreateSteps = [
     },
     {
         element: '#auctions_create_liquidity',
-        title: 'Liquidty',
-        intro: 'Liquidty is the amount of liquidity you want to provide for the token auction',
+        title: 'Liquidity',
+        intro: 'This is the amount of ETH required to create the token auction and fill the initial bid.',
     },
     {
         element: '#auctions_create_network_fee',
         title: 'Network Fee',
-        intro: 'Network fee is the fee you have to pay in order to transact',
+        intro: 'This is the estimated fee you will have to pay in order to create the auction on-chain.',
     },
     {
         element: '#auctions_create_button',
         title: 'Create Token',
         intro: 'Create token auction token from this button',
-        navigate: {label: 'To Auctions', path: '/auctions'},
+        navigate: { label: 'To Auctions', path: '/auctions' },
+        actionOnComplete: '#create_auction_reset',
     },
     {
         element: '#auctions_create_connect_button',
         title: 'Connect Wallet',
         intro: 'You should connect your wallet to create token auction',
-        navigate: {label: 'To Auctions', path: '/auctions'},
+        actionOnComplete: '#create_auction_reset',
     },
 ];

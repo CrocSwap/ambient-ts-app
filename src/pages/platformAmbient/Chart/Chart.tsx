@@ -129,7 +129,6 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import ChartSettings from '../../Chart/ChartSettings/ChartSettings';
 import { BrandContext } from '../../../contexts/BrandContext';
 import CandleLineChart from './LineChart/LineChart';
-import ChartTooltip from '../../Chart/ChartTooltip/ChartTooltip';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 
 interface propsIF {
@@ -181,7 +180,6 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
-    showTooltip: boolean;
 }
 
 export default function Chart(props: propsIF) {
@@ -213,7 +211,6 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
-        showTooltip,
     } = props;
 
     const {
@@ -709,9 +706,8 @@ export default function Chart(props: propsIF) {
     );
 
     const [bandwidth, setBandwidth] = useState(5);
-    const smallScreen = useMediaQuery('(max-width: 768px)');
 
-    const toolbarWidth = smallScreen ? 0 : isToolbarOpen ? 38 : 15;
+    const toolbarWidth = isToolbarOpen ? 38 : 15;
 
     const [prevlastCandleTime, setPrevLastCandleTime] = useState<number>(
         lastCandleData.time,
@@ -1223,6 +1219,8 @@ export default function Chart(props: propsIF) {
             let zoomTimeout: number | undefined = undefined;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let previousTouch: any | undefined = undefined; // event
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let startTouch: any | undefined = undefined;
             let previousDeltaTouch: number | undefined = undefined;
             let previousDeltaTouchLocation: number | undefined = undefined;
             const lastCandleDate = lastCandleData?.time * 1000;
@@ -1258,6 +1256,7 @@ export default function Chart(props: propsIF) {
                         setPrevLastCandleTime(lastCandleData.time);
                         // check wheel end
                         wheelTimeout = setTimeout(() => {
+                            setShouldResetBuffer(false);
                             setIsChartZoom(false);
                             setCursorStyleTrigger(false);
                             showLatestActive();
@@ -1275,6 +1274,7 @@ export default function Chart(props: propsIF) {
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
                             previousTouch = event.sourceEvent.touches[0];
+                            startTouch = event.sourceEvent.touches[0];
 
                             if (event.sourceEvent.touches.length > 1) {
                                 previousDeltaTouch = Math.hypot(
@@ -1437,6 +1437,41 @@ export default function Chart(props: propsIF) {
                             setCursorStyleTrigger(false);
                             setChartZoomEvent('');
 
+                            if (
+                                event.sourceEvent.type.includes('touch') &&
+                                zoomTimeout &&
+                                event.sourceEvent.timeStamp - zoomTimeout >
+                                    100 &&
+                                startTouch.clientX ===
+                                    event.sourceEvent.changedTouches[0]
+                                        .clientX &&
+                                startTouch.clientY ===
+                                    event.sourceEvent.changedTouches[0].clientY
+                            ) {
+                                const canvas = d3
+                                    .select(d3CanvasMain.current)
+                                    .select('canvas')
+                                    .node() as HTMLCanvasElement;
+
+                                const rectCanvas =
+                                    canvas.getBoundingClientRect();
+
+                                setContextMenuPlacement({
+                                    top: rectCanvas.top,
+                                    left: rectCanvas.left + 10,
+                                    isReversed: false,
+                                });
+
+                                setContextmenu(true);
+                            }
+
+                            if (
+                                event.sourceEvent.type.includes('touch') &&
+                                contextmenu
+                            ) {
+                                setContextmenu(false);
+                            }
+
                             if (clickedForLine) {
                                 // fires click event when zoom takes too short
                                 if (
@@ -1558,6 +1593,7 @@ export default function Chart(props: propsIF) {
         isChartZoom,
         liqMaxActiveLiq,
         zoomBase,
+        contextmenu,
     ]);
 
     useEffect(() => {
@@ -2726,7 +2762,6 @@ export default function Chart(props: propsIF) {
             reset &&
             poolPriceDisplay !== undefined
         ) {
-            setShouldResetBuffer(true);
             resetFunc();
             setReset(false);
             setShowLatest(false);
@@ -4634,10 +4669,12 @@ export default function Chart(props: propsIF) {
                 const offsetX = event.offsetX;
                 const offsetY = event.offsetY;
 
-                if (shouldDisableChartSettings) {
-                    setContextmenu(false);
-                } else {
-                    setCloseOutherChartSetting(true);
+                if (event.pointerType !== 'touch') {
+                    if (shouldDisableChartSettings) {
+                        setContextmenu(false);
+                    } else {
+                        setCloseOutherChartSetting(true);
+                    }
                 }
 
                 let isOrderHistorySelected = undefined;
@@ -5495,15 +5532,39 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
-    const setCrossHairDataFunc = (nearestTime: number, offsetY: number) => {
-        setCrosshairActive('chart');
+    const setCrossHairDataFunc = (
+        nearestTime: number,
+        offsetX: number,
+        offsetY: number,
+    ) => {
+        if (scaleData) {
+            const snapDiff =
+                scaleData?.xScale.invert(offsetX) % (period * 1000);
 
-        setCrosshairData([
-            {
-                x: nearestTime,
-                y: scaleData?.yScale.invert(offsetY),
-            },
-        ]);
+            const snappedTime =
+                scaleData?.xScale.invert(offsetX) -
+                (snapDiff > period * 1000 - snapDiff
+                    ? -1 * (period * 1000 - snapDiff)
+                    : snapDiff);
+
+            const crTime =
+                snappedTime <= lastCandleData.time * 1000 &&
+                snappedTime >= firstCandleData.time * 1000 &&
+                nearestTime
+                    ? nearestTime * 1000
+                    : snappedTime;
+
+            setCrosshairActive('chart');
+
+            setCrosshairData([
+                {
+                    x: crTime,
+                    y: scaleData?.yScale.invert(offsetY),
+                },
+            ]);
+
+            return crTime;
+        }
     };
 
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
@@ -5518,7 +5579,7 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                setCrossHairDataFunc(nearest?.time * 1000, offsetY);
+                    setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (
@@ -5945,10 +6006,6 @@ export default function Chart(props: propsIF) {
                 paddingLeft: toolbarWidth + 'px',
             }}
         >
-            <ChartTooltip
-                currentData={props.currentData}
-                showTooltip={showTooltip}
-            />
             <d3fc-group
                 id='d3fc_group'
                 auto-resize

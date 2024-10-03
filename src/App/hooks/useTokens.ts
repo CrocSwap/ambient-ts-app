@@ -219,11 +219,13 @@ export const useTokens = (
                 .filter((l) => l !== undefined); // remove `undefined` values (URIs that did not produce a valid response)
 
             // Record token lists in local storage + persist in local storage
-            localStorage.setItem(
-                localStorageKeys.tokenLists,
-                JSON.stringify(fulfilledLists),
-            );
-            setTokenLists(fulfilledLists as TokenListIF[]);
+            fulfilledLists.length &&
+                localStorage.setItem(
+                    localStorageKeys.tokenLists,
+                    JSON.stringify(fulfilledLists),
+                );
+            fulfilledLists.length &&
+                setTokenLists(fulfilledLists as TokenListIF[]);
         });
     }, []);
 

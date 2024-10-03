@@ -1,5 +1,4 @@
 import styled from 'styled-components/macro';
-import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png';
 
 // can be extracted to common
 
@@ -9,10 +8,11 @@ interface BoxContainerProps {
 }
 
 const MainSection = styled.section`
-    background: url(${backgroundImage}) no-repeat;
 
     height: 100%;
     padding: 8px;
+   
+   
 `;
 
 const BoxContainer = styled.div<BoxContainerProps>`
@@ -24,6 +24,9 @@ const BoxContainer = styled.div<BoxContainerProps>`
         `  backdrop-filter: blur(10px);
         border-radius: 0.25rem;`}
     height: 100%;
+
+    
+    
 `;
 
 const FeaturedBoxInnerContainer = styled.div<BoxContainerProps>`

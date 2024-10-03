@@ -129,7 +129,7 @@ function RangeWidth(props: propsIF) {
             </FlexContainer>
             <FlexContainer
                 justifyContent='center'
-                fontWeight='100'
+                fontWeight='300'
                 fontSize='header1'
                 color='text1'
                 animation={showRangePulseAnimation ? 'flicker' : ''}
@@ -138,7 +138,7 @@ function RangeWidth(props: propsIF) {
                 aria-atomic='true'
                 aria-relevant='all'
             >
-                <Text color='text2' fontWeight='100' id='bal_range_width'>
+                <Text color='text2' fontWeight='300' id='bal_range_width'>
                     {rangeWidthPercentage === 100
                         ? 'Ambient'
                         : `± ${rangeWidthPercentage}%`}

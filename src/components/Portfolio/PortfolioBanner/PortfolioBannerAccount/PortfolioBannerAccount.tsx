@@ -1,21 +1,26 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TokenBalanceContext } from '../../../../contexts/TokenBalanceContext';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { FlexContainer } from '../../../../styled/Common';
-import styles from './PortfolioBannerAccount.module.css'
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
+import { TokenBalanceContext, TokenBalanceContextIF } from '../../../../contexts/TokenBalanceContext';
+import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
+import styles from './PortfolioBannerAccount.module.css';
 
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
-import NFTBannerAccount from './NFTBannerAccount';
-interface IPortfolioBannerAccountPropsIF {
+
+interface propsIF {
     ensName: string;
     resolvedAddress: string;
     truncatedAccountAddress: string;
@@ -24,14 +29,15 @@ interface IPortfolioBannerAccountPropsIF {
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
     setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
+    nftTestWalletInput: string;
+    setNftTestWalletInput: Dispatch<SetStateAction<string>>;
+    showNFTPage: boolean;
+    setShowNFTPage: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line 
+    handleTestWalletChange: any;
 }
 
-export default function PortfolioBannerAccount(
-    props: IPortfolioBannerAccountPropsIF,
-) {
-    const [showAccountDetails, setShowAccountDetails] = useState(false);
-    const [showNFTPage, setShowNFTPage] = useState(false);
-
+export default function PortfolioBannerAccount(props: propsIF) {
     const {
         ensName,
         resolvedAddress,
@@ -39,38 +45,42 @@ export default function PortfolioBannerAccount(
         ensNameAvailable,
         connectedAccountActive,
         showTabsAndNotExchange,
-        setShowTabsAndNotExchange
+        setShowTabsAndNotExchange,
+        showNFTPage,
+        setShowNFTPage,
+        nftTestWalletInput,
+        setNftTestWalletInput,
+        handleTestWalletChange,
     } = props;
 
     const {
         userAddress,
         userProfileNFT,
-        isfetchNftTriggered,
-        setIsfetchNftTriggered,
         setUserProfileNFT,
         setUserThumbnailNFT,
-        setNftTestWalletAddress,
-    } = useContext(UserDataContext);
+    } = useContext<UserDataContextIF>(UserDataContext);
 
-    const { NFTData, NFTFetchSettings, setNFTFetchSettings } =
-        useContext(TokenBalanceContext);
+    const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
 
     const {
         snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
+
     const {
-        // chainData: { blockExplorer, chainId },
         chainData: { blockExplorer },
-    } = useContext(CrocEnvContext);
-    const isSmallScreen = useMediaQuery('(max-width: 768px)');
+    } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
-    const ensNameToDisplay = ensName !== '' ? ensName : truncatedAccountAddress;
+    const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const addressToDisplay = resolvedAddress
+    const [showAccountDetails, setShowAccountDetails] = useState<boolean>(false);
+
+    const ensNameToDisplay: string = ensName !== '' ? ensName : truncatedAccountAddress;
+
+    const addressToDisplay: string | undefined = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
-          ? truncatedAccountAddress
-          : userAddress;
+            ? truncatedAccountAddress
+            : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -98,7 +108,7 @@ export default function PortfolioBannerAccount(
         setShowNFTPage(false);
     }, [resolvedAddress]);
 
-    function handleCopyEnsName() {
+    function handleCopyEnsName(): void {
         copy(
             ensNameAvailable
                 ? ensName
@@ -114,14 +124,14 @@ export default function PortfolioBannerAccount(
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
-    function handleCopyAddress() {
+
+    function handleCopyAddress(): void {
         copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
         const copiedData = resolvedAddress ? resolvedAddress : userAddress;
-
         openSnackbar(`${copiedData} copied`, 'info');
     }
 
-    function handleOpenExplorer(address: string) {
+    function handleOpenExplorer(address: string): void {
         if (address && blockExplorer) {
             const explorerUrl = `${blockExplorer}address/${address}`;
             window.open(explorerUrl);
@@ -129,38 +139,33 @@ export default function PortfolioBannerAccount(
     }
 
     // Nft Fetch For Test Wallet
-    const [isWalletPanelActive, setIsWalletPanelActive] = useState(false);
+    const [isWalletPanelActive, setIsWalletPanelActive] = useState<boolean>(false);
 
-    function openWalletAddressPanel(e: KeyboardEvent) {
-        if (e.code === 'KeyQ' && e.altKey) {
-            setIsWalletPanelActive((prev) => !prev);
-
-            document.removeEventListener('keydown', openWalletAddressPanel);
-        }
-    }
-
+    // functionality to show panel for NFT test fetch
     useEffect(() => {
+        function openWalletAddressPanel(e: KeyboardEvent): void {
+            if (e.code === 'KeyQ' && e.altKey) {
+                setIsWalletPanelActive((prev) => !prev);
+                document.removeEventListener('keydown', openWalletAddressPanel);
+            }
+        }
         document.body.addEventListener('keydown', openWalletAddressPanel);
+        return document.body.removeEventListener('keydown', openWalletAddressPanel);
     }, []);
 
-    const [nftTestWalletInput, setNftTestWalletInput] = useState<string>('');
-
-    function handleTestWalletChange(nftTestWalletInput: string) {
-        setNftTestWalletAddress(() => nftTestWalletInput);
-        setIsfetchNftTriggered(() => true);
-    }
-
     return (
-        <div className={styles.portfolio_banner_main_container}
-            // animate={showAccountDetails ? 'open' : 'closed'}
-        >
-            <FlexContainer
-                alignItems='flex-end'
-                zIndex={1}
-                gap={22}
+        <div className={styles.portfolio_banner_account}>
+            <div
+                className={styles.user_facing_content}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                <span
+                <div
+                    className={styles.jazzicon}
+                    style={{
+                        transform: NFTData
+                            ? 'transform: translate(0%, 23%)'
+                            : '',
+                    }}
                     onClick={() => {
                         !(
                             resolvedAddress !== undefined &&
@@ -169,55 +174,37 @@ export default function PortfolioBannerAccount(
                         ) && setShowNFTPage(!showNFTPage);
                     }}
                 >
-                
-                        <div className={styles.portfolio_settings_container}
-                            style={{transform: NFTData ? 'transform: translate(0%, 23%)' : ''}}
-                        >    
-                        {(resolvedAddress || userAddress) &&
-                            getAvatarForProfilePage(
-                                resolvedAddress
-                                    ? resolvedAddress
-                                    : userAddress
-                                      ? userAddress
-                                      : '',
-                                userProfileNFT,
-                                65,
-                                resolvedAddress !== undefined &&
-                                    resolvedAddress.length > 0 &&
-                                    !connectedAccountActive
-                                    ? false
-                                    : 
-                                      true,
-                            )}
-                    </div>
-                </span>
+                    {(resolvedAddress || userAddress) &&
+                        getAvatarForProfilePage(
+                            resolvedAddress
+                                ? resolvedAddress
+                                : userAddress
+                                    ? userAddress
+                                    : '',
+                            userProfileNFT,
+                            65,
+                            resolvedAddress !== undefined &&
+                                resolvedAddress.length > 0 &&
+                                !connectedAccountActive
+                                ? false
+                                : true,
+                        )}
+                </div>
 
-                <FlexContainer flexDirection='column' gap={4}>
-                    <FlexContainer
-                        fontWeight='300'
-                        fontSize={isSmallScreen ? 'body' : 'header1'}
-                        cursor='pointer'
-                        letterSpacing
-                        color='text1'
+                <div className={styles.wallet_info}>
+                    <h3
+                        className={styles.address_or_ens}
                         onClick={handleCopyEnsName}
                     >
                         {isSmallScreen
                             ? trimString(ensNameToDisplay, 18, 3, '...')
                             : ensNameToDisplay}
-                        {/* {isSmallScreen
-                            ? trimString(truncatedAccountAddress, 5, 3, '...')
-                            : truncatedAccountAddress} */}
-                    </FlexContainer>
-                    <FlexContainer
-                        fontWeight='300'
-                        fontSize='body'
-                        gap={8}
-                        cursor='pointer'
+                    </h3>
+                    <div
+                        className={styles.address_detail}
                         onClick={handleCopyAddress}
                     >
-                        {isSmallScreen
-                            ? trimString(addressToDisplay ?? '', 7, 4, '...')
-                            : trimString(addressToDisplay ?? '', 6, 4, '…')}
+                        {addressToDisplay && addressToDisplay.length > 8 ? trimString(addressToDisplay, 5, 3) : addressToDisplay}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
                             <FiExternalLink
@@ -230,29 +217,22 @@ export default function PortfolioBannerAccount(
                                 }}
                             />
                         ) : null}
-                    </FlexContainer>
-                </FlexContainer>
+                    </div>
+                </div>
 
-                {isSmallScreen && connectedAccountActive && <button
-                    onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
-                
-                    className={styles.deposit_button}>{showTabsAndNotExchange ? 'Transactions' : 'Deposit/Withdraw'}</button>}
-            </FlexContainer>
-
-            {showNFTPage && NFTData && (
-                <NFTBannerAccount
-                    setShowNFTPage={setShowNFTPage}
-                    showNFTPage={showNFTPage}
-                    NFTData={NFTData}
-                    isfetchNftTriggered={isfetchNftTriggered}
-                    setIsfetchNftTriggered={setIsfetchNftTriggered}
-                    NFTFetchSettings={NFTFetchSettings}
-                    setNFTFetchSettings={setNFTFetchSettings}
-                    setNftTestWalletInput={setNftTestWalletInput}
-                    nftTestWalletInput={nftTestWalletInput}
-                    handleTestWalletChange={handleTestWalletChange}
-                />
-            )}
+                {isSmallScreen && connectedAccountActive && (
+                    <button
+                        className={styles.deposit_button}
+                        onClick={() =>
+                            setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                        }
+                    >
+                        {showTabsAndNotExchange
+                            ? 'Transactions'
+                            : 'Deposit/Withdraw'}
+                    </button>
+                )}
+            </div>
 
             {isWalletPanelActive && (
                 <div
@@ -264,7 +244,6 @@ export default function PortfolioBannerAccount(
                     }}
                 >
                     <input
-                        id='token_select_input_field'
                         spellCheck='false'
                         type='text'
                         value={nftTestWalletInput}
@@ -272,11 +251,9 @@ export default function PortfolioBannerAccount(
                         placeholder=' Test wallet address'
                         style={{
                             borderRadius: '3px',
-
                             borderWidth: '1.5px',
                             borderStyle: 'solid',
                             borderColor: 'rgba(121, 133, 148, 0.7)',
-
                             fontSize: '15px',
                             color: 'rgba(204, 204, 204)',
                             background: '#2f3d52',

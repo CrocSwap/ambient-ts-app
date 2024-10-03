@@ -31,6 +31,7 @@ import FibRetracementSvg from '../../../../../assets/images/icons/draw/FibRetrac
 import DpRangeSvg from '../../../../../assets/images/icons/draw/DpRangeSvg';
 import DeleteSvg from '../../../../../assets/images/icons/draw/DeleteSvg';
 import { BrandContext } from '../../../../../contexts/BrandContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 
 /* interface ToolbarProps {
   
@@ -53,10 +54,11 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    const mobileView = useMediaQuery('(max-width: 1200px)');
+    const mobileView = useMediaQuery('(max-width: 780px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
+    const isFuta = ['futa'].includes(platformName);
 
     const {
         toolbarRef,
@@ -85,6 +87,7 @@ function ChartToolbar() {
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
+    const { isUserIdle20min } = useContext(AppStateContext);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -315,19 +318,25 @@ function ChartToolbar() {
         }
     };
 
-    return chartContainerOptions && chartContainerOptions.top !== 0 ? (
+    return chartContainerOptions &&
+        chartContainerOptions.top !== 0 &&
+        !isUserIdle20min ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
             isSmallScreen={smallScreen}
             marginTopValue={chartContainerOptions.top - 57}
-            height={chartContainerOptions.height}
+            height={chartContainerOptions.height - xAxisHeightPixel}
             id='toolbar_container'
             ref={toolbarRef}
             backgroundColor={
-                mobileView || ['futa'].includes(platformName)
-                    ? 'var(--dark1)'
-                    : 'var(--dark2)'
+                isFuta
+                    ? mobileView || smallScreen
+                        ? 'transparent'
+                        : 'var(--dark1)'
+                    : mobileView
+                      ? 'var(--dark1)'
+                      : 'var(--dark2)'
             }
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
@@ -550,7 +559,7 @@ function ChartToolbar() {
                 >
                     <ArrowRight
                         isActive={isToolbarOpen}
-                        isFuta={['futa'].includes(platformName)}
+                        isFuta={isFuta}
                     ></ArrowRight>
                 </DividerButton>
             </DividerContainer>

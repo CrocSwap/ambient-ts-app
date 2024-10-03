@@ -10,12 +10,9 @@ import React, {
     useContext,
 } from 'react';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import {
-    NavItemButton,
-    NavItemIconButton,
-} from '../../../../styled/Components/Header';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import styles from './NavItem.module.css'
 interface NavItemPropsIF {
     children: ReactNode;
     icon: ReactNode;
@@ -23,6 +20,7 @@ interface NavItemPropsIF {
     setOpen: Dispatch<SetStateAction<boolean>>;
     allowClicksOutside?: boolean;
     square?: boolean;
+    blurBg?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
@@ -33,12 +31,13 @@ function NavItem(props: NavItemPropsIF) {
         open,
         setOpen,
         allowClicksOutside = false,
-        square,
+        blurBg = true,
     } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
         if (!allowClicksOutside) setOpen(false);
+        appHeaderDropdown.setIsActive(false);
     };
 
     UseOnClickOutside(navItemRef, clickOutsideHandler);
@@ -52,25 +51,28 @@ function NavItem(props: NavItemPropsIF) {
     });
 
     return (
-        <NavItemButton
-            className='nav_item'
+        <button className={styles.navItemButton}
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
         >
-            <NavItemIconButton
-                square={square}
+            <div className={styles.navItemIconButton}
+                
                 onClick={() => {
-                    setOpen(!open);
-                    if (!open) {
-                        appHeaderDropdown.setIsActive(true);
-                    } else appHeaderDropdown.setIsActive(false);
+                    setOpen((prevOpen) => {
+                        const newOpen = !prevOpen;
+                        if (blurBg) {
+                            appHeaderDropdown.setIsActive(newOpen);
+                        }
+                        return newOpen;
+                    });
                 }}
             >
                 {icon}
-            </NavItemIconButton>
+            </div>
+
             {open && childrenWithProps}
-        </NavItemButton>
+        </button>
     );
 }
 

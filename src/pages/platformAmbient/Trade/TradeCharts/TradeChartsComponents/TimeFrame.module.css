@@ -121,5 +121,6 @@
     box-shadow: var(--glow-light-box-shadow);
 }
 
-@media only screen and (max-width: 600px) {
+.mobile_container{
+    display: flex;
 }

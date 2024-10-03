@@ -180,11 +180,7 @@ function Ranges(props: propsIF) {
             !isLargeScreenAccount &&
             isSidebarOpen)
             ? 'small'
-            : (!isSmallScreen && !isLargeScreen) ||
-                (isAccountView &&
-                    connectedAccountActive &&
-                    isLargeScreenAccount &&
-                    isSidebarOpen)
+            : !isSmallScreen && !isLargeScreen
               ? 'medium'
               : 'large';
 
@@ -254,13 +250,6 @@ function Ranges(props: propsIF) {
         </FlexContainer>
     );
 
-    // Changed this to have the sort icon be inline with the last row rather than under it
-    const walID = (
-        <>
-            <p>Position ID</p>
-            Wallet
-        </>
-    );
     const minMax = (
         <>
             <p>Min</p>
@@ -275,6 +264,7 @@ function Ranges(props: propsIF) {
             <p>{`${quoteTokenSymbol}`}</p>
         </>
     );
+
     const headerColumns = [
         {
             name: 'Last Updated',
@@ -305,13 +295,20 @@ function Ranges(props: propsIF) {
             sortable: showAllData,
         },
         {
-            name: walID,
+            name: 'Wallet',
             className: 'wallet_id',
             show:
-                tableView === 'medium' ||
-                (!isAccountView && tableView === 'small'),
+                !isAccountView &&
+                (tableView === 'medium' || tableView === 'small'),
             slug: 'walletid',
             sortable: !isAccountView,
+        },
+        {
+            name: 'Position ID',
+            className: 'position_id',
+            show: isAccountView && tableView !== 'small',
+            slug: 'positionid',
+            sortable: false,
         },
         {
             name: 'Min',
@@ -548,6 +545,8 @@ function Ranges(props: propsIF) {
                         firstMintTx: '', // unknown
                         aprEst: 0, // unknown
                     };
+                    const skipENSFetch = true;
+
                     const positionData = await getPositionData(
                         mockServerPosition,
                         tokens.tokenUniv,
@@ -558,7 +557,7 @@ function Ranges(props: propsIF) {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
-                        true,
+                        skipENSFetch,
                     );
                     const onChainPosition: PositionIF = {
                         chainId: chainId,
@@ -703,8 +702,6 @@ function Ranges(props: propsIF) {
             );
         });
 
-   
-
     const handleKeyDownViewRanges = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ): void => {
@@ -742,11 +739,11 @@ function Ranges(props: propsIF) {
             activeUserPositionsByPoolLength={activeUserPositionsByPool.length}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%'}}>
+        <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%' }}>
             <ul
                 ref={listRef}
                 // id='current_row_scroll'
-                style={{height: '100%'}}
+                style={{ height: '100%' }}
             >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&
@@ -794,18 +791,24 @@ function Ranges(props: propsIF) {
         </div>
     );
 
-    if (isSmallScreen) return (
-        <div style={{  overflow: 'scroll', height:  '100%'}}>
-            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
-            {headerColumnsDisplay}
-
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {rangeDataOrNull}
+                </div>
             </div>
-            <div style={{overflowY: 'scroll', height: '100%'}}>
-                
-            {rangeDataOrNull}   
-</div>
-        </div>
-    )
+        );
     return (
         <FlexContainer
             flexDirection='column'

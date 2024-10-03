@@ -5,6 +5,8 @@ import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import { ChartTooltipDiv, CurrentDataDiv } from './ChartTooltipStyles';
 import useDollarPrice from '../../platformAmbient/Chart/ChartUtils/getDollarPrice';
+import { BrandContext } from '../../../contexts/BrandContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     showTooltip: boolean;
@@ -13,7 +15,10 @@ interface propsIF {
 export default function ChartTooltip(props: propsIF) {
     const { showTooltip, currentData } = props;
 
-    const { chartSettings } = useContext(ChartContext);
+    const mobileView = useMediaQuery('(min-width: 768px)');
+
+    const { chartSettings, isToolbarOpen, isFullScreen } =
+        useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
     const matchingCandleTime = candleTime.defaults.find(
@@ -28,18 +33,22 @@ export default function ChartTooltip(props: propsIF) {
 
     const getDollarPrice = useDollarPrice();
 
+    const { platformName } = useContext(BrandContext);
+
+    const isFuta = ['futa'].includes(platformName);
+
     const chartTooltip = (
-        <ChartTooltipDiv>
+        <ChartTooltipDiv
+            isToolbarOpen={isToolbarOpen}
+            isFullScreen={isFullScreen}
+            isFuta={isFuta}
+        >
             {showTooltip && currentData ? (
-                <CurrentDataDiv>
+                <CurrentDataDiv isFuta={isFuta}>
                     <p>
-                        {`${topToken.symbol} / ${bottomToken.symbol} • ${matchingCandleTime?.readable} • `}
-                    </p>
-                    <p>
+                        {isFuta && !mobileView ? '' : `${topToken.symbol}/${bottomToken.symbol} ${matchingCandleTime?.readable} `}
                         {`O: ${getDollarPrice(isDenomBase ? currentData.invPriceOpenExclMEVDecimalCorrected : currentData.priceOpenExclMEVDecimalCorrected).formattedValue} `}
                         {`H: ${getDollarPrice(isDenomBase ? currentData.invMinPriceExclMEVDecimalCorrected : currentData.maxPriceExclMEVDecimalCorrected).formattedValue} `}
-                    </p>
-                    <p>
                         {`L: ${getDollarPrice(isDenomBase ? currentData.invMaxPriceExclMEVDecimalCorrected : currentData.minPriceExclMEVDecimalCorrected).formattedValue} `}
                         {`C: ${getDollarPrice(isDenomBase ? currentData.invPriceCloseExclMEVDecimalCorrected : currentData.priceCloseExclMEVDecimalCorrected).formattedValue} `}
                         {`V: ${formatDollarAmountAxis(currentData.volumeUSD)}`}

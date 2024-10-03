@@ -51,6 +51,7 @@ export interface AppStateContextIF {
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
+    isUserIdle20min: boolean;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -67,6 +68,7 @@ export const AppStateContextProvider = (props: {
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
+    const [isUserIdle20min, setIsUserIdle20min] = useState(false);
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -156,6 +158,7 @@ export const AppStateContextProvider = (props: {
             },
             server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
             isUserIdle,
+            isUserIdle20min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             walletModal: {
                 isOpen: isGateWalletModalOpen,
@@ -199,14 +202,71 @@ export const AppStateContextProvider = (props: {
         setIsUserIdle(true);
     };
 
+    const onIdle20 = () => {
+        setIsUserIdle20min(true);
+    };
+
     const onActive = () => {
         setIsUserIdle(false);
+        setIsUserIdle20min(false);
     };
+
+    // Custom visibility change handler to trigger onActive when the tab becomes visible
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                // If the tab is visible, manually trigger onActive
+                onActive();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Clean up the event listener on component unmount
+        return () => {
+            document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange,
+            );
+        };
+    }, [onActive]);
 
     useIdleTimer({
         onIdle,
         onActive,
         timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        promptTimeout: 0,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange', // triggers on tab change
+        ],
+        immediateEvents: [],
+        debounce: 0,
+        throttle: 0,
+        eventsThrottle: 200,
+        element: document,
+        startOnMount: true,
+        startManually: false,
+        stopOnIdle: false,
+        crossTab: false,
+        name: 'idle-timer',
+        syncTimers: 0,
+        leaderElection: false,
+    });
+
+    useIdleTimer({
+        onIdle: onIdle20,
+        onActive,
+        timeout: 1000 * 60 * 20, // set user to idle after 20 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -230,7 +290,7 @@ export const AppStateContextProvider = (props: {
         startManually: false,
         stopOnIdle: false,
         crossTab: false,
-        name: 'idle-timer',
+        name: 'idle-timer-10',
         syncTimers: 0,
         leaderElection: false,
     });

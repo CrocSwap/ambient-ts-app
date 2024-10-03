@@ -1,8 +1,8 @@
 import { memo, useEffect, useRef, useState } from 'react';
-import { TutorialStepIF } from '../../Chat/ChatIFs';
-import styles from './TutorialComponent.module.css';
 import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { TutorialStepExternalComponent, TutorialStepIF } from '../../Chat/ChatIFs';
+import styles from './TutorialComponent.module.css';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface propsIF {
@@ -12,10 +12,13 @@ interface propsIF {
     showSteps?: boolean;
     initialStep?: number;
     onComplete?: () => void;
+    externalComponents?: Map<string, TutorialStepExternalComponent>
 }
 
 function TutorialComponent(props: propsIF) {
+
     const { steps, tutoKey, initialStep, showSteps, onComplete } = props;
+    console.log(tutoKey, steps)
 
     const [hasTriggered, setHasTriggered] = useState<boolean>(false);
     const hasTriggeredRef = useRef<boolean>(false);
@@ -40,11 +43,19 @@ function TutorialComponent(props: propsIF) {
     
     const isMobile = useMediaQuery('(max-width: 800px)');
     const [initialTimeoutDone, setInitialTimeoutDone] = useState<boolean>(false);
+    const [onCompleteActions, setOnCompleteActions] = useState<string[]>([]);
+    const onCompleteActionsRef = useRef<string[]>([]);
+    onCompleteActionsRef.current = onCompleteActions;
+
+    const [stepExternalComponent, setStepExternalComponent] = useState<TutorialStepExternalComponent>();
 
     useEffect(() => {
         if (hasTriggeredRef.current) return;
+        buildOnCompletes();
         if (steps.length > 0) {
             triggerTutorial();
+        }else{
+            completeTutorial();
         }
     }, [tutoKey]);
 
@@ -56,6 +67,9 @@ function TutorialComponent(props: propsIF) {
 
         if (refVal < steps.length - 1) {
             setStepIndex(refVal + 1);
+        }
+        else if (refVal === steps.length -1){
+            completeTutorial();
         }
     };
     const prevStep = () => {
@@ -73,6 +87,7 @@ function TutorialComponent(props: propsIF) {
         if (onComplete) {
             onComplete();
         }
+        handleOnCompletes();
     };
 
     const getTargetEl = () => {
@@ -109,6 +124,18 @@ function TutorialComponent(props: propsIF) {
             triggerAnimation(focusOverlay.current);
         }
     };
+
+    const buildOnCompletes = () => {
+        const completeActions:string[] = [];
+
+        steps.forEach((step) => {
+            if(step.actionOnComplete){
+                completeActions.push(step.actionOnComplete);
+            }
+        })
+        
+        setOnCompleteActions([...completeActions]);
+    }
 
     const handleTooltip = () => {
         const targetEl = getTargetEl();
@@ -228,6 +255,18 @@ function TutorialComponent(props: propsIF) {
         }
     }
 
+    const handleOnCompletes = () => {
+        if(onCompleteActionsRef.current && onCompleteActionsRef.current.length > 0){
+            onCompleteActionsRef.current.map((action) => {
+                const el = document.querySelector(action);
+                if(el && el instanceof HTMLElement){
+                    el.click();
+                }
+            })
+
+        }
+    }
+
     
     const navigate = useNavigate();
 
@@ -256,6 +295,12 @@ function TutorialComponent(props: propsIF) {
             focusOverlay.current.style.display = 'none';
         }
 
+        if(step && step.element && props.externalComponents && props.externalComponents.get(step.element.toString()) !== undefined){
+            setStepExternalComponent(props.externalComponents.get(step.element.toString()));
+        }else{
+            setStepExternalComponent(undefined);
+        }
+
         setTimeout(() => {
             handleFocusOverlay();
             handleTooltip();
@@ -279,7 +324,24 @@ function TutorialComponent(props: propsIF) {
         <>
             {
                 forTooltip && isMobile ?
-                (<> </>)
+                (<> 
+                    {
+                    <div
+                        className={`${styles.step_btn} ${styles.prev_btn} ${stepIndex == 0 ? styles.disabled : ''}`}
+                        onClick={prevStep}
+                    >
+                        {'<'}
+                    </div>
+                }
+                {stepIndex < steps.length - 1 && (
+                    <div
+                        className={styles.step_btn + ' ' + styles.next_button}
+                        onClick={nextStep}
+                    >
+                        {'>'}
+                    </div>
+                )}
+                </>)
                 :
                 (<>
                     {
@@ -306,15 +368,33 @@ function TutorialComponent(props: propsIF) {
                     className={styles.step_btn + ' ' + styles.complete_button}
                     onClick={completeTutorial}
                 >
-                    Complete
+                    {isMobile && forTooltip ? 'X' : 'Complete'}
                 </div>
+            )}
+
+            { !forTooltip && !isMobile && (
+                <div
+                className={styles.step_btn + ' ' + styles.dismiss_button}
+                onClick={completeTutorial}
+            >
+                 {'X'} 
+            </div>
+            )}
+
+            { forTooltip && !isMobile && (
+                <div
+                className={styles.step_btn + ' ' + styles.dismiss_button + ' ' + styles.for_tooltip }
+                onClick={completeTutorial}
+            >
+                 {'X'} 
+            </div>
             )}
         </>
     );
 
     return (
         <div>
-            <div className={styles.tutorial_overlay}></div>
+            <div className={styles.tutorial_overlay} onClick={nextStep}></div>
             <div ref={focusOverlay} className={styles.focus_outline}></div>
 
             {step && (
@@ -333,10 +413,20 @@ function TutorialComponent(props: propsIF) {
                     </div>
                     <div className={styles.tooltip_content}>{step.intro}</div>  
 
+                    {stepExternalComponent && (stepExternalComponent.placement === 'nav-before' || !stepExternalComponent.placement) &&
+                        (<>{stepExternalComponent.component}</>)
+                    }
                     <div className={styles.tooltip_buttons_wrapper}>
                         {navButtons(true)}
                         {renderNavigate()}
+                        {stepExternalComponent && stepExternalComponent.placement === 'nav-end' &&
+                            (<>{stepExternalComponent.component}</>)
+                        }
                     </div>
+
+                    {stepExternalComponent && stepExternalComponent.placement === 'nav-after' &&
+                        (<>{stepExternalComponent.component}</>)
+                    }
 
                     <div className={styles.step_dots_wrapper}>
                         {steps.map((_, i) => (

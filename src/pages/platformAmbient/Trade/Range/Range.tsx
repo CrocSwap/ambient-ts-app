@@ -1,4 +1,8 @@
-import { concDepositSkew, fromDisplayQty } from '@crocswap-libs/sdk';
+import {
+    concDepositSkew,
+    fromDisplayQty,
+    toDisplayQty,
+} from '@crocswap-libs/sdk';
 import {
     Dispatch,
     memo,
@@ -89,7 +93,7 @@ function Range(props: RangePropsIF) {
         ethMainnetUsdPrice,
         crocEnv,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei, isActiveNetworkBlast } =
+    const { gasPriceInGwei, isActiveNetworkBlast, isActiveNetworkScroll } =
         useContext(ChainDataContext);
     const { poolPriceDisplay, dailyVol } = useContext(PoolContext);
     const {
@@ -163,6 +167,7 @@ function Range(props: RangePropsIF) {
               ? primaryQuantity
               : '',
     );
+
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
         position
             ? position?.positionLiqQuoteDecimalCorrected.toString()
@@ -184,6 +189,29 @@ function Range(props: RangePropsIF) {
         }
         setPositionCount(positionCount + 1);
     }, [position]);
+
+    const tokenAInputQtyNoExponentString = useMemo(() => {
+        try {
+            return tokenAInputQty.includes('e')
+                ? toDisplayQty(
+                      fromDisplayQty(tokenAInputQty || '0', tokenA.decimals),
+                      tokenA.decimals,
+                  )
+                : tokenAInputQty;
+        } catch (error) {
+            console.log({ error });
+            return '0';
+        }
+    }, [tokenAInputQty, tokenA.decimals]);
+
+    const tokenBInputQtyNoExponentString = useMemo(() => {
+        return tokenBInputQty.includes('e')
+            ? toDisplayQty(
+                  fromDisplayQty(tokenBInputQty || '0', tokenB.decimals),
+                  tokenB.decimals,
+              )
+            : tokenBInputQty;
+    }, [tokenBInputQty, tokenB.decimals]);
 
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);
@@ -323,23 +351,32 @@ function Range(props: RangePropsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         fromDisplayQty(tokenADexBalance || '0', tokenA.decimals) -
-        fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
+        fromDisplayQty(tokenAInputQtyNoExponentString || '0', tokenA.decimals);
     const tokenBSurplusMinusTokenBRemainderNum =
         fromDisplayQty(tokenBDexBalance || '0', tokenB.decimals) -
-        fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
+        fromDisplayQty(tokenBInputQtyNoExponentString || '0', tokenB.decimals);
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenAInputQty || '0', tokenA.decimals);
+        : fromDisplayQty(
+              tokenAInputQtyNoExponentString || '0',
+              tokenA.decimals,
+          );
     const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
         ? tokenBSurplusMinusTokenBRemainderNum < 0
             ? tokenBSurplusMinusTokenBRemainderNum * -1n
             : 0n
-        : fromDisplayQty(tokenBInputQty || '0', tokenB.decimals);
-    const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
+        : fromDisplayQty(
+              tokenBInputQtyNoExponentString || '0',
+              tokenB.decimals,
+          );
+    const isQtyEntered =
+        tokenAInputQtyNoExponentString !== '' &&
+        tokenBInputQtyNoExponentString !== '';
     const showExtraInfoDropdown =
-        tokenAInputQty !== '' || tokenBInputQty !== '';
+        tokenAInputQtyNoExponentString !== '' ||
+        tokenBInputQtyNoExponentString !== '';
 
     const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
@@ -897,12 +934,11 @@ function Range(props: RangePropsIF) {
     const [amountToReduceNativeTokenQtyL2, setAmountToReduceNativeTokenQtyL2] =
         useState<number>(0.0005);
 
-    const isScroll = chainId === '0x82750' || chainId === '0x8274f';
     const [l1GasFeePoolInGwei] = useState<number>(
-        isScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
+        isActiveNetworkScroll ? 10000 : isActiveNetworkBlast ? 10000 : 0,
     );
     const [extraL1GasFeePool] = useState(
-        isScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
+        isActiveNetworkScroll ? 0.01 : isActiveNetworkBlast ? 0.01 : 0,
     );
 
     const amountToReduceNativeTokenQty =
@@ -986,8 +1022,12 @@ function Range(props: RangePropsIF) {
             : createRangePosition({
                   slippageTolerancePercentage,
                   isAmbient,
-                  tokenAInputQty: isTokenAInputDisabled ? '0' : tokenAInputQty,
-                  tokenBInputQty: isTokenBInputDisabled ? '0' : tokenBInputQty,
+                  tokenAInputQty: isTokenAInputDisabled
+                      ? '0'
+                      : tokenAInputQtyNoExponentString,
+                  tokenBInputQty: isTokenBInputDisabled
+                      ? '0'
+                      : tokenBInputQtyNoExponentString,
                   isWithdrawTokenAFromDexChecked,
                   isWithdrawTokenBFromDexChecked,
                   defaultLowTick,
@@ -1028,7 +1068,7 @@ function Range(props: RangePropsIF) {
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
     } = useHandleRangeButtonMessage(
         tokenA,
-        tokenAInputQty,
+        tokenAInputQtyNoExponentString,
         tokenABalance,
         tokenADexBalance,
         isTokenAInputDisabled,
@@ -1188,8 +1228,16 @@ function Range(props: RangePropsIF) {
             modal={
                 isOpen ? (
                     <ConfirmRangeModal
-                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
-                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
+                        tokenAQty={
+                            isTokenAInputDisabled
+                                ? ''
+                                : tokenAInputQtyNoExponentString
+                        }
+                        tokenBQty={
+                            isTokenBInputDisabled
+                                ? ''
+                                : tokenBInputQtyNoExponentString
+                        }
                         spotPriceDisplay={getFormattedNumber({
                             value: displayPriceWithDenom,
                         })}

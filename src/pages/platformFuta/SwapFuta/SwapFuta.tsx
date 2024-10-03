@@ -2,18 +2,12 @@ import { useContext, useState } from 'react';
 import Divider from '../../../components/Futa/Divider/FutaDivider';
 import Separator from '../../../components/Futa/Separator/Separator';
 import Comments from '../../../components/Futa/Comments/Comments';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import Swap from '../../platformAmbient/Trade/Swap/Swap';
 
 import Trade from '../../platformAmbient/Trade/Trade';
 import styles from './SwapFuta.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
-import {
-    TradeDropdown,
-    TradeDropdownButton,
-} from '../../../styled/Components/Trade';
-import { BsCaretDownFill } from 'react-icons/bs';
+
 import { ChartContext } from '../../../contexts/ChartContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 
@@ -22,103 +16,94 @@ import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIs
 function SwapFuta() {
     const tradeWrapperID = 'swapFutaTradeWrapper';
 
-    const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
-
-    const { activeMobileComponent, setActiveMobileComponent } =
-        useContext(TradeTableContext);
-
-    const [showMobileDropdown, setMobileDropdown] = useState(false);
-
-    const handleMobileDropdownClick = (component: string) => {
-        setActiveMobileComponent(component);
-        setMobileDropdown(false);
-    };
+    const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
     const { isCandleDataNull } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
-    const mobileTradeDropdown = (
-        <TradeDropdown>
-            <TradeDropdownButton
-                onClick={() => setMobileDropdown(!showMobileDropdown)}
-                activeText
-            >
-                {activeMobileComponent}
+    const [activeTab, setActiveTab] = useState('Trade');
 
-                <BsCaretDownFill />
-            </TradeDropdownButton>
+    const tabs = [
+        {
+            id: 'Trade',
+            label: 'Trade',
 
-            {showMobileDropdown && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        marginTop: '8px',
-                        width: '100%',
-                        background: 'var(--dark2)',
-                    }}
-                >
-                    {activeMobileComponent !== 'trade' && (
-                        <TradeDropdownButton
-                            onClick={() => handleMobileDropdownClick('trade')}
-                        >
-                            Trade
-                        </TradeDropdownButton>
-                    )}
-
-                    {!isCandleDataNull &&
-                        isPoolInitialized &&
-                        activeMobileComponent !== 'chart' && (
-                            <TradeDropdownButton
-                                onClick={() =>
-                                    handleMobileDropdownClick('chart')
-                                }
-                            >
-                                Chart
-                            </TradeDropdownButton>
-                        )}
-                    {activeMobileComponent !== 'comments' && (
-                        <TradeDropdownButton
-                            onClick={() =>
-                                handleMobileDropdownClick('comments')
-                            }
-                        >
-                            Comments
-                        </TradeDropdownButton>
-                    )}
-                </div>
-            )}
-        </TradeDropdown>
-    );
-
-    const mobileSwap = (
-        <section className={styles.mobileMainSection}>
-            {mobileTradeDropdown}
-
-            {activeMobileComponent === 'chart' && (
-                <div className={styles.chartSection}>
-                    <Divider count={2} />
-                    <Trade />
-                </div>
-            )}
-
-            {activeMobileComponent === 'trade' && (
-                <ContentContainer
-                // noPadding noStyle={smallScreen}
-                >
-                    <div>
-                        <Divider count={2} />
-                        <Swap isOnTradeRoute />
-                    </div>
-                </ContentContainer>
-            )}
-
-            {activeMobileComponent === 'comments' && (
+            data: <Swap isOnTradeRoute />,
+        },
+        !isCandleDataNull && isPoolInitialized
+            ? {
+                  id: 'Chart',
+                  label: 'Chart',
+                  data: (
+                      <>
+                          <Trade futaActiveTab={activeTab} />
+                      </>
+                  ),
+              }
+            : null,
+        {
+            id: 'Comments',
+            label: 'Comments',
+            data: (
                 <Comments
                     isForTrade={true}
                     resizeEffectorSelector={tradeWrapperID}
                 />
-            )}
+            ),
+        },
+    ];
+
+    const mobileTabs = (
+        <div
+            className={styles.mobile_tabs_container}
+            style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${tabs.length}, 1fr)`, // Dynamic grid based on tab count
+            }}
+        >
+            {tabs
+                .filter((tab) => tab !== null && tab !== undefined)
+                .map((tab) => (
+                    <button
+                        key={tab?.id}
+                        className={`${styles.tabButton} ${activeTab === tab?.id ? styles.activeTab : ''}`}
+                        onClick={() => {
+                            if (tab?.id) setActiveTab(tab.id);
+                        }}
+                        style={{
+                            color:
+                                activeTab === tab?.id
+                                    ? 'var(--accent1)'
+                                    : 'var(--text2)',
+                            border:
+                                activeTab === tab?.id
+                                    ? '1px solid var(--accent1)'
+                                    : '1px solid transparent',
+                        }}
+                    >
+                        {tab?.label}
+                    </button>
+                ))}
+        </div>
+    );
+
+    const activeTabData = tabs.find((tab) => tab?.id === activeTab)?.data;
+
+    const mobileSwap = (
+        <section
+            className={
+                activeTab === 'Chart'
+                    ? styles.chart_mobile_container
+                    : styles.mobile_container
+            }
+            style={{ height: '100%' }}
+        >
+            {mobileTabs}
+
+            <div style={{ height: '100%'}}>
+                {activeTabData}
+            </div>
         </section>
     );
 
@@ -128,7 +113,7 @@ function SwapFuta() {
         <section className={styles.mainSection}>
             <div className={styles.chartSection}>
                 <Divider count={2} />
-                <Trade />
+                <Trade futaActiveTab={activeTab} />
             </div>
 
             <div style={{ paddingBottom: '4px' }}>

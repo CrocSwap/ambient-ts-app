@@ -19,6 +19,7 @@ import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { FaPlus } from 'react-icons/fa6';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -222,89 +223,14 @@ function RangeTokenInput(props: propsIF) {
                 isEditPanel={isEditPanel}
                 usdValue={usdValueTokenA}
             />
-            {!hidePlus && (
-                <FlexContainer
-                    fullWidth
-                    justifyContent='center'
-                    alignItems='center'
-                >
-                    <svg
-                        width='28'
-                        height='28'
-                        viewBox='0 0 28 28'
-                        fill='#000000'
-                        xmlns='http://www.w3.org/2000/svg'
-                    >
-                        <g
-                            clipPath='url(#clip0_4245_78460)'
-                            filter='url(#filter0_d_4245_78460)'
-                        >
-                            <path
-                                d='M14 0V20'
-                                stroke='var(--accent1)'
-                                strokeWidth='3'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                            />
-                            <path
-                                d='M4 10H24'
-                                stroke='var(--accent1)'
-                                strokeWidth='3'
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                            />
-                        </g>
-                        <defs>
-                            <filter
-                                id='filter0_d_4245_78460'
-                                x='0'
-                                y='0'
-                                width='28'
-                                height='28'
-                                filterUnits='userSpaceOnUse'
-                                colorInterpolationFilters='sRGB'
-                            >
-                                <feFlood
-                                    floodOpacity='0'
-                                    result='BackgroundImageFix'
-                                />
-                                <feColorMatrix
-                                    in='SourceAlpha'
-                                    type='matrix'
-                                    values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0'
-                                    result='hardAlpha'
-                                />
-                                <feOffset dy='4' />
-                                <feGaussianBlur stdDeviation='2' />
-                                <feComposite in2='hardAlpha' operator='out' />
-                                <feColorMatrix
-                                    type='matrix'
-                                    values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0'
-                                />
-                                <feBlend
-                                    mode='normal'
-                                    in2='BackgroundImageFix'
-                                    result='effect1_dropShadow_4245_78460'
-                                />
-                                <feBlend
-                                    mode='normal'
-                                    in='SourceGraphic'
-                                    in2='effect1_dropShadow_4245_78460'
-                                    result='shape'
-                                />
-                            </filter>
-                            <clipPath id='clip0_4245_78460'>
-                                <rect
-                                    width='20'
-                                    height='20'
-                                    fill='#000000'
-                                    transform='translate(4)'
-                                />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                </FlexContainer>
-            )}
+            <FlexContainer
+                justifyContent='center'
+                alignItems='center'
+            >
+
+            {!hidePlus && <FaPlus size={26} color='var(--accent1)' />}
+            </FlexContainer>
+           
             <TokenInputWithWalletBalance
                 fieldId='range_B'
                 tokenAorB='B'

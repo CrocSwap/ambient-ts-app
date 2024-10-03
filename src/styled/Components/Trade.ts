@@ -23,8 +23,16 @@ export const MainSection = styled.section<{
     border-top: ${(props) => !props.isDropdown && '1px solid var(--dark2)'};
 
     @media (max-width: 1200px) {
-        display: flex;
-        flex-direction: column;
+        ${({ isFill }) => {
+            if (!isFill) {
+                return `
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 350px; /* Prevents overflowing */
+        margin: 0 auto;
+       
+      `;
+            }
+        }}
     }
 
     @media (max-width: 600px) {
@@ -38,33 +46,33 @@ export const MainSection = styled.section<{
     }
 `;
 
-
-
 export const ResizableContainer = styled(Resizable)<{
     showResizeable: boolean;
+    isFuta?: boolean;
 }>`
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
 
-    max-height: calc(100% - 54px);
+    max-height: ${({ isFuta }) =>
+        isFuta ? 'calc(100% - 5px)' : 'calc(100% - 54px)'};
     min-height: 0px;
 
     ${({ showResizeable }) =>
         showResizeable &&
         `
-    & > div:last-child > * {
-        bottom: 0 !important;
-        height: 5px !important;
-        background-color: var(--dark3);
-        z-index: 99;
-    }
-    
-    & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
-        z-index: -1;
-        display: none;
-    }
+      & > div:last-child > * {
+          bottom: 0 !important;
+          height: 5px !important;
+          background-color: var(--dark3);
+          z-index: 8;
+      }
+  
+      & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
+          z-index: -1;
+          display: none;
+      }
     `}
 `;
 
@@ -82,7 +90,7 @@ export const ChartContainer = styled.div<{
         height: calc(100% - 56px);
         left: 0;
         top: 56px;
-        z-index: 10;
+        z-index: 4;
 
         background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
     `
@@ -101,7 +109,7 @@ export const ChartContainer = styled.div<{
         @media (min-width: 1200px) {
             background: ${isFuta ? 'var(--dark1)' : 'var(--dark2)'};
         }
-
+            
         @media ((min-width: 801px) and (max-width:1200px)) {
             padding-bottom: 30px;
         }
@@ -110,6 +118,8 @@ export const ChartContainer = styled.div<{
             padding-bottom: 80px;
         }
     `}
+
+    ${({ isFuta }) => (isFuta ? 'padding-bottom: 30px;' : '')}
 
     &::-webkit-scrollbar {
         display: none;
