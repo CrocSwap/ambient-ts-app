@@ -824,7 +824,9 @@ function Transactions(props: propsIF) {
                     :
                     (<TableRows
                         type='Transaction'
-                        data={sortedTransactions}
+                        data={sortedTransactions.filter(
+                            (tx) => tx.changeType !== 'cross',
+                        )}
                         fullData={sortedTransactions}
                         tableView={tableView}
                         isAccountView={isAccountView}
