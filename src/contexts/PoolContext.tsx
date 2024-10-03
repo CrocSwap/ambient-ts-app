@@ -21,7 +21,7 @@ import {
 } from '../ambient-utils/dataLayer';
 import { ZERO_ADDRESS } from '../ambient-utils/constants';
 
-interface PoolContextIF {
+export interface PoolContextIF {
     poolList: PoolIF[];
     findPool: (
         tkn1: TokenIF | string,

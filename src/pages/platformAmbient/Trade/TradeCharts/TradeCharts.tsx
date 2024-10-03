@@ -12,8 +12,8 @@ import {
 import { useLocation } from 'react-router-dom';
 import TutorialOverlay from '../../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { tradeChartTutorialSteps } from '../../../../utils/tutorial/TradeChart';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { ChartContext } from '../../../../contexts/ChartContext';
+import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
+import { ChartContext, ChartContextIF } from '../../../../contexts/ChartContext';
 import {
     LS_KEY_ORDER_HISTORY_SETTINGS,
     LS_KEY_SUBCHART_SETTINGS,
@@ -26,10 +26,10 @@ import { FlexContainer } from '../../../../styled/Common';
 import { MainContainer } from '../../../../styled/Components/Chart';
 import { TutorialButton } from '../../../../styled/Components/Tutorial';
 import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
 import styles from './TradeCharts.module.css';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { BrandContext } from '../../../../contexts/BrandContext';
+import { SidebarContext, SidebarStateIF } from '../../../../contexts/SidebarContext';
+import { BrandContext, BrandContextIF } from '../../../../contexts/BrandContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
@@ -38,6 +38,7 @@ import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import Modal from '../../../../components/Global/Modal/Modal';
 import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
 import { PoolContext } from '../../../../contexts';
+import { PoolContextIF } from '../../../../contexts/PoolContext';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -86,41 +87,41 @@ function TradeCharts(props: propsIF) {
     } = props;
 
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
-        useContext(SidebarContext);
+        useContext<SidebarStateIF>(SidebarContext);
 
     const { isTradeDollarizationEnabled, setIsTradeDollarizationEnabled } =
-        useContext(PoolContext);
+        useContext<PoolContextIF>(PoolContext);
 
     const {
         tutorial: { isActive: isTutorialActive },
-    } = useContext(AppStateContext);
+    } = useContext<AppStateContextIF>(AppStateContext);
     const {
         chartSettings,
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
         chartCanvasRef,
-    } = useContext(ChartContext);
+    } = useContext<ChartContextIF>(ChartContext);
 
-    const { isUserConnected } = useContext(UserDataContext);
+    const { isUserConnected } = useContext<UserDataContextIF>(UserDataContext);
 
-    const { platformName } = useContext(BrandContext);
+    const { platformName } = useContext<BrandContextIF>(BrandContext);
 
     const { pathname } = useLocation();
-    const smallScreen = useMediaQuery('(max-width: 768px)');
+    const smallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const isFuta = ['futa'].includes(platformName);
+    const isFuta: boolean = ['futa'].includes(platformName);
 
-    const isMarketOrLimitModule =
+    const isMarketOrLimitModule: boolean =
         pathname.includes('market') || pathname.includes('limit');
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
 
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
-    const [rescale, setRescale] = useState(true);
-    const [latest, setLatest] = useState(false);
-    const [showLatest, setShowLatest] = useState(false);
-    const [reset, setReset] = useState(false);
+    const [rescale, setRescale] = useState<boolean>(true);
+    const [latest, setLatest] = useState<boolean>(false);
+    const [showLatest, setShowLatest] = useState<boolean>(false);
+    const [reset, setReset] = useState<boolean>(false);
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
@@ -141,22 +142,22 @@ function TradeCharts(props: propsIF) {
         getLocalStorageItem(LS_KEY_ORDER_HISTORY_SETTINGS) ?? '{}',
     );
 
-    const [showTvl, setShowTvl] = useState(
+    const [showTvl, setShowTvl] = useState<boolean>(
         subchartState?.isTvlSubchartEnabled ?? false,
     );
-    const [showFeeRate, setShowFeeRate] = useState(
+    const [showFeeRate, setShowFeeRate] = useState<boolean>(
         subchartState?.isFeeRateSubchartEnabled ?? false,
     );
-    const [showVolume, setShowVolume] = useState(
+    const [showVolume, setShowVolume] = useState<boolean>(
         subchartState?.isVolumeSubchartEnabled ?? true,
     );
-    const [showSwap, setShowSwap] = useState(
+    const [showSwap, setShowSwap] = useState<boolean>(
         orderHistoryState?.isSwapOrderHistoryEnabled ?? true,
     );
-    const [showLiquidity, setShowLiquidity] = useState(
+    const [showLiquidity, setShowLiquidity] = useState<boolean>(
         false, // orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
     );
-    const [showHistorical, setShowHistorical] = useState(
+    const [showHistorical, setShowHistorical] = useState<boolean>(
         false, // orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
     );
 
@@ -199,7 +200,7 @@ function TradeCharts(props: propsIF) {
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
-    function closeOnEscapeKeyDown(e: KeyboardEvent) {
+    function closeOnEscapeKeyDown(e: KeyboardEvent): void {
         if (e.code === 'Escape') setIsChartFullScreen(false);
     }
 
@@ -350,7 +351,7 @@ function TradeCharts(props: propsIF) {
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
-    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
+    const [isTutorialEnabled, setIsTutorialEnabled] = useState<boolean>(false);
 
     return (
         <>
