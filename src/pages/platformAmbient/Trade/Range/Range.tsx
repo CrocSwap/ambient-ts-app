@@ -538,6 +538,10 @@ function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
+            // prevent ambient ranges in edit mode
+            if (simpleRangeWidth === 100 && isEditPanel) {
+                return;
+            }
             setSimpleRangeWidth(simpleRangeWidth);
             setRangeWidthPercentage(simpleRangeWidth);
             const sliderInput = document.getElementById(

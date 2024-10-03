@@ -101,6 +101,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
         inputId,
+        isEditPanel,
     };
 
     const rangePriceInfoProps = {
@@ -140,7 +141,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         <div className={styles.info_container}>
             <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}    
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
                 <RangeWidth {...rangeWidthProps} />

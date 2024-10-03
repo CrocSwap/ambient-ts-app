@@ -25,6 +25,7 @@ interface propsIF {
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
     customSliderPadding?: string;
+    isEditPanel?: boolean;
 }
 
 // React functional component
@@ -34,6 +35,7 @@ function RangeWidth(props: propsIF) {
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
         customSliderPadding,
+        isEditPanel,
     } = props;
     const {
         globalPopup: { open: openGlobalPopup },
@@ -52,6 +54,11 @@ function RangeWidth(props: propsIF) {
     const balancedPresets: number[] = shouldDisplaySub5PercentWidths
         ? [0.1, 0.25, 0.5, 1, 5, 10, 100]
         : [5, 10, 25, 50, 100];
+
+    if (isEditPanel) {
+        // remove last element from balancedPresets array
+        balancedPresets.pop();
+    }
     // type annotation as union of number-literals in `balancedPresets`
     type presetValues = (typeof balancedPresets)[number];
 
@@ -176,9 +183,12 @@ function RangeWidth(props: propsIF) {
                     percentageInput
                     defaultValue={rangeWidthPercentage}
                     id='input-slider-range'
-                    onChange={(event) =>
-                        handleRangeSlider(event, setRangeWidthPercentage)
-                    }
+                    onChange={(event) => {
+                        // prevent ambient ranges while in edit mode
+                        if (!(event.target.value === '100' && isEditPanel)) {
+                            handleRangeSlider(event, setRangeWidthPercentage);
+                        }
+                    }}
                     onClick={() => {
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
