@@ -46,6 +46,12 @@
         /* max-width: 500px; */
         width: 100%;
     }
+
+    .swap_route{
+        border: none;
+        padding: 0 8px;
+        
+    }
 }
 
 @media (min-width: 768px) {
