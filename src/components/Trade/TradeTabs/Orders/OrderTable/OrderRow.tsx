@@ -220,6 +220,7 @@ function OrderRow(props: propsIF) {
         sideTypeColumn,
         tokensColumn,
         statusDisplay,
+        hiddenIDColumn
     } = orderRowConstants(orderRowConstantsProps);
 
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
@@ -248,6 +249,7 @@ function OrderRow(props: propsIF) {
                 onKeyDown={handleKeyPress}
                 data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView === 'large' && OrderTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {(tableView === 'large' ||

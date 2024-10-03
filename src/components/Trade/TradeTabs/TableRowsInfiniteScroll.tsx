@@ -72,10 +72,10 @@ function TableRowsInfiniteScroll({
 
     // const txSpanSelectorForScrollMethod =  isSmallScreen ? `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(1) > div:nth-child(1) > span`:
     //     `#infinite_scroll_wrapper_${wrapperID} > div > div:nth-child(2) > div > span`;
-    const txSpanSelectorForScrollMethod =  `#infinite_scroll_wrapper_${wrapperID} div[data-label='id'] > span`;
+    const txSpanSelectorForScrollMethod =  `#infinite_scroll_wrapper_${wrapperID} div[data-label='hidden-id'] > span`;
     // const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
     //     'div:nth-child(2)';
-    const txSpanSelectorForBindMethod =  'div[data-label="id"]';
+    const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
     
 
 
@@ -484,20 +484,6 @@ function TableRowsInfiniteScroll({
     }, [moreDataAvailable])
 
 
-    // const getKeyFieldFromRowRef = (ref: HTMLDivElement | null) => {
-    //     if(ref && ref.parentElement){
-    //         const parent = ref.parentElement;
-    //         const spanSelector = 'div[data-label="id"] > span';
-    //         if(parent){
-    //             const txSpan = parent.querySelectorAll(spanSelector);
-    //             if(txSpan){
-    //                 return txSpan[0].textContent;
-    //             }
-    //         }
-    //     }
-
-    //     return null;
-    // }
 
     useEffect(() => {
         domDebug('moreDataLoading', moreDataLoading);

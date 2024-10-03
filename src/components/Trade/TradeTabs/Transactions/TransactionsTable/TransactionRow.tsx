@@ -210,6 +210,7 @@ function TransactionRow(props: propsIF) {
         ambientPriceDisplay,
         lowAndHighPriceDisplay,
         priceDisplay,
+        hiddenIDColumn
     } = txRowConstants(txRowConstantsProps);
 
     return (
@@ -226,6 +227,7 @@ function TransactionRow(props: propsIF) {
                 onKeyDown={handleKeyPress}
                 data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {(tableView === 'large' ||

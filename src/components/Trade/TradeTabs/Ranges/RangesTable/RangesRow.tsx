@@ -234,6 +234,7 @@ function RangesRow(props: propsIF) {
         tokenValues,
         apyDisplay,
         rangeDisplay,
+        hiddenIDColumn
     } = rangeRowConstants(rangeRowConstantsProps);
 
     return (
@@ -253,6 +254,7 @@ function RangesRow(props: propsIF) {
                 ref={currentPositionActive ? activePositionRef : null}
                 data-type='infinite-scroll-row'
             >
+                {hiddenIDColumn}
                 {tableView === 'large' && rankingOrNull}
                 {tableView === 'large' && rangeTimeWithTooltip}
                 {isAccountView && tokenPair}
