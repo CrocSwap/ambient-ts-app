@@ -1,0 +1,11 @@
+/* ProgressBar.module.css */
+.progressBarContainer {
+    display: flex;
+    gap: 2px;
+}
+
+.progressBar {
+    width: 27.9px;
+    height: 12px;
+    background: var(--accent1);
+}

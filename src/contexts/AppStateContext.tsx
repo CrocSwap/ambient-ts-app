@@ -51,6 +51,7 @@ export interface AppStateContextIF {
     showTopPtsBanner: boolean;
     dismissTopBannerPopup: () => void;
     isUserIdle: boolean;
+    isUserIdle10min: boolean;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -67,6 +68,7 @@ export const AppStateContextProvider = (props: {
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
     const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
     const [isUserIdle, setIsUserIdle] = useState(false);
+    const [isUserIdle10min, setIsUserIdle10min] = useState(false);
 
     window.ononline = () => setIsUserOnline(true);
     window.onoffline = () => setIsUserOnline(false);
@@ -105,11 +107,8 @@ export const AppStateContextProvider = (props: {
         )?.unixTimeOfDismissal || 0;
 
     const [showPointSystemPopup, setShowPointSystemPopup] = useState(
-        !ctaPopupDismissalTime ||
-            ctaPopupDismissalTime <
-                Math.floor(
-                    Date.now() / 1000 - 60 * pointsModalDismissalDuration,
-                ),
+        ctaPopupDismissalTime <
+            Math.floor(Date.now() / 1000 - 60 * pointsModalDismissalDuration),
     );
 
     const dismissPointSystemPopup = () => {
@@ -123,11 +122,8 @@ export const AppStateContextProvider = (props: {
         )?.unixTimeOfDismissal || 0;
 
     const [showTopPtsBanner, setShowTopPtsBanner] = useState<boolean>(
-        !ctaBannerDismissalTime ||
-            ctaBannerDismissalTime <
-                Math.floor(
-                    Date.now() / 1000 - 60 * pointsBannerDismissalDuration,
-                ),
+        ctaBannerDismissalTime <
+            Math.floor(Date.now() / 1000 - 60 * pointsBannerDismissalDuration),
     );
 
     const dismissTopBannerPopup = () => {
@@ -162,6 +158,7 @@ export const AppStateContextProvider = (props: {
             },
             server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
             isUserIdle,
+            isUserIdle10min,
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             walletModal: {
                 isOpen: isGateWalletModalOpen,
@@ -201,12 +198,18 @@ export const AppStateContextProvider = (props: {
         ],
     );
 
+
     const onIdle = () => {
         setIsUserIdle(true);
     };
 
+    const onIdle10 = () => {
+        setIsUserIdle10min(true);
+    };
+
     const onActive = () => {
         setIsUserIdle(false);
+        setIsUserIdle10min(false);
     };
 
     useIdleTimer({
@@ -237,6 +240,38 @@ export const AppStateContextProvider = (props: {
         stopOnIdle: false,
         crossTab: false,
         name: 'idle-timer',
+        syncTimers: 0,
+        leaderElection: false,
+    });
+
+    useIdleTimer({
+        onIdle: onIdle10,
+        onActive,
+        timeout: 1000 * 60 * 10, // set user to idle after 10 minutes
+        promptTimeout: 0,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange',
+        ],
+        immediateEvents: [],
+        debounce: 0,
+        throttle: 0,
+        eventsThrottle: 200,
+        element: document,
+        startOnMount: true,
+        startManually: false,
+        stopOnIdle: false,
+        crossTab: false,
+        name: 'idle-timer-10',
         syncTimers: 0,
         leaderElection: false,
     });

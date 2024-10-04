@@ -56,8 +56,8 @@ export const formatPoolPriceAxis = (
     const digit = digits
         ? digits
         : num != undefined
-        ? num.toString().length
-        : 0;
+          ? num.toString().length
+          : 0;
     if (num === 0) return '0.00';
     if (num === undefined) return '-';
     if (!num) return '-';
@@ -92,14 +92,14 @@ export const formatAmountChartData = (
         mantissa: digits
             ? digits
             : num > 10 || num < -10
-            ? 2
-            : (num > 1 && num <= 10) || (num >= -10 && num < -1)
-            ? 3
-            : (num <= 1 && num >= 0.001) || (num >= -1 && num <= -0.001)
-            ? 5
-            : (num < 0.001 && num > 0) || (num < 0 && num > -0.001)
-            ? 7
-            : 2,
+              ? 2
+              : (num > 1 && num <= 10) || (num >= -10 && num < -1)
+                ? 3
+                : (num <= 1 && num >= 0.001) || (num >= -1 && num <= -0.001)
+                  ? 5
+                  : (num < 0.001 && num > 0) || (num < 0 && num > -0.001)
+                    ? 7
+                    : 2,
 
         // mantissa: num > 1000 ? 2 : digits,
         abbreviations: {

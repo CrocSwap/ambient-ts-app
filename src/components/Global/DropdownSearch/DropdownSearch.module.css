@@ -32,7 +32,7 @@
 
 .dropdown_content::-webkit-scrollbar {
     display: none;
-  }
+}
 
 .option_button {
     display: flex;

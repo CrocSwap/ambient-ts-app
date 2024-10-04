@@ -10,11 +10,11 @@ import {
     RiArrowUpDoubleLine,
 } from 'react-icons/ri';
 import { trimString } from '../../ambient-utils/dataLayer';
+import NotFound from '../../pages/common/NotFound/NotFound';
 import { PoolIF } from '../../ambient-utils/types';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
 import { UserDataContext } from '../../contexts/UserDataContext';
-import NotFound from '../../pages/NotFound/NotFound';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import ChatConfirmationPanel from './ChatConfirmationPanel/ChatConfirmationPanel';
