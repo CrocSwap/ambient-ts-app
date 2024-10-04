@@ -1,4 +1,4 @@
-import React, {
+import {
     useEffect,
     useState,
     memo,
@@ -10,8 +10,6 @@ import { AnimateSharedLayout, motion } from 'framer-motion';
 import UserMenu from './UserMenu/UserMenu';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import logo from '../../../assets/images/logos/logo_mark.svg';
-// import { BiGitBranch } from 'react-icons/bi';
-// import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../ambient-utils/constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -19,7 +17,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import {
     getFormattedNumber,
@@ -32,19 +29,15 @@ import {
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
-
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
-// import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { ReceiptContext } from '../../../contexts/ReceiptContext';
-import { BrandContext } from '../../../contexts/BrandContext';
+import { BrandContext, BrandContextIF } from '../../../contexts/BrandContext';
 import styles from './PageHeader.module.css';
-// import MobileDropdown from './MobileDropdown/MobileDropdown';
-// import { GiHamburgerMenu } from 'react-icons/gi';
 
 const PageHeader = function () {
     const {
@@ -52,11 +45,7 @@ const PageHeader = function () {
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
-    const { headerImage } = useContext(BrandContext);
-    // const isDevMenuEnabled =
-    //     import.meta.env.VITE_IS_DEV_MENU_ENABLED !== undefined
-    //         ? import.meta.env.VITE_IS_DEV_MENU_ENABLED === 'true'
-    //         : true;
+    const { headerImage } = useContext<BrandContextIF>(BrandContext);
 
     const {
         walletModal: { open: openWalletModal },
@@ -418,8 +407,6 @@ const PageHeader = function () {
         };
     }, []);
 
-    // const [showDevMenu, setShowDevMenu] = useState(false);
-
     return (
         <>
             <header
@@ -446,7 +433,8 @@ const PageHeader = function () {
                             <img
                                 className={styles.logoText}
                                 src={logo}
-                                alt='ambient'
+                                    alt='ambient'
+                                    width='70px'
                             />
                         )}
                     </Link>
@@ -468,16 +456,8 @@ const PageHeader = function () {
                                 overflow='visible'
                             >
                                 <NetworkSelector />
-
                                 {!isUserConnected && connectWagmiButton}
                                 <UserMenu {...userMenuProps} />
-                                {/* {isDevMenuEnabled && !desktopScreen &&  (
-                                    <GiHamburgerMenu
-                                        onClick={() =>
-                                            setShowDevMenu(!showDevMenu)
-                                        }
-                                    />
-                                )} */}
                             </FlexContainer>
                         </div>
                     )}

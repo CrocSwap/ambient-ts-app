@@ -87,7 +87,7 @@ function ChartToolbar() {
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
-    const { isUserIdle10min } = useContext(AppStateContext);
+    const { isUserIdle20min } = useContext(AppStateContext);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -320,7 +320,7 @@ function ChartToolbar() {
 
     return chartContainerOptions &&
         chartContainerOptions.top !== 0 &&
-        !isUserIdle10min ? (
+        !isUserIdle20min ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}

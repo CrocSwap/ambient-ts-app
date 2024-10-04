@@ -179,8 +179,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 setCustomToken(null);
             });
     }, [searchType, validatedInput, provider, cachedTokenDetails]);
-    // EDS Test Token 2 address (please do not delete!)
-    // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
     // value to determine what should be displayed in the DOM
     // this approach is necessary because not all data takes the same shape
@@ -222,33 +220,23 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const clearInputFieldAndCloseModal = () => {
-        setInput('');
-        onClose();
-    };
-
-    const deviceHasKeyboard = 'ontouchstart' in document.documentElement;
-
-    useEffect(() => {
-        if (deviceHasKeyboard) return;
-
-        const input = document.getElementById(
-            'token_select_input_field',
-        ) as HTMLInputElement;
-        if (input) input.focus();
-    }, [deviceHasKeyboard]);
-
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
     const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
-    // const isInit = location.pathname.startsWith('/initpool');
+    // control whether the `<input>` has DOM focus by default
+    const INPUT_HAS_AUTOFOCUS = false;
+    // logic to add and remove placeholder text from the `<input>` field
+    const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
     return (
         <section className={styles.container}>
             <header className={styles.header}>
-                <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
+                <IoIosArrowBack onClick={() => {
+                    setInput('');
+                    onClose();
+                }} />
                 <p>Select Token</p>
                 <p />
             </header>
@@ -259,8 +247,18 @@ export const SoloTokenSelect = (props: propsIF) => {
                     type='text'
                     value={rawInput}
                     autoComplete='off'
+                    autoFocus={INPUT_HAS_AUTOFOCUS}
+                    // needed to remove placeholder text when focused
+                    onFocus={() => setHidePlaceholderText(true)}
+                    // needed to add placeholder text when not focused
+                    onBlur={() => setHidePlaceholderText(false)}
+                    // variable placeholder text (disappears when field is focused)
+                    placeholder={
+                        hidePlaceholderText
+                            ? ''
+                            : '🔍 Search name or paste address'
+                    }
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder=' Search name or paste address'
                     style={{
                         color: showSoloSelectTokenButtons
                             ? 'var(--text2)'
@@ -269,7 +267,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 />
                 {validatedInput && (
                     <button
-                        className={styles.clearButton}
                         onClick={() => setInput('')}
                         aria-label='Clear input'
                         tabIndex={0}

@@ -24,7 +24,7 @@ export interface NftFetchSettingsIF {
     pageSize: number;
 }
 
-interface TokenBalanceContextIF {
+export interface TokenBalanceContextIF {
     tokenBalances: TokenIF[] | undefined;
     resetTokenBalances: () => void;
     setTokenBalance: (params: {

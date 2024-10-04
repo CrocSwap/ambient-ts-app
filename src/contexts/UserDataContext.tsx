@@ -12,7 +12,7 @@ import { fetchEnsAddress } from '../ambient-utils/api';
 import { UserAvatarDataIF } from '../components/Chat/ChatIFs';
 import { getAvatarRest } from '../components/Chat/ChatUtilsHelper';
 
-interface UserDataContextIF {
+export interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
     walletChain: number | undefined;
