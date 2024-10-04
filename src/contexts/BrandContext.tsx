@@ -1,4 +1,10 @@
-import { ReactNode, createContext, useContext, useMemo } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useContext,
+    useMemo,
+    useState,
+} from 'react';
 import { skins } from '../App/hooks/useSkin';
 import { brandIF, fontSets, heroItem } from '../assets/branding/types';
 import { TradeDataContext } from './TradeDataContext';
@@ -10,6 +16,7 @@ import {
     ambientProductionBrandAssets,
     ambientTestnetBrandAssets,
     futaBrandAssets,
+    sampleBrandAssets,
 } from '../assets/branding';
 import { UserDataContext } from './UserDataContext';
 
@@ -21,7 +28,11 @@ const PREMIUM_THEMES_IN_ENV = {
 type premiumThemes = keyof typeof PREMIUM_THEMES_IN_ENV;
 
 export interface BrandContextIF {
-    skin: skins;
+    skin: {
+        active: skins;
+        available: skins[];
+        set: (s: skins) => void;
+    };
     fontSet: fontSets;
     colorAndFont: string;
     platformName: string;
@@ -62,6 +73,8 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
     // TODO: add error handling if dev puts a value in `.env` not matching defined cases
     const brand: string = import.meta.env.VITE_BRAND_ASSET_SET ?? '';
     const brandAssets = useMemo<brandIF>(() => {
+        // make the linter happy for sample file
+        false && sampleBrandAssets;
         switch (brand) {
             case 'blast':
                 return blastBrandAssets;
@@ -78,17 +91,30 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         }
     }, [brand]);
 
-    // hook to manage the active color theme in the app
-    // const skin: skinMethodsIF = useSkin(
-    //     brandAssets.color,
-    //     chainData.chainId as chainIds,
-    // );
+    // this is for testing premium-access features
+    const emilyAddr = '0x8a8b00B332c5eD50466e31FCCdd4dc2170b4F78f';
+    const benAddr = '0xE09de95d2A8A73aA4bFa6f118Cd1dcb3c64910Dc';
+    const premiumTheme1: string[] = [
+        emilyAddr.toLowerCase(),
+        benAddr.toLowerCase(),
+    ];
 
-    function getSkin(): skins {
-        const networkPrefs =
+    const [skin, setSkin] = useState<skins>(getDefaultSkin());
+
+    function getAvailableSkins(): skins[] {
+        const networkSettings =
             brandAssets.networks[chainData.chainId as chainIds];
-        return networkPrefs ? networkPrefs.color : 'purple_dark';
-        // return premiumAccess.get('theme1') ? 'futa_dark' : 'purple_dark';
+        const available: skins[] = networkSettings?.color ?? ['purple_dark'];
+        const premium: skins[] = networkSettings?.premiumColor ?? [];
+        const hasPremium = !!(
+            userAddress && premiumTheme1.includes(userAddress.toLowerCase())
+        );
+        return hasPremium ? available : available.concat(premium);
+    }
+
+    function getDefaultSkin(): skins {
+        const defaultSkin: skins[] = getAvailableSkins();
+        return defaultSkin[0];
     }
 
     function getHero(): heroItem[] {
@@ -97,13 +123,17 @@ export const BrandContextProvider = (props: { children: ReactNode }) => {
         return networkPrefs
             ? networkPrefs.hero
             : [{ content: 'ambient', processAs: 'separator' }];
-    }
+    };
 
     // data to be returned to the app
     const brandData: BrandContextIF = {
-        skin: getSkin(),
+        skin: {
+            active: skin,
+            available: getAvailableSkins(),
+            set: (s: skins) => setSkin(s),
+        },
         fontSet: brandAssets.fontSet,
-        colorAndFont: getSkin() + '+' + brandAssets.fontSet,
+        colorAndFont: getDefaultSkin() + '+' + brandAssets.fontSet,
         platformName: brandAssets.platformName,
         networks: Object.keys(brandAssets.networks) as chainIds[],
         headerImage: brandAssets.headerImage,

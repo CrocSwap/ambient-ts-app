@@ -4,3 +4,4 @@ export { ambientTestnetBrandAssets } from './ambientTestnetBrandAssets';
 export { blastBrandAssets } from './blastBrandAssets';
 export { scrollBrandAssets } from './scrollBrandAssets';
 export { futaBrandAssets } from './futaBrandAssets';
+export { sampleBrandAssets } from './sampleBrandAssets';
