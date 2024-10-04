@@ -218,6 +218,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     // -----------------------------------------------------------------------
 
     const [activeTab, setActiveTab] = useState('Order');
+            // eslint-disable-next-line 
     const [direction, setDirection] = useState(0); // To track the swipe direction for animations
 
     const tabs = [
