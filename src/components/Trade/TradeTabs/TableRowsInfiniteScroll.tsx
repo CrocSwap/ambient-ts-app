@@ -549,7 +549,7 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div id={`infinite_scroll_wrapper_${wrapperID}`} style={{transition: 'all .2s ease-in-out', opacity: isTableReadyRef.current ? '1' : '.5'}}>
+<div id={`infinite_scroll_wrapper_${wrapperID}`}>
             <TableRows
                 type={type}
                 data={data}
