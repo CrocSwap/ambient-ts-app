@@ -142,29 +142,6 @@ function TableRowsInfiniteScroll({
     
     const wrapperEl = bindWrapperEl();
 
-    const getOverlayComponentForLoadingState = () => {
-
-            if(isSmallScreen){
-                return <div style={{
-                    transition: 'all .2s ease-in-out', 
-                    // position: 'absolute', top: '0', left: '0', 
-                    position: 'absolute', top: '80px', left: '0', 
-                    zIndex: isTableReadyRef.current ? '-1': '1',
-                    backdropFilter: 'blur(10px)',
-                    width: '100%',
-                    height: 'calc(100% - 80px)'
-                }}></div>
-            }else{
-                return <div style={{
-                    transition: 'all .2s ease-in-out', 
-                    position: 'absolute', top: '50px', left: '0', 
-                    zIndex: isTableReadyRef.current ? '-1': '1',
-                    backdropFilter: 'blur(10px)',
-                    width: '100%',
-                    height: 'calc(100% - 50px)'
-                }}></div>
-            }
-    }
 
     const bindTableReadyState = (newState: boolean) => {
         if(newState === true){
@@ -572,7 +549,7 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div id={`infinite_scroll_wrapper_${wrapperID}`}>
+<div id={`infinite_scroll_wrapper_${wrapperID}`} style={{transition: 'all .2s ease-in-out', opacity: isTableReadyRef.current ? '1' : '.5'}}>
             <TableRows
                 type={type}
                 data={data}
@@ -595,7 +572,6 @@ function TableRowsInfiniteScroll({
                 {
                     renderDebugData()
                 }
-                {getOverlayComponentForLoadingState()}
 
         </>
     );
