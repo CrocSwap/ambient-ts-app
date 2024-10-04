@@ -1,5 +1,5 @@
 import { AnimateSharedLayout } from 'framer-motion';
-import { useEffect, useRef, useState, useMemo, useContext } from 'react';
+import { useEffect, useRef, useState, useMemo, useContext, useCallback } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { getReceiptTxHashes } from '../../../ambient-utils/dataLayer';
@@ -47,6 +47,19 @@ const NotificationCenter = () => {
             setShowNotificationTable(false);
         }
     };
+
+    const escFunction = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            setShowNotificationTable(false);
+        }
+    }, [showNotificationTable]);
+
+    useEffect(() => {
+        document.addEventListener('keydown', escFunction, false);
+        return () => {
+            document.removeEventListener('keydown', escFunction, false);
+        };
+    }, [escFunction]);
     useOnClickOutside(activityCenterRef, clickOutsideHandler);
     useOnClickOutside(notificationItemRef, clickOutsideHandler);
 
