@@ -2,9 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
-
 @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
 
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
@@ -66,7 +63,8 @@
     --swap-border: var(--title-gradient);
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
-    --dark-border: 0.2px solid #010101;
+    --dark-border-color: #010101;
+    --dark-border: 0.2px solid var(--dark-border-color);
 
     /* transitions */
     --transition: all var(--animation-speed) ease-in-out;
@@ -78,8 +76,15 @@
     --footer-height: 24px;
 
     /* gradients, shadows */
-    --shimmer: linear-gradient(to right, #141e30, #243b55);
-    --gradient-box-shadow: 0px 0px 20px 0px rgba(115, 113, 252, 0.25) inset;
+    --shimmer-start-color: #141E30;
+    --shimmer-end-color: #243b55;
+    --shimmer: linear-gradient(
+        to right,
+        var(--shimmer-start-color),
+        var(--shimmer-end-color)
+    );
+    --gradient-box-shadow-color: rgba(115, 113, 252, 0.25);
+    --gradient-box-shadow: 0px 0px 20px 0px var(--gradient-box-shadow-color) inset;
 
     --title-gradient: linear-gradient(
         90deg,
@@ -236,10 +241,10 @@
     /* sizes */
     --footer-height: 24px;
 
-    --font-logo: 'Fira Mono', monospace;
-    --font-family: 'Fira Mono', monospace;
-    --roboto: 'Fira Mono', monospace;
-    --mono: 'Fira Mono', monospace;
+    --font-logo: 'Fira Mono';
+    --font-family: 'Fira Mono';
+    --roboto: 'Fira Mono';
+    --mono: 'Fira Mono';
 
     --scrollbar: none;
     --scrollbar-track: transparent;
