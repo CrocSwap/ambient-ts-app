@@ -34,6 +34,7 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -70,6 +71,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         useContext(PoolContext);
     const { advancedMode } = useContext(RangeContext);
     const { isDenomBase, poolPriceNonDisplay } = useContext(TradeDataContext);
+
+    const mobileView = useMediaQuery('(max-width: 1200px)');
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
@@ -548,10 +551,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
-                    liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 6,
-                    ]);
+                    liquidityScale.range([event.detail.width, 0]);
 
                     liquidityDepthScale.range([
                         event.detail.width,
@@ -969,16 +969,16 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 ref={d3CanvasLiqHover}
                 style={{
                     position: 'relative',
-                    width: '20%',
-                    marginLeft: '80%',
+                    width: mobileView ? '30%' : '20%',
+                    marginLeft: mobileView ? '70%' : '80%',
                 }}
             ></d3fc-canvas>
             <d3fc-canvas
                 ref={d3CanvasLiq}
                 style={{
                     position: 'relative',
-                    width: '20%',
-                    marginLeft: '80%',
+                    width: mobileView ? '30%' : '20%',
+                    marginLeft: mobileView ? '70%' : '80%',
                 }}
             ></d3fc-canvas>
         </>
