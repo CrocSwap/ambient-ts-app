@@ -10,7 +10,7 @@
     bottom: 56px;
    
   
-    z-index: 10000000;
+    z-index: 9999999999999999999;
   
     font-size: 12px;
     border-top: 1px solid var(--text3);
