@@ -1,6 +1,5 @@
 import styles from './TransactionDetailsModal.module.css';
 import { useState, useRef, useContext, useEffect, memo } from 'react';
-import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
 import { TransactionIF, PositionServerIF } from '../../../ambient-utils/types';
@@ -20,6 +19,7 @@ import {
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../Modal/Modal';
+import DetailsHeader from '../DetailsHeader/DetailsHeader';
 
 interface propsIF {
     tx: TransactionIF;
@@ -113,7 +113,6 @@ function TransactionDetailsModal(props: propsIF) {
         chainId,
     ]);
 
-    const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const detailsRef = useRef(null);
@@ -183,20 +182,20 @@ function TransactionDetailsModal(props: propsIF) {
         </div>
     );
 
-    const transactionDetailsHeaderProps = {
-        showSettings,
-        setShowSettings,
-        copyTransactionDetailsToClipboard,
-        setShowShareComponent,
-        showShareComponent,
-        handleCopyAddress,
-        onClose,
-    };
+ 
 
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-                <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
+                <DetailsHeader
+                    onClose={onClose}
+                    handleCopyAction={handleCopyAddress}
+                    copyToClipboard={copyTransactionDetailsToClipboard}
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                    tooltipCopyAction='Copy transaction hash to clipboard'
+                    tooltipCopyImage='Copy shareable image'
+                />
                 {showShareComponent ? (
                     shareComponent
                 ) : (
