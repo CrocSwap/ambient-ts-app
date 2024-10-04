@@ -124,17 +124,17 @@ export default function App() {
         const handleKeyDown = (e: KeyboardEvent): void => {
             if (
                 (e.ctrlKey || e.metaKey) &&
-                e.shiftKey
-                && e.key.toLowerCase() === 'k'
+                e.shiftKey &&
+                e.key.toLowerCase() === 'k'
             ) {
                 isCSSModalOpen ? closeCSSModal() : openCSSModal();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
-    
-        return (() => {
+
+        return () => {
             window.removeEventListener('keydown', handleKeyDown);
-        });
+        };
     }, [isCSSModalOpen]);
 
     return (

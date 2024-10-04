@@ -9,10 +9,22 @@ import {
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
-import { TokenBalanceContext, TokenBalanceContextIF } from '../../../../contexts/TokenBalanceContext';
-import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from '../../../../contexts/TokenBalanceContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../contexts/UserDataContext';
 import styles from './PortfolioBannerAccount.module.css';
 
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
@@ -28,12 +40,12 @@ interface propsIF {
     jazziconsToDisplay: JSX.Element | null;
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
-    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
     nftTestWalletInput: string;
     setNftTestWalletInput: Dispatch<SetStateAction<string>>;
     showNFTPage: boolean;
     setShowNFTPage: Dispatch<SetStateAction<boolean>>;
-    // eslint-disable-next-line 
+    // eslint-disable-next-line
     handleTestWalletChange: any;
 }
 
@@ -58,6 +70,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         userProfileNFT,
         setUserProfileNFT,
         setUserThumbnailNFT,
+        isUserConnected,
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
@@ -72,15 +85,17 @@ export default function PortfolioBannerAccount(props: propsIF) {
 
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const [showAccountDetails, setShowAccountDetails] = useState<boolean>(false);
+    const [showAccountDetails, setShowAccountDetails] =
+        useState<boolean>(false);
 
-    const ensNameToDisplay: string = ensName !== '' ? ensName : truncatedAccountAddress;
+    const ensNameToDisplay: string =
+        ensName !== '' ? ensName : truncatedAccountAddress;
 
     const addressToDisplay: string | undefined = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
-            ? truncatedAccountAddress
-            : userAddress;
+          ? truncatedAccountAddress
+          : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -139,7 +154,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }
 
     // Nft Fetch For Test Wallet
-    const [isWalletPanelActive, setIsWalletPanelActive] = useState<boolean>(false);
+    const [isWalletPanelActive, setIsWalletPanelActive] =
+        useState<boolean>(false);
 
     // functionality to show panel for NFT test fetch
     useEffect(() => {
@@ -150,7 +166,10 @@ export default function PortfolioBannerAccount(props: propsIF) {
             }
         }
         document.body.addEventListener('keydown', openWalletAddressPanel);
-        return document.body.removeEventListener('keydown', openWalletAddressPanel);
+        return document.body.removeEventListener(
+            'keydown',
+            openWalletAddressPanel,
+        );
     }, []);
 
     return (
@@ -179,8 +198,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             resolvedAddress
                                 ? resolvedAddress
                                 : userAddress
-                                    ? userAddress
-                                    : '',
+                                  ? userAddress
+                                  : '',
                             userProfileNFT,
                             65,
                             resolvedAddress !== undefined &&
@@ -204,7 +223,9 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         className={styles.address_detail}
                         onClick={handleCopyAddress}
                     >
-                        {addressToDisplay && addressToDisplay.length > 8 ? trimString(addressToDisplay, 5, 3) : addressToDisplay}
+                        {addressToDisplay && addressToDisplay.length > 8
+                            ? trimString(addressToDisplay, 5, 3)
+                            : addressToDisplay}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
                             <FiExternalLink
@@ -220,16 +241,14 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     </div>
                 </div>
 
-                {isSmallScreen && connectedAccountActive && (
+                {isSmallScreen && isUserConnected && (
                     <button
                         className={styles.deposit_button}
                         onClick={() =>
                             setShowTabsAndNotExchange(!showTabsAndNotExchange)
                         }
                     >
-                        {showTabsAndNotExchange
-                            ? 'Transactions'
-                            : 'Deposit/Withdraw'}
+                        Deposit/Withdraw
                     </button>
                 )}
             </div>

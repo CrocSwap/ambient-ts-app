@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 
 import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
-import OrderDetailsHeader from '../OrderDetailsHeader/OrderDetailsHeader';
 import PriceInfo from '../PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import { LimitOrderIF, LimitOrderServerIF } from '../../../ambient-utils/types';
@@ -26,6 +25,7 @@ import modalBackground from '../../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../../Global/Modal/Modal';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import DetailsHeader from '../../Global/DetailsHeader/DetailsHeader';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -285,13 +285,16 @@ export default function OrderDetailsModal(props: propsIF) {
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-                <OrderDetailsHeader
-                    copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
-                    showShareComponent={showShareComponent}
-                    setShowShareComponent={setShowShareComponent}
-                    handleCopyPositionId={handleCopyPositionId}
-                    onClose={onClose}
-                />
+            <DetailsHeader
+    onClose={onClose}
+    handleCopyAction={handleCopyPositionId}
+    copyToClipboard={copyOrderDetailsToClipboard}
+    showShareComponent={showShareComponent}
+    setShowShareComponent={setShowShareComponent}
+    tooltipCopyAction='Copy position slot ID to clipboard'
+    tooltipCopyImage='Copy shareable image'
+/>
+
                 {showShareComponent ? (
                     shareComponent
                 ) : (
