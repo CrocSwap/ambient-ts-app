@@ -1,12 +1,12 @@
 import { brandIF } from './types';
-import large from '../images/logos/large.svg';
+import pageHeaderTestBanner from '../../assets/images/Temporary/pageHeaderTestBanner.png';
 
-export const futaBrandAssets: brandIF = {
+export const sampleBrandAssets: brandIF = {
     networks: {
         // ethereum sepolia
-        '0xaa36a7': {
+        '0x1': {
             // first value in array is default color scheme
-            color: ['futa_dark', 'purple_dark', 'purple_light'],
+            color: ['purple_dark', 'purple_light', 'futa_dark'],
             premiumColor: [],
             hero: [{ content: 'futa', processAs: 'text' }],
         },
@@ -15,6 +15,6 @@ export const futaBrandAssets: brandIF = {
     fontSet: 'futa',
     showPoints: false,
     showDexStats: false,
-    headerImage: large as string,
+    headerImage: pageHeaderTestBanner as string,
     includeCanto: false,
 };
