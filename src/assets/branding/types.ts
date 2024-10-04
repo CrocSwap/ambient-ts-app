@@ -12,7 +12,8 @@ export type networkPrefs = Partial<
     Record<
         chainIds,
         {
-            color: skins;
+            color: skins[];
+            premiumColor: skins[];
             hero: heroItem[];
         }
     >

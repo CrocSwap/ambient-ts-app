@@ -5,7 +5,6 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { ChartContext } from '../../../../../contexts/ChartContext';
 import { printDomToImage } from '../../../../../ambient-utils/dataLayer';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { FiCopy } from 'react-icons/fi';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import { useSimulatedIsPoolInitialized } from '../../../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../../../styled/Common';
@@ -21,6 +20,7 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { BrandContext } from '../../../../../contexts/BrandContext';
+import { RiScreenshot2Fill } from 'react-icons/ri';
 // import { IoSettingsOutline } from 'react-icons/io5';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
@@ -181,7 +181,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                     }
                 >
                     <BsFullscreen
-                        size={20}
+                        size={16}
                         id='trade_chart_full_screen_button'
                         aria-label='Full screen chart button'
                     />
@@ -193,7 +193,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                 enterDelay={500}
             >
                 <HeaderButtons mobileHide onClick={copyChartToClipboard}>
-                    <FiCopy
+
+                    <RiScreenshot2Fill
                         size={20}
                         id='trade_chart_save_image'
                         aria-label='Copy chart image button'

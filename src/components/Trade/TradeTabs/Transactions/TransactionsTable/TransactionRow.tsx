@@ -195,7 +195,6 @@ function TransactionRow(props: propsIF) {
         tokenPair,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
-        txIdColumnComponent,
         TxTimeWithTooltip,
         sideDisplay,
         baseQuoteQtyDisplayColumn,
@@ -221,11 +220,11 @@ function TransactionRow(props: propsIF) {
             >
                 {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <div>{IDWithTooltip}</div>}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
+                {(tableView === 'large' ||
+                    (tableView === 'medium' && isAccountView)) && (
+                    <div>{IDWithTooltip}</div>
                 )}
-                {tableView !== 'large' && txIdColumnComponent}
+                {!isAccountView && walletWithTooltip}
                 {tableView !== 'small' &&
                     (tx.entityType === 'liqchange'
                         ? tx.positionType === 'ambient'

@@ -6,7 +6,6 @@ import {
     getChainExplorer,
 } from '../../../../ambient-utils/dataLayer';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -103,15 +102,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const ariaLabel = `${status} transaction of ${txType}`;
 
     return (
-        <motion.div
-            layout
-            initial={{ scale: 0.4, opacity: 0, y: 50 }}
-            exit={{
-                scale: 0,
-                opacity: 0,
-                transition: { duration: 0.2 },
-            }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
+        <div
+            
             className={styles.container}
             tabIndex={0}
             role='listitem'
@@ -159,6 +151,6 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     </a>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

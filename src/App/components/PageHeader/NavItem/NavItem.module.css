@@ -37,3 +37,13 @@
     width: 20px;
     height: 20px;
 }
+
+@media only screen and (max-width: 768px) {
+    .navItemIconButton {
+
+border-radius: 50%;
+width: 35px;
+height: 35px;
+    }
+
+}
