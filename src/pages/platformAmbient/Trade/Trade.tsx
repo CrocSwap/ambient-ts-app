@@ -51,6 +51,8 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import { LuSettings } from 'react-icons/lu';
 import TradeCharts from './TradeCharts/TradeCharts';
 import TimeFrame from './TradeCharts/TradeChartsComponents/TimeFrame';
+import { useSwipeable } from 'react-swipeable';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -166,10 +168,57 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         usdPrice,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
+    const currencyCharacter = isDenomBase
+        ? // denom in a, return token b character
+          getUnicodeCharacter(quoteToken.symbol)
+        : // denom in b, return token a character
+          getUnicodeCharacter(baseToken.symbol);
+
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? isDenomBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
+
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+    });
+
+    const poolPrice = isTradeDollarizationEnabled
+        ? usdPrice
+            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
+            : '…'
+        : poolPriceDisplay === Infinity ||
+            poolPriceDisplay === 0 ||
+            poolPriceDisplay === undefined
+          ? '…'
+          : `${currencyCharacter}${truncatedPoolPrice}`;
+
+    const poolPriceChangeString =
+        poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
+
+    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const calculateHeight = () => {
+            const totalHeight = window.innerHeight;
+            const heightToSubtract = isFuta ? 56 + 56 + 25 : 56 + 56; // Subtract 56px from top and 56px from bottom
+            setAvailableHeight(totalHeight - heightToSubtract);
+        };
+
+        calculateHeight(); // Calculate initial height
+        window.addEventListener('resize', calculateHeight);
+
+        return () => window.removeEventListener('resize', calculateHeight);
+    }, []);
+
+    const contentHeight = availableHeight - 75;
 
     // -----------------------------------------------------------------------
 
     const [activeTab, setActiveTab] = useState('Order');
+    const [direction, setDirection] = useState(0); // To track the swipe direction for animations
 
     const tabs = [
         {
@@ -226,60 +275,83 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         </div>
     );
 
-    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
-
-    useEffect(() => {
-        const calculateHeight = () => {
-            const totalHeight = window.innerHeight;
-            const heightToSubtract = isFuta ? 56 + 56 + 25 : 56 + 56; // Subtract 56px from top and 56px from bottom
-            setAvailableHeight(totalHeight - heightToSubtract);
-        };
-
-        calculateHeight(); // Calculate initial height
-        window.addEventListener('resize', calculateHeight);
-
-        return () => window.removeEventListener('resize', calculateHeight);
-    }, []);
-
-    const contentHeight = availableHeight - 75;
     const activeTabData = tabs.find(
         (tab) => tab.id === (isFuta ? futaActiveTab : activeTab),
     )?.data;
 
-    const currencyCharacter = isDenomBase
-        ? // denom in a, return token b character
-          getUnicodeCharacter(quoteToken.symbol)
-        : // denom in b, return token a character
-          getUnicodeCharacter(baseToken.symbol);
+    // To track the swipe and prevent rapid multiple swipes
+    const swipeAction = useRef(false);
 
-    const poolPriceDisplayWithDenom = poolPriceDisplay
-        ? isDenomBase
-            ? 1 / poolPriceDisplay
-            : poolPriceDisplay
-        : 0;
+    // Handle swiping left (next tab)
+    const handleSwipeLeft = () => {
+        if (swipeAction.current) return; // Prevent multiple rapid swipes
+        swipeAction.current = true;
 
-    const truncatedPoolPrice = getFormattedNumber({
-        value: poolPriceDisplayWithDenom,
-        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+        const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
+        if (currentIndex < tabs.length - 1) {
+            setActiveTab(tabs[currentIndex + 1].id);
+        }
+
+        setTimeout(() => {
+            swipeAction.current = false;
+        }, 300); // Adjust delay for debouncing
+    };
+
+    // Handle swiping right (previous tab)
+    const handleSwipeRight = () => {
+        if (swipeAction.current) return; // Prevent multiple rapid swipes
+        swipeAction.current = true;
+
+        const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
+        if (currentIndex > 0) {
+            setActiveTab(tabs[currentIndex - 1].id);
+        }
+
+        setTimeout(() => {
+            swipeAction.current = false;
+        }, 300); // Adjust delay for debouncing
+    };
+
+    const swipeHandlers = useSwipeable({
+        onSwipedLeft: handleSwipeLeft,
+        onSwipedRight: handleSwipeRight,
+        onSwiping: (eventData) => {
+            const { initial, event } = eventData;
+
+            // Check if the swipe started near the edges to prevent default back navigation
+            const startX = initial[0];
+            const edgeThreshold = 50; // Threshold for edge swipes, you can adjust this value
+
+            if (
+                event.cancelable &&
+                startX > edgeThreshold &&
+                startX < window.innerWidth - edgeThreshold
+            ) {
+                event.preventDefault(); // Only prevent default if not too close to the edges
+            }
+        },
+        trackMouse: true, // For desktop swipe handling
     });
-
-    const poolPrice = isTradeDollarizationEnabled
-        ? usdPrice
-            ? getFormattedNumber({ value: usdPrice, prefix: '$' })
-            : '…'
-        : poolPriceDisplay === Infinity ||
-            poolPriceDisplay === 0 ||
-            poolPriceDisplay === undefined
-          ? '…'
-          : `${currencyCharacter}${truncatedPoolPrice}`;
-
-    const poolPriceChangeString =
-        poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
+    const slideVariants = {
+        enter: (direction: number) => ({
+            x: direction > 0 ? 300 : -300, // Off-screen position for sliding
+            opacity: 0,
+        }),
+        center: {
+            x: 0, // Centered position
+            opacity: 1,
+        },
+        exit: (direction: number) => ({
+            x: direction < 0 ? 300 : -300, // Slide off-screen
+            opacity: 0,
+        }),
+    };
 
     const mobileComponent = (
         <div
             className={styles.mobile_container}
             style={{ height: `${availableHeight}px` }}
+            {...swipeHandlers}
         >
             {!isFuta && mobileTabs}
             <div
@@ -351,9 +423,31 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                     />
                 </FlexContainer>
             )}
-            <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
-                {activeTabData}
-            </div>
+            <AnimatePresence initial={false} custom={direction}>
+                <motion.div
+                    style={{
+                        height: `${contentHeight}px`,
+                        overflowY: 'scroll',
+                       
+                        width: '100%', // Ensure full width of content
+                    }}
+                    key={activeTab} // Ensure that Framer Motion tracks the current tab
+                    custom={direction} // Pass the direction for custom animations
+                    variants={slideVariants}
+                    initial='enter'
+                    animate='center'
+                    exit='exit'
+                    transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 30,
+                        duration: 0.3,
+                    }}
+                    // style={{ position: 'absolute', width: '100%' }} // Ensure full width of content
+                >
+                    {activeTabData}
+                </motion.div>
+            </AnimatePresence>
         </div>
     );
 
