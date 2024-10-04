@@ -6,7 +6,6 @@ import {
     BlastRewardsDataIF,
     PositionServerIF,
 } from '../../../ambient-utils/types';
-import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
 import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
 import { useProcessRange } from '../../../utils/hooks/useProcessRange';
@@ -37,6 +36,7 @@ import {
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
 import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
+import DetailsHeader from '../../Global/DetailsHeader/DetailsHeader';
 
 interface propsIF {
     position: PositionIF;
@@ -500,13 +500,16 @@ function RangeDetailsModal(props: propsIF) {
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-                <RangeDetailsHeader
-                    onClose={onClose}
-                    copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
-                    showShareComponent={showShareComponent}
-                    setShowShareComponent={setShowShareComponent}
-                    handleCopyPositionId={handleCopyPositionId}
-                />
+            <DetailsHeader
+    onClose={onClose}
+    handleCopyAction={handleCopyPositionId}
+    copyToClipboard={copyRangeDetailsToClipboard}
+    showShareComponent={showShareComponent}
+    setShowShareComponent={setShowShareComponent}
+    tooltipCopyAction='Copy position slot ID to clipboard'
+    tooltipCopyImage='Copy shareable image'
+/>
+
                 {showShareComponent ? (
                     shareComponent
                 ) : (
