@@ -158,6 +158,9 @@ function Transactions(props: propsIF) {
         changes: [...transactionsByPool.changes],
     });
 
+
+    const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
+
     const fetchedTransactionsRef = useRef<Changes>();
     fetchedTransactionsRef.current = fetchedTransactions;
 
@@ -179,6 +182,7 @@ function Transactions(props: propsIF) {
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
+        setHotTransactions([]);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     useEffect(() => {
@@ -255,14 +259,50 @@ function Transactions(props: propsIF) {
         );
 
         if (uniqueChanges.length > 0) {
+            if(pagesVisible[0] === 0){
+                setFetchedTransactions((prev) => {
+                    return {
+                        dataReceived: true,
+                        changes: [...uniqueChanges, ...prev.changes],
+                    };
+                });
+            }else{
+                updateHotTransactions(uniqueChanges);
+            }
+        }
+    }, [transactionsByPool]);
+
+    useEffect(() => {
+        console.log('hotTxs', hotTransactions);
+    }, [hotTransactions]);
+
+
+    const updateHotTransactions = (changes: TransactionIF[]) => {
+
+        const existingChanges = new Set(
+            hotTransactions.map(
+                (change) => change.txHash || change.txId,
+            ),
+        );
+
+        const uniqueChanges = changes.filter(
+            (change) => !existingChanges.has(change.txHash || change.txId),
+        );
+
+        setHotTransactions((prev) => [...uniqueChanges, ...prev]);
+    }
+
+    useEffect(() => {
+        if(pagesVisible[0] === 0 && hotTransactions.length > 0){
             setFetchedTransactions((prev) => {
                 return {
                     dataReceived: true,
-                    changes: [...uniqueChanges, ...prev.changes],
+                    changes: [...hotTransactions, ...prev.changes],
                 };
             });
+            setHotTransactions([]);
         }
-    }, [transactionsByPool]);
+    }, [pagesVisible[0]])
 
     const oldestTxTime = useMemo(
         () =>
