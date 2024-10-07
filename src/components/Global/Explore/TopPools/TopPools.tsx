@@ -8,7 +8,7 @@ import {
 } from '../useSortedPools';
 import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
-import Spinner from '../../Spinner/Spinner';
+// import Spinner from '../../Spinner/Spinner';
 import styles from './TopPools.module.css';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
