@@ -100,6 +100,8 @@ function Orders(props: propsIF) {
     const fetchedTransactionsRef = useRef<LimitOrdersByPool>();
     fetchedTransactionsRef.current = fetchedTransactions;
 
+    const [hotTransactions, setHotTransactions] = useState<LimitOrderIF[]>([]);
+
     const { tokens: {tokenUniv: tokenList} } = useContext<TokenContextIF>(TokenContext);
 
 
@@ -123,14 +125,13 @@ function Orders(props: propsIF) {
     }, [isAccountView, showAllData]);
 
 
-
-
     useEffect(() => {
         setPagesVisible([0, 1]);
         setPageDataCountShouldReset(true);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
+        setHotTransactions([]);
     }, [selectedBaseAddress + selectedQuoteAddress]);
 
     const [pageDataCountShouldReset, setPageDataCountShouldReset ] = useState(false);
@@ -197,6 +198,65 @@ function Orders(props: propsIF) {
         }
     }
 
+    const updateHotTransactions = (changes: LimitOrderIF[]) => {
+        const existingChanges = new Set(
+            hotTransactions.map(
+                (change) => change.limitOrderId,
+            ),
+        );
+
+        const uniqueChanges = changes.filter(
+            (change) => !existingChanges.has(change.limitOrderId),
+        );
+
+        setHotTransactions((prev) => [...uniqueChanges, ...prev]);
+    };
+
+
+    const mergePageDataCountValues = (hotTxsCount: number) => {
+        const counts = pageDataCountRef.current?.counts || pageDataCount.counts;
+        const newCounts = counts.map(e=>{ 
+            if(e < dataPerPage && hotTxsCount > 0){
+                const gap = dataPerPage - e;
+                if( hotTxsCount > gap){
+                    e += gap;
+                    hotTxsCount -= gap;
+                }else{
+                    e += hotTxsCount;
+                    hotTxsCount = 0;
+                }        
+            }
+            return e;
+        });
+    
+        if(hotTxsCount > 0){
+            for(let i = 0 ; i < hotTxsCount / dataPerPage-1; i++){
+                newCounts.push(dataPerPage);
+            }
+            newCounts.push(hotTxsCount%dataPerPage)
+        }
+
+        setPageDataCount(prev => {
+            return {
+                pair: prev.pair,
+                counts: newCounts
+            }
+        })
+    }
+    
+    useEffect(() => {
+        if(pagesVisible[0] === 0 && hotTransactions.length > 0){
+            setFetchedTransactions((prev) => {
+                return {
+                    dataReceived: true,
+                    limitOrders: [...hotTransactions, ...prev.limitOrders],
+                };
+            });
+            mergePageDataCountValues(hotTransactions.length);
+            setHotTransactions([]);
+        }
+    }, [pagesVisible[0]])
+
     useEffect(() => {
         // clear fetched transactions when switching pools
         if (limitOrdersByPool.limitOrders.length === 0) {
@@ -219,12 +279,17 @@ function Orders(props: propsIF) {
             );
     
             if (uniqueChanges.length > 0) {
-                setFetchedTransactions((prev) => {
-                    return {
-                        dataReceived: true,
-                        limitOrders: [...uniqueChanges, ...prev.limitOrders],
-                    };
-                });
+                if(pagesVisible[0] === 0){
+                    setFetchedTransactions((prev) => {
+                        return {
+                            dataReceived: true,
+                            limitOrders: [...uniqueChanges, ...prev.limitOrders],
+                        };
+                    });
+                }
+                else{
+                    updateHotTransactions(uniqueChanges);
+                }
             }
 
             
