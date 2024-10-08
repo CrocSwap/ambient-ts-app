@@ -211,6 +211,9 @@ function TableRowsInfiniteScroll({
             bindTableReadyState(true);
             return;
         }
+        setTimeout(() => {
+            bindTableReadyState(true);
+        }, 100)
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
         lockShift();
@@ -221,6 +224,9 @@ function TableRowsInfiniteScroll({
             bindTableReadyState(true);
             return;
         }
+        setTimeout(() => {
+            bindTableReadyState(true);
+        }, 100)
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
         lockShift();
