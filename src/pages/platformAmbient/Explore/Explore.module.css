@@ -71,6 +71,7 @@
     flex: 1 0 0;
     border-radius: 4px;
     background: var(--dark2, #12121a);
+    border: 1px solid var(--dark3);
 
     width: 300px;
    
@@ -137,6 +138,10 @@
 @media (max-width: 480px) {
     .title_text {
         font-size: 20px;
+    }
+
+    .input_container{
+        border: none;
     }
 }
 
