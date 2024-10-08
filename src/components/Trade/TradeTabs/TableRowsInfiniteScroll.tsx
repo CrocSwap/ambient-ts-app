@@ -194,6 +194,9 @@ function TableRowsInfiniteScroll({
             },
             timeout ? timeout : 2000,
         );
+        setTimeout(() => {
+            bindTableReadyState(true)
+        }, 300)
     };
 
     const lockShift = () => {
