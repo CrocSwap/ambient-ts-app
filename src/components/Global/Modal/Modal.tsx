@@ -35,6 +35,8 @@ export default function Modal(props: ModalPropsIF) {
         onClose = () => null,
     } = props;
 
+ 
+
     const [isDragging, setIsDragging] = useState(false);
     const controls = useAnimation();
     const isMobile = useMediaQuery('(max-width: 500px)');
@@ -103,6 +105,8 @@ export default function Modal(props: ModalPropsIF) {
         hidden: { opacity: 0, y: isMobile ? '100%' : 0, scale: isMobile ? 1 : 0.5 },
         visible: { opacity: 1, y: 0, scale: 1 },
     };
+
+
 
     return (
         <GlobalModalPortal>

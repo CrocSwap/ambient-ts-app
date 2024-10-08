@@ -6,10 +6,12 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import { brand } from '../../../ambient-utils/constants';
-import Modal from '../Modal/Modal';
-import ModalHeader from '../ModalHeader/ModalHeader';
+
 import styles from './DropdownMenu2.module.css'
 import { motion } from 'framer-motion';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
+import BottomSheet from '../BottomSheet/BottomSheet';
+
 // Interface for React functional components
 interface propsIF {
     title: string;
@@ -37,28 +39,38 @@ export default function DropdownMenu2(props: propsIF) {
         marginRight,
         marginLeft
     } = props;
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { openBottomSheet, closeBottomSheet } = useBottomSheet(); // Get bottom sheet open/close functions from context
     const { appHeaderDropdown } = useContext(AppStateContext);
     const dropdownRefItem = useRef<HTMLDivElement>(null);
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
     const isEscapePressed = useKeyPress('Escape');
+
     useEffect(() => {
         if (isEscapePressed) {
             setIsMenuOpen(false);
             appHeaderDropdown.setIsActive(false);
+            closeBottomSheet(); // Close the bottom sheet if escape is pressed
         }
-    }, [isEscapePressed]);
+    }, [isEscapePressed, closeBottomSheet]);
 
     function toggleMenu(): void {
-        setIsMenuOpen(!isMenuOpen);
-        // if (!isMenuOpen) {
-        //     appHeaderDropdown.setIsActive(true);
-        // } else appHeaderDropdown.setIsActive(false);
+        if (showMobileVersion) {
+            // On mobile, open the bottom sheet instead of the dropdown
+            openBottomSheet(); // Trigger the bottom sheet
+        } else {
+            // For desktop, toggle the normal dropdown menu
+            setIsMenuOpen(!isMenuOpen);
+            appHeaderDropdown.setIsActive(!isMenuOpen);
+        }
     }
+
     const clickOutsideHandler = () => {
-        if (showMobileVersion) return null
+        if (showMobileVersion) return null;
         setIsMenuOpen(false);
+        appHeaderDropdown.setIsActive(false);
     };
 
     UseOnClickOutside(dropdownRefItem, clickOutsideHandler);
@@ -83,20 +95,12 @@ export default function DropdownMenu2(props: propsIF) {
         </motion.div>
     );
 
- 
-
     const showFullMenu = desktopScreen && brand !== 'futa';
-
-    const modalVersion = (
-        <Modal usingCustomHeader onClose={() => setIsMenuOpen(false)}>
-            <ModalHeader title={'Select Network'} onClose={() => setIsMenuOpen(false)} />
-            {dropdownMenuContent}
-            </Modal>
-    )
 
     return (
         <div ref={dropdownRefItem}>
-            <div className={styles.menu}
+            <div
+                className={styles.menu}
                 onClick={() => expandable && toggleMenu()}
                 style={{
                     minWidth: !showFullMenu
@@ -108,8 +112,9 @@ export default function DropdownMenu2(props: propsIF) {
             >
                 <div className={styles.menuItem}>
                     {showFullMenu && (
-                        <div className={styles.iconContainer}
-                            style={{cursor: expandable ? 'pointer' : 'default'}}
+                        <div
+                            className={styles.iconContainer}
+                            style={{ cursor: expandable ? 'pointer' : 'default' }}
                         >
                             <img
                                 src={logo}
@@ -155,7 +160,16 @@ export default function DropdownMenu2(props: propsIF) {
                     />
                 )}
             </div>
-            {isMenuOpen && (showMobileVersion ? modalVersion :  dropdownMenuContent)}
+
+            {/* For mobile, use bottom sheet, for desktop, use dropdown */}
+            {isMenuOpen && !showMobileVersion && dropdownMenuContent}
+
+            {/* BottomSheet content for mobile */}
+            {showMobileVersion && (
+                <BottomSheet title='Select Network'>
+                    {dropdownMenuContent}
+                </BottomSheet>
+            )}
         </div>
     );
 }
