@@ -2108,6 +2108,7 @@ export default function Chart(props: propsIF) {
                                         Math.abs(
                                             pinnedTick - currentPoolPriceTick,
                                         ) / 100,
+                                        location.pathname.includes('/edit')
                                     );
 
                                     const offset = rangeWidthPercentage * 100;
@@ -2141,6 +2142,7 @@ export default function Chart(props: propsIF) {
                                         Math.abs(
                                             currentPoolPriceTick - pinnedTick,
                                         ) / 100,
+                                        location.pathname.includes('/edit')
                                     );
 
                                     const offset = rangeWidthPercentage * 100;
@@ -2853,7 +2855,7 @@ export default function Chart(props: propsIF) {
                     clickedValue === liquidityData?.topBoundary ||
                     clickedValue < liquidityData?.lowBoundary
                 ) {
-                    rangeWidthPercentage = 100;
+                    rangeWidthPercentage = location.pathname.includes('/edit') ? 99 : 100;;
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
 
@@ -2882,6 +2884,7 @@ export default function Chart(props: propsIF) {
 
                         rangeWidthPercentage = roundToNearestPreset(
                             Math.abs(tickValue - currentPoolPriceTick) / 100,
+                            location.pathname.includes('/edit')
                         );
                     } else {
                         tickValue = getPinnedTickFromDisplayPrice(
@@ -2895,6 +2898,7 @@ export default function Chart(props: propsIF) {
 
                         rangeWidthPercentage = roundToNearestPreset(
                             Math.abs(currentPoolPriceTick - tickValue) / 100,
+                            location.pathname.includes('/edit')
                         );
                     }
                 }
