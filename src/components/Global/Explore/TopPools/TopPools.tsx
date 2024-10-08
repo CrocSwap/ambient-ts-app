@@ -8,13 +8,14 @@ import {
 } from '../useSortedPools';
 import checkPoolForWETH from '../../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../../ambient-utils/types';
-import Spinner from '../../Spinner/Spinner';
+// import Spinner from '../../Spinner/Spinner';
 import styles from './TopPools.module.css';
 import AssignSort from '../AssignSort';
 import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import ExploreToggle from '../ExploreToggle/ExploreToggle';
 import useIsPWA from '../../../../utils/hooks/useIsPWA';
+import PoolRowSkeleton from '../PoolRow/PoolRowSkeleton';
 
 export type HeaderItem = {
     label: string;
@@ -158,6 +159,12 @@ function TopPools(props: propsIF) {
                 })}
         </div>
     );
+    const tempItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    const skeletonDisplay = tempItems.map((item, idx) => (
+        <PoolRowSkeleton key={idx} />
+    ))
+
 
     return (
         <div
@@ -182,6 +189,7 @@ function TopPools(props: propsIF) {
                                 }
                             />
                         ))
+          
                 ) : searchQuery ? (
                     <div className={styles.no_results}>
                         No pools match the search query: {searchQuery}
@@ -190,9 +198,7 @@ function TopPools(props: propsIF) {
                         </button>
                     </div>
                 ) : (
-                    <div className={styles.spinner_container}>
-                        <Spinner size={100} bg='var(--dark1)' centered />
-                    </div>
+                    skeletonDisplay
                 )}
             </div>
         </div>
