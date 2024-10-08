@@ -557,6 +557,13 @@ function Range(props: RangePropsIF) {
         }
     }, [rangeWidthPercentage]);
 
+
+    useEffect(() => {
+       if (simpleRangeWidth === 100 && isEditPanel) {
+            setSimpleRangeWidth(99);
+        }
+    }, [advancedMode]);
+    
     useEffect(() => {
         setNewRangeTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
