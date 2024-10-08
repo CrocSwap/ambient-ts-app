@@ -24,6 +24,7 @@ import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
+import { IS_EDIT_ENABLED } from '../../../../../ambient-utils/constants';
 
 // interface for React functional component props
 interface propsIF {
@@ -51,6 +52,7 @@ function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount,
         rangeDetailsProps,
         position,
+        // eslint-disable-next-line
         isPositionInRange,
         isAccountView,
         openDetailsModal: openRangeDetailsModal,
@@ -72,8 +74,11 @@ function RangesMenu(props: propsIF) {
         setAdvancedMode,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
-    const { handlePulseAnimation, setActiveMobileComponent } =
-        useContext(TradeTableContext);
+    const {
+        handlePulseAnimation,
+        setActiveMobileComponent,
+        setCurrentPositionActive,
+    } = useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -90,8 +95,12 @@ function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const { tokenA, tokenB, getDefaultRangeWidthForTokenPair } =
-        useContext(TradeDataContext);
+    const {
+        tokenA,
+        tokenB,
+        getDefaultRangeWidthForTokenPair,
+        setIsTokenAPrimary,
+    } = useContext(TradeDataContext);
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
 
@@ -137,6 +146,7 @@ function RangesMenu(props: propsIF) {
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const linkGenRepo: linkGenMethodsIF = useLinkGen('reposition');
+    const linkGenEdit: linkGenMethodsIF = useLinkGen('edit');
 
     const shouldCopyQuoteToTokenA =
         tokenAAddress.toLowerCase() === position.quote.toLowerCase() ||
@@ -172,6 +182,38 @@ function RangesMenu(props: propsIF) {
             state={{ position: position }}
         >
             Reposition
+        </Link>
+    );
+    const editButton = (
+        <Link
+            id={`edit_button_${position.positionId}`}
+            className={styles.reposition_button}
+            to={linkGenEdit.getFullURL({
+                chain: chainId,
+                tokenA: position.base,
+                tokenB: position.quote,
+                // tokenA:
+                //     tokenAAddress.toLowerCase() === position.quote.toLowerCase()
+                //         ? position.quote
+                //         : position.base,
+                // tokenB:
+                //     tokenBAddress.toLowerCase() === position.base.toLowerCase()
+                //         ? position.base
+                //         : position.quote,
+                lowTick: position.bidTick.toString(),
+                highTick: position.askTick.toString(),
+            })}
+            onClick={() => {
+                setActiveMobileComponent('trade');
+                setAdvancedLowTick(position.bidTick);
+                setAdvancedHighTick(position.askTick);
+                setAdvancedMode(true);
+                setCurrentPositionActive(position.positionId);
+                setIsTokenAPrimary(true);
+            }}
+            state={{ position: position }}
+        >
+            Edit
         </Link>
     );
 
@@ -271,7 +313,7 @@ function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {tableView !== 'small' && showRepositionButton && repositionButton}
+            {showRepositionButton && repositionButton}
             {tableView !== 'small' &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
@@ -284,6 +326,11 @@ function RangesMenu(props: propsIF) {
             {!userMatchesConnectedAccount &&
                 tableView !== 'small' &&
                 copyButton}
+            {(IS_EDIT_ENABLED && position.positionType !== 'ambient') &&
+            !showRepositionButton &&
+            userMatchesConnectedAccount
+                ? editButton
+                : null}
         </div>
     );
 
@@ -300,10 +347,14 @@ function RangesMenu(props: propsIF) {
                 removeButton}
             {detailsButton}
             {!isAccountView && walletButton}
-            {tableView === 'small' && showRepositionButton && repositionButton}
             {!userMatchesConnectedAccount &&
                 tableView === 'small' &&
                 copyButton}
+            {(IS_EDIT_ENABLED && position.positionType !== 'ambient') &&
+            showRepositionButton &&
+            userMatchesConnectedAccount
+                ? editButton
+                : null}
         </div>
     );
 

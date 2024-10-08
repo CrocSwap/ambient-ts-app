@@ -45,7 +45,8 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
+// import RangeWidth from '../../../../components/Form/RangeWidth/RangeWidth';
+import Range from '../Range/Range';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
@@ -89,12 +90,12 @@ function Reposition() {
         updateTransactionHash,
     } = useContext(ReceiptContext);
     const {
+        advancedLowTick,
+        advancedHighTick,
         simpleRangeWidth,
         setSimpleRangeWidth,
-        setMaxRangePrice: setMaxPrice,
-        setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
-        setRescaleRangeBoundariesWithSlider,
+        // setRescaleRangeBoundariesWithSlider,
         setAdvancedMode,
     } = useContext(RangeContext);
     const { userAddress } = useContext(UserDataContext);
@@ -309,6 +310,11 @@ function Reposition() {
         }
     }, [position, rangeWidthPercentage, currentPoolPriceTick]);
 
+    useEffect(() => {
+        setPinnedLowTick(advancedLowTick);
+        setPinnedHighTick(advancedHighTick);
+    }, [advancedLowTick, advancedHighTick]);
+
     function mintArgsForReposition(
         lowTick: number,
         highTick: number,
@@ -452,15 +458,11 @@ function Reposition() {
     useEffect(() => {
         if (!pinnedMinPriceDisplayTruncated) return;
         setMinPriceDisplay(pinnedMinPriceDisplayTruncated.toString());
-        if (pinnedMinPriceDisplayTruncated !== undefined) {
-            setMinPrice(parseFloat(pinnedMinPriceDisplayTruncated));
-        }
     }, [pinnedMinPriceDisplayTruncated]);
 
     useEffect(() => {
         if (!pinnedMaxPriceDisplayTruncated) return;
         setMaxPriceDisplay(pinnedMaxPriceDisplayTruncated);
-        setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
     }, [pinnedMaxPriceDisplayTruncated]);
 
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
@@ -824,6 +826,10 @@ function Reposition() {
             currentQuoteQtyDisplayTruncated === '...') ||
         (newBaseQtyDisplay === '...' && newQuoteQtyDisplay === '...');
 
+    // useEffect(() => {
+    //     console.log({ minPriceDisplay, maxPriceDisplay });
+    // }, [minPriceDisplay, maxPriceDisplay]);
+
     return (
         <>
             <div className={styles.repositionContainer}>
@@ -833,13 +839,14 @@ function Reposition() {
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
-                    <RangeWidth
+                    {/* <RangeWidth
                         rangeWidthPercentage={rangeWidthPercentage}
                         setRangeWidthPercentage={setRangeWidthPercentage}
                         setRescaleRangeBoundariesWithSlider={
                             setRescaleRangeBoundariesWithSlider
                         }
-                    />
+                    /> */}
+                    <Range isReposition />
                     <RepositionPriceInfo
                         position={position}
                         currentPoolPriceDisplay={currentPoolPriceDisplay}

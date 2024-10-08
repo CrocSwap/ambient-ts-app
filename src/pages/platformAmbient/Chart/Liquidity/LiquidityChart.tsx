@@ -33,7 +33,10 @@ import {
 } from './LiquiditySeries/LineSeries';
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import {
+    ChartThemeIF,
+    pathsToUpdateChart,
+} from '../../../../contexts/ChartContext';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -425,9 +428,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [liqBidSeries, liqAskSeries, liqDepthBidSeries, liqDepthAskSeries]);
 
     const drawCurveLines = (canvas: HTMLCanvasElement) => {
-        const isRange =
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition');
+        const isRange = pathsToUpdateChart.some((path) =>
+            location.pathname.includes(path),
+        );
         if (isRange) {
             clipHighlightedLines(canvas);
             lineLiqSeries(liqDataAsk);
@@ -436,9 +439,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     };
 
     const drawDepthLines = (canvas: HTMLCanvasElement) => {
-        const isRange =
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition');
+        const isRange = pathsToUpdateChart.some((path) =>
+            location.pathname.includes(path),
+        );
         if (isRange) {
             clipHighlightedLines(canvas);
             lineLiqDepthAskSeries(liqDataDepthAsk);

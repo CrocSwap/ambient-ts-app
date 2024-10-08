@@ -278,7 +278,8 @@ export const TokenSelectButton = styled.button<{ justDisplay?: boolean }>`
     background: var(--dark1);
     outline: none;
     border: 0.5px solid transparent;
-    padding: 0 4px;
+    padding: 0 8px;
+    border-radius: 50px;
     height: 40px;
     padding-right: ${(props) => (props.justDisplay ? '12px' : '')};
 
@@ -296,6 +297,9 @@ export const TokenSelectButton = styled.button<{ justDisplay?: boolean }>`
     &:focus-visible {
         border: 1px solid var(--text1);
     }
+    ${({ disabled }) => disabled && 'cursor: wait !important; '}
+    ${({ disabled }) => disabled && 'pointer-events: none !important; '}
+    ${({ disabled }) => disabled && 'padding-right: 27px; '}
 `;
 
 export const RefreshButton = styled(IconButton)`

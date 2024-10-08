@@ -236,17 +236,17 @@ export function getPinnedPriceValuesFromDisplayPrices(
             ? pinnedMinPriceDisplay.toExponential(2)
             : pinnedMinPriceDisplay < 2
             ? pinnedMinPriceDisplay > 0.1
-                ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
-                : truncateDecimals(pinnedMinPriceDisplay, 6).toString()
-            : truncateDecimals(pinnedMinPriceDisplay, 2).toString();
+                ? truncateDecimals(pinnedMinPriceDisplay, 4)
+                : truncateDecimals(pinnedMinPriceDisplay, 6)
+            : truncateDecimals(pinnedMinPriceDisplay, 2);
     const pinnedMaxPriceDisplayTruncated =
         pinnedMaxPriceDisplay < 0.0001
             ? pinnedMaxPriceDisplay.toExponential(2)
             : pinnedMaxPriceDisplay < 2
             ? pinnedMinPriceDisplay > 0.1
-                ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
-                : truncateDecimals(pinnedMaxPriceDisplay, 6).toString()
-            : truncateDecimals(pinnedMaxPriceDisplay, 2).toString();
+                ? truncateDecimals(pinnedMaxPriceDisplay, 4)
+                : truncateDecimals(pinnedMaxPriceDisplay, 6)
+            : truncateDecimals(pinnedMaxPriceDisplay, 2);
 
     return {
         pinnedMinPriceDisplay: pinnedMinPriceDisplay.toString(),

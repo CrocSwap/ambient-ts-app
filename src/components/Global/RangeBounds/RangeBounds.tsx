@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { RangeContext } from '../../../contexts/RangeContext';
 
+import EditLiqPriceInfo from '../../Trade/EditLiquidity/EditLiqPriceInfo/EditLiqPriceInfo';
+
 interface RangeBoundsProps {
     customSwitch?: boolean;
     isRangeBoundsDisabled: boolean;
@@ -50,10 +52,12 @@ interface RangeBoundsProps {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    maxPrice: number;
-    minPrice: number;
-    setMaxPrice: Dispatch<SetStateAction<number>>;
-    setMinPrice: Dispatch<SetStateAction<number>>;
+    maxRangePrice: number;
+    minRangePrice: number;
+    setMaxRangePrice: Dispatch<SetStateAction<number>>;
+    setMinRangePrice: Dispatch<SetStateAction<number>>;
+    isEditPanel?: boolean;
+    isReposition?: boolean;
 }
 
 export default function RangeBounds(props: RangeBoundsProps) {
@@ -82,19 +86,22 @@ export default function RangeBounds(props: RangeBoundsProps) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        maxPrice,
-        minPrice,
-        setMaxPrice,
-        setMinPrice,
+        maxRangePrice,
+        minRangePrice,
+        setMaxRangePrice,
+        setMinRangePrice,
 
         isRangeBoundsDisabled,
         customSwitch = false,
+        isEditPanel,
+        isReposition,
     } = props;
     const rangeWidthProps = {
         rangeWidthPercentage,
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
         inputId,
+        isEditPanel,
     };
 
     const rangePriceInfoProps = {
@@ -120,10 +127,10 @@ export default function RangeBounds(props: RangeBoundsProps) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        maxPrice,
-        minPrice,
-        setMaxPrice,
-        setMinPrice,
+        maxRangePrice,
+        minRangePrice,
+        setMaxRangePrice,
+        setMinRangePrice,
         minPriceInputString,
         maxPriceInputString,
     };
@@ -134,12 +141,20 @@ export default function RangeBounds(props: RangeBoundsProps) {
         <div className={styles.info_container}>
             <motion.div
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}    
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
                 <RangeWidth {...rangeWidthProps} />
+                {isEditPanel && (
+                    <EditLiqPriceInfo
+                        rangeWidthPercentage={rangeWidthPercentage}
+                    />
+                )}
             </motion.div>
-            <RangePriceInfo {...rangePriceInfoProps} />
+
+            {isReposition || isEditPanel ? null : (
+                <RangePriceInfo {...rangePriceInfoProps} />
+            )}
         </div>
     );
     const advancedModeContent = (
@@ -151,10 +166,14 @@ export default function RangeBounds(props: RangeBoundsProps) {
             >
                 <div className={styles.advanced_info_container}>
                     <MinMaxPrice {...minMaxPricePropsIF} />
+                    {isEditPanel && <span className={styles.divider} />}
+                    {isEditPanel && <EditLiqPriceInfo {...rangeWidthProps} />}
                 </div>
             </motion.div>
         </>
     );
+
+    // if (isEditPanel) return <RangeWidthControl />;
     return (
         <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
             {!customSwitch && (

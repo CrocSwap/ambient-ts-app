@@ -26,7 +26,8 @@ interface TransactionByType {
         | 'Remove'
         | 'Harvest'
         | 'Claim'
-        | 'Reposition';
+        | 'Reposition'
+        | 'Edit';
     txType:
         | 'Market'
         | 'Limit'

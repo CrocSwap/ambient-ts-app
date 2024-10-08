@@ -14,6 +14,7 @@ import {
     scaleData,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
+import { pathsToUpdateChart } from '../../../../contexts/ChartContext';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -95,11 +96,11 @@ export default function RangeLinesChart(props: propsIF) {
                 .yScale(scaleData?.yScale);
 
             horizontalLine.decorate((context: any) => {
-                context.visibility =
-                    location.pathname.includes('pool') ||
-                    location.pathname.includes('reposition')
-                        ? 'visible'
-                        : 'hidden';
+                context.visibility = pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
+                    ? 'visible'
+                    : 'hidden';
                 context.strokeStyle = 'var(--accent2)';
                 context.fillStyle = 'transparent';
                 context.pointerEvents = 'none';
@@ -179,15 +180,19 @@ export default function RangeLinesChart(props: propsIF) {
     }, [position?.positionId]);
 
     useEffect(() => {
-        if (location.pathname.includes('reposition')) {
+        if (
+            pathsToUpdateChart
+                .filter((path) => path !== 'pool')
+                .some((path) => location.pathname.includes(path))
+        ) {
             setBalancedLines();
         }
     }, [location.pathname]);
 
     useEffect(() => {
-        const isRange =
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition');
+        const isRange = pathsToUpdateChart.some((path) =>
+            location.pathname.includes(path),
+        );
 
         d3.select(d3CanvasRangeLine.current)
             .select('canvas')
@@ -196,8 +201,7 @@ export default function RangeLinesChart(props: propsIF) {
 
     useEffect(() => {
         if (
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition')
+            pathsToUpdateChart.some((path) => location.pathname.includes(path))
         ) {
             const canvas = d3
                 .select(d3CanvasRangeLine.current)
@@ -209,8 +213,9 @@ export default function RangeLinesChart(props: propsIF) {
                 d3.select(d3CanvasRangeLine.current)
                     .on('draw', () => {
                         if (
-                            location.pathname.includes('pool') ||
-                            location.pathname.includes('reposition')
+                            pathsToUpdateChart.some((path) =>
+                                location.pathname.includes(path),
+                            )
                         ) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
@@ -251,15 +256,14 @@ export default function RangeLinesChart(props: propsIF) {
 
         if (
             horizontalLine !== undefined &&
-            (location.pathname.includes('pool') ||
-                location.pathname.includes('reposition'))
+            pathsToUpdateChart.some((path) => location.pathname.includes(path))
         ) {
             horizontalLine.decorate((context: any, datum: any) => {
-                context.visibility =
-                    location.pathname.includes('pool') ||
-                    location.pathname.includes('reposition')
-                        ? 'visible'
-                        : 'hidden';
+                context.visibility = pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
+                    ? 'visible'
+                    : 'hidden';
                 context.strokeStyle =
                     datum.value > passValue ? lineSellColor : lineBuyColor;
                 context.pointerEvents = 'none';
@@ -283,8 +287,7 @@ export default function RangeLinesChart(props: propsIF) {
 
     const displayHorizontalLines = () => {
         if (
-            location.pathname.includes('reposition') ||
-            location.pathname.includes('pool')
+            pathsToUpdateChart.some((path) => location.pathname.includes(path))
         ) {
             if (advancedMode || simpleRangeWidth !== 100) {
                 d3.select(d3CanvasRangeLine.current)
@@ -301,7 +304,9 @@ export default function RangeLinesChart(props: propsIF) {
     const setBalancedLines = (isRepositionLinesSet = false) => {
         if (tokenA.address !== tokenB.address) {
             if (
-                location.pathname.includes('reposition') &&
+                pathsToUpdateChart
+                    .filter((path) => path !== 'pool')
+                    .some((path) => location.pathname.includes(path)) &&
                 position !== undefined &&
                 isRepositionLinesSet
             ) {

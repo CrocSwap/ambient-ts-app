@@ -19,7 +19,8 @@ export type TransactionModuleType =
     | 'Swap'
     | 'Limit Order'
     | 'Pool'
-    | 'Reposition';
+    | 'Reposition'
+    | 'Edit';
 
 // interface for component props
 interface propsIF {

@@ -98,12 +98,16 @@ import {
 import { checkCircleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
+
 import { updatesIF } from '../../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
-import { ChartContext } from '../../../contexts/ChartContext';
+import {
+    ChartContext,
+    pathsToUpdateChart,
+} from '../../../contexts/ChartContext';
 import { useDrawSettings } from '../../../App/hooks/useDrawSettings';
 import {
     LS_KEY_CHART_ANNOTATIONS,
@@ -281,9 +285,9 @@ export default function Chart(props: propsIF) {
 
     const {
         minRangePrice: minPrice,
-        setMinRangePrice: setMinPrice,
+        setMinRangePrice,
         maxRangePrice: maxPrice,
-        setMaxRangePrice: setMaxPrice,
+        setMaxRangePrice,
         rescaleRangeBoundariesWithSlider,
         chartTriggeredBy,
         setChartTriggeredBy,
@@ -810,8 +814,9 @@ export default function Chart(props: propsIF) {
         if (
             chartMousemoveEvent &&
             mainCanvasBoundingClientRect &&
-            (location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')) &&
+            pathsToUpdateChart.some((path) =>
+                location.pathname.includes(path),
+            ) &&
             !(!advancedMode && simpleRangeWidth === 100) &&
             scaleData
         ) {
@@ -1539,14 +1544,16 @@ export default function Chart(props: propsIF) {
                                 mousePlacement > limitLineValue - lineBuffer;
 
                             const isOnRangeMin =
-                                (location.pathname.includes('pool') ||
-                                    location.pathname.includes('reposition')) &&
+                                pathsToUpdateChart.some((path) =>
+                                    location.pathname.includes(path),
+                                ) &&
                                 mousePlacement < minRangeValue + lineBuffer &&
                                 mousePlacement > minRangeValue - lineBuffer;
 
                             const isOnRangeMax =
-                                (location.pathname.includes('pool') ||
-                                    location.pathname.includes('reposition')) &&
+                                pathsToUpdateChart.some((path) =>
+                                    location.pathname.includes(path),
+                                ) &&
                                 mousePlacement < maxRangeValue + lineBuffer &&
                                 mousePlacement > maxRangeValue - lineBuffer;
 
@@ -1633,8 +1640,9 @@ export default function Chart(props: propsIF) {
                 changeScale(false);
 
                 if (
-                    location.pathname.includes('pool') ||
-                    location.pathname.includes('reposition')
+                    pathsToUpdateChart.some((path) =>
+                        location.pathname.includes(path),
+                    )
                 ) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
                         (liqData: LiquidityDataLocal) => liqData.liqPrices,
@@ -1714,8 +1722,9 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (
-            (location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')) &&
+            pathsToUpdateChart.some((path) =>
+                location.pathname.includes(path),
+            ) &&
             advancedMode
         ) {
             if (chartTriggeredBy === '' || rescaleRangeBoundariesWithSlider) {
@@ -2053,10 +2062,7 @@ export default function Chart(props: propsIF) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         let pinnedDisplayPrices: any;
 
-                        if (
-                            !advancedMode ||
-                            location.pathname.includes('reposition')
-                        ) {
+                        if (!advancedMode) {
                             if (
                                 draggedValue === 0 ||
                                 draggedValue === liquidityData?.topBoundary
@@ -2102,6 +2108,9 @@ export default function Chart(props: propsIF) {
                                         Math.abs(
                                             pinnedTick - currentPoolPriceTick,
                                         ) / 100,
+                                        location.pathname.includes(
+                                            '/trade/edit',
+                                        ),
                                     );
 
                                     const offset = rangeWidthPercentage * 100;
@@ -2135,6 +2144,9 @@ export default function Chart(props: propsIF) {
                                         Math.abs(
                                             currentPoolPriceTick - pinnedTick,
                                         ) / 100,
+                                        location.pathname.includes(
+                                            '/trade/edit',
+                                        ),
                                     );
 
                                     const offset = rangeWidthPercentage * 100;
@@ -2306,7 +2318,11 @@ export default function Chart(props: propsIF) {
                     if (!cancelDrag) {
                         if (
                             (!advancedMode ||
-                                location.pathname.includes('reposition')) &&
+                                pathsToUpdateChart
+                                    .filter((path) => path !== 'pool')
+                                    .some((path) =>
+                                        location.pathname.includes(path),
+                                    )) &&
                             rangeWidthPercentage
                         ) {
                             setSimpleRangeWidth(rangeWidthPercentage);
@@ -2555,8 +2571,9 @@ export default function Chart(props: propsIF) {
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
             ) {
                 if (dragRange && !isLineDrag) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
@@ -2834,7 +2851,7 @@ export default function Chart(props: propsIF) {
                 lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
             }
 
-            if (!advancedMode || location.pathname.includes('reposition')) {
+            if (!advancedMode) {
                 let rangeWidthPercentage;
                 let tickValue;
                 if (
@@ -2842,7 +2859,11 @@ export default function Chart(props: propsIF) {
                     clickedValue === liquidityData?.topBoundary ||
                     clickedValue < liquidityData?.lowBoundary
                 ) {
-                    rangeWidthPercentage = 100;
+                    rangeWidthPercentage = location.pathname.includes(
+                        '/trade/edit',
+                    )
+                        ? 99
+                        : 100;
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
 
@@ -2871,6 +2892,7 @@ export default function Chart(props: propsIF) {
 
                         rangeWidthPercentage = roundToNearestPreset(
                             Math.abs(tickValue - currentPoolPriceTick) / 100,
+                            location.pathname.includes('/trade/edit'),
                         );
                     } else {
                         tickValue = getPinnedTickFromDisplayPrice(
@@ -2884,6 +2906,7 @@ export default function Chart(props: propsIF) {
 
                         rangeWidthPercentage = roundToNearestPreset(
                             Math.abs(currentPoolPriceTick - tickValue) / 100,
+                            location.pathname.includes('/trade/edit'),
                         );
                     }
                 }
@@ -2903,12 +2926,12 @@ export default function Chart(props: propsIF) {
                         lookupChain(chainId).gridSize,
                     );
 
-                    setMaxPrice(
+                    setMaxRangePrice(
                         parseFloat(
                             pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                         ),
                     );
-                    setMinPrice(
+                    setMinRangePrice(
                         parseFloat(
                             pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                         ),
@@ -4468,8 +4491,7 @@ export default function Chart(props: propsIF) {
         if (location.pathname.includes('limit')) {
             changeScaleLimit(isTriggeredByZoom);
         } else if (
-            location.pathname.includes('pool') ||
-            location.pathname.includes('reposition')
+            pathsToUpdateChart.some((path) => location.pathname.includes(path))
         ) {
             changeScaleRangeOrReposition(isTriggeredByZoom);
         } else {
@@ -4504,15 +4526,16 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (!isLineDrag) {
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                pathsToUpdateChart.some((path) =>
+                    location.pathname.includes(path),
+                )
             ) {
                 changeScaleRangeOrReposition(false);
             }
         }
     }, [
-        location.pathname.includes('pool') ||
-            location.pathname.includes('reposition'),
+        pathsToUpdateChart.some((path) => location.pathname.includes(path)),
+
         market,
         isLineDrag,
         minPrice,
@@ -4688,8 +4711,9 @@ export default function Chart(props: propsIF) {
                     // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                     if (
-                        (location.pathname.includes('pool') ||
-                            location.pathname.includes('reposition')) &&
+                        pathsToUpdateChart.some((path) =>
+                            location.pathname.includes(path),
+                        ) &&
                         scaleData !== undefined &&
                         !isHoverCandleOrVolumeData
                     ) {
@@ -5567,7 +5591,7 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                    setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
+                setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (
@@ -5684,8 +5708,8 @@ export default function Chart(props: propsIF) {
                 (target: lineValue) => target.name === 'Max',
             )[0].value;
 
-            setMinPrice(low > high ? high : low);
-            setMaxPrice(low > high ? low : high);
+            setMinRangePrice(low > high ? high : low);
+            setMaxRangePrice(low > high ? low : high);
 
             if (lowLineMoved) {
                 setChartTriggeredBy('low_line');
