@@ -5,6 +5,9 @@ import styles from './NotificationTable.module.css';
 import { FlexContainer } from '../../../../styled/Common';
 import { ReceiptContext } from '../../../../contexts/ReceiptContext';
 import { BrandContext } from '../../../../contexts/BrandContext';
+import Modal from '../../Modal/Modal';
+import ModalHeader from '../../ModalHeader/ModalHeader';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -14,10 +17,15 @@ interface NotificationTableProps {
 }
 
 const NotificationTable = (props: NotificationTableProps) => {
-    const { showNotificationTable, pendingTransactions, notificationItemRef } =
-        props;
+    const {
+        showNotificationTable,
+        pendingTransactions,
+        notificationItemRef,
+        setShowNotificationTable,
+    } = props;
 
     const { platformName } = useContext(BrandContext);
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const { resetReceiptData, transactionsByType, sessionReceipts } =
         useContext(ReceiptContext);
@@ -52,8 +60,7 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     const isFuta = ['futa'].includes(platformName);
 
-    if (!showNotificationTable) return null;
-    return (
+    const mainContent = (
         <div className={styles.mainContainer}>
             <div
                 className={`${styles.container} ${isFuta ? styles.container_futa : ''}`}
@@ -83,6 +90,25 @@ const NotificationTable = (props: NotificationTableProps) => {
             </div>
         </div>
     );
+    const modalVersion = (
+        <div className={styles.container}>
+
+            <Modal
+                usingCustomHeader
+                onClose={() => setShowNotificationTable(false)}
+            >
+                <ModalHeader
+                    title={'Recent Transactions'}
+                    onClose={() => setShowNotificationTable(false)}
+                />
+                {mainContent}
+            </Modal>
+        </div>
+    );
+
+    if (!showNotificationTable) return null;
+   
+    return  showMobileVersion ? modalVersion : mainContent
 };
 
 export default NotificationTable;

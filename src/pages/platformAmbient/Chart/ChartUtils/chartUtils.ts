@@ -165,6 +165,10 @@ export type orderHistory = {
     tokenB: string;
     tokenBAmount: number;
 };
+export const isIOS = (): boolean => {
+    const userAgent = navigator.userAgent;
+    return /iPad|iPhone|iPod/.test(userAgent);
+};
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {
     const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
@@ -621,9 +625,9 @@ export function roundToNearestPreset(closest: number) {
     return Math.floor(closest);
 }
 
-export const getCssVariable = (skin: skins, variableName: string) => {
+export const getCssVariable = (activeSkin: skins, variableName: string) => {
     const themeElement = document.querySelector(
-        '[data-theme="' + skin + '"]',
+        '[data-theme="' + activeSkin + '"]',
     ) as Element;
 
     const value = getComputedStyle(themeElement)
