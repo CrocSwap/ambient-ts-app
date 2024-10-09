@@ -282,9 +282,8 @@ function TableRowsInfiniteScroll({
                         behavior: 'instant' as ScrollBehavior,
                     });
                     setTimeout(() => {
-                        const tableWrapper = document.getElementById(`infinite_scroll_wrapper_${wrapperID}`);
-                        if(tableWrapper){
-                            const scrollHeight = tableWrapper.scrollHeight;
+                        if(wrapperEl){
+                            const scrollHeight = wrapperEl.scrollHeight;
                             setLastClickedRow(scrollHeight.toString());
                         }
                     }, 300)
