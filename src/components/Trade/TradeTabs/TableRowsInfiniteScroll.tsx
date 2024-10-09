@@ -79,7 +79,7 @@ function TableRowsInfiniteScroll({
     
 
 
-    const debugMode = false;
+    const debugMode = true;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
@@ -243,7 +243,7 @@ function TableRowsInfiniteScroll({
             return (<>
             <span style={{fontSize: '.72rem'}}>
             <div style={{padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
-            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '1.2rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
+            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '12rem', top: '1.2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>lastSeenTX : {lastSeenTxIDRef.current}</div>
             </span>
