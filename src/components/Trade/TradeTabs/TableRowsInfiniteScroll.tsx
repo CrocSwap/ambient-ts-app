@@ -86,6 +86,7 @@ function TableRowsInfiniteScroll({
 
     const [showManualScrollDown, setShowManualScrollDown] = useState(false);
     const [showManualScrollUp, setShowManualScrollUp] = useState(false);
+    const [lastClickedRow, setLastClickedRow] = useState('');
     
 
     const moreDataLoadingRef = useRef<boolean>();
@@ -247,6 +248,7 @@ function TableRowsInfiniteScroll({
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '12rem', top: '1.2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>lastSeenTX : {lastSeenTxIDRef.current}</div>
+            <div style={{left: '12rem', top: '4rem', color: 'rgba(225, 128,255)', position: 'absolute',  background: 'black'}}>lastClicked : {lastClickedRow}</div>
             </span>
             </>)
         }else{
@@ -279,6 +281,14 @@ function TableRowsInfiniteScroll({
                         block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
                         behavior: 'instant' as ScrollBehavior,
                     });
+                    setTimeout(() => {
+                        const hiddenDiv = row.querySelectorAll('div[data-label="hidden-id"]')[0] as HTMLDivElement;
+                        console.log(hiddenDiv)
+                        if(hiddenDiv){
+                            hiddenDiv.focus();
+                            setLastClickedRow(txID);
+                        }
+                    }, 300)
                 }
                 // const row = span.parentElement?.parentElement as HTMLDivElement;
 
