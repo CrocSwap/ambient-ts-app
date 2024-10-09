@@ -25,6 +25,7 @@ import TestPage from '../pages/common/TestPage/TestPage';
 const PlatformAmbientRoutes: React.FC = () => {
     const { defaultUrlParams } = useContext(CrocEnvContext);
 
+
     return (
         <Routes>
             <Route index element={<Home />} />

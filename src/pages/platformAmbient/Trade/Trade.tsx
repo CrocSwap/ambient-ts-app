@@ -9,6 +9,7 @@ import {
     useCallback,
     memo,
     useRef,
+    
 } from 'react';
 
 // START: Import JSX Components
@@ -37,28 +38,25 @@ import {
 } from '../../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../../contexts/PoolContext';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
-import styles from './Trade.module.css';
 
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
-import TokenIcon from '../../../components/Global/TokenIcon/TokenIcon';
-import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
+
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { LuSettings } from 'react-icons/lu';
 import TradeCharts from './TradeCharts/TradeCharts';
-import TimeFrame from './TradeCharts/TradeChartsComponents/TimeFrame';
-import { useSwipeable } from 'react-swipeable';
-import { AnimatePresence, motion } from 'framer-motion';
+
+import TradeMobile from './TradeMobile';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
 function Trade(props: { futaActiveTab?: string | undefined }) {
     const { futaActiveTab } = props;
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
 
     const {
         chainData: { chainId },
@@ -96,7 +94,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         quoteToken,
         isDenomBase,
         limitTick,
-        toggleDidUserFlipDenom,
+      
     } = useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
@@ -131,7 +129,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         unselectCandle();
     }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
-    const smallScreen = useMediaQuery('(max-width: 768px)');
 
     const [
         isMobileSettingsModalOpen,
@@ -164,7 +161,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const {
         poolPriceDisplay,
         poolPriceChangePercent,
-        isPoolPriceChangePositive,
+        
         usdPrice,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
@@ -198,261 +195,40 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const poolPriceChangeString =
         poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
-    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
 
-    useEffect(() => {
-        const calculateHeight = () => {
-            const totalHeight = window.innerHeight;
-            const heightToSubtract = isFuta ? 56 + 56 + 25 : 56 + 56; // Subtract 56px from top and 56px from bottom
-            setAvailableHeight(totalHeight - heightToSubtract);
-        };
 
-        calculateHeight(); // Calculate initial height
-        window.addEventListener('resize', calculateHeight);
 
-        return () => window.removeEventListener('resize', calculateHeight);
-    }, []);
+    const tradeMobileProps = {
+        changeState: changeState,
+        selectedDate: selectedDate,
+        setSelectedDate: setSelectedDate,
+        updateURL,
+        isMobileSettingsModalOpen,
+        openMobileSettingsModal,
+        closeMobileSettingsModal,
 
-    const contentHeight = availableHeight - 75;
+        filter: transactionFilter,
+        setTransactionFilter: setTransactionFilter,
+        transactionFilter,
+       
+        hasInitialized: hasInitialized,
+        setHasInitialized: setHasInitialized,
+        unselectCandle: unselectCandle,
+        candleTime: chartSettings.candleTime.global,
+        tokens,
+        poolPrice,
+        futaActiveTab,
+        poolPriceChangeString
+    }
 
-    // -----------------------------------------------------------------------
 
-    const [activeTab, setActiveTab] = useState('Order');
-            // eslint-disable-next-line 
-    const [direction, setDirection] = useState(0); // To track the swipe direction for animations
 
-    const tabs = [
-        {
-            id: 'Order',
-            label: 'Order',
-            data: (
-                <ContentContainer isOnTradeRoute style={{ padding: '0 1rem' }}>
-                    <Outlet
-                        context={{
-                            urlParamMap: urlParamMap,
-                            limitTick: limitTick,
-                            updateURL: updateURL,
-                        }}
-                    />
-                </ContentContainer>
-            ),
-        },
-        {
-            id: 'Chart',
-            label: 'Chart',
-            data: (
-                <>
-                    {!isChartHeightMinimum && <ChartToolbar />}
-                    {isPoolInitialized && !isCandleDataNull && (
-                        <TradeCharts {...tradeChartsProps} />
-                    )}
-                </>
-            ),
-        },
-        { id: 'Txns', label: 'Txns', data: <TradeTabs2 {...tradeTabsProps} /> },
-        { id: 'Info', label: 'Info', data: <TableInfo /> },
-    ];
-    const mobileTabs = (
-        <div className={styles.mobile_tabs_container}>
-            {tabs.map((tab) => (
-                <button
-                    key={tab.id}
-                    className={`${styles.tabButton} ${activeTab === tab.id ? styles.activeTab : ''}`}
-                    onClick={() => setActiveTab(tab.id)}
-                    style={{
-                        color:
-                            activeTab === tab.id
-                                ? 'var(--accent1)'
-                                : 'var(--text2)',
-                        border:
-                            activeTab === tab.id
-                                ? '1px solid var(--accent1)'
-                                : '1px solid transparent',
-                    }}
-                >
-                    {tab.label}
-                </button>
-            ))}
-        </div>
-    );
 
-    const activeTabData = tabs.find(
-        (tab) => tab.id === (isFuta ? futaActiveTab : activeTab),
-    )?.data;
 
-    // To track the swipe and prevent rapid multiple swipes
-    const swipeAction = useRef(false);
 
-    // Handle swiping left (next tab)
-    const handleSwipeLeft = () => {
-        if (swipeAction.current) return; // Prevent multiple rapid swipes
-        swipeAction.current = true;
-
-        const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
-        if (currentIndex < tabs.length - 1) {
-            setActiveTab(tabs[currentIndex + 1].id);
-        }
-
-        setTimeout(() => {
-            swipeAction.current = false;
-        }, 300); // Adjust delay for debouncing
-    };
-
-    // Handle swiping right (previous tab)
-    const handleSwipeRight = () => {
-        if (swipeAction.current) return; // Prevent multiple rapid swipes
-        swipeAction.current = true;
-
-        const currentIndex = tabs.findIndex((tab) => tab.id === activeTab);
-        if (currentIndex > 0) {
-            setActiveTab(tabs[currentIndex - 1].id);
-        }
-
-        setTimeout(() => {
-            swipeAction.current = false;
-        }, 300); // Adjust delay for debouncing
-    };
-
-    const swipeHandlers = useSwipeable({
-        onSwipedLeft: handleSwipeLeft,
-        onSwipedRight: handleSwipeRight,
-        onSwiping: (eventData) => {
-            const { initial, event } = eventData;
-
-            // Check if the swipe started near the edges to prevent default back navigation
-            const startX = initial[0];
-            const edgeThreshold = 50; // Threshold for edge swipes, you can adjust this value
-
-            if (
-                event.cancelable &&
-                startX > edgeThreshold &&
-                startX < window.innerWidth - edgeThreshold
-            ) {
-                event.preventDefault(); // Only prevent default if not too close to the edges
-            }
-        },
-        trackMouse: true, // For desktop swipe handling
-    });
-    const slideVariants = {
-        enter: (direction: number) => ({
-            x: direction > 0 ? 300 : -300, // Off-screen position for sliding
-            opacity: 0,
-        }),
-        center: {
-            x: 0, // Centered position
-            opacity: 1,
-        },
-        exit: (direction: number) => ({
-            x: direction < 0 ? 300 : -300, // Slide off-screen
-            opacity: 0,
-        }),
-    };
-
-    const mobileComponent = (
-        <div
-            className={styles.mobile_container}
-            style={{ height: `${availableHeight}px` }}
-            {...swipeHandlers}
-        >
-            {!isFuta && mobileTabs}
-            <div
-                className={styles.mobile_header}
-                style={{ padding: isFuta ? '8px' : '' }}
-            >
-                <div
-                    className={styles.mobile_token_icons}
-                    onClick={toggleDidUserFlipDenom}
-                >
-                    <TokenIcon
-                        token={isDenomBase ? baseToken : quoteToken}
-                        src={
-                            isDenomBase ? baseToken.logoURI : quoteToken.logoURI
-                        }
-                        alt={isDenomBase ? baseToken.symbol : quoteToken.symbol}
-                        size={'s'}
-                    />
-                    <TokenIcon
-                        token={isDenomBase ? quoteToken : baseToken}
-                        src={
-                            isDenomBase ? quoteToken.logoURI : baseToken.logoURI
-                        }
-                        alt={isDenomBase ? quoteToken.symbol : baseToken.symbol}
-                        size={'s'}
-                    />
-                    <div>
-                        {isDenomBase ? baseToken.symbol : quoteToken.symbol}
-                        {'/'}
-                        {isDenomBase ? quoteToken.symbol : baseToken.symbol}
-                    </div>
-                </div>
-                <div
-                    className={styles.conv_rate}
-                    onClick={toggleDidUserFlipDenom}
-                >
-                    {poolPrice}
-
-                    <p
-                        style={{
-                            color: isPoolPriceChangePositive
-                                ? 'var(--positive)'
-                                : 'var(--negative)',
-                            fontSize: 'var(--body-size)',
-                        }}
-                    >
-                        {poolPriceChangeString}
-                    </p>
-                </div>
-            </div>
-
-            {(isFuta ? futaActiveTab === 'Chart' : activeTab === 'Chart') && (
-                <FlexContainer
-                    style={{
-                        justifyContent: 'space-between',
-                        padding: '0px 1rem 1rem 0.5rem',
-                    }}
-                >
-                    <div className={styles.mobile_settings_row}>
-                        <TimeFrame
-                            candleTime={chartSettings.candleTime.global}
-                        />
-                    </div>
-
-                    <LuSettings
-                        size={20}
-                        onClick={openMobileSettingsModal}
-                        color='var(--text2)'
-                    />
-                </FlexContainer>
-            )}
-            <AnimatePresence initial={false} custom={direction}>
-                <motion.div
-                    style={{
-                        height: `${contentHeight}px`,
-                        overflowY: 'scroll',
-                       
-                        width: '100%', // Ensure full width of content
-                    }}
-                    key={activeTab} // Ensure that Framer Motion tracks the current tab
-                    custom={direction} // Pass the direction for custom animations
-                    variants={slideVariants}
-                    initial='enter'
-                    animate='center'
-                    exit='exit'
-                    transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 30,
-                        duration: 0.3,
-                    }}
-                    // style={{ position: 'absolute', width: '100%' }} // Ensure full width of content
-                >
-                    {activeTabData}
-                </motion.div>
-            </AnimatePresence>
-        </div>
-    );
-
-    if (smallScreen) return mobileComponent;
+    if (showMobileVersion) return (
+        <TradeMobile {...tradeMobileProps} />
+    )
 
     return (
         <>
