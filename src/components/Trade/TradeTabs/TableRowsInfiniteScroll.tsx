@@ -573,7 +573,7 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div id={`infinite_scroll_wrapper_${wrapperID}`}>
+<div id={`infinite_scroll_wrapper_${wrapperID}`} style={{willChange: 'scroll-position, contents'}}>
             <TableRows
                 type={type}
                 data={data}
