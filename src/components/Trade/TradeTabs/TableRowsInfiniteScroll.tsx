@@ -282,7 +282,7 @@ function TableRowsInfiniteScroll({
                     setTimeout(() => {
                         if(wrapperEl){
                             wrapperEl.scrollBy({
-                                bottom: 2,    // scroll vertically by 2px
+                                top: -2,    // scroll vertically by 2px
                                 left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
                                 behavior: 'smooth' // enables smooth scrolling
                               });
