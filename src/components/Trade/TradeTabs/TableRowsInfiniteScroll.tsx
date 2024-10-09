@@ -145,11 +145,11 @@ function TableRowsInfiniteScroll({
 
     const bindTableReadyState = (newState: boolean) => {
         if(newState === true){
-            setTransactionTableOpacity('1');
+            // setTransactionTableOpacity('1');
             setIsTableReady(true);
         }
         else{
-            setTransactionTableOpacity('.5');
+            // setTransactionTableOpacity('.5');
             setIsTableReady(false);
         }
     }
@@ -174,11 +174,11 @@ function TableRowsInfiniteScroll({
         }
     };
     
-    const setTransactionTableOpacity = (val: string) => {
-        if(wrapperEl){
-            wrapperEl.style.opacity = val;
-        }
-    };
+    // const setTransactionTableOpacity = (val: string) => {
+    //     if(wrapperEl){
+    //         wrapperEl.style.opacity = val;
+    //     }
+    // };
 
 
     const triggerAutoScroll = (
