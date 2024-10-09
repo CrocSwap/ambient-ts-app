@@ -279,15 +279,13 @@ function TableRowsInfiniteScroll({
                     }
                     row.scrollIntoView({
                         block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
-                        // behavior: 'instant' as ScrollBehavior,
-                        behavior: 'smooth' as ScrollBehavior,
+                        behavior: 'instant' as ScrollBehavior,
                     });
                     setTimeout(() => {
-                        const hiddenDiv = row.querySelectorAll('div[data-label="hidden-id"]')[0] as HTMLDivElement;
-                        console.log(hiddenDiv)
-                        if(hiddenDiv){
-                            hiddenDiv.focus();
-                            setLastClickedRow(txID);
+                        const tableWrapper = document.getElementById(`infinite_scroll_wrapper_${wrapperID}`);
+                        if(tableWrapper){
+                            const scrollHeight = tableWrapper.scrollHeight;
+                            setLastClickedRow(scrollHeight.toString());
                         }
                     }, 300)
                 }
