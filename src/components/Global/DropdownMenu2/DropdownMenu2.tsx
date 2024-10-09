@@ -89,7 +89,6 @@ export default function DropdownMenu2(props: propsIF) {
 
     const modalVersion = (
         <Modal usingCustomHeader onClose={() => setIsMenuOpen(false)}>
-            <ModalHeader title={'Select Network'} onClose={() => setIsMenuOpen(false)} />
             {dropdownMenuContent}
             </Modal>
     )

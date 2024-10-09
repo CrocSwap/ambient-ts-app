@@ -80,7 +80,7 @@ export default function Modal(props: ModalPropsIF) {
             <div className={styles.header_right}>
                 {headerRightItems}
                 <span />
-                <RiCloseFill
+                {!isMobile && <RiCloseFill
                     id='close_modal_button'
                     size={27}
                     className={styles.close_button}
@@ -89,7 +89,7 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={-1}
                     aria-label='Close modal button'
                     style={{ cursor: 'pointer' }}
-                />
+                />}
             </div>
         </header>
     ) : null;
