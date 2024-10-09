@@ -733,8 +733,8 @@ function Transactions(props: propsIF) {
                 style={
                     isSmallScreen
                         ? isAccountView
-                            ? { maxHeight: 'calc(100svh - 310px)', overflowY:'auto' }
-                            : { height: 'calc(100svh - 300px)', overflowY:'auto' }
+                            ? { maxHeight: 'calc(100svh - 310px)', overflowY:'auto', willChange: 'scroll-position, contents' }
+                            : { height: 'calc(100svh - 300px)', overflowY:'auto', willChange: 'scroll-position, contents' }
                         : undefined
                 }
             >

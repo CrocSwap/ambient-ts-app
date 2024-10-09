@@ -284,6 +284,8 @@ function TableRowsInfiniteScroll({
                     setTimeout(() => {
                         if(wrapperEl){
                             const scrollHeight = wrapperEl.scrollHeight;
+                            console.log(wrapperEl)
+                            console.log(scrollHeight)
                             setLastClickedRow(scrollHeight.toString());
                         }
                     }, 300)
@@ -571,7 +573,7 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div id={`infinite_scroll_wrapper_${wrapperID}`} style={{willChange: 'scroll-position, contents'}}>
+<div id={`infinite_scroll_wrapper_${wrapperID}`}>
             <TableRows
                 type={type}
                 data={data}
