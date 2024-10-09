@@ -86,7 +86,6 @@ function TableRowsInfiniteScroll({
 
     const [showManualScrollDown, setShowManualScrollDown] = useState(false);
     const [showManualScrollUp, setShowManualScrollUp] = useState(false);
-    const [lastClickedRow, setLastClickedRow] = useState('');
     
 
     const moreDataLoadingRef = useRef<boolean>();
@@ -248,7 +247,6 @@ function TableRowsInfiniteScroll({
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '12rem', top: '1.2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>lastSeenTX : {lastSeenTxIDRef.current}</div>
-            <div style={{left: '12rem', top: '4rem', color: 'rgba(225, 128,255)', position: 'absolute',  background: 'black'}}>lastClicked : {lastClickedRow}</div>
             </span>
             </>)
         }else{
@@ -283,10 +281,11 @@ function TableRowsInfiniteScroll({
                     });
                     setTimeout(() => {
                         if(wrapperEl){
-                            const scrollHeight = wrapperEl.scrollHeight;
-                            console.log(wrapperEl)
-                            console.log(scrollHeight)
-                            setLastClickedRow(scrollHeight.toString());
+                            wrapperEl.scrollBy({
+                                top: 2,    // scroll vertically by 2px
+                                left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
+                                behavior: 'smooth' // enables smooth scrolling
+                              });
                         }
                     }, 300)
                 }
