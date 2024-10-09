@@ -365,6 +365,10 @@ function TableRowsInfiniteScroll({
         } else {
             scrollWithAlternateStrategy();
         }
+        const wrapper = document.getElementById(`infinite_scroll_wrapper_${wrapperID}`);
+        if( wrapper !== null){
+            wrapper.click();
+        }
     }
 
     const scrollWithAlternateStrategy = () => { 
