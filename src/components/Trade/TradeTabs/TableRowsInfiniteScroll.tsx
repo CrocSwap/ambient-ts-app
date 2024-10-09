@@ -279,7 +279,8 @@ function TableRowsInfiniteScroll({
                     }
                     row.scrollIntoView({
                         block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
-                        behavior: 'instant' as ScrollBehavior,
+                        // behavior: 'instant' as ScrollBehavior,
+                        behavior: 'smooth' as ScrollBehavior,
                     });
                     setTimeout(() => {
                         const hiddenDiv = row.querySelectorAll('div[data-label="hidden-id"]')[0] as HTMLDivElement;
