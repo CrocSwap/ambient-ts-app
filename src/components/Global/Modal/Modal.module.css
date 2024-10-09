@@ -102,7 +102,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    padding-bottom: 56px;
+    /* padding-bottom: 56px; */
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     box-shadow: 0px -2px 8px rgba(0, 0, 0, 0.15);
@@ -115,6 +115,10 @@
     transition:
         height 0.3s ease,
         backdrop-filter 0.3s ease;
+
+        max-height: 70sdh;
+        overflow-y: auto;
+        
 }
 
 /* Drag handle for bottom sheet */

@@ -7,7 +7,6 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import { brand } from '../../../ambient-utils/constants';
 import Modal from '../Modal/Modal';
-import ModalHeader from '../ModalHeader/ModalHeader';
 import styles from './DropdownMenu2.module.css'
 import { motion } from 'framer-motion';
 // Interface for React functional components
