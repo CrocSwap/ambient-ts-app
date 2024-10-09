@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { FlexContainer, Text } from '../../../styled/Common';
 import styles from './LevelsCard.module.css';
 import { LuCopy, LuExternalLink } from 'react-icons/lu';
@@ -26,6 +27,7 @@ interface LevelsCardPropsIF {
         retroPoints: string;
     }[];
     jazziconsToDisplay: JSX.Element | null;
+    jazziconsToClip: { clip: string; display: string };
     truncatedAccountAddressOrEnsName: string;
     pointsRemainingToNextLevel: number | undefined;
     isViewMoreActive?: boolean;
@@ -41,6 +43,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
         progressPercentage,
         pointsData,
         jazziconsToDisplay,
+        jazziconsToClip,
         truncatedAccountAddressOrEnsName,
         pointsRemainingToNextLevel,
         resolvedAddress,
@@ -74,6 +77,16 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     const [hideLevelCardScroll, setHideLevelCardScroll] = useState(false);
     const copyCardToClipboard = async () => {
         if (levelsCanvasRef.current) {
+            const jazz = d3
+                .select(levelsCanvasRef.current)
+                .select('img')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .node() as any;
+
+            if (jazz) {
+                jazz.src = jazziconsToClip.clip;
+            }
+
             setHideLevelCardScroll(true);
             const blob = await printDomToImage(
                 levelsCanvasRef.current,
@@ -84,6 +97,7 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             if (blob) {
                 copy(blob);
                 openSnackbar('Card image copied to clipboard', 'info');
+                jazz.src = jazziconsToClip.display;
             }
         }
 
@@ -99,7 +113,11 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
             alignItems='center'
             justifyContent='center'
         >
-            <Link to={userLink} className={styles.user_image}>
+            <Link
+                to={userLink}
+                className={styles.user_image}
+                id='profilePicture'
+            >
                 {jazziconsToDisplay}
             </Link>
             <FlexContainer flexDirection='column'>
@@ -157,7 +175,11 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     if (isViewMoreActive) return pointsHistoryOnly;
 
     return (
-        <div className={styles.main_container} ref={levelsCanvasRef}>
+        <div
+            id='levelsCanvasCard'
+            className={styles.main_container}
+            ref={levelsCanvasRef}
+        >
             {header}
             <Text fontSize='header1' color='text1' padding='8px 32px'>
                 {`Level ${
