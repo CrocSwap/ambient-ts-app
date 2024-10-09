@@ -176,6 +176,7 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
+    openMobileSettingsModal: () => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -207,6 +208,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
+        openMobileSettingsModal,
     } = props;
 
     const {
@@ -1443,21 +1445,8 @@ export default function Chart(props: propsIF) {
                                 startTouch.clientY ===
                                     event.sourceEvent.changedTouches[0].clientY
                             ) {
-                                const canvas = d3
-                                    .select(d3CanvasMain.current)
-                                    .select('canvas')
-                                    .node() as HTMLCanvasElement;
-
-                                const rectCanvas =
-                                    canvas.getBoundingClientRect();
-
-                                setContextMenuPlacement({
-                                    top: rectCanvas.top,
-                                    left: rectCanvas.left + 10,
-                                    isReversed: false,
-                                });
-
-                                setContextmenu(true);
+                                openMobileSettingsModal();
+                                event.preventDefault();
                             }
 
                             if (
@@ -5567,7 +5556,7 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                    setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
+                setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (

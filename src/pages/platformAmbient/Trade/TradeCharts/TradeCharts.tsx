@@ -83,6 +83,7 @@ function TradeCharts(props: propsIF) {
         updateURL,
         isMobileSettingsModalOpen,
         closeMobileSettingsModal,
+        openMobileSettingsModal,
     } = props;
 
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
@@ -327,6 +328,7 @@ function TradeCharts(props: propsIF) {
             )}
         </section>
     );
+
     const timeFrameContent = smallScreen ? (
         <>
             {isMobileSettingsModalOpen && (
@@ -404,6 +406,7 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         updateURL={updateURL}
+                        openMobileSettingsModal={openMobileSettingsModal}
                     />
                 </div>
                 <TutorialOverlay
