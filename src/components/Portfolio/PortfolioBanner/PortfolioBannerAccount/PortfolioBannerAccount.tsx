@@ -31,6 +31,7 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
+import { linkGenMethodsIF, useLinkGen } from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     ensName: string;
@@ -71,6 +72,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         setUserProfileNFT,
         setUserThumbnailNFT,
         isUserConnected,
+        disconnectUser,
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
@@ -84,6 +86,9 @@ export default function PortfolioBannerAccount(props: propsIF) {
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
     const [showAccountDetails, setShowAccountDetails] =
         useState<boolean>(false);
@@ -209,7 +214,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                 : true,
                         )}
                 </div>
-
                 <div className={styles.wallet_info}>
                     <h3
                         className={styles.address_or_ens}
@@ -242,14 +246,21 @@ export default function PortfolioBannerAccount(props: propsIF) {
                 </div>
 
                 {isSmallScreen && isUserConnected && (
-                    <button
-                        className={styles.deposit_button}
-                        onClick={() =>
-                            setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                        }
-                    >
-                        Deposit/Withdraw
-                    </button>
+                    <div className={styles.button_bank}>
+                        <div>
+                            <button onClick={() => linkGenCurrent.navigate('points')}>
+                                Points
+                            </button>
+                            <button onClick={() => disconnectUser()}>Log Out</button>
+                        </div>
+                        <button
+                            onClick={() =>
+                                setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                            }
+                        >
+                            Deposit / Withdraw
+                        </button>
+                    </div>
                 )}
             </div>
 
