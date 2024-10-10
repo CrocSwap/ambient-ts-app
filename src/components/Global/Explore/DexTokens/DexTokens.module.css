@@ -62,16 +62,18 @@
     overflow-y: auto; /* Make only the content scrollable */
     scrollbar-gutter: stable; /* This will keep the layout stable when the scrollbar appears */
 
-    padding-right: 1rem;
+    overflow-x: hidden;
+
+    padding-right: 4px;
     padding-bottom: 1rem;
 }
 
 .borderRight {
     height: 100%;
-    width: 2px;
+    width: 1px;
     position: absolute;
     background-color: var(--dark3);
-    right: 18px;
+    right: 6px;
 }
 
 .tokens {
@@ -134,6 +136,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media only screen and (min-width: 600px) {
+    .contentContainer{
+        padding-right: 1rem;
+        overflow-x: auto;
+    }
+
+    .borderRight {
+        width: 2px;
+        right: 18px;
+    }
+
+
 }
 
 @media only screen and (min-width: 768px) {
