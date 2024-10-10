@@ -16,6 +16,7 @@ export const ExchangeBalanceDropdown = () => {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
     const escapePressed = useKeyPress('Escape');
+    
 
     useEffect(() => {
         if (fullLayoutActive && !tokenModalOpen && escapePressed) {

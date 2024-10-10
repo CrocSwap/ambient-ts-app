@@ -1,0 +1,167 @@
+@keyframes shimmer {
+    0% {
+        background-position: -1200px 0;
+    }
+    100% {
+        background-position: 1200px 0;
+    }
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 13px auto;
+    gap: 4px;
+    margin-top: 1rem;
+    position: relative;
+}
+
+.topBar {
+    background: var(--dark3);
+    height: 13px;
+    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background-size: 1200px 100%;
+    animation: shimmer 2.5s infinite ease-in-out; /* Adjust duration */
+}
+
+.content {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 24px auto 57px;
+}
+
+.leftSide,
+.rightSide {
+    background-color: var(--dark3);
+}
+
+.leftSide {
+    display: flex;
+    padding: 4px 4px 4px 0px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    align-self: stretch;
+    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background-size: 1200px 100%;
+    animation: shimmer 2.5s infinite ease-in-out; /* Adjust duration */
+}
+
+.leftSide span {
+    background: var(--dark2);
+    display: flex;
+    width: 20px;
+    height: 20px;
+    padding: 1.429px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.middleSide {
+    background-color: var(--dark2);
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+   align-items: center;
+    padding: 8px;
+    height: 100%;
+    animation: shimmer 2.5s infinite ease-in-out; /* Adjust duration */
+    background-size: 1200px 100%; /* Larger size to smoothen the loop */
+    padding: 1rem 3rem;
+}
+
+
+
+.shimmerBG {
+    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background-size: 1200px 100%;
+    animation: shimmer 2.5s infinite ease-in-out;
+}
+
+.rightSide {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-self: stretch;
+    gap: 8px;
+    background: var(--dark2);
+}
+
+.rightSideItem {
+    background: var(--dark3);
+    height: 100px;
+    width: 57px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    background: linear-gradient(to right, var(--dark1) 8%, var(--dark2) 18%, var(--dark1) 33%);
+    background-size: 1200px 100%;
+    animation: shimmer 2.5s infinite ease-in-out;
+}
+
+.rightSideItem span {
+    background: var(--dark3);
+    width: 57px;
+    height: 20px;
+}
+
+.loadingText{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+
+}
+
+/* Responsive Design: Smaller Screens */
+@media (max-width: 768px) {
+    .content {
+        grid-template-columns: 20px auto 40px; /* Adjust grid columns */
+    }
+
+    .rightSideItem {
+        height: 80px; /* Reduce the height */
+        width: 40px; /* Reduce the width */
+    }
+
+    .leftSide span {
+        width: 15px;
+        height: 15px; /* Reduce size of items on the left */
+    }
+
+    .middleSide svg {
+        width: 100%; /* Make the SVG responsive */
+        height: auto;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+    .content {
+        grid-template-columns: 15px auto 30px; /* Further reduce grid columns */
+    }
+
+    .rightSideItem {
+        height: 60px;
+        width: 30px; /* Adjust width and height for small screens */
+    }
+
+    .leftSide span {
+        width: 12px;
+        height: 12px; /* Further reduce size of items */
+    }
+
+    .middleSide svg {
+        width: 100%;
+        height: auto;
+    }
+
+    svg{
+        display: none;
+    }
+}

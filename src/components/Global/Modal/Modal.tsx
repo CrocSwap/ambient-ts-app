@@ -1,5 +1,5 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { motion, useAnimation, PanInfo } from 'framer-motion';
+import React, { ReactNode, useCallback, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
 import styles from './Modal.module.css';
@@ -7,6 +7,7 @@ import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../ambient-utils/constants';
 import { Container } from '../../../styled/Common';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useBottomSheet } from '../../../contexts/BottomSheetContext';
 
 interface ModalPropsIF {
     onClose: () => void;
@@ -35,15 +36,15 @@ export default function Modal(props: ModalPropsIF) {
         onClose = () => null,
     } = props;
 
-    const [isDragging, setIsDragging] = useState(false);
-    const controls = useAnimation();
+    const { openBottomSheet, closeBottomSheet, isBottomSheetOpen } =
+        useBottomSheet();
     const isMobile = useMediaQuery('(max-width: 500px)');
 
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
-            onClose();
+            handleClose();
         }
-    }, [onClose]);
+    }, []);
 
     useEffect(() => {
         document.addEventListener('keydown', escFunction, false);
@@ -52,21 +53,19 @@ export default function Modal(props: ModalPropsIF) {
         };
     }, [escFunction]);
 
+    // Open bottom sheet on mobile, close on desktop transition
     useEffect(() => {
-        controls.start('visible');
-    }, [controls]);
-
-    const handleDragStart = () => {
-        setIsDragging(true);
-    };
-
-    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        setIsDragging(false);
-        if (info.offset.y > 100 && isMobile) {
-            onClose();
-        } else {
-            controls.start({ y: 0 });
+        if (isMobile && !isBottomSheetOpen) {
+            openBottomSheet();
+        } else if (!isMobile && isBottomSheetOpen) {
+            closeBottomSheet();
         }
+    }, [isMobile, isBottomSheetOpen, openBottomSheet, closeBottomSheet]);
+
+    // Handle closing both modal and bottom sheet
+    const handleClose = () => {
+        onClose();
+        closeBottomSheet();
     };
 
     const headerJSX = !usingCustomHeader ? (
@@ -81,16 +80,16 @@ export default function Modal(props: ModalPropsIF) {
             <div className={styles.header_right}>
                 {headerRightItems}
                 <span />
-                <RiCloseFill
+                {!isMobile && <RiCloseFill
                     id='close_modal_button'
                     size={27}
                     className={styles.close_button}
-                    onClick={onClose}
+                    onClick={handleClose}
                     role='button'
                     tabIndex={-1}
                     aria-label='Close modal button'
                     style={{ cursor: 'pointer' }}
-                />
+                />}
             </div>
         </header>
     ) : null;
@@ -99,47 +98,72 @@ export default function Modal(props: ModalPropsIF) {
         <footer className={styles.modal_footer}>{footer}</footer>
     ) : null;
 
-    const variants = {
-        hidden: { opacity: 0, y: isMobile ? '100%' : 0, scale: isMobile ? 1 : 0.5 },
-        visible: { opacity: 1, y: 0, scale: 1 },
-    };
+    if (isMobile && isBottomSheetOpen) {
+        // Render Bottom Sheet style for mobile
+        return (
+            <>
+                <motion.div
+                    className={styles.modal_overlay}
+                    initial='hidden'
+                    animate={{ opacity: 1 }}
+                    exit='hidden'
+                    onClick={handleClose}
+                />
+                <motion.div
+                    className={styles.bottom_sheet}
+                    initial={{ y: window.innerHeight, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                        duration: 0.5,
+                        type: 'spring',
+                        damping: 25,
+                        stiffness: 200,
+                    }}
+                    drag='y'
+                    dragConstraints={{ top: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(e, info) => {
+                        if (info.offset.y > 100) handleClose();
+                    }}
+                >
+                    <div className={styles.sheet_handle}>
+                        <div className={styles.drag_handle} />
+                    </div>
+                    {headerJSX}
+                    <section className={styles.modal_content}>
+                        {children}
+                    </section>
+                    {footerJSX}
+                </motion.div>
+            </>
+        );
+    }
 
+    // Render traditional modal for non-mobile views
     return (
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={!isDragging ? onClose : undefined}
+                onMouseDown={handleClose}
                 role='dialog'
                 aria-modal='true'
             >
                 <motion.div
-                    drag={isMobile ? 'y' : false}
-                    dragConstraints={{ top: 0, bottom: 0 }}
-                    dragElastic={0.2}
-                    onDragStart={handleDragStart}
-                    onDragEnd={handleDragEnd}
-                    initial="hidden"
-                    animate={controls}
-                    exit="hidden"
-                    variants={variants}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4 }}
-                    className={`${styles.modal_body} ${noBackground ? styles.no_background_modal : ''}`}
+                    className={`
+                        ${styles.modal_body}
+                        ${noBackground ? styles.no_background_modal : null}
+                    `}
                     onMouseDown={(e) => e.stopPropagation()}
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <Container boxShadow={!isMobile ? 'gradient' : undefined}>
-                        {isMobile && (
-                            <div className={styles.drag_handle} />
-                        )}
+                    <Container boxShadow='gradient'>
                         {headerJSX}
-                        <section
-                            className={styles.modal_content}
-                            aria-live='polite'
-                            aria-atomic='true'
-                            aria-relevant='additions text'
-                        >
+                        <section className={styles.modal_content}>
                             {children}
                         </section>
                         {footerJSX}
