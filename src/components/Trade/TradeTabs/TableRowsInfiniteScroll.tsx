@@ -207,7 +207,7 @@ function TableRowsInfiniteScroll({
     }
 
     const shiftUp = (): void => {
-        if(shiftLockRef.current) {
+        if(shiftLockRef.current === true) {
             bindTableReadyState(true);
             return;
         }
@@ -220,7 +220,7 @@ function TableRowsInfiniteScroll({
     };
     
     const shiftDown = (): void => {
-        if(shiftLockRef.current) {
+        if(shiftLockRef.current === true) {
             bindTableReadyState(true);
             return;
         }
@@ -287,7 +287,7 @@ function TableRowsInfiniteScroll({
                                 behavior: 'smooth' // enables smooth scrolling
                               });
                         }
-                    }, 300)
+                    }, 100)
                 }
                 // const row = span.parentElement?.parentElement as HTMLDivElement;
 
