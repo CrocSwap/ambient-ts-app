@@ -157,7 +157,10 @@ export default function LevelsCard(props: LevelsCardPropsIF) {
     if (isViewMoreActive) return pointsHistoryOnly;
 
     return (
-        <div className={styles.main_container} ref={levelsCanvasRef}>
+        <div
+            className={styles.main_container}
+            ref={levelsCanvasRef}
+        >
             {header}
             <Text fontSize='header1' color='text1' padding='8px 32px'>
                 {`Level ${
