@@ -1,6 +1,5 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
 import Row from '../../../Global/Row/Row';
-import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
 
@@ -109,11 +108,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const totalValueContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
+           
             className={`${styles.info_container}`}
             style={{paddingBottom: showMobileVersion ? '16px' : '0'}}
         >
@@ -130,7 +126,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     <div className={styles.info_text}>{usdValue}</div>
                 </DefaultTooltip>
             </Row>
-        </motion.div>
+        </div>
     );
 
     const isAmbient = tx.positionType === 'ambient';
@@ -154,11 +150,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             : 'Market';
 
     const txTypeContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
+           
             className={styles.info_container}
             style={{paddingBottom: showMobileVersion ? '16px' : '0'}}
 
@@ -167,15 +160,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <span>Order Type: </span>
                 <div className={styles.info_text}>{changeTypeDisplay}</div>
             </Row>
-        </motion.div>
+        </div>
     );
 
     const buyQuoteRow = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
+           
             className={styles.info_container}
         >
             <Row>
@@ -200,15 +190,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     />
                 </div>
             </Row>
-        </motion.div>
+        </div>
     );
 
     const sellBaseRow = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
+          
             className={styles.info_container}
         >
             <Row>
@@ -233,15 +220,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     />
                 </div>
             </Row>
-        </motion.div>
+        </div>
     );
 
     const buyBaseRow = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
+           
             className={styles.info_container}
         >
             <Row>
@@ -266,15 +250,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     />
                 </div>
             </Row>
-        </motion.div>
+        </div>
     );
 
     const sellQuoteRow = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+        <div
+           
             className={styles.info_container}
         >
             <Row>
@@ -299,7 +280,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     />
                 </div>
             </Row>
-        </motion.div>
+        </div>
     );
 
     const PriceDisplay = (

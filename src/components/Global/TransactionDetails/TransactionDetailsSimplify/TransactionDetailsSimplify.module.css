@@ -7,7 +7,9 @@
     -moz-animation: fadeIn ease 1s;
     -o-animation: fadeIn ease 1s;
     -ms-animation: fadeIn ease 1s;
-    border: 1px solid var(--dark3);
+    border: none;
+   
+   
   
 }
 
@@ -16,7 +18,7 @@
     height: 100%;
     border-radius: var(--border-radius);
     backdrop-filter: blur(10px);
-
+    border: 1px solid var(--dark3);
     padding: 1rem;
 }
 
@@ -29,8 +31,13 @@
     cursor: default;
 }
 @media (max-width: 768px) {
+    .tx_details_container{
+        border: 1px solid var(--dark3);
+        min-height: 60vh;
+    }
 .info_content{
     padding: 0;
+    border: none;
 }
 
 

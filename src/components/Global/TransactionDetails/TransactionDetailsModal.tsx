@@ -7,6 +7,8 @@ import TransactionDetailsSimplify from './TransactionDetailsSimplify/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
@@ -186,20 +188,54 @@ function TransactionDetailsModal(props: propsIF) {
         </div>
     );
 
+    const [direction, setDirection] = useState<number>(0);
+
+    const variants = {
+      enter: (direction: number) => {
+        return {
+          x: direction > 0 ? 1000 : -1000,
+          opacity: 0
+        };
+      },
+      center: {
+        zIndex: 1,
+        x: 0,
+        opacity: 1
+      },
+      exit: (direction: number) => {
+        return {
+          zIndex: 0,
+          x: direction < 0 ? 1000 : -1000,
+          opacity: 0
+        };
+      }
+    };
+  
+    const swipeConfidenceThreshold = 10000;
+    const swipePower = (offset: number, velocity: number) => {
+      return Math.abs(offset) * velocity;
+    };
+  
+    const paginate = (newDirection: number) => {
+      setDirection(newDirection);
+      setShowShareComponent(!showShareComponent);
+    };
+  
+
     const mobileTabs = (
         <div className={styles.mobile_tabs_container}
         style={{paddingBottom: showShareComponent ? '0' : '8px' }}
         >
             <button
                 className={showShareComponent ? styles.active_button : ''}
-                onClick={() => setShowShareComponent(true)}
-            >
+                onClick={() => paginate(1)}
+                >
                 Overview
             </button>
             <button
                 className={!showShareComponent ? styles.active_button : ''}
-                onClick={() => setShowShareComponent(false)}
-            >
+                onClick={() => paginate(-1)}
+                >
                 Details
             </button>
         </div>
@@ -207,7 +243,32 @@ function TransactionDetailsModal(props: propsIF) {
 
     const shareComponentMobile = (
         <Modal usingCustomHeader onClose={onClose}>
-            <div className={styles.transaction_details_mobile}>
+                  <AnimatePresence initial={false} custom={direction}>
+
+            <motion.div className={styles.transaction_details_mobile}
+             key={showShareComponent ? 'share' : 'details'}
+             custom={direction}
+             variants={variants}
+             initial="enter"
+             animate="center"
+             exit="exit"
+             transition={{
+               x: { type: 'spring', stiffness: 300, damping: 30 },
+               opacity: { duration: 0.2 }
+             }}
+             drag="x"
+             dragConstraints={{ left: 0, right: 0 }}
+             dragElastic={1}
+             onDragEnd={(e: PointerEvent, { offset, velocity }: PanInfo) => {
+                const swipe = swipePower(offset.x, velocity.x);
+              
+                if (swipe < -swipeConfidenceThreshold) {
+                  paginate(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  paginate(-1);
+                }
+              }}
+                >
                 <ModalHeader title={'Transaction Details'} onClose={onClose} />
                 {mobileTabs}
                 {!showShareComponent ? (
@@ -237,7 +298,9 @@ function TransactionDetailsModal(props: propsIF) {
                         </div>
                     </>
                 )}
-            </div>
+                </motion.div>
+                </AnimatePresence >
+
         </Modal>
     );
 

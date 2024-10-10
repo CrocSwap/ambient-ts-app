@@ -190,7 +190,7 @@
         'info'
         'graph';
     width: 100%;
-    height: 95svh; 
+    height: 100svh; 
     
     padding: 16px;
 }
@@ -215,6 +215,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    
 }
 
 /* Make sure the graph takes full space */
