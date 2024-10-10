@@ -386,17 +386,19 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
 
     return (
         <div className={styles.tx_details_container}>
-            <div className={styles.info_content}>
-                {infoContent.map((info, idx) => (
-                    <InfoRow
-                        key={info.title + idx}
-                        title={info.title}
-                        content={info.content}
-                        explanation={info.explanation}
-                    />
-                ))}
+    <div className={styles.info_content}>
+        {infoContent.map((info, idx) => (
+            <div key={info.title + idx}>
+                <InfoRow
+                    title={info.title}
+                    content={info.content}
+                    explanation={info.explanation}
+                />
             </div>
-        </div>
+        ))}
+    </div>
+</div>
+
     );
 }
 

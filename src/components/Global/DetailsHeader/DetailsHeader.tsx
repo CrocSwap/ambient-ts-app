@@ -58,6 +58,7 @@ export default function DetailsHeader(props: DetailsHeaderPropsIF) {
                     className={styles.logo_text}
                 />
             </section>
+            
             {/* <div>something here</div> */}
 
             <section className={styles.settings_control}>

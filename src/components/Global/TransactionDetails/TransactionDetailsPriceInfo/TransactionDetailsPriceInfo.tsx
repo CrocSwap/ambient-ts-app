@@ -14,6 +14,7 @@ import { TokenContext } from '../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 type ItemIF = {
     slug: string;
@@ -58,6 +59,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
     } = useProcessTransaction(tx, userAddress, crocEnv);
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
 
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
@@ -111,7 +114,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className={styles.info_container}
+            className={`${styles.info_container}`}
+            style={{paddingBottom: showMobileVersion ? '16px' : '0'}}
         >
             <Row>
                 <span>Order Value: </span>
@@ -156,6 +160,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className={styles.info_container}
+            style={{paddingBottom: showMobileVersion ? '16px' : '0'}}
+
         >
             <Row>
                 <span>Order Type: </span>
@@ -377,27 +383,39 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </div>
     );
 
+    const orderValueBuy = isDenomBaseLocal
+    ? isBuy
+        ? sellBaseRow
+        : buyBaseRow
+    : isBuy
+    ? buyQuoteRow
+            : sellQuoteRow
+    
+    const orderValueSell = isDenomBaseLocal
+    ? isBuy
+        ? buyQuoteRow
+        : sellQuoteRow
+    : isBuy
+    ? sellBaseRow
+    : buyBaseRow
+
     return (
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
+             
+
                 {tokenPairDetails}
                 {txTypeContent}
-                {isDenomBaseLocal
-                    ? isBuy
-                        ? sellBaseRow
-                        : buyBaseRow
-                    : isBuy
-                    ? buyQuoteRow
-                    : sellQuoteRow}
-                {isDenomBaseLocal
-                    ? isBuy
-                        ? buyQuoteRow
-                        : sellQuoteRow
-                    : isBuy
-                    ? sellBaseRow
-                    : buyBaseRow}
                 {controlItems[2] && totalValueContent}
+                <span className={styles.dividerMobile} />
+                <>
+                {orderValueBuy}
+                {orderValueSell}
+                </>
+                <span className={styles.dividerMobile}/>
+
                 {PriceDisplay}
+              
                 {tx.entityType === 'liqchange' && positionApy !== 0 ? (
                     <Apy
                         amount={positionApy}

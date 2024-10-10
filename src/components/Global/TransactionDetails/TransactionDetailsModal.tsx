@@ -20,6 +20,8 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import Modal from '../Modal/Modal';
 import DetailsHeader from '../DetailsHeader/DetailsHeader';
+import ModalHeader from '../ModalHeader/ModalHeader';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     tx: TransactionIF;
@@ -29,6 +31,8 @@ interface propsIF {
 }
 
 function TransactionDetailsModal(props: propsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
         props;
     const {
@@ -178,11 +182,66 @@ function TransactionDetailsModal(props: propsIF) {
                     />
                 </div>
             </div>
-            <p className={styles.ambi_copyright}>ambient.finance</p>
+            {/* <p className={styles.ambi_copyright}>ambient.finance</p> */}
         </div>
     );
 
- 
+    const mobileTabs = (
+        <div className={styles.mobile_tabs_container}
+        style={{paddingBottom: showShareComponent ? '0' : '8px' }}
+        >
+            <button
+                className={showShareComponent ? styles.active_button : ''}
+                onClick={() => setShowShareComponent(true)}
+            >
+                Overview
+            </button>
+            <button
+                className={!showShareComponent ? styles.active_button : ''}
+                onClick={() => setShowShareComponent(false)}
+            >
+                Details
+            </button>
+        </div>
+    );
+
+    const shareComponentMobile = (
+        <Modal usingCustomHeader onClose={onClose}>
+            <div className={styles.transaction_details_mobile}>
+                <ModalHeader title={'Transaction Details'} onClose={onClose} />
+                {mobileTabs}
+                {!showShareComponent ? (
+                    <TransactionDetailsSimplify
+                        tx={tx}
+                        isAccountView={isAccountView}
+                        timeFirstMintMemo={timeFirstMintMemo}
+                    />
+                ) : (
+                    <>
+                        <TransactionDetailsPriceInfo
+                            tx={tx}
+                            controlItems={controlItems}
+                            positionApy={updatedPositionApy}
+                            isAccountView={isAccountView}
+                        />
+                        <div className={styles.graph_section_mobile}>
+                            <TransactionDetailsGraph
+                                tx={tx}
+                                transactionType={tx.entityType}
+                                isBaseTokenMoneynessGreaterOrEqual={
+                                    isBaseTokenMoneynessGreaterOrEqual
+                                }
+                                isAccountView={isAccountView}
+                                timeFirstMintMemo={timeFirstMintMemo}
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
+        </Modal>
+    );
+
+    if (showMobileVersion) return shareComponentMobile;
 
     return (
         <Modal usingCustomHeader onClose={onClose}>

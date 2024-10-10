@@ -65,15 +65,7 @@
     cursor: default;
 }
 
-@media only screen and (max-width:600px) {
-    .main_content {
 
-        display: grid;
-        grid-template-rows: 1fr 0.6fr;
-    }
-
-  
-}
 
 @media only screen and (min-width: 768px) {
     .outer_container {
@@ -151,5 +143,95 @@
     }
     100% {
         opacity: 1;
+    }
+}
+
+/* MOBILE DETAILS MODALS */
+
+.mobile_tabs_container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.mobile_tabs_container button {
+    outline: none;
+    border: 1px solid transparent;
+    display: flex;
+    padding: 5px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 50px;
+    background: var(--dark2, #12121a);
+
+    color: var(--text-text2, #8b98a5);
+    text-align: center;
+    /* small */
+    font-family: 'Lexend Deca';
+    font-size: var(--body-size);
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+}
+
+.mobile_tabs_container .active_button {
+    border: 1px solid var(--accent-accent1, #7371fc);
+}
+.transaction_details_mobile {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+        'header'
+        'tabs'
+        'info'
+        'graph';
+    width: 100%;
+    height: 95svh; 
+    
+    padding: 16px;
+}
+
+.transaction_details_header {
+    grid-area: header;
+}
+
+/* Price info section */
+.transaction_details_info {
+    grid-area: info;
+}
+
+.mobile_tabs_container {
+    grid-area: tabs;
+}
+/* Graph section */
+.graph_section_mobile {
+    grid-area: graph;
+    width: 100%;
+    min-height: 200px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Make sure the graph takes full space */
+.graph_section canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+/* Responsive adjustments for super small screens */
+@media (max-width: 375px) {
+    .transaction_details_mobile {
+        height: auto; 
+        padding: 12px;
+    }
+    
+    .graph_section_mobile {
+        max-height: 40vh; 
     }
 }

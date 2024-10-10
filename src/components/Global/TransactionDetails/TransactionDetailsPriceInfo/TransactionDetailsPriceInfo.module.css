@@ -24,7 +24,7 @@
     align-items: center;
     gap: 8px;
     border-radius: var(--border-radius);
-    padding: 0.6rem;
+   
 
     font-weight: 300;
     color: var(--text2);
@@ -58,6 +58,7 @@
     flex-direction: column;
     gap: 4px;
     align-items: center;
+    padding-top: 16px;
 }
 
 .min_max_price p {
@@ -97,16 +98,18 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    gap: 1rem;
     align-items: center;
     cursor: default;
+    padding-bottom: 1rem;
 }
 
 .token_pair_details p {
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
     color: var(--text1);
     font-weight: 300;
+  
+   padding-left: 8px;
 }
 .tx_details {
     /* cursor: pointer; */
@@ -147,9 +150,40 @@
     gap: 4px;
 }
 
+.dividerMobile{
+    width: 100%;
+    height: 1px;
+    background: var(--dark3)
+}
+
+
 @media only screen and (min-width: 768px) {
+    .token_pair_details p {
+        font-size: var(--header2-size);
+        line-height: var(--header2-lh);
+       
+    }
+
+    .min_max_price{
+        padding-top: 0;
+    }
+
+    .info_container{
+        padding: 0.6rem;
+    }
     .price_info_container,
     .main_container {
         gap: 1rem;
+    }
+
+    .dividerMobile{
+        display: none;
+    }
+
+    .token_pair_details{
+        padding-bottom: 0;
+    }
+    .rowPadding{
+        padding-bottom: none;
     }
 }
