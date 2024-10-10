@@ -962,9 +962,13 @@ export default function TransactionDetailsGraph(
             context.fillStyle = 'rgba(189,189,189,0.6)';
             context.font = '10px Lexend Deca';
 
-            const factor = mobileView ? 7 : 5;
+            const factor = mobileView ? 7 :  5 ;
 
-            const tickTempValues = scaleData.xScale.ticks(factor);
+            let tickTempValues = scaleData.xScale.ticks(factor);
+            
+            if (!mobileView && tickTempValues.length > 7) {                
+                tickTempValues = scaleData.xScale.ticks(3);
+            }            
 
             tickTempValues.map((tick: any) => {
                 if (

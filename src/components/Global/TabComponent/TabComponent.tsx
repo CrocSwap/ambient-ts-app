@@ -336,6 +336,7 @@ export default function TabComponent(props: TabPropsIF) {
 
     return (
         <div
+        
             className={styles.tab_window}
             style={{ background: backgroundStyle }}
             role='tablist'

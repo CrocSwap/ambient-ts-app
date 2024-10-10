@@ -8,7 +8,7 @@ export const fetchNFT = async (
     pageKey: string,
     pageSize: number,
 ): Promise<fetchNFTReturn> => {
-    if (!crocEnv) return;
+    if (!crocEnv || !ALCHEMY_API_KEY) return;
 
     const options = { method: 'GET', headers: { accept: 'application/json' } };
 
