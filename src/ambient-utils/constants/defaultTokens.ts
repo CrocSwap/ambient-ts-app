@@ -443,6 +443,16 @@ export const scrollWeETH: TokenIF = {
         'https://tokenlogo.xyz/assets/token/0x7e7d4467112689329f7e06571ed0e8cbad4910ee.svg',
 };
 
+export const scrollScroll: TokenIF = {
+    name: 'Scroll',
+    address: '0xd29687c813d741e2f938f4ac377128810e217b1b',
+    symbol: 'SCR',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://assets.coingecko.com/coins/images/50571/thumb/scroll.jpg?1728376125',
+};
+
 export const scrollSCROLLY: TokenIF = {
     name: 'Scrolly The Map',
     address: '0xb65aD8d81d1E4Cb2975352338805AF6e39BA8Be8',
@@ -750,6 +760,7 @@ export const defaultTokens: TokenIF[] = [
     scrollWrappedETH,
     scrollWstETH,
     scrollWeETH,
+    scrollScroll,
     scrollSCROLLY,
     scrollSTG,
     scrollSCRIBES,

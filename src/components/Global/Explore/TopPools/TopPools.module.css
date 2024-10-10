@@ -66,17 +66,18 @@
     ); /* Adjust this value based on your header's height */
     overflow-y: auto; /* Make only the content scrollable */
     scrollbar-gutter: stable; /* This will keep the layout stable when the scrollbar appears */
+    overflow-x: hidden;
 
-    padding-right: 1rem;
+    padding-right: 4px;
     padding-bottom: 1rem;
 }
 
 .borderRight {
     height: 100%;
-    width: 2px;
+    width: 1px;
     position: absolute;
     background-color: var(--dark3);
-    right: 18px;
+    right: 6px;
 }
 
 .tokens {
@@ -142,11 +143,26 @@
 .no_results button:hover {
     color: var(--text2);
 }
+@media only screen and (min-width: 600px) {
+    .contentContainer{
+        padding-right: 1rem;
+        overflow-x: auto;
+    }
+
+    .borderRight {
+        width: 2px;
+        right: 18px;
+    }
+
+
+}
 
 @media only screen and (min-width: 768px) {
     .mainContainer {
         border: none;
     }
+
+ 
     .no_results {
         height: 70%;
     }

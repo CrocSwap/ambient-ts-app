@@ -1,31 +1,39 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { memoizePromiseFn } from '../dataLayer/functions/memoizePromiseFn';
-import { Alchemy } from 'alchemy-sdk';
+import { ALCHEMY_API_KEY } from '../constants';
 
 export const fetchNFT = async (
     address: string,
     crocEnv: CrocEnv | undefined,
-    client: Alchemy,
     pageKey: string,
     pageSize: number,
 ): Promise<fetchNFTReturn> => {
-    if (!crocEnv) return;
+    if (!crocEnv || !ALCHEMY_API_KEY) return;
 
-    const nftsForOwnerResponse = await client.nft.getNftsForOwner(address, {
-        pageKey: pageKey,
-        pageSize: pageSize,
-    });
+    const options = { method: 'GET', headers: { accept: 'application/json' } };
 
-    const nftData = nftsForOwnerResponse.ownedNfts;
-    const totalNFTCount = nftsForOwnerResponse.totalCount;
-    const pageKeyResponse = nftsForOwnerResponse.pageKey;
+    try {
+        const response = await fetch(
+            `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/getNFTsForOwner?owner=${address}&withMetadata=true&pageSize=${pageSize}&pageKey=${pageKey}`,
+            options,
+        );
 
-    return {
-        NFTData: nftData,
-        totalNFTCount: totalNFTCount,
-        pageKey: pageKeyResponse,
-        userHasNFT: nftsForOwnerResponse.totalCount > 0,
-    };
+        const data = await response.json();
+
+        const nftData = data.ownedNfts;
+        const totalNFTCount = data.totalCount;
+        const pageKeyResponse = data.pageKey;
+
+        return {
+            NFTData: nftData,
+            totalNFTCount: totalNFTCount,
+            pageKey: pageKeyResponse,
+            userHasNFT: totalNFTCount > 0,
+        };
+    } catch (error) {
+        console.error(error);
+        return undefined;
+    }
 };
 
 export type fetchNFTReturn =
@@ -41,7 +49,6 @@ export type fetchNFTReturn =
 export type NFTQueryFn = (
     address: string,
     crocEnv: CrocEnv | undefined,
-    client: Alchemy,
     pageKey: string,
     pageSize: number,
 ) => Promise<fetchNFTReturn>;

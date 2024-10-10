@@ -586,7 +586,7 @@ function TvlChart(props: TvlData) {
                 style={{
                     display: 'block',
                     gridColumnStart: 1,
-                    gridColumnEnd: 4,
+                    gridColumnEnd: 3,
                     gridRowStart: 1,
                     gridRowEnd: 3,
                 }}
@@ -599,7 +599,7 @@ function TvlChart(props: TvlData) {
                 style={{
                     display: 'block',
                     gridColumnStart: 1,
-                    gridColumnEnd: 4,
+                    gridColumnEnd: 3,
                     gridRowStart: 1,
                     gridRowEnd: 3,
                 }}
@@ -625,7 +625,8 @@ function TvlChart(props: TvlData) {
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 3,
+                    gridColumnStart: 3,
+                    gridColumnEnd: 4,
                     gridRowStart: 1,
                     gridRowEnd: 3,
                 }}
