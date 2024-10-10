@@ -39,6 +39,12 @@ enum ScrollDirection {
     DOWN,
 }
 
+enum InfScrollAction {
+    SHIFT_UP,
+    SHIFT_DOWN,
+    ADD_MORE_DATA
+}
+
 enum ScrollPosition {
     TOP,
     BOTTOM,
@@ -131,6 +137,9 @@ function TableRowsInfiniteScroll({
     const shiftLockRef = useRef<boolean>();
     shiftLockRef.current = shiftLock;
 
+
+    const [actionHistory, setActionHistory] = useState('');
+
     const bindWrapperEl = () => {
         if(isSmallScreen){
             return document.getElementById(`infinite_scroll_wrapper_${wrapperID}`)?.parentElement;
@@ -157,6 +166,7 @@ function TableRowsInfiniteScroll({
   
 
     const scrollToTop = () => {
+        setActionHistory('');
         setLastSeenTxID('');
         setPagesVisible([0, 1]);
         if(wrapperEl){
@@ -217,6 +227,7 @@ function TableRowsInfiniteScroll({
         }, 100)
         setPagesVisible((prev) => [prev[0] - 1, prev[1] - 1]);
         triggerAutoScroll(ScrollDirection.UP);
+        addToActionHistory(InfScrollAction.SHIFT_UP);
     };
     
     const shiftDown = (): void => {
@@ -230,6 +241,7 @@ function TableRowsInfiniteScroll({
         }, 100)
         setPagesVisible((prev) => [prev[0] + 1, prev[1] + 1]);
         triggerAutoScroll(ScrollDirection.DOWN);
+        addToActionHistory(InfScrollAction.SHIFT_DOWN)
     };
 
     
@@ -246,7 +258,8 @@ function TableRowsInfiniteScroll({
             <div style={{padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
-            <div style={{left: '12rem', top: '1.2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>lastSeenTX : {lastSeenTxIDRef.current}</div>
+            <div style={{left: '12rem', top: '2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
+            <div style={{left: '12rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: shiftLockRef.current === true ? 'red': 'green'}}></div>
             </span>
             </>)
         }else{
@@ -485,6 +498,29 @@ function TableRowsInfiniteScroll({
 
 
 
+    const addToActionHistory = (actionType: InfScrollAction) => {
+
+        setActionHistory( prev => {
+
+            let actionToken = '';
+
+            switch(actionType){
+                case InfScrollAction.SHIFT_UP: 
+                    actionToken = '↑'
+                break;
+                case InfScrollAction.SHIFT_DOWN:
+                    actionToken = '↓'
+                break;
+                case InfScrollAction.ADD_MORE_DATA:
+                    actionToken = '…'
+            }
+
+
+            return prev += (' ' + actionToken);
+        })
+        
+    }
+
     useEffect(() => {
         domDebug('moreDataLoading', moreDataLoading);
         domDebug('page', pagesVisible[0]);
@@ -534,7 +570,9 @@ function TableRowsInfiniteScroll({
 
     const addMoreData = async() => {
         // setMoreDataLoading(true);
-        fetcherFunction();
+        await fetcherFunction();
+        addToActionHistory(InfScrollAction.ADD_MORE_DATA)
+        lockShift();
         // setMoreDataLoading(false);
         // if(changePage){
         //     setExtraPagesAvailable((prev) => prev + 1);
