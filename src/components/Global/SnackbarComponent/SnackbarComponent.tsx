@@ -87,7 +87,7 @@ function SnackbarComponent() {
                 onClose={handleClose}
                 anchorOrigin={anchorOrigin}
                 // z-index needs to be greater than globalPopup
-                style={{ width: '900px', zIndex: 10000000 }}
+                style={{ width: '900px', zIndex: 99999999999 }}
             >
                 <motion.div
                     initial={{ scale: 0.5 }}
