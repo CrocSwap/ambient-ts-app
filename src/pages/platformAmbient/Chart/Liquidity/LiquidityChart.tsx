@@ -34,6 +34,7 @@ import {
 import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ChartThemeIF } from '../../../../contexts/ChartContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -133,6 +134,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         colorChangeTrigger,
         setColorChangeTrigger,
     } = props;
+
+    const mobileView = useMediaQuery('(max-width: 1200px)');
 
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
@@ -264,7 +267,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     ]);
 
     useEffect(() => {
-        if (liquidityScale && scaleData) {
+        if (liquidityScale && scaleData && mobileView) {
             const mergedLiqData = liqDataBid.concat(liqDataAsk);
 
             const topBoundary = scaleData.yScale.domain()[1];
@@ -278,9 +281,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             const domain = d3.max(filtered, (d) => d.activeLiq);
 
-            liquidityScale.domain([0, domain * 1.1]);
+            liquidityScale.domain([0, domain]);
         }
-    }, [diffHashSigScaleData(scaleData, 'y')]);
+    }, [diffHashSigScaleData(scaleData, 'y'), mobileView]);
 
     useEffect(() => {
         if (
