@@ -48,10 +48,6 @@ export default function Level(props: propsIF) {
     const { xpLeaders } = useContext(XpLeadersContext);
 
     const [shownAvatar, setShownAvatar] = useState<ReactElement>(<></>);
-    const [jazziconsToClip, setJazziconsToClip] = useState<{
-        clip: string;
-        display: string;
-    }>({ clip: '', display: '' });
 
     useEffect(() => {
         (async () => {
@@ -62,14 +58,7 @@ export default function Level(props: propsIF) {
                   : '';
             const avatarData = await getAvatarRest(walletID);
 
-            setJazziconsToClip(() => {
-                return {
-                    clip: avatarData.avatarCompressed,
-                    display: avatarData.avatarImage,
-                };
-            });
-
-            setShownAvatar(getAvatarComponent(walletID, avatarData, 50));
+            setShownAvatar(getAvatarComponent(walletID, avatarData, 50, true));
         })();
     }, [resolvedAddress, userAddress]);
 
@@ -163,7 +152,6 @@ export default function Level(props: propsIF) {
         progressPercentage,
         pointsData,
         jazziconsToDisplay,
-        jazziconsToClip,
         resolvedAddress,
         pointsRemainingToNextLevel: xpData?.data?.pointsRemainingToNextLevel,
         isViewMoreActive,
