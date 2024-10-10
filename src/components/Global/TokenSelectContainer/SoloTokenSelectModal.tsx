@@ -260,6 +260,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // logic to add and remove placeholder text from the `<input>` field
     const [hidePlaceholderText, setHidePlaceholderText] = useState<boolean>(INPUT_HAS_AUTOFOCUS);
 
+    const ex = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate atque ipsum dolore mollitia, sunt voluptate blanditiis reprehenderit deleniti, minus amet veniam nulla, natus doloribus a itaque impedit ipsam iste consectetur. Enim laboriosam consequuntur, quisquam quam ea maiores accusantium officia, dolore amet quod ipsa inventore blanditiis accusamus recusandae facere necessitatibus minus?'
+
     return (
         <Modal
             title='Select Token'
@@ -270,6 +272,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         >
             <section className={styles.container}>
                 <div className={styles.input_control_container}>
+               
                     <input
                         type='text'
                         id='token_select_input_field'
@@ -307,6 +310,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         </button>
                     )}
                 </div>
+                <div className={styles.scrollContainer}>
                 <div style={{ padding: '1rem' }}>
                     {platform !== 'futa' &&
                         isWrappedNativeToken(validatedInput) && (
@@ -435,6 +439,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 fromListsText=''
                             />
                         ))}
+                </div>
+                
+            
             </section>
         </Modal>
     );

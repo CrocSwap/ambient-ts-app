@@ -80,6 +80,8 @@
 /* Modal content */
 .modal_content {
     border-radius: var(--border-radius);
+    scrollbar-width: 5px !important;
+    scrollbar-color: var(--accent1) var(--dark2);
 }
 
 /* Close button styles */
