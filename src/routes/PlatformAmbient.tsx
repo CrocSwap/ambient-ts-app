@@ -9,7 +9,6 @@ import InitPool from '../pages/platformAmbient/InitPool/InitPool';
 import Portfolio from '../pages/platformAmbient/Portfolio/Portfolio';
 import Explore from '../pages/platformAmbient/Explore/Explore';
 import Swap from '../pages/platformAmbient/Swap/Swap';
-
 import NotFound from '../pages/common/NotFound/NotFound';
 import ExampleForm from '../pages/platformAmbient/InitPool/FormExample';
 import Limit from '../pages/platformAmbient/Trade/Limit/Limit';
