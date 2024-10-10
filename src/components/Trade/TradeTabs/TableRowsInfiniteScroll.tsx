@@ -264,12 +264,12 @@ function TableRowsInfiniteScroll({
 
             return (<>
             <span style={{fontSize: '.72rem'}}>
-            <div style={{padding: '.5rem 1rem', background: 'black', color: `${isTableReady ? 'rgba(0, 255,0)' : 'rgba(255, 0,0)'}`, position: 'absolute', left: '1rem', top: '1.7rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>Ready? : </div>
-            <div style={{padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '1rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
+            <div style={{display: 'none', padding: '.5rem 1rem', background: 'black', color: `${isTableReady ? 'rgba(0, 255,0)' : 'rgba(255, 0,0)'}`, position: 'absolute', left: '1rem', top: '1.7rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>Ready? : </div>
+            <div style={{display: 'none', padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '0rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
-            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
-            <div style={{left: '12rem', top: '2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
-            <div style={{left: '12rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: reqLockRef.current === true ? 'red': 'green'}}></div>
+            <div style={{display: 'none',position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
+            <div style={{left: '1rem', top: '0rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
+            <div style={{right: '0rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: reqLockRef.current === true ? 'red': 'green'}}></div>
             </span>
             </>)
         }else{
@@ -283,6 +283,21 @@ function TableRowsInfiniteScroll({
     }, [sortBy, showAllData]);
 
     domDebug('moreDataAvailable', moreDataAvailableRef.current);
+
+    const doIphoneFix = () => {
+        if(isIOS()){
+            setTimeout(() => {
+                if(wrapperEl){
+                    // addToActionHistory(InfScrollAction.SLIGHT_SCROLL);
+                    wrapperEl.scrollBy({
+                        top: -2,    // scroll vertically by 2px
+                        left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
+                        behavior: 'smooth' // enables smooth scrolling
+                      });
+                }
+            }, 100)
+        }
+    }
 
     const scrollByTxID = (txID: string, pos: ScrollPosition): void => {
         if(txID.length === 0) return;
@@ -302,20 +317,8 @@ function TableRowsInfiniteScroll({
                         block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
                         behavior: 'instant' as ScrollBehavior,
                     });
-                    console.log(wrapperEl)
-                    if(isIOS()){
-                        setTimeout(() => {
-                            if(wrapperEl){
-                                wrapperEl.style.border = '1px solid red'
-                                addToActionHistory(InfScrollAction.SLIGHT_SCROLL);
-                                wrapperEl.scrollBy({
-                                    top: -2,    // scroll vertically by 2px
-                                    left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
-                                    behavior: 'smooth' // enables smooth scrolling
-                                  });
-                            }
-                        }, 100)
-                    }
+                    doIphoneFix();
+                    
                 }
                 // const row = span.parentElement?.parentElement as HTMLDivElement;
 
@@ -423,6 +426,7 @@ function TableRowsInfiniteScroll({
                     behavior: 'instant' as ScrollBehavior,
                 });
             }
+            doIphoneFix();
         }
     };
 
