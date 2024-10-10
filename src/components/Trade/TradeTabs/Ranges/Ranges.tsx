@@ -1137,8 +1137,15 @@ const addMoreData = async() => {
         <div onKeyDown={handleKeyDownViewRanges} style={{ height: '100%' }}>
             <ul
                 ref={listRef}
-                // id='current_row_scroll'
-                style={{ height: '100%' }}
+                id='current_row_scroll'
+                // style={{ height: '100%' }}
+                style={
+                    isSmallScreen
+                        ? isAccountView
+                            ? { maxHeight: 'calc(100svh - 310px)', overflowY:'auto' }
+                            : { height: 'calc(100svh - 300px)', overflowY:'auto' }
+                        : undefined
+                }
             >
                 {!isAccountView &&
                     pendingPositionsToDisplayPlaceholder.length > 0 &&

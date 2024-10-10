@@ -42,7 +42,8 @@ enum ScrollDirection {
 enum InfScrollAction {
     SHIFT_UP,
     SHIFT_DOWN,
-    ADD_MORE_DATA
+    ADD_MORE_DATA,
+    SLIGHT_SCROLL
 }
 
 enum ScrollPosition {
@@ -71,6 +72,11 @@ function TableRowsInfiniteScroll({
     moreDataLoading
     
 }: propsIF) {
+
+    const isIOS = (): boolean => {
+        const userAgent = navigator.userAgent;
+        return /iPad|iPhone|iPod/.test(userAgent);
+    };
 
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
@@ -136,6 +142,10 @@ function TableRowsInfiniteScroll({
     const [shiftLock, setShiftLock] = useState(false);
     const shiftLockRef = useRef<boolean>();
     shiftLockRef.current = shiftLock;
+
+    const [reqLock, setReqLock] = useState(false);
+    const reqLockRef = useRef<boolean>();
+    reqLockRef.current = reqLock;
 
 
     const [actionHistory, setActionHistory] = useState('');
@@ -259,7 +269,7 @@ function TableRowsInfiniteScroll({
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '50%', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '12rem', top: '2rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
-            <div style={{left: '12rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: shiftLockRef.current === true ? 'red': 'green'}}></div>
+            <div style={{left: '12rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: reqLockRef.current === true ? 'red': 'green'}}></div>
             </span>
             </>)
         }else{
@@ -292,15 +302,20 @@ function TableRowsInfiniteScroll({
                         block: pos === ScrollPosition.BOTTOM ? 'end' : 'start',
                         behavior: 'instant' as ScrollBehavior,
                     });
-                    setTimeout(() => {
-                        if(wrapperEl){
-                            wrapperEl.scrollBy({
-                                top: -2,    // scroll vertically by 2px
-                                left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
-                                behavior: 'smooth' // enables smooth scrolling
-                              });
-                        }
-                    }, 100)
+                    console.log(wrapperEl)
+                    if(isIOS()){
+                        setTimeout(() => {
+                            if(wrapperEl){
+                                wrapperEl.style.border = '1px solid red'
+                                addToActionHistory(InfScrollAction.SLIGHT_SCROLL);
+                                wrapperEl.scrollBy({
+                                    top: -2,    // scroll vertically by 2px
+                                    left: 0,   // scroll horizontally by 0px (you can adjust this if needed)
+                                    behavior: 'smooth' // enables smooth scrolling
+                                  });
+                            }
+                        }, 100)
+                    }
                 }
                 // const row = span.parentElement?.parentElement as HTMLDivElement;
 
@@ -513,6 +528,10 @@ function TableRowsInfiniteScroll({
                 break;
                 case InfScrollAction.ADD_MORE_DATA:
                     actionToken = '…'
+                    break;
+                case InfScrollAction.SLIGHT_SCROLL:
+                    actionToken = '~'
+                    break;
             }
 
 
@@ -568,8 +587,19 @@ function TableRowsInfiniteScroll({
 
 
 
+    const lockReq = () => {
+        setReqLock(true);
+        setTimeout(() => {
+            setReqLock(false);
+        }, 700);
+    }
+
+
     const addMoreData = async() => {
         // setMoreDataLoading(true);
+
+        if(reqLockRef.current === true) return;
+        lockReq();
         await fetcherFunction();
         addToActionHistory(InfScrollAction.ADD_MORE_DATA)
         lockShift();
