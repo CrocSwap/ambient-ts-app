@@ -1446,7 +1446,6 @@ export default function Chart(props: propsIF) {
                                     event.sourceEvent.changedTouches[0].clientY
                             ) {
                                 openMobileSettingsModal();
-                                event.preventDefault();
                             }
 
                             if (
@@ -4723,22 +4722,27 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'contextmenu',
                 (event: PointerEvent) => {
-                    if (!event.shiftKey) {
+                    if (mobileView) {
                         event.preventDefault();
-
-                        const screenHeight = window.innerHeight;
-
-                        const diff = screenHeight - event.clientY;
-
-                        setContextMenuPlacement({
-                            top: event.clientY,
-                            left: event.clientX,
-                            isReversed: diff < 350,
-                        });
-
-                        setContextmenu(true);
+                        openMobileSettingsModal();
                     } else {
-                        setContextmenu(false);
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            const screenHeight = window.innerHeight;
+
+                            const diff = screenHeight - event.clientY;
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                                isReversed: diff < 350,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
                     }
                 },
             );
