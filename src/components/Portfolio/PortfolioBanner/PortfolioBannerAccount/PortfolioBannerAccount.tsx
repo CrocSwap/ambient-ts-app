@@ -31,7 +31,7 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
-import { linkGenMethodsIF, useLinkGen } from '../../../../utils/hooks/useLinkGen';
+import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     ensName: string;
@@ -73,6 +73,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
         setUserThumbnailNFT,
         isUserConnected,
         disconnectUser,
+        resolvedAddressFromContext
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
@@ -85,10 +86,9 @@ export default function PortfolioBannerAccount(props: propsIF) {
         chainData: { blockExplorer },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
-    const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
+    const navigate = useNavigate();
 
-    // hook to generate navigation actions with pre-loaded path
-    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+    const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
     const [showAccountDetails, setShowAccountDetails] =
         useState<boolean>(false);
@@ -230,8 +230,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         {addressToDisplay && addressToDisplay.length > 8
                             ? trimString(addressToDisplay, 5, 3)
                             : addressToDisplay}
-                        {addressToDisplay ? <FiCopy size={'12px'} /> : null}
-                        {addressToDisplay ? (
+                        {addressToDisplay && <FiCopy size={'12px'} />}
+                        {addressToDisplay && (
                             <FiExternalLink
                                 size={'12px'}
                                 onClick={(e) => {
@@ -241,25 +241,39 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                     e.stopPropagation();
                                 }}
                             />
-                        ) : null}
+                        )}
                     </div>
                 </div>
-
-                {isSmallScreen && isUserConnected && (
+                {
+                    // differential view for small screens
+                    // some items only appear when viewing your own page
+                    isSmallScreen && (
                     <div className={styles.button_bank}>
                         <div>
-                            <button onClick={() => linkGenCurrent.navigate('points')}>
+                            <button onClick={() => {
+                                const linkToNavigateTo: string = (ensName || userAddress)
+                                    ? `/${ensName || userAddress}/xp`
+                                    : resolvedAddressFromContext
+                                    ? `/${resolvedAddressFromContext}/xp`
+                                    : `/${userAddress}/xp`;
+                                navigate(linkToNavigateTo);
+                            }}>
                                 Points
                             </button>
-                            <button onClick={() => disconnectUser()}>Log Out</button>
+                            {
+                                isUserConnected &&
+                                    <button onClick={() => disconnectUser()}>
+                                        Log Out
+                                    </button>
+                            }
                         </div>
-                        <button
+                        {isUserConnected && <button
                             onClick={() =>
                                 setShowTabsAndNotExchange(!showTabsAndNotExchange)
                             }
                         >
                             Deposit / Withdraw
-                        </button>
+                        </button>}
                     </div>
                 )}
             </div>

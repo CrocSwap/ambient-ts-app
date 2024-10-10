@@ -51,7 +51,6 @@ import {
 import medal from '../../../assets/images/icons/medal.svg';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
 
 // interface for React functional component props
@@ -434,34 +433,34 @@ export default function PortfolioTabs(props: propsIF) {
     }, [location.pathname]);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+    // const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
-    // navigate the URL when the user changes tabs
-    useEffect(() => {
-        const go = (t: string): void => linkGenCurrent.navigate(t);
-        if (isSmallScreen) switch(activeTab) {
-            case 'Transactions':
-                go('transactions');
-                break;
-            case 'Limits':
-                go('limits');
-                break;
-            case 'Liquidity':
-                go('liquidity');
-                break;
-            case 'Points':
-                go('points');
-                break;
-            case 'Exchange Balances':
-                go('exchange-balances');
-                break;
-            case 'Wallet Balances':
-                go('wallet-balances');
-                break;
-            default:
-                null;
-        }
-    }, [activeTab]);
+    // // navigate the URL when the user changes tabs
+    // useEffect(() => {
+    //     const go = (t: string): void => linkGenCurrent.navigate(t);
+    //     if (isSmallScreen) switch(activeTab) {
+    //         case 'Transactions':
+    //             go('transactions');
+    //             break;
+    //         case 'Limits':
+    //             go('limits');
+    //             break;
+    //         case 'Liquidity':
+    //             go('liquidity');
+    //             break;
+    //         case 'Points':
+    //             go('points');
+    //             break;
+    //         case 'Exchange Balances':
+    //             go('exchange-balances');
+    //             break;
+    //         case 'Wallet Balances':
+    //             go('wallet-balances');
+    //             break;
+    //         default:
+    //             null;
+    //     }
+    // }, [activeTab]);
 
     const renderTabContent = (): JSX.Element | null => {
         const selectedTabData =dataToUse.find(
