@@ -23,7 +23,7 @@ interface propsIF {
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
-import { LuSettings2 } from 'react-icons/lu';
+import { LuSettings, LuSettings2 } from 'react-icons/lu';
 
 function TradeModuleHeader(props: propsIF) {
     const { slippage, dexBalSwap, bypassConfirm, settingsTitle, isSwapPage } =
@@ -74,7 +74,7 @@ function TradeModuleHeader(props: propsIF) {
                         aria-label='Settings button'
                         className={styles.icon_container}
                     >
-                        <LuSettings2 size={22} />
+                       {smallScreen ? <LuSettings size={20} /> : <LuSettings2 size={22} />}
                     </button>
                 </div>
                 {isSettingsModalOpen && (

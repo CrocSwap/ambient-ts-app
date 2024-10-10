@@ -23,6 +23,7 @@ export function DetailedBox(props: DetailedBoxPropsIF) {
                         <TooltipComponent
                             title={tooltipText}
                             placement='bottom'
+                            usePopups
                         />
                     )}
                 </FlexContainer>

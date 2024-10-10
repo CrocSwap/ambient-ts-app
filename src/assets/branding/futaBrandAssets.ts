@@ -5,7 +5,9 @@ export const futaBrandAssets: brandIF = {
     networks: {
         // ethereum sepolia
         '0xaa36a7': {
-            color: 'futa_dark',
+            // first value in array is default color scheme
+            color: ['futa_dark', 'purple_dark', 'purple_light'],
+            premiumColor: [],
             hero: [{ content: 'futa', processAs: 'text' }],
         },
     },
