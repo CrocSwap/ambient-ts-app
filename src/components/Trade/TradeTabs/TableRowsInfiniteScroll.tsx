@@ -174,11 +174,11 @@ function TableRowsInfiniteScroll({
         }
     };
     
-    // const setTransactionTableOpacity = (val: string) => {
-    //     if(wrapperEl){
-    //         wrapperEl.style.opacity = val;
-    //     }
-    // };
+    const setTransactionTableOpacity = (val: string) => {
+        if(wrapperEl){
+            wrapperEl.style.opacity = val;
+        }
+    };
 
 
     const triggerAutoScroll = (
