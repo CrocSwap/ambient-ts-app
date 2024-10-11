@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import useWebSocket from 'react-use-websocket';
 import {
-    ALCHEMY_API_KEY,
     BLOCK_POLLING_RPC_URL,
     IS_LOCAL_ENV,
     MAINNET_RPC_URL,
@@ -44,7 +43,6 @@ import {
 import { BLAST_RPC_URL } from '../ambient-utils/constants/networks/blastNetwork';
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
-import { Network, Alchemy } from 'alchemy-sdk';
 import { fetchNFT } from '../ambient-utils/api/fetchNft';
 import { ReceiptContext } from './ReceiptContext';
 
@@ -126,13 +124,6 @@ export const ChainDataContextProvider = (props: {
         '0x82750',
         '0x8274f',
     ];
-
-    const settings = {
-        apiKey: ALCHEMY_API_KEY,
-        network: Network.ETH_MAINNET,
-    };
-
-    const alchemyClient = new Alchemy(settings);
 
     // boolean representing whether the active network is an L2
     const isActiveNetworkL2: boolean = L2_NETWORKS.includes(chainData.chainId);
@@ -283,8 +274,7 @@ export const ChainDataContextProvider = (props: {
                     crocEnv &&
                     isUserConnected &&
                     userAddress &&
-                    chainData.chainId &&
-                    alchemyClient
+                    chainData.chainId
                 ) {
                     try {
                         const fetchFunction = isfetchNftTriggered
@@ -296,7 +286,6 @@ export const ChainDataContextProvider = (props: {
                                 ? nftTestWalletAddress
                                 : userAddress,
                             crocEnv,
-                            alchemyClient,
                             NFTFetchSettings.pageKey,
                             NFTFetchSettings.pageSize,
                         );
@@ -380,7 +369,6 @@ export const ChainDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         // everyFiveMinutes,
-        alchemyClient !== undefined,
         activeNetwork.graphCacheUrl,
         isfetchNftTriggered,
     ]);
