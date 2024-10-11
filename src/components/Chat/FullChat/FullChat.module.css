@@ -273,6 +273,7 @@
     border: 1px solid #f3bc4188;
     color: #f3bc41cc;
     padding: 0 0.6rem;
+    z-index: 3;
 }
 
 
