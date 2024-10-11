@@ -162,7 +162,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
 
     const memoizedChartSettings = useMemo<LocalChartSettingsIF>(() => {
         if (isSaving) {
-            console.log('isSaving');
             const localSettings = {
                 chartColors: {
                     upCandleBodyColor: chartThemeColors.upCandleBodyColor
@@ -210,7 +209,6 @@ export default function ChartSettingsContent(props: ContextMenuContentIF) {
 
             return localSettings;
         } else {
-            console.log('else');
             const CHART_CONTEXT_SETTINGS_LOCAL_STORAGE = localStorage.getItem(
                 LS_KEY_CHART_CONTEXT_SETTINGS,
             );
