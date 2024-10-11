@@ -24,6 +24,7 @@ import TransactionDetailsLiquidityGraph from './TransactionDetailsLiquidityGraph
 import { CACHE_UPDATE_FREQ_IN_MS } from '../../../../ambient-utils/constants';
 import { toDisplayPrice } from '@crocswap-libs/sdk';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { FlexContainer } from '../../../../styled/Common';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -1485,7 +1486,13 @@ export default function TransactionDetailsGraph(
         ],
     );
 
-    const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;
+    const loadingSpinner =
+        <FlexContainer fullWidth fullHeight justifyContent='center' alignItems='center'
+       
+        >
+
+        <Spinner size={100} bg='var(--dark1)' centered />;
+        </FlexContainer>
 
     const placeholderImage = (
         <div className='transaction_details_graph_placeholder' />
