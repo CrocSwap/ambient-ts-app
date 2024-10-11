@@ -43,7 +43,6 @@ interface propsIF {
 }
 
 export default function PriceInfo(props: propsIF) {
-    const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const {
         limitOrder,
