@@ -69,6 +69,7 @@ const ContextMenuContextText = styled.div`
     font-family: Lexend Deca;
     font-size: 12px;
     font-weight: 300;
+
     line-height: 15px;
     letter-spacing: -0.02em;
     text-align: left;
@@ -93,6 +94,8 @@ const CheckListContainer = styled.div`
 `;
 
 const CheckList = styled.div`
+    position: relative;
+    
     display: flex;
 
     flex-direction: row;
@@ -247,8 +250,6 @@ const StyledSelectbox = styled.div`
     height: 23px;
 
     cursor: pointer;
-
-    padding: 4px;
 
     border-radius: 4px;
 

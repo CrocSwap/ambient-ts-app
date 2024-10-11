@@ -67,10 +67,11 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: Dispatch<SetStateAction<boolean>>;
     updateURL: (changes: updatesIF) => void;
+    openMobileSettingsModal: () => void;
 }
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate, updateURL } = props;
+    const { selectedDate, setSelectedDate, updateURL, openMobileSettingsModal } = props;
 
     const {
         candleData,
@@ -1201,6 +1202,8 @@ function TradeCandleStickChart(props: propsIF) {
                             setIsCompletedFetchData={setIsCompletedFetchData}
                             setChartResetStatus={setChartResetStatus}
                             chartResetStatus={chartResetStatus}
+                            openMobileSettingsModal={openMobileSettingsModal}
+
                         />
                     </>
                 )}
