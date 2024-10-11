@@ -68,12 +68,20 @@
 .button_bank button {
     font-size: 12px;
     outline: none;
+    padding: 4px;
+    border-radius: 20px;
+}
+
+.dark_button {
     background: transparent;
     border: 1px solid var(--accent1);
     color: var(--accent1);
-    padding: 4px;
-    border-radius: 20px;
-    /* min-width: 120px; */
+}
+
+.logout_button {
+    background-color: var(--accent1);
+    border: 1px solid var(--accent1);
+    color: var(--text1);
 }
 
 @media only screen and (max-width: 768px) {

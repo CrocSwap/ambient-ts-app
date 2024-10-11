@@ -250,7 +250,7 @@ export default function PortfolioBannerAccount(props: propsIF) {
                     isSmallScreen && (
                     <div className={styles.button_bank}>
                         <div>
-                            <button onClick={() => {
+                            <button className={styles.dark_button} onClick={() => {
                                 const linkToNavigateTo: string = (ensName || userAddress)
                                     ? `/${ensName || userAddress}/xp`
                                     : resolvedAddressFromContext
@@ -262,12 +262,16 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             </button>
                             {
                                 isUserConnected &&
-                                    <button onClick={() => disconnectUser()}>
+                                    <button
+                                        className={styles.logout_button}
+                                        onClick={() => disconnectUser()}
+                                    >
                                         Log Out
                                     </button>
                             }
                         </div>
                         {isUserConnected && <button
+                            className={styles.dark_button}
                             onClick={() =>
                                 setShowTabsAndNotExchange(!showTabsAndNotExchange)
                             }
