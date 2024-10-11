@@ -111,6 +111,7 @@ import {
     mainCanvasElementId,
     xAxisBuffer,
     xAxisHeightPixel,
+    xAxisMobileBuffer,
 } from './ChartUtils/chartConstants';
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
 import OrderHistoryTooltip from './OrderHistoryCh/OrderHistoryTooltip';
@@ -2614,7 +2615,9 @@ export default function Chart(props: propsIF) {
             const liqBuffer =
                 liqMode === 'none' || ['futa'].includes(platformName)
                     ? 0.95
-                    : xAxisBuffer;
+                    : mobileView
+                      ? xAxisMobileBuffer
+                      : xAxisBuffer;
 
             const centerX = snappedTime;
             const diff =
