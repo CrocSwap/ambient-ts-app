@@ -1,19 +1,19 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
-import Row from '../../../Global/Row/Row';
-import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
+import Row from '../../../Row/Row';
+import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
 
-import { TokenIF, TransactionIF } from '../../../../ambient-utils/types';
+import { TokenIF, TransactionIF } from '../../../../../ambient-utils/types';
 import { useLocation } from 'react-router-dom';
-import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-import TokenIcon from '../../TokenIcon/TokenIcon';
-import { uriToHttp } from '../../../../ambient-utils/dataLayer';
-import Apy from '../../Tabs/Apy/Apy';
-import { TokenContext } from '../../../../contexts/TokenContext';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
+import { uriToHttp } from '../../../../../ambient-utils/dataLayer';
+import Apy from '../../../Tabs/Apy/Apy';
+import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 type ItemIF = {
     slug: string;
@@ -59,7 +59,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         quoteTokenAddress,
     } = useProcessTransaction(tx, userAddress, crocEnv);
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
-
 
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
@@ -109,9 +108,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
 
     const totalValueContent = (
         <div
-           
             className={`${styles.info_container}`}
-            style={{paddingBottom: showMobileVersion ? '16px' : '0'}}
+            style={{ paddingBottom: showMobileVersion ? '16px' : '0' }}
         >
             <Row>
                 <span>Order Value: </span>
@@ -138,23 +136,21 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         changeType === 'harvest'
             ? 'Range Harvest'
             : changeType === 'mint'
-            ? entityType === 'limitOrder'
-                ? 'Limit'
-                : 'Range'
-            : changeType === 'burn'
-            ? entityType === 'limitOrder'
-                ? 'Limit Removal'
-                : 'Range Removal'
-            : changeType === 'recover'
-            ? 'Limit Claim'
-            : 'Market';
+              ? entityType === 'limitOrder'
+                  ? 'Limit'
+                  : 'Range'
+              : changeType === 'burn'
+                ? entityType === 'limitOrder'
+                    ? 'Limit Removal'
+                    : 'Range Removal'
+                : changeType === 'recover'
+                  ? 'Limit Claim'
+                  : 'Market';
 
     const txTypeContent = (
         <div
-           
             className={styles.info_container}
-            style={{paddingBottom: showMobileVersion ? '16px' : '0'}}
-
+            style={{ paddingBottom: showMobileVersion ? '16px' : '0' }}
         >
             <Row>
                 <span>Order Type: </span>
@@ -164,17 +160,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const buyQuoteRow = (
-        <div
-           
-            className={styles.info_container}
-        >
+        <div className={styles.info_container}>
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
                         ? tx.quoteSymbol + ': '
                         : tx.changeType === 'burn'
-                        ? tx.quoteSymbol + ' Claimed: '
-                        : 'Buy: '}
+                          ? tx.quoteSymbol + ' Claimed: '
+                          : 'Buy: '}
                 </p>
                 <div className={styles.info_text}>
                     {tx.entityType !== 'limitOrder' ||
@@ -194,17 +187,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const sellBaseRow = (
-        <div
-          
-            className={styles.info_container}
-        >
+        <div className={styles.info_container}>
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
                         ? tx.baseSymbol + ': '
                         : tx.changeType === 'burn'
-                        ? tx.baseSymbol + ' Removed: '
-                        : 'Sell: '}
+                          ? tx.baseSymbol + ' Removed: '
+                          : 'Sell: '}
                 </p>
                 <div className={styles.info_text}>
                     {tx.entityType !== 'limitOrder' ||
@@ -224,17 +214,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const buyBaseRow = (
-        <div
-           
-            className={styles.info_container}
-        >
+        <div className={styles.info_container}>
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
                         ? tx.baseSymbol + ': '
                         : tx.changeType === 'burn'
-                        ? tx.baseSymbol + ' Claimed: '
-                        : 'Buy: '}
+                          ? tx.baseSymbol + ' Claimed: '
+                          : 'Buy: '}
                 </p>
                 <div className={styles.info_text}>
                     {tx.entityType !== 'limitOrder' ||
@@ -254,17 +241,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const sellQuoteRow = (
-        <div
-           
-            className={styles.info_container}
-        >
+        <div className={styles.info_container}>
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
                         ? tx.quoteSymbol + ': '
                         : tx.changeType === 'burn'
-                        ? tx.quoteSymbol + ' Removed: '
-                        : 'Sell: '}
+                          ? tx.quoteSymbol + ' Removed: '
+                          : 'Sell: '}
                 </p>
                 <div className={styles.info_text}>
                     {tx.entityType !== 'limitOrder' ||
@@ -289,8 +273,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {tx.entityType === 'liqchange'
                     ? 'Price Range'
                     : tx.entityType === 'limitOrder'
-                    ? 'Limit Price'
-                    : 'Price'}
+                      ? 'Limit Price'
+                      : 'Price'}
             </p>
             {isAmbient ? (
                 <span className={styles.min_price}>
@@ -365,38 +349,36 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const orderValueBuy = isDenomBaseLocal
-    ? isBuy
-        ? sellBaseRow
-        : buyBaseRow
-    : isBuy
-    ? buyQuoteRow
-            : sellQuoteRow
-    
+        ? isBuy
+            ? sellBaseRow
+            : buyBaseRow
+        : isBuy
+          ? buyQuoteRow
+          : sellQuoteRow;
+
     const orderValueSell = isDenomBaseLocal
-    ? isBuy
-        ? buyQuoteRow
-        : sellQuoteRow
-    : isBuy
-    ? sellBaseRow
-    : buyBaseRow
+        ? isBuy
+            ? buyQuoteRow
+            : sellQuoteRow
+        : isBuy
+          ? sellBaseRow
+          : buyBaseRow;
 
     return (
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
-             
-
                 {tokenPairDetails}
                 {txTypeContent}
                 {controlItems[2] && totalValueContent}
                 <span className={styles.dividerMobile} />
                 <>
-                {orderValueBuy}
-                {orderValueSell}
+                    {orderValueBuy}
+                    {orderValueSell}
                 </>
-                <span className={styles.dividerMobile}/>
+                <span className={styles.dividerMobile} />
 
                 {PriceDisplay}
-              
+
                 {tx.entityType === 'liqchange' && positionApy !== 0 ? (
                     <Apy
                         amount={positionApy}

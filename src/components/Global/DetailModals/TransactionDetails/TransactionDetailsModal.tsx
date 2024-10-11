@@ -1,28 +1,32 @@
-import styles from './TransactionDetailsModal.module.css';
+import styles from '../TransactionDetailsModal.module.css';
 import { useState, useRef, useContext, useEffect, memo } from 'react';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
-import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
-import { TransactionIF, PositionServerIF } from '../../../ambient-utils/types';
+import {
+    TransactionIF,
+    PositionServerIF,
+} from '../../../../ambient-utils/types';
 import TransactionDetailsSimplify from './TransactionDetailsSimplify/TransactionDetailsSimplify';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import modalBackground from '../../../assets/images/backgrounds/background.png';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import modalBackground from '../../../../assets/images/backgrounds/background.png';
 
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
-} from '../../../ambient-utils/constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+} from '../../../../ambient-utils/constants';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import {
     getPositionData,
     printDomToImage,
-} from '../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import Modal from '../Modal/Modal';
+} from '../../../../ambient-utils/dataLayer';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import Modal from '../../Modal/Modal';
 import DetailsHeader from '../DetailsHeader/DetailsHeader';
-import ModalHeader from '../ModalHeader/ModalHeader';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import ModalHeader from '../../ModalHeader/ModalHeader';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import TransactionDetailsGraph from '../TransactionDetailsGraph/TransactionDetailsGraph';
+import MobileDetailTabs from '../MobileDetailTabs/MobileDetailTabs';
 
 interface propsIF {
     tx: TransactionIF;
@@ -187,53 +191,35 @@ function TransactionDetailsModal(props: propsIF) {
         </div>
     );
 
-    const mobileTabs = (
-        <div
-            className={styles.mobile_tabs_container}
-            style={{ paddingBottom: showShareComponent ? '0' : '8px' }}
-        >
-            <button
-                className={showShareComponent ? styles.active_button : ''}
-                onClick={() => setShowShareComponent(true)}
-            >
-                Overview
-            </button>
-            <button
-                className={!showShareComponent ? styles.active_button : ''}
-                onClick={() => setShowShareComponent(false)}
-            >
-                Details
-            </button>
-        </div>
-    );
 
-    const mobileGraph = (
-        <div className={styles.mobile_price_graph_container}>
-            <TransactionDetailsPriceInfo
-                tx={tx}
-                controlItems={controlItems}
-                positionApy={updatedPositionApy}
-                isAccountView={isAccountView}
-            />
-            <div className={styles.graph_section_mobile}>
-                <TransactionDetailsGraph
-                    tx={tx}
-                    transactionType={tx.entityType}
-                    isBaseTokenMoneynessGreaterOrEqual={
-                        isBaseTokenMoneynessGreaterOrEqual
-                    }
-                    isAccountView={isAccountView}
-                    timeFirstMintMemo={timeFirstMintMemo}
-                />
-            </div>
-        </div>
-    );
+
+    // const mobileGraph = (
+    //     <div className={styles.mobile_price_graph_container}>
+    //         <TransactionDetailsPriceInfo
+    //             tx={tx}
+    //             controlItems={controlItems}
+    //             positionApy={updatedPositionApy}
+    //             isAccountView={isAccountView}
+    //         />
+    //         <div className={styles.graph_section_mobile}>
+    //             <TransactionDetailsGraph
+    //                 tx={tx}
+    //                 transactionType={tx.entityType}
+    //                 isBaseTokenMoneynessGreaterOrEqual={
+    //                     isBaseTokenMoneynessGreaterOrEqual
+    //                 }
+    //                 isAccountView={isAccountView}
+    //                 timeFirstMintMemo={timeFirstMintMemo}
+    //             />
+    //         </div>
+    //     </div>
+    // );
 
     const shareComponentMobile = (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.transaction_details_mobile}>
                 <ModalHeader title={'Transaction Details'} onClose={onClose} />
-                {mobileTabs}
+                <MobileDetailTabs showShareComponent={showShareComponent} setShowShareComponent={setShowShareComponent} />
                 {!showShareComponent ? (
                     <TransactionDetailsSimplify
                         tx={tx}
@@ -241,7 +227,25 @@ function TransactionDetailsModal(props: propsIF) {
                         timeFirstMintMemo={timeFirstMintMemo}
                     />
                 ) : (
-                    mobileGraph
+                    <div className={styles.mobile_price_graph_container}>
+                        <TransactionDetailsPriceInfo
+                            tx={tx}
+                            controlItems={controlItems}
+                            positionApy={updatedPositionApy}
+                            isAccountView={isAccountView}
+                        />
+                        <div className={styles.graph_section_mobile}>
+                            <TransactionDetailsGraph
+                                tx={tx}
+                                transactionType={tx.entityType}
+                                isBaseTokenMoneynessGreaterOrEqual={
+                                    isBaseTokenMoneynessGreaterOrEqual
+                                }
+                                isAccountView={isAccountView}
+                                timeFirstMintMemo={timeFirstMintMemo}
+                            />
+                        </div>
+                    </div>
                 )}
             </div>
         </Modal>

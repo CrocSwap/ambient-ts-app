@@ -1,18 +1,21 @@
 import styles from './RangeDetailsSimplify.module.css';
-import { BlastRewardsDataIF, PositionIF } from '../../../ambient-utils/types';
-import { useProcessRange } from '../../../utils/hooks/useProcessRange';
-import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import {
+    BlastRewardsDataIF,
+    PositionIF,
+} from '../../../../../ambient-utils/types';
+import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import moment from 'moment';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { memo, useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import InfoRow from '../../Global/InfoRow';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import InfoRow from '../../../InfoRow';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
@@ -26,6 +29,8 @@ interface RangeDetailsSimplifyPropsIF {
 
 // TODO: refactor to using styled-components
 function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const {
         position,
         baseFeesDisplay,
@@ -173,8 +178,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
     const status = isAmbient
         ? 'Ambient'
         : isPositionInRange
-        ? 'In Range'
-        : 'Out of Range';
+          ? 'In Range'
+          : 'Out of Range';
 
     const firstMintTime =
         moment(timeFirstMintMemo * 1000).format('MM/DD/YYYY HH:mm') +
@@ -258,12 +263,12 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             content: isAmbient
                 ? ambientOrMin
                 : isAccountView
-                ? isBaseTokenMoneynessGreaterOrEqual
-                    ? `1 ${quoteTokenSymbol} = ${minRangeDenomByMoneyness} ${baseTokenSymbol}`
-                    : `1 ${baseTokenSymbol} = ${minRangeDenomByMoneyness} ${quoteTokenSymbol}`
-                : isDenomBase
-                ? `1 ${baseTokenSymbol} = ${ambientOrMin} ${quoteTokenSymbol}`
-                : `1 ${quoteTokenSymbol} = ${ambientOrMin} ${baseTokenSymbol}`,
+                  ? isBaseTokenMoneynessGreaterOrEqual
+                      ? `1 ${quoteTokenSymbol} = ${minRangeDenomByMoneyness} ${baseTokenSymbol}`
+                      : `1 ${baseTokenSymbol} = ${minRangeDenomByMoneyness} ${quoteTokenSymbol}`
+                  : isDenomBase
+                    ? `1 ${baseTokenSymbol} = ${ambientOrMin} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} = ${ambientOrMin} ${baseTokenSymbol}`,
             explanation: 'The low price boundary of the range',
         },
         {
@@ -271,12 +276,12 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             content: isAmbient
                 ? ambientOrMax
                 : isAccountView
-                ? isBaseTokenMoneynessGreaterOrEqual
-                    ? `1 ${quoteTokenSymbol} = ${maxRangeDenomByMoneyness} ${baseTokenSymbol}`
-                    : `1 ${baseTokenSymbol} = ${maxRangeDenomByMoneyness} ${quoteTokenSymbol}`
-                : isDenomBase
-                ? `1 ${baseTokenSymbol} = ${ambientOrMax} ${quoteTokenSymbol}`
-                : `1 ${quoteTokenSymbol} = ${ambientOrMax} ${baseTokenSymbol}`,
+                  ? isBaseTokenMoneynessGreaterOrEqual
+                      ? `1 ${quoteTokenSymbol} = ${maxRangeDenomByMoneyness} ${baseTokenSymbol}`
+                      : `1 ${baseTokenSymbol} = ${maxRangeDenomByMoneyness} ${quoteTokenSymbol}`
+                  : isDenomBase
+                    ? `1 ${baseTokenSymbol} = ${ambientOrMax} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} = ${ambientOrMax} ${baseTokenSymbol}`,
             explanation: 'The upper price boundary of the range',
         },
 
@@ -357,8 +362,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                     ? 13
                     : 11
                 : isActiveNetworkBlast
-                ? 15
-                : 13,
+                  ? 15
+                  : 13,
             0,
             {
                 title: 'Time Last Updated ',
@@ -368,7 +373,22 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
             },
         );
     }
-
+    if (showMobileVersion) return (
+        <div className={styles.tx_details_container}>
+        <div className={styles.main_container}>
+            <section>
+                {infoContent.map((info, idx) => (
+                    <InfoRow
+                        key={info.title + idx}
+                        title={info.title}
+                        content={info.content}
+                        explanation={info.explanation}
+                    />
+                ))}
+            </section>
+        </div>
+    </div>
+    )
     return (
         <div className={styles.tx_details_container}>
             <div className={styles.main_container}>
@@ -381,8 +401,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                                     ? 12
                                     : 10
                                 : isActiveNetworkBlast
-                                ? 14
-                                : 12,
+                                  ? 14
+                                  : 12,
                         )
                         .map((info, idx) => (
                             <InfoRow
@@ -402,8 +422,8 @@ function RangeDetailsSimplify(props: RangeDetailsSimplifyPropsIF) {
                                     ? 12
                                     : 10
                                 : isActiveNetworkBlast
-                                ? 14
-                                : 12,
+                                  ? 14
+                                  : 12,
                             infoContent.length,
                         )
                         .map((info, idx) => (

@@ -1,16 +1,16 @@
 import styles from './PriceInfo.module.css';
 
-import Apy from '../../Global/Tabs/Apy/Apy';
+import Apy from '../../../Tabs/Apy/Apy';
 import { useLocation } from 'react-router-dom';
-import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import TokenIcon from '../../../TokenIcon/TokenIcon';
 import {
     PositionIF,
     BlastRewardsDataIF,
     TokenIF,
-} from '../../../ambient-utils/types';
+} from '../../../../../ambient-utils/types';
 import { useContext } from 'react';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 
 interface propsIF {
     position: PositionIF;
@@ -146,12 +146,13 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '0'
                         : isOnTradeRoute
-                        ? (isDenomBaseLocal
-                              ? quoteTokenCharacter
-                              : baseTokenCharacter) + lowRangeDisplay
-                        : (isDenomBaseLocal
-                              ? quoteTokenCharacter
-                              : baseTokenCharacter) + minRangeDenomByMoneyness}
+                          ? (isDenomBaseLocal
+                                ? quoteTokenCharacter
+                                : baseTokenCharacter) + lowRangeDisplay
+                          : (isDenomBaseLocal
+                                ? quoteTokenCharacter
+                                : baseTokenCharacter) +
+                            minRangeDenomByMoneyness}
                 </h2>
             </section>
 
@@ -161,12 +162,13 @@ export default function PriceInfo(props: propsIF) {
                     {isAmbient
                         ? '∞'
                         : isOnTradeRoute
-                        ? (isDenomBaseLocal
-                              ? quoteTokenCharacter
-                              : baseTokenCharacter) + highRangeDisplay
-                        : (isDenomBaseLocal
-                              ? quoteTokenCharacter
-                              : baseTokenCharacter) + maxRangeDenomByMoneyness}
+                          ? (isDenomBaseLocal
+                                ? quoteTokenCharacter
+                                : baseTokenCharacter) + highRangeDisplay
+                          : (isDenomBaseLocal
+                                ? quoteTokenCharacter
+                                : baseTokenCharacter) +
+                            maxRangeDenomByMoneyness}
                 </h2>
             </section>
         </div>

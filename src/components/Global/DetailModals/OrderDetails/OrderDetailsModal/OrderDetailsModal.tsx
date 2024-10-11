@@ -1,31 +1,37 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 
-import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
+import styles from '../../TransactionDetailsModal.module.css';
 import PriceInfo from '../PriceInfo/PriceInfo';
-import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
-import { LimitOrderIF, LimitOrderServerIF } from '../../../ambient-utils/types';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
+import {
+    LimitOrderIF,
+    LimitOrderServerIF,
+} from '../../../../../ambient-utils/types';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
-import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
     IS_LOCAL_ENV,
-} from '../../../ambient-utils/constants';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+} from '../../../../../ambient-utils/constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import {
     getLimitOrderData,
     getFormattedNumber,
     printDomToImage,
-} from '../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import Modal from '../../Global/Modal/Modal';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import DetailsHeader from '../../Global/DetailsHeader/DetailsHeader';
+} from '../../../../../ambient-utils/dataLayer';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import modalBackground from '../../../../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import Modal from '../../../../Global/Modal/Modal';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import DetailsHeader from '../../DetailsHeader/DetailsHeader';
+import ModalHeader from '../../../ModalHeader/ModalHeader';
+import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -35,6 +41,8 @@ interface propsIF {
 }
 
 export default function OrderDetailsModal(props: propsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const {
         limitOrder,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -231,50 +239,73 @@ export default function OrderDetailsModal(props: propsIF) {
         }
     }, [limitOrder.timeFirstMint]);
 
+    const DetailsProps = {
+        limitOrder: limitOrder,
+        timeFirstMintMemo: timeFirstMintMemo,
+        usdValue: usdValue,
+        isBid: isBid,
+        isDenomBase: isDenomBase,
+        baseCollateralDisplay: baseCollateralDisplay,
+        quoteCollateralDisplay: quoteCollateralDisplay,
+        isOrderFilled: isClaimable,
+        baseDisplayFrontend: baseDisplayFrontend,
+        quoteDisplayFrontend: quoteDisplayFrontend,
+        quoteTokenLogo: quoteTokenLogo,
+        baseTokenLogo: baseTokenLogo,
+        baseTokenSymbol: baseTokenSymbol,
+        quoteTokenSymbol: quoteTokenSymbol,
+        baseTokenName: baseTokenName,
+        quoteTokenName: quoteTokenName,
+        isFillStarted: isFillStarted,
+        truncatedDisplayPrice: truncatedDisplayPrice,
+        isAccountView: isAccountView,
+    };
+
+    const PriceInfoProps = {
+        limitOrder: limitOrder,
+        controlItems: controlItems,
+        usdValue: usdValue,
+        isBid: isBid,
+        isDenomBase: isDenomBase,
+        baseCollateralDisplay: baseCollateralDisplay,
+        quoteCollateralDisplay: quoteCollateralDisplay,
+        isOrderFilled: isClaimable,
+        baseDisplayFrontend: baseDisplayFrontend,
+        quoteDisplayFrontend: quoteDisplayFrontend,
+        quoteTokenLogo: quoteTokenLogo,
+        baseTokenLogo: baseTokenLogo,
+        baseTokenSymbol: baseTokenSymbol,
+        quoteTokenSymbol: quoteTokenSymbol,
+        baseTokenName: baseTokenName,
+        quoteTokenName: quoteTokenName,
+        isFillStarted: isFillStarted,
+        truncatedDisplayPrice: truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness:
+            truncatedDisplayPriceDenomByMoneyness,
+        baseTokenAddress: baseTokenAddress,
+        quoteTokenAddress: quoteTokenAddress,
+        fillPercentage: fillPercentage,
+        isAccountView: isAccountView,
+        isBaseTokenMoneynessGreaterOrEqual: isBaseTokenMoneynessGreaterOrEqual,
+    };
+
+    const GraphProps = {
+        tx: limitOrder,
+        timeFirstMintMemo: timeFirstMintMemo,
+        transactionType: 'limitOrder',
+        isBaseTokenMoneynessGreaterOrEqual: isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView: isAccountView,
+    };
+
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
-                    <PriceInfo
-                        limitOrder={limitOrder}
-                        controlItems={controlItems}
-                        usdValue={usdValue}
-                        isBid={isBid}
-                        isDenomBase={isDenomBase}
-                        baseCollateralDisplay={baseCollateralDisplay}
-                        quoteCollateralDisplay={quoteCollateralDisplay}
-                        isOrderFilled={isClaimable}
-                        baseDisplayFrontend={baseDisplayFrontend}
-                        quoteDisplayFrontend={quoteDisplayFrontend}
-                        quoteTokenLogo={quoteTokenLogo}
-                        baseTokenLogo={baseTokenLogo}
-                        baseTokenSymbol={baseTokenSymbol}
-                        quoteTokenSymbol={quoteTokenSymbol}
-                        baseTokenName={baseTokenName}
-                        quoteTokenName={quoteTokenName}
-                        isFillStarted={isFillStarted}
-                        truncatedDisplayPrice={truncatedDisplayPrice}
-                        truncatedDisplayPriceDenomByMoneyness={
-                            truncatedDisplayPriceDenomByMoneyness
-                        }
-                        baseTokenAddress={baseTokenAddress}
-                        quoteTokenAddress={quoteTokenAddress}
-                        fillPercentage={fillPercentage}
-                        isAccountView={isAccountView}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
-                    />
+                    <PriceInfo {...PriceInfoProps} />
                 </div>
                 <div className={styles.right_container}>
                     <TransactionDetailsGraph
-                        tx={limitOrder}
-                        timeFirstMintMemo={timeFirstMintMemo}
-                        transactionType={'limitOrder'}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
-                        isAccountView={isAccountView}
+                        {...GraphProps}
                     />
                 </div>
             </div>
@@ -282,43 +313,48 @@ export default function OrderDetailsModal(props: propsIF) {
         </div>
     );
 
+    const shareComponentMobile = (
+        <Modal usingCustomHeader onClose={onClose}>
+            <div className={styles.transaction_details_mobile}>
+                <ModalHeader title={'Order Details'} onClose={onClose} />
+                <MobileDetailTabs
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                />
+                {!showShareComponent ? (
+                    <OrderDetailsSimplify {...DetailsProps} />
+                ) : (
+                    <div className={styles.mobile_price_graph_container}>
+                        <PriceInfo {...PriceInfoProps} />
+                        <div className={styles.graph_section_mobile}>
+                            <TransactionDetailsGraph
+                                {...GraphProps}
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+        </Modal>
+    );
+    if (showMobileVersion) return shareComponentMobile;
+
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-            <DetailsHeader
-    onClose={onClose}
-    handleCopyAction={handleCopyPositionId}
-    copyToClipboard={copyOrderDetailsToClipboard}
-    showShareComponent={showShareComponent}
-    setShowShareComponent={setShowShareComponent}
-    tooltipCopyAction='Copy position slot ID to clipboard'
-    tooltipCopyImage='Copy shareable image'
-/>
+                <DetailsHeader
+                    onClose={onClose}
+                    handleCopyAction={handleCopyPositionId}
+                    copyToClipboard={copyOrderDetailsToClipboard}
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                    tooltipCopyAction='Copy position slot ID to clipboard'
+                    tooltipCopyImage='Copy shareable image'
+                />
 
                 {showShareComponent ? (
                     shareComponent
                 ) : (
-                    <OrderDetailsSimplify
-                        limitOrder={limitOrder}
-                        timeFirstMintMemo={timeFirstMintMemo}
-                        usdValue={usdValue}
-                        isBid={isBid}
-                        isDenomBase={isDenomBase}
-                        baseCollateralDisplay={baseCollateralDisplay}
-                        quoteCollateralDisplay={quoteCollateralDisplay}
-                        isOrderFilled={isClaimable}
-                        baseDisplayFrontend={baseDisplayFrontend}
-                        quoteDisplayFrontend={quoteDisplayFrontend}
-                        quoteTokenLogo={quoteTokenLogo}
-                        baseTokenLogo={baseTokenLogo}
-                        baseTokenSymbol={baseTokenSymbol}
-                        quoteTokenSymbol={quoteTokenSymbol}
-                        baseTokenName={baseTokenName}
-                        quoteTokenName={quoteTokenName}
-                        isFillStarted={isFillStarted}
-                        truncatedDisplayPrice={truncatedDisplayPrice}
-                        isAccountView={isAccountView}
-                    />
+                    <OrderDetailsSimplify {...DetailsProps} />
                 )}
             </div>
         </Modal>

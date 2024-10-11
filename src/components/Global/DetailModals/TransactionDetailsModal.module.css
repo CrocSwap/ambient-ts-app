@@ -146,45 +146,15 @@
 
 /* MOBILE DETAILS MODALS */
 
-.mobile_tabs_container {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
 
-.mobile_tabs_container button {
-    outline: none;
-    border: 1px solid transparent;
-    display: flex;
-    padding: 5px 8px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex: 1 0 0;
-    border-radius: 50px;
-    background: var(--dark2, #12121a);
-
-    color: var(--text-text2, #8b98a5);
-    text-align: center;
-    /* small */
-    font-family: 'Lexend Deca';
-    font-size: var(--body-size);
-    font-style: normal;
-    font-weight: 300;
-    line-height: normal;
-}
-
-.mobile_tabs_container .active_button {
-    border: 1px solid var(--accent-accent1, #7371fc);
-}
 .transaction_details_mobile {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: auto auto 1fr;
 
     width: 100%;
-    height: 80svh;
+    height: 81svh;
+    overflow: hidden;
 
     padding: 16px;
 }
@@ -196,32 +166,27 @@
 
 .graph_section_mobile {
     width: 100%;
-    height: 100%; /* Ensures full height usage */
-    height: 130px; /* Ensures it doesn't collapse */
+    height: 100%; 
+    height: 130px; 
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-grow: 1; /* This ensures it grows as needed */
+    flex-grow: 1; 
 }
 
 .graph_section_mobile canvas {
     width: 100% !important;
-    height: 100% !important; /* Ensures canvas fills the space */
+    height: 100% !important; 
     object-fit: contain;
 }
 
 /* Responsive adjustments for super small screens */
 @media (max-width: 375px) {
     .transaction_details_mobile {
-        height: auto;
+     
         padding: 12px;
         
     }
 
-    /* .graph_section_mobile {
-       min-height: 0;
-       height: 150px;
 
-      
-    } */
 }

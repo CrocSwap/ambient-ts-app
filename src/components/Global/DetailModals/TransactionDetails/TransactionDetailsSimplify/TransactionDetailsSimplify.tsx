@@ -1,16 +1,16 @@
-import { TransactionIF } from '../../../../ambient-utils/types';
+import { TransactionIF } from '../../../../../ambient-utils/types';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
 import styles from './TransactionDetailsSimplify.module.css';
-import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
-import { ZERO_ADDRESS } from '../../../../ambient-utils/constants';
+import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import moment from 'moment';
 import { memo, useContext } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext } from '../../../../contexts/UserDataContext';
-import InfoRow from '../../InfoRow';
-import { getElapsedTime } from '../../../../ambient-utils/dataLayer';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import InfoRow from '../../../InfoRow';
+import { getElapsedTime } from '../../../../../ambient-utils/dataLayer';
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
@@ -153,20 +153,20 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
         changeType === 'harvest'
             ? 'Range Harvest'
             : changeType === 'mint'
-            ? entityType === 'limitOrder'
-                ? 'Limit Add'
-                : positionType === 'concentrated'
-                ? 'Concentrated Range Add'
-                : 'Ambient Range Add'
-            : changeType === 'burn'
-            ? entityType === 'limitOrder'
-                ? 'Limit Removal'
-                : positionType === 'concentrated'
-                ? 'Concentrated Range Removal'
-                : 'Ambient Range Removal'
-            : changeType === 'recover'
-            ? 'Limit Claim'
-            : 'Market Order';
+              ? entityType === 'limitOrder'
+                  ? 'Limit Add'
+                  : positionType === 'concentrated'
+                    ? 'Concentrated Range Add'
+                    : 'Ambient Range Add'
+              : changeType === 'burn'
+                ? entityType === 'limitOrder'
+                    ? 'Limit Removal'
+                    : positionType === 'concentrated'
+                      ? 'Concentrated Range Removal'
+                      : 'Ambient Range Removal'
+                : changeType === 'recover'
+                  ? 'Limit Claim'
+                  : 'Market Order';
 
     // Create a data array for the info and map through it here
     const infoContent = [
@@ -223,8 +223,8 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             title: isLimitRemoval
                 ? 'From Qty Removed '
                 : isSwap
-                ? 'From Qty '
-                : 'Token 1 Qty',
+                  ? 'From Qty '
+                  : 'Token 1 Qty',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
@@ -269,8 +269,8 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
             title: isLimitRemoval
                 ? 'To Token Claimed '
                 : isSwap
-                ? 'To Qty '
-                : 'Token 2 Qty ',
+                  ? 'To Qty '
+                  : 'Token 2 Qty ',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
@@ -299,8 +299,8 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                 tx.entityType === 'swap'
                     ? 'Price '
                     : tx.entityType === 'limitOrder'
-                    ? 'Limit Price '
-                    : 'Low Price Boundary',
+                      ? 'Limit Price '
+                      : 'Low Price Boundary',
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isSwap
@@ -309,25 +309,25 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                                 ? `1 ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
                                 : `1 ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
                             : isDenomBase
-                            ? `1 ${baseTokenSymbol} = ${truncatedDisplayPrice} ${quoteTokenSymbol}`
-                            : `1 ${quoteTokenSymbol} = ${truncatedDisplayPrice} ${baseTokenSymbol}`
+                              ? `1 ${baseTokenSymbol} = ${truncatedDisplayPrice} ${quoteTokenSymbol}`
+                              : `1 ${quoteTokenSymbol} = ${truncatedDisplayPrice} ${baseTokenSymbol}`
                         : isAmbient
-                        ? '0.00'
-                        : isAccountView
-                        ? isBaseTokenMoneynessGreaterOrEqual
-                            ? `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
-                            : `1 ${baseTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                        : isDenomBase
-                        ? `1 ${baseTokenSymbol} = ${truncatedLowDisplayPrice} ${quoteTokenSymbol}`
-                        : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
+                          ? '0.00'
+                          : isAccountView
+                            ? isBaseTokenMoneynessGreaterOrEqual
+                                ? `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                                : `1 ${baseTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                            : isDenomBase
+                              ? `1 ${baseTokenSymbol} = ${truncatedLowDisplayPrice} ${quoteTokenSymbol}`
+                              : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
                 </div>
             ),
             explanation:
                 tx.entityType === 'swap'
                     ? 'The effective conversion rate for the swap'
                     : tx.entityType === 'limitOrder'
-                    ? 'The pool price at which the limit order will be 100% filled and claimable'
-                    : 'The low price boundary of the range',
+                      ? 'The pool price at which the limit order will be 100% filled and claimable'
+                      : 'The low price boundary of the range',
         },
         ...(isSwap
             ? [
@@ -346,12 +346,12 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
                       content: isAmbient
                           ? '∞'
                           : isAccountView
-                          ? isBaseTokenMoneynessGreaterOrEqual
-                              ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
-                              : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
-                          : isDenomBase
-                          ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
-                          : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
+                            ? isBaseTokenMoneynessGreaterOrEqual
+                                ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                                : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                            : isDenomBase
+                              ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
+                              : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
                       explanation: 'The upper price boundary of the range',
                   },
                   {
@@ -386,19 +386,18 @@ function TransactionDetailsSimplify(props: TransactionDetailsSimplifyPropsIF) {
 
     return (
         <div className={styles.tx_details_container}>
-    <div className={styles.info_content}>
-        {infoContent.map((info, idx) => (
-            <div key={info.title + idx}>
-                <InfoRow
-                    title={info.title}
-                    content={info.content}
-                    explanation={info.explanation}
-                />
+            <div className={styles.info_content}>
+                {infoContent.map((info, idx) => (
+                    <div key={info.title + idx}>
+                        <InfoRow
+                            title={info.title}
+                            content={info.content}
+                            explanation={info.explanation}
+                        />
+                    </div>
+                ))}
             </div>
-        ))}
-    </div>
-</div>
-
+        </div>
     );
 }
 

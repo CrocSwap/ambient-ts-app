@@ -1,33 +1,32 @@
-import PriceInfo from '.././PriceInfo/PriceInfo';
-import styles from '../../../components/Global/TransactionDetails/TransactionDetailsModal.module.css';
+import PriceInfo from '../PriceInfo/PriceInfo';
+import styles from '../../TransactionDetailsModal.module.css';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import {
     PositionIF,
     BlastRewardsDataIF,
     PositionServerIF,
-} from '../../../ambient-utils/types';
-import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
-import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import { useProcessRange } from '../../../utils/hooks/useProcessRange';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+} from '../../../../../ambient-utils/types';
+import RangeDetailsSimplify from '../RangeDetailsSimplify/RangeDetailsSimplify';
+import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import {
     CACHE_UPDATE_FREQ_IN_MS,
     GCGO_OVERRIDE_URL,
-} from '../../../ambient-utils/constants';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
+} from '../../../../../ambient-utils/constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
 import {
     getPositionData,
     getFormattedNumber,
     printDomToImage,
-} from '../../../ambient-utils/dataLayer';
-import { TokenContext } from '../../../contexts/TokenContext';
-import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import Modal from '../../Global/Modal/Modal';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import { TradeDataContext } from '../../../contexts/TradeDataContext';
+} from '../../../../../ambient-utils/dataLayer';
+import { TokenContext } from '../../../../../contexts/TokenContext';
+import modalBackground from '../../../../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
+import Modal from '../../../Modal/Modal';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 import {
     baseTokenForConcLiq,
     bigIntToFloat,
@@ -35,8 +34,12 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { fetchPositionRewardsData } from '../../../ambient-utils/api/fetchPositionRewards';
-import DetailsHeader from '../../Global/DetailsHeader/DetailsHeader';
+import { fetchPositionRewardsData } from '../../../../../ambient-utils/api/fetchPositionRewards';
+import DetailsHeader from '../../DetailsHeader/DetailsHeader';
+import TransactionDetailsGraph from '../../TransactionDetailsGraph/TransactionDetailsGraph';
+import ModalHeader from '../../../ModalHeader/ModalHeader';
+import MobileDetailTabs from '../../MobileDetailTabs/MobileDetailTabs';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     position: PositionIF;
@@ -45,6 +48,8 @@ interface propsIF {
 }
 
 function RangeDetailsModal(props: propsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const [showShareComponent, setShowShareComponent] = useState(true);
     const { isDenomBase } = useContext(TradeDataContext);
     const {
@@ -444,6 +449,60 @@ function RangeDetailsModal(props: propsIF) {
         }
     }, [position.timeFirstMint]);
 
+    const PriceInfoProps = {
+        position: position,
+        usdValue: usdValue !== undefined ? usdValue : '…',
+        lowRangeDisplay: lowRangeDisplay,
+        highRangeDisplay: highRangeDisplay,
+        baseCollateralDisplay: baseCollateralDisplay,
+        quoteCollateralDisplay: quoteCollateralDisplay,
+        baseFeesDisplay: baseFeesDisplay,
+        quoteFeesDisplay: quoteFeesDisplay,
+        baseTokenLogoURI: baseTokenLogoURI,
+        quoteTokenLogoURI: quoteTokenLogoURI,
+        baseTokenSymbol: baseTokenSymbol,
+        quoteTokenSymbol: quoteTokenSymbol,
+        isDenomBase: isDenomBase,
+        isAmbient: isAmbient,
+        positionApy: updatedPositionApy,
+        minRangeDenomByMoneyness: minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
+        baseTokenAddress: baseTokenAddress,
+        quoteTokenAddress: quoteTokenAddress,
+        blastRewardsData: blastRewardsData,
+        isBaseTokenMoneynessGreaterOrEqual: isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView: isAccountView,
+        baseTokenCharacter: baseTokenCharacter,
+        quoteTokenCharacter: quoteTokenCharacter,
+    };
+
+    const HeaderProps = {
+        onClose: onClose,
+        handleCopyAction: handleCopyPositionId,
+        copyToClipboard: copyRangeDetailsToClipboard,
+        showShareComponent: showShareComponent,
+        setShowShareComponent: setShowShareComponent,
+        tooltipCopyAction: 'Copy position slot ID to clipboard',
+        tooltipCopyImage: 'Copy shareable image',
+    };
+    const GraphProps = {
+        tx: position,
+        timeFirstMintMemo: timeFirstMintMemo,
+        transactionType: 'liqchange',
+        isBaseTokenMoneynessGreaterOrEqual: isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView: isAccountView,
+    };
+
+    const DetailProps = {
+        position: position,
+        timeFirstMintMemo: timeFirstMintMemo,
+        baseFeesDisplay: baseFeesDisplay,
+        quoteFeesDisplay: quoteFeesDisplay,
+        isAccountView: isAccountView,
+        updatedPositionApy: updatedPositionApy,
+        blastRewardsData: blastRewardsData,
+    };
+
     const shareComponent = (
         <div
             ref={detailsRef}
@@ -452,76 +511,46 @@ function RangeDetailsModal(props: propsIF) {
         >
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
-                    <PriceInfo
-                        position={position}
-                        usdValue={usdValue !== undefined ? usdValue : '…'}
-                        lowRangeDisplay={lowRangeDisplay}
-                        highRangeDisplay={highRangeDisplay}
-                        baseCollateralDisplay={baseCollateralDisplay}
-                        quoteCollateralDisplay={quoteCollateralDisplay}
-                        baseFeesDisplay={baseFeesDisplay}
-                        quoteFeesDisplay={quoteFeesDisplay}
-                        baseTokenLogoURI={baseTokenLogoURI}
-                        quoteTokenLogoURI={quoteTokenLogoURI}
-                        baseTokenSymbol={baseTokenSymbol}
-                        quoteTokenSymbol={quoteTokenSymbol}
-                        isDenomBase={isDenomBase}
-                        isAmbient={isAmbient}
-                        positionApy={updatedPositionApy}
-                        minRangeDenomByMoneyness={minRangeDenomByMoneyness}
-                        maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
-                        baseTokenAddress={baseTokenAddress}
-                        quoteTokenAddress={quoteTokenAddress}
-                        blastRewardsData={blastRewardsData}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
-                        isAccountView={isAccountView}
-                        baseTokenCharacter={baseTokenCharacter}
-                        quoteTokenCharacter={quoteTokenCharacter}
-                    />
+                    <PriceInfo {...PriceInfoProps} />
                 </div>
                 <div className={styles.right_container}>
-                    <TransactionDetailsGraph
-                        tx={position}
-                        timeFirstMintMemo={timeFirstMintMemo}
-                        transactionType={'liqchange'}
-                        isBaseTokenMoneynessGreaterOrEqual={
-                            isBaseTokenMoneynessGreaterOrEqual
-                        }
-                        isAccountView={isAccountView}
-                    />
+                    <TransactionDetailsGraph {...GraphProps} />
                 </div>
             </div>
             <p className={styles.ambi_copyright}>ambient.finance</p>
         </div>
     );
-
+    const shareComponentMobile = (
+        <Modal usingCustomHeader onClose={onClose}>
+            <div className={styles.transaction_details_mobile}>
+                <ModalHeader title={'Range Details'} onClose={onClose} />
+                <MobileDetailTabs
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                />
+                {!showShareComponent ? (
+                    <RangeDetailsSimplify {...DetailProps} />
+                ) : (
+                    <div className={styles.mobile_price_graph_container} style={{marginTop: '12px'}}>
+                        <PriceInfo {...PriceInfoProps} />
+                        <div className={styles.graph_section_mobile}>
+                            <TransactionDetailsGraph {...GraphProps} />
+                        </div>
+                    </div>
+                )}
+            </div>
+        </Modal>
+    );
+    if (showMobileVersion) return shareComponentMobile;
     return (
         <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
-            <DetailsHeader
-    onClose={onClose}
-    handleCopyAction={handleCopyPositionId}
-    copyToClipboard={copyRangeDetailsToClipboard}
-    showShareComponent={showShareComponent}
-    setShowShareComponent={setShowShareComponent}
-    tooltipCopyAction='Copy position slot ID to clipboard'
-    tooltipCopyImage='Copy shareable image'
-/>
+                <DetailsHeader {...HeaderProps} />
 
                 {showShareComponent ? (
                     shareComponent
                 ) : (
-                    <RangeDetailsSimplify
-                        position={position}
-                        timeFirstMintMemo={timeFirstMintMemo}
-                        baseFeesDisplay={baseFeesDisplay}
-                        quoteFeesDisplay={quoteFeesDisplay}
-                        isAccountView={isAccountView}
-                        updatedPositionApy={updatedPositionApy}
-                        blastRewardsData={blastRewardsData}
-                    />
+                    <RangeDetailsSimplify {...DetailProps} />
                 )}
             </div>
         </Modal>

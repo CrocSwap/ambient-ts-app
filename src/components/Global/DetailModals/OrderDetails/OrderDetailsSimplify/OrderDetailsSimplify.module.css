@@ -98,3 +98,16 @@
         opacity: 1;
     }
 }
+
+
+@media (max-width: 768px) {
+    .main_container{
+      padding: 0; 
+    }
+
+    .main_container section{
+        overflow-y: auto;
+    }
+
+
+}

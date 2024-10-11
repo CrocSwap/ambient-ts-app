@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 import { CgClose } from 'react-icons/cg';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
 import styles from './DetailsHeader.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import logo from '../../../assets/images/logos/logo_mark.svg';
-import logoText from '../../../assets/images/logos/logo_text.png';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import logo from '../../../../assets/images/logos/logo_mark.svg';
+import logoText from '../../../../assets/images/logos/logo_text.png';
 import { RiScreenshot2Fill } from 'react-icons/ri';
 import { LuCopy, LuShare2 } from 'react-icons/lu';
 import { TbListDetails } from 'react-icons/tb';
@@ -58,13 +58,13 @@ export default function DetailsHeader(props: DetailsHeaderPropsIF) {
                     className={styles.logo_text}
                 />
             </section>
-            
+
             {/* <div>something here</div> */}
 
             <section className={styles.settings_control}>
-                    {!showShareComponent ? copyActionIconWithTooltip : null}
-                    {showShareComponent ? copyImageIconWithTooltip : null}
-              
+                {!showShareComponent ? copyActionIconWithTooltip : null}
+                {showShareComponent ? copyImageIconWithTooltip : null}
+
                 <button
                     className={styles.info_button}
                     onClick={() => setShowShareComponent(!showShareComponent)}
@@ -82,8 +82,8 @@ export default function DetailsHeader(props: DetailsHeaderPropsIF) {
                     )}
                 </button>
                 <div onClick={onClose}>
-                        <CgClose size={28} color='var(--text3)' />
-                    </div>
+                    <CgClose size={28} color='var(--text3)' />
+                </div>
             </section>
         </div>
     );

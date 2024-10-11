@@ -1,18 +1,18 @@
 import styles from './OrderDetailsSimplify.module.css';
-import { LimitOrderIF } from '../../../ambient-utils/types';
-import { ZERO_ADDRESS } from '../../../ambient-utils/constants';
+import { ZERO_ADDRESS } from '../../../../../ambient-utils/constants';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
+import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
 import { memo, useContext } from 'react';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
+import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
 import { useMediaQuery } from '@material-ui/core';
-import { UserDataContext } from '../../../contexts/UserDataContext';
-import InfoRow from '../../Global/InfoRow';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import InfoRow from '../../../InfoRow';
+import { LimitOrderIF } from '../../../../../ambient-utils/types';
 
 interface OrderDetailsSimplifyPropsIF {
     limitOrder: LimitOrderIF;
@@ -39,6 +39,8 @@ interface OrderDetailsSimplifyPropsIF {
 
 // TODO: refactor to using styled-components
 function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const {
         isBid,
         isOrderFilled,
@@ -187,8 +189,8 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
     const status = isOrderFilled
         ? 'Fill Complete'
         : isLimitOrderPartiallyFilled
-        ? 'Fill Partially Complete'
-        : 'Fill Not Yet Started';
+          ? 'Fill Partially Complete'
+          : 'Fill Not Yet Started';
 
     const infoContent = [
         {
@@ -305,8 +307,8 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
                     ? `1  ${quoteTokenSymbol} = ${startPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
                     : `1  ${baseTokenSymbol} = ${startPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
                 : isDenomBase
-                ? `1  ${baseTokenSymbol} = ${startPriceDisplay}  ${quoteTokenSymbol}`
-                : `1  ${quoteTokenSymbol} = ${startPriceDisplay}  ${baseTokenSymbol}`,
+                  ? `1  ${baseTokenSymbol} = ${startPriceDisplay}  ${quoteTokenSymbol}`
+                  : `1  ${quoteTokenSymbol} = ${startPriceDisplay}  ${baseTokenSymbol}`,
             explanation: 'Price at which token conversion starts',
         },
         {
@@ -316,8 +318,8 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
                     ? `1  ${quoteTokenSymbol} = ${middlePriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
                     : `1  ${baseTokenSymbol} = ${middlePriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
                 : isDenomBase
-                ? `1  ${baseTokenSymbol} = ${middlePriceDisplay}  ${quoteTokenSymbol}`
-                : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
+                  ? `1  ${baseTokenSymbol} = ${middlePriceDisplay}  ${quoteTokenSymbol}`
+                  : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
                 'The effective conversion price halfway between start and end',
@@ -329,8 +331,8 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
                     ? `1  ${quoteTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${baseTokenSymbol}`
                     : `1  ${baseTokenSymbol} = ${finishPriceDisplayDenomByMoneyness}  ${quoteTokenSymbol}`
                 : isDenomBase
-                ? `1  ${baseTokenSymbol} = ${finishPriceDisplay}  ${quoteTokenSymbol}`
-                : `1  ${quoteTokenSymbol} = ${finishPriceDisplay}  ${baseTokenSymbol}`,
+                  ? `1  ${baseTokenSymbol} = ${finishPriceDisplay}  ${quoteTokenSymbol}`
+                  : `1  ${quoteTokenSymbol} = ${finishPriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
                 'Price at which conversion ends and limit order can be claimed',
@@ -357,6 +359,23 @@ function OrderDetailsSimplify(props: OrderDetailsSimplifyPropsIF) {
             explanation: 'Time the owner last updated the limit at this price',
         });
     }
+
+    if (showMobileVersion) return (
+        <div className={styles.tx_details_container}>
+        <div className={styles.main_container}>
+            <section>
+                {infoContent.map((info, idx) => (
+                    <InfoRow
+                        key={info.title + idx}
+                        title={info.title}
+                        content={info.content}
+                        explanation={info.explanation}
+                    />
+                ))}
+            </section>
+        </div>
+    </div>
+    )
 
     return (
         <div className={styles.tx_details_container}>
