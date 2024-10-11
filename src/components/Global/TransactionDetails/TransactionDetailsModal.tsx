@@ -7,7 +7,6 @@ import TransactionDetailsSimplify from './TransactionDetailsSimplify/Transaction
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import modalBackground from '../../../assets/images/backgrounds/background.png';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 
 import {
     CACHE_UPDATE_FREQ_IN_MS,
