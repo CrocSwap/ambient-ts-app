@@ -188,87 +188,51 @@ function TransactionDetailsModal(props: propsIF) {
         </div>
     );
 
-    const [direction, setDirection] = useState<number>(0);
-
-    const variants = {
-      enter: (direction: number) => {
-        return {
-          x: direction > 0 ? 1000 : -1000,
-          opacity: 0
-        };
-      },
-      center: {
-        zIndex: 1,
-        x: 0,
-        opacity: 1
-      },
-      exit: (direction: number) => {
-        return {
-          zIndex: 0,
-          x: direction < 0 ? 1000 : -1000,
-          opacity: 0
-        };
-      }
-    };
-  
-    const swipeConfidenceThreshold = 10000;
-    const swipePower = (offset: number, velocity: number) => {
-      return Math.abs(offset) * velocity;
-    };
-  
-    const paginate = (newDirection: number) => {
-      setDirection(newDirection);
-      setShowShareComponent(!showShareComponent);
-    };
-  
-
     const mobileTabs = (
-        <div className={styles.mobile_tabs_container}
-        style={{paddingBottom: showShareComponent ? '0' : '8px' }}
+        <div
+            className={styles.mobile_tabs_container}
+            style={{ paddingBottom: showShareComponent ? '0' : '8px' }}
         >
             <button
                 className={showShareComponent ? styles.active_button : ''}
-                onClick={() => paginate(1)}
-                >
+                onClick={() => setShowShareComponent(true)}
+            >
                 Overview
             </button>
             <button
                 className={!showShareComponent ? styles.active_button : ''}
-                onClick={() => paginate(-1)}
-                >
+                onClick={() => setShowShareComponent(false)}
+            >
                 Details
             </button>
         </div>
     );
 
+    const mobileGraph = (
+        <div className={styles.mobile_price_graph_container}>
+            <TransactionDetailsPriceInfo
+                tx={tx}
+                controlItems={controlItems}
+                positionApy={updatedPositionApy}
+                isAccountView={isAccountView}
+            />
+            <div className={styles.graph_section_mobile}>
+                <TransactionDetailsGraph
+                    tx={tx}
+                    transactionType={tx.entityType}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    timeFirstMintMemo={timeFirstMintMemo}
+                />
+            </div>
+        </div>
+    );
+
     const shareComponentMobile = (
         <Modal usingCustomHeader onClose={onClose}>
-                  <AnimatePresence initial={false} custom={direction}>
-
-            <motion.div className={styles.transaction_details_mobile}
-             key={showShareComponent ? 'share' : 'details'}
-             custom={direction}
-             variants={variants}
-             initial="enter"
-             animate="center"
-             exit="exit"
-             transition={{
-               x: { type: 'spring', stiffness: 300, damping: 30 },
-               opacity: { duration: 0.2 }
-             }}
-             drag="x"
-             dragConstraints={{ left: 0, right: 0 }}
-             dragElastic={1}
-             onDragEnd={(e: PointerEvent, { offset, velocity }: PanInfo) => {
-                const swipe = swipePower(offset.x, velocity.x);
-              
-                if (swipe < -swipeConfidenceThreshold) {
-                  paginate(1);
-                } else if (swipe > swipeConfidenceThreshold) {
-                  paginate(-1);
-                }
-              }}
-                >
+            <div className={styles.transaction_details_mobile}>
                 <ModalHeader title={'Transaction Details'} onClose={onClose} />
                 {mobileTabs}
                 {!showShareComponent ? (
@@ -278,29 +242,9 @@ function TransactionDetailsModal(props: propsIF) {
                         timeFirstMintMemo={timeFirstMintMemo}
                     />
                 ) : (
-                    <>
-                        <TransactionDetailsPriceInfo
-                            tx={tx}
-                            controlItems={controlItems}
-                            positionApy={updatedPositionApy}
-                            isAccountView={isAccountView}
-                        />
-                        <div className={styles.graph_section_mobile}>
-                            <TransactionDetailsGraph
-                                tx={tx}
-                                transactionType={tx.entityType}
-                                isBaseTokenMoneynessGreaterOrEqual={
-                                    isBaseTokenMoneynessGreaterOrEqual
-                                }
-                                isAccountView={isAccountView}
-                                timeFirstMintMemo={timeFirstMintMemo}
-                            />
-                        </div>
-                    </>
+                    mobileGraph
                 )}
-                </motion.div>
-                </AnimatePresence >
-
+            </div>
         </Modal>
     );
 
