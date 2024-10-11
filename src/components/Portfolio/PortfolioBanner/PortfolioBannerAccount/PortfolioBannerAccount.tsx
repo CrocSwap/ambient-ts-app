@@ -31,6 +31,7 @@ import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
+import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     ensName: string;
@@ -71,6 +72,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
         setUserProfileNFT,
         setUserThumbnailNFT,
         isUserConnected,
+        disconnectUser,
+        resolvedAddressFromContext
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
@@ -82,6 +85,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
     const {
         chainData: { blockExplorer },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
+
+    const navigate = useNavigate();
 
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
@@ -209,7 +214,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                 : true,
                         )}
                 </div>
-
                 <div className={styles.wallet_info}>
                     <h3
                         className={styles.address_or_ens}
@@ -226,8 +230,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         {addressToDisplay && addressToDisplay.length > 8
                             ? trimString(addressToDisplay, 5, 3)
                             : addressToDisplay}
-                        {addressToDisplay ? <FiCopy size={'12px'} /> : null}
-                        {addressToDisplay ? (
+                        {addressToDisplay && <FiCopy size={'12px'} />}
+                        {addressToDisplay && (
                             <FiExternalLink
                                 size={'12px'}
                                 onClick={(e) => {
@@ -237,19 +241,44 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                     e.stopPropagation();
                                 }}
                             />
-                        ) : null}
+                        )}
                     </div>
                 </div>
-
-                {isSmallScreen && isUserConnected && (
-                    <button
-                        className={styles.deposit_button}
-                        onClick={() =>
-                            setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                        }
-                    >
-                        Deposit/Withdraw
-                    </button>
+                {
+                    // differential view for small screens
+                    // some items only appear when viewing your own page
+                    isSmallScreen && (
+                    <div className={styles.button_bank}>
+                        <div>
+                            <button className={styles.dark_button} onClick={() => {
+                                const linkToNavigateTo: string = (ensName || userAddress)
+                                    ? `/${ensName || userAddress}/xp`
+                                    : resolvedAddressFromContext
+                                    ? `/${resolvedAddressFromContext}/xp`
+                                    : `/${userAddress}/xp`;
+                                navigate(linkToNavigateTo);
+                            }}>
+                                Points
+                            </button>
+                            {
+                                isUserConnected &&
+                                    <button
+                                        className={styles.logout_button}
+                                        onClick={() => disconnectUser()}
+                                    >
+                                        Log Out
+                                    </button>
+                            }
+                        </div>
+                        {isUserConnected && <button
+                            className={styles.dark_button}
+                            onClick={() =>
+                                setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                            }
+                        >
+                            Deposit / Withdraw
+                        </button>}
+                    </div>
                 )}
             </div>
 
