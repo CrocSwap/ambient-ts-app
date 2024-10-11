@@ -177,8 +177,6 @@ interface propsIF {
         isResetChart: boolean;
     };
     openMobileSettingsModal: () => void;
-    colorChangeTrigger: boolean;
-    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -211,8 +209,6 @@ export default function Chart(props: propsIF) {
         setChartResetStatus,
         chartResetStatus,
         openMobileSettingsModal,
-        colorChangeTrigger,
-        setColorChangeTrigger,
     } = props;
 
     const {
@@ -242,15 +238,14 @@ export default function Chart(props: propsIF) {
         setChartContainerOptions,
         chartThemeColors,
         setChartThemeColors,
-        defaultChartSettings,
-        localChartSettings,
-        setLocalChartSettings,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
         shouldResetBuffer,
         setShouldResetBuffer,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -6348,11 +6343,7 @@ export default function Chart(props: propsIF) {
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
                     setChartThemeColors={setChartThemeColors}
-                    defaultChartSettings={defaultChartSettings}
-                    localChartSettings={localChartSettings}
-                    setLocalChartSettings={setLocalChartSettings}
                     render={render}
-                    setColorChangeTrigger={setColorChangeTrigger}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
                     setShouldDisableChartSettings={
@@ -6360,7 +6351,6 @@ export default function Chart(props: propsIF) {
                     }
                     setCloseOutherChartSetting={setCloseOutherChartSetting}
                     closeOutherChartSetting={closeOutherChartSetting}
-                    isMobile={false}
                 />
             )}
         </div>
