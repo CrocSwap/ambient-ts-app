@@ -187,33 +187,11 @@ function TransactionDetailsModal(props: propsIF) {
                     />
                 </div>
             </div>
-            {/* <p className={styles.ambi_copyright}>ambient.finance</p> */}
+           
         </div>
     );
 
 
-
-    // const mobileGraph = (
-    //     <div className={styles.mobile_price_graph_container}>
-    //         <TransactionDetailsPriceInfo
-    //             tx={tx}
-    //             controlItems={controlItems}
-    //             positionApy={updatedPositionApy}
-    //             isAccountView={isAccountView}
-    //         />
-    //         <div className={styles.graph_section_mobile}>
-    //             <TransactionDetailsGraph
-    //                 tx={tx}
-    //                 transactionType={tx.entityType}
-    //                 isBaseTokenMoneynessGreaterOrEqual={
-    //                     isBaseTokenMoneynessGreaterOrEqual
-    //                 }
-    //                 isAccountView={isAccountView}
-    //                 timeFirstMintMemo={timeFirstMintMemo}
-    //             />
-    //         </div>
-    //     </div>
-    // );
 
     const shareComponentMobile = (
         <Modal usingCustomHeader onClose={onClose}>

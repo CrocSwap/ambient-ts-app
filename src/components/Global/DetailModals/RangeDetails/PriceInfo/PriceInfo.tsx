@@ -292,8 +292,8 @@ export default function PriceInfo(props: propsIF) {
                 {positionApy !== 0 ? (
                     <Apy
                         amount={positionApy}
-                        fs='48px'
-                        lh='60px'
+                        fs={showMobileVersion ? '22px' : '48px'}
+                        lh={showMobileVersion ? '' : '60px'}
                         center
                         showTitle
                     />
