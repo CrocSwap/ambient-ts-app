@@ -37,7 +37,9 @@ import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import Modal from '../../../../components/Global/Modal/Modal';
 import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
-import { PoolContext } from '../../../../contexts';
+import { CandleContext, PoolContext } from '../../../../contexts';
+import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
+import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -100,7 +102,11 @@ function TradeCharts(props: propsIF) {
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
         chartCanvasRef,
+        chartThemeColors,
     } = useContext(ChartContext);
+
+    const { isCondensedModeEnabled, setIsCondensedModeEnabled } =
+        useContext(CandleContext);
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -197,6 +203,33 @@ function TradeCharts(props: propsIF) {
             setShowSwap(orderHistoryState?.isSwapOrderHistoryEnabled ?? true);
         }
     }, [isUserConnected]);
+
+    const [shouldDisableChartSettings, setShouldDisableChartSettings] =
+        useState<boolean>(true);
+
+    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
+
+    const [selectedColorObj, setSelectedColorObj] = useState<
+        ColorObjIF | undefined
+    >(undefined);
+
+    const [isSelecboxActive, setIsSelecboxActive] = useState(false);
+
+    const handleModalOnClose = () => {
+        if(shouldDisableChartSettings && !isSelecboxActive) {
+            closeMobileSettingsModal()
+        } else {
+            setShouldDisableChartSettings(true);
+            setSelectedColorObj(undefined)
+            setIsSelecboxActive(false)
+        }
+    }
+
+    // const render = useCallback(() => {
+    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //     const nd = d3.select('#d3fc_group').node() as any;
+    //     if (nd) nd.requestRedraw();
+    // }, []);
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
@@ -329,16 +362,48 @@ function TradeCharts(props: propsIF) {
         </section>
     );
 
+    const settingsContent = chartThemeColors && (
+        <section
+            onClick={() => {
+                setShouldDisableChartSettings(true);
+                setSelectedColorObj(undefined);
+                setIsSelecboxActive(false);
+            }}
+            className={styles.time_frame_container}
+        >
+            <ChartSettingsContent
+                chartThemeColors={chartThemeColors}
+                isCondensedModeEnabled={isCondensedModeEnabled}
+                setIsCondensedModeEnabled={setIsCondensedModeEnabled}
+                setShouldDisableChartSettings={setShouldDisableChartSettings}
+                chartItemStates={chartItemStates}
+                setColorChangeTrigger={setColorChangeTrigger}
+                isSelecboxActive={isSelecboxActive}
+                setIsSelecboxActive={setIsSelecboxActive}
+                selectedColorObj={selectedColorObj}
+                setSelectedColorObj={setSelectedColorObj}
+                reverseColorObj={true}
+                // render={render}
+            />
+        </section>
+    );
+
     const timeFrameContent = smallScreen ? (
         <>
             {isMobileSettingsModalOpen && (
                 <Modal
-                    onClose={closeMobileSettingsModal}
+                    onClose={handleModalOnClose}
                     title='Chart Settings'
                 >
-                    {timeFrameContentDesktop}
+                    {settingsContent}
 
                     <div className={styles.settings_apply_button_container}>
+                        <button
+                            style={{ background: 'var(--dark3)' }}
+                            onClick={closeMobileSettingsModal}
+                        >
+                            Reset
+                        </button>
                         <button onClick={closeMobileSettingsModal}>
                             Apply
                         </button>
@@ -407,6 +472,8 @@ function TradeCharts(props: propsIF) {
                         setShowLatest={setShowLatest}
                         updateURL={updateURL}
                         openMobileSettingsModal={openMobileSettingsModal}
+                        colorChangeTrigger={colorChangeTrigger}
+                        setColorChangeTrigger={setColorChangeTrigger}
                     />
                 </div>
                 <TutorialOverlay

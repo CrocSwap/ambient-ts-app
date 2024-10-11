@@ -68,6 +68,8 @@ interface propsIF {
     setShowLatest: Dispatch<SetStateAction<boolean>>;
     updateURL: (changes: updatesIF) => void;
     openMobileSettingsModal: () => void;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function TradeCandleStickChart(props: propsIF) {
@@ -1203,6 +1205,8 @@ function TradeCandleStickChart(props: propsIF) {
                             setChartResetStatus={setChartResetStatus}
                             chartResetStatus={chartResetStatus}
                             openMobileSettingsModal={openMobileSettingsModal}
+                            colorChangeTrigger={props.colorChangeTrigger}
+                            setColorChangeTrigger={props.setColorChangeTrigger}
 
                         />
                     </>

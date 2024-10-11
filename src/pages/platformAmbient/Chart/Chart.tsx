@@ -177,6 +177,8 @@ interface propsIF {
         isResetChart: boolean;
     };
     openMobileSettingsModal: () => void;
+    colorChangeTrigger: boolean;
+    setColorChangeTrigger: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -209,6 +211,8 @@ export default function Chart(props: propsIF) {
         setChartResetStatus,
         chartResetStatus,
         openMobileSettingsModal,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = props;
 
     const {
@@ -318,8 +322,6 @@ export default function Chart(props: propsIF) {
     const [isShowFloatingToolbar, setIsShowFloatingToolbar] = useState(false);
     const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
-
-    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
 
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
@@ -6358,6 +6360,7 @@ export default function Chart(props: propsIF) {
                     }
                     setCloseOutherChartSetting={setCloseOutherChartSetting}
                     closeOutherChartSetting={closeOutherChartSetting}
+                    isMobile={false}
                 />
             )}
         </div>
