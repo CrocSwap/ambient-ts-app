@@ -1,7 +1,7 @@
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     scrollETH,
-    scrollSTONE,
+    scrollScroll,
     scrollUSDC,
     scrollUSDT,
     scrollWBTC,
@@ -37,9 +37,9 @@ export const scrollMainnet: NetworkIF = {
     topPools: [
         new TopPool(scrollETH, scrollUSDC, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollUSDT, lookupChain('0x82750').poolIndex),
+        new TopPool(scrollETH, scrollScroll, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollWeETH, lookupChain('0x82750').poolIndex),
         new TopPool(scrollETH, scrollWBTC, lookupChain('0x82750').poolIndex),
-        new TopPool(scrollETH, scrollSTONE, lookupChain('0x82750').poolIndex),
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
