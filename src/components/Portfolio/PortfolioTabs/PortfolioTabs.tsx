@@ -432,35 +432,8 @@ export default function PortfolioTabs(props: propsIF) {
         }
     }, [location.pathname]);
 
-    // hook to generate navigation actions with pre-loaded path
-    // const linkGenCurrent: linkGenMethodsIF = useLinkGen();
-
-    // // navigate the URL when the user changes tabs
-    // useEffect(() => {
-    //     const go = (t: string): void => linkGenCurrent.navigate(t);
-    //     if (isSmallScreen) switch(activeTab) {
-    //         case 'Transactions':
-    //             go('transactions');
-    //             break;
-    //         case 'Limits':
-    //             go('limits');
-    //             break;
-    //         case 'Liquidity':
-    //             go('liquidity');
-    //             break;
-    //         case 'Points':
-    //             go('points');
-    //             break;
-    //         case 'Exchange Balances':
-    //             go('exchange-balances');
-    //             break;
-    //         case 'Wallet Balances':
-    //             go('wallet-balances');
-    //             break;
-    //         default:
-    //             null;
-    //     }
-    // }, [activeTab]);
+    // TODO:    this file is changing state without changing URL, we should
+    // TODO:    ... refactor to trigger a nav action and update state responsively
 
     const renderTabContent = (): JSX.Element | null => {
         const selectedTabData =dataToUse.find(
