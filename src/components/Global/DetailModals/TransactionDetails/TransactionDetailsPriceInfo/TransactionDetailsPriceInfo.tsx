@@ -29,6 +29,7 @@ interface propsIF {
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
+
     const { tx, controlItems, positionApy, isAccountView } = props;
     const { userAddress } = useContext(UserDataContext);
     const { crocEnv } = useContext(CrocEnvContext);
@@ -382,8 +383,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {tx.entityType === 'liqchange' && positionApy !== 0 ? (
                     <Apy
                         amount={positionApy}
-                        fs='48px'
-                        lh='60px'
+                        fs={showMobileVersion ? '22px' : '48px'}
+                        lh={showMobileVersion ? '' : '60px'}
                         center
                         showTitle
                     />
