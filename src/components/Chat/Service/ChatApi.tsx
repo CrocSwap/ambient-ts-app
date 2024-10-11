@@ -1,14 +1,9 @@
-import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { ethers } from 'ethers';
 import { useContext } from 'react';
+import { CHAT_BACKEND_URL } from '../../../ambient-utils/constants';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import {
-    getLS,
-    // getUserAvatarEndpoint,
-    // getUserAvatarImageByAccountEndpoint,
-    getUserVerifyToken,
-    setLS,
-    // updateUserWithAvatarImageEndpoint,
-} from '../ChatUtils';
+import { LS_USER_VERIFY_TOKEN } from '../ChatConstants/ChatConstants';
 import {
     getTopRoomsEndpoint,
     getUserAvatarEndpoint,
@@ -18,12 +13,28 @@ import {
     updateUserWithAvatarImageEndpoint,
     verifyUserEndpoint,
 } from '../ChatConstants/ChatEndpoints';
-import { LS_USER_VERIFY_TOKEN } from '../ChatConstants/ChatConstants';
+import {
+    getLS,
+    // getUserAvatarEndpoint,
+    // getUserAvatarImageByAccountEndpoint,
+    getUserVerifyToken,
+    setLS,
+} from '../ChatUtils';
+
 
 const host = CHAT_BACKEND_URL;
 
 const useChatApi = () => {
     const { userAddress } = useContext(UserDataContext);
+    const { walletProvider } = useWeb3ModalProvider();
+
+    const getSigner = async () => {
+        if (walletProvider) {
+            const w3provider = new ethers.BrowserProvider(walletProvider);
+            return await w3provider.getSigner();
+        }
+        return null;
+    }
 
     async function getStatus() {
         // Hit the chat /status endpoint to see if it's online
@@ -37,6 +48,8 @@ const useChatApi = () => {
             return false;
         }
     }
+
+  
 
     async function getID() {
         if (userAddress) {
@@ -263,6 +276,7 @@ const useChatApi = () => {
     }
 
     async function verifyWalletService(verificationDate: Date) {
+
         // this assignment will be deleted after backend deployment
         let verificationText =
             'Verify your wallet address in order to access additional chat functionality.\n\nYou can update your avatar on https://ambient.finance/account \n\nBy continuing to use chat you accept the Ambient Finance Terms of Service (https://ambient.finance/terms) and Privacy Policy (https://ambient.finance/privacy). \n\nThis request will not trigger a blockchain transaction or cost any gas fees. \n\n';
@@ -274,43 +288,32 @@ const useChatApi = () => {
             console.error(err);
         }
 
-        return new Promise((resolve, reject) => {
-            const message =
-                verificationText + 'Wallet address:\n' + userAddress;
-
-            if (
-                window.ethereum &&
-                window.ethereum.request &&
-                typeof window.ethereum.request === 'function'
-            ) {
-                window.ethereum
-                    .request({
-                        method: 'personal_sign',
-                        params: [
-                            message.substring(
-                                0,
-                                message.indexOf('Wallet address:'),
-                            ),
-                            userAddress,
-                            '',
-                        ],
-                    })
-                    // eslint-disable-next-line
-                    .then(async (signedMessage: any) => {
-                        const resp = await sendVerifyRequest(
-                            signedMessage,
-                            verificationDate,
-                        );
-                        setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
-                        resolve(resp);
-                    })
-                    // eslint-disable-next-line
-                    .catch((error: any) => {
-                        // Handle error
-                        reject(error);
-                    });
-            }
-        });
+        const signer = await getSigner();
+        if(signer){
+            return new Promise((resolve, reject) => {
+                const message =
+                    verificationText + 'Wallet address:\n' + userAddress;
+                    // signer.signMessage(message)
+                    signer.signMessage(message.substring(
+                        0,
+                        message.indexOf('Wallet address:'),
+                    ))
+                        // eslint-disable-next-line
+                        .then(async (signedMessage: any) => {
+                            const resp = await sendVerifyRequest(
+                                signedMessage,
+                                verificationDate,
+                            );
+                            setLS(LS_USER_VERIFY_TOKEN, signedMessage, userAddress);
+                            resolve(resp);
+                        })
+                        // eslint-disable-next-line
+                        .catch((error: any) => {
+                            // Handle error
+                            reject(error);
+                        });
+            });
+        }
     }
 
     async function isUserVerified() {
