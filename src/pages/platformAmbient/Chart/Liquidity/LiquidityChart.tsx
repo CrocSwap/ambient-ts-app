@@ -267,23 +267,42 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     ]);
 
     useEffect(() => {
-        if (liquidityScale && scaleData && mobileView) {
+        if (mobileView) {
             const mergedLiqData = liqDataBid.concat(liqDataAsk);
 
-            const topBoundary = scaleData.yScale.domain()[1];
-            const bottomBoundary = scaleData.yScale.domain()[0];
+            try {
+                if (mergedLiqData && mergedLiqData.length === 0) return;
 
-            const filtered = mergedLiqData.filter(
-                (data: LiquidityDataLocal) =>
-                    data.liqPrices >= bottomBoundary &&
-                    data.liqPrices <= topBoundary,
-            );
+                const { min, max }: nearestLiquidity =
+                    findLiqNearest(mergedLiqData);
 
-            const domain = d3.max(filtered, (d) => d.activeLiq);
+                if (min !== undefined && max !== undefined) {
+                    const visibleDomain = mergedLiqData.filter(
+                        (liqData: LiquidityDataLocal) =>
+                            liqData?.liqPrices >= min &&
+                            liqData?.liqPrices <= max,
+                    );
+                    const maxLiq = d3.max(
+                        visibleDomain,
+                        (d: LiquidityDataLocal) => d.activeLiq,
+                    );
+                    if (maxLiq && parseFloat(maxLiq) !== 1 && liquidityScale) {
+                        liquidityScale.domain([0, maxLiq]);
+                    }
 
-            liquidityScale.domain([0, domain]);
+                    render();
+                    renderCanvasArray([d3CanvasLiq]);
+                }
+            } catch (error) {
+                console.error({ error });
+            }
         }
-    }, [diffHashSigScaleData(scaleData, 'y'), mobileView]);
+    }, [
+        diffHashSigScaleData(scaleData, 'y'),
+        liquidityData?.depthLiqAskData,
+        liquidityData?.depthLiqBidData,
+        mobileView,
+    ]);
 
     useEffect(() => {
         if (
@@ -570,7 +589,10 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
-                    liquidityScale.range([event.detail.width, 0]);
+                    liquidityScale.range([
+                        event.detail.width,
+                        mobileView ? 0 : (event.detail.width / 10) * 6,
+                    ]);
 
                     liquidityDepthScale.range([
                         event.detail.width,
