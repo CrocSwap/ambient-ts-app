@@ -11,6 +11,7 @@ import {
 import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 interface propsIF {
     position: PositionIF;
@@ -40,6 +41,8 @@ interface propsIF {
 }
 
 export default function PriceInfo(props: propsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const {
         usdValue,
         lowRangeDisplay,

@@ -7,6 +7,7 @@ import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { getFormattedNumber } from '../../../../../ambient-utils/dataLayer';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 type ItemIF = {
     slug: string;
@@ -42,6 +43,8 @@ interface propsIF {
 }
 
 export default function PriceInfo(props: propsIF) {
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const {
         limitOrder,
         isBid,
