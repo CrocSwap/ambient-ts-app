@@ -176,6 +176,7 @@ interface propsIF {
     chartResetStatus: {
         isResetChart: boolean;
     };
+    openMobileSettingsModal: () => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -207,6 +208,7 @@ export default function Chart(props: propsIF) {
         setIsCompletedFetchData,
         setChartResetStatus,
         chartResetStatus,
+        openMobileSettingsModal,
     } = props;
 
     const {
@@ -236,15 +238,14 @@ export default function Chart(props: propsIF) {
         setChartContainerOptions,
         chartThemeColors,
         setChartThemeColors,
-        defaultChartSettings,
-        localChartSettings,
-        setLocalChartSettings,
         contextmenu,
         setContextmenu,
         contextMenuPlacement,
         setContextMenuPlacement,
         shouldResetBuffer,
         setShouldResetBuffer,
+        colorChangeTrigger,
+        setColorChangeTrigger,
     } = useContext(ChartContext);
 
     const chainId = chainData.chainId;
@@ -316,8 +317,6 @@ export default function Chart(props: propsIF) {
     const [isShowFloatingToolbar, setIsShowFloatingToolbar] = useState(false);
     const [handleDocumentEvent, setHandleDocumentEvent] = useState();
     const period = unparsedData.duration;
-
-    const [colorChangeTrigger, setColorChangeTrigger] = useState(false);
 
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
@@ -1443,21 +1442,7 @@ export default function Chart(props: propsIF) {
                                 startTouch.clientY ===
                                     event.sourceEvent.changedTouches[0].clientY
                             ) {
-                                const canvas = d3
-                                    .select(d3CanvasMain.current)
-                                    .select('canvas')
-                                    .node() as HTMLCanvasElement;
-
-                                const rectCanvas =
-                                    canvas.getBoundingClientRect();
-
-                                setContextMenuPlacement({
-                                    top: rectCanvas.top,
-                                    left: rectCanvas.left + 10,
-                                    isReversed: false,
-                                });
-
-                                setContextmenu(true);
+                                openMobileSettingsModal();
                             }
 
                             if (
@@ -4734,22 +4719,27 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'contextmenu',
                 (event: PointerEvent) => {
-                    if (!event.shiftKey) {
+                    if (mobileView) {
                         event.preventDefault();
-
-                        const screenHeight = window.innerHeight;
-
-                        const diff = screenHeight - event.clientY;
-
-                        setContextMenuPlacement({
-                            top: event.clientY,
-                            left: event.clientX,
-                            isReversed: diff < 350,
-                        });
-
-                        setContextmenu(true);
+                        openMobileSettingsModal();
                     } else {
-                        setContextmenu(false);
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+
+                            const screenHeight = window.innerHeight;
+
+                            const diff = screenHeight - event.clientY;
+
+                            setContextMenuPlacement({
+                                top: event.clientY,
+                                left: event.clientX,
+                                isReversed: diff < 350,
+                            });
+
+                            setContextmenu(true);
+                        } else {
+                            setContextmenu(false);
+                        }
                     }
                 },
             );
@@ -5567,7 +5557,7 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
 
-                    setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
+                setCrossHairDataFunc(nearest?.time, offsetX, offsetY);
 
                 let isOrderHistorySelected = undefined;
                 if (
@@ -6353,11 +6343,7 @@ export default function Chart(props: propsIF) {
                     chartItemStates={props.chartItemStates}
                     chartThemeColors={chartThemeColors}
                     setChartThemeColors={setChartThemeColors}
-                    defaultChartSettings={defaultChartSettings}
-                    localChartSettings={localChartSettings}
-                    setLocalChartSettings={setLocalChartSettings}
                     render={render}
-                    setColorChangeTrigger={setColorChangeTrigger}
                     isCondensedModeEnabled={isCondensedModeEnabled}
                     setIsCondensedModeEnabled={setIsCondensedModeEnabled}
                     setShouldDisableChartSettings={
