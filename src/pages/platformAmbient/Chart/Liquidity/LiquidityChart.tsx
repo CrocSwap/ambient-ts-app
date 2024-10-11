@@ -266,8 +266,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         diffHashSig(chartThemeColors),
     ]);
 
+    // Auto scale fo liq Curve
     useEffect(() => {
-        if (mobileView) {
+        // if (mobileView) {
             const mergedLiqData = liqDataBid.concat(liqDataAsk);
 
             try {
@@ -296,7 +297,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             } catch (error) {
                 console.error({ error });
             }
-        }
+        // }
     }, [
         diffHashSigScaleData(scaleData, 'y'),
         liquidityData?.depthLiqAskData,
