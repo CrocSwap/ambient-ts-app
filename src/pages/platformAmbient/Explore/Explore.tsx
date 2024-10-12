@@ -123,10 +123,17 @@ export default function Explore(props: ExploreIF) {
     const [searchQueryToken, setSearchQueryToken] = useState<string>('');
 
     // Filter out excluded addresses
+    const lowercaseExcludedAddresses = excludedTokenAddresses.map((addr) =>
+        addr.toLowerCase(),
+    );
     const filteredPoolsNoExcludedTokens = pools.all.filter(
         (pool) =>
-            !excludedTokenAddresses.includes(pool.base.address) &&
-            !excludedTokenAddresses.includes(pool.quote.address),
+            !lowercaseExcludedAddresses.includes(
+                pool.base.address.toLowerCase(),
+            ) &&
+            !lowercaseExcludedAddresses.includes(
+                pool.quote.address.toLowerCase(),
+            ),
     );
 
     const filteredPools =

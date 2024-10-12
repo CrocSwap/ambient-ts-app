@@ -417,10 +417,16 @@ export async function getChainStats(
             if (!json?.data) {
                 return undefined;
             }
+
             // Filter out excluded addresses
+            const lowercaseExcludedAddresses = excludedTokenAddresses.map(
+                (addr) => addr.toLowerCase(),
+            );
             const filteredData = json.data.filter(
                 (item: { tokenAddr: string }) =>
-                    !excludedTokenAddresses.includes(item.tokenAddr),
+                    !lowercaseExcludedAddresses.includes(
+                        item.tokenAddr.toLowerCase(),
+                    ),
             );
 
             if (returnAs === 'expanded') {
