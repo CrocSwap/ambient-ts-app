@@ -163,7 +163,7 @@ export const checkBlacklist = (addr: string) => {
 };
 
 export const excludedTokenAddresses = [
-    '0xd294412741ee08aa3a35ac179ff0b4d9d7fefb27',
+    '0xd294412741ee08aa3a35ac179ff0b4d9d7fefb27', // fake SCR
 ];
 
 // if blacklist is not already lowercase
