@@ -4,6 +4,7 @@ import {
     GCGO_OVERRIDE_URL,
     ZERO_ADDRESS,
     ethereumMainnet,
+    excludedTokenAddresses,
     mainnetETH,
 } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
@@ -403,6 +404,7 @@ export async function getChainStats(
     const chainStatsFreshEndpoint = GCGO_OVERRIDE_URL
         ? GCGO_OVERRIDE_URL + '/chain_stats?'
         : graphCacheUrl + '/chain_stats?';
+
     return fetch(
         chainStatsFreshEndpoint +
             new URLSearchParams({
@@ -415,10 +417,22 @@ export async function getChainStats(
             if (!json?.data) {
                 return undefined;
             }
+
+            // Filter out excluded addresses
+            const lowercaseExcludedAddresses = excludedTokenAddresses.map(
+                (addr) => addr.toLowerCase(),
+            );
+            const filteredData = json.data.filter(
+                (item: { tokenAddr: string }) =>
+                    !lowercaseExcludedAddresses.includes(
+                        item.tokenAddr.toLowerCase(),
+                    ),
+            );
+
             if (returnAs === 'expanded') {
-                return json.data;
+                return filteredData;
             } else if (returnAs === 'cumulative') {
-                const payload = json.data as DexTokenAggServerIF[];
+                const payload = filteredData as DexTokenAggServerIF[];
                 return expandChainStats(
                     payload,
                     chainId,
