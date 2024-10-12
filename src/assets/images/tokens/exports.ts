@@ -44,7 +44,7 @@ import BIG from './BIG.jpg';
 import PUNKETH20 from './PUNKETH-20.jpeg';
 import RSETH from './RSETH.webp';
 import SCROLLY from './SCROLLY.webp';
-import SCR from './SCR.svg';
+// import SCR from './SCR.svg';
 import WEETH from './WEETH.svg';
 import BLAST from './BLAST.png';
 import ZCAT from './ZCAT.webp';
@@ -101,7 +101,7 @@ export {
     PUNKETH20,
     RSETH,
     SCROLLY,
-    SCR,
+    // SCR,
     WEETH,
     BLAST,
     ZCAT,
