@@ -351,6 +351,29 @@ input[type='number'] {
         pointer-events: none;
         /* display: none; */
     }
+
+    .custom_scroll_ambient::-webkit-scrollbar {
+        width: 5px !important;
+      }
+      
+ 
+      /* Handle */
+      .custom_scroll_ambient::-webkit-scrollbar-thumb {
+        background: 
+        linear-gradient(
+            0deg,
+            var(--accent1) 0%,
+            var(--accent5) 49.48%,
+            var(--accent1) 100%
+        ) !important;
+      }
+
+      /* .custom_scroll_ambient{
+        scrollbar-width: thin;
+scrollbar-color: transparent;
+      } */
+
+
 }
 
 @media only screen and (min-width: 1280px) {

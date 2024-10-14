@@ -9,16 +9,29 @@ import {
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { trimString } from '../../../../ambient-utils/dataLayer';
-import { AppStateContext, AppStateContextIF } from '../../../../contexts/AppStateContext';
-import { CrocEnvContext, CrocEnvContextIF } from '../../../../contexts/CrocEnvContext';
-import { TokenBalanceContext, TokenBalanceContextIF } from '../../../../contexts/TokenBalanceContext';
-import { UserDataContext, UserDataContextIF } from '../../../../contexts/UserDataContext';
+import {
+    AppStateContext,
+    AppStateContextIF,
+} from '../../../../contexts/AppStateContext';
+import {
+    CrocEnvContext,
+    CrocEnvContextIF,
+} from '../../../../contexts/CrocEnvContext';
+import {
+    TokenBalanceContext,
+    TokenBalanceContextIF,
+} from '../../../../contexts/TokenBalanceContext';
+import {
+    UserDataContext,
+    UserDataContextIF,
+} from '../../../../contexts/UserDataContext';
 import styles from './PortfolioBannerAccount.module.css';
 
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { getAvatarForProfilePage } from '../../../Chat/ChatRenderUtils';
 import useChatApi from '../../../Chat/Service/ChatApi';
+import { useNavigate } from 'react-router-dom';
 
 interface propsIF {
     ensName: string;
@@ -28,12 +41,12 @@ interface propsIF {
     jazziconsToDisplay: JSX.Element | null;
     connectedAccountActive: boolean;
     showTabsAndNotExchange: boolean;
-    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>
+    setShowTabsAndNotExchange: Dispatch<SetStateAction<boolean>>;
     nftTestWalletInput: string;
     setNftTestWalletInput: Dispatch<SetStateAction<string>>;
     showNFTPage: boolean;
     setShowNFTPage: Dispatch<SetStateAction<boolean>>;
-    // eslint-disable-next-line 
+    // eslint-disable-next-line
     handleTestWalletChange: any;
 }
 
@@ -58,6 +71,9 @@ export default function PortfolioBannerAccount(props: propsIF) {
         userProfileNFT,
         setUserProfileNFT,
         setUserThumbnailNFT,
+        isUserConnected,
+        disconnectUser,
+        resolvedAddressFromContext
     } = useContext<UserDataContextIF>(UserDataContext);
 
     const { NFTData } = useContext<TokenBalanceContextIF>(TokenBalanceContext);
@@ -70,17 +86,21 @@ export default function PortfolioBannerAccount(props: propsIF) {
         chainData: { blockExplorer },
     } = useContext<CrocEnvContextIF>(CrocEnvContext);
 
+    const navigate = useNavigate();
+
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
 
-    const [showAccountDetails, setShowAccountDetails] = useState<boolean>(false);
+    const [showAccountDetails, setShowAccountDetails] =
+        useState<boolean>(false);
 
-    const ensNameToDisplay: string = ensName !== '' ? ensName : truncatedAccountAddress;
+    const ensNameToDisplay: string =
+        ensName !== '' ? ensName : truncatedAccountAddress;
 
     const addressToDisplay: string | undefined = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
-            ? truncatedAccountAddress
-            : userAddress;
+          ? truncatedAccountAddress
+          : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -139,7 +159,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
     }
 
     // Nft Fetch For Test Wallet
-    const [isWalletPanelActive, setIsWalletPanelActive] = useState<boolean>(false);
+    const [isWalletPanelActive, setIsWalletPanelActive] =
+        useState<boolean>(false);
 
     // functionality to show panel for NFT test fetch
     useEffect(() => {
@@ -150,7 +171,10 @@ export default function PortfolioBannerAccount(props: propsIF) {
             }
         }
         document.body.addEventListener('keydown', openWalletAddressPanel);
-        return document.body.removeEventListener('keydown', openWalletAddressPanel);
+        return document.body.removeEventListener(
+            'keydown',
+            openWalletAddressPanel,
+        );
     }, []);
 
     return (
@@ -179,8 +203,8 @@ export default function PortfolioBannerAccount(props: propsIF) {
                             resolvedAddress
                                 ? resolvedAddress
                                 : userAddress
-                                    ? userAddress
-                                    : '',
+                                  ? userAddress
+                                  : '',
                             userProfileNFT,
                             65,
                             resolvedAddress !== undefined &&
@@ -190,7 +214,6 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                 : true,
                         )}
                 </div>
-
                 <div className={styles.wallet_info}>
                     <h3
                         className={styles.address_or_ens}
@@ -204,9 +227,11 @@ export default function PortfolioBannerAccount(props: propsIF) {
                         className={styles.address_detail}
                         onClick={handleCopyAddress}
                     >
-                        {addressToDisplay && addressToDisplay.length > 8 ? trimString(addressToDisplay, 5, 3) : addressToDisplay}
-                        {addressToDisplay ? <FiCopy size={'12px'} /> : null}
-                        {addressToDisplay ? (
+                        {addressToDisplay && addressToDisplay.length > 8
+                            ? trimString(addressToDisplay, 5, 3)
+                            : addressToDisplay}
+                        {addressToDisplay && <FiCopy size={'12px'} />}
+                        {addressToDisplay && (
                             <FiExternalLink
                                 size={'12px'}
                                 onClick={(e) => {
@@ -216,21 +241,44 @@ export default function PortfolioBannerAccount(props: propsIF) {
                                     e.stopPropagation();
                                 }}
                             />
-                        ) : null}
+                        )}
                     </div>
                 </div>
-
-                {isSmallScreen && connectedAccountActive && (
-                    <button
-                        className={styles.deposit_button}
-                        onClick={() =>
-                            setShowTabsAndNotExchange(!showTabsAndNotExchange)
-                        }
-                    >
-                        {showTabsAndNotExchange
-                            ? 'Transactions'
-                            : 'Deposit/Withdraw'}
-                    </button>
+                {
+                    // differential view for small screens
+                    // some items only appear when viewing your own page
+                    isSmallScreen && (
+                    <div className={styles.button_bank}>
+                        <div>
+                            <button className={styles.dark_button} onClick={() => {
+                                const linkToNavigateTo: string = (ensName || userAddress)
+                                    ? `/${ensName || userAddress}/xp`
+                                    : resolvedAddressFromContext
+                                    ? `/${resolvedAddressFromContext}/xp`
+                                    : `/${userAddress}/xp`;
+                                navigate(linkToNavigateTo);
+                            }}>
+                                Points
+                            </button>
+                            {
+                                isUserConnected &&
+                                    <button
+                                        className={styles.logout_button}
+                                        onClick={() => disconnectUser()}
+                                    >
+                                        Log Out
+                                    </button>
+                            }
+                        </div>
+                        {isUserConnected && <button
+                            className={styles.dark_button}
+                            onClick={() =>
+                                setShowTabsAndNotExchange(!showTabsAndNotExchange)
+                            }
+                        >
+                            Deposit / Withdraw
+                        </button>}
+                    </div>
                 )}
             </div>
 

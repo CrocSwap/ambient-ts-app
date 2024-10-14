@@ -51,6 +51,7 @@ import {
 import medal from '../../../assets/images/icons/medal.svg';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useLocation } from 'react-router-dom';
 
 // interface for React functional component props
 interface propsIF {
@@ -413,22 +414,36 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     const dataToUse = connectedAccountActive
-        ? accountTabDataWithTokens
-        : accountTabDataWithoutTokens;
+    ? accountTabDataWithTokens
+    : accountTabDataWithoutTokens;
 
-    const [activeTab, setActiveTab] = useState<string>('Transactions');
+    const location = useLocation();
 
-    const renderTabContent = () => {
-        const selectedTabData = dataToUse.find(
-            (tab) => tab.label === activeTab,
+    // active tab rendered in DOM
+    const DEFAULT_TAB = 'Transactions';
+    const [activeTab, setActiveTab] = useState<string>(DEFAULT_TAB);
+
+    // allow the user to reach the Points tab through URL navigation
+    useEffect(() => {
+        if (location.pathname.includes('points')) {
+            setActiveTab('Points');
+        }
+    }, [location.pathname]);
+
+    // TODO:    this file is changing state without changing URL, we should
+    // TODO:    ... refactor to trigger a nav action and update state responsively
+
+    const renderTabContent = (): JSX.Element | null => {
+        const selectedTabData =dataToUse.find(
+            (tab) => tab.label === activeTab
         );
         return selectedTabData ? selectedTabData.content : null;
     };
 
-    const mobileTabs = (
+    const mobileTabs: JSX.Element = (
         <div className={styles.mobile_tabs_container}>
             <div className={styles.mobile_tabs_button_container}>
-                {dataToUse.map((tab) => (
+                {dataToUse.filter((t) => t.label !== 'Points').map((tab) => (
                     <button
                         key={tab.label}
                         onClick={() => setActiveTab(tab.label)}
@@ -453,7 +468,8 @@ export default function PortfolioTabs(props: propsIF) {
         </div>
     );
 
-    if (isSmallScreen) return mobileTabs;
+
+    if ( isSmallScreen) return mobileTabs;
     return (
         <div className={styles.portfolio_tabs_container}>
             <TabComponent
