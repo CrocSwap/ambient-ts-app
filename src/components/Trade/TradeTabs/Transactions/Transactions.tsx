@@ -272,11 +272,6 @@ function Transactions(props: propsIF) {
         }
     }, [transactionsByPool]);
 
-    useEffect(() => {
-        console.log('hotTxs', hotTransactions);
-    }, [hotTransactions]);
-
-
     const updateHotTransactions = (changes: TransactionIF[]) => {
 
         const existingChanges = new Set(

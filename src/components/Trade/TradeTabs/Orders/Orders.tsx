@@ -526,11 +526,6 @@ function Orders(props: propsIF) {
 
     // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<LimitOrderIF[]>(() => {
-
-        console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
-        console.log('p0', pagesVisible[0], '| p1', pagesVisible[1]);
-        console.log('pageDataCountVals', pageDataCountRef.current?.counts);
-        console.log('.............................')
         return isAccountView
             ? sortedLimits
             : sortedLimits.slice(

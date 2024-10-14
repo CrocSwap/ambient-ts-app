@@ -295,9 +295,6 @@ const mergePageDataCountValues = (hotTxsCount: number) => {
 }
 
 
-useEffect(() => {
-    console.log('hotTxs', hotTransactions);
-}, [hotTransactions]);
 
 useEffect(() => {
     if(pagesVisible[0] === 0 && hotTransactions.length > 0){
@@ -445,7 +442,6 @@ const addMoreData = async() => {
                 }
                 // check diff
                 const cleanData = dataDiffCheck(dirtyData);
-                console.log('package: ', cleanData.length)
                 if (cleanData.length == 0){
                     break;
                 }
@@ -548,10 +544,6 @@ const addMoreData = async() => {
             // infinite scroll ------------------------------------------------------------------------------------------------------------------------------
     const sortedLimitDataToDisplay = useMemo<PositionIF[]>(() => {
 
-        console.log('startIndex', getIndexForPages(true), ' endIndex', getIndexForPages(false));
-        console.log('p0', pagesVisible[0], '| p1', pagesVisible[1]);
-        console.log('pageDataCountVals', pageDataCountRef.current?.counts);
-        console.log('.............................')
         return isAccountView
             ? sortedPositions
             : sortedPositions.slice(
