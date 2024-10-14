@@ -38,7 +38,7 @@ export interface ExploreContextIF {
         ) => void;
         reset: () => void;
     };
-    tokens: useTokenStatsIF;
+    topTokensOnchain: useTokenStatsIF;
     isExploreDollarizationEnabled: boolean;
     setIsExploreDollarizationEnabled: Dispatch<SetStateAction<boolean>>;
 }
@@ -435,7 +435,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                 setExtraPools([]);
             },
         },
-        tokens: dexTokens,
+        topTokensOnchain: dexTokens,
         isExploreDollarizationEnabled,
         setIsExploreDollarizationEnabled,
     };
