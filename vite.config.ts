@@ -23,7 +23,7 @@ export default defineConfig({
     },
     server: {
         port: 3000,
-        host: '0.0.0.0'
+        // host: '0.0.0.0'  // can be used for checking on mobile locally
     },
     build: {
         outDir: 'build',
