@@ -66,11 +66,11 @@
         rgba(231, 86, 112, 0.1) 100%
     );
 
-    --orange: #f1b162;
+    --orange: #FF8B00;
     --orange-background: radial-gradient(
         50% 50% at 50% 50%,
-        rgba(241, 177, 98, 0.1) 0%,
-        rgba(241, 177, 98, 0.1) 100%
+        rgba(255, 139, 0, 0.1) 0%,
+        rgba(255, 139, 0, 0.1) 100%
     );
 
     /**
@@ -250,6 +250,13 @@
 
     --other-green: #6bae52;
     --other-red: #e75670;
+
+    --orange: #f1b162;
+    --orange-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(241, 177, 98, 0.1) 0%,
+        rgba(241, 177, 98, 0.1) 100%
+    );
 
     /* border */
     --color-border: 1px solid var(--accent1);
