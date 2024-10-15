@@ -54,6 +54,11 @@
     --negative: #f6385b;
 
     --other-green: #41d18e;
+    --other-green-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(65, 209, 142, 0.1) 0%,
+        rgba(65, 209, 142, 0.1) 100%
+    );
     --other-red: #e75670;
     --other-red-background: radial-gradient(
         50% 50% at 50% 50%,

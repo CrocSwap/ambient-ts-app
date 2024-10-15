@@ -33,6 +33,7 @@ const colorSets = {
     red: new ColorSet('--other-red', '--other-red-background', '--other-red'),
     orange: new ColorSet('--orange', '--orange-background', '--orange'),
     yellow: new ColorSet('--yellow', '--yellow-background', '--yellow'),
+    green: new ColorSet('--other-green', '--other-green-background', '--other-green'),
 };
 
 // union type of recognized colors per `colors` obj
