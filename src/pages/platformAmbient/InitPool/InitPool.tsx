@@ -27,7 +27,7 @@ import { useSendInit } from '../../../App/hooks/useSendInit';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import { WarningBox } from '../../../components/RangeActionModal/WarningBox/WarningBox';
+import WarningBox from '../../../components/RangeActionModal/WarningBox/WarningBox';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../../components/Global/MultiStepTransaction/MultiContentComponent';

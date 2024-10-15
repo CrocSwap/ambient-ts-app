@@ -28,7 +28,7 @@ import {
     removeWrappedNative,
     isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import WarningBox from '../../RangeActionModal/WarningBox/WarningBox';
 import {
     TradeDataContext,
     TradeDataContextIF,

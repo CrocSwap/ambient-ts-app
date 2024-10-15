@@ -7,7 +7,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../ambient-utils/dataLayer';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import WarningBox from '../../RangeActionModal/WarningBox/WarningBox';
 import { FlexContainer, Text } from '../../../styled/Common';
 
 interface propsIF {

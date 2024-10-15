@@ -20,7 +20,7 @@ import {
     removeWrappedNative,
     isWrappedNativeToken,
 } from '../../../ambient-utils/dataLayer';
-import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import WarningBox from '../../RangeActionModal/WarningBox/WarningBox';
 import { IoIosArrowBack } from 'react-icons/io';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
