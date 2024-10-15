@@ -31,17 +31,21 @@ const useFetchPoolStats = (
         server: { isEnabled: isServerEnabled },
         isUserIdle,
     } = useContext(AppStateContext);
+
     const {
         cachedPoolStatsFetch,
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
     } = useContext(CachedDataContext);
+
     const { poolPriceNonDisplay, setPoolPriceNonDisplay, setLimitTick } =
         useContext(TradeDataContext);
+
     const [localPoolPriceNonDisplay, setLocalPoolPriceNonDisplay] = useState<
         [string, number] | undefined
     >();
+
     const {
         crocEnv,
         activeNetwork,
@@ -49,7 +53,13 @@ const useFetchPoolStats = (
         chainData: { chainId },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
+
+    useEffect(() => {
+        console.log({ allPoolStats });
+    }, [allPoolStats]);
+
     const { tokens } = useContext(TokenContext);
 
     const [poolPriceDisplayNum, setPoolPriceDisplayNum] = useState<
@@ -59,6 +69,7 @@ const useFetchPoolStats = (
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
     >();
+
     const [shouldInvertDisplay, setShouldInvertDisplay] = useState<
         boolean | undefined
     >(!pool.isBaseTokenMoneynessGreaterOrEqual);

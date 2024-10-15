@@ -9,7 +9,7 @@ import {
 } from '../../constants';
 import { FetchContractDetailsFn, TokenPriceFn } from '../../api';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
-import { TokenIF } from '../../types';
+import { AllPoolDataIF, TokenIF } from '../../types';
 import { PoolQueryFn } from './querySpotPrice';
 import { isETHorStakedEthToken } from '..';
 
@@ -567,7 +567,7 @@ export type AllPoolStatsFn = (
     chain: string,
     graphCacheUrl: string,
     with24hPrices?: boolean,
-) => Promise<PoolStatsServerIF>;
+) => Promise<AllPoolDataIF>;
 
 export type Change24Fn = (
     chainId: string,

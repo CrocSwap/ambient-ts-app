@@ -18,7 +18,7 @@ import {
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
-import { TokenIF } from '../ambient-utils/types';
+import { AllPoolDataIF, TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
@@ -59,6 +59,7 @@ interface ChainDataContextIF {
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
+    allPoolStats: AllPoolDataIF | undefined;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -189,7 +190,9 @@ export const ChainDataContextProvider = (props: {
         return () => clearInterval(interval);
     }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
 
-    const [allPoolStats, setAllPoolStats] = useState<unknown | undefined>();
+    const [allPoolStats, setAllPoolStats] = useState<
+        AllPoolDataIF | undefined
+    >();
 
     async function updateAllPoolStats(): Promise<void> {
         try {
@@ -200,17 +203,12 @@ export const ChainDataContextProvider = (props: {
             );
 
             if (allPoolStats) {
-                console.log({ allPoolStats });
                 setAllPoolStats(allPoolStats);
             }
         } catch (error) {
             console.log({ error });
         }
     }
-
-    useEffect(() => {
-        console.log({ allPoolStats });
-    }, [allPoolStats]);
 
     useEffect(() => {
         updateAllPoolStats();
@@ -589,6 +587,7 @@ export const ChainDataContextProvider = (props: {
         isActiveNetworkScroll,
         isActiveNetworkMainnet,
         isActiveNetworkL2,
+        allPoolStats,
         nativeTokenUsdPrice,
     };
 
