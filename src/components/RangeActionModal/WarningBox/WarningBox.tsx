@@ -2,22 +2,25 @@ import React from 'react';
 import styles from './WarningBox.module.css'; // Import your styles here
 import { IoWarningOutline } from 'react-icons/io5';
 
+type dashedString = `--${string}`;
+type cssVariable = `var(${dashedString})`;
+
 // interface for obj with custom CSS properties and their values
 interface ColorSetIF {
-    color: string;
-    background: string;
-    border: string;
+    color: cssVariable;
+    background: cssVariable;
+    border: `${number}px solid ${cssVariable}`;
 }
 
 // class constructor to make color set creation more readable
 class ColorSet implements ColorSetIF {
-    public readonly color: string;
-    public readonly background: string;
-    public readonly border: string;
+    public readonly color: cssVariable;
+    public readonly background: cssVariable;
+    public readonly border: `1px solid ${cssVariable}`;
     constructor(
-        col: string,
-        bck: string,
-        bor: string,
+        col: dashedString,
+        bck: dashedString,
+        bor: dashedString,
     ) {
         this.color = `var(${col})`;
         this.background = `var(${bck})`;
