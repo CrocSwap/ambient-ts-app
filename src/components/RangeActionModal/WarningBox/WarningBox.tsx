@@ -19,6 +19,9 @@ const colorSets = {
 // union type of recognized colors per `colors` obj
 type warningColors = keyof typeof colorSets;
 
+// color set to consume by default if none is specified
+const DEFAULT_COLOR_SET: warningColors = 'red';
+
 interface propsIF {
     title?: string;
     details: React.ReactNode;
@@ -33,7 +36,7 @@ export default function WarningBox(props: propsIF) {
         details,
         button,
         noBackground,
-        color = 'red',
+        color = DEFAULT_COLOR_SET,
     } = props;
 
     const noBackgroundWarning = (
