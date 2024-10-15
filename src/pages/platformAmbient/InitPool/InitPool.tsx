@@ -1588,6 +1588,7 @@ export default function InitPool() {
         >
             <WarningBox
                 details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
+                color='red'
             />
         </div>
     ) : (

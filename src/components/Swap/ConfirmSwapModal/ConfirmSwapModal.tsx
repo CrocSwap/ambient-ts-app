@@ -155,6 +155,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     const priceIncreaseComponent = (
         <WarningBox
             title='Price Updated'
+            color='red'
             details={`The price of ${buyTokenData.symbol} has increased by
         ${buyTokenPriceChangeString}%`}
             button={

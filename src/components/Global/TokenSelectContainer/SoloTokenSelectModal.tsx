@@ -328,6 +328,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                             isWrappedNativeToken(validatedInput) && (
                                 <WarningBox
                                     title=''
+                                    color='red'
                                     details={WETH_WARNING}
                                     noBackground
                                     button={
