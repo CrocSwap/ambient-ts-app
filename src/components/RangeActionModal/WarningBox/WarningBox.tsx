@@ -13,7 +13,12 @@ const colorSets = {
         color: 'var(--orange)',
         background: 'var(--orange-background)',
         border: '1px solid var(--orange)',
-    }
+    },
+    yellow: {
+        color: 'var(--yellow)',
+        background: 'var(--yellow-background)',
+        border: '1px solid var(--yellow)',
+    },
 };
 
 // union type of recognized colors per `colors` obj

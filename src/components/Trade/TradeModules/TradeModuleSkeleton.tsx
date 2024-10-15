@@ -283,7 +283,7 @@ export const TradeModuleSkeleton = (props: propsIF) => {
                             Looking to LP?
                         </LPButton>
                     )}
-                    {pairHasSCR && <WarningBox color='orange' details='Pre-initialization holding price is shown. This is not the actual market price.' />}
+                    {pairHasSCR && <WarningBox color='yellow' details='Pre-initialization holding price is shown. This is not the actual market price.' />}
                 </FlexContainer>
             </ContentContainer>
             {modal}
