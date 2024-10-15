@@ -102,6 +102,49 @@ const fetchPoolStats = async (
     }
 };
 
+const fetchAllPoolStats = async (
+    chainId: string,
+    graphCacheUrl: string,
+    with24hPrices?: boolean,
+): Promise<PoolStatsServerIF | undefined> => {
+    const allPoolStatsEndpoint = GCGO_OVERRIDE_URL
+        ? GCGO_OVERRIDE_URL + '/all_pool_stats?'
+        : graphCacheUrl + '/all_pool_stats?';
+
+    if (with24hPrices) {
+        return fetch(
+            allPoolStatsEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                    with24hPrices: 'true',
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+                return payload;
+            });
+    } else {
+        return fetch(
+            allPoolStatsEndpoint +
+                new URLSearchParams({
+                    chainId: chainId,
+                }),
+        )
+            .then((response) => response.json())
+            .then((json) => {
+                if (!json?.data) {
+                    return;
+                }
+                const payload = json.data as PoolStatsServerIF;
+                return payload;
+            });
+    }
+};
+
 export async function expandPoolStats(
     payload: PoolStatsServerIF,
     base: string,
@@ -520,6 +563,12 @@ export type PoolStatsFn = (
     histTime?: number,
 ) => Promise<PoolStatsServerIF>;
 
+export type AllPoolStatsFn = (
+    chain: string,
+    graphCacheUrl: string,
+    with24hPrices?: boolean,
+) => Promise<PoolStatsServerIF>;
+
 export type Change24Fn = (
     chainId: string,
     baseToken: string,
@@ -541,6 +590,10 @@ export type LiquidityFeeFn = (
 
 export function memoizePoolStats(): PoolStatsFn {
     return memoizeCacheQueryFn(fetchPoolStats) as PoolStatsFn;
+}
+
+export function memoizeAllPoolStats(): AllPoolStatsFn {
+    return memoizeCacheQueryFn(fetchAllPoolStats) as AllPoolStatsFn;
 }
 
 export function memoizeGet24hChange(): Change24Fn {
