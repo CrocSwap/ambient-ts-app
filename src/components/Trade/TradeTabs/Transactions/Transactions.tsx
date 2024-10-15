@@ -12,6 +12,7 @@ import {
     useState,
 } from 'react';
 import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
+
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
 import {
@@ -69,11 +70,13 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import Spinner from '../../../Global/Spinner/Spinner';
 import NoTableData from '../NoTableData/NoTableData';
-import TableRows from '../TableRows';
+// import TableRows from '../TableRows';
 import TableRowsInfiniteScroll from '../TableRowsInfiniteScroll';
 import { useSortedTxs } from '../useSortedTxs';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
+import { fetchPoolUserChanges } from '../../../../ambient-utils/api/fetchPoolUserChanges';
+import { UserDataContext } from '../../../../contexts';
 
 interface propsIF {
     filter?: CandleDataIF | undefined;
@@ -119,6 +122,10 @@ function Transactions(props: propsIF) {
     const { tokens } = useContext<TokenContextIF>(TokenContext);
 
     const {
+        userAddress,
+    } = useContext(UserDataContext);
+
+    const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext<SidebarStateIF>(SidebarContext);
 
@@ -153,10 +160,24 @@ function Transactions(props: propsIF) {
 
     // ref holding scrollable element (to attach event listener)
     
+    const initialChanges = showAllData ? transactionsByPool.changes : userTransactionsByPool.changes;
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
         dataReceived: false,
-        changes: [...transactionsByPool.changes],
+        changes: [...initialChanges],
     });
+
+
+
+    useEffect(() => {
+        const initialChanges = showAllData ? transactionsByPool.changes : userTransactionsByPool.changes;
+        console.log('initialChanges', initialChanges.length)
+        setFetchedTransactions({
+            dataReceived: false,
+            changes: [...initialChanges],
+        })
+    }, [showAllData])
+
+    console.log(fetchedTransactions.changes.length)
 
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
@@ -196,10 +217,10 @@ function Transactions(props: propsIF) {
     }, [transactionsByPool.changes]);
 
     
-    const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
-    useEffect(() => {
-        setShowInfiniteScroll(!isAccountView && showAllData);
-    }, [isAccountView, showAllData]);
+    // const [showInfiniteScroll, setShowInfiniteScroll] = useState<boolean>(!isAccountView && showAllData);
+    // useEffect(() => {
+    //     setShowInfiniteScroll(!isAccountView && showAllData);
+    // }, [isAccountView, showAllData]);
 
     
 
@@ -210,9 +231,10 @@ function Transactions(props: propsIF) {
     const transactionData = useMemo<TransactionIF[]>(
         () =>
             isAccountView
-                ? activeAccountTransactionData || []
+                // ? activeAccountTransactionData || []
+                ? fetchedTransactions.changes
                 : !showAllData
-                  ? userTransactionsByPool.changes
+                  ? fetchedTransactions.changes
                   : fetchedTransactions.changes,
         [
             activeAccountTransactionData,
@@ -248,6 +270,7 @@ function Transactions(props: propsIF) {
 
 
     useEffect(() => {
+        if(!showAllData) return;
         const existingChanges = new Set(
             fetchedTransactions.changes.map(
                 (change) => change.txHash || change.txId,
@@ -271,6 +294,32 @@ function Transactions(props: propsIF) {
             }
         }
     }, [transactionsByPool]);
+
+    useEffect(() => {
+        if(showAllData) return;
+        const existingChanges = new Set(
+            fetchedTransactions.changes.map(
+                (change) => change.txHash || change.txId,
+            ),
+        ); // Adjust if using a different unique identifier
+
+        const uniqueChanges = userTransactionsByPool.changes.filter(
+            (change) => !existingChanges.has(change.txHash || change.txId),
+        );
+
+        if (uniqueChanges.length > 0) {
+            if(pagesVisible[0] === 0){
+                setFetchedTransactions((prev) => {
+                    return {
+                        dataReceived: true,
+                        changes: [...uniqueChanges, ...prev.changes],
+                    };
+                });
+            }else{
+                updateHotTransactions(uniqueChanges);
+            }
+        }
+    }, [userTransactionsByPool]);
 
     const updateHotTransactions = (changes: TransactionIF[]) => {
 
@@ -635,6 +684,9 @@ function Transactions(props: propsIF) {
 
     const addMoreData = async() => {
         
+
+        console.log('add more data', userAddress)
+
         setMoreDataLoading(true);
         // retrieve pool recent changes
             if(!crocEnv || !provider){
@@ -642,22 +694,43 @@ function Transactions(props: propsIF) {
                 return;
             }
             else{
-                const poolChangesJsonData = await fetchPoolRecentChanges({
-                    tokenList: tokens.tokenUniv,
-                    base: selectedBaseAddress,
-                    quote: selectedQuoteAddress,
-                    poolIdx: poolIndex,
-                    chainId: chainId,
-                    n: 50,
-                    timeBefore: oldestTxTime,
-                    crocEnv: crocEnv,
-                    graphCacheUrl: activeNetwork.graphCacheUrl,
-                    provider: provider,
-                    cachedFetchTokenPrice: cachedFetchTokenPrice,
-                    cachedQuerySpotPrice: cachedQuerySpotPrice,
-                    cachedTokenDetails: cachedTokenDetails,
-                    cachedEnsResolve: cachedEnsResolve,
-                });
+                let poolChangesJsonData;
+                if(showAllData){
+                    poolChangesJsonData = await fetchPoolRecentChanges({
+                        tokenList: tokens.tokenUniv,
+                        base: selectedBaseAddress,
+                        quote: selectedQuoteAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        n: 50,
+                        timeBefore: oldestTxTime,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        provider: provider,
+                        cachedFetchTokenPrice: cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: cachedQuerySpotPrice,
+                        cachedTokenDetails: cachedTokenDetails,
+                        cachedEnsResolve: cachedEnsResolve,
+                    });
+                }else if(userAddress !== undefined){
+                    poolChangesJsonData = await fetchPoolUserChanges({ 
+                        tokenList: tokens.tokenUniv,
+                        base: selectedBaseAddress,
+                        quote: selectedQuoteAddress,
+                        poolIdx: poolIndex,
+                        chainId: chainId,
+                        user: userAddress,
+                        n: 50,
+                        timeBefore: oldestTxTime,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        provider: provider,
+                        cachedFetchTokenPrice: cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: cachedQuerySpotPrice,
+                        cachedTokenDetails: cachedTokenDetails,
+                        cachedEnsResolve: cachedEnsResolve,
+                    })
+                }
                     if (poolChangesJsonData && poolChangesJsonData.length > 0) {
                         const cleanData = dataDiffCheck(poolChangesJsonData);
 
@@ -836,8 +909,6 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                    {showInfiniteScroll ? 
-                    (
                     <TableRowsInfiniteScroll
                         type='Transaction'
                         data={sortedTxDataToDisplay}
@@ -854,20 +925,6 @@ function Transactions(props: propsIF) {
                         setLastFetchedCount={setLastFetchedCount}
                         moreDataLoading={moreDataLoading}
                         />
-
-                    )
-                    :
-                    (<TableRows
-                        type='Transaction'
-                        data={sortedTransactions.filter(
-                            (tx) => tx.changeType !== 'cross',
-                        )}
-                        fullData={sortedTransactions}
-                        tableView={tableView}
-                        isAccountView={isAccountView}
-                    />)
-                    }
-                
             </ul>
         </div>
     );
