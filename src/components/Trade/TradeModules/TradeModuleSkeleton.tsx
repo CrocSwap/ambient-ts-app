@@ -23,7 +23,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     brand,
     excludedTokenAddresses,
-    ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';

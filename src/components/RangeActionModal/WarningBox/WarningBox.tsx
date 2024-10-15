@@ -3,13 +3,21 @@ import styles from './WarningBox.module.css'; // Import your styles here
 import { IoWarningOutline } from 'react-icons/io5';
 
 // obj to translate human-readable color to CSS variable
-const colors = {
-    red: '--other-red',
-    orange: '--orange',
+const colorSets = {
+    red: {
+        color: 'var(--other-red)',
+        background: 'var(--other-red-background)',
+        text: 'var(--other-red)',
+    },
+    orange: {
+        color: 'var(--orange)',
+        background: 'var(--orange-background)',
+        text: 'var(--orange)',
+    }
 };
 
 // union type of recognized colors per `colors` obj
-type warningColors = keyof typeof colors;
+type warningColors = keyof typeof colorSets;
 
 interface propsIF {
     title?: string;
@@ -25,7 +33,7 @@ export default function WarningBox(props: propsIF) {
         details,
         button,
         noBackground,
-        color = colors.red,
+        color = 'red',
     } = props;
 
     const noBackgroundWarning = (
@@ -40,7 +48,10 @@ export default function WarningBox(props: propsIF) {
 
     if (noBackground) return noBackgroundWarning;
     return (
-        <div className={` ${styles.warning_box}`}>
+        <div
+            className={styles.warning_box}
+            style={ colorSets[color] }
+        >
             <ul>
                 {title && (
                     <div>

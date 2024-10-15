@@ -55,6 +55,18 @@
 
     --other-green: #41d18e;
     --other-red: #e75670;
+    --other-red-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(231, 86, 112, 0.1) 0%,
+        rgba(231, 86, 112, 0.1) 100%
+    );
+
+    --orange: #f1b162;
+    --orange-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(241, 177, 98, 0.1) 0%,
+        rgba(241, 177, 98, 0.1) 100%
+    );
 
     /* border */
     --color-border: 1px solid var(--accent1);
@@ -213,7 +225,6 @@
     --accent4: #71b5fc;
     --accent5: #7be4ff;
 
-    --orange: #f1b162;
     --green: #62f1b0;
     --red: #f16962;
 

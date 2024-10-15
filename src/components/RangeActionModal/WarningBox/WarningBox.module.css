@@ -4,7 +4,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px;
-    border: solid 1px var(--other-red);
+    border: solid 1px;
     border-radius: var(--border-radius);
     background: radial-gradient(
         50% 50% at 50% 50%,
