@@ -2,23 +2,34 @@ import React from 'react';
 import styles from './WarningBox.module.css'; // Import your styles here
 import { IoWarningOutline } from 'react-icons/io5';
 
+// interface for obj with custom CSS properties and their values
+interface ColorSetIF {
+    color: string;
+    background: string;
+    border: string;
+}
+
+// class constructor to make color set creation more readable
+class ColorSet implements ColorSetIF {
+    public readonly color: string;
+    public readonly background: string;
+    public readonly border: string;
+    constructor(
+        col: string,
+        bck: string,
+        bor: string,
+    ) {
+        this.color = `var(${col})`;
+        this.background = `var(${bck})`;
+        this.border = `1px solid var(${bor})`;
+    }
+}
+
 // obj to translate human-readable color to CSS variable
 const colorSets = {
-    red: {
-        color: 'var(--other-red)',
-        background: 'var(--other-red-background)',
-        border: '1px solid var(--other-red)'
-    },
-    orange: {
-        color: 'var(--orange)',
-        background: 'var(--orange-background)',
-        border: '1px solid var(--orange)',
-    },
-    yellow: {
-        color: 'var(--yellow)',
-        background: 'var(--yellow-background)',
-        border: '1px solid var(--yellow)',
-    },
+    red: new ColorSet('--other-red', '--other-red-background', '--other-red'),
+    orange: new ColorSet('--orange', '--orange-background', '--orange'),
+    yellow: new ColorSet('--yellow', '--yellow-background', '--yellow'),
 };
 
 // union type of recognized colors per `colors` obj
