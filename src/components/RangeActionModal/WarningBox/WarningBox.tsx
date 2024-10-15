@@ -29,7 +29,7 @@ class ColorSet implements ColorSetIF {
 }
 
 // obj to translate human-readable color to CSS variable
-const colorSets = {
+const colorSets: {[c: string]: ColorSetIF} = {
     red: new ColorSet('--other-red', '--other-red-background', '--other-red'),
     orange: new ColorSet('--orange', '--orange-background', '--orange'),
     yellow: new ColorSet('--yellow', '--yellow-background', '--yellow'),
