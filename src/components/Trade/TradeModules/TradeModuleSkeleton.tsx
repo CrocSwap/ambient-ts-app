@@ -145,13 +145,11 @@ export const TradeModuleSkeleton = (props: propsIF) => {
         tokenB: tokenB.address,
     };
 
-    // const SCR_ADDR = '0xd29687c813d741e2f938f4ac377128810e217b1b';
+    // logic to populate warning box if active pair 
+    const SCR_ADDR = '0xd29687c813d741e2f938f4ac377128810e217b1b';
     const pairHasSCR: boolean = [tokenA, tokenB]
         .map((t: TokenIF) => t.address.toLowerCase())
-        // .includes(SCR_ADDR.toLowerCase());
-        .includes(ZERO_ADDRESS);
-
-    // const isSCR = '0xd29687c813d741e2f938f4ac377128810e217b1b';
+        .includes(SCR_ADDR.toLowerCase());
 
     return (
         <>
