@@ -23,11 +23,14 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import {
     brand,
     excludedTokenAddresses,
+    ZERO_ADDRESS,
 } from '../../../ambient-utils/constants';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
+import { TokenIF } from '../../../ambient-utils/types';
+import WarningBox from '../../RangeActionModal/WarningBox/WarningBox';
 
-interface PropsIF {
+interface propsIF {
     chainId: string;
     header: ReactNode;
     input: ReactNode;
@@ -43,7 +46,7 @@ interface PropsIF {
     inputOptions?: ReactNode;
 }
 
-export const TradeModuleSkeleton = (props: PropsIF) => {
+export const TradeModuleSkeleton = (props: propsIF) => {
     const {
         chainId,
         isSwapPage,
@@ -141,6 +144,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     };
+
+    // const SCR_ADDR = '0xd29687c813d741e2f938f4ac377128810e217b1b';
+    const pairHasSCR: boolean = [tokenA, tokenB]
+        .map((t: TokenIF) => t.address.toLowerCase())
+        // .includes(SCR_ADDR.toLowerCase());
+        .includes(ZERO_ADDRESS);
+
+    // const isSCR = '0xd29687c813d741e2f938f4ac377128810e217b1b';
 
     return (
         <>
@@ -275,6 +286,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             Looking to LP?
                         </LPButton>
                     )}
+                    {pairHasSCR && <WarningBox color='orange' details='hello world' />}
                 </FlexContainer>
             </ContentContainer>
             {modal}
