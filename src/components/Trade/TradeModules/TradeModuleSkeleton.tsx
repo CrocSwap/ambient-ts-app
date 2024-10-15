@@ -283,7 +283,7 @@ export const TradeModuleSkeleton = (props: propsIF) => {
                             Looking to LP?
                         </LPButton>
                     )}
-                    {pairHasSCR && <WarningBox color='orange' details='hello world' />}
+                    {true && <WarningBox color='orange' details='hello world' />}
                 </FlexContainer>
             </ContentContainer>
             {modal}

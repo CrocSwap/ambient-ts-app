@@ -7,12 +7,12 @@ const colorSets = {
     red: {
         color: 'var(--other-red)',
         background: 'var(--other-red-background)',
-        text: 'var(--other-red)',
+        border: '1px solid var(--other-red)'
     },
     orange: {
         color: 'var(--orange)',
         background: 'var(--orange-background)',
-        text: 'var(--orange)',
+        border: '1px solid var(--orange)',
     }
 };
 
@@ -39,7 +39,7 @@ export default function WarningBox(props: propsIF) {
     const noBackgroundWarning = (
         <div className={styles.text_only}>
             <div>
-                <IoWarningOutline color={`var(${color})`} size={24} />
+                <IoWarningOutline color={colorSets[color].color} size={24} />
             </div>
             <p>{details}</p>
             {button && button}
@@ -56,7 +56,7 @@ export default function WarningBox(props: propsIF) {
                 {title && (
                     <div>
                         <IoWarningOutline
-                            color={`var(${color})`}
+                            color={colorSets[color].color}
                             size={20}
                             style={{ marginRight: '4px' }}
                         />

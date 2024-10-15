@@ -4,15 +4,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px;
-    border: solid 1px;
     border-radius: var(--border-radius);
-    background: radial-gradient(
-        50% 50% at 50% 50%,
-        rgba(231, 86, 112, 0.1) 0%,
-        rgba(231, 86, 112, 0.1) 100%
-    );
-    color: var(--other-red);
-
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: 22px;
