@@ -2,23 +2,36 @@ import React from 'react';
 import styles from './WarningBox.module.css'; // Import your styles here
 import { IoWarningOutline } from 'react-icons/io5';
 
-interface WarningBoxProps {
+// obj to translate human-readable color to CSS variable
+const colors = {
+    red: '--other-red',
+    orange: '--orange',
+};
+
+// union type of recognized colors per `colors` obj
+type warningColors = keyof typeof colors;
+
+interface propsIF {
     title?: string;
     details: React.ReactNode;
     button?: React.ReactNode;
     noBackground?: boolean;
+    color?: warningColors;
 }
 
-export const WarningBox: React.FC<WarningBoxProps> = ({
-    title,
-    details,
-    button,
-    noBackground,
-}) => {
+export default function WarningBox(props: propsIF) {
+    const {
+        title,
+        details,
+        button,
+        noBackground,
+        color = colors.red,
+    } = props;
+
     const noBackgroundWarning = (
         <div className={styles.text_only}>
             <div>
-                <IoWarningOutline color='var(--other-red)' size={24} />
+                <IoWarningOutline color={`var(${color})`} size={24} />
             </div>
             <p>{details}</p>
             {button && button}
@@ -32,7 +45,7 @@ export const WarningBox: React.FC<WarningBoxProps> = ({
                 {title && (
                     <div>
                         <IoWarningOutline
-                            color='var(--other-red)'
+                            color={`var(${color})`}
                             size={20}
                             style={{ marginRight: '4px' }}
                         />
@@ -44,4 +57,4 @@ export const WarningBox: React.FC<WarningBoxProps> = ({
             {button && button}
         </div>
     );
-};
+}
