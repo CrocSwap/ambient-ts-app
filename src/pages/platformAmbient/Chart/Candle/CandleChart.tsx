@@ -75,7 +75,7 @@ export default function CandleChart(props: candlePropsIF) {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
         if (tradeTableState === 'Expanded') return;
-        if (data && data.length > 0 && scaleData) {
+        if (data && data.length > 0 && scaleData && !showFutaCandles) {
             if (!showLatest) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
@@ -85,6 +85,7 @@ export default function CandleChart(props: candlePropsIF) {
                         i.time <= lastCandleData.time - period &&
                         i.time >= prevlastCandleTime,
                 ).length;
+
                 setPrevLastCandleTime(lastCandleData.time - period);
 
                 scaleData?.xScale.domain([
@@ -93,7 +94,7 @@ export default function CandleChart(props: candlePropsIF) {
                 ]);
             }
         }
-    }, [tradeTableState, lastCandleData?.time]);
+    }, [tradeTableState, lastCandleData?.time, showFutaCandles]);
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
