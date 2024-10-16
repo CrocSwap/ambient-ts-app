@@ -20,7 +20,10 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
 import SmolRefuelLink from '../../Global/SmolRefuelLink/SmolRefuelLink';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { brand } from '../../../ambient-utils/constants';
+import {
+    brand,
+    excludedTokenAddresses,
+} from '../../../ambient-utils/constants';
 import { poolParamsIF } from '../../../utils/hooks/useLinkGen';
 import { openInNewTab } from '../../../ambient-utils/dataLayer';
 
@@ -83,13 +86,34 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
 
     const smallScreen = useMediaQuery('(max-width: 768px)');
 
+    const lowercaseExcludedAddresses = useMemo(
+        () => excludedTokenAddresses.map((addr) => addr.toLowerCase()),
+        [excludedTokenAddresses],
+    );
+
+    const tokenAIsExcludedToken = useMemo(() => {
+        return lowercaseExcludedAddresses.includes(
+            tokenA.address.toLowerCase(),
+        );
+    }, [tokenA.address, lowercaseExcludedAddresses]);
+
+    const tokenBIsExcludedToken = useMemo(() => {
+        return lowercaseExcludedAddresses.includes(
+            tokenB.address.toLowerCase(),
+        );
+    }, [tokenB.address, lowercaseExcludedAddresses]);
+
     // token acknowledgement needed message (empty string if none needed)
     const ackTokenMessage = useMemo<string>(() => {
         // !Important   any changes to verbiage in this code block must be approved
         // !Important   ... by Doug, get in writing by email or request specific
         // !Important   ... review for a pull request on GitHub
         let text: string;
-        if (needConfirmTokenA && needConfirmTokenB) {
+        if (tokenAIsExcludedToken) {
+            text = `This ${tokenA.symbol} token has been identified as a potentially fraudulent token. Please be sure this is the actual token you want to trade. Many tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (tokenBIsExcludedToken) {
+            text = `This ${tokenB.symbol} token has been identified as a potentially fraudulent token. Please be sure this is the actual token you want to trade. Many tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
+        } else if (needConfirmTokenA && needConfirmTokenB) {
             text = `The tokens ${tokenA.symbol || tokenA.name} and ${
                 tokenB.symbol || tokenB.name
             } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
@@ -108,7 +132,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     }, [needConfirmTokenA, needConfirmTokenB, tokenA.symbol, tokenB.symbol]);
 
     const formattedAckTokenMessage = ackTokenMessage.replace(
-        /\b(not)\b/g,
+        /\b(not|(?<!many\s)fraudulent)\b/gi,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
 

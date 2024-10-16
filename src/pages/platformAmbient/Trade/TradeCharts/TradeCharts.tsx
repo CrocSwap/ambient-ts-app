@@ -37,7 +37,10 @@ import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import Modal from '../../../../components/Global/Modal/Modal';
 import DollarizationModalControl from '../../../../components/Global/DollarizationModalControl/DollarizationModalControl';
-import { PoolContext } from '../../../../contexts';
+import { CandleContext, PoolContext } from '../../../../contexts';
+import ChartSettingsContent from '../../../Chart/ChartSettings/ChartSettingsContent';
+import { ColorObjIF } from '../../../Chart/ChartSettings/ChartSettings';
+import Spinner from '../../../../components/Global/Spinner/Spinner';
 // interface for React functional component props
 interface propsIF {
     changeState: (
@@ -83,6 +86,7 @@ function TradeCharts(props: propsIF) {
         updateURL,
         isMobileSettingsModalOpen,
         closeMobileSettingsModal,
+        openMobileSettingsModal,
     } = props;
 
     const { isPoolDropdownOpen, setIsPoolDropdownOpen } =
@@ -99,7 +103,11 @@ function TradeCharts(props: propsIF) {
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
         chartCanvasRef,
+        chartThemeColors,
     } = useContext(ChartContext);
+
+    const { isCondensedModeEnabled, setIsCondensedModeEnabled } =
+        useContext(CandleContext);
 
     const { isUserConnected } = useContext(UserDataContext);
 
@@ -197,6 +205,54 @@ function TradeCharts(props: propsIF) {
         }
     }, [isUserConnected]);
 
+    const [shouldDisableChartSettings, setShouldDisableChartSettings] =
+        useState<boolean>(true);
+
+    const [selectedColorObj, setSelectedColorObj] = useState<
+        ColorObjIF | undefined
+    >(undefined);
+
+    const [isSelecboxActive, setIsSelecboxActive] = useState(false);
+
+    const [applyDefault, setApplyDefault] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const handleModalOnClose = () => {
+        if (shouldDisableChartSettings && !isSelecboxActive) {
+            closeMobileSettingsModal();
+        } else {
+            setShouldDisableChartSettings(true);
+            setSelectedColorObj(undefined);
+            setIsSelecboxActive(false);
+        }
+    };
+
+    const handleSaveChanges = () => {
+        setShouldDisableChartSettings(true);
+        setSelectedColorObj(undefined);
+        setIsSelecboxActive(false);
+
+        setIsSaving(true);
+
+        const savedTimeOut = setTimeout(() => {
+            setIsSaving(false);
+            closeMobileSettingsModal();
+        }, 1000);
+        return () => {
+            clearTimeout(savedTimeOut);
+        };
+    };
+
+    const handleReset = () => {
+        setApplyDefault(true);
+    };
+
+    // const render = useCallback(() => {
+    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //     const nd = d3.select('#d3fc_group').node() as any;
+    //     if (nd) nd.requestRedraw();
+    // }, []);
+
     // END OF CHART SETTINGS------------------------------------------------------------
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
@@ -273,10 +329,12 @@ function TradeCharts(props: propsIF) {
 
     const timeFrameContentDesktop = (
         <section className={styles.time_frame_container}>
-            <div className={styles.mobile_settings_row}>
-                <p className={styles.mobile_settings_header}>Time Frame:</p>
-                <TimeFrame candleTime={chartSettings.candleTime.global} />
-            </div>
+            {!isMobileSettingsModalOpen && (
+                <div className={styles.mobile_settings_row}>
+                    <p className={styles.mobile_settings_header}>Time Frame:</p>
+                    <TimeFrame candleTime={chartSettings.candleTime.global} />
+                </div>
+            )}
             <div className={styles.mobile_settings_row}>
                 <p className={styles.mobile_settings_header}>Volume:</p>
 
@@ -325,18 +383,65 @@ function TradeCharts(props: propsIF) {
             )}
         </section>
     );
+
+    const settingsContent = chartThemeColors && (
+        <section
+            onClick={() => {
+                setShouldDisableChartSettings(true);
+                setSelectedColorObj(undefined);
+                setIsSelecboxActive(false);
+            }}
+            className={styles.time_frame_container}
+        >
+            <ChartSettingsContent
+                chartThemeColors={chartThemeColors}
+                isCondensedModeEnabled={isCondensedModeEnabled}
+                setIsCondensedModeEnabled={setIsCondensedModeEnabled}
+                setShouldDisableChartSettings={setShouldDisableChartSettings}
+                chartItemStates={chartItemStates}
+                isSelecboxActive={isSelecboxActive}
+                setIsSelecboxActive={setIsSelecboxActive}
+                selectedColorObj={selectedColorObj}
+                setSelectedColorObj={setSelectedColorObj}
+                reverseColorObj={true}
+                applyDefault={applyDefault}
+                setApplyDefault={setApplyDefault}
+                isSaving={isSaving}
+                setIsSaving={setIsSaving}
+                isMobile={true}
+                // render={render}
+            />
+        </section>
+    );
+
     const timeFrameContent = smallScreen ? (
         <>
             {isMobileSettingsModalOpen && (
-                <Modal
-                    onClose={closeMobileSettingsModal}
-                    title='Chart Settings'
-                >
-                    {timeFrameContentDesktop}
+                <Modal onClose={handleModalOnClose} title='Chart Settings'>
+                    {settingsContent}
 
                     <div className={styles.settings_apply_button_container}>
-                        <button onClick={closeMobileSettingsModal}>
-                            Apply
+                        <button
+                            style={{ background: 'var(--dark3)' }}
+                            onClick={handleReset}
+                        >
+                            Reset
+                        </button>
+
+                        <button
+                            style={{
+                                background: isSaving
+                                    ? 'var(--dark3)'
+                                    : 'var(--accent1)',
+                            }}
+                            onClick={handleSaveChanges}
+                        >
+                            {' '}
+                            {isSaving ? (
+                                <Spinner size={14} bg='transparent' centered />
+                            ) : (
+                                'Apply'
+                            )}
                         </button>
                     </div>
                 </Modal>
@@ -402,6 +507,7 @@ function TradeCharts(props: propsIF) {
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
                         updateURL={updateURL}
+                        openMobileSettingsModal={openMobileSettingsModal}
                     />
                 </div>
                 <TutorialOverlay

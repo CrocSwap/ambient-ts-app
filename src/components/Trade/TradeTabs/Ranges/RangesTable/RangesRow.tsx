@@ -225,7 +225,6 @@ function RangesRow(props: propsIF) {
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
         rangeTimeWithTooltip,
-        txIdColumnComponent,
         fullScreenMinDisplay,
         fullScreenMaxDisplay,
         priceDisplay,
@@ -256,12 +255,8 @@ function RangesRow(props: propsIF) {
                 {!isLeaderboard && tableView === 'large' && (
                     <div>{IDWithTooltip}</div>
                 )}
-                {tableView === 'large' && !isAccountView && (
-                    <div>{walletWithTooltip}</div>
-                )}
-                {(tableView === 'medium' ||
-                    (!isAccountView && tableView === 'small')) &&
-                    txIdColumnComponent}
+                {!isAccountView && walletWithTooltip}
+                {tableView !== 'small' && isAccountView && IDWithTooltip}
                 {tableView === 'large' && fullScreenMinDisplay}
                 {tableView === 'large' && fullScreenMaxDisplay}
                 {tableView === 'medium' && priceDisplay}

@@ -9,14 +9,14 @@ import {
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { useModal } from '../../Global/Modal/useModal';
 import RangesRow from './Ranges/RangesTable/RangesRow';
-import RangeDetailsModal from '../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
+import RangeDetailsModal from '../../Global/DetailModals/RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import RangeActionModal from '../../RangeActionModal/RangeActionModal';
 import LimitActionModal from '../../LimitActionModal/LimitActionModal';
 import TransactionRow from './Transactions/TransactionsTable/TransactionRow';
-import TransactionDetailsModal from '../../Global/TransactionDetails/TransactionDetailsModal';
+import TransactionDetailsModal from '../../Global/DetailModals/TransactionDetails/TransactionDetailsModal';
 import { getMoneynessRank } from '../../../ambient-utils/dataLayer';
 import OrderRow from './Orders/OrderTable/OrderRow';
-import OrderDetailsModal from '../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
+import OrderDetailsModal from '../../Global/DetailModals/OrderDetails/OrderDetailsModal/OrderDetailsModal';
 
 interface propsIF {
     type: 'Transaction' | 'Order' | 'Range';
@@ -143,7 +143,6 @@ function TableRows({
         isDetailsModalOpen,
         isActionModalOpen,
     ]);
-
 
     const rangeContent = () => {
         return (
