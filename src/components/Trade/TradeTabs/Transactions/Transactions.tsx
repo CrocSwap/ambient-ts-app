@@ -212,20 +212,15 @@ function Transactions(props: propsIF) {
     const isSmallScreen: boolean = useMediaQuery('(max-width: 768px)');
     const isLargeScreen: boolean = useMediaQuery('(min-width: 1600px)');
 
-    const tableView: 'small' | 'medium' | 'large' =
-        isSmallScreen ||
-        (isAccountView &&
-            !isLargeScreen &&
-            isSidebarOpen &&
-            fullLayoutActive === false)
-            ? 'small'
-            : (!isSmallScreen && !isLargeScreen) ||
-                (isAccountView &&
-                    isLargeScreen &&
-                    isSidebarOpen &&
-                    fullLayoutActive === false)
-              ? 'medium'
-              : 'large';
+    const tableView: 'small' | 'medium' | 'large' = isSmallScreen
+        ? 'small'
+        : (!isSmallScreen && !isLargeScreen) ||
+            (isAccountView &&
+                isLargeScreen &&
+                isSidebarOpen &&
+                fullLayoutActive === false)
+          ? 'medium'
+          : 'large';
 
     const getCandleData = (): Promise<void> | undefined =>
         crocEnv &&
@@ -298,12 +293,6 @@ function Transactions(props: propsIF) {
         !!provider,
     ]);
 
-    const walID: JSX.Element = (
-        <>
-            <p>ID</p>
-            Wallet
-        </>
-    );
     const sideType: JSX.Element = (
         <>
             <p>Type</p>
@@ -332,23 +321,18 @@ function Transactions(props: propsIF) {
             sortable: true,
         },
         {
-            name: 'ID',
-            show: tableView === 'large',
+            name: 'Transaction ID',
+            show:
+                tableView === 'large' ||
+                (tableView === 'medium' && isAccountView),
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
-            show: tableView === 'large' && !isAccountView,
+            show: !isAccountView,
             slug: 'wallet',
-            sortable: true,
-        },
-        {
-            name: walID,
-            show: tableView !== 'large',
-            slug: 'walletid',
-            sortable: !isAccountView,
-            alignCenter: false,
+            sortable: showAllData,
         },
         {
             name: 'Price',
@@ -479,7 +463,6 @@ function Transactions(props: propsIF) {
         !txDataToDisplay.length &&
         unindexedNonFailedTransactions.length === 0;
 
-    
     const transactionDataOrNull: JSX.Element = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
@@ -491,154 +474,152 @@ function Transactions(props: propsIF) {
             }
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction} style={{ height: '100%'}}>
-        <ul
-        ref={listRef}
-        // id='current_row_scroll'
-        style={{height: '100%'}}
-    >
-        {!isAccountView &&
-            unindexedNonFailedTransactions.length > 0 &&
-            unindexedNonFailedTransactions.reverse().map((tx, idx) => {
-                if (tx.txAction !== 'Reposition')
-                    return (
-                        <TransactionRowPlaceholder
-                            key={idx}
-                            transaction={{
-                                hash: tx.txHash,
-                                side: tx.txAction,
-                                type: tx.txType,
-                                action: tx.txAction,
-                                details: tx.txDetails,
-                            }}
-                            tableView={tableView}
-                        />
-                    );
-                return (
-                    <>
-                        <TransactionRowPlaceholder
-                            key={idx + 'sell'}
-                            transaction={{
-                                hash: tx.txHash,
-                                side: 'Sell',
-                                type: 'Market',
-                                action: tx.txAction,
-                                details: {
-                                    baseSymbol:
-                                        tx.txDetails?.baseSymbol ??
-                                        '...',
-                                    quoteSymbol:
-                                        tx.txDetails?.quoteSymbol ??
-                                        '...',
-                                    baseTokenDecimals:
-                                        tx.txDetails?.baseTokenDecimals,
-                                    quoteTokenDecimals:
-                                        tx.txDetails
-                                            ?.quoteTokenDecimals,
-                                    lowTick: tx.txDetails?.lowTick,
-                                    highTick: tx.txDetails?.highTick,
-                                    gridSize: tx.txDetails?.gridSize,
-                                    isBid: tx.txDetails?.isBid,
-                                },
-                            }}
-                            tableView={tableView}
-                        />
-                        <TransactionRowPlaceholder
-                            key={idx + 'add'}
-                            transaction={{
-                                hash: tx.txHash,
-                                side: 'Add',
-                                type: 'Range',
-                                action: tx.txAction,
-                                details: {
-                                    baseSymbol:
-                                        tx.txDetails?.baseSymbol ??
-                                        '...',
-                                    quoteSymbol:
-                                        tx.txDetails?.quoteSymbol ??
-                                        '...',
-                                    baseTokenDecimals:
-                                        tx.txDetails?.baseTokenDecimals,
-                                    quoteTokenDecimals:
-                                        tx.txDetails
-                                            ?.quoteTokenDecimals,
-                                    lowTick: tx.txDetails?.lowTick,
-                                    highTick: tx.txDetails?.highTick,
-                                    gridSize: tx.txDetails?.gridSize,
-                                },
-                            }}
-                            tableView={tableView}
-                        />
-                        <TransactionRowPlaceholder
-                            key={idx + 'remove'}
-                            transaction={{
-                                hash: tx.txHash,
-                                side: 'Remove',
-                                type: 'Range',
-                                action: tx.txAction,
-                                details: {
-                                    baseSymbol:
-                                        tx.txDetails?.baseSymbol ??
-                                        '...',
-                                    quoteSymbol:
-                                        tx.txDetails?.quoteSymbol ??
-                                        '...',
-                                    baseTokenDecimals:
-                                        tx.txDetails?.baseTokenDecimals,
-                                    quoteTokenDecimals:
-                                        tx.txDetails
-                                            ?.quoteTokenDecimals,
-                                    lowTick:
-                                        tx.txDetails?.originalLowTick,
-                                    highTick:
-                                        tx.txDetails?.originalHighTick,
-                                    gridSize: tx.txDetails?.gridSize,
-                                },
-                            }}
-                            tableView={tableView}
-                        />
-                    </>
-                );
-            })}
-        <TableRows
-            type='Transaction'
-            data={sortedTransactions.filter(
-                (tx) => tx.changeType !== 'cross',
-            )}
-            fullData={sortedTransactions}
-            tableView={tableView}
-            isAccountView={isAccountView}
-        />
-                </ul>
-                </div>
-       
-    );
-
-
-
-
-    
-
-
-
-    if (isSmallScreen) return (
-        <div style={{  overflow: 'scroll', height:  '100%'}}>
-            <div style={{position: 'sticky', top: 0, background: 'var(--dark2', zIndex: '1'}}>
-            {headerColumnsDisplay}
-
-            </div>
-            <div style={{overflowY: 'scroll', height: '100%'}}>
-                
-            {transactionDataOrNull}   
-</div>
-        </div>
-    )
-
-    return (
-        <FlexContainer
-            flexDirection='column'
+        <div
+            onKeyDown={handleKeyDownViewTransaction}
             style={{ height: '100%' }}
         >
+            <ul
+                ref={listRef}
+                // id='current_row_scroll'
+                style={{ height: '100%' }}
+            >
+                {!isAccountView &&
+                    unindexedNonFailedTransactions.length > 0 &&
+                    unindexedNonFailedTransactions.reverse().map((tx, idx) => {
+                        if (tx.txAction !== 'Reposition')
+                            return (
+                                <TransactionRowPlaceholder
+                                    key={idx}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: tx.txAction,
+                                        type: tx.txType,
+                                        action: tx.txAction,
+                                        details: tx.txDetails,
+                                    }}
+                                    tableView={tableView}
+                                />
+                            );
+                        return (
+                            <>
+                                <TransactionRowPlaceholder
+                                    key={idx + 'sell'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Sell',
+                                        type: 'Market',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                            isBid: tx.txDetails?.isBid,
+                                        },
+                                    }}
+                                    tableView={tableView}
+                                />
+                                <TransactionRowPlaceholder
+                                    key={idx + 'add'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Add',
+                                        type: 'Range',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    tableView={tableView}
+                                />
+                                <TransactionRowPlaceholder
+                                    key={idx + 'remove'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Remove',
+                                        type: 'Range',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick:
+                                                tx.txDetails?.originalLowTick,
+                                            highTick:
+                                                tx.txDetails?.originalHighTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    tableView={tableView}
+                                />
+                            </>
+                        );
+                    })}
+                <TableRows
+                    type='Transaction'
+                    data={sortedTransactions.filter(
+                        (tx) => tx.changeType !== 'cross',
+                    )}
+                    fullData={sortedTransactions}
+                    tableView={tableView}
+                    isAccountView={isAccountView}
+                />
+            </ul>
+        </div>
+    );
+
+    if (isSmallScreen)
+        return (
+            <div style={{ overflow: 'scroll', height: '100%' }}>
+                <div
+                    style={{
+                        position: 'sticky',
+                        top: 0,
+                        background: 'var(--dark2',
+                        zIndex: '1',
+                    }}
+                >
+                    {headerColumnsDisplay}
+                </div>
+                <div style={{ overflowY: 'scroll', height: '100%' }}>
+                    {transactionDataOrNull}
+                </div>
+            </div>
+        );
+
+    return (
+        <FlexContainer flexDirection='column' style={{ height: '100%' }}>
             <div>{headerColumnsDisplay}</div>
 
             <div

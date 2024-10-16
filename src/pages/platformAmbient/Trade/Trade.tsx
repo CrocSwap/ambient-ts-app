@@ -9,6 +9,7 @@ import {
     useCallback,
     memo,
     useRef,
+    
 } from 'react';
 
 // START: Import JSX Components
@@ -37,25 +38,25 @@ import {
 } from '../../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
 import { TradeDataContext } from '../../../contexts/TradeDataContext';
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import { PoolContext } from '../../../contexts/PoolContext';
 import ChartToolbar from '../Chart/Draw/Toolbar/Toolbar';
 import PointsBanner from './PointsBanner';
-import styles from './Trade.module.css';
 
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { BrandContext } from '../../../contexts/BrandContext';
-import TokenIcon from '../../../components/Global/TokenIcon/TokenIcon';
-import TableInfo from '../../../components/Trade/TableInfo/TableInfo';
+
 import { useModal } from '../../../components/Global/Modal/useModal';
-import { LuSettings } from 'react-icons/lu';
 import TradeCharts from './TradeCharts/TradeCharts';
+
+import TradeMobile from './TradeMobile';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
 function Trade(props: { futaActiveTab?: string | undefined }) {
     const { futaActiveTab } = props;
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
 
     const {
         chainData: { chainId },
@@ -93,7 +94,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         quoteToken,
         isDenomBase,
         limitTick,
-        toggleDidUserFlipDenom,
+      
     } = useContext(TradeDataContext);
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
@@ -128,7 +129,6 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
         unselectCandle();
     }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
-    const smallScreen = useMediaQuery('(max-width: 768px)');
 
     const [
         isMobileSettingsModalOpen,
@@ -161,90 +161,10 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const {
         poolPriceDisplay,
         poolPriceChangePercent,
-        isPoolPriceChangePositive,
+        
         usdPrice,
         isTradeDollarizationEnabled,
     } = useContext(PoolContext);
-
-    // -----------------------------------------------------------------------
-
-    const [activeTab, setActiveTab] = useState('Order');
-
-    const tabs = [
-        {
-            id: 'Order',
-            label: 'Order',
-            data: (
-                <ContentContainer isOnTradeRoute style={{ padding: '0 1rem' }}>
-                    <Outlet
-                        context={{
-                            urlParamMap: urlParamMap,
-                            limitTick: limitTick,
-                            updateURL: updateURL,
-                        }}
-                    />
-                </ContentContainer>
-            ),
-        },
-        {
-            id: 'Chart',
-            label: 'Chart',
-            data: (
-                <>
-                    {!isChartHeightMinimum && <ChartToolbar />}
-                    {isPoolInitialized && !isCandleDataNull && (
-                        <TradeCharts {...tradeChartsProps} />
-                    )}
-                </>
-            ),
-        },
-        { id: 'Txns', label: 'Txns', data: <TradeTabs2 {...tradeTabsProps} /> },
-        { id: 'Info', label: 'Info', data: <TableInfo /> },
-    ];
-    const mobileTabs = (
-        <div className={styles.mobile_tabs_container}>
-            {tabs.map((tab) => (
-                <button
-                    key={tab.id}
-                    className={`${styles.tabButton} ${activeTab === tab.id ? styles.activeTab : ''}`}
-                    onClick={() => setActiveTab(tab.id)}
-                    style={{
-                        color:
-                            activeTab === tab.id
-                                ? 'var(--accent1)'
-                                : 'var(--text2)',
-                        border:
-                            activeTab === tab.id
-                                ? '1px solid var(--accent1)'
-                                : '1px solid transparent',
-                    }}
-                >
-                    {tab.label}
-                </button>
-            ))}
-        </div>
-    );
-
-    const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
-
-    useEffect(() => {
-        const calculateHeight = () => {
-            const totalHeight = window.innerHeight;
-            const heightToSubtract = isFuta ? 56 + 56 + 25 : 56 + 56; // Subtract 56px from top and 56px from bottom
-            setAvailableHeight(totalHeight - heightToSubtract);
-        };
-
-        calculateHeight(); // Calculate initial height
-        window.addEventListener('resize', calculateHeight);
-
-        return () => window.removeEventListener('resize', calculateHeight);
-    }, []);
-
-    const contentHeight = availableHeight - 75;
-    const activeTabData = tabs.find(
-        (tab) => tab.id === (isFuta ? futaActiveTab : activeTab),
-    )?.data;
-
     const currencyCharacter = isDenomBase
         ? // denom in a, return token b character
           getUnicodeCharacter(quoteToken.symbol)
@@ -275,76 +195,40 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
     const poolPriceChangeString =
         poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent;
 
-    const mobileComponent = (
-        <div
-            className={styles.mobile_container}
-            style={{ height: `${availableHeight}px` }}
-        >
-            {!isFuta && mobileTabs}
-            <div
-                className={styles.mobile_header}
-                style={{ padding: isFuta ? '8px' : '' }}
-            >
-                <div
-                    className={styles.mobile_token_icons}
-                    onClick={toggleDidUserFlipDenom}
-                >
-                    <TokenIcon
-                        token={isDenomBase ? baseToken : quoteToken}
-                        src={
-                            isDenomBase ? baseToken.logoURI : quoteToken.logoURI
-                        }
-                        alt={isDenomBase ? baseToken.symbol : quoteToken.symbol}
-                        size={'s'}
-                    />
-                    <TokenIcon
-                        token={isDenomBase ? quoteToken : baseToken}
-                        src={
-                            isDenomBase ? quoteToken.logoURI : baseToken.logoURI
-                        }
-                        alt={isDenomBase ? quoteToken.symbol : baseToken.symbol}
-                        size={'s'}
-                    />
-                    <div>
-                        {isDenomBase ? baseToken.symbol : quoteToken.symbol}
-                        {'/'}
-                        {isDenomBase ? quoteToken.symbol : baseToken.symbol}
-                    </div>
-                </div>
-                <div
-                    className={styles.conv_rate}
-                    onClick={toggleDidUserFlipDenom}
-                >
-                    {poolPrice}
 
-                    <p
-                        style={{
-                            color: isPoolPriceChangePositive
-                                ? 'var(--positive)'
-                                : 'var(--negative)',
-                            fontSize: 'var(--body-size)',
-                        }}
-                    >
-                        {poolPriceChangeString}
-                    </p>
-                </div>
-                {(isFuta
-                    ? futaActiveTab === 'Chart'
-                    : activeTab === 'Chart') && (
-                    <LuSettings
-                        size={20}
-                        onClick={openMobileSettingsModal}
-                        color='var(--text2)'
-                    />
-                )}
-            </div>
-            <div style={{ height: `${contentHeight}px`, overflowY: 'scroll' }}>
-                {activeTabData}
-            </div>
-        </div>
-    );
 
-    if (smallScreen) return mobileComponent;
+
+    const tradeMobileProps = {
+        changeState: changeState,
+        selectedDate: selectedDate,
+        setSelectedDate: setSelectedDate,
+        updateURL,
+        isMobileSettingsModalOpen,
+        openMobileSettingsModal,
+        closeMobileSettingsModal,
+
+        filter: transactionFilter,
+        setTransactionFilter: setTransactionFilter,
+        transactionFilter,
+       
+        hasInitialized: hasInitialized,
+        setHasInitialized: setHasInitialized,
+        unselectCandle: unselectCandle,
+        candleTime: chartSettings.candleTime.global,
+        tokens,
+        poolPrice,
+        futaActiveTab,
+        poolPriceChangeString
+    }
+
+
+
+
+
+
+    if (showMobileVersion) return (
+        <TradeMobile {...tradeMobileProps} />
+    )
 
     return (
         <>
@@ -362,7 +246,7 @@ function Trade(props: { futaActiveTab?: string | undefined }) {
                         </div>
                     )}
 
-                    <TradeChartsHeader tradePage />
+                    {!isChartFullScreen && <TradeChartsHeader tradePage />}
                     {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                     <FlexContainer
                         flexDirection='column'

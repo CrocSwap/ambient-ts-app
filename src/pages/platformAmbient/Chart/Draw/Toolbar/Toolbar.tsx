@@ -54,7 +54,7 @@ interface undoRedoButtonList {
 }
 
 function ChartToolbar() {
-    const mobileView = useMediaQuery('(max-width: 780px)');
+    const mobileView = useMediaQuery('(max-width: 768px)');
     const smallScreen = useMediaQuery('(max-width: 500px)');
 
     const { platformName } = useContext(BrandContext);
@@ -83,11 +83,11 @@ function ChartToolbar() {
     } = useContext(ChartContext);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-    const { chartThemeColors } = useContext(ChartContext);
+    const { chartThemeColors,isFullScreen } = useContext(ChartContext);
 
     const [isHoveredUp, setIsHoveredUp] = useState(false);
     const [isHoveredDown, setIsHoveredDown] = useState(false);
-    const { isUserIdle10min } = useContext(AppStateContext);
+    const { isUserIdle20min } = useContext(AppStateContext);
 
     const [hoveredTool, setHoveredTool] = useState<string | undefined>(
         undefined,
@@ -320,11 +320,12 @@ function ChartToolbar() {
 
     return chartContainerOptions &&
         chartContainerOptions.top !== 0 &&
-        !isUserIdle10min ? (
+        !isUserIdle20min ? (
         <ToolbarContainer
             isActive={isToolbarOpen}
             isMobile={mobileView}
             isSmallScreen={smallScreen}
+            isFullScreen={isFullScreen}
             marginTopValue={chartContainerOptions.top - 57}
             height={chartContainerOptions.height - xAxisHeightPixel}
             id='toolbar_container'
@@ -359,7 +360,6 @@ function ChartToolbar() {
                                 <IconCard key={index}>
                                     <IconActiveContainer
                                         onClick={() =>
-                                            !mobileView &&
                                             handleDrawModeChange(item)
                                         }
                                         onMouseEnter={() => {
@@ -510,7 +510,7 @@ function ChartToolbar() {
                             <IconCard>
                                 <IconActiveContainer
                                     onClick={() =>
-                                        !mobileView && handleDeleteAll()
+                                        handleDeleteAll()
                                     }
                                     onMouseEnter={() => {
                                         handleOnMouseEnter('Delete All');

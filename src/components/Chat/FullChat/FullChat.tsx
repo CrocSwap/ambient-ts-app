@@ -115,7 +115,7 @@ function FullChat(props: FullChatPropsIF) {
     const { favePools } = useContext(UserPreferenceContext);
     const reconstructedReadableRoom =
         params && !params.includes('global')
-            ? params.replace('&', ' / ').toUpperCase()
+            ? params.replace(/&/g, ' / ').toUpperCase()
             : params && params.includes('global')
               ? 'Global'
               : 'Global';

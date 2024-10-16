@@ -38,6 +38,7 @@ import styles from './Portfolio.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import NFTBannerAccount from '../../../components/Portfolio/PortfolioBanner/PortfolioBannerAccount/NFTBannerAccount';
 import { TokenBalanceContext } from '../../../contexts';
+import ModalHeader from '../../../components/Global/ModalHeader/ModalHeader';
 
 interface PortfolioPropsIF {
     isLevelsPage?: boolean;
@@ -214,6 +215,7 @@ function Portfolio(props: PortfolioPropsIF) {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const [isAutoLayout, setIsAutoLayout] = useState<boolean>(true); // Tracks if the layout is being set automatically
 
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
     const matchesMinWidth = useMediaQuery('(min-width: 768px)');
     const matchesMaxWidth = useMediaQuery('(max-width: 1280px)');
 
@@ -226,7 +228,27 @@ function Portfolio(props: PortfolioPropsIF) {
         }
     }, [isAutoLayout, matchesMinWidth, matchesMaxWidth]);
 
-    const exchangeBalanceComponent = (
+    const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
+
+
+
+    const exchangeBalanceModal = (
+        <Modal usingCustomHeader onClose={() => setShowTabsAndNotExchange(false)}>
+            <ModalHeader
+                title={'Exchange Balance'}
+                onClose={() => setShowTabsAndNotExchange(false)}
+            />
+            <div className={styles.container}>
+                <ExchangeBalance
+                    fullLayoutActive={fullLayoutActive}
+                    setFullLayoutActive={setFullLayoutActive}
+                    isModalView
+                />
+            </div>
+        </Modal>
+    );
+
+    const exchangeBalanceComponent = showMobileVersion && showTabsAndNotExchange ? exchangeBalanceModal : (
         <ExchangeBalance
             fullLayoutActive={fullLayoutActive}
             setFullLayoutActive={setFullLayoutActive}
@@ -352,7 +374,6 @@ function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 768px)');
 
     const notConnectedContent = (
@@ -433,20 +454,19 @@ function Portfolio(props: PortfolioPropsIF) {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
     };
 
-    const contentToRenderOnMobile = (() => {
-        switch (true) {
-            case (!showTabsAndNotExchange && isUserConnected) ||
-                (addressFromParams !== undefined && !connectedAccountActive):
-                return <PortfolioTabs {...portfolioTabsProps} />;
 
-            case showTabsAndNotExchange &&
-                isUserConnected &&
-                connectedAccountActive:
-                return exchangeBalanceComponent;
-            default:
-                return notConnectedContent;
-        }
+    const contentToRenderOnMobile = (() => {
+        if (isUserConnected || addressFromParams !== undefined) {
+            return (
+                <>
+                    <PortfolioTabs {...portfolioTabsProps} />
+                    {showTabsAndNotExchange  && exchangeBalanceComponent}
+                </>
+            );
+        } 
+        return notConnectedContent;
     })();
+    
 
     const [availableHeight, setAvailableHeight] = useState(window.innerHeight);
 
@@ -551,7 +571,7 @@ function Portfolio(props: PortfolioPropsIF) {
                     <PortfolioTabs {...portfolioTabsProps} />
                 ) : undefined}
 
-                {connectedAccountActive
+                {connectedAccountActive 
                     ? exchangeBalanceComponent
                     : !isUserConnected && !addressFromParams
                       ? notConnectedContent

@@ -604,7 +604,6 @@ export default function NFTBannerAccount(props: NFTBannerAccountProps) {
                             }}
                         >
                             <input
-                                id='token_select_input_field'
                                 spellCheck='false'
                                 type='text'
                                 value={nftTestWalletInput}

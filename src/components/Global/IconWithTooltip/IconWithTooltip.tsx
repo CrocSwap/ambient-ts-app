@@ -25,17 +25,20 @@ interface IconWithTooltipPropsIF {
 
 function IconWithTooltip(props: IconWithTooltipPropsIF) {
     const { children, title, placement, style, enterDelay } = props;
+
     return (
-        <DefaultTooltip
-            interactive
-            arrow
-            title={title}
-            enterDelay={enterDelay ? parseFloat(enterDelay) : 400}
-            leaveDelay={200}
-            placement={placement ? placement : 'bottom'}
-        >
-            <div style={style}>{children}</div>
-        </DefaultTooltip>
+        <>
+            <DefaultTooltip
+                interactive
+                arrow
+                title={title}
+                enterDelay={enterDelay ? parseFloat(enterDelay) : 400}
+                leaveDelay={200}
+                placement={placement ? placement : 'bottom'}
+            >
+                <div style={style}>{children}</div>
+            </DefaultTooltip>
+        </>
     );
 }
 

@@ -1,0 +1,49 @@
+.navItemButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    border: none;
+    background: transparent;
+}
+
+.navItemButton:focus-visible .icon_button {
+    filter: brightness(1.2);
+    background: var(--dark2);
+}
+
+.navItemIconButton {
+    width: 30px;
+    height: 30px;
+    background-color: var(--dark2);
+    border-radius: 4px; 
+    padding: 5px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.navItemIconButton.square {
+    border-radius: 4px;
+}
+
+.navItemIconButton:hover,
+.navItemIconButton:focus-visible {
+    filter: brightness(1.2);
+    background: var(--dark2);
+}
+
+.navItemIconButton svg {
+    fill: var(--text1);
+    width: 20px;
+    height: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+    .navItemIconButton {
+
+border-radius: 50%;
+width: 35px;
+height: 35px;
+    }
+
+}

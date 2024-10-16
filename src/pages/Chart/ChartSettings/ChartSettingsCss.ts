@@ -69,6 +69,7 @@ const ContextMenuContextText = styled.div`
     font-family: Lexend Deca;
     font-size: 12px;
     font-weight: 300;
+
     line-height: 15px;
     letter-spacing: -0.02em;
     text-align: left;
@@ -93,6 +94,8 @@ const CheckListContainer = styled.div`
 `;
 
 const CheckList = styled.div`
+    position: relative;
+    
     display: flex;
 
     flex-direction: row;
@@ -175,6 +178,7 @@ const FooterButtons = styled.div<{
     gap: 10px;
     border-radius: ${({ isFuta }) => (isFuta ? '0px' : '50px')};
 
+    max-width: 110px;
     width: ${({ width }) => width};
     height: 27px;
 
@@ -201,12 +205,11 @@ const FooterButtons = styled.div<{
 `;
 
 const FooterContextText = styled.div`
-    font-family: Lexend Deca;
-    font-size: 12px;
-    font-weight: 300;
+    font-size: var(--body-size);
     line-height: 15px;
     letter-spacing: -0.02em;
     text-align: center;
+    text-wrap: nowrap;
 `;
 
 const Icon = styled.svg`
@@ -247,8 +250,6 @@ const StyledSelectbox = styled.div`
     height: 23px;
 
     cursor: pointer;
-
-    padding: 4px;
 
     border-radius: 4px;
 
