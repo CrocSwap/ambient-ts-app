@@ -1,0 +1,32 @@
+.mobile_tabs_container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.mobile_tabs_container button {
+    outline: none;
+    border: 1px solid transparent;
+    display: flex;
+    padding: 5px 8px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 50px;
+    background: var(--dark2, #12121a);
+
+    color: var(--text-text2, #8b98a5);
+    text-align: center;
+    /* small */
+    font-family: 'Lexend Deca';
+    font-size: var(--body-size);
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+}
+
+.mobile_tabs_container .active_button {
+    border: 1px solid var(--accent-accent1, #7371fc);
+}
