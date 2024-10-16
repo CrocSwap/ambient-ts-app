@@ -1230,31 +1230,34 @@ const addMoreData = async() => {
             </div>
         );
     return (
+        <>
         <FlexContainer
             flexDirection='column'
             style={{
                 height: isSmallScreen
                     ? '97%'
                     : !isAccountView
-                      ? '105%'
+                    // ? '105%' //turned into 100% after moving footer display out of flexcontainer
+                    ? '100%'
                       : '100%',
             }}
-        >
+            >
             <div>{headerColumnsDisplay}</div>
 
             <div
                 style={{ flex: 1, overflow: 'auto' }}
                 className='custom_scroll_ambient'
-            >
+                >
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
                     rangeDataOrNull
                 )}
             </div>
-
-            {footerDisplay}
+            {/* {footerDisplay} */} 
         </FlexContainer>
+        {footerDisplay}
+        </>
     );
 }
 
