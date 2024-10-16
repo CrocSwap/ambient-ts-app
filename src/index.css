@@ -54,7 +54,36 @@
     --negative: #f6385b;
 
     --other-green: #41d18e;
+    --other-green-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(65, 209, 142, 0.1) 0%,
+        rgba(65, 209, 142, 0.1) 100%
+    );
     --other-red: #e75670;
+    --other-red-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(231, 86, 112, 0.1) 0%,
+        rgba(231, 86, 112, 0.1) 100%
+    );
+
+    --orange: #FF8B00;
+    --orange-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(255, 139, 0, 0.1) 0%,
+        rgba(255, 139, 0, 0.1) 100%
+    );
+
+    /**
+    *   color scheme yellow is not from Figma, I made it myself for demo
+    *   ... needs, if we create a "yellow" color this can be updated and
+    *   ... this note deleted (check for actual consumption first)
+    */
+    --yellow: #FFFF00;
+    --yellow-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(255, 255, 0, 0.1) 0%,
+        rgba(255, 255, 0, 0.1) 100%
+    );
 
     /* border */
     --color-border: 1px solid var(--accent1);
@@ -213,7 +242,6 @@
     --accent4: #71b5fc;
     --accent5: #7be4ff;
 
-    --orange: #f1b162;
     --green: #62f1b0;
     --red: #f16962;
 
@@ -222,6 +250,13 @@
 
     --other-green: #6bae52;
     --other-red: #e75670;
+
+    --orange: #f1b162;
+    --orange-background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(241, 177, 98, 0.1) 0%,
+        rgba(241, 177, 98, 0.1) 100%
+    );
 
     /* border */
     --color-border: 1px solid var(--accent1);
