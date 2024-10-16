@@ -93,7 +93,7 @@ function TableRowsInfiniteScroll({
     
 
 
-    const debugMode = true;
+    const debugMode = false;
     const[manualMode, setManualMode] = useState(false);
     const manualModeRef = useRef<boolean>();
     manualModeRef.current = manualMode;
@@ -657,7 +657,7 @@ function TableRowsInfiniteScroll({
 
     return (
         <>
-<div id={`infinite_scroll_wrapper_${wrapperID}`}>
+<div id={`infinite_scroll_wrapper_${wrapperID}`} style={{position: 'relative'}}>
             <TableRows
                 type={type}
                 data={data}

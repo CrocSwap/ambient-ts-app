@@ -168,17 +168,6 @@ function Transactions(props: propsIF) {
 
 
 
-    useEffect(() => {
-        const initialChanges = showAllData ? transactionsByPool.changes : userTransactionsByPool.changes;
-        console.log('initialChanges', initialChanges.length)
-        setFetchedTransactions({
-            dataReceived: false,
-            changes: [...initialChanges],
-        })
-    }, [showAllData])
-
-    console.log(fetchedTransactions.changes.length)
-
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
@@ -198,13 +187,28 @@ function Transactions(props: propsIF) {
 
     const [lastFetchedCount, setLastFetchedCount] = useState<number>(0);
 
-    useEffect(() => {
+
+    const resetInfiniteScrollData = () => {
         setPagesVisible([0, 1]);
         setExtraPagesAvailable(0);
         setMoreDataAvailable(true);
         setLastFetchedCount(0);
         setHotTransactions([]);
+    }
+
+    useEffect(() => {
+        resetInfiniteScrollData();
     }, [selectedBaseAddress + selectedQuoteAddress]);
+
+    
+    useEffect(() => {
+        resetInfiniteScrollData();
+        const initialChanges = showAllData ? transactionsByPool.changes : userTransactionsByPool.changes;
+        setFetchedTransactions({
+            dataReceived: false,
+            changes: [...initialChanges],
+        })
+    }, [showAllData])
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -260,7 +264,7 @@ function Transactions(props: propsIF) {
     ] = useSortedTxs('time', txDataToDisplay);
 
     const sortedTxDataToDisplay = useMemo<TransactionIF[]>(() => {
-        return isCandleSelected || isAccountView
+        return isCandleSelected
             ? sortedTransactions
             : sortedTransactions.slice(
                   pagesVisible[0] * 50,
@@ -683,10 +687,6 @@ function Transactions(props: propsIF) {
 
 
     const addMoreData = async() => {
-        
-
-        console.log('add more data', userAddress)
-
         setMoreDataLoading(true);
         // retrieve pool recent changes
             if(!crocEnv || !provider){
@@ -950,7 +950,7 @@ function Transactions(props: propsIF) {
         );
 
     return (
-        <FlexContainer flexDirection='column' style={{ height: '100%' }}>
+        <FlexContainer flexDirection='column' style={{ height: '100%', position: 'relative' }}>
             <div>{headerColumnsDisplay}</div>
             <div
                 style={{

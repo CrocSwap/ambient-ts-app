@@ -820,7 +820,7 @@ function Orders(props: propsIF) {
     return (
         <FlexContainer
             flexDirection='column'
-            style={{ height: isSmallScreen ? '95%' : '100%' }}
+            style={{ height: isSmallScreen ? '95%' : '100%', position: 'relative'  }}
         >
             <div>{headerColumnsDisplay}</div>
 

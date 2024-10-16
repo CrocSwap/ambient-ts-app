@@ -1237,7 +1237,8 @@ const addMoreData = async() => {
                     ? '97%'
                     : !isAccountView
                       ? '105%'
-                      : '100%',
+                      : '100%'
+                , position: 'relative' 
             }}
         >
             <div>{headerColumnsDisplay}</div>
