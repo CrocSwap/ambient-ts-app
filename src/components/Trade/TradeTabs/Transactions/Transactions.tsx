@@ -11,7 +11,7 @@ import {
     useRef,
     useState,
 } from 'react';
-import { fetchPoolRecentChanges } from '../../../../ambient-utils/api';
+import { fetchPoolRecentChanges, fetchUserRecentChanges } from '../../../../ambient-utils/api';
 
 import { IS_LOCAL_ENV } from '../../../../ambient-utils/constants';
 import { candleTimeIF } from '../../../../App/hooks/useChartSettings';
@@ -86,6 +86,7 @@ interface propsIF {
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
     fullLayoutActive?: boolean;
+    accountAddress?: string | undefined
 }
 
 function Transactions(props: propsIF) {
@@ -97,6 +98,7 @@ function Transactions(props: propsIF) {
         setSelectedInsideTab,
         isAccountView,
         fullLayoutActive,
+        accountAddress
     } = props;
 
     const {
@@ -148,6 +150,7 @@ function Transactions(props: propsIF) {
     const quoteTokenSymbol: string = quoteToken?.symbol;
     const baseTokenSymbol: string = baseToken?.symbol;
 
+
     
     const showAllData = !isAccountView && showAllDataSelection;
 
@@ -160,14 +163,23 @@ function Transactions(props: propsIF) {
 
     // ref holding scrollable element (to attach event listener)
     
-    const initialChanges = showAllData ? transactionsByPool.changes : userTransactionsByPool.changes;
+    const getInitialChangesData = () => {
+        let ret: TransactionIF[] = [];
+        if(isAccountView ){
+            ret = activeAccountTransactionData ? activeAccountTransactionData : [];
+        }
+        else if(showAllData){
+            ret = transactionsByPool.changes;
+        }else{
+            ret =  userTransactionsByPool.changes;
+        }
+
+        return ret;
+    }
     const [fetchedTransactions, setFetchedTransactions] = useState<Changes>({
         dataReceived: false,
-        changes: [...initialChanges],
+        changes: [...getInitialChangesData()],
     });
-
-
-
 
     const [hotTransactions, setHotTransactions] = useState<TransactionIF[]>([]);
 
@@ -203,12 +215,21 @@ function Transactions(props: propsIF) {
     
     useEffect(() => {
         resetInfiniteScrollData();
-        const initialChanges = showAllData ? transactionsByPool.changes : userTransactionsByPool.changes;
         setFetchedTransactions({
             dataReceived: false,
-            changes: [...initialChanges],
+            changes: [...getInitialChangesData()],
         })
     }, [showAllData])
+
+    useEffect(() => {
+        if(pagesVisible[0] === 0 && fetchedTransactions.changes.length === 0) {
+            resetInfiniteScrollData();
+            setFetchedTransactions({
+                dataReceived: false,
+                changes: [...getInitialChangesData()],
+            })
+        }
+    }, [activeAccountTransactionData])
 
     useEffect(() => {
         // clear fetched transactions when switching pools
@@ -324,6 +345,7 @@ function Transactions(props: propsIF) {
             }
         }
     }, [userTransactionsByPool]);
+    
 
     const updateHotTransactions = (changes: TransactionIF[]) => {
 
@@ -685,7 +707,6 @@ function Transactions(props: propsIF) {
         
     }
 
-
     const addMoreData = async() => {
         setMoreDataLoading(true);
         // retrieve pool recent changes
@@ -720,6 +741,21 @@ function Transactions(props: propsIF) {
                         poolIdx: poolIndex,
                         chainId: chainId,
                         user: userAddress,
+                        n: 50,
+                        timeBefore: oldestTxTime,
+                        crocEnv: crocEnv,
+                        graphCacheUrl: activeNetwork.graphCacheUrl,
+                        provider: provider,
+                        cachedFetchTokenPrice: cachedFetchTokenPrice,
+                        cachedQuerySpotPrice: cachedQuerySpotPrice,
+                        cachedTokenDetails: cachedTokenDetails,
+                        cachedEnsResolve: cachedEnsResolve,
+                    })
+                }else if(accountAddress){
+                    poolChangesJsonData = await fetchUserRecentChanges({ 
+                        tokenList: tokens.tokenUniv,
+                        chainId: chainId,
+                        user: accountAddress,
                         n: 50,
                         timeBefore: oldestTxTime,
                         crocEnv: crocEnv,

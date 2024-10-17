@@ -90,8 +90,6 @@ function TableRowsInfiniteScroll({
     // const txSpanSelectorForBindMethod =  isSmallScreen ? 'div:nth-child(1)':
     //     'div:nth-child(2)';
     const txSpanSelectorForBindMethod =  'div[data-label="hidden-id"]';
-    
-
 
     const debugMode = false;
     const[manualMode, setManualMode] = useState(false);
@@ -269,7 +267,7 @@ function TableRowsInfiniteScroll({
             <span style={{fontSize: '.72rem'}}>
             <div style={{display: 'none', padding: '.5rem 1rem', background: 'black', color: `${isTableReady ? 'rgba(0, 255,0)' : 'rgba(255, 0,0)'}`, position: 'absolute', left: '1rem', top: '1.7rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>Ready? : </div>
             <div style={{display: 'none', padding: '.5rem 1rem', background: 'black', color: 'rgba(0, 255,0)', opacity: manualModeRef.current ? '1':'.7', position: 'absolute', right: '3rem', top: '0rem'}} onClick={() => {setManualMode(!manualModeRef.current)}}>{manualModeRef.current ? 'Manual' : 'Auto'} Mode</div>
-            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', right: '1rem', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
+            <div style={{position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '1rem', top: '0rem'}}>Page: {pagesVisibleRef.current ? pagesVisibleRef.current[0] : ''}</div>
             <div style={{display: 'none',position: 'absolute',  background: 'black', color: 'rgba(0, 255,0)', left: '2rem', top: '1.2rem'}}>Rows : {renderedRows}</div>
             <div style={{left: '1rem', top: '0rem', color: 'rgba(255, 150,30)', position: 'absolute',  background: 'black'}}>{actionHistory}</div>
             <div style={{right: '0rem', top: '1.2rem', display: 'block', width:'1rem', height: '1rem', borderRadius: '50vw', position: 'absolute',  background: reqLockRef.current === true ? 'red': 'green'}}></div>
