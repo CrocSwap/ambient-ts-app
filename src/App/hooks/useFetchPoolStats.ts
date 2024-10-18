@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
@@ -61,10 +61,16 @@ const useFetchPoolStats = (
     const { lastBlockNumber, allPoolStats } = useContext(ChainDataContext);
 
     // useMemo to filter allPoolStats for the current pool
-    const currentPoolStats = allPoolStats?.find(
-        (poolStat: SinglePoolDataIF) =>
-            poolStat.base.toLowerCase() === pool.base.address.toLowerCase() &&
-            poolStat.quote.toLowerCase() === pool.quote.address.toLowerCase(),
+    const currentPoolStats = useMemo(
+        () =>
+            allPoolStats?.find(
+                (poolStat: SinglePoolDataIF) =>
+                    poolStat.base.toLowerCase() ===
+                        pool.base.address.toLowerCase() &&
+                    poolStat.quote.toLowerCase() ===
+                        pool.quote.address.toLowerCase(),
+            ),
+        [allPoolStats, pool.base.address, pool.quote.address],
     );
 
     const { tokens } = useContext(TokenContext);
@@ -307,15 +313,6 @@ const useFetchPoolStats = (
             localPoolPriceNonDisplay[0] ===
                 pool.base.address + pool.quote.address
         ) {
-            // const poolStatsNow = await cachedPoolStatsFetch(
-            //     chainId,
-            //     pool.base.address,
-            //     pool.quote.address,
-            //     poolIndex,
-            //     Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            //     activeNetwork.graphCacheUrl,
-            // );
-
             const poolStatsNow = {
                 baseFees: currentPoolStats?.baseFees || 0,
                 baseTvl: currentPoolStats?.baseTvl || 0,
@@ -344,19 +341,7 @@ const useFetchPoolStats = (
                 enableTotalSupply,
             );
 
-            // const ydayTime = Math.floor(Date.now() / 1000 - 24 * 3600);
-
-            // const poolStats24hAgo = await cachedPoolStatsFetch(
-            //     chainId,
-            //     pool.base.address,
-            //     pool.quote.address,
-            //     poolIndex,
-            //     Math.floor(Date.now() / CACHE_UPDATE_FREQ_IN_MS),
-            //     activeNetwork.graphCacheUrl,
-            //     ydayTime,
-            // );
-
-            const poolStats24hAgo2 = {
+            const poolStats24hAgo = {
                 baseFees: currentPoolStats?.baseFees || 0,
                 baseTvl: currentPoolStats?.baseTvl || 0,
                 baseVolume: currentPoolStats?.baseVolume || 0,
@@ -372,7 +357,7 @@ const useFetchPoolStats = (
             };
 
             const expandedPoolStats24hAgo = await expandPoolStats(
-                poolStats24hAgo2,
+                poolStats24hAgo,
                 pool.base.address,
                 pool.quote.address,
                 chainId,
