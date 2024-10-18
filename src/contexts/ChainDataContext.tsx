@@ -18,7 +18,7 @@ import {
     supportedNetworks,
 } from '../ambient-utils/constants';
 import { isJsonString } from '../ambient-utils/dataLayer';
-import { AllPoolDataIF, TokenIF } from '../ambient-utils/types';
+import { SinglePoolDataIF, TokenIF } from '../ambient-utils/types';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
@@ -59,7 +59,7 @@ interface ChainDataContextIF {
     isActiveNetworkMainnet: boolean;
     isActiveNetworkL2: boolean;
     nativeTokenUsdPrice: number | undefined;
-    allPoolStats: AllPoolDataIF | undefined;
+    allPoolStats: SinglePoolDataIF[] | undefined;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -191,7 +191,7 @@ export const ChainDataContextProvider = (props: {
     }, [chainData.chainId, BLOCK_NUM_POLL_MS]);
 
     const [allPoolStats, setAllPoolStats] = useState<
-        AllPoolDataIF | undefined
+        SinglePoolDataIF[] | undefined
     >();
 
     async function updateAllPoolStats(): Promise<void> {

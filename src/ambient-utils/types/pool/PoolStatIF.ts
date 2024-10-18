@@ -56,7 +56,3 @@ export interface SinglePoolDataIF {
     quoteTvl: number;
     quoteVolume: number;
 }
-
-export interface AllPoolDataIF {
-    allPoolData: SinglePoolDataIF[];
-}
