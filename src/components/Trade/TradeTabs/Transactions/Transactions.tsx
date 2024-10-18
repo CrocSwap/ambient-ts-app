@@ -716,7 +716,7 @@ function Transactions(props: propsIF) {
             }
             else{
                 let poolChangesJsonData;
-                if(showAllData){
+                if(showAllData && !isAccountView){
                     poolChangesJsonData = await fetchPoolRecentChanges({
                         tokenList: tokens.tokenUniv,
                         base: selectedBaseAddress,
@@ -733,7 +733,7 @@ function Transactions(props: propsIF) {
                         cachedTokenDetails: cachedTokenDetails,
                         cachedEnsResolve: cachedEnsResolve,
                     });
-                }else if(userAddress !== undefined){
+                }else if(!showAllData && !isAccountView && userAddress){
                     poolChangesJsonData = await fetchPoolUserChanges({ 
                         tokenList: tokens.tokenUniv,
                         base: selectedBaseAddress,
@@ -751,11 +751,12 @@ function Transactions(props: propsIF) {
                         cachedTokenDetails: cachedTokenDetails,
                         cachedEnsResolve: cachedEnsResolve,
                     })
-                }else if(accountAddress){
+                }else if(accountAddress || userAddress){
+                    const userParam = accountAddress && accountAddress.length > 0 ? accountAddress : (userAddress ? userAddress : '')
                     poolChangesJsonData = await fetchUserRecentChanges({ 
                         tokenList: tokens.tokenUniv,
                         chainId: chainId,
-                        user: accountAddress,
+                        user: userParam,
                         n: 50,
                         timeBefore: oldestTxTime,
                         crocEnv: crocEnv,
