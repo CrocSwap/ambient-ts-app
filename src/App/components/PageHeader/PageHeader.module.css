@@ -99,8 +99,13 @@
     max-height: 70%;
 }
 
-
-
+/* .announcement_bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    background-color: yellow;
+} */
 
 @media (max-width: 800px) {
     .primaryNavigation {

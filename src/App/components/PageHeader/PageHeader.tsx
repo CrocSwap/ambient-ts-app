@@ -48,6 +48,7 @@ const PageHeader = function () {
     const { headerImage } = useContext<BrandContextIF>(BrandContext);
 
     const {
+        announcements,
         walletModal: { open: openWalletModal },
         appHeaderDropdown,
     } = useContext(AppStateContext);
@@ -349,7 +350,6 @@ const PageHeader = function () {
             <nav
                 className={styles.primaryNavigation}
                 id='primary_navigation'
-               
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
@@ -407,6 +407,8 @@ const PageHeader = function () {
         };
     }, []);
 
+
+
     return (
         <>
             <header
@@ -463,6 +465,27 @@ const PageHeader = function () {
                     )}
                 </div>
             </header>
+            { announcements.show &&
+                <div
+                    // TODO: move styling to a css module once this component
+                    // TODO: ... finds a permanent home in the hierarchy
+                    // className={styles.announcement_bar}
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        backgroundColor: 'yellow',
+                        color: 'black',
+                        position: 'sticky',
+                        top: '55px',
+                        zIndex: '99999',
+                    }}
+                >
+                    <p>Hi there!</p>
+                    <div onClick={() => announcements.close()}>X</div>
+                </div>
+            }
             {/* {isDevMenuEnabled && showDevMenu && <MobileDropdown />} */}
         </>
     );
