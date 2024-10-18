@@ -21,6 +21,7 @@ interface argsIF {
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
+    timeBefore?: number;
 }
 
 export const fetchUserRecentChanges = (args: argsIF) => {
@@ -36,6 +37,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         cachedQuerySpotPrice,
         cachedTokenDetails,
         cachedEnsResolve,
+        timeBefore
     } = args;
 
     const userRecentChangesCacheEndpoint = GCGO_OVERRIDE_URL
@@ -43,6 +45,15 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         : graphCacheUrl + '/user_txs?';
 
     const poolChanges = fetch(
+        timeBefore ? 
+        userRecentChangesCacheEndpoint +
+            new URLSearchParams({
+                user: user,
+                chainId: chainId,
+                timeBefore: timeBefore.toString(),
+                n: n ? n.toString() : '', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                // page: page ? page.toString() : '', // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+            }):
         userRecentChangesCacheEndpoint +
             new URLSearchParams({
                 user: user,
